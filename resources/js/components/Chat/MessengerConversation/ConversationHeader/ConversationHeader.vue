@@ -246,6 +246,18 @@
 			</div>
 		</div>
 		<ConversationPinned />
+
+		<JobtronOverlay
+			v-if="isCropModal"
+			@close="isCropModal = false"
+		>
+			<div class="ConversationHeader-cropper">
+				<div id="chat-croppie" />
+				<JobtronButton @click="saveAvatar">
+					Сохранить
+				</JobtronButton>
+			</div>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -253,6 +265,7 @@
 import {mapActions, mapGetters} from 'vuex';
 import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
 import PopupMenu from '@ui/PopupMenu'
+import 'vue-advanced-cropper/dist/style.css'
 import {
 	ChatIconMore,
 	ChatIconSearchMessages,
@@ -263,6 +276,8 @@ import {
 	ChatIconHistoryBack,
 } from '@icons'
 import JobtronAvatar from '@ui/Avatar'
+import JobtronOverlay from '@ui/Overlay'
+import JobtronButton from '@ui/Button'
 // import clickOutside from '../../directives/clickOutside.ts';
 
 
@@ -279,6 +294,8 @@ export default {
 		ChatIconMuteChat,
 		ChatIconDeleteChat,
 		ChatIconHistoryBack,
+		JobtronOverlay,
+		JobtronButton,
 	},
 	// directives: {
 	// 	clickOutside
@@ -295,6 +312,8 @@ export default {
 			editTitle: false,
 			isPopup: false,
 			userPopup: 0,
+			isCropModal: false,
+			croppie: null,
 		};
 	},
 	computed: {
@@ -367,7 +386,7 @@ export default {
 				input.onchange = e => {
 					let file = e.target.files[0];
 					if (file) {
-						this.uploadChatAvatar(file);
+						this.cropAvatar(file);
 					}
 				};
 				input.click();
@@ -377,6 +396,41 @@ export default {
 					message: 'Для изменения аватара чата необходимо быть администратором чата.',
 				});
 			}
+		},
+		cropAvatar(file){
+			/* global Croppie */
+			const reader = new FileReader()
+			reader.addEventListener('load', () => {
+				this.croppie = new Croppie(document.getElementById('chat-croppie'), {
+					enableExif: true,
+					viewport: {
+						width:200,
+						height:200,
+						type:'square' //circle
+					},
+					boundary:{
+						width:300,
+						height:300
+					}
+				})
+				this.croppie.bind({
+					url: reader.result
+				})
+			}, false);
+
+			this.isCropModal = true
+			reader.readAsDataURL(file);
+		},
+		saveAvatar(){
+			this.isCropModal = false
+			this.croppie.result({
+				type: 'blob',
+				format: 'jpeg',
+				quality: 0.8
+			}).then(blob => {
+				const file = new File([blob], 'image.jpeg')
+				this.uploadChatAvatar(file)
+			})
 		},
 		changeTitle(event) {
 			event.stopPropagation();
@@ -503,13 +557,6 @@ export default {
 </script>
 
 <style lang="scss">
-.ConversationHeader{
-	&-title{
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-}
 .messenger__chat-header {
 	display: flex;
 	align-items: center;
@@ -740,4 +787,27 @@ export default {
 	margin-left: 8px;
 }
 
+
+.ConversationHeader{
+	&-title{
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	&-cropper{
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+
+		padding-bottom: 10px;
+
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		background-color: #fff;
+		border-radius: 16px;
+		transform: translate(-50%, -50%);
+		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+	}
+}
 </style>
