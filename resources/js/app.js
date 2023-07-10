@@ -212,7 +212,7 @@ Vue.directive('click-outside', {
 	bind(el, binding, vnode) {
 		el.clickOutsideEvent = (event) => {
 			if (!(el === event.target || el.contains(event.target))) {
-				vnode.context[binding.expression](event);
+				vnode.context[binding.expression](event, el);
 			}
 		};
 		el.clickOutsideEventStop = (event) => { event.stopPropagation() }

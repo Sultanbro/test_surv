@@ -8,16 +8,72 @@
 					class="text-nowrap mb-3"
 					:small="true"
 					:bordered="true"
-					:items="items"
+					:items="sorted"
 					:fields="fields"
 					primary-key="a"
 					:key="componentKey"
+					ref="table"
 				>
+					<template #header(name)="{field}">
+						<div
+							class="pointer"
+							@click="setSort('name')"
+						>
+							{{ field.label }}
+						</div>
+					</template>
+					<template #header(agrees)="{field}">
+						<div
+							class="pointer"
+							@click="setSort('agrees')"
+						>
+							{{ field.label }}
+						</div>
+					</template>
+					<template #header="{field}">
+						<div
+							class="pointer relative"
+							@click.stop="openContext"
+							:data-key="field.key"
+						>
+							{{ field.label }}
+							<PopupMenu
+								v-show="popupMenu[field.key]"
+								v-click-outside="closeContext"
+								:data-key="field.key"
+							>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'sets')"
+								>
+									Наборы
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'calls')"
+								>
+									Звонки
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'minutes')"
+								>
+									Минуты
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'accepts')"
+								>
+									Согласия
+								</div>
+							</PopupMenu>
+						</div>
+					</template>
 					<template #cell="data">
 						<div v-html="getCellHtml(data.value)" />
 					</template>
 					<template #cell(totals)="data">
-						<div>{{ totals[data.index] ? totals[data.index].join('/') : '' }}</div>
+						<div>{{ totals[data.item.user_id] ? totals[data.item.user_id].join('/') : '' }}</div>
 					</template>
 					<template #cell(name)="data">
 						<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
@@ -101,12 +157,14 @@
 <script>
 import JobtronButton from '@ui/Button'
 import JobtronTable from '@ui/Table'
+import PopupMenu from '@ui/PopupMenu'
 
 export default {
 	name: 'TableRecruiterStats',
 	components: {
 		JobtronButton,
 		JobtronTable,
+		PopupMenu,
 	},
 	props: {
 		data: {
@@ -196,24 +254,66 @@ export default {
 				20,
 				25,
 				2
-			]
+			],
+
+			popupMenu: {
+				totals: false,
+			},
+			sortCol: 'none',
+			sortType: 'none', // sets | calls | minutes | accepts
+			sortTypes: {
+				sets: 0,
+				calls: 1,
+				minutes: 2,
+				accepts: 3
+			},
+			compare: {
+				name: (a, b) => a.name.localeCompare(b.name),
+				agrees: (a, b) => (parseInt(b.agrees) || 0) - (parseInt(a.agrees) || 0),
+				data: (a, b) => {
+					const aData = a[this.sortCol] ? a[this.sortCol].split('/') : [0, 0, 0, 0]
+					const bData = b[this.sortCol] ? b[this.sortCol].split('/') : [0, 0, 0, 0]
+					const type = this.sortTypes[this.sortType]
+					return (Number(bData[type]) || 0) - (Number(aData[type]) || 0)
+				},
+				totals: (a, b) => {
+					const aData = this.totals[a.user_id] ? this.totals[a.user_id] : [0, 0, 0, 0]
+					const bData = this.totals[b.user_id] ? this.totals[b.user_id] : [0, 0, 0, 0]
+					const type = this.sortTypes[this.sortType]
+					return bData[type] - aData[type]
+				},
+			}
 		};
 	},
 	computed: {
 		totals(){
-			return this.data.map(row => {
-				if(row.user_id) return this.getUserTotals(row)
-				return this.getTotalTotals(row)
-			})
-		}
+			return this.data.reduce((result, row) => {
+				if(row.user_id) result[row.user_id] = this.getUserTotals(row)
+				else result[row.user_id] = this.getTotalTotals(row)
+				return result
+			}, {})
+		},
+		sorted(){
+			if(this.sortCol === 'none') return this.items
+
+			const toSort = this.data.slice(0, -1)
+			const totals = this.data.slice(-1)
+			if(['name', 'agrees', 'totals'].includes(this.sortCol)){
+				toSort.sort(this.compare[this.sortCol])
+			}
+			else {
+				toSort.sort(this.compare.data)
+			}
+			return [...toSort, ...totals]
+		},
 	},
 	watch: {
 		data: {
 			immediate: true,
 			handler () {
 				this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
-				this.items  = this.data;
-				this.leads  = this.leads_data;
+				this.items = this.data;
+				this.leads = this.leads_data;
 				this.componentKey++;
 			}
 		},
@@ -221,8 +321,8 @@ export default {
 			handler (val) {
 				this.$emit('changeDay', val)
 				this.fields[0].label = 'Сотрудники: ' + this.rates[val];
-				this.items  = this.data;
-				this.leads  = this.leads_data;
+				this.items = this.data;
+				this.leads = this.leads_data;
 				this.componentKey++;
 			}
 		},
@@ -234,10 +334,11 @@ export default {
 	methods: {
 		setFields() {
 			Object.keys(this.times).forEach(key => {
+				this.popupMenu[key] = false
 				this.fields.push({
 					key: `${key}`,
 					label: this.times[key],
-					tdClass: 'day'
+					tdClass: 'day',
 				});
 			})
 		},
@@ -279,7 +380,30 @@ export default {
 				return value
 			}).join('/')
 			return cell
-		}
+		},
+		openContext(event){
+			// в слотах не работает реактивность, меняем состояние ручками
+			const pop = event.target.querySelector('.PopupMenu')
+			const thead = event.target.parentNode.parentNode
+			thead.querySelectorAll('.PopupMenu').forEach(el => {
+				el.style.display = 'none'
+			})
+			if(pop){
+				pop.style.display = ''
+			}
+		},
+		closeContext(event, el){
+			// в слотах не работает реактивность, меняем состояние ручками
+			el.style.display = 'none'
+		},
+		setSort(col, type = 'none'){
+			this.sortCol = col
+			this.sortType = type
+
+			this.$refs.table.$el.querySelectorAll('.PopupMenu').forEach(el => {
+				el.style.display = 'none'
+			})
+		},
 	}
 };
 </script>
