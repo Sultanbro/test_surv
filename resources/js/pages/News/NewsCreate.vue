@@ -89,7 +89,7 @@
 					@click="toggleAccessModal(true)"
 				>
 					<img src="/icon/news/create-post/add-new.svg">
-					<span>Добавить ещё</span>
+					<span>Добавить получателей</span>
 				</div>
 			</div>
 
@@ -111,7 +111,7 @@
 			>
 			<a
 				class="news-create__submit"
-				@click="isEdit == false ? createPost() : updatePost()"
+				@click="!isEdit ? createPost() : updatePost()"
 			>
 				<span v-html="isEdit ? 'Сохранить' : 'Отправить'" />
 			</a>
@@ -134,6 +134,19 @@
 			v-scroll-lock="showAccessModal"
 		>
 			<div class="access-modal">
+				<div class="access-modal__search">
+					<img
+						class="news-icon"
+						src="/icon/news/filter/search.svg"
+					>
+					<input
+						type="text"
+						v-model="accessSearch"
+						class="access-modal__search-input"
+						placeholder="Быстрый поиск"
+					>
+				</div>
+
 				<div class="access-modal__tabs">
 					<div
 						:class="'access-modal__tab ' + (currentAccessTab == 1 ?'access-modal__tab--active' : '')"
@@ -161,19 +174,6 @@
 					</div>
 				</div>
 
-				<div class="access-modal__search">
-					<img
-						class="news-icon"
-						src="/icon/news/filter/search.svg"
-					>
-					<input
-						type="text"
-						v-model="accessSearch"
-						class="access-modal__search-input"
-						placeholder="Быстрый поиск"
-					>
-				</div>
-
 				<div class="user-list">
 					<div
 						v-show="currentAccessTab == 1"
@@ -182,7 +182,7 @@
 						<div
 							v-for="item in accessDictionaries.users"
 							:key="item.id"
-							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							v-show="item.name && item.last_name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) || item.last_name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 						>
@@ -195,7 +195,7 @@
 									{{ item.position }}
 								</div>
 								<div class="user-item__name">
-									{{ item.name }}
+									{{ item.name }} {{ item.last_name }}
 								</div>
 							</div>
 							<label class="news-checkbox">
@@ -215,7 +215,7 @@
 						<div
 							v-for="item in accessDictionaries.profile_groups"
 							:key="item.id"
-							v-show="item.name? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 2)"
 						>
@@ -267,10 +267,6 @@
 						class="access-modal__selected-count"
 						v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"
 					/>
-					<a class="access-modal__add-employee hover-pointer">
-						<img src="/icon/news/access-modal/plus-accent.svg">
-						<span v-html="'Пригласить сотрудника'" />
-					</a>
 				</div>
 			</div>
 		</div>

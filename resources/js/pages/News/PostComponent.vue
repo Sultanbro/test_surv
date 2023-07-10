@@ -55,6 +55,9 @@
 								<div class="news-menu-popup__arrow" />
 								<div
 									class="news-menu-popup__item"
+									:class="{
+										active: currentPost.is_favourite
+									}"
 									@click="favouritePost(currentPost.id)"
 								>
 									<img
@@ -82,7 +85,8 @@
 									/>
 								</div>
 								<div
-									v-show="currentPost.author ? ((this.$can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									v-if="$can('news_edit')"
+									v-show="currentPost.author ? (($can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
 									class="news-menu-popup__item"
 									@click="editPost"
 								>
@@ -97,7 +101,8 @@
 									/>
 								</div>
 								<div
-									v-show="currentPost.author ? ((this.$can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									v-if="$can('news_edit')"
+									v-show="currentPost.author ? (($can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
 									class="news-menu-popup__item"
 									@click="deletePost(currentPost.id)"
 								>
