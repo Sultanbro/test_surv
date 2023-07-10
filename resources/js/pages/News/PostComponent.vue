@@ -16,11 +16,12 @@
 					<div class="news-item__name-time">
 						<div class="news-item__name-access">
 							<div class="news-item__info-block">
-								<span class="news-item__name">{{ currentPost.author ? currentPost.author.name : null }}</span>
-								<span
-									class="news-item__time"
-									v-html="currentPost.created_at"
-								/>
+								<span class="news-item__name">
+									{{ currentPost.author ? currentPost.author.name : null }}
+								</span>
+								<span class="news-item__time">
+									{{ createdAt }}
+								</span>
 							</div>
 							<img src="/icon/news/some-icons/arrow-right.svg">
 							<div
@@ -274,6 +275,8 @@
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
+import { pluralForm } from '@/composables/pluralForm.js'
+
 export default {
 	name: 'PostComponent',
 	components: {
@@ -303,6 +306,22 @@ export default {
 			images: [],
 			galleryIndex: null,
 			showModalImages: false
+		}
+	},
+	computed: {
+		createdAt(){
+			const created = this.$moment.utc(this.currentPost.created_at)
+			const now = this.$moment.utc(Date.now())
+			const diff = now.diff(created, 'hours')
+			const min = now.diff(created, 'minutes')
+			const local = created.local()
+			return diff > 48
+				? local.format('DD.MM.YYYY в HH:mm')
+				: diff > 24
+					? '1 день назад'
+					: diff > 0
+						? `${diff} ${pluralForm(diff, ['час', 'часа', 'часов'])} назад`
+						: `${min} ${pluralForm(diff, ['минуту', 'минуты', 'минут'])} назад`
 		}
 	},
 	mounted() {

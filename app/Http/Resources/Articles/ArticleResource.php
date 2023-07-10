@@ -32,7 +32,7 @@ class ArticleResource extends JsonResource
             'title' => $this->resource->title,
             'content' => $this->resource->content,
             'available_for' => $this->resource->available_for,
-            'created_at' => DateHelper::format($this->resource->created_at),
+            'created_at' => $this->resource->created_at,
             'author' => (new UserResource($this->resource->author))->toArray($request),
             'likes' => LikeResource::collection($this->resource->likes)->toArray($request),
             'likes_count' => $this->repository->likesCount($this->resource),
