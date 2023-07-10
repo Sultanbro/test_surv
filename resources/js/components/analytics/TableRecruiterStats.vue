@@ -8,13 +8,72 @@
 					class="text-nowrap mb-3"
 					:small="true"
 					:bordered="true"
-					:items="items"
+					:items="sorted"
 					:fields="fields"
 					primary-key="a"
 					:key="componentKey"
+					ref="table"
 				>
-					<template #cell()="data">
-						<div>{{ data.value }}</div>
+					<template #header(name)="{field}">
+						<div
+							class="pointer"
+							@click="setSort('name')"
+						>
+							{{ field.label }}
+						</div>
+					</template>
+					<template #header(agrees)="{field}">
+						<div
+							class="pointer"
+							@click="setSort('agrees')"
+						>
+							{{ field.label }}
+						</div>
+					</template>
+					<template #header="{field}">
+						<div
+							class="pointer relative"
+							@click.stop="openContext"
+							:data-key="field.key"
+						>
+							{{ field.label }}
+							<PopupMenu
+								v-show="popupMenu[field.key]"
+								v-click-outside="closeContext"
+								:data-key="field.key"
+							>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'sets')"
+								>
+									Наборы
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'calls')"
+								>
+									Звонки
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'minutes')"
+								>
+									Минуты
+								</div>
+								<div
+									class="PopupMenu-item"
+									@click="setSort(field.key, 'accepts')"
+								>
+									Согласия
+								</div>
+							</PopupMenu>
+						</div>
+					</template>
+					<template #cell="data">
+						<div v-html="getCellHtml(data.value)" />
+					</template>
+					<template #cell(totals)="data">
+						<div>{{ totals[data.item.user_id] ? totals[data.item.user_id].join('/') : '' }}</div>
 					</template>
 					<template #cell(name)="data">
 						<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
@@ -66,7 +125,7 @@
 					<b>Стандарт звонков:</b><br>
 					<span class="aaa fz-12 text-red mb-2">кол-во наборов: 30 наборов</span>
 					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
-					<span class="aaa fz-12 text-red">30 минут диалога</span>
+					<span class="aaa fz-12 text-red">25 минут диалога</span>
 					<span class="aaa fz-12 text-red">2 согласия</span>
 				</p>
 			</div>
@@ -98,12 +157,14 @@
 <script>
 import JobtronButton from '@ui/Button'
 import JobtronTable from '@ui/Table'
+import PopupMenu from '@ui/PopupMenu'
 
 export default {
 	name: 'TableRecruiterStats',
 	components: {
 		JobtronButton,
 		JobtronTable,
+		PopupMenu,
 	},
 	props: {
 		data: {
@@ -157,6 +218,13 @@ export default {
 					tdClass: 'text-center t-name',
 					thClass: 'text-center',
 				},
+				{
+					key: 'totals',
+					label: 'Итого',
+					variant: 'title',
+					tdClass: 'text-center t-name',
+					thClass: 'text-center',
+				},
 			],
 			showModal: false,
 			profiles: [
@@ -168,36 +236,8 @@ export default {
 				'иностранные',
 				'hh',
 				'чаты',
-			]
-		};
-	},
-	watch: {
-		data: {
-			immediate: true,
-			handler () {
-				this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
-				this.items  = this.data;
-				this.leads  = this.leads_data;
-				this.componentKey++;
-			}
-		},
-		currentDay: {
-			handler (val) {
-				this.$emit('changeDay', val)
-				this.fields[0].label = 'Сотрудники: ' + this.rates[val];
-				this.items  = this.data;
-				this.leads  = this.leads_data;
-				this.componentKey++;
-			}
-		},
-	},
-	mounted() {
-		this.setFields()
-		this.currentDay = this.daysInMonth
-	},
-	methods: {
-		setFields() {
-			let times = {
+			],
+			times: {
 				9: '09-10',
 				10: '10-11',
 				11: '11-12',
@@ -208,13 +248,97 @@ export default {
 				16: '16-17',
 				17: '17-18',
 				18: '18-19',
-			};
+			},
+			expectations: [
+				30,
+				20,
+				25,
+				2
+			],
 
-			Object.keys(times).forEach(key => {
+			popupMenu: {
+				totals: false,
+			},
+			sortCol: 'none',
+			sortType: 'none', // sets | calls | minutes | accepts
+			sortTypes: {
+				sets: 0,
+				calls: 1,
+				minutes: 2,
+				accepts: 3
+			},
+			compare: {
+				name: (a, b) => a.name.localeCompare(b.name),
+				agrees: (a, b) => (parseInt(b.agrees) || 0) - (parseInt(a.agrees) || 0),
+				data: (a, b) => {
+					const aData = a[this.sortCol] ? a[this.sortCol].split('/') : [0, 0, 0, 0]
+					const bData = b[this.sortCol] ? b[this.sortCol].split('/') : [0, 0, 0, 0]
+					const type = this.sortTypes[this.sortType]
+					return (Number(bData[type]) || 0) - (Number(aData[type]) || 0)
+				},
+				totals: (a, b) => {
+					const aData = this.totals[a.user_id] ? this.totals[a.user_id] : [0, 0, 0, 0]
+					const bData = this.totals[b.user_id] ? this.totals[b.user_id] : [0, 0, 0, 0]
+					const type = this.sortTypes[this.sortType]
+					return bData[type] - aData[type]
+				},
+			}
+		};
+	},
+	computed: {
+		totals(){
+			return this.data.reduce((result, row) => {
+				if(row.user_id) result[row.user_id] = this.getUserTotals(row)
+				else result[row.user_id] = this.getTotalTotals(row)
+				return result
+			}, {})
+		},
+		sorted(){
+			if(this.sortCol === 'none') return this.items
+
+			const toSort = this.data.slice(0, -1)
+			const totals = this.data.slice(-1)
+			if(['name', 'agrees', 'totals'].includes(this.sortCol)){
+				toSort.sort(this.compare[this.sortCol])
+			}
+			else {
+				toSort.sort(this.compare.data)
+			}
+			return [...toSort, ...totals]
+		},
+	},
+	watch: {
+		data: {
+			immediate: true,
+			handler () {
+				this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
+				this.items = this.data;
+				this.leads = this.leads_data;
+				this.componentKey++;
+			}
+		},
+		currentDay: {
+			handler (val) {
+				this.$emit('changeDay', val)
+				this.fields[0].label = 'Сотрудники: ' + this.rates[val];
+				this.items = this.data;
+				this.leads = this.leads_data;
+				this.componentKey++;
+			}
+		},
+	},
+	mounted() {
+		this.setFields()
+		this.currentDay = this.daysInMonth
+	},
+	methods: {
+		setFields() {
+			Object.keys(this.times).forEach(key => {
+				this.popupMenu[key] = false
 				this.fields.push({
 					key: `${key}`,
-					label: times[key],
-					tdClass: 'day'
+					label: this.times[key],
+					tdClass: 'day',
 				});
 			})
 		},
@@ -232,32 +356,59 @@ export default {
 			}).catch(() => {
 				this.$toast.error('Ошибка!');
 			});
-		}
+		},
+		getUserTotals(row){
+			return Object.keys(this.times).reduce((result, key) => {
+				if(!row[key]) return result
+				const items = row[key].split('/')
+				return result.map((res, index) => {
+					return res + (Number(items[index]) || 0)
+				})
+			}, [0, 0, 0, 0])
+		},
+		getTotalTotals(row){
+			Object.keys(this.times).reduce((result, key) => {
+				if(!row[key]) return result
+				return result + (Number(row[key]) || 0)
+			}, 0)
+		},
+		getCellHtml(cell){
+			if(!cell) return ''
+			if(~('' + cell).indexOf('/')) return cell.split('/').map((value, index) => {
+				if((Number(value) || 0) >= this.expectations[index])
+					return `<span class="TableRecruiterStats-complete">${value}</span>`
+				return value
+			}).join('/')
+			return cell
+		},
+		openContext(event){
+			// в слотах не работает реактивность, меняем состояние ручками
+			const pop = event.target.querySelector('.PopupMenu')
+			const thead = event.target.parentNode.parentNode
+			thead.querySelectorAll('.PopupMenu').forEach(el => {
+				el.style.display = 'none'
+			})
+			if(pop){
+				pop.style.display = ''
+			}
+		},
+		closeContext(event, el){
+			// в слотах не работает реактивность, меняем состояние ручками
+			el.style.display = 'none'
+		},
+		setSort(col, type = 'none'){
+			this.sortCol = col
+			this.sortType = type
+
+			this.$refs.table.$el.querySelectorAll('.PopupMenu').forEach(el => {
+				el.style.display = 'none'
+			})
+		},
 	}
 };
 </script>
 
 <style lang="scss">
-.TableRecruiterStats{
-	&-table{
-		overflow-y: auto;
-	}
-	&-colTitle{
-		height: 100%;
-	}
-	.b-table-sticky-column{
-		left: 0;
-	}
-	.special-select{
-		padding: 0 0 0 5px !important;
-		margin-top: -5px;
-		margin-bottom: -5px;
-	}
-	.JobtronTable-th,
-	.JobtronTable-td{
-		padding: 5px;
-	}
-}
 .recruiter_stats {
 	&.my-table .day {
 		min-width: 63px;
@@ -348,5 +499,31 @@ span.aaa {
 	margin-bottom: 12px !important;
 	line-height: 15px;
 	display: block;
+}
+
+
+
+.TableRecruiterStats{
+	&-table{
+		overflow-y: auto;
+	}
+	&-colTitle{
+		height: 100%;
+	}
+	&-complete{
+		color: #8bab00;
+	}
+	.b-table-sticky-column{
+		left: 0;
+	}
+	.special-select{
+		padding: 0 0 0 5px !important;
+		margin-top: -5px;
+		margin-bottom: -5px;
+	}
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 5px;
+	}
 }
 </style>
