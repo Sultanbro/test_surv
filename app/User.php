@@ -1303,7 +1303,7 @@ class User extends Authenticatable implements Authorizable
      * Получаем дни работы для пользователя за месяц
      * @return int
      */
-    public function getCountWorkDaysMonth(): int {
+    public function getCountWorkDaysMonth($year = null, $month = null): int {
         $firstWorkDay = $this->first_work_day ? Carbon::parse($this->first_work_day)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
         $workChartName = $this->workChart->name;
 
@@ -1316,8 +1316,11 @@ class User extends Authenticatable implements Authorizable
         $dayOff = (int)$days[1];
         $total = $workingDay + $dayOff;
 
-        $year = Carbon::now()->year;
-        $month = Carbon::now()->month;
+        if ($year == null && $month == null) {
+            $year = Carbon::now()->year;
+            $month = Carbon::now()->month;
+        }
+
         $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
 
         $workDayInMonth = 0;
@@ -1477,7 +1480,7 @@ class User extends Authenticatable implements Authorizable
             $workDays = workdays($date->year, $date->month, $ignore);
         }
         elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-            $workDays = $this->getCountWorkDaysMonth();
+            $workDays = $this->getCountWorkDaysMonth($date->year, $date->month);
         }
         else {
             throw new Exception(message: 'Проверьте график работы', code: 400);
