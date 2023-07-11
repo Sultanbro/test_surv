@@ -71,20 +71,27 @@
 					>
 						<td class="t-cell rownumber ruler-cells">
 							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
-								<IconDelete
+								<span
 									v-if="editTableMode && i_index > 3"
-									width="14"
-									height="14"
-									class="pointer"
 									@click="deleteRow(i_index)"
-								/>
-								<ChatIconPlus
+								>
+									<IconDelete
+
+										width="14"
+										height="14"
+										class="pointer"
+									/>
+								</span>
+								<span
 									v-if="editTableMode && i_index > 2"
-									width="14"
-									height="14"
-									class="pointer ChatIcon-parent"
 									@click="add_row(i_index)"
-								/>
+								>
+									<ChatIconPlus
+										width="14"
+										height="14"
+										class="pointer ChatIcon-parent"
+									/>
+								</span>
 								<span>{{ i_index + 1 }}</span>
 							</div>
 						</td>
@@ -882,29 +889,27 @@ export default {
 
 
 		deleteRow(index) {
-			let e = confirm('Вы уверены?');
+			if(confirm('Вы уверены?')) return
 			let loader = this.$loading.show();
 
-			if(e) {
-				this.axios.post('/timetracking/analytics/delete-row', {
-					group_id: this.group_id,
-					date: this.$moment(
-						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-						'MMMM YYYY'
-					).format('YYYY-MM-DD'),
-					item: this.items[index]
-				}).then(() => {
-					this.$toast.success('Удалено');
-					// Delete item from items
-					this.items.splice(index, 1);
-					this.setDependencies();
-					loader.hide()
-				}).catch(error => {
-					this.$toast.error('Не получилось');
-					console.error(error)
-					loader.hide()
-				});
-			}
+			this.axios.post('/timetracking/analytics/delete-row', {
+				group_id: this.group_id,
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				item: this.items[index]
+			}).then(() => {
+				this.$toast.success('Удалено');
+				// Delete item from items
+				this.items.splice(index, 1);
+				this.setDependencies();
+				loader.hide()
+			}).catch(error => {
+				this.$toast.error('Не получилось');
+				console.error(error)
+				loader.hide()
+			});
 		},
 
 		save_depend() {
@@ -1430,14 +1435,6 @@ export default {
 					this.letter_cells.push(letters[fl_pos]);
 				}
 			}
-		},
-
-		handleClick (event, item) { // for context menu
-			this.$refs.vueSimpleContextMenu.showMenu(event, item)
-		},
-
-		optionClicked (event) { // for context menu
-			window.alert(JSON.stringify(event))
 		},
 
 		// get array of expression combinations
