@@ -107,7 +107,7 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
-import { fetchTopNPS } from '@/stores/api/top.mock.js'
+import { fetchTopNPS } from '@/stores/api/top.js'
 
 export default {
 	name: 'NPS',
