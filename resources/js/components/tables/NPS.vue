@@ -41,8 +41,10 @@
 					<tr>
 						<template v-for="(field, key) in fields">
 							<th
+								class="NPS-th"
 								:class="field.klass"
 								:key="key"
+								@click="doSort(field.key)"
 							>
 								{{ field.name }}
 							</th>
@@ -51,7 +53,7 @@
 				</thead>
 				<tbody>
 					<tr
-						v-for="(item, index) in users"
+						v-for="(item, index) in sorted"
 						:key="index"
 					>
 						<template v-for="(field, key) in fields">
@@ -70,20 +72,20 @@
 											<div class="w-50">
 												<b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
 												<div
-													v-for="(text, index) in item.texts[field.key]"
-													:key="index"
+													v-for="(text, plusIndex) in item.texts[field.key]"
+													:key="plusIndex"
 												>
-													<b>{{ index + 1 }}:</b> {{ text }}
+													<b>{{ plusIndex + 1 }}:</b> {{ text }}
 												</div>
 											</div>
 
 											<div class="w-50">
 												<b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
 												<div
-													v-for="(text, index) in item.minuses[field.key]"
-													:key="index"
+													v-for="(text, minusIndex) in item.minuses[field.key]"
+													:key="minusIndex"
 												>
-													<b>{{ index + 1 }}:</b> {{ text }}
+													<b>{{ minusIndex + 1 }}:</b> {{ text }}
 												</div>
 											</div>
 										</div>
@@ -105,7 +107,7 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
-import { fetchTopNPS } from '@/stores/api/top.js'
+import { fetchTopNPS } from '@/stores/api/top.mock.js'
 
 export default {
 	name: 'NPS',
@@ -131,7 +133,20 @@ export default {
 				weekDays: 0,
 				daysInMonth: 0
 			},
-			ukey: 1
+			ukey: 1,
+
+			sortCol: '',
+			sortOrder: 'asc',
+			sortFn: {
+				asc: {
+					str: (a, b) => (a[this.sortCol] || '').localeCompare(b[this.sortCol] || ''),
+					data: (a, b) => (Number(a[this.sortCol]) || 0) - (Number(b[this.sortCol]) || 0),
+				},
+				desc: {
+					str: (b, a) => (a[this.sortCol] || '').localeCompare(b[this.sortCol] || ''),
+					data: (b, a) => (Number(a[this.sortCol]) || 0) - (Number(b[this.sortCol]) || 0),
+				}
+			}
 		}
 	},
 	computed: {
@@ -139,6 +154,17 @@ export default {
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+		sorted(){
+			if(!this.sortCol) return this.users
+			const toSort = this.users.slice()
+			if(['group_id', 'position', 'name'].includes(this.sortCol)){
+				toSort.sort(this.sortFn[this.sortOrder].str)
+			}
+			else{
+				toSort.sort(this.sortFn[this.sortOrder].data)
+			}
+			return toSort
 		}
 	},
 	created() {
@@ -238,76 +264,99 @@ export default {
 
 			this.fields = fieldsArray
 		},
+
+		doSort(col) {
+			if(this.sortCol === col){
+				this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
+				return
+			}
+
+			this.sortOrder = 'asc'
+			this.sortCol = col
+		}
 	}
 };
 </script>
 
 <style lang="scss" scoped>
-    .custom-table-nps{
-       tbody{
-           th,td{
-               padding: 0!important;
-               .inner{
-                   height: 40px;
-                   padding: 0 10px;
-                   display: flex;
-                   align-items: center;
-                   justify-content: center;
-               }
-           }
-       }
-    }
+.custom-table-nps{
+	tbody{
+		th,td{
+			padding: 0!important;
+			.inner{
+				height: 40px;
+				padding: 0 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+		}
+	}
+}
 
-.month:hover div.inner {
-    position: relative;
-}
-.month:hover div.inner {
-    background: #eee;
-    cursor: pointer;
-}
+
 div.inner-text {
-    display: none;
+	display: none;
 }
 
-.month:hover div.inner-text {
-    position: absolute;
-    right: 0;
-    padding: 15px;
-    width: 400px;
-    max-width: 400px;
-    max-height: 200px;
-    text-align: left;
-    font-size: 13px;
-    background: #fff7c8;
-    border-radius: 5px;
-    cursor: pointer;
-    display: block;
-    border: 1px solid #ddd;
-    overflow-y:auto;
-}
 .inner{
-    &:not(.inner-text-top){
-        .inner-text{
-            top: 40px;
-        }
-    }
-    &.inner-text-top{
-        .inner-text{
-            bottom: 40px;
-        }
-    }
+	&:not(.inner-text-top){
+		.inner-text{
+			top: 40px;
+		}
+	}
+	&.inner-text-top{
+		.inner-text{
+			bottom: 40px;
+		}
+	}
+}
+
+.month:hover {
+	div.inner {
+		position: relative;
+		background: #eee;
+		cursor: pointer;
+	}
+
+	div.inner-text {
+		position: absolute;
+		right: 0;
+		padding: 15px;
+		width: 400px;
+		max-width: 400px;
+		max-height: 200px;
+		text-align: left;
+		font-size: 13px;
+		background: #fff7c8;
+		border-radius: 5px;
+		cursor: pointer;
+		display: block;
+		border: 1px solid #ddd;
+		overflow-y:auto;
+	}
 }
 
 .bg-blue {
-    background: aliceblue;
+	background: aliceblue;
 }
 td.month {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 .w-200 {
-    min-width: 200px;
+	min-width: 200px;
 }
 .w-50 {
-    width: 50%;
+	width: 50%;
+}
+</style>
+
+<!-- 360 no scope MLG -->
+<style lang="scss">
+.NPS{
+	&-th{
+		cursor: pointer;
+		user-select: none;
+	}
 }
 </style>
