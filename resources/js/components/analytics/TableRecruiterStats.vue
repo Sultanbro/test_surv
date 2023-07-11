@@ -236,6 +236,7 @@ export default {
 				'иностранные',
 				'hh',
 				'чаты',
+				'СС',
 			],
 			times: {
 				9: '09-10',
@@ -511,7 +512,8 @@ span.aaa {
 		height: 100%;
 	}
 	&-complete{
-		color: #8bab00;
+		color: #06c42d;
+		font-weight: 700;
 	}
 	.b-table-sticky-column{
 		left: 0;
