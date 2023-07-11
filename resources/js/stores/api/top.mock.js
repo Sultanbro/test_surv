@@ -1,4 +1,5 @@
 import axios from 'axios'
+import fetchTimetrackingNPS from './mock/top/fetchTimetrackingNPS.json'
 
 export async function topArchiveUtility(request){
 	const { data } = await axios.post('/top/utility-archive', request)
@@ -28,7 +29,6 @@ export async function switchArchiveTop(request){
 	return data
 }
 
-export async function fetchTopNPS(request){
-	const { data } = await axios.post('/timetracking/nps', request)
-	return data
+export async function fetchTopNPS(){
+	return fetchTimetrackingNPS
 }

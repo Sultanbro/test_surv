@@ -105,6 +105,8 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
+import { fetchTopNPS } from '@/stores/api/top.js'
+
 export default {
 	name: 'NPS',
 	props: {
@@ -145,7 +147,6 @@ export default {
 		this.fetchData();
 	},
 	methods: {
-
 		setMonth() {
 			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
 			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
@@ -157,23 +158,39 @@ export default {
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 		},
 
-		fetchData() {
-			let loader = this.$loading.show();
+		async fetchData() {
+			const loader = this.$loading.show();
 
-			this.axios.post('/timetracking/nps', {
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-				year: this.currentYear,
-			}).then(response => {
-
+			try {
+				const {users} = await fetchTopNPS({
+					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+					year: this.currentYear,
+				})
 				this.setMonth()
-				this.users = response.data.users;
+				this.users = this.addAvg(users)
 				this.ukey++;
-
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			}
+			catch (error) {
 				alert(error)
-			});
+			}
+
+			loader.hide()
+		},
+
+		addAvg(users){
+			users.forEach(user => {
+				let count = 0
+				let sum = 0
+				for(let i = 1, l = 12; i <= l; ++i){
+					if(user[i]){
+						++count
+						sum += (Number(user[i]) || 0)
+					}
+				}
+				user.avg = (sum / count) || 0
+				user.avg = user.avg.toFixed(user.avg === parseInt(user.avg) ? 0 : 1)
+			})
+			return users
 		},
 
 		setMonthsTableFields() {
@@ -201,9 +218,14 @@ export default {
 				klass: ' text-left bg-blue w-200'
 			})
 
+			fieldsArray.push({
+				key: 'avg',
+				name: 'Среднее',
+				order: order++,
+				klass: 'text-center px-1'
+			})
 
 			for(let i = 1; i <= 12; i++) {
-
 				if(i.length == 1) i = '0' + i
 
 				fieldsArray.push({
@@ -212,7 +234,6 @@ export default {
 					order: order++,
 					klass: 'text-center px-1 month'
 				})
-
 			}
 
 			this.fields = fieldsArray

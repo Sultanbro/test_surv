@@ -27,8 +27,8 @@ class NpsController extends Controller
      */
     public function fetch(Request $request)
     {
-        
-    
+
+
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
@@ -51,6 +51,7 @@ class NpsController extends Controller
 
 
             $arr = [
+                'id' => $user->id,
                 'name' => $user->last_name . ' '. $user->name,
                 'group_id' => $group,
                 'position' => $user->position_id == 45 ? 'Руковод' : 'Cт. спец',
