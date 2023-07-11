@@ -3,14 +3,14 @@
 		<h4 class="d-flex align-items-center justify-content-between mb-3">
 			<div class="mr-2" />
 			<div>
-				<!-- <a href="#" @click="exportData()" class="btn btn-success btn-sm">
+				<!-- <a href="#" @click="exportData()" class="btn btn-success">
                 <i class="far fa-file-excel"></i>
                 Экспорт</a> -->
 				<div v-if="is_admin && tenant === 'bp'">
 					<!-- Ozon -->
 					<a
 						@click="showExcelImport = !showExcelImport"
-						class="btn btn-success btn-sm rounded mr-2 text-white"
+						class="btn btn-success rounded mr-2 text-white"
 					>
 						<i class="fa fa-upload" />
 						Импорт</a>

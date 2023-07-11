@@ -147,7 +147,7 @@
 
 					<button
 						v-if="mode == 'edit'"
-						class="btn btn-default btn-sm mt-2 mb-2"
+						class="btn btn-default mt-2 mb-2"
 						@click.stop="addVariant(q_index, -1)"
 					>
 						+ вариант

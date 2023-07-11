@@ -68,7 +68,7 @@
 				<a
 					@click="showExcelImport = !showExcelImport"
 					v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
-					class="btn btn-success btn-sm rounded mr-2 text-white"
+					class="btn btn-success rounded mr-2 text-white"
 				>
 					<i class="fa fa-upload" />
 					Импорт</a>
@@ -79,7 +79,7 @@
 				<a
 					href="javascript:"
 					@click="exportData()"
-					class="btn btn-success btn-sm rounded"
+					class="btn btn-success rounded"
 				>
 					<i class="far fa-file-excel" />
 					Экспорт</a>
@@ -197,7 +197,7 @@
 					:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 				>
 					<button
-						class="btn btn-light rounded btn-sm"
+						class="btn btn-light rounded"
 						@click="switchAction"
 					>
 						Сумма\Среднее

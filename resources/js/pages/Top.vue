@@ -127,7 +127,7 @@
 								<div class="d-flex">
 									<button
 										@click="saveRentGauge(g_index)"
-										class="btn btn-primary btn-sm rounded mt-1 mr-2"
+										class="btn btn-primary rounded mt-1 mr-2"
 									>
 										Сохранить
 									</button>

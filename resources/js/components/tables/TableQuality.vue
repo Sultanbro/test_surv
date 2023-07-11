@@ -793,7 +793,7 @@
 					<div class="row mb-3">
 						<div class="col-12">
 							<button
-								class="btn btn-sm btn-default rounded"
+								class="btn btn-default rounded"
 								style="font-size:12px;"
 								@click="addParam()"
 							>

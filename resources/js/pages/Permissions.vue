@@ -72,7 +72,7 @@
 					>
 						<div class="d-flex mb-3">
 							<button
-								class="btn btn-primary btn-sm mr-2"
+								class="btn btn-primary mr-2"
 								@click="back"
 							>
 								Назад
@@ -177,7 +177,7 @@
 
 						<div class="mt-3">
 							<button
-								class="btn btn-success btn-sm"
+								class="btn btn-success"
 								@click="updateRole"
 							>
 								Сохранить
@@ -226,7 +226,7 @@
 							</div>
 							<div class="role-footer">
 								<button
-									class="btn btn-success btn-sm"
+									class="btn btn-success"
 									@click="addRole"
 								>
 									Добавить роль
