@@ -17,15 +17,6 @@
 					:fill-style="'#5ebee9'"
 				/>
 				<template v-else>
-					<label class="messenger__attachment">
-						<input
-							type="file"
-							style="display:none"
-							@change="prepareFiles"
-							multiple="multiple"
-						>
-						<ChatIconUpload />
-					</label>
 					<div class="messenger__message-input messenger__message-text-input">
 						<div
 							v-if="citedMessage"
@@ -45,6 +36,15 @@
 							placeholder="Ввести сообщение"
 						/>
 					</div>
+					<label class="messenger__attachment">
+						<input
+							type="file"
+							style="display:none"
+							@change="prepareFiles"
+							multiple="multiple"
+						>
+						<ChatIconUpload class="mt-2" />
+					</label>
 				</template>
 				<EmojiPopup @append="appendEmoji" />
 				<div

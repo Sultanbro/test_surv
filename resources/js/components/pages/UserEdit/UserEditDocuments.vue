@@ -46,7 +46,7 @@ export default {
 						<a
 							download
 							v-if="user && user.downloads && user.downloads.ud_lich"
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/ud_lich/${user.downloads.ud_lich}`"
 						>Скачать</a>
 					</template>
@@ -80,7 +80,7 @@ export default {
 						<a
 							download
 							v-if="user && user.downloads && user.downloads.dog_okaz_usl"
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/dog_okaz_usl/${user.downloads.dog_okaz_usl}`"
 						>Скачать</a>
 					</template>
@@ -114,7 +114,7 @@ export default {
 						<a
 							download
 							v-if="user && user.downloads && user.downloads.sohr_kom_tainy"
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}}/sohr_kom_tainy/${user.downloads.sohr_kom_tainy}`"
 						>Скачать</a>
 					</template>
@@ -147,7 +147,7 @@ export default {
 						</label>
 						<a
 							download
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							v-if="user && user.downloads && user.downloads.dog_o_nekonk"
 							:href="`/static/profiles/${user.id}/dog_o_nekonk/${user.downloads.dog_o_nekonk}`"
 						>Скачать</a>
@@ -182,7 +182,7 @@ export default {
 						<a
 							download
 							v-if="user && user.downloads && user.downloads.trud_dog"
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/trud_dog/${user.downloads.trud_dog}`"
 						>Скачать</a>
 					</template>
@@ -217,7 +217,7 @@ export default {
 						<a
 							download
 							v-if="user && user.downloads && user.downloads.archive"
-							class="btn btn-success btn-sm btn-block"
+							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/archive/${user.downloads.archive}`"
 						>Скачать</a>
 					</template>

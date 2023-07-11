@@ -133,7 +133,7 @@
 				v-show="showFullContent"
 				class="news-item__content"
 				ref="newsItemContent"
-				v-html="currentPost.content"
+				v-html="content"
 			/>
 			<div
 				class="gallery-modal"
@@ -169,7 +169,7 @@
 				v-show="currentPost.is_pinned"
 				class="news-item__show-full"
 				@click="toggleShowFullContent"
-				v-html="showFullContent ? 'Скрыть подробности' :'Показать полностью'"
+				v-html="showFullContent ? 'Скрыть подробности' : 'Показать полностью'"
 			/>
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">
@@ -327,7 +327,10 @@ export default {
 					: diff > 0
 						? `${diff} ${pluralForm(diff, ['час', 'часа', 'часов'])} назад`
 						: `${min} ${pluralForm(diff, ['минуту', 'минуты', 'минут'])} назад`
-		}
+		},
+		content(){
+			return this.currentPost.content.replaceAll('<a ', '<a target="_blank" ')
+		},
 	},
 	mounted() {
 		this.showFullContent = this.currentPost.is_pinned == false;

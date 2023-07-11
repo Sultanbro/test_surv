@@ -77,7 +77,7 @@ export default {
 	margin: 0 0 0 20px;
 
 	font-weight: 400;
-	font-size: 14px;
+	font-size: 11px;
 	line-height: 17px;
 	letter-spacing: -0.02em;
 

@@ -422,7 +422,7 @@
 									<button
 										v-if="payment.id"
 										style="position: absolute; left: 0px"
-										class="btn btn-danger btn-sm card-delete rounded mt-1"
+										class="btn btn-danger card-delete rounded mt-1"
 										@click="removePaymentCart(index, payment.id)"
 									>
 										<span class="fa fa-trash" />
@@ -430,7 +430,7 @@
 									<button
 										v-else
 										style="position: absolute; left: 0px"
-										class="btn btn-primary btn-sm card-delete rounded mt-1"
+										class="btn btn-primary card-delete rounded mt-1"
 										@click="removePaymentCart(index, 'dev')"
 									>
 										<span class="fa fa-trash" />

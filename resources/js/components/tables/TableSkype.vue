@@ -2,7 +2,7 @@
 	<div class="TableSkype">
 		<div class="skypo">
 			<div class="row mt-4 align-items-center">
-				<div class="col-4 col-md-4 d-flex align-items-right mb-4">
+				<div class="col-4 col-md-4 d-flex mb-4">
 					<!-- <select class="form-control" v-model="currentDay">
 								0">Все дни</option>
 								<option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
@@ -20,61 +20,63 @@
 						<!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
 					</div>
 				</div>
-				<div class="col-md-2 mb-4">
-					<select
-						class="form-control form-control-sm mt-2"
-						v-model="filter.currentInviteGroup"
-					>
-						<option
-							v-for="(invite_group, index) in invite_groups"
-							:key="index"
-							:value="index"
+				<div class="col-8 col-md-8 d-flex justify-end gap-3">
+					<div class="TableSkype-select mb-4">
+						<select
+							class="form-control form-control-sm mt-2"
+							v-model="filter.currentInviteGroup"
 						>
-							{{ invite_group }}
-						</option>
-					</select>
-				</div>
-				<div class="col-md-2 mb-4">
-					<select
-						class="form-control form-control-sm mt-2"
-						v-model="filter.user_type"
-					>
-						<option
-							v-for="(user_type, index) in user_types"
-							:key="index"
-							:value="index"
+							<option
+								v-for="(invite_group, index) in invite_groups"
+								:key="index"
+								:value="index"
+							>
+								{{ invite_group }}
+							</option>
+						</select>
+					</div>
+					<div class="TableSkype-select mb-4">
+						<select
+							class="form-control form-control-sm mt-2"
+							v-model="filter.user_type"
 						>
-							{{ user_type }}
-						</option>
-					</select>
-				</div>
-				<div class="col-md-2 mb-4">
-					<select
-						class="form-control form-control-sm mt-2"
-						v-model="filter.lang"
-					>
-						<option
-							v-for="(lang, index) in langs"
-							:key="index"
-							:value="index"
+							<option
+								v-for="(user_type, index) in user_types"
+								:key="index"
+								:value="index"
+							>
+								{{ user_type }}
+							</option>
+						</select>
+					</div>
+					<div class="TableSkype-select mb-4">
+						<select
+							class="form-control form-control-sm mt-2"
+							v-model="filter.lang"
 						>
-							{{ lang }}
-						</option>
-					</select>
-				</div>
-				<div class="col-md-2 mb-4">
-					<select
-						class="form-control form-control-sm mt-2"
-						v-model="filter.wishtime"
-					>
-						<option
-							v-for="(wishtime, index) in wishtimes"
-							:key="index"
-							:value="index"
+							<option
+								v-for="(lang, index) in langs"
+								:key="index"
+								:value="index"
+							>
+								{{ lang }}
+							</option>
+						</select>
+					</div>
+					<div class="TableSkype-select mb-4">
+						<select
+							class="form-control form-control-sm mt-2"
+							v-model="filter.wishtime"
 						>
-							{{ wishtime }}
-						</option>
-					</select>
+							<option
+								v-for="(wishtime, index) in wishtimes"
+								:key="index"
+								:value="index"
+							>
+								{{ wishtime }}
+							</option>
+						</select>
+					</div>
 				</div>
 				<!-- <div class="col-md-2">
                 <select class="form-control form-control-sm" v-model="filter.segment">
@@ -86,7 +88,7 @@
 				</div>
 				<div class="col-md-4 mb-4" />
 				<div class="col-md-4 mb-4">
-					<div class="d-flex justify-content-end">
+					<div class="d-flex justify-end">
 						<!-- <div class="d-flex mr-3 align-items-center">
                         <div class="circle bg-green"></div>
                         <div>Приглашенные</div>
@@ -105,15 +107,17 @@
                     </div> -->
 						<JobtronButton
 							class="ml-4"
+							small
 							@click="showModal = !showModal"
 						>
 							+ Добавить
 						</JobtronButton>
 						<JobtronButton
-							class="ml-4 fz14"
+							class="ml-4 fz-11"
 							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
 							title="Показывать поля"
 							fade
+							small
 						>
 							<i
 								class="icon-nd-settings"
@@ -232,28 +236,32 @@
 				</template>
 
 				<template #cell(net)="data">
-					<div>
-						<div v-if="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5'">
+					<div
+						class="TableSkype-maw"
+						:title="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5' ? data.value : nets[data.value]"
+					>
+						<template v-if="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5'">
 							{{ data.value }}
-						</div>
-						<div v-else>
+						</template>
+						<template v-else>
 							{{ nets[data.value] }}
-						</div>
+						</template>
 					</div>
 				</template>
 
 				<template #cell(segment)="data">
-					<div>
-						<div v-if="segments.hasOwnProperty(data.value)">
+					<div
+						class="TableSkype-maw"
+						:title="segments.hasOwnProperty(data.value) ? segments[data.value] : data.value"
+					>
+						<template v-if="segments.hasOwnProperty(data.value)">
 							{{ segments[data.value] }}
-						</div>
-						<div v-else>
+						</template>
+						<template v-else>
 							{{ data.value }}
-						</div>
+						</template>
 					</div>
 				</template>
-
-
 
 				<template #cell(wishtime)="data">
 					<div>
@@ -297,7 +305,6 @@
 			/>
 		</div>
 
-
 		<div
 			v-if="checkedBoxes.length > 0"
 			class="bottomvars"
@@ -339,13 +346,13 @@
 				</div>
 				<div class="col-sm-2">
 					<button
-						class="btn btn-primary btn-sm rounded py-1"
+						class="btn btn-primary rounded py-1"
 						@click="inviteUsers()"
 					>
 						Пригласить на стажировку
 					</button>
 				</div>
-				<div class="col-sm-3 d-flex justify-content-end">
+				<div class="col-sm-3 d-flex justify-end">
 					<div class="blues">
 						<div
 							v-if="checkedBoxes.length == records.length"
@@ -360,7 +367,6 @@
 				</div>
 			</div>
 		</div>
-
 
 		<b-modal
 			v-model="showModal"
@@ -445,6 +451,7 @@
 					:key="key"
 				>
 					<b-form-checkbox
+						v-if="key !== 'file'"
 						v-model="showSkypeFields[key]"
 						:unchecked-value="false"
 					>
@@ -623,7 +630,8 @@ export default {
 			handler (val) {
 				if(val) {
 					this.checkAll();
-				} else {
+				}
+				else {
 					this.unCheckAll();
 				}
 			}
@@ -668,7 +676,7 @@ export default {
 
 		setDefaultShowFields() {
 
-			localStorage.clear();
+			// localStorage.clear();
 
 			if(localStorage.showSkypeFields) {
 				this.showSkypeFields = JSON.parse(localStorage.getItem('showSkypeFields'));
@@ -688,7 +696,7 @@ export default {
 					segment: true,
 					resp: true,
 					phone: true,
-					file: true,
+					// file: true,
 				};
 			}
 
@@ -707,7 +715,7 @@ export default {
 				segment: 'Сегмент',
 				resp: 'Ответственный',
 				phone: 'Телефон',
-				file: 'Файл',
+				// file: 'Файл',
 			}
 
 		},
@@ -836,12 +844,12 @@ export default {
 					variant: 'title',
 					class: 'text-left t-name'
 				},
-				{
-					key: 'file',
-					label: 'Файл',
-					variant: 'title',
-					class: 'text-left t-name'
-				},
+				// {
+				// 	key: 'file',
+				// 	label: 'Файл',
+				// 	variant: 'title',
+				// 	class: 'text-left t-name'
+				// },
 			];
 
 			this.fields = fields;
@@ -1047,21 +1055,6 @@ export default {
 </script>
 
 <style lang="scss">
-.TableSkype{
-	&-table{
-		overflow-x: auto;
-	}
-	.JobtronTable-td{
-		background-color: transparent;
-	}
-	.pagination{
-		padding: 0;
-		.page-item .page-link{
-			width: 40px;
-			height: 40px;
-		}
-	}
-}
 
 .skypo .fa-cog {
 	display: block;
@@ -1087,21 +1080,54 @@ export default {
 }
 
 
-.skypes-table {
-	.country {
-		font-size: 20px;
+.TableSkype{
+	&-table{
+		overflow-x: auto;
 	}
 
-	// td:nth-child(7), th:nth-child(7) {
-	// 	color: #000;
-	// 	font-size: 0.7rem;
-	// 	word-break: break-all;
-	// 	max-width: 140px;
-	// 	width: 45px !important;
-	// 	overflow: hidden;
-	// }
-}
+	&-maw{
+		max-width: 175px;
+		margin: 0 auto;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
 
+	&-select{
+		width: 125px;
+	}
+
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 2px 5px;
+		font-size: 12px;
+	}
+	.JobtronTable-td{
+		background-color: transparent;
+	}
+	.pagination{
+		padding: 0;
+		.page-item .page-link{
+			width: 40px;
+			height: 40px;
+		}
+	}
+	.country {
+		font-size: 16px;
+	}
+
+	.b-calendar-grid-body{
+		.row{
+			flex-flow: row nowrap;
+		}
+		.col{
+			flex: 0 0 14.285%;
+			.btn{
+				padding: 0;
+			}
+		}
+	}
+}
 </style>
 <style lang="scss" scoped>
 a{
@@ -1238,8 +1264,5 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .my-table tr .badge {
 	opacity: 1;
-}
-input.timer {
-	width: 58px;
 }
 </style>

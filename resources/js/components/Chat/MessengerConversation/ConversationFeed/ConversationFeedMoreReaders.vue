@@ -45,7 +45,7 @@ export default {
 	position: relative;
 
 	font-weight: 600;
-	font-size: 14px;
+	font-size: 11px;
 	line-height: 17px;
 
 	letter-spacing: -0.02em;

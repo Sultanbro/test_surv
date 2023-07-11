@@ -11,7 +11,7 @@
 				<div v-if="is_admin">
 					<a
 						@click="showExcelImport = !showExcelImport"
-						class="btn btn-success btn-sm rounded mr-2 text-white"
+						class="btn btn-success rounded mr-2 text-white"
 					>
 						<i class="fa fa-upload" />
 						Импорт</a>

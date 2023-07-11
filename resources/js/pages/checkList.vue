@@ -302,7 +302,7 @@
 									@click="deleteCheckList(index, item.id)"
 									type="button"
 									title="Удалить чек-лист"
-									class="btn btn-secondary btn-sm"
+									class="btn btn-secondary"
 								>
 									<i
 										class="fa fa-trash"
@@ -316,7 +316,7 @@
 									@click="deleteCheckList(index, item.id)"
 									type="button"
 									title="Удалить чек-лист"
-									class="btn btn-primary btn-sm"
+									class="btn btn-primary"
 								>
 									<i
 										class="fa fa-trash"

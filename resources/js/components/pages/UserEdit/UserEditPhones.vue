@@ -178,7 +178,7 @@ export default {
 							>
 							<button
 								type="button"
-								class="btn btn-danger btn-sm contact-delete rounded"
+								class="btn btn-danger contact-delete rounded"
 								@click="deletePhone(key)"
 							>
 								<i class="fa fa-trash" />

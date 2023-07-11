@@ -89,7 +89,7 @@
 						</b-form-group>
 						<button
 							v-if="currentGroup != 23 && user_types == 2 && isBp"
-							class="btn btn-sm rounded btn-primary ml-2"
+							class="btn rounded btn-primary ml-2"
 							@click="copy()"
 							:style="{'padding': '2px 8px'}"
 						>
@@ -106,7 +106,7 @@
 						<button
 							v-if="(currentGroup == 42 && canEdit) || (currentGroup == 88 && canEdit)"
 							@click="showExcelImport = !showExcelImport"
-							class="btn btn-primary mr-2 btn-sm rounded"
+							class="btn btn-primary mr-2 rounded"
 							:style="{'padding': '2px 8px'}"
 						>
 							<i class="fa fa-upload" />

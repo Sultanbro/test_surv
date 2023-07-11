@@ -82,6 +82,7 @@
 									:class="{
 										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
 									}"
+									tooltip
 								/>
 								<template v-if="showMembersNames">
 									{{ member.name }}

@@ -54,7 +54,7 @@
 				<!-- Ozon -->
 				<a
 					@click="showExcelImport = !showExcelImport"
-					class="btn btn-success btn-sm rounded mr-2 text-white"
+					class="btn btn-success rounded mr-2 text-white"
 				>
 					<i class="fa fa-upload" />
 					Импорт</a>
@@ -65,7 +65,7 @@
 				<a
 					href="#"
 					@click="exportData()"
-					class="btn btn-success btn-sm rounded"
+					class="btn btn-success rounded"
 				>
 					<i class="far fa-file-excel" />
 					Экспорт</a>

@@ -236,13 +236,13 @@
 							<div class="d-flex">
 								<button
 									@click="save(group_index, gauge_index)"
-									class="btn btn-primary btn-sm rounded mt-1 mr-2"
+									class="btn btn-primary rounded mt-1 mr-2"
 								>
 									Сохранить
 								</button>
 								<button
 									@click="delete_gauge(group_index, gauge_index)"
-									class="btn btn-danger btn-sm rounded mt-1"
+									class="btn btn-danger rounded mt-1"
 								>
 									Удалить
 								</button>

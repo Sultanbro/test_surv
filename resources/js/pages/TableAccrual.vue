@@ -121,7 +121,7 @@
 						v-if="selectedGroup.salary_approved == 0 && can_edit"
 						style="float:right"
 						@click="showBeforeApprove = true"
-						class="rounded btn-sm mb-3 ml-3"
+						class="rounded mb-3 ml-3"
 						variant="info"
 					>
 						Проверено и готово к выдаче
@@ -562,7 +562,7 @@
 						>
 							<b-button
 								@click="toggleTab('avans')"
-								class="btn-sm rounded btn-primary w-full d-block"
+								class="rounded btn-primary w-full d-block"
 								:class="{'activex': avans.visible}"
 							>
 								Выдать аванс
@@ -571,7 +571,7 @@
 						<div class="col-6">
 							<b-button
 								@click="toggleTab('bonus')"
-								class="btn-sm rounded btn-primary w-full d-block"
+								class="rounded btn-primary w-full d-block"
 								:class="{'activex': bonus.visible}"
 							>
 								Выдать бонус
@@ -603,7 +603,7 @@
 					<p><span class="color-red">{{ avans.require }}</span></p>
 					<b-button
 						@click="updateSalary('avans')"
-						class="btn-sm rounded btn-primary"
+						class="rounded btn-primary"
 						variant="primary"
 					>
 						Выдать аванс
@@ -633,7 +633,7 @@
 					<p><span class="color-red">{{ avans.require }}</span></p>
 					<b-button
 						@click="updateSalary('bonus')"
-						class="btn-sm rounded btn-primary"
+						class="rounded btn-primary"
 						variant="primary"
 					>
 						Выдать бонус
@@ -1528,7 +1528,7 @@ export default {
 			}
 
 			this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
-			this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
+			this.sidebarHistory = data.item.history?.filter(x => parseInt(x.day) === parseInt(data.field.key))
 		},
 
 		// Дичайший костыль, переделать при первой возможности
