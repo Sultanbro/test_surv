@@ -169,7 +169,7 @@
 				v-show="currentPost.is_pinned"
 				class="news-item__show-full"
 				@click="toggleShowFullContent"
-				v-html="showFullContent ? 'Скрыть подробности' :'Показать полностью'"
+				v-html="showFullContent ? 'Скрыть подробности' : 'Показать полностью'"
 			/>
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">

@@ -339,7 +339,7 @@
 				</div>
 				<div class="col-sm-2">
 					<button
-						class="btn btn-primary btn-sm rounded py-1"
+						class="btn btn-primary rounded py-1"
 						@click="inviteUsers()"
 					>
 						Пригласить на стажировку
@@ -1047,21 +1047,6 @@ export default {
 </script>
 
 <style lang="scss">
-.TableSkype{
-	&-table{
-		overflow-x: auto;
-	}
-	.JobtronTable-td{
-		background-color: transparent;
-	}
-	.pagination{
-		padding: 0;
-		.page-item .page-link{
-			width: 40px;
-			height: 40px;
-		}
-	}
-}
 
 .skypo .fa-cog {
 	display: block;
@@ -1102,6 +1087,26 @@ export default {
 	// }
 }
 
+
+.TableSkype{
+	&-table{
+		overflow-x: auto;
+	}
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 4px 15px;
+	}
+	.JobtronTable-td{
+		background-color: transparent;
+	}
+	.pagination{
+		padding: 0;
+		.page-item .page-link{
+			width: 40px;
+			height: 40px;
+		}
+	}
+}
 </style>
 <style lang="scss" scoped>
 a{
