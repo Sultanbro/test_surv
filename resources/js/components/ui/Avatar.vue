@@ -2,6 +2,7 @@
 	<span
 		class="JobtronAvatar"
 		:style="style"
+		:title="tooltip ? title : ''"
 	>
 		<img
 			v-if="image && !imageError"
@@ -17,10 +18,10 @@
 		>
 			{{ shotrTitle }}
 		</span>
-		<span
+		<!-- <span
 			v-if="tooltip"
 			class="JobtronAvatar-tooltip"
-		>{{ title }}</span>
+		>{{ title }}</span> -->
 		<span
 			v-if="status"
 			class="JobtronAvatar-status"
@@ -118,21 +119,21 @@ export default {
 		font-size: 12px;
 		font-weight: 700;
 	}
-	&-tooltip{
-		width: 120px;
-		padding: 5px;
+	// &-tooltip{
+	// 	width: 120px;
+	// 	padding: 5px;
 
-		background-color: black;
-		color: #fff;
+	// 	background-color: black;
+	// 	color: #fff;
 
-		text-align: center;
+	// 	text-align: center;
 
-		border-radius: 6px;
-		visibility: hidden;
+	// 	border-radius: 6px;
+	// 	visibility: hidden;
 
-		position: absolute;
-		z-index: 1;
-	}
+	// 	position: absolute;
+	// 	z-index: 10;
+	// }
 	&-status{
 		width: 10px;
 		height: 10px;
