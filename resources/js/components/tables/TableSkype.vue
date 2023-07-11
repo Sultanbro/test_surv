@@ -1099,8 +1099,8 @@ export default {
 
 	.JobtronTable-th,
 	.JobtronTable-td{
-		padding: 2px 5px;
-		font-size: 12px;
+		padding: 2px 4px;
+		font-size: 14px;
 	}
 	.JobtronTable-td{
 		background-color: transparent;
