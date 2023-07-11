@@ -510,6 +510,20 @@ span.aaa {
 	}
 	&-colTitle{
 		height: 100%;
+		.special-select{
+			padding: 0 0 0 5px !important;
+			margin-top: -5px;
+			margin-bottom: -5px;
+			border: none;
+
+			background: #fff !important;
+			color: #999;
+			&:focus{
+				box-shadow: none !important;
+				outline: none !important;
+				border: none !important;
+			}
+		}
 	}
 	&-complete{
 		color: #06c42d;
@@ -517,11 +531,6 @@ span.aaa {
 	}
 	.b-table-sticky-column{
 		left: 0;
-	}
-	.special-select{
-		padding: 0 0 0 5px !important;
-		margin-top: -5px;
-		margin-bottom: -5px;
 	}
 	.JobtronTable-th,
 	.JobtronTable-td{
