@@ -12,24 +12,27 @@ export default {
 			}
 		},
 		async init({commit, getters, dispatch}) {
-
 			window.Echo.connector.pusher.connection.bind_global(function (payload) {
 				if (!getters.isSocketConnected && payload === 'message') {
 					commit('setSocketConnected', true);
-				} else if (payload === 'connected') {
+				}
+				else if (payload === 'connected') {
 					commit('setSocketConnected', true);
-				} else if (payload === 'error' || payload === 'disconnected' || payload === 'connecting' || payload === 'unavailable') {
+				}
+				else if (payload === 'error' || payload === 'disconnected' || payload === 'connecting' || payload === 'unavailable') {
 					commit('setSocketConnected', false);
 				}
 			});
 
 			const domain = window.location.hostname;
 			// new message notification
-			window.Echo.private(`messages.${domain}.${getters.user.id}`)
+			window.Echo
+				.private(`messages.${domain}.${getters.user.id}`)
 				.listen('.newMessage', e => {
 					if (e.message.event) {
 						dispatch('newServiceMessage', e.message);
-					} else {
+					}
+					else {
 						dispatch('newMessage', e.message);
 					}
 					dispatch('requestScroll', 0);

@@ -36,10 +36,9 @@ export default {
 				return;
 			}
 			const chatId = getters.chat.id
-			if(reset && hasLocal(chatId)){
+			if (reset && hasLocal(chatId)) {
 				commit('setMessages', loadLocal(chatId))
 				dispatch('setLoading', false)
-				console.log('hasLocal')
 			}
 			commit('setMessagesLoading', true);
 
@@ -48,12 +47,13 @@ export default {
 				count = MESSAGES_LOAD_COUNT_ON_RESET;
 				startMessageId = null;
 				including = !!goto;
-			} else if (goto > 0) {
-
+			}
+			else if (goto > 0) {
 				count = MESSAGES_MAX_COUNT;
 				startMessageId = goto;
 				including = true;
-			} else {
+			}
+			else {
 				count = getters.messagesLoadMoreCount;
 				startMessageId = getters.startMessageId;
 				including = false;
@@ -65,16 +65,14 @@ export default {
 				}
 
 				if (messages.length === 0) {
-
 					if (count < 0) {
 						commit('setMessagesNewEndReached');
-					} else {
+					}
+					else {
 						commit('setMessagesOldEndReached');
 					}
-
 				}
 				else {
-
 					messages = Object.keys(messages).map(key => messages[key]).reverse();
 					dispatch('markMessagesAsRead', messages);
 
@@ -82,14 +80,15 @@ export default {
 						commit('setMessages', messages);
 						saveLocal(chatId, messages)
 						dispatch('requestScroll', 0);
-					} else if (count > 0) {
+					}
+					else if (count > 0) {
 						commit('prependMessages', messages);
-					} else {
+					}
+					else {
 						commit('appendMessages', messages);
 					}
 
 					if (goto > 0) {
-
 						// after 4 seconds
 						setTimeout(() => {
 							// next tick
@@ -100,7 +99,6 @@ export default {
 							}
 						}, 1000);
 					}
-
 				}
 				commit('setMessagesLoading', false);
 				callback();
@@ -117,11 +115,11 @@ export default {
 			dispatch('loadMessages');
 		},
 		async sendMessage({commit, getters, dispatch}, message) {
-			if(this.messageSending) return
+			if (this.messageSending) return
 			this.messageSending = true
-			let citedMessageId = getters.citedMessage ? getters.citedMessage.id : null;
+			const citedMessageId = getters.citedMessage ? getters.citedMessage.id : null;
 			const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-			let newMessage = {
+			const newMessage = {
 				id: guid,
 				body: message,
 				created_at: new Date().toISOString(),
@@ -156,9 +154,9 @@ export default {
 			const isSender = getters.user.id === message.sender_id
 			const chat = getters.chats.find(chat => chat.id === message.chat_id)
 
-			if ( isCurrentChat && !isSender) {
+			if (isCurrentChat && !isSender) {
 				commit('addMessage', message);
-				if(getters.isOpen) dispatch('markMessagesAsRead', [message]);
+				if (getters.isOpen) dispatch('markMessagesAsRead', [message]);
 			}
 			// add chat if not exists
 			if (chat) {
@@ -170,7 +168,7 @@ export default {
 				});
 			}
 
-			if(!chat?.is_mute && !isSender) dispatch('sendNotification', {
+			if (!chat?.is_mute && !isSender) dispatch('sendNotification', {
 				title: `${message.sender.name} ${message.sender.last_name}`,
 				body: message.body,
 				icon: `/users_img/${message.sender.img_url}`,
@@ -184,7 +182,8 @@ export default {
 			case 'join':
 				if (getters.chat && getters.chat.id === message.chat_id) {
 					commit('addMembers', [message.event.payload.user]);
-				} else if (getters.user.id === message.event.payload.user.id) {
+				}
+				else if (getters.user.id === message.event.payload.user.id) {
 					await API.getChatInfo(message.chat_id, chat => {
 						commit('addChat', chat);
 					});
@@ -386,7 +385,8 @@ export default {
 			let reaction = message.reactions.find(r => r.emoji === emoji);
 			if (reaction) {
 				reaction.push(user);
-			} else {
+			}
+			else {
 				message.reactions.push({emoji, users: [user]});
 			}
 		},
@@ -403,7 +403,8 @@ export default {
 				if (reader) {
 					reader.pivot = user.pivot;
 					Vue.set(message.readers, message.readers.indexOf(reader), reader);
-				} else {
+				}
+				else {
 					message.readers.push(user);
 				}
 			}
@@ -424,7 +425,7 @@ export default {
 					uniqueDates.push(dateKey);
 					messagesMap[dateKey] = [];
 				}
-				if(!state.messages[index + 1]){
+				if (!state.messages[index + 1]) {
 					message.last = true
 				}
 
@@ -441,7 +442,7 @@ export default {
 					const own = message.sender_id === getters.user.id
 					const isMessageRead = message.readers && ~message.readers.findIndex(reader => reader.id === getters.user.id)
 					let isUnreadFirst = false
-					if(!message.event && !own && !unread && !isMessageRead){
+					if (!message.event && !own && !unread && !isMessageRead) {
 						unread = true
 						isUnreadFirst = true
 					}
