@@ -1308,7 +1308,7 @@ class User extends Authenticatable implements Authorizable
 
         if ($this->first_work_day) {
             $firstWorkDay = Carbon::parse($this->first_work_day);
-            if ($firstWorkDay->year == $year && $firstWorkDay->month == $month) {
+            if ($firstWorkDay->year >= $year && $firstWorkDay->month >= $month) {
                 $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
             }else {
                 $firstWorkDay = $firstWorkDay->format('Y-m-d');
