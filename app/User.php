@@ -1311,7 +1311,7 @@ class User extends Authenticatable implements Authorizable
             if ($firstWorkDay->year == $year && $firstWorkDay->month == $month) {
                 $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
             }else {
-                $firstWorkDay = $firstWorkDay->parse('Y-m-d');
+                $firstWorkDay = $firstWorkDay->format('Y-m-d');
             }
         } else {
             $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
