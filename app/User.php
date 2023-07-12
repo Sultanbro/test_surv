@@ -1304,19 +1304,7 @@ class User extends Authenticatable implements Authorizable
      * @return int
      */
     public function getCountWorkDaysMonth($year = null, $month = null): int {
-        $requestDate = Carbon::createFromDate($year, $month);
-
-        if ($this->first_work_day) {
-            $firstWorkDay = Carbon::parse($this->first_work_day);
-            if ($firstWorkDay->year == $year && $firstWorkDay->month == $month) {
-                $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
-            }else {
-                $firstWorkDay = $firstWorkDay->parse('Y-m-d');
-            }
-        } else {
-            $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
-        }
-
+        $firstWorkDay = $this->first_work_day ? Carbon::parse($this->first_work_day)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
         $workChartName = $this->workChart->name;
 
         if ($workChartName == "2-2"){
@@ -1333,7 +1321,7 @@ class User extends Authenticatable implements Authorizable
             $month = Carbon::now()->month;
         }
 
-        $daysInMonth = $requestDate->daysInMonth;
+        $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
