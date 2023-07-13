@@ -117,6 +117,7 @@ export default {
 			taxesFillData: null,
 
 			test: null,
+			fieldErrors: {}
 		}
 	},
 	computed: {
@@ -382,14 +383,17 @@ export default {
 
 			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
 				this.sendForm(formData, isNew);
-			} else {
+			}
+			else {
 				this.$toast.error('Заполните обязательные поля');
 			}
 			loader.hide();
 		},
+
 		async sendForm(formData, isNew){
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
 			const loader = this.$loading.show();
+
 			try{
 				const response = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
@@ -433,14 +437,13 @@ export default {
 						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
 					}
 				}
-				console.log('Данные сохранены');
+
 				if (this.workChartId) {
 					const userId = this.user ? this.user.id : response.data.data.id;
 					const formDataWorkChart = new FormData();
 					formDataWorkChart.append('user_id', userId);
 					formDataWorkChart.append('work_chart_id', this.workChartId);
 					await axios.post('/work-chart/user/add', formDataWorkChart);
-					console.log('график сохранен');
 				}
 
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
@@ -452,17 +455,36 @@ export default {
 
 				if (isNew) {
 					this.$toast.success('Информация о сотруднике сохранена');
-					// window.location = '/timetracking/settings?tab=1';
-				} else {
+				}
+				else {
 					this.$toast.success('Информация о сотруднике обновлена');
 				}
-				loader.hide();
-			} catch (e){
-				console.log(e);
-				this.$toast.error('Не удалось сохранить информацию о сотруднике');
-				loader.hide();
 			}
+			catch (error){
+				console.error(error);
+				const msg = 'Не удалось сохранить информацию о сотруднике'
+				if (error.response) {
+					if (error.response.data?.message) {
+						this.$toast.error(`${msg}\n${error.response.data.message}`)
+					}
+					else{
+						this.$toast.error(msg);
+					}
+					if (error.response.data?.errors) {
+						this.fieldErrors = error.response.data?.errors
+					}
+				}
+				else if (error.request) {
+					this.$toast.error(`${msg}\nСервер не отвечает, попробуйте позже`);
+				}
+				else{
+					this.$toast.error(msg);
+				}
+			}
+
+			loader.hide();
 		},
+
 		async deleteUser(){
 			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
@@ -819,6 +841,7 @@ export default {
 									:user="user"
 									:in_groups="in_groups"
 									:front_valid="frontValid"
+									:errors="fieldErrors"
 									@valid_change="validChange"
 									@selectWorkChart="selectWorkChart"
 								/>
@@ -835,6 +858,7 @@ export default {
 									<UserEditAdaptation
 										v-show="showBlocks.adaptation"
 										:user="user"
+										:errors="fieldErrors"
 									/>
 								</div>
 							</div>
