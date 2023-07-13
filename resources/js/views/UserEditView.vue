@@ -391,6 +391,7 @@ export default {
 		},
 
 		async sendForm(formData, isNew){
+			this.fieldErrors = {}
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
 			const loader = this.$loading.show();
 
