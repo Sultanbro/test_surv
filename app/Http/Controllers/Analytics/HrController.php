@@ -645,23 +645,11 @@ class HrController extends Controller
                     'admin_id' => 1,
                 ]);
             }
-
-            /*========================= Обновление webhook-ом время собеседование =====================================*/
-
-            if ($lead->deal_id) {
-                $bitrix = new Bitrix('intellect');
-
-                if ($lead->inhouse) {
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1633576992" => Carbon::parse($request->date." ".$request->time)->format('Y-m-d H:i:s')]);
-                }else{
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1568000119" => Carbon::parse($request->date." ".$request->time)->format('Y-m-d H:i:s')]);
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1648978687" => Carbon::parse($request->date." ".$request->time)->addDay()->format('Y-m-d H:i:s')]);
-                }
-            }
+        
         }
+        
 
-
-
+      
         /*==============================================================*/
         /*******  Уведомление руководителю группы */
         /*==============================================================*/
