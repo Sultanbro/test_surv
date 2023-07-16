@@ -15,7 +15,7 @@ class SaveGroupSalary extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:group {date?}'; 
+    protected $signature = 'salary:group {date?}';
 
     /**
      * The console command description.
@@ -25,12 +25,12 @@ class SaveGroupSalary extends Command
     protected $description = 'Сохранить заработанное группой без вычета шт и ав';
 
     /**
-     * Variables that used 
+     * Variables that used
      *
      * @var mixed
      */
-    public $date; // Дата пересчета 
-    
+    public $date; // Дата пересчета
+
     /**
      * Create a new command instance.
      *
@@ -40,7 +40,7 @@ class SaveGroupSalary extends Command
     {
         parent::__construct();
     }
-    
+
     /**
      * Execute the console command.
      *
@@ -48,7 +48,7 @@ class SaveGroupSalary extends Command
      */
     public function handle()
     {
-         
+
         if($this->argument('date')) {
             $dates = [$this->argument('date')];
         } else {
@@ -57,9 +57,9 @@ class SaveGroupSalary extends Command
                 Carbon::now()->subMonth()->format('Y-m-d')
             ];
         }
-        
+
         foreach ($dates as $key => $date) {
-            $this->count($date);
+            // $this->count($date);
             $this->comment('----------------------');
             $this->comment('----------------------');
             $this->comment('----------------------');
@@ -67,7 +67,7 @@ class SaveGroupSalary extends Command
             $this->comment('----------------------');
             $this->comment('----------------------');
         }
-        
+
 
     }
 
