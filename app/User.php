@@ -6,6 +6,9 @@ use App\Classes\Helpers\Phone;
 use App\Api\BitrixOld as Bitrix;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Admin\EditedSalary;
+use App\Models\Admin\EditedKpi;
+use App\Models\Admin\EditedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
 use App\Models\CentralUser;
@@ -90,7 +93,7 @@ class User extends Authenticatable implements Authorizable
         'working_city',
         'work_start',
         'work_end',
-        'birthday', 
+        'birthday',
         'read_corp_book_at',
         'has_noti',
         'notified_at',
@@ -201,7 +204,7 @@ class User extends Authenticatable implements Authorizable
             ->withPivot(['created_at'])
             ->withTimestamps();
     }
-    
+
     public function awards(): BelongsToMany
     {
         return $this->belongsToMany(Award::class)
@@ -232,6 +235,31 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
     }
 
+    public function kpi_obtained_bonuses(): HasMany
+    {
+        return $this->hasMany('App\Models\Admin\ObtainedBonus', 'user_id', 'id');
+    }
+
+    public function edited_salaries(): HasMany
+    {
+        return $this->hasMany('App\Models\Admin\EditedSalary', 'user_id', 'id');
+    }
+
+    public function edited_kpi(): HasMany
+    {
+        return $this->hasMany('App\Models\Admin\EditedKpi', 'user_id', 'id');
+    }
+
+    public function edited_bonuses(): HasMany
+    {
+        return $this->hasMany('App\Models\Admin\EditedBonus', 'user_id', 'id');
+    }
+
+    public function saved_kpi(): HasMany
+    {
+        return $this->hasMany('App\SavedKpi', 'user_id', 'id');
+    }
+
     /**
      * @return BelongsToMany
      */
@@ -243,7 +271,8 @@ class User extends Authenticatable implements Authorizable
                 'updated_at',
                 'deleted_at',
                 'from',
-                'to'
+                'to',
+                'status',
             ])->withTimestamps();
     }
     /**
@@ -445,7 +474,7 @@ class User extends Authenticatable implements Authorizable
         if(!$this->user_description) {
             return 0;
         }
-         
+
         $date = Carbon::parse( $this->user_description->applied )->timestamp;
         $fired = Carbon::parse($this->deleted_at)->timestamp;
 
@@ -458,14 +487,14 @@ class User extends Authenticatable implements Authorizable
     public function workdays_from_applied($date, $workdays = 6) {
         $date = Carbon::parse($date);
         $applied_from = 0;
-        if($this->user_description && $this->user_description->applied) { 
+        if($this->user_description && $this->user_description->applied) {
             $applied = Carbon::parse($this->user_description->applied);
-         
+
             $year = $applied->year;
             $month = $applied->month;
-            
+
             if($year == $date->year && $month == $date->month) {
-                $exclude = $workdays == 5 ? 2 : 1; 
+                $exclude = $workdays == 5 ? 2 : 1;
                 $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude) + 1;
                 //$applied_from = $applied_from - 1;
                 $applied_from = $applied_from < 0 ? 0 : $applied_from;
@@ -481,17 +510,17 @@ class User extends Authenticatable implements Authorizable
     public function description(): HasOne
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
-    } 
+    }
 
     public function user_description(): HasOne
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
-    } 
+    }
 
     public function lead()
     {
        return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
-    } 
+    }
 
     public function integration_token(String $server)
     {
@@ -504,7 +533,7 @@ class User extends Authenticatable implements Authorizable
     public function hourly_pay($date) {
         $zarplata = $this->zarplata ? $this->zarplata->zarplata : 70000;
         $working_hours = $this->workingTime ? $this->workingTime->time : 9;
-        
+
         // Какие дни не учитывать в месяце
         $ignore = $this->working_day_id == 1 ? [6,0] : [0];
 
@@ -515,7 +544,7 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * В каких группах находится user 
+     * В каких группах находится user
      * @return ProfileGroup
      */
     public function inGroups($is_head = false)
@@ -529,7 +558,7 @@ class User extends Authenticatable implements Authorizable
             ->get()
             ->pluck('group_id')
             ->toArray();
-            
+
         return ProfileGroup::whereIn('id', array_values($groups))
             //->where('active', 1)
             ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
@@ -570,7 +599,7 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * В каких группах находится user c условиями оплаты 
+     * В каких группах находится user c условиями оплаты
      * @return array
      */
     public function inGroupsWithTerms()
@@ -581,7 +610,7 @@ class User extends Authenticatable implements Authorizable
             ->get()
             ->pluck('group_id')
             ->toArray();
-            
+
         return ProfileGroup::whereIn('id', array_values($groups))
             //->where('active', 1)
             ->select(['id', 'name', 'payment_terms', 'show_payment_terms'])
@@ -589,7 +618,7 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * В каких группах руководит user 
+     * В каких группах руководит user
      * @return array
      */
     public function headInGroups()
@@ -600,26 +629,26 @@ class User extends Authenticatable implements Authorizable
 
         foreach($groups as $group) {
             $group_users = json_decode($group->head_id);
-            
+
             if(in_array($this->id, $group_users)) {
-                array_push($_groups, $group);  
+                array_push($_groups, $group);
             }
         }
 
         return $_groups;
     }
-    
+
     /**
      * Уволить сотрудника
      */
-    public static function deleteUser(Request $request) 
-    {   
-        $user_id = $request->user_id 
+    public static function deleteUser(Request $request)
+    {
+        $user_id = $request->user_id
             ? $request->user_id
             : $request->id;
 
         $user = self::withTrashed()->find($user_id);
-        
+
         if($user == null)  {
             return back()->withErrors('Пользователь не найден');
         }
@@ -629,7 +658,7 @@ class User extends Authenticatable implements Authorizable
             : date('Y-m-d');
 
         if ($user) {
-            
+
             (new UserService)->fireUser($user->id, $fireDate);
 
             $user->deleted_at = Carbon::now();
@@ -650,7 +679,7 @@ class User extends Authenticatable implements Authorizable
             ])->first();
 
             $bitrix = new Bitrix();
-            
+
             $bitrix_id = 0;
             if($ud && $ud->bitrix_id != 0) {
                 $bitrix_id = $ud->bitrix_id;
@@ -658,7 +687,7 @@ class User extends Authenticatable implements Authorizable
                 $bitrixUser = $bitrix->searchUser($email);
                 if($bitrixUser) $bitrix_id = $bitrixUser['ID'];
             }
-            
+
             /** Увольнение с Битрикс */
             $success = false;
             if($bitrix_id != 2 && $bitrix_id != 0) $success = $bitrix->deleteUser($bitrix_id); // Нельзя удалять 2 user. Через него работают запросы
@@ -668,7 +697,7 @@ class User extends Authenticatable implements Authorizable
                 // Не уволен
             }
 
-                
+
             if($user->phone && $ud) {
 
 
@@ -677,7 +706,7 @@ class User extends Authenticatable implements Authorizable
                 $wphone = Phone::normalize($user->phone);
 
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://'.tenant('id').'.jobtron.org/quiz_after_fire?phone='. $wphone);
-                    
+
                 if($bitrix_id != 0) {
                     $ud->bitrix_id = 0;
                     $ud->save();
@@ -695,13 +724,13 @@ class User extends Authenticatable implements Authorizable
 
     private static function setDay($user_id) {
         $targetUser = User::find($user_id);
-        
+
         $authUser = Auth::user();
         if(!$authUser) $authUser = User::find(5);
         if($targetUser == null) {return ['success' => 1, 'history' => null];}
 
         $daytype = DayType::where('user_id', $user_id)->whereDate('date', date('Y-m-d'))->first();
-     
+
         if (!$daytype) {
             $daytype = DayType::create([
                 'user_id' => $user_id,
@@ -857,7 +886,7 @@ class User extends Authenticatable implements Authorizable
      * @throws \Exception
      */
     public function getCurrentSalary()
-    {   
+    {
         $sum = 0;
 
         $date = \Carbon\Carbon::now();
@@ -865,12 +894,12 @@ class User extends Authenticatable implements Authorizable
         // get user salary data
         // return array with one element
         $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$this->id]);
-        
+
         // count total
         if(count($salary_table['users']) > 0) {
             $arr = $salary_table['users'][0];
             for($i =1;$i<=$date->daysInMonth;$i++) {
-                
+
                 // earned
                 $sum += $arr->earnings[$i] ?? 0;
 
@@ -894,8 +923,8 @@ class User extends Authenticatable implements Authorizable
                 // } else {
                 //     $sum += $arr->edited_bonus->amount;
                 // }
-                
-            }   
+
+            }
 
             // kpi
             // if($arr->edited_kpi == null) {
@@ -959,16 +988,16 @@ class User extends Authenticatable implements Authorizable
         $ud = UserDescription::where('user_id', $this->id)->first();
         if($ud && $ud->applied) {
             $user_applied_at = $ud->applied;
-        } 
-        
-        if($user_applied_at == null) {
-            $user_applied_at = $this->created_at; 
         }
-        
+
+        if($user_applied_at == null) {
+            $user_applied_at = $this->created_at;
+        }
+
         return $user_applied_at;
     }
 
-    
+
 
     public function trackHistory()
     {
@@ -1090,6 +1119,14 @@ class User extends Authenticatable implements Authorizable
         return WorkChartModel::getWorkTime($userChart);
     }
 
+    public function workTimeFast()
+    {
+        $userChart = $this->getWorkChartFast();
+
+        return WorkChartModel::getWorkTime($userChart);
+    }
+
+
     /**
      * Количество рабочих дней в неделе по графику.
      *
@@ -1116,12 +1153,12 @@ class User extends Authenticatable implements Authorizable
                 break;
             }
         }
-  
+
         return $rate;
     }
 
     /**
-     * читал ли корп книгу сегодня 
+     * читал ли корп книгу сегодня
      */
     public function readCorpBook()
     {
@@ -1135,14 +1172,14 @@ class User extends Authenticatable implements Authorizable
                 $read = false;
             }
         }
-       
-        
-        
+
+
+
         return $read;
     }
 
     /**
-     * 
+     *
      */
     public function isStartedDay() {
         $tt = Timetracking::whereDate('enter', date('Y-m-d'))
@@ -1210,26 +1247,54 @@ class User extends Authenticatable implements Authorizable
         ];
     }
 
+    public function scheduleFast($withOutHalf = false): array
+    {
+        $timezone = $this->timezone();
+
+        $workTime = $this->workTimeFast();
+        $workStartTime = $workTime['workStartTime'];
+        $workEndTime = $workTime['workEndTime'];
+
+        $date = Carbon::now($timezone)->format('Y-m-d');
+
+        //TODO: проверить логику, раньше не было число с *.30
+        if ($withOutHalf){
+            $start = Carbon::parse("$date $workStartTime", $timezone);
+        } else {
+            $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        }
+        $end = Carbon::parse("$date $workEndTime", $timezone);
+
+        if ($start->greaterThan($end)) {
+            $end->addDay();
+        }
+
+        return [
+            'start' => $start,
+            'end'   => $end
+        ];
+    }
+
     /**
      * Timezone
-     * 
+     *
      * @return String
      */
-    public function timezone() 
+    public function timezone()
     {
         $user_timezone = ($this->timezone >= 0) ? $this->timezone : 6;
         return Setting::TIMEZONES[$user_timezone];
     }
 
     /**
-     * Cтраница из Базы знаний 
+     * Cтраница из Базы знаний
      * Показывается при начале дня Сотрудника
      * Сотрудник обязан читать минимум 60 сек
-     * 
+     *
      * @return \App\KnowBase|null;
      */
-    public function getCorpbook() 
-    {   
+    public function getCorpbook()
+    {
         return !$this->readCorpBook()
             ? \App\KnowBase::getRandomPage()
             : null;
@@ -1253,6 +1318,15 @@ class User extends Authenticatable implements Authorizable
     public function activeGroup(): ?ProfileGroup
     {
         return $this->groups()->where('status', '=', 'active')->first();
+    }
+
+    public function activeGroupFast(): ?ProfileGroup
+    {
+
+        if($this->groups){
+            return $this->groups->where('pivot.status', '=', 'active')->first();
+        }
+        return null;
     }
 
     /**
@@ -1361,6 +1435,21 @@ class User extends Authenticatable implements Authorizable
         $groupChart = $groups?->workChart()->first();
 
         return $groupChart;
+    }
+
+    public function getWorkChartFast(): ?WorkChartModel {
+        $userChart = $this->workChart;
+
+        if ($this->workChart) {
+            return $this->workChart;
+        }
+
+        $group = $this->activeGroupFast();
+        if ($group && $group->workChart) {
+            return $group->workChart;
+        }
+
+        return null;
     }
 
     /**

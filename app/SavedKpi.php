@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\User;
 
 class SavedKpi extends Model
-{   
+{
     public $timestamps = false;
 
     protected $table = 'saved_kpi';
@@ -16,6 +16,5 @@ class SavedKpi extends Model
         'user_id',
         'date',
         'total',
-        'kpi_item_id'
     ];
 }
