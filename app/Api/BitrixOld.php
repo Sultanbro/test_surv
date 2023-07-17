@@ -491,5 +491,18 @@ class BitrixOld
         return $result;
     }
 
+    public function updateDeal($deal_id, $fields){
+        $fields = [
+            'id' =>  $deal_id,
+            'fields' => $fields
+        ];
+
+        $query = http_build_query($fields);
+
+        $result = $this->curl_post($this->link . 'crm.deal.update.json', $query);
+
+        return $result;
+    }
+
 
 }
