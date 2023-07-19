@@ -98,7 +98,7 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()
-                ->where('group_id','=',$group->id)
+                ->where('group_id','=', $group->id)
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
@@ -480,12 +480,11 @@ class UserService
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         $working = GroupUser::withTrashed()
-            ->where('group_id', $group_id)
+            ->where('group_id', '=', $group_id)
             ->whereDate('from','<=', $last_date)
             ->where(fn ($query) => $query->whereNull('to')->orWhere(
                 fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
             );
-
         return $this->getGroupEmployeesAll($working->get(), $last_date);
     }
 

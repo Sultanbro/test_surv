@@ -47,23 +47,22 @@ class Salary extends Model
      */
     public static function getTotal($date, $group_id, $user_types = 0)
     {
-        $isDebug = 1 == $user_types;
         $month = Carbon::parse($date)->startOfMonth();
 
         $group = ProfileGroup::find($group_id);
 
-        // dump($group->name);
-        // dump('------------');
-        // dump('~~~~~~~~~~~~');
+        dump($group->name);
+        dump('------------');
+        dump('~~~~~~~~~~~~');
 
         $internshipPayRate = $group->paid_internship == 1 ? 0.5 : 0;
-       // $user_ids = ProfileGroup::employees($group_id, $date, $user_types);
+        // $user_ids = ProfileGroup::employees($group_id, $date, $user_types);
 
-       $working = (new UserService)->getEmployees($group_id, $date);
-       $working = collect($working)->pluck('id')->toArray();
+        $working = (new UserService)->getEmployees($group_id, $date);
+        $working = collect($working)->pluck('id')->toArray();
 
-       $fired = (new UserService)->getFiredEmployees($group_id, $date);
-       $fired = collect($fired)->pluck('id')->toArray();
+        $fired = (new UserService)->getFiredEmployees($group_id, $date);
+        $fired = collect($fired)->pluck('id')->toArray();
 
         $user_ids = [];
         if($user_types == 0)  {
@@ -82,11 +81,7 @@ class Salary extends Model
         $osal = 0;
         $obon = 0;
 
-        $debugUserIds = [];
-
         foreach ($users as $key => $user) {
-            $debug = [];
-
             if($user->user_description && $user->user_description->is_trainee == 0) {
 
             } else {
@@ -102,11 +97,8 @@ class Salary extends Model
                 continue;
             }
 
-            if($isDebug) $debug['user'] = $user->name;
-            array_push($debugUserIds, $user->id);
-
             $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
-            // dump('hourly_pay '.$hourly_pay);
+            dump('hourly_pay '.$hourly_pay);
 
             // Вычисление даты принятия
             $user_applied_at = $user->applied_at();
@@ -119,83 +111,69 @@ class Salary extends Model
             $tts_before_apply = $user->timetracking
                 ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
 
-                $earnings = [];
-                $hourly_pays = [];
-                $hours = [];
+            $earnings = [];
+            $hourly_pays = [];
+            $hours = [];
 
-                $trainings = [];
+            $trainings = [];
 
-                if($user->working_time_id == 1) {
-                    $worktime = 8;
-                } else {
-                    $worktime = 9;
-                }
+            if($user->working_time_id == 1) {
+                $worktime = 8;
+            } else {
+                $worktime = 9;
+            }
 
-                for ($i = 1; $i <= $month->daysInMonth; $i++) {
-                    $d = '' . $i;
-                    if(strlen ($i) == 1) $d = '0' . $i;
+            for ($i = 1; $i <= $month->daysInMonth; $i++) {
+                $d = '' . $i;
+                if(strlen ($i) == 1) $d = '0' . $i;
+
+                //count hourly pay
+                $s = $user->salaries->where('day', $d)->first();
+                $zarplata = $s ? $s->amount : 70000;
+
+                $schedule = $user->schedule();
+                $lunchTime = 1;
+                $working_hours = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+
+                $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
+                $workdays = workdays($month->year, $month->month, $ignore);
+
+                $hourly_pay = $zarplata / $workdays / $working_hours;
+
+                $hourly_pays[$i] = round($hourly_pay, 2);
+
+                ///
+                $x = $tts->where('day', $i);
+                $y = $tts_before_apply->where('day', $i);
+                $a = $trainee_days->where('day', $i);
+
+
+                $earnings[$i] = null;
+                $hours[$i] = null;
+                $trainings[$i] = null;
 
 
 
-                    $d = '' . $i;
-                    if(strlen ($i) == 1) $d = '0' . $i;
-
-                    //count hourly pay
-                    $s = $user->salaries->where('day', $d)->first();
-                    $zarplata = $s ? $s->amount : 70000;
-
-                    $schedule = $user->schedule();
-                    $lunchTime = 1;
-                    $working_hours = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
-
-                    $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
-                    $workdays = workdays($month->year, $month->month, $ignore);
-
-                    $hourly_pay = $zarplata / $workdays / $working_hours;
-
+                if($a->count() > 0) { // день отмечен как стажировка
+                    $trainings[$i] = true;
+                    $earning = $hourly_pay * $internshipPayRate * $worktime;
+                    $earnings[$i] = round($earning);
+                    $hours[$i] = round($worktime / 2, 1);
                     $hourly_pays[$i] = round($hourly_pay, 2);
-
-                    ///
-                    $x = $tts->where('day', $i);
-                    $y = $tts_before_apply->where('day', $i);
-                    $a = $trainee_days->where('day', $i);
-
-
-                    $earnings[$i] = null;
-                    $hours[$i] = null;
-                    $trainings[$i] = null;
-
-
-
-                    if($a->count() > 0) { // день отмечен как стажировка
-                        $trainings[$i] = true;
-                        $earning = $hourly_pay * $internshipPayRate * $worktime;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($worktime / 2, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    } else if($x->count() > 0) { // отработанное врея есть
-                        $total_hours = $x->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    } else if($y->count() > 0) {// отработанное врея есть до принятия на работу
-                        $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    }
+                } else if($x->count() > 0) { // отработанное врея есть
+                    $total_hours = $x->sum('total_hours');
+                    $earning = $total_hours / 60 * $hourly_pay;
+                    $earnings[$i] = round($earning);
+                    $hours[$i] = round($total_hours / 60, 1);
+                    $hourly_pays[$i] = round($hourly_pay, 2);
+                } else if($y->count() > 0) {// отработанное врея есть до принятия на работу
+                    $total_hours = $y->sum('total_hours');
+                    $earning = $total_hours / 60 * $hourly_pay;
+                    $earnings[$i] = round($earning);
+                    $hours[$i] = round($total_hours / 60, 1);
+                    $hourly_pays[$i] = round($hourly_pay, 2);
                 }
-                if($isDebug) $debug['salaries'] = $user->salaries->toArray();
-                if($isDebug) $debug['earnings'] = $earnings;
-                if($isDebug) $debug['hours'] = $hours;
-                if($isDebug) $debug['trainings'] = $trainings;
-                if($isDebug) $debug['hourly_pays'] = $hourly_pays;
-                if($isDebug) $debug['tts'] = $tts;
-                if($isDebug) $debug['tts_before_apply'] = $tts_before_apply;
-                if($isDebug) $debug['schedule'] = $schedule;
-                if($isDebug) $debug['group'] = $user->groups()->where('status', '=', 'active')->first();;
+            }
 
 
 
@@ -209,9 +187,7 @@ class Salary extends Model
                 } else {
                     $bonuses[$i] = null;
                 }
-
             }
-            if($isDebug) $debug['bonuses'] = $bonuses;
 
             $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
 
@@ -226,40 +202,32 @@ class Salary extends Model
                     $awards[$i] = null;
                 }
             }
-            if($isDebug) $debug['awards'] = $awards;
 
-                $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $month->format('Y-m-d'))->first();
+            $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $month->format('Y-m-d'))->first();
 
-                //
-                $editedKpi = EditedKpi::where('user_id', $user->id)
-                    ->whereYear('date', $month->year)
-                    ->whereMonth('date', $month->month)
-                    ->first();
+            //
+            $editedKpi = EditedKpi::where('user_id', $user->id)
+                ->whereYear('date', $month->year)
+                ->whereMonth('date', $month->month)
+                ->first();
 
-                if($editedKpi) {
-                    $kpi = $editedKpi->amount;
+            if($editedKpi) {
+                $kpi = $editedKpi->amount;
+            } else {
+                $kpi = Kpi::userKpi($user->id, $date);
+            }
 
-                    if($isDebug) $debug['editedKpi'] = $editedKpi;
-                } else {
-                    $kpi = Kpi::userKpi($user->id, $date);
-                    if($isDebug) $debug['savedKpi'] = $kpi;
-                }
-
-                $editedBonus = EditedBonus::where('user_id', $user->id)
-                    ->whereYear('date', $month->year)
-                    ->whereMonth('date', $month->month)
-                    ->first();
-                if($isDebug) $debug['editedBonus'] = $editedBonus;
-
-
-
+            $editedBonus = EditedBonus::where('user_id', $user->id)
+                ->whereYear('date', $month->year)
+                ->whereMonth('date', $month->month)
+                ->first();
 
             $user_total = 0;
             $total_bonuses = 0;
             $total_salary = 0;
 
 
-         //   if($user->id == 18392) dd($earnings);
+            // if($user->id == 18392) dd($earnings);
 
             for($i=1;$i<=$month->daysInMonth;$i++) {
                 $total_bonuses += (float)$bonuses[$i] + (float)$awards[$i];
@@ -267,12 +235,11 @@ class Salary extends Model
             }
 
             $total_bonuses += $user->testBonuses->sum('amount');
-            if($isDebug) $debug['testBonuses'] = $user->testBonuses->toArray();
 
             $user_total += $total_salary;
 
-            // dump( $earnings);
-            // dump($user_total);
+            dump($earnings);
+            dump($user_total);
             if($editedBonus) {
                 $user_total += (float)$editedBonus->amount;
                 $total_bonuses = (float)$editedBonus->amount;
@@ -309,10 +276,6 @@ class Salary extends Model
                 ->first('total')
                 ->total;
 
-            if($isDebug) $debug['--total_salary'] = $total_salary;
-            if($isDebug) $debug['--total_bonuses'] = $total_bonuses;
-            if($isDebug) $debug['--kpi'] = $kpi;
-            if($isDebug) dump($debug);
 
             $user_total += (float)$kpi;
 
@@ -323,17 +286,14 @@ class Salary extends Model
                 $okpi += $kpi;
                 $obon += $total_bonuses;
                 $osal += $total_salary;
-                // dump($text);
+                dump($text);
             }
-
         }
 
-        if($isDebug) dump($debugUserIds);
 
-
-        // dump('SAL ' . $osal);
-        // dump('BON ' . $obon);
-        // dump('KPI ' . $okpi);
+        dump('SAL ' . $osal);
+        dump('BON ' . $obon);
+        dump('KPI ' . $okpi);
         return $all_total;
     }
 
@@ -383,7 +343,12 @@ class Salary extends Model
             //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->with([
                 'groups' => function ($q) use ($month) {
-                    $q->with('workChart');
+                    $q->with('workChart')
+                        ->where([
+                            ['status', 'active'],
+                            ['is_head', false]
+                        ])
+                        ->whereNull('to');
                 },
                 'zarplata',
                 'workingTime',
@@ -453,6 +418,7 @@ class Salary extends Model
                 'fines' => function ($q) use ($month) {
                     $q->whereYear('day', $month->year)
                         ->whereMonth('day', $month->month)
+                        ->where('status', 1)
                         ->get();
                 },
             ])
@@ -1019,32 +985,8 @@ class Salary extends Model
     }
 
     public static function getAllTotals($date, $groups, $user_types = 0){
-        $isDebug = 1 == $user_types;
-
-        $group_ids = [];
-        foreach ($groups as $key => $group) {
-            array_push($group_ids, $group->id);
-        }
 
         $month_start = Carbon::parse($date)->startOfMonth();
-
-        // $user_ids = [];
-        // if($user_types == 0) {
-        //     $working = (new UserService)->getEmployeesAll($group_ids, $date);
-        //     $fired = (new UserService)->getFiredEmployeesAll($group_ids, $date);
-
-        //     $user_ids = array_merge(
-        //         collect($working)->pluck('id')->toArray(),
-        //         collect($fired)->pluck('id')->toArray()
-        //     );
-        // } else if($user_types == 1) {
-        //     $working = (new UserService)->getEmployeesAll($group_ids, $date);
-        //     $user_ids = collect($working)->pluck('id')->toArray();
-        // } else if($user_types == 2) {
-        //     $fired = (new UserService)->getFiredEmployeesAll($group_ids, $date);
-        //     $user_ids = collect($fired)->pluck('id')->toArray();
-        // }
-        // $users = self::getUsersDataV2($month_start, $user_ids);
 
         $month = Carbon::parse($date)->startOfMonth();
 
@@ -1076,9 +1018,6 @@ class Salary extends Model
             }
             $users = self::getUsersDataV2($month_start, $user_ids);
 
-            if($isDebug) dump($group->name);
-            $debugUserIds = [];
-
             foreach ($users as $user){
                 $debug = [];
                 if($user->user_description && $user->user_description->is_trainee == 0) {}
@@ -1091,11 +1030,6 @@ class Salary extends Model
                     // dump('skip_no_group');
                     continue;
                 }
-
-                if($isDebug) $debug['id'] = $user->id;
-                if($isDebug) $debug['name'] = $user->name;
-
-                array_push($debugUserIds, $user->id);
 
                 $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
                 // dump('hourly_pay '.$hourly_pay);
@@ -1171,16 +1105,6 @@ class Salary extends Model
                         $hourly_pays[$i] = round($hourly_pay, 2);
                     }
                 }
-                if($isDebug) $debug['salaries'] = $user->salaries->toArray();
-                if($isDebug) $debug['earnings'] = $earnings;
-                if($isDebug) $debug['hours'] = $hours;
-                if($isDebug) $debug['trainings'] = $trainings;
-                if($isDebug) $debug['hourly_pays'] = $hourly_pays;
-                if($isDebug) $debug['tts'] = $tts;
-                if($isDebug) $debug['tts_before_apply'] = $tts_before_apply;
-                if($isDebug) $debug['schedule'] = $schedule;
-                if($isDebug) $debug['group'] = $user->groups->where('status', '=', 'active')->first();
-                if($isDebug) $debug['groups'] = $user->groups->toArray();
 
                 $bonuses = [];
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
@@ -1194,22 +1118,18 @@ class Salary extends Model
                         $bonuses[$i] = null;
                     }
                 }
-                if($isDebug) $debug['bonus'] = $bonuses;
 
                 $awards = 0;
                 if($user->kpi_obtained_bonuses->count()){
                     $awards = $user->kpi_obtained_bonuses->sum('amount');
                 }
-                if($isDebug) $debug['awards'] = $user->kpi_obtained_bonuses->toArray();
 
 
                 $kpi = 0;
                 if ($user->edited_kpi->count()) {
                     $kpi = $user->edited_kpi->sum('amount');
-                    if($isDebug) $debug['edited_kpi'] = $user->edited_kpi->toArray();
                 } else if ($user->saved_kpi->count()) {
                     $kpi = $user->saved_kpi->sum('total');
-                    if($isDebug) $debug['saved_kpi'] = $user->saved_kpi->toArray();
                 }
 
                 $user_total = 0;
@@ -1226,16 +1146,12 @@ class Salary extends Model
 
                 $total_bonuses += (float)$user->testBonuses->sum('amount');
 
-                if($isDebug) $debug['testBonuses'] = $user->testBonuses->toArray();
-
                 $user_total += $total_salary;
 
                 if($user->edited_bonuses->count()) {
                     $amount = $user->edited_bonuses->sum('amount');
                     $user_total += (float)$amount;
                     $total_bonuses = (float)$amount;
-
-                    if($isDebug) $debug['edited_bonuses'] = $user->edited_bonuses->toArray();
                 } else {
                     $user_total += $total_bonuses;
                 }
@@ -1244,25 +1160,9 @@ class Salary extends Model
 
                 $fines = $user->fines->sum('penalty_amount');
 
-                // $fines = \DB::table('user_fines')
-                //     ->selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
-                //     ->leftJoin('fines as f', 'f.id', '=', 'user_fines.fine_id')
-                //     ->where('user_id', $user->id)
-                //     ->whereMonth('day', $month->month)
-                //     ->whereYear('day', $month->year)
-                //     ->where('status', UserFine::STATUS_ACTIVE)
-                //     ->first('total')
-                //     ->total;
-
                 $user_total += (float)$kpi;
 
                 $total_must_count = (float)$user_total - $avans - $fines;
-
-                if($isDebug) $debug['--total_salary'] = $total_salary;
-                if($isDebug) $debug['--total_bonuses'] = $total_bonuses;
-                if($isDebug) $debug['--kpi'] = $kpi;
-
-                if($isDebug) dump($debug);
 
                 if($total_must_count > 0)  {
                     $all_total[$group->id] += $user_total;
@@ -1272,8 +1172,6 @@ class Salary extends Model
                     $osal += $total_salary;
                 }
             }
-
-            if($isDebug) dump($debugUserIds);
         }
 
         return $all_total;
