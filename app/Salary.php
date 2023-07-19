@@ -990,7 +990,7 @@ class Salary extends Model
 
         $month = Carbon::parse($date)->startOfMonth();
 
-        $_total = [];
+        $all_total = [];
 
         $okpi = 0;
         $osal = 0;
