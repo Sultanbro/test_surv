@@ -383,7 +383,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     // salaries
     Route::get('/timetracking/salaries', [Salary\SalaryController::class, 'index']);
-    Route::get('/timetracking/salaries/test', [Salary\SalaryController::class, 'test']);
     Route::get('/timetracking/salaries/export', [Salary\SalaryController::class, 'exportExcel']);
     Route::post('/timetracking/salaries/get-total', [Salary\SalaryController::class, 'getTotal']);
     Route::post('/timetracking/salaries', [Salary\SalaryController::class, 'salaries']);
