@@ -745,6 +745,18 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
         });
 
+        //Api Structure
+
+        Route::group(['prefix'=>'structure','as'=>'structure.'],function(){
+            Route::post('/store',[App\Http\Controllers\Api\Structure\StructureCardController::class,'store'])->name('store');
+            Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class,'all'])->name('get-all');
+            Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
+            Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
+
+
+        });
+
+
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
             Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
