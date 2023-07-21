@@ -60,10 +60,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=1"')->everyFiveMinutes(); // hh отклики запрос откликов
         $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=3"')->everyFiveMinutes(); // hh отклики в битрикс
         $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=2"')->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
-        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=0"')->dailyAt('02:00'); // hh вакансиии обновить
-        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=1"')->everyFiveMinutes(); // hh отклики запрос откликов
-        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=3"')->everyFiveMinutes(); // hh отклики в битрикс
-        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=2"')->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
         $schedule->command('tenants:run recruiter:attendance --tenants=bp')->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших
         $schedule->command('tenants:run whatsapp:estimate_first_day --tenants=bp')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('tenants:run recruiting:trainee_report --tenants=bp')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней

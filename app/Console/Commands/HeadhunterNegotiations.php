@@ -67,13 +67,10 @@ class HeadhunterNegotiations extends Command
 
     public function createLeadsOnBitrix() : void
     {
-        $vacancyIds = $this->getVacancyIds();
-
         $negotiations = Negotiation::where('has_updated', 1)
             ->where('lead_id', 0)
             ->where('phone', '!=', '')
             ->where('phone', '!=', 'null')
-            ->whereIn('vacancy_id', $vacancyIds)
             ->get()
             ->take(5);
 
@@ -125,14 +122,12 @@ class HeadhunterNegotiations extends Command
 
     public function getPhonesByResume() : void
     {
-        $vacancyIds = $this->getVacancyIds();
         $negotiations = Negotiation::whereDate('time', '>=', $this->date)
             ->where('has_updated', 1)
             ->where('lead_id', 0)
             ->where('phone', '')
             ->where('phone', '!=', 'null')
             ->where('resume_id', '!=', '')
-            ->whereIn('vacancy_id', $vacancyIds)
             ->get();
 
         $this->line('getPhonesByResume: '. $negotiations->count());
@@ -350,16 +345,5 @@ class HeadhunterNegotiations extends Command
             if(in_array($word, $words)) $has = true;
         }
         return !$has;
-    }
-
-    public function getVacancyIds(): array
-    {
-        $vacancyIds = [];
-        $vacancies = $this->hh->getVacancies();
-        foreach ($vacancies as $vacancy) {
-            $vacancyIds[] = $vacancy->id;
-        }
-
-        return $vacancyIds;
     }
 }               

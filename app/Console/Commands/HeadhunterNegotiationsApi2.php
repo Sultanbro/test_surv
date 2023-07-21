@@ -66,13 +66,11 @@ class HeadhunterNegotiationsApi2 extends Command
     }
     public function createLeadsOnBitrix() : void
     {
-        $vacancyIds = $this->getVacancyIds();
-
         $negotiations = Negotiation::where('has_updated', 1)
             ->where('lead_id', 0)
             ->where('phone', '!=', '')
             ->where('phone', '!=', 'null')
-            ->whereIn('vacancy_id', $vacancyIds)
+            ->where('from', Negotiation::FROM_TYPE_HH2)
             ->get()
             ->take(5);
 
@@ -124,14 +122,13 @@ class HeadhunterNegotiationsApi2 extends Command
 
     public function getPhonesByResume() : void
     {
-        $vacancyIds = $this->getVacancyIds();
         $negotiations = Negotiation::whereDate('time', '>=', $this->date)
             ->where('has_updated', 1)
             ->where('lead_id', 0)
             ->where('phone', '')
             ->where('phone', '!=', 'null')
             ->where('resume_id', '!=', '')
-            ->whereIn('vacancy_id', $vacancyIds)
+            ->where('from', Negotiation::FROM_TYPE_HH2)
             ->get();
 
         $this->line('getPhonesByResume: '. $negotiations->count());
@@ -151,7 +148,10 @@ class HeadhunterNegotiationsApi2 extends Command
             }
             
             $phone = $this->hh->getPhone($resume->contact);
-            $neg = Negotiation::where('id', '!=', $n->id)->where('phone', $phone)->where('time', '>', Carbon::now()->subDays(3))->first();
+            $neg = Negotiation::where('id', '!=', $n->id)
+                ->where('phone', $phone)
+                ->where('time', '>', Carbon::now()->subDays(3))
+                ->first();
 
             if($phone == '') $phone = 'null';
             if($neg) {
@@ -268,6 +268,7 @@ class HeadhunterNegotiationsApi2 extends Command
                 $neg->time = $time;
                 $neg->resume_id = $resume_id;
                 $neg->name = $name;
+                $neg->from = Negotiation::FROM_TYPE_HH2;
                 $neg->save();
             } else {
                 Negotiation::create([
@@ -279,6 +280,7 @@ class HeadhunterNegotiationsApi2 extends Command
                     'phone' => '',
                     'name' => $name,
                     'resume_id' => $resume_id,
+                    'from' => Negotiation::FROM_TYPE_HH2,
                 ]);
             }
         }
