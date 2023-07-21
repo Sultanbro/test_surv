@@ -72,10 +72,10 @@ class SaveGroupSalary extends Command
     public function count($date) {
         $groups = ProfileGroup::where('active', 1)->get();
 
-        $workingGroups = Salary::getAllTotals($date, $groups, 1);
-        $firedGroups = Salary::getAllTotals($date, $groups, 2);
+        $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
+        $firedGroups = Salary::getAllTotals($date, $groups, Salary::FIRED_USERS);
 
-        $date = Carbon::parse($date)->day(1)->format('Y-m-d');
+        $date = Carbon::parse($date)->firstOfMonth();
 
         foreach ($groups as $key => $group) {
             $this->line($group->name);
@@ -84,10 +84,10 @@ class SaveGroupSalary extends Command
             $this->line('============');
 
             // save working
-            $gs = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 1)->first();
-            if($gs) {
-                $gs->total = $workingGroups[$group->id];
-                $gs->save();
+            $workingGroupSalary = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 1)->first();
+            if($workingGroupSalary) {
+                $workingGroupSalary->total = $workingGroups[$group->id];
+                $workingGroupSalary->save();
             } else {
                 GroupSalary::create([
                     'group_id' => $group->id,
@@ -98,10 +98,10 @@ class SaveGroupSalary extends Command
             }
 
             // save fired total
-            $gs = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 2)->first();
-            if($gs) {
-                $gs->total = $firedGroups[$group->id];
-                $gs->save();
+            $firedGroupSalary = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 2)->first();
+            if($firedGroupSalary) {
+                $firedGroupSalary->total = $firedGroups[$group->id];
+                $firedGroupSalary->save();
             } else {
                 GroupSalary::create([
                     'group_id' => $group->id,

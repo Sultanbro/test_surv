@@ -20,6 +20,10 @@ use Exception;
 
 class Salary extends Model
 {
+    CONST ALL_USERS = 0;
+    CONST WORKING_USERS = 1;
+    CONST FIRED_USERS = 2;
+
     protected $table = 'salaries';
 
     protected $dates = ['date'];
@@ -45,7 +49,7 @@ class Salary extends Model
      * 1 only working
      * 2 only fired
      */
-    public static function getTotal($date, $group_id, $user_types = 0)
+    public static function getTotal($date, $group_id, $user_types = self::ALL_USERS)
     {
         $month = Carbon::parse($date)->startOfMonth();
 
@@ -65,11 +69,11 @@ class Salary extends Model
         $fired = collect($fired)->pluck('id')->toArray();
 
         $user_ids = [];
-        if($user_types == 0)  {
+        if($user_types == self::ALL_USERS)  {
             $user_ids = array_merge($working, $fired);
-        } else if($user_types == 1) {
+        } else if($user_types == self::WORKING_USERS) {
             $user_ids = $working;
-        } else if($user_types == 2) {
+        } else if($user_types == self::FIRED_USERS) {
             $user_ids = $fired;
         }
 
@@ -984,7 +988,7 @@ class Salary extends Model
         return $data;
     }
 
-    public static function getAllTotals($date, $groups, $user_types = 0){
+    public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS){
 
         $month_start = Carbon::parse($date)->startOfMonth();
 
@@ -1001,7 +1005,7 @@ class Salary extends Model
             $all_total[$group->id] = 0;
 
             $user_ids = [];
-            if($user_types == 0) {
+            if($user_types == self::ALL_USERS) {
                 $working = (new UserService)->getEmployeesAll($group->id, $date);
                 $fired = (new UserService)->getFiredEmployeesAll($group->id, $date);
 
@@ -1009,10 +1013,10 @@ class Salary extends Model
                     collect($working)->pluck('id')->toArray(),
                     collect($fired)->pluck('id')->toArray()
                 );
-            } else if($user_types == 1) {
+            } else if($user_types == self::WORKING_USERS) {
                 $working = (new UserService)->getEmployeesAll($group->id, $date);
                 $user_ids = collect($working)->pluck('id')->toArray();
-            } else if($user_types == 2) {
+            } else if($user_types == self::FIRED_USERS) {
                 $fired = (new UserService)->getFiredEmployeesAll($group->id, $date);
                 $user_ids = collect($fired)->pluck('id')->toArray();
             }
