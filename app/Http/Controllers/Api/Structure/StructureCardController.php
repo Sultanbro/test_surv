@@ -53,8 +53,7 @@ class StructureCardController extends Controller
      */
     public function all():JsonResponse
     {
-        $managerId = 5;
-        $structureCard = $this->structureCardService->getStructureCardWithChildrenByManager($managerId);
+        $structureCard = $this->structureCardService->getStructureCardWithChildrenByManager();
 
         return response()->json($structureCard);
     }

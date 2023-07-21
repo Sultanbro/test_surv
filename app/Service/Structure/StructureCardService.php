@@ -62,19 +62,19 @@ class StructureCardService
      * @param $managerId
      * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
      */
-    public function getStructureCardWithChildrenByManager($managerId)
+    public function getStructureCardWithChildrenByManager()
     {
-        $cardId = StructureCardManager::query()->where('user_id', $managerId)->value('card_id');
 
-        if (!$cardId) {
-            return collect(); // Return an empty collection if no card is found for the user
+        $structureCard = StructureCard::query()
+            ->whereNull('parent_id')
+            ->with('childrens', 'users', 'manager')
+            ->firstOrFail();
+
+        if (!$structureCard) {
+            return response()->json(['message' => 'Card not found.'], 404);
         }
 
-        return StructureCard::whereHas('manager', function ($query) use ($managerId) {
-            $query->where('user_id', $managerId);
-        })
-            ->with('childrens', 'childrens.manager', 'childrens.users:id', 'manager', 'users:id')
-            ->first();
+        return response()->json(['structure_card' => $structureCard], 200)->getData();
     }
 
     /**
