@@ -37,6 +37,8 @@ class HeadHunter {
     CONST AUTH_CODE = 'authorization_code';
     CONST REFRESH_TOKEN = 'refresh_token';
 
+    CONST FROM_STATUS = 1;
+
     /**
      * Ссылка авторизации вручную, нужно войти в hh аккаунт, потом перейти по ссылке
      * Получает код авторизации

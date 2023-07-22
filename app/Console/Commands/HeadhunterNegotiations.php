@@ -71,6 +71,7 @@ class HeadhunterNegotiations extends Command
             ->where('lead_id', 0)
             ->where('phone', '!=', '')
             ->where('phone', '!=', 'null')
+            ->where('from', '=', HeadHunter::FROM_STATUS)
             ->get()
             ->take(5);
 
@@ -83,10 +84,12 @@ class HeadhunterNegotiations extends Command
                 ->where('created_at', '>', Carbon::now()->subDays(7))
                 ->whereNotIn('status', ['LOSE'])
                 ->get();
-                
+
+            $leadId = null;
+
             if($leads->count() > 0) {
                 if($n->lead_id == 0) {
-                    $n->lead_id = $leads->first()->lead_id; 
+                    $n->lead_id = $leads->first()->lead_id;
                     $n->save();
 
                     History::system('Дубликат hh.ru', [
@@ -97,6 +100,7 @@ class HeadhunterNegotiations extends Command
                 }
             } else {
                 $lead_id = $this->createLead($n);
+                $leadId = $lead_id;
                 $this->line('Lead created: '. $lead_id);
 
                 History::system('Создание лида hh.ru', [
@@ -112,7 +116,7 @@ class HeadhunterNegotiations extends Command
                 $this->hh->put('/negotiations/consider/'. $n->negotiation_id);
             } catch(\Exception $e) {
                 History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
-                    'lead_id' => $leads->first()->lead_id,
+                    'lead_id' => $leads->first()->lead_id ?? $leadId,
                     'phone' => $n->phone, 
                     'negotiation_id' => $n->negotiation_id,
                 ]);
@@ -128,6 +132,7 @@ class HeadhunterNegotiations extends Command
             ->where('phone', '')
             ->where('phone', '!=', 'null')
             ->where('resume_id', '!=', '')
+            ->where('from',HeadHunter::FROM_STATUS)
             ->get();
 
         $this->line('getPhonesByResume: '. $negotiations->count());
@@ -264,6 +269,7 @@ class HeadhunterNegotiations extends Command
                 $neg->time = $time;
                 $neg->resume_id = $resume_id;
                 $neg->name = $name;
+                $neg->from = HeadHunter::FROM_STATUS;
                 $neg->save();
             } else {
                 Negotiation::create([
@@ -275,6 +281,7 @@ class HeadhunterNegotiations extends Command
                     'phone' => '',
                     'name' => $name,
                     'resume_id' => $resume_id,
+                    'from' => HeadHunter::FROM_STATUS,
                 ]);
             }
         }
@@ -318,12 +325,14 @@ class HeadhunterNegotiations extends Command
                         'manager_id' => $manager_id,
                         'city' => $city,
                         'status' => $status,
+                        'from' => HeadHunter::FROM_STATUS
                     ]);
                 } else {
                     $vac->title = $hh_vacancy->name;
                     $vac->manager_id = $manager_id;
                     $vac->status = $status;
                     $vac->city = $city;
+                    $vac->from = HeadHunter::FROM_STATUS;
                     $vac->save();
                 }
             }   
