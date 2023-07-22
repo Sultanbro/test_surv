@@ -83,6 +83,8 @@ class HeadhunterNegotiationsApi2 extends Command
                 ->where('created_at', '>', Carbon::now()->subDays(7))
                 ->whereNotIn('status', ['LOSE'])
                 ->get();
+
+            $leadId = null;
                 
             if($leads->count() > 0) { 
                 if($n->lead_id == 0) {
@@ -97,6 +99,7 @@ class HeadhunterNegotiationsApi2 extends Command
                 }
             } else {
                 $lead_id = $this->createLead($n);
+                $leadId = $lead_id;
                 $this->line('Lead created: '. $lead_id);
 
                 History::system('Создание лида hh2.ru', [
@@ -112,7 +115,7 @@ class HeadhunterNegotiationsApi2 extends Command
                 $this->hh->put('/negotiations/consider/'. $n->negotiation_id);
             } catch(\Exception $e) {
                 History::system($e->getCode() == 403 ? 'Отклик архивирован hh2.ru' : 'Ошибка hh2.ru', [
-                    'lead_id' => $leads->first()->lead_id,
+                    'lead_id' => $leads->first()->lead_id ?? $leadId,
                     'phone' => $n->phone, 
                     'negotiation_id' => $n->negotiation_id,
                 ]);
@@ -128,7 +131,7 @@ class HeadhunterNegotiationsApi2 extends Command
             ->where('phone', '')
             ->where('phone', '!=', 'null')
             ->where('resume_id', '!=', '')
-            ->where('from', Negotiation::FROM_TYPE_HH2)
+            ->where('from', HeadHunterApi2::FROM_STATUS)
             ->get();
 
         $this->line('getPhonesByResume: '. $negotiations->count());
@@ -268,7 +271,7 @@ class HeadhunterNegotiationsApi2 extends Command
                 $neg->time = $time;
                 $neg->resume_id = $resume_id;
                 $neg->name = $name;
-                $neg->from = Negotiation::FROM_TYPE_HH2;
+                $neg->from = HeadHunterApi2::FROM_STATUS;
                 $neg->save();
             } else {
                 Negotiation::create([
@@ -280,7 +283,7 @@ class HeadhunterNegotiationsApi2 extends Command
                     'phone' => '',
                     'name' => $name,
                     'resume_id' => $resume_id,
-                    'from' => Negotiation::FROM_TYPE_HH2,
+                    'from' => HeadHunterApi2::FROM_STATUS,
                 ]);
             }
         }
@@ -320,12 +323,14 @@ class HeadhunterNegotiationsApi2 extends Command
                         'manager_id' => $manager_id,
                         'city' => $city,
                         'status' => $status,
+                        'from' => HeadHunterApi2::FROM_STATUS,
                     ]);
                 } else {
                     $vac->title = $hh_vacancy->name;
                     $vac->manager_id = $manager_id;
                     $vac->status = $status;
                     $vac->city = $city;
+                    $vac->from = HeadHunterApi2::FROM_STATUS;
                     $vac->save();
                 }
             }   
