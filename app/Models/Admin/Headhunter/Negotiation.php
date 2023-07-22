@@ -20,7 +20,6 @@ class Negotiation extends Model
         'has_updated',
         'phone',
         'name',
-        'resume_id',
-        'from'
+        'resume_id'
     ];
 }
