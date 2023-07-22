@@ -70,7 +70,7 @@ class HeadhunterNegotiationsApi2 extends Command
             ->where('lead_id', 0)
             ->where('phone', '!=', '')
             ->where('phone', '!=', 'null')
-            ->where('from', Negotiation::FROM_TYPE_HH2)
+            ->where('from', HeadHunterApi2::FROM_STATUS)
             ->get()
             ->take(5);
 
