@@ -30,19 +30,4 @@ class StructureCardRepository extends CoreRepository
         return $this->model()->query()->create($data);
     }
 
-    /**
-     * @param $managerId
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object|null
-     */
-    public function getStructureCardWithChildrenByManager($managerId)
-    {
-        return StructureCard::whereHas('managers', function ($query) use ($managerId) {
-            $query->where('user_id', $managerId);
-        })
-            ->with(['children' => function ($query) {
-                $query->with('managers:id')->with('users:id')->with('childrens.users:id')->get();
-            }])
-            ->first();
-    }
-
 }

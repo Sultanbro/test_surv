@@ -67,7 +67,7 @@ class StructureCardService
 
         $structureCard = StructureCard::query()
             ->whereNull('parent_id')
-            ->with('childrens', 'users', 'manager')
+            ->with('childrens', 'users:id', 'manager')
             ->firstOrFail();
 
         if (!$structureCard) {

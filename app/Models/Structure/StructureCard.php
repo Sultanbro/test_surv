@@ -17,7 +17,7 @@ class StructureCard extends Model
 
     protected $table = 'structure_card';
 
-    protected $fillable = ['name', 'parent_id', 'description', 'color','group_id','status'];
+    protected $fillable = ['name', 'parent_id', 'description', 'color','group_id','status','is_group'];
 
     /**
      * Get the parent card of the structure card.

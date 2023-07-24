@@ -43,7 +43,8 @@ class StructureCardDTO
             'user_ids.*' => 'exists:users,id',
             'position_id' => 'required|exists:position,id',
             'manager_id' => 'required|exists:users,id',
-            'status' => 'boolean'
+            'status' => 'boolean',
+            'is_group' =>'boolean'
         ];
     }
 }
