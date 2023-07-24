@@ -2,6 +2,7 @@
 import axios from 'axios'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
+import UserEditError from '@/components/pages/UserEdit/UserEditError'
 import { getShiftDays } from '@/composables/shifts'
 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -10,6 +11,7 @@ export default {
 	components: {
 		ProfileGroups,
 		UserEditGroups,
+		UserEditError,
 	},
 	props: {
 		formUserName: {
@@ -63,6 +65,10 @@ export default {
 		front_valid:{
 			type: Object,
 			default: () => null
+		},
+		errors:{
+			type: Object,
+			default: () => ({})
 		}
 	},
 	data(){
@@ -218,7 +224,12 @@ export default {
 						@input="checkValid($event, 'name')"
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="name"
+				/>
 			</div>
+
 			<div
 				class="form-group row"
 				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.lastName}"
@@ -239,6 +250,10 @@ export default {
 						@input="checkValid($event, 'lastName')"
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="last_name"
+				/>
 			</div>
 
 			<div
@@ -261,6 +276,10 @@ export default {
 						@input="checkValid($event, 'email')"
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="email"
+				/>
 			</div>
 			<div
 				v-if="user"
@@ -280,6 +299,10 @@ export default {
 						placeholder=""
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="new_pwd"
+				/>
 			</div>
 
 			<div class="form-group row">
@@ -298,6 +321,10 @@ export default {
 						@input="checkValid($event, 'birthday')"
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="birthday"
+				/>
 			</div>
 
 			<div
@@ -340,6 +367,10 @@ export default {
 						:user_role="2"
 					/>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="position"
+				/>
 			</div>
 
 			<!-- groups tab -->
@@ -395,6 +426,10 @@ export default {
 						</option>
 					</select>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="user_type"
+				/>
 			</div>
 			<div class="form-group row">
 				<label
@@ -441,6 +476,10 @@ export default {
 						</option>
 					</select>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="program_type"
+				/>
 			</div>
 			<div class="form-group row">
 				<label
@@ -507,6 +546,10 @@ export default {
 						</div>
 					</div>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="selectedCityInput"
+				/>
 			</div>
 			<div class="form-group row">
 				<label
@@ -534,6 +577,10 @@ export default {
 						</template>
 					</b-form-select>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="work-chart"
+				/>
 			</div>
 			<div class="form-group row">
 				<label
@@ -561,6 +608,10 @@ export default {
 						</template>
 					</b-form-select>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="timezone"
+				/>
 			</div>
 			<div class="form-group row">
 				<label
@@ -600,6 +651,10 @@ export default {
 						</label>
 					</div>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="full_time"
+				/>
 			</div>
 
 			<div class="form-group row">
@@ -614,6 +669,10 @@ export default {
 						class="form-control"
 					>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="first_work_day"
+				/>
 			</div>
 
 			<!-- -->
@@ -663,6 +722,10 @@ export default {
 						:value="user ? user.description : ''"
 					/>
 				</div>
+				<UserEditError
+					:errors="errors"
+					name="description"
+				/>
 			</div>
 		</div>
 	</div>
@@ -747,4 +810,8 @@ export default {
 .UserEdit-new-position {
 	color: green;
 }
+</style>
+
+<style lang="scss">
+// .UserEditMain{}
 </style>

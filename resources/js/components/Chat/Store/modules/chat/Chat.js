@@ -12,7 +12,7 @@ export default {
 		},
 		addChat(state, chat) {
 			const exists = state.chats.find(c => c.id === chat.id)
-			if(exists) return
+			if (exists) return
 			state.chats.push(chat);
 		},
 		setChat(state, chat) {
@@ -70,14 +70,14 @@ export default {
 		},
 		setChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
-			if(!user) return
-			if(!user.pivot) user.pivot = {}
+			if (!user) return
+			if (!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 1
 		},
 		unsetChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
-			if(!user) return
-			if(!user.pivot) user.pivot = {}
+			if (!user) return
+			if (!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 0
 		},
 		muteChat(state, chatId){
@@ -90,8 +90,8 @@ export default {
 		},
 		changeChatAvatar(state, {chatId, image}){
 			const chat = state.chats.find(chat => chat.id === chatId)
-			if(chat) chat.image = image
-			if(state.chat){
+			if (chat) chat.image = image
+			if (state.chat){
 				state.chat.image = image
 			}
 		}

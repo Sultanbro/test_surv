@@ -64,6 +64,7 @@ export default {
 			this.groups.push(tag)
 			this.value.push(tag)
 		},
+
 		messageoff() {
 			setTimeout(() => {
 				this.message = null
@@ -71,7 +72,6 @@ export default {
 		},
 
 		selectGroup(selectedOption) {
-
 			let data = {
 				user_id: this.user_id,
 				group_id: selectedOption.id,
@@ -81,11 +81,9 @@ export default {
 			let msg = 'Сотрудник добавлен в отдел "' + selectedOption.name + '"';
 
 			this.request(data, msg);
-
 		},
 
 		removeGroup(selectedOption) {
-
 			let data = {
 				user_id: this.user_id,
 				group_id: selectedOption.id,
@@ -95,7 +93,6 @@ export default {
 			let msg = 'Сотрудник удален из группы "' + selectedOption.name + '"';
 
 			this.request(data, msg);
-
 		},
 
 		request(data, msg) {
@@ -109,8 +106,6 @@ export default {
 					this.$toast.info(error.response);
 				});
 		},
-
-
 	}
 }
 </script>

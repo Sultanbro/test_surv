@@ -12,24 +12,27 @@ export default {
 			}
 		},
 		async init({commit, getters, dispatch}) {
-
 			window.Echo.connector.pusher.connection.bind_global(function (payload) {
 				if (!getters.isSocketConnected && payload === 'message') {
 					commit('setSocketConnected', true);
-				} else if (payload === 'connected') {
+				}
+				else if (payload === 'connected') {
 					commit('setSocketConnected', true);
-				} else if (payload === 'error' || payload === 'disconnected' || payload === 'connecting' || payload === 'unavailable') {
+				}
+				else if (payload === 'error' || payload === 'disconnected' || payload === 'connecting' || payload === 'unavailable') {
 					commit('setSocketConnected', false);
 				}
 			});
 
 			const domain = window.location.hostname;
 			// new message notification
-			window.Echo.private(`messages.${domain}.${getters.user.id}`)
+			window.Echo
+				.private(`messages.${domain}.${getters.user.id}`)
 				.listen('.newMessage', e => {
 					if (e.message.event) {
 						dispatch('newServiceMessage', e.message);
-					} else {
+					}
+					else {
 						dispatch('newMessage', e.message);
 					}
 					dispatch('requestScroll', 0);
@@ -37,6 +40,9 @@ export default {
 
 			// Запрос на уведомления браузера
 			if (Notification.permission === 'default') Notification.requestPermission()
+
+			window.addEventListener('blur', () => commit('messengerBlur'))
+			window.addEventListener('focus', () => commit('messengerFocus'))
 
 			commit('setInitialize', true);
 		},
@@ -83,9 +89,24 @@ export default {
 					if (permission === 'granted') dispatch('sendNotification', { title, body, icon, data })
 				})
 			}
-		}
+		},
+		messengerBlur({commit}){
+			commit('messengerBlur')
+		},
+		messengerFocus({commit, dispatch, getters}){
+			commit('messengerFocus')
+			if(getters.isOpen && getters.chat && getters.messages){
+				dispatch('markMessagesAsRead', getters.messages)
+			}
+		},
 	},
 	mutations: {
+		messengerBlur(state){
+			state.isFocus = false
+		},
+		messengerFocus(state){
+			state.isFocus = true
+		},
 		setInitialize(state, initialized) {
 			state.initialized = initialized;
 		},
@@ -145,7 +166,8 @@ export default {
 		socketConnected: false,
 		galleryIndex: null,
 		galleryImages: [],
-		loading: false
+		loading: false,
+		isFocus: true,
 	},
 	getters: {
 		isInitialized: state => state.initialized,
@@ -159,6 +181,7 @@ export default {
 		isSocketConnected: state => state.socketConnected,
 		galleryIndex: state => state.galleryIndex,
 		galleryImages: state => state.galleryImages,
-		isLoading: state => state.loading
+		isLoading: state => state.loading,
+		isFocus: state => state.isFocus,
 	}
 }

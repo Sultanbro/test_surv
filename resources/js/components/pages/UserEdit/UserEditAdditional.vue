@@ -6,15 +6,33 @@ export default {
 			type: Object,
 			default: null
 		},
-		userCreated: String,
-		userApplied: String,
-		userAppliedDays: Number,
-		isTrainee: Boolean,
-		userDeleted: String,
-		userDeletedAt: String,
+		userCreated: {
+			type: String,
+			default: ''
+		},
+		userApplied: {
+			type: String,
+			default: ''
+		},
+		userAppliedDays: {
+			type: Number,
+			default: 0
+		},
+		isTrainee: {
+			type: Boolean
+		},
+		userDeleted: {
+			type: String,
+			default: ''
+		},
+		userDeletedAt: {
+			type: String,
+			default: ''
+		},
 	}
 }
 </script>
+
 <template>
 	<div
 		id="add_info"
