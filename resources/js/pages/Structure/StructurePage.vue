@@ -8,12 +8,14 @@
 		:class="[{'is-dragging': isDragging}, {'overflow-hidden': openEditCard}]"
 	>
 		<div
+			v-if="$can('structure_edit')"
 			class="structure-company-controls"
-			mousemove.stop
+			@mousemove.stop
 			@mousedown.stop
 		>
 			<div class="actions">
 				<button
+					v-if="false"
 					class="remove-demo"
 					@click="deleteDemoData"
 				>
@@ -21,8 +23,8 @@
 				</button>
 				<button
 					class="icon-btn"
-					:class="{'active': editStructure}"
-					@click="editStructure = !editStructure"
+					:class="{'active': isEditMode}"
+					@click="toggleEdit"
 				>
 					<i class="fa fa-pen" />
 				</button>
@@ -33,7 +35,7 @@
 		</div>
 		<div
 			class="range-zoom"
-			mousemove.stop
+			@mousemove.stop
 			@mousedown.stop
 		>
 			<input
@@ -48,54 +50,20 @@
 		</div>
 		<div
 			class="structure-company-area"
-			:style="{zoom: zoom / 100}"
+			:style="{
+				zoom: zoom / 100,
+				'-moz-transform': `scale(${zoom / 100})`
+			}"
 		>
-			<div
-				class="structure-card ceo-card"
-				:style="{marginLeft: leftMarginMainCard}"
-				:class="{'no-result' : structure.length === 0}"
-			>
-				<div class="structure-card-header">
-					<p class="department">
-						Коммерческий департамент
-					</p>
-					<p class="count">
-						999 сотрудников
-					</p>
-				</div>
-				<div class="structure-card-body">
-					<img
-						src="https://randomuser.me/api/portraits/men/1.jpg"
-						alt="photo"
-						class="director-photo"
-					>
-					<p class="position">
-						Генеральный директор
-					</p>
-					<p class="full-name">
-						Адиль Каримов
-					</p>
-				</div>
-				<i
-					class="fa fa-plus-circle structure-add"
-					v-if="editStructure"
-					@click="addDepartment"
-				/>
-			</div>
 			<div
 				class="departments-area"
 				ref="departmentsArea"
 			>
-				<template v-for="department in structure">
+				<template v-if="rootCard">
 					<StructureItem
-						:department="department"
-						:key="department.id"
-						:level="1"
-						:edit-structure="editStructure"
-						:bgc="''"
-						:users="users"
-						:positions="positions"
-						:departments-list="departments"
+						:card="rootCard"
+						:level="0"
+						:dictionaries="dictionaries"
 						@isOpenEditCard="isOpenEditCard"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
@@ -107,10 +75,14 @@
 </template>
 
 <script>
+import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
-import {users, positions, departments, structure} from './mockApi';
+// import {users, positions, departments, structure} from './mockApi';
+import {useCompanyStore} from '@/stores/Company.js'
+import {useStructureStore} from '@/stores/Structure.js'
+
 export default {
-	name: 'StructureComp',
+	name: 'StructurePage',
 	components: {
 		StructureItem,
 	},
@@ -125,18 +97,31 @@ export default {
 			openEditCard: false,
 			editStructure: false,
 			leftMarginMainCard: 0,
-			positions: positions,
-			departments: departments,
-			users: users,
-			structure: structure
 		}
 	},
-	mounted() {
-		this.drawLines();
-		window.addEventListener('wheel', this.scrollArea, { passive: false });
-	},
-	beforeDestroy() {
-		window.removeEventListener('wheel', this.scrollArea);
+	computed: {
+		...mapState(useCompanyStore, ['dictionaries']),
+		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		rootCard(){
+			return this.cards.find(card => !card.parentId)
+		},
+		name(){
+			if(!this.rootCard) return ''
+			if(!this.rootCard.group_id) return this.rootCard.name
+			const group = this.dictionaries.profile_groups.find(group => group.id === this.rootCard.group_id)
+			if(group) return group.name
+			return ''
+		},
+		manager(){
+			if(!this.rootCard) return null
+			if(!this.rootCard.manager) return null
+			return this.dictionaries.users.find(user => user.id === this.rootCard.manager.user_id)
+		},
+		position(){
+			if(!this.rootCard) return null
+			if(!this.rootCard.manager) return null
+			return this.dictionaries.positions.find(pos => pos.id === this.rootCard.manager.position_id)
+		}
 	},
 	watch: {
 		openEditCard(val) {
@@ -144,16 +129,19 @@ export default {
 				this.stopDrag();
 			}
 		},
-		structure: {
-			deep: true,
-			handler() {
-				this.$children.forEach(childComponent => {
-					this.recursiveUpdate(childComponent);
-				});
-			}
-		}
+	},
+	mounted() {
+		this.fetchDictionaries()
+		this.structureGet()
+		this.drawLines()
+		window.addEventListener('wheel', this.scrollArea, { passive: false })
+	},
+	beforeUnmount() {
+		window.removeEventListener('wheel', this.scrollArea)
 	},
 	methods: {
+		...mapActions(useCompanyStore, ['fetchDictionaries']),
+		...mapActions(useStructureStore, ['structureGet', 'toggleEdit']),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
 				component.drawLines();
@@ -171,7 +159,7 @@ export default {
 				employeesCount: 0,
 				isNew: true
 			};
-			this.structure.push(obj);
+			// this.structure.push(obj);
 			this.scrollToBlock(obj.id);
 		},
 		scrollToBlock(id){
@@ -192,22 +180,21 @@ export default {
 			}
 		},
 		deleteDemoData(){
-			this.structure = [];
+			// this.structure = [];
 			this.$nextTick(() => {
 				this.drawLines();
 			})
 		},
 		drawLines() {
-			if (this.$refs.departmentsArea) {
-				const children = [...this.$refs.departmentsArea.children];
-				if(!children.length){
-					this.leftMarginMainCard = 0;
-					return;
-				}
-				let sumWidth = 0;
-				children.forEach(c => sumWidth += c.offsetWidth);
-				this.leftMarginMainCard = `${Math.round((sumWidth / 2) - 167)}px`;
+			if(!this.$refs.departmentsArea) return
+			const children = [...this.$refs.departmentsArea.children];
+			if(!children.length){
+				this.leftMarginMainCard = 0;
+				return;
 			}
+			let sumWidth = 0;
+			children.forEach(c => sumWidth += c.offsetWidth);
+			this.leftMarginMainCard = `${Math.round((sumWidth / 2) - 167)}px`;
 		},
 		updateLines() {
 			this.$nextTick(() => {
@@ -216,22 +203,19 @@ export default {
 			this.$forceUpdate();
 		},
 		startDrag(event) {
-			if (!this.openEditCard) {
-				this.isDragging = true;
-				this.startX = event.clientX;
-				this.startY = event.clientY;
-				this.scrollLeft = this.$refs.container.scrollLeft;
-				this.scrollTop = this.$refs.container.scrollTop;
-			}
+			if(this.openEditCard) return
 
+			this.isDragging = true;
+			this.startX = event.clientX;
+			this.startY = event.clientY;
+			this.scrollLeft = this.$refs.container.scrollLeft;
+			this.scrollTop = this.$refs.container.scrollTop;
 		},
 		stopDrag() {
 			this.isDragging = false;
 		},
 		onDrag(event) {
-			if (!this.isDragging) {
-				return;
-			}
+			if (!this.isDragging) return
 
 			const deltaX = event.clientX - this.startX;
 			const deltaY = event.clientY - this.startY;

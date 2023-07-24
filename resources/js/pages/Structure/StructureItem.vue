@@ -2,188 +2,218 @@
 	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="structure-item"
-		:class="[{'grouped' : department.group}, 'lvl' + level]"
+		:class="[{'grouped' : card.is_group}, 'lvl' + level]"
 		:style="{'--half-width' : halfWidth}"
 		ref="structureItem"
 	>
+		<!-- Карточка -->
 		<div
 			class="structure-card"
-			:id="'id-' + department.id"
-			:style="{ backgroundColor: bgColor }"
-			:class="{'no-result' : !department.hasOwnProperty('departmentChildren')}"
+			:id="'id-' + card.id"
+			:style="{ backgroundColor: card.color }"
+			:class="{'no-result' : !(children && children.length)}"
 		>
 			<div
 				class="structure-card-header"
-				:class="{'no-body': department.employeesCount === 0 && !department.director}"
+				:class="{'no-body': card.employeesCount === 0 && !manager}"
 			>
 				<p
 					class="department"
-					:class="{'is-new': department.isNew}"
+					:class="{'is-new': card.isNew}"
 				>
-					{{ department.department }}
+					{{ name }}
+				</p>
+
+				<!-- кол-во сотрудников -->
+				<p
+					v-if="card.employeesCount > 0"
+					class="count"
+				>
+					{{ card.employeesCount }} сотрудников
 				</p>
 				<p
-					class="count"
-					v-if="department.employeesCount > 0"
-				>
-					{{ department.employeesCount }} сотрудников
-				</p>
-				<p
-					class="count"
 					v-else
+					class="count"
 				>
 					Нет сотрудников
 				</p>
+
 				<i
+					v-if="isEditMode"
 					class="fa fa-cog structure-edit"
-					v-if="editStructure"
 					@click="openEditCard"
 				/>
 			</div>
+
+			<!-- Список сотрудников -->
 			<div
+				v-if="manager || (card.users && card.users.length)"
 				class="structure-card-body"
-				v-if="department.director || department.users"
 			>
-				<template v-if="department.director">
+				<template v-if="manager">
 					<img
-						:src="department.director.photo"
+						:src="manager.avatar"
 						alt="photo"
 						class="director-photo"
 					>
 					<div class="additional-info">
 						<img
-							:src="department.director.photo"
+							:src="manager.avatar"
 							alt="photo"
 							class="addi-director-photo"
 						>
 						<div class="addi-content">
 							<div class="addi-fullname">
-								{{ department.director.fullName }}
+								{{ manager.name }} {{ manager.last_name }}
 							</div>
 							<p class="addi-item">
-								<span>Дата рождения: </span>{{ department.director.birthday }}
+								<span>Дата рождения: </span>{{ manager.birthday }}
 							</p>
 							<p class="addi-item">
-								<span>Телефон: </span> {{ department.director.phone }}
+								<span>Телефон: </span> {{ manager.phone }}
 							</p>
 							<p class="addi-item addi-email">
-								<span>E-mail: </span> {{ department.director.email }}
+								<span>E-mail: </span> {{ manager.email }}
 							</p>
 						</div>
 					</div>
-					<p class="position">
-						{{ department.position }}
+					<p
+						v-if="position"
+						class="position"
+					>
+						{{ position.name }}
 					</p>
 					<p class="full-name">
-						{{ department.director.fullName }}
+						{{ manager.name }} {{ manager.last_name }}
 					</p>
 				</template>
 				<hr
+					v-if="manager && users && users.length"
 					class="divider-users"
-					v-if="department.director && department.users && department.users.length"
 				>
-				<template v-if="department.users">
+				<template v-if="users && users.length">
 					<div class="users-group">
-						<template v-for="(user, usrIdx) in department.users">
+						<template v-for="(user, usrIdx) in users">
 							<img
-								:src="user.photo"
-								alt="photo"
 								v-if="usrIdx < 6"
 								:key="usrIdx"
+								:src="user.avatar"
+								alt="photo"
+								:title="`${user.name} ${user.last_name}`"
 							>
 						</template>
 						<span
+							v-if="users.length > 5"
 							class="user-group-more"
-							v-if="department.users.length > 5"
 							@click="openUsersMore"
-						>{{ department.users.length - 6 }}</span>
+						>{{ users.length - 6 }}</span>
 					</div>
 					<StructureUsersMore
-						:users="department.users"
-						v-if="usersMore && department.users.length > 5"
+						v-if="usersMore && users.length > 5"
+						:users="users"
 					/>
 				</template>
 			</div>
 			<i
-				v-if="editStructure"
+				v-if="isEditMode"
 				class="fa fa-plus-circle structure-add"
-				:class="{'has-result': department.result}"
+				:class="{'has-result': card.description}"
 				@click="addNew"
 			/>
 			<StructureEditCard
 				v-if="editCard"
-				:users="users"
-				:department="department"
-				:positions="positions"
-				:bgc="bgColor"
-				:departments-list="departmentsList"
+				:card="card"
+				:selected-users="users"
+				:users="dictionaries.users"
+				:positions="dictionaries.positions"
+				:departments-list="dictionaries.profile_groups"
 				@close="closeEditCard"
-				@save="saveEditCard"
-				@delete="deleteDepartment"
 			/>
 		</div>
-		<template v-if="department.hasOwnProperty('departmentChildren')">
+
+		<!-- Потомки -->
+		<template v-if="children && children.length">
 			<div
 				class="structure-group"
 				ref="group"
-				:style="[{'--start-line' : startLine}, {'--end-line' : endLine}]"
+				:style="{
+					'--start-line' : startLine,
+					'--end-line' : endLine,
+				}"
 			>
 				<StructureItem
-					v-for="(child, index) in department.departmentChildren"
-					:department="child"
-					:level="level + 1"
+					v-for="(child, index) in children"
 					:key="index"
-					:bgc="bgColor"
-					:users="users"
-					:edit-structure="editStructure"
-					:positions="positions"
-					:departments-list="departmentsList"
+					:card="child"
+					:level="level + 1"
+					:dictionaries="dictionaries"
+					:skip-users="localSkip"
 					@updateLines="drawLines"
 					@isOpenEditCard="isOpenEditCard"
 				/>
 			</div>
 		</template>
+
+		<!-- Результаты -->
 		<div
+			v-if="card.description"
 			class="structure-card-result"
-			v-if="department.hasOwnProperty('result') && department.result.length > 0"
-			:style="{ backgroundColor: bgColor, width: resultWidth > 0 ? `${resultWidth}px` : null }"
+			:style="{ backgroundColor: card.color, width: resultWidth > 0 ? `${resultWidth}px` : null }"
 		>
 			<p class="result-title">
 				Результаты
 			</p>
 			<p class="result-text">
-				{{ department.result }}
+				{{ card.description }}
 			</p>
 		</div>
 		<div
-			class="backdrop-structure-area"
 			v-if="editCard"
+			class="backdrop-structure-area"
 			@click="closeEditCard"
 		/>
 		<div
-			class="backdrop-structure-area"
 			v-if="usersMore"
+			class="backdrop-structure-area"
 			@click="closeUsersMore"
 		/>
 	</div>
 </template>
 
 <script>
-/* eslint-disable vue/no-mutating-props */
-import StructureEditCard from './StructureEditCard';
-import StructureUsersMore from './StructureUsersMore';
+import {mapState, mapActions} from 'pinia'
+import StructureEditCard from './StructureEditCard'
+import StructureUsersMore from './StructureUsersMore'
+import {useStructureStore} from '@/stores/Structure.js'
 
 export default {
 	name: 'StructureItem',
-	components: {StructureEditCard, StructureUsersMore},
+	components: {
+		StructureEditCard,
+		StructureUsersMore,
+	},
 	props: {
-		department: Object,
-		level: Number,
+		card: {
+			type: Object,
+			default: null
+		},
+		level: {
+			type: Number,
+			default: 0
+		},
 		editStructure: Boolean,
-		departmentsList: Array,
-		positions: Array,
-		users: Array,
-		bgc: String
+		dictionaries: {
+			type: Object,
+			default: () => ({
+				users: [],
+				profile_groups: [],
+				positions: [],
+			})
+		},
+		skipUsers: {
+			type: Array,
+			default: () => []
+		}
 	},
 	data() {
 		return {
@@ -194,32 +224,68 @@ export default {
 			structureAddTop: 0,
 			usersMore: false,
 			editCard: false,
-			bgColor: ''
+		}
+	},
+	computed: {
+		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		children(){
+			return this.cards.reduce((result, child) => {
+				if(child.parent_id === this.card.id){
+					result.push(child)
+				}
+				return result
+			}, [])
+		},
+		localSkip(){
+			if(this.card.manager) return [...this.skipUsers, this.card.manager.user_id]
+			return this.skipUsers
+		},
+		name(){
+			if(!this.card) return ''
+			if(!this.card.group_id) return this.card.name
+			const group = this.dictionaries.profile_groups.find(group => group.id === this.card.group_id)
+			if(group) return group.name
+			return ''
+		},
+		manager(){
+			if(!this.card) return null
+			if(!this.card.manager) return null
+			return this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
+		},
+		position(){
+			if(!this.card) return null
+			if(!this.card.manager) return null
+			return this.dictionaries.positions.find(pos => pos.id === this.card.manager.position_id)
+		},
+		users(){
+			return this.card.users.reduce((result, userPivot) => {
+				if(this.localSkip.includes(userPivot.id)) return result
+				const user = this.dictionaries.users.find(u => u.id === userPivot.id)
+				if(user) result.push(user)
+				else{
+					console.log('not found', userPivot.id)
+				}
+				return result
+			}, [])
 		}
 	},
 	mounted() {
 		this.drawLines();
-		this.bgColor = this.department.bgc ? this.department.bgc : this.bgc ? this.bgc : '';
-	},
-	watch: {
-		bgc(val) {
-			this.bgColor = val;
-		},
 	},
 	methods: {
+		...mapActions(useStructureStore, ['addCard']),
 		deleteDepartment() {
 			this.closeEditCard();
-			const parent = this.$parent.department || this.$parent;
-			const index = parent[parent.department ? 'departmentChildren' : 'structure'].findIndex(d => d.id === this.department.id);
-			if (index !== -1) {
-				parent[parent.department ? 'departmentChildren' : 'structure'].splice(index, 1);
-			}
+			// const parent = this.$parent.department || this.$parent;
+			// const index = parent[parent.department ? 'departmentChildren' : 'structure'].findIndex(d => d.id === this.department.id);
+			// if (index !== -1) {
+			// 	parent[parent.department ? 'departmentChildren' : 'structure'].splice(index, 1);
+			// }
 			this.$emit('updateLines');
 			this.$forceUpdate();
 		},
 		saveEditCard() {
 			this.closeEditCard();
-			this.bgColor = this.department.bgc;
 			this.$emit('updateLines');
 			this.drawLines();
 		},
@@ -257,15 +323,15 @@ export default {
 			})
 		},
 		addNew() {
-			this.showTest = true;
-			const obj = {
-				id: Math.floor(Math.random() * 10000),
-				department: 'Новый департамент',
-				employeesCount: 0,
-				isNew: true
-			};
-			this.department.hasOwnProperty('departmentChildren') ? this.department.departmentChildren.push(obj) : this.department.departmentChildren = [obj];
-			this.$forceUpdate();
+			// const obj = {
+			// 	id: Math.floor(Math.random() * 10000),
+			// 	department: 'Новый департамент',
+			// 	employeesCount: 0,
+			// 	isNew: true
+			// };
+			// this.department.departmentChildren ? this.department.departmentChildren.push(obj) : this.department.departmentChildren = [obj];
+			this.addCard(this.card.id)
+			this.$forceUpdate()
 		}
 	}
 }

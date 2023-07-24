@@ -11,13 +11,13 @@
 					:key="idx"
 				>
 					<img
-						:src="user.photo"
+						:src="user.avatar"
 						alt="photo"
 						class="user-group-photo"
 					>
 					<div>
 						<p class="user-group-full-name">
-							{{ user.fullName }}
+							{{ user.name }} {{ user.last_name }}
 						</p>
 						<p class="user-group-position">
 							{{ user.position }}
@@ -32,7 +32,10 @@
 export default {
 	name: 'StructureUsersMore',
 	props: {
-		users: Array,
+		users: {
+			type: Array,
+			default: () => {},
+		},
 	},
 	computed: {
 		shouldPositionAtTop() {
