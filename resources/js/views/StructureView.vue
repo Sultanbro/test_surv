@@ -1,12 +1,12 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout';
-const StructureComp = () => import(/* webpackChunkName: "MyCoursePage" */ '@/pages/Structure/StructureComp.vue');
+const StructurePage = () => import(/* webpackChunkName: "StructurePage" */ '@/pages/Structure/StructurePage.vue');
 
 export default {
 	name: 'StructureView',
 	components: {
 		DefaultLayout,
-		StructureComp
+		StructurePage
 	},
 }
 </script>
@@ -14,7 +14,7 @@ export default {
 <template>
 	<DefaultLayout class="no-padding">
 		<div class="old__content">
-			<StructureComp />
+			<StructurePage />
 		</div>
 	</DefaultLayout>
 </template>

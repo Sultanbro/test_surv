@@ -8,9 +8,9 @@ use App\User;
 use DB;
 
 final class CabinetService
-{   
+{
     public function add(String $tenantId, User $user, bool $is_owner): void
-    {       
+    {
         $centralUser = $this->getCentralUser($user);
 
         $data = [
@@ -25,7 +25,7 @@ final class CabinetService
     }
 
     public function remove(String $tenantId, User $user): void
-    {       
+    {
         $centralUser = $this->getCentralUser($user);
 
         TenantPivot::where([
@@ -51,7 +51,7 @@ final class CabinetService
         ]);
     }
 
-    public function getOwnerByTenantId(int $tenantId): CentralUser
+    public function getOwnerByTenantId(String $tenantId): CentralUser
     {
         $tenantPivot = TenantPivot::where([
             'tenant_id' => $tenantId,
@@ -61,5 +61,5 @@ final class CabinetService
 
         return CentralUser::where('id', $tenantPivot->user_id)->firstOrFail();
     }
-    
+
 }

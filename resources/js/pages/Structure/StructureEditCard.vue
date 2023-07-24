@@ -15,8 +15,13 @@
 		<div class="edit-card-body">
 			<multiselect
 				v-model="departmentName"
-				:options="departmentsList"
+				:options="groupOptions"
+				taggable
 				placeholder="Отдел \ департамент \ подразделение"
+				track-by="id"
+				label="name"
+				@tag="tagName"
+				@select="selectName"
 			/>
 			<div class="collapse-block">
 				<p
@@ -29,37 +34,48 @@
 					<multiselect
 						v-model="position"
 						:options="positions"
+						track-by="id"
+						label="name"
 						placeholder="Должность"
 					/>
 					<multiselect
-						:options="users"
 						v-model="director"
+						:options="users"
+						label="name"
+						track-by="id"
 						placeholder="Выберите руководителя"
-						label="fullName"
-						track-by="fullName"
 						class="multiselect-users mt-3"
 					>
-						<template
-							slot="option"
-							slot-scope="props"
-						>
+						<template #singleLabel>
+							{{ director.name }} {{ director.last_name }}
+						</template>
+						<template #option="props">
 							<img
+								:src="props.option.avatar"
 								class="user-image"
-								:src="props.option.photo"
 								alt="photo"
 							>
 							<div class="user-full-name">
-								{{ props.option.fullName }}
+								{{ props.option.name }} {{ props.option.last_name }}
 							</div>
 						</template>
 					</multiselect>
 					<b-form-textarea
-						class="mt-3"
 						v-model="result"
+						class="mt-3"
 					/>
 				</b-collapse>
 			</div>
-			<div class="collapse-block">
+			<b-form-checkbox
+				v-model="autoUsers"
+				switch
+			>
+				Автоматически подтягивать сотрудников
+			</b-form-checkbox>
+			<div
+				v-if="!autoUsers"
+				class="collapse-block"
+			>
 				<p
 					class="collapse-item"
 					v-b-toggle.collapse-users
@@ -68,32 +84,26 @@
 				</p>
 				<b-collapse id="collapse-users">
 					<multiselect
-						:options="users"
 						v-model="usersList"
+						:options="users"
+						label="id"
+						track-by="name"
 						placeholder="Выберите сотрудников"
-						label="fullName"
-						track-by="fullName"
 						:close-on-select="false"
 						class="multiselect-users"
 						:multiple="true"
 					>
-						<template
-							slot="option"
-							slot-scope="props"
-						>
+						<template #option="props">
 							<img
 								class="user-image"
-								:src="props.option.photo"
+								:src="props.option.avatar"
 								alt="photo"
 							>
 							<div class="user-full-name">
-								{{ props.option.fullName }}
+								{{ props.option.name }}
 							</div>
 						</template>
-						<template
-							slot="selection"
-							slot-scope="{ values, isOpen }"
-						>
+						<template #selection="{ values, isOpen }">
 							<span
 								class="multiselect__single"
 								v-if="values.length"
@@ -114,10 +124,12 @@
 					<div class="d-flex justify-content-between aic">
 						<label class="select-color">
 							<span class="label">Цвет блока</span>
-							<span class="circle-picker"><input
-								type="color"
-								v-model="bgColor"
-							></span>
+							<span class="circle-picker">
+								<input
+									v-model="bgColor"
+									type="color"
+								>
+							</span>
 						</label>
 						<b-form-group
 							class="custom-switch custom-switch-sm"
@@ -160,53 +172,133 @@
 </template>
 
 <script>
-/* eslint-disable vue/no-mutating-props */
-/* eslint-disable vue/no-side-effects-in-computed-properties */
+import {mapState, mapActions} from 'pinia'
+import {useStructureStore} from '@/stores/Structure.js'
+
 export default {
 	name: 'StructureEditCard',
 	props: {
-		users: Array,
-		department: Object,
-		departmentsList: Array,
-		positions: Array,
-		bgc: String
+		card: {
+			type: Object,
+			default: null
+		},
+		selectedUsers: {
+			type: Array,
+			default: () => []
+		},
+		users: {
+			type: Array,
+			default: () => []
+		},
+		departmentsList: {
+			type: Array,
+			default: () => []
+		},
+		positions: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
-			departmentName: this.department.department ? this.department.department : '',
-			director: this.department.director ? this.department.director : '',
-			usersList: this.department.users ? this.department.users : [],
-			result: this.department.result ? this.department.result : '',
-			position: this.department.position ? this.department.position : '',
-			group: this.department.group ? this.department.group : false,
-			bgColor: this.bgc ? this.bgc : ''
+			departmentName: this.card.group_id ? this.departmentsList.find(opt => opt.id === this.card.group_id) : [{
+				id: null,
+				name: this.card.name,
+			}],
+			director: this.card.manager ? this.users.find(user => user.id === this.card.manager.user_id) : '',
+			usersList: this.selectedUsers,
+			result: this.card.description || '',
+			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
+			group: !!this.card.is_group || false,
+			autoUsers: !!this.card.status || false,
+			bgColor: this.card.color || '#d0def5',
+			nameTag: this.card.group_id ? [] : [{
+				id: null,
+				name: this.card.name,
+			}],
+		}
+	},
+	computed: {
+		...mapState(useStructureStore, []),
+		groupOptions(){
+			return [
+				...this.nameTag,
+				...this.departmentsList,
+			]
 		}
 	},
 	mounted() {
-		const cardRect = this.$refs.editCard.getBoundingClientRect();
-		const topDiff = Math.max(0, 628 - (window.innerHeight - cardRect.top)) + 20;
-		const leftDiff = Math.max(0, 50 - cardRect.left) + 60;
+		const cardRect = this.$refs.editCard.getBoundingClientRect()
+		const topDiff = Math.max(0, 628 - (window.innerHeight - cardRect.top)) + 20
+		const leftDiff = Math.max(0, 50 - cardRect.left) + 60
 
-		this.$refs.editCard.style.top = `-${topDiff}px`;
-		this.$refs.editCard.style.right = `-${leftDiff}px`;
+		this.$refs.editCard.style.top = `-${topDiff}px`
+		this.$refs.editCard.style.right = `-${leftDiff}px`
 	},
 	methods: {
-		saveDepartment() {
-			this.department.department = this.departmentName;
-			this.department.director = this.director;
-			this.department.users = this.usersList;
-			this.department.result = this.result;
-			this.department.position = this.position;
-			this.department.group = this.group;
-			this.department.bgc = this.bgColor;
-			this.department.employeesCount = this.usersList.length;
-			this.department.isNew = false;
+		...mapActions(useStructureStore, ['createCard', 'updateCard', 'deleteCard']),
+		async saveDepartment() {
+			const isGroup = this.departmentName && this.departmentName.id
+			const hasName = this.nameTag.length
+			const hasPosition = this.position && this.position.id
+			const hasManager = this.director && this.director.id
 
-			this.$emit('save');
+			if(!(isGroup || hasName)) return this.$toast.error('Укажите отдел или название департамента')
+			if(!hasManager) return this.$toast.error('Укажите руководителя')
+			if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
+
+			const saveData = {
+				id: this.card.id > 0 ? this.card.id : 0,
+				parent_id: this.card.parent_id,
+				group_id: isGroup ? this.departmentName.id : null,
+				description: this.result,
+				color: this.bgColor,
+				user_ids: [this.director.id, ...this.usersList.map(user => user.id)],
+				position_id: this.position.id,
+				manager_id: this.director.id,
+				status: this.autoUsers,
+				is_group: this.group,
+			}
+
+			if(!isGroup && hasName){
+				saveData.name = this.nameTag[0].name
+			}
+
+			try {
+				const data = await this[this.card.id > 0 ? 'updateCard' : 'createCard'](saveData)
+				if(data) this.$toast.success('Карточка сохранена')
+
+				this.$emit('close')
+			}
+			catch (error) {
+				this.$toast.error('Карточка не сохранена')
+			}
 		},
 		deleteDepartment() {
-			this.$emit('delete');
+			try {
+				const data = this.deleteCard(this.card.id)
+				if(data) this.$toast.success('Карточка удалена')
+
+				this.$emit('close')
+			}
+			catch (error) {
+				this.$toast.error('Карточка не удалена')
+			}
 		},
+		tagName(search){
+			this.nameTag = [{
+				id: null,
+				name: search,
+			}]
+			this.departmentName = {
+				id: null,
+				name: search,
+			}
+		},
+		selectName(option){
+			if(!option.id) return
+			this.nameTag = []
+		}
 	}
 }
 </script>
