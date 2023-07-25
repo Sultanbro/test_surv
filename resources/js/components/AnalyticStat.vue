@@ -889,7 +889,7 @@ export default {
 
 
 		deleteRow(index) {
-			if(confirm('Вы уверены?')) return
+			if(!confirm('Вы уверены?')) return
 			let loader = this.$loading.show();
 
 			this.axios.post('/timetracking/analytics/delete-row', {
