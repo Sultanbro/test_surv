@@ -297,6 +297,7 @@ export default {
 		async addPosition() {
 			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position})
 			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+
 			const data = responseAdd.data.data;
 			const dataPush = {
 				id: data.id,
@@ -307,6 +308,9 @@ export default {
 
 			this.activebtn = dataPush;
 			this.data.push(dataPush);
+
+			localStorage.setItem('event.updatePositions', JSON.stringify({command: 'addPosition'}))
+			localStorage.removeItem('event.updatePositions')
 		},
 		async savePosition() {
 			try{
@@ -323,6 +327,9 @@ export default {
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
 				this.$toast.success(this.addNew ? 'Новая должность создана!' : 'Изменения сохранены');
 				this.addNew = false
+
+				localStorage.setItem('event.updatePositions', JSON.stringify({command: 'savePosition'}))
+				localStorage.removeItem('event.updatePositions')
 			}
 			catch(error){
 				console.error(error.message);
@@ -339,6 +346,9 @@ export default {
 				this.data.splice(ind, 1);
 				this.addNew = false
 				this.resetState();
+
+				localStorage.setItem('event.updatePositions', JSON.stringify({command: 'deletePosition'}))
+				localStorage.removeItem('event.updatePositions')
 			}
 		},
 

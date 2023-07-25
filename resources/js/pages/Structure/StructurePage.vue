@@ -102,26 +102,18 @@ export default {
 	computed: {
 		...mapState(useCompanyStore, ['dictionaries']),
 		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		cardsOrFirst(){
+			if(this.cards && this.cards.length){
+				return this.cards
+			}
+			return [{
+				...this.getEmptyCard(),
+				id: null
+			}]
+		},
 		rootCard(){
-			return this.cards.find(card => !card.parentId)
+			return this.cardsOrFirst.find(card => !card.parentId)
 		},
-		name(){
-			if(!this.rootCard) return ''
-			if(!this.rootCard.group_id) return this.rootCard.name
-			const group = this.dictionaries.profile_groups.find(group => group.id === this.rootCard.group_id)
-			if(group) return group.name
-			return ''
-		},
-		manager(){
-			if(!this.rootCard) return null
-			if(!this.rootCard.manager) return null
-			return this.dictionaries.users.find(user => user.id === this.rootCard.manager.user_id)
-		},
-		position(){
-			if(!this.rootCard) return null
-			if(!this.rootCard.manager) return null
-			return this.dictionaries.positions.find(pos => pos.id === this.rootCard.manager.position_id)
-		}
 	},
 	watch: {
 		openEditCard(val) {
@@ -130,18 +122,24 @@ export default {
 			}
 		},
 	},
-	mounted() {
+	async mounted() {
 		this.fetchDictionaries()
-		this.structureGet()
+		await this.structureGet()
 		this.drawLines()
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
+		window.addEventListener('storage', this.checkTabEvents, false)
 	},
 	beforeUnmount() {
 		window.removeEventListener('wheel', this.scrollArea)
+		window.removeEventListener('storage', this.checkTabEvents, false)
 	},
 	methods: {
 		...mapActions(useCompanyStore, ['fetchDictionaries']),
-		...mapActions(useStructureStore, ['structureGet', 'toggleEdit']),
+		...mapActions(useStructureStore, [
+			'structureGet',
+			'toggleEdit',
+			'getEmptyCard',
+		]),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
 				component.drawLines();
@@ -160,15 +158,14 @@ export default {
 				isNew: true
 			};
 			// this.structure.push(obj);
-			this.scrollToBlock(obj.id);
+			this.scrollToBlock(obj.id)
 		},
 		scrollToBlock(id){
 			this.$nextTick(() => {
-				const addedDepartment = document.querySelector(`#id-${id}`);
-				addedDepartment.scrollIntoView({ behavior: 'smooth', block: 'center' });
-				this.drawLines();
-			});
-
+				const addedDepartment = document.querySelector(`#id-${id}`)
+				addedDepartment.scrollIntoView({ behavior: 'smooth', block: 'center' })
+				this.drawLines()
+			})
 		},
 		isOpenEditCard(bool) {
 			this.openEditCard = bool;
@@ -223,6 +220,17 @@ export default {
 			this.$refs.container.scrollLeft = this.scrollLeft - deltaX;
 			this.$refs.container.scrollTop = this.scrollTop - deltaY;
 		},
+		async checkTabEvents(event){
+			if (event.key !== 'event.updatePositions') return
+			const message = JSON.parse(event.newValue);
+			if (!message) return
+
+			if (message.command) {
+				const loader = this.$loading.show()
+				await this.fetchDictionaries(true)
+				loader.hide()
+			}
+		}
 	}
 }
 </script>

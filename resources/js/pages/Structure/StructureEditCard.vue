@@ -33,7 +33,7 @@
 				<b-collapse id="collapse-director">
 					<multiselect
 						v-model="position"
-						:options="positions"
+						:options="posOptions"
 						track-by="id"
 						label="name"
 						placeholder="Должность"
@@ -63,6 +63,7 @@
 					<b-form-textarea
 						v-model="result"
 						class="mt-3"
+						placeholder="Результат"
 					/>
 				</b-collapse>
 			</div>
@@ -149,6 +150,8 @@
 		<div class="edit-card-footer">
 			<div class="d-flex align-items-center">
 				<button
+					:disabled="card.parent_id < 0"
+					:title="card.parent_id < 0 ? 'Сохраните вышестоящую карточку' : ''"
 					class="btn btn-primary"
 					@click="saveDepartment"
 				>
@@ -162,12 +165,19 @@
 				</button>
 			</div>
 			<button
+				v-if="level"
 				class="btn btn-remove"
 				@click="deleteDepartment"
 			>
 				<i class="fa fa-trash" />
 			</button>
 		</div>
+		<a
+			ref="createPosLink"
+			class="hidden"
+			target="_blank"
+			href="/timetracking/settings?tab=2#nav-home"
+		/>
 	</div>
 </template>
 
@@ -198,6 +208,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		level: {
+			type: Number,
+			default: 0
+		}
 	},
 	data() {
 		return {
@@ -225,16 +239,26 @@ export default {
 				...this.nameTag,
 				...this.departmentsList,
 			]
+		},
+		posOptions(){
+			return [
+				...this.positions,
+				{
+					id: 0,
+					name: '+ Создать новую должность'
+				}
+			]
 		}
 	},
-	mounted() {
-		const cardRect = this.$refs.editCard.getBoundingClientRect()
-		const topDiff = Math.max(0, 628 - (window.innerHeight - cardRect.top)) + 20
-		const leftDiff = Math.max(0, 50 - cardRect.left) + 60
-
-		this.$refs.editCard.style.top = `-${topDiff}px`
-		this.$refs.editCard.style.right = `-${leftDiff}px`
+	watch: {
+		position(){
+			if(this.position && this.position.id === 0){
+				this.$refs.createPosLink.click()
+			}
+		}
 	},
+	mounted() {},
+	beforeUnmount() {},
 	methods: {
 		...mapActions(useStructureStore, ['createCard', 'updateCard', 'deleteCard']),
 		async saveDepartment() {
