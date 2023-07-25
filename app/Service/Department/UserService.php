@@ -8,6 +8,7 @@ use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
 use Exception;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HigherOrderWhenProxy;
@@ -94,10 +95,10 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        foreach ($groups as $group) 
+        foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()
-                ->where('group_id','=',$group->id)
+                ->where('group_id','=', $group->id)
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
@@ -189,14 +190,14 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
                 ->where('status', GroupUser::STATUS_FIRED)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
-            
+
             $data = $this->getGroupEmployees($groupUser->get());
         }
 
         return $data;
     }
 
-    
+
 
     /**
      * @param int $groupId
@@ -386,7 +387,7 @@ class UserService
     }
 
     /**
-     * Удалить из группы 
+     * Удалить из группы
      * @param int $userID
      * @param String|null $date
      * @return void
@@ -405,18 +406,18 @@ class UserService
 
     /**
      * Get all users in Department
-     * 
+     *
      * @param int $group_d
      * @param String $date
      * @return Collection
      */
-    public function getUsersAll(int $group_id, String $date) 
-    {   
+    public function getUsersAll(int $group_id, String $date)
+    {
         // working users - employees
         $users = $this->getEmployees(
             $group_id,
             Carbon::parse($date)->startOfMonth()->format('Y-m-d')
-        ); 
+        );
 
         $users = collect($users);
 
@@ -424,7 +425,7 @@ class UserService
         $trainees = $this->getTrainees(
             $group_id,
             Carbon::parse($date)->startOfMonth()->format('Y-m-d')
-        ); 
+        );
 
         $users = $users->merge(collect($trainees));
 
@@ -432,10 +433,10 @@ class UserService
         $fired = $this->getFiredEmployees(
             $group_id,
             Carbon::parse($date)->startOfMonth()->format('Y-m-d')
-        ); 
-        
+        );
+
         $users = $users->merge(collect($fired));
-        
+
         return $users;
     }
 
@@ -471,5 +472,54 @@ class UserService
         }catch (Exception $exception) {
             throw new Exception($exception);
         }
+    }
+
+
+    public function getEmployeesAll($group_id, string $date){
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        $working = GroupUser::withTrashed()
+            ->where('group_id', '=', $group_id)
+            ->whereDate('from','<=', $last_date)
+            ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
+            );
+        return $this->getGroupEmployeesAll($working->get(), $last_date);
+    }
+
+    public function getFiredEmployeesAll($group_id, string $date){
+        $fired = GroupUser::withTrashed()
+            ->where('group_id', $group_id)
+            ->where('status', GroupUser::STATUS_FIRED)
+            ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
+
+        return $this->getGroupEmployeesAll($fired->get());
+    }
+
+    public function getGroupEmployeesAll($group_users, $last_date = null, $withGroups = false){
+        $user_ids = [];
+        foreach ($group_users as $key => $groupUser) {
+            array_push($user_ids, $groupUser->user_id);
+        }
+
+        $usersQuery = User::withTrashed()
+            ->whereIn('id', $user_ids)
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0));
+
+        if($withGroups){
+            $usersQuery = $usersQuery->with('groups');
+        }
+
+        if ($last_date) {
+            $usersQuery = $usersQuery
+                ->where(function(Builder $query) use($last_date){
+                    $query
+                        ->where('deleted_at', '>', $last_date)
+                        ->orWhereNull('deleted_at');
+                });
+        }
+
+        return $usersQuery->get();
     }
 }

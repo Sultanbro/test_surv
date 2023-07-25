@@ -59,7 +59,7 @@ class SaveGroupSalary extends Command
         }
 
         foreach ($dates as $key => $date) {
-            // $this->count($date);
+            $this->count($date);
             $this->comment('----------------------');
             $this->comment('----------------------');
             $this->comment('----------------------');
@@ -67,57 +67,49 @@ class SaveGroupSalary extends Command
             $this->comment('----------------------');
             $this->comment('----------------------');
         }
-
-
     }
 
     public function count($date) {
         $groups = ProfileGroup::where('active', 1)->get();
 
+        $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
+        $firedGroups = Salary::getAllTotals($date, $groups, Salary::FIRED_USERS);
+
+        $date = Carbon::parse($date)->firstOfMonth();
+
         foreach ($groups as $key => $group) {
-
-            // get total
-            $salary_working = Salary::getTotal($date, $group->id, 1);
-            $salary_fired = Salary::getTotal($date, $group->id, 2);
-
             $this->line($group->name);
-            $this->line('Р:' . $salary_working);
-            $this->line('У:'. $salary_fired);
+            $this->line('Р:' . $workingGroups[$group->id]);
+            $this->line('У:'. $firedGroups[$group->id]);
             $this->line('============');
 
-            $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-
-
             // save working
-            $gs = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 1)->first();
-            if($gs) {
-                $gs->total = $salary_working;
-                $gs->save();
+            $workingGroupSalary = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 1)->first();
+            if($workingGroupSalary) {
+                $workingGroupSalary->total = $workingGroups[$group->id];
+                $workingGroupSalary->save();
             } else {
                 GroupSalary::create([
                     'group_id' => $group->id,
-                    'total' => $salary_working,
+                    'total' => $workingGroups[$group->id],
                     'type' => 1,
                     'date' => $date
                 ]);
             }
 
-             // save fired total
-             $gs = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 2)->first();
-             if($gs) {
-                 $gs->total = $salary_fired;
-                 $gs->save();
-             } else {
-                 GroupSalary::create([
-                     'group_id' => $group->id,
-                     'total' => $salary_fired,
-                     'type' => 2,
-                     'date' => $date
-                 ]);
-             }
-
+            // save fired total
+            $firedGroupSalary = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 2)->first();
+            if($firedGroupSalary) {
+                $firedGroupSalary->total = $firedGroups[$group->id];
+                $firedGroupSalary->save();
+            } else {
+                GroupSalary::create([
+                    'group_id' => $group->id,
+                    'total' => $firedGroups[$group->id],
+                    'type' => 2,
+                    'date' => $date
+                ]);
+            }
         }
     }
-
-
 }

@@ -7,8 +7,8 @@ use App\DayType;
 use App\Http\Controllers\Controller;
 use App\Models\Tax;
 use App\ProfileGroup;
-use App\Salary; 
-use App\GroupSalary; 
+use App\Salary;
+use App\GroupSalary;
 use App\Kpi;
 use App\Timetracking;
 use App\TimetrackingHistory;
@@ -38,7 +38,7 @@ use App\Service\Department\UserService;
 
 class SalaryController extends Controller
 {
-    
+
     public function __construct()
     {
         View::share('title', 'Начисления');
@@ -55,22 +55,22 @@ class SalaryController extends Controller
         $groups = ProfileGroup::where('active', 1);
 
         if(!auth()->user()->is_admin) $groups->whereIn('id', auth()->user()->groups);
-            
-        
+
+
         $groups = $groups->get();
 
         //if(auth()->id() == 4444) dd($groups);
-        
+
 
         $date = Carbon::now()->day(1)->format("Y-m-d");
-        
+
 
         if(auth()->user()->is_admin != 1) {
             $_groups = [];
             foreach ($groups as $key => $group) {
-    
+
                 if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-    
+
                 $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
                 if($approval) {
                     $user = User::withTrashed()->find($approval->user_id);
@@ -80,14 +80,14 @@ class SalaryController extends Controller
                 } else {
                     $group->salary_approved = 0;
                 }
-    
+
                 $_groups[] = $group;
             }
-           
+
             $groups = $_groups;
-        }   
-       
-       
+        }
+
+
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
         return view('admin.salary', compact('groups', 'years'));
@@ -98,7 +98,7 @@ class SalaryController extends Controller
         if($user->deleted_at == '0000-00-00 00:00:00' || $user->deleted_at == null) { // Проверка не уволен ли сотрудник
             return true;
         } else {
-            
+
             $dt1 = Carbon::parse($user->deleted_at); // День увольнения
             $dt2 = Carbon::create($year, $month, 30, 0, 0, 0); // Выбранный период
 
@@ -122,7 +122,7 @@ class SalaryController extends Controller
                 'error' => 'access'
             ];
         }
-        
+
         $year  = $request->year;
         $month = $request->month;
 
@@ -134,25 +134,25 @@ class SalaryController extends Controller
 
         if ($request->has('group_id')) {
             $group = ProfileGroup::find($request->group_id);
-            
+
             // $users_ids = [];
             // if($group) $users_ids = json_decode($group->users, true);
 
             if($request->user_types == 0) {
-                $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d')); 
+                $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
             }
 
             if($request->user_types == 1) {
-                $users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d')); 
+                $users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
             }
-    
+
             if($request->user_types == 2) {
-                $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d')); 
+                $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d'));
             }
 
             $users_ids = collect($users)->pluck('id')->toArray();
 
-            // if($request->user_types == 2) 
+            // if($request->user_types == 2)
         }
 
         $group_editors = is_array(json_decode($group->editors_id))
@@ -179,7 +179,7 @@ class SalaryController extends Controller
         $data['total_resources'] = $arr['total_resources'];
         $data['auth_token'] = Auth::user()->remember_token;
         $data['year'] = $request['year'];
-    
+
 
         // total on group
 
@@ -191,8 +191,8 @@ class SalaryController extends Controller
             ->where('date', $sdate)
             ->where('type', 1)
             ->get()->sum('total');
-        
-        // group fired 
+
+        // group fired
 
         $data['group_fired'] = GroupSalary::where('group_id', $request->group_id)
             ->where('date', $sdate)
@@ -216,7 +216,7 @@ class SalaryController extends Controller
             $data['all_total'] = 0;
             $data['all_total_fired'] = 0;
         }
-        
+
         //////
         $groups = ProfileGroup::query()->where('active', true)
             ->orWhere(fn ($query) => $query->where('active', false)->where(
@@ -227,18 +227,18 @@ class SalaryController extends Controller
         $salary_approved = []; // костыль
 
         $_groups = [];
-        
+
         $currentGroup = null;
 
         $data['salary_approved'] = 0;
-        
+
         foreach ($groups as $key => $group) {
 
             $editors_id = json_decode($group->editors_id);
             if ($group->editors_id == null) $editors_id = [];
 
             if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), $editors_id)) continue;
-            
+
             $approval = SalaryApproval::where('group_id', $group->id)->where('date', $sdate)->first();
 
             if($approval) {
@@ -262,7 +262,7 @@ class SalaryController extends Controller
 
         $data['groups'] = $_groups;
         $data['currentGroup'] = $currentGroup;
-    
+
         return $data;
     }
 
@@ -271,7 +271,7 @@ class SalaryController extends Controller
         $period = $request->period;
         $user_id = $request->user_id;
         $date = $request->group_id;
-        
+
         Artisan::call('salary:update', [
             'date' => $request->date,
             'group_id' => $request->group_id,
@@ -302,7 +302,7 @@ class SalaryController extends Controller
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->whereDay('date', $day)
-            ->first();    
+            ->first();
 
         if($salary) {
             if($type == 'avans') {
@@ -312,7 +312,7 @@ class SalaryController extends Controller
 
             if($type == 'bonus') {
                 $salary->comment_bonus = $comment;
-                $salary->bonus = $amount;    
+                $salary->bonus = $amount;
             }
 
             $salary->save();
@@ -336,7 +336,7 @@ class SalaryController extends Controller
                     'bonus' => $amount,
                 ]);
             }
-            
+
         }
 
         if($type == 'avans' || $type == 'bonus') {
@@ -396,14 +396,14 @@ class SalaryController extends Controller
         /**
          * get users
          */
-        $working_users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d')); 
+        $working_users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
         $working_users = collect($working_users)->pluck('id')->toArray();
 
-        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d')); 
+        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
         $fired_users = collect($fired_users)->pluck('id')->toArray();
-  
+
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        
+
         // Доступ к группе
         if(auth()->user()->is_admin != 1) {
             if (!in_array($currentUser->id, $group_editors)) {
@@ -436,7 +436,7 @@ class SalaryController extends Controller
             'Стажировочные', // 8
             'Бонус', // 11
             'ИТОГО', // 12
-            'Авансы', // 13 
+            'Авансы', // 13
             'Штрафы', // 14
         ];
 
@@ -449,11 +449,11 @@ class SalaryController extends Controller
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
-    
+
         $_users = array_merge([['']],$working_users['users']);
         $_users = array_merge($_users, [[''],[''],['']]);
         $_users = array_merge($_users, $fired_users['users']);
-     
+
         $data[0] = [
             'name'     => 'Действующие и Уволенные',
             'sheet'    => $_users,
@@ -498,7 +498,7 @@ class SalaryController extends Controller
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
-        
+
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
@@ -557,7 +557,7 @@ class SalaryController extends Controller
                 continue;
             }
 
-            // Суммы на месяц 
+            // Суммы на месяц
             $month_salary = Salary::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
@@ -566,7 +566,7 @@ class SalaryController extends Controller
                     DB::raw('sum(bonus) as bonus'),
                 ])
                 ->first();
-            
+
             // edited salary
             $edited_salary =  EditedSalary::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
@@ -621,7 +621,7 @@ class SalaryController extends Controller
 
             // отработанные дни
             $workedHours = Timetracking::select([
-                    'total_hours', 
+                    'total_hours',
                     DB::raw('DAY(enter) as day')
                 ])
                 ->whereYear('enter', $date->year)
@@ -631,10 +631,10 @@ class SalaryController extends Controller
 
             $workedHours = $workedHours->whereNotIn('day', $trainee_days)->sum('total_hours') / 60;
             $workedDays = round($workedHours / $_user->countWorkHours(), 2);
-                
+
             if(!$edited_salary) $allTotal[5] += $workedDays;
-            
-            // проверка сданных экзаменов  
+
+            // проверка сданных экзаменов
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
 
             // ставка
@@ -653,7 +653,7 @@ class SalaryController extends Controller
                     } else {
                         $salary += $arrs->earnings[$i] ?? 0;
                     }
-                }   
+                }
             }
 
             // KPI
@@ -687,12 +687,12 @@ class SalaryController extends Controller
                     ->whereMonth('date', $date->month)
                     ->first('total')
                     ->total;
-                    
+
                 $bonus = round($month_salary->bonus + $ObtainedBonus + $test_bonuses);
-            }  
-            
+            }
+
             if(!$edited_salary) $allTotal[11] += $bonus;
-              
+
             // ИТОГО доход
             $total_income = round($salary + $bonus + $kpi + $trainee_fees, 0);
 
@@ -708,7 +708,7 @@ class SalaryController extends Controller
                     $headphones_amount = $ud->headphones_amount;
                 }
             }
-                    
+
             $prepaid = round($month_salary->avans) + $headphones_amount;
             if(!$edited_salary) $allTotal[13] += $prepaid;
 
@@ -732,10 +732,10 @@ class SalaryController extends Controller
             foreach($userFines as $fine) {
                 $penalty += $fines[$fine->fine_id];
             }
-              
+
             if(!$edited_salary) $allTotal[14] += $penalty;
 
-            
+
             // Итого расход
             $expense = $prepaid + $penalty;
             if(!$edited_salary)  $allTotal[15] += $expense;
@@ -744,7 +744,7 @@ class SalaryController extends Controller
             $total_payment = round($total_income - $expense);
 
             if(!$edited_salary) $allTotal[16] += $total_payment >= 0 ? $total_payment : 0;
-            
+
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
@@ -817,7 +817,7 @@ class SalaryController extends Controller
         }
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
-        array_multisort($name_asc, SORT_ASC, $data['users']); 
+        array_multisort($name_asc, SORT_ASC, $data['users']);
 
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
@@ -830,10 +830,10 @@ class SalaryController extends Controller
     }
 
     private function space($str, $step, $reverse = false) {
-    
+
         if ($reverse)
             return strrev(chunk_split(strrev($str), $step, ' '));
-        
+
         return chunk_split($str, $step, ' ');
     }
 
@@ -845,7 +845,7 @@ class SalaryController extends Controller
 		if(in_array($str, ['99','33','38'])) $phone = $this->add_space($string, [3]);
 		return $phone;
 	}
-    
+
     private function card_space($card) {
         $card = preg_replace('/\s+/', '', $card);
         return $this->add_space($card, [4,8,12,16]);
@@ -859,14 +859,14 @@ class SalaryController extends Controller
 		}
 		return $result;
 	}
-    
+
     public static function convertCardNumberWithDots($card_number)
     {
         if (empty($card_number) || $card_number == '') return '';
         for ($i = 0; $i <= 12; $i += 4) $card_arr[] = substr($card_number, $i, 4);
         return implode('.', $card_arr);
     }
- 
+
     public static function countDays($year, $month, $type)
     {
         $day_count = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -910,7 +910,7 @@ class SalaryController extends Controller
         }
         return $wd;
     }
-    
+
     /**
      * approve salary was checked for previous month
      */
@@ -926,7 +926,7 @@ class SalaryController extends Controller
                 'date' => Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'),
                 'user_id' => Auth::user()->id
             ]);
-        } 
+        }
     }
     /**
      * Edit bonus or kpi
@@ -944,10 +944,10 @@ class SalaryController extends Controller
                 ->whereYear('date', Carbon::parse($date)->year)
                 ->whereMonth('date', Carbon::parse($date)->month)
                 ->first();
-                
+
             if(!$edited) {
                 $edited = new EditedKpi();
-            } 
+            }
 
             $edited->user_id = $user_id;
             $edited->author_id = auth()->id();
@@ -964,10 +964,10 @@ class SalaryController extends Controller
                 ->whereYear('date', Carbon::parse($date)->year)
                 ->whereMonth('date', Carbon::parse($date)->month)
                 ->first();
-                
+
             if(!$edited) {
                 $edited = new EditedBonus();
-            } 
+            }
 
             $edited->user_id = $user_id;
             $edited->author_id = auth()->id();
@@ -982,10 +982,10 @@ class SalaryController extends Controller
                 ->whereYear('date', Carbon::parse($date)->year)
                 ->whereMonth('date', Carbon::parse($date)->month)
                 ->first();
-                
+
             if(!$edited) {
                 $edited = new EditedSalary();
-            } 
+            }
 
             $edited->user_id = $user_id;
             $edited->author_id = auth()->id();
@@ -1000,7 +1000,7 @@ class SalaryController extends Controller
     public function getTotal(Request $request, $user_ids)
     {
         $kpi_total = 0;
-        foreach($user_ids as $user_id) { 
+        foreach($user_ids as $user_id) {
             $kpi_total += Kpi::userKpi($user_id, Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'));
         }
 
@@ -1010,7 +1010,7 @@ class SalaryController extends Controller
             ->whereIn('user_id', $user_ids)
             ->first()
             ->total;
-        
+
         $editedKpis = EditedKpi::selectRaw('sum(ROUND(amount,0)) as total')
             ->whereYear('date', $request->year)
             ->whereMonth('date', $request->month)
@@ -1021,12 +1021,12 @@ class SalaryController extends Controller
 
 
 
-       
+
 
         $total = 0;
         $month = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
-       
-        /////// TTS 
+
+        /////// TTS
         $tts = Timetracking::whereYear('enter', $request->year)
                 ->select([
                     'user_id',
@@ -1036,19 +1036,19 @@ class SalaryController extends Controller
                 ->whereIn('user_id', $user_ids)
                 ->groupBy('user_id')
                 ->get();
-     
+
         foreach($tts as $tt) {
- 
-           
+
+
             $user = User::withTrashed()->find($tt->user_id);
             if($user) {
                 $hourly_pay = $user->hourly_pay($month);
                 $total += $hourly_pay * $tt->total_hours / 60;
             }
-          
+
         }
-            
-        
+
+
         $total = round($total);
 
 
