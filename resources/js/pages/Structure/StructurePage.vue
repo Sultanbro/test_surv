@@ -108,7 +108,8 @@ export default {
 			}
 			return [{
 				...this.getEmptyCard(),
-				id: null
+				id: null,
+				parent_id: null,
 			}]
 		},
 		rootCard(){
