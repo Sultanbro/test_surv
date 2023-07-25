@@ -7,6 +7,7 @@ import {
 } from '@/stores/api/structure'
 
 function recursiveToFlat(struct, result = []){
+	if(!struct) return result
 	result.push({
 		id: struct.id,
 		name: struct.name,
@@ -54,25 +55,14 @@ export const useStructureStore = defineStore('structure', {
 			this.isEditMode = !this.isEditMode
 		},
 		addCard(parentId){
-			let color = '#7CAEF3'
 			const card = this.cards.find(card => card.id === parentId)
+			const empty = this.getEmptyCard()
+			empty.parent_id = parentId
 			if(card){
-				color = card.color
+				empty.color = card.color
 			}
 
-			this.cards.push({
-				id: --this.newId,
-				name: '',
-				parent_id: parentId,
-				description: '',
-				color,
-				group_id: 0,
-				status: 1,
-				users: [],
-				manager: null,
-				is_group: 0,
-				isNew: true
-			})
+			this.cards.push(empty)
 		},
 		async createCard(card){
 			const data = await structureCreate(card)
@@ -93,6 +83,21 @@ export const useStructureStore = defineStore('structure', {
 
 			return true
 		},
+		getEmptyCard(){
+			return {
+				id: --this.newId,
+				name: '',
+				parent_id: 0,
+				description: '',
+				color: '#7CAEF3',
+				group_id: 0,
+				status: 1,
+				users: [],
+				manager: null,
+				is_group: 0,
+				isNew: true
+			}
+		}
 	},
 	getters: {
 		rootCard(){

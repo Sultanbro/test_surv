@@ -1,7 +1,7 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
 	<div
-		class="structure-item"
+		class="StructureItem structure-item"
 		:class="[{'grouped' : card.is_group}, 'lvl' + level]"
 		:style="{'--half-width' : halfWidth}"
 		ref="structureItem"
@@ -18,7 +18,7 @@
 				:class="{'no-body': card.employeesCount === 0 && !manager}"
 			>
 				<p
-					class="department"
+					class="StructureItem-contrast department"
 					:class="{'is-new': card.isNew}"
 				>
 					{{ name }}
@@ -27,13 +27,13 @@
 				<!-- кол-во сотрудников -->
 				<p
 					v-if="card.employeesCount > 0"
-					class="count"
+					class="StructureItem-contrast count"
 				>
 					{{ card.employeesCount }} сотрудников
 				</p>
 				<p
 					v-else
-					class="count"
+					class="StructureItem-contrast count"
 				>
 					Нет сотрудников
 				</p>
@@ -67,7 +67,7 @@
 								{{ manager.name }} {{ manager.last_name }}
 							</div>
 							<p class="addi-item">
-								<span>Дата рождения: </span>{{ manager.birthday }}
+								<span>Дата рождения: </span>{{ $moment(manager.birthday).format('DD.MM.YYYY') }}
 							</p>
 							<p class="addi-item">
 								<span>Телефон: </span> {{ manager.phone }}
@@ -79,11 +79,11 @@
 					</div>
 					<p
 						v-if="position"
-						class="position"
+						class="StructureItem-contrast position"
 					>
 						{{ position.name }}
 					</p>
-					<p class="full-name">
+					<p class="StructureItem-contrast full-name">
 						{{ manager.name }} {{ manager.last_name }}
 					</p>
 				</template>
@@ -104,7 +104,7 @@
 						</template>
 						<span
 							v-if="users.length > 5"
-							class="user-group-more"
+							class="StructureItem-contrast user-group-more"
 							@click="openUsersMore"
 						>{{ users.length - 6 }}</span>
 					</div>
@@ -127,6 +127,7 @@
 				:users="dictionaries.users"
 				:positions="dictionaries.positions"
 				:departments-list="dictionaries.profile_groups"
+				:level="level"
 				@close="closeEditCard"
 			/>
 		</div>
@@ -160,10 +161,10 @@
 			class="structure-card-result"
 			:style="{ backgroundColor: card.color, width: resultWidth > 0 ? `${resultWidth}px` : null }"
 		>
-			<p class="result-title">
+			<p class="StructureItem-contrast result-title">
 				Результаты
 			</p>
-			<p class="result-text">
+			<p class="StructureItem-contrast result-text">
 				{{ card.description }}
 			</p>
 		</div>
@@ -336,3 +337,12 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.StructureItem{
+	&-contrast{
+		mix-blend-mode: difference;
+		color: gray !important;
+	}
+}
+</style>
