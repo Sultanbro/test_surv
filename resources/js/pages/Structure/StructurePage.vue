@@ -5,7 +5,7 @@
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="[{'is-dragging': isDragging}, {'overflow-hidden': openEditCard}]"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 	>
 		<div
 			v-if="$can('structure_edit')"
@@ -63,20 +63,29 @@
 					<StructureItem
 						:card="rootCard"
 						:level="0"
-						:dictionaries="dictionaries"
-						@isOpenEditCard="isOpenEditCard"
+						:dictionaries="actualDictionaries"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
 					/>
 				</template>
 			</div>
 		</div>
+
+		<StructureEditCard
+			v-if="editedCard"
+			:card="editedCard"
+			:users="actualDictionaries.users"
+			:positions="actualDictionaries.positions"
+			:departments-list="actualDictionaries.profile_groups"
+			@close="closeEditCard"
+		/>
 	</div>
 </template>
 
 <script>
 import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
+import StructureEditCard from './StructureEditCard'
 // import {users, positions, departments, structure} from './mockApi';
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
@@ -85,6 +94,7 @@ export default {
 	name: 'StructurePage',
 	components: {
 		StructureItem,
+		StructureEditCard,
 	},
 	data() {
 		return {
@@ -94,7 +104,6 @@ export default {
 			scrollLeft: 0,
 			scrollTop: 0,
 			zoom: 100,
-			openEditCard: false,
 			editStructure: false,
 			leftMarginMainCard: 0,
 		}
@@ -106,8 +115,22 @@ export default {
 		]),
 		...mapState(useStructureStore, [
 			'cards',
+			'editedCard',
 			'isEditMode',
 		]),
+		actualDictionaries(){
+			return {
+				users: this.dictionaries.users.filter(user => {
+					return !user.deleted_at && user.last_seen
+				}),
+				profile_groups: this.dictionaries.profile_groups.filter(group => {
+					return group.active
+				}),
+				positions: this.dictionaries.positions.filter(pos => {
+					return !pos.deleted_at
+				})
+			}
+		},
 		owner(){
 			if(!this.centralOwner) return null
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
@@ -140,7 +163,7 @@ export default {
 		},
 	},
 	watch: {
-		openEditCard(val) {
+		editedCard(val) {
 			if (val) {
 				this.stopDrag();
 			}
@@ -168,6 +191,7 @@ export default {
 			'structureGet',
 			'toggleEdit',
 			'getEmptyCard',
+			'closeEditCard',
 		]),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
@@ -195,9 +219,6 @@ export default {
 				addedDepartment.scrollIntoView({ behavior: 'smooth', block: 'center' })
 				this.drawLines()
 			})
-		},
-		isOpenEditCard(bool) {
-			this.openEditCard = bool;
 		},
 		scrollArea(event) {
 			if (event.ctrlKey) {
@@ -229,7 +250,7 @@ export default {
 			this.$forceUpdate();
 		},
 		startDrag(event) {
-			if(this.openEditCard) return
+			if(this.editedCard) return
 
 			this.isDragging = true;
 			this.startX = event.clientX;
