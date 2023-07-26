@@ -526,6 +526,8 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
+        $group = ProfileGroup::find($group_id);
+
         $users = User::withTrashed();
 
         $users->whereIn('users.id', array_unique($users_ids));
@@ -667,10 +669,11 @@ class Salary extends Model
             }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
-
-                $dayInMonth = Carbon::create($date->year, $date->month, $i);
-                $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth);
-                if ($userStat) $statTotalHour = floatval($userStat->value);
+                if ($group->time_address != 0) {
+                    $dayInMonth = Carbon::create($date->year, $date->month, $i);
+                    $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
+                    if ($userStat) $statTotalHour = floatval($userStat->value);
+                }
 
                 $d = '' . $i;
 

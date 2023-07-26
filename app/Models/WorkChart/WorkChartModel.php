@@ -29,7 +29,8 @@ class WorkChartModel extends Model
         'end_time',
         'work_charts_type',
         'workdays',
-        'rest_time'
+        'rest_time',
+        'floating_dayoffs'
     ];
 
     const WORK_CHART_TYPE_USUAL = 1;
@@ -200,6 +201,7 @@ class WorkChartModel extends Model
             ->where('work_charts_type', $data['work_charts_type'])
             ->where('workdays', $data['workdays'])
             ->where('rest_time', $data['rest_time'])
+            ->where('floating_dayoffs', $data['floating_dayoffs'])
             ->exists();
     }
 
