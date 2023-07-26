@@ -15,7 +15,7 @@
 		>
 			<div
 				class="structure-card-header"
-				:class="{'no-body': card.employeesCount === 0 && !manager}"
+				:class="{'no-body': employeesCount === 0 && !manager}"
 			>
 				<p
 					class="StructureItem-contrast department"
@@ -26,10 +26,10 @@
 
 				<!-- кол-во сотрудников -->
 				<p
-					v-if="card.employeesCount > 0"
+					v-if="employeesCount > 0"
 					class="StructureItem-contrast count"
 				>
-					{{ card.employeesCount }} сотрудников
+					{{ employeesCount }} сотрудников
 				</p>
 				<p
 					v-else
@@ -255,6 +255,9 @@ export default {
 				}
 				return result
 			}, [])
+		},
+		employeesCount(){
+			return this.children.length + this.users.length
 		}
 	},
 	mounted() {
@@ -286,13 +289,6 @@ export default {
 			})
 		},
 		addNew() {
-			// const obj = {
-			// 	id: Math.floor(Math.random() * 10000),
-			// 	department: 'Новый департамент',
-			// 	employeesCount: 0,
-			// 	isNew: true
-			// };
-			// this.department.departmentChildren ? this.department.departmentChildren.push(obj) : this.department.departmentChildren = [obj];
 			this.addCard(this.card.id)
 			this.$forceUpdate()
 		}
