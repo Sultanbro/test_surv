@@ -28,9 +28,9 @@
 				>
 					<i class="fa fa-pen" />
 				</button>
-				<button class="icon-btn">
+				<!-- <button class="icon-btn">
 					<i class="icon-nd-settings" />
-				</button>
+				</button> -->
 			</div>
 		</div>
 		<div
@@ -100,17 +100,40 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(useCompanyStore, ['dictionaries']),
-		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		...mapState(useCompanyStore, [
+			'dictionaries',
+			'centralOwner',
+		]),
+		...mapState(useStructureStore, [
+			'cards',
+			'isEditMode',
+		]),
+		owner(){
+			if(!this.centralOwner) return null
+			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
+		},
 		cardsOrFirst(){
 			if(this.cards && this.cards.length){
 				return this.cards
 			}
-			return [{
+			const ownerCard = {
 				...this.getEmptyCard(),
 				id: null,
 				parent_id: null,
-			}]
+				name: 'Генеральный директор'
+			}
+			if(this.owner){
+				ownerCard.manager = {
+					user_id: this.owner.id,
+					position_id: this.owner.position_id
+				}
+				ownerCard.users = [
+					{
+						id: this.owner.id
+					}
+				]
+			}
+			return [ownerCard]
 		},
 		rootCard(){
 			return this.cardsOrFirst.find(card => !card.parentId)
@@ -124,8 +147,10 @@ export default {
 		},
 	},
 	async mounted() {
-		this.fetchDictionaries()
+		await this.fetchDictionaries()
+		await this.fetchCentralOwner()
 		await this.structureGet()
+		this.$nextTick(this.checkFirstCard)
 		this.drawLines()
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
 		window.addEventListener('storage', this.checkTabEvents, false)
@@ -135,7 +160,10 @@ export default {
 		window.removeEventListener('storage', this.checkTabEvents, false)
 	},
 	methods: {
-		...mapActions(useCompanyStore, ['fetchDictionaries']),
+		...mapActions(useCompanyStore, [
+			'fetchDictionaries',
+			'fetchCentralOwner',
+		]),
 		...mapActions(useStructureStore, [
 			'structureGet',
 			'toggleEdit',
@@ -231,7 +259,8 @@ export default {
 				await this.fetchDictionaries(true)
 				loader.hide()
 			}
-		}
+		},
+		checkFirstCard(){}
 	}
 }
 </script>

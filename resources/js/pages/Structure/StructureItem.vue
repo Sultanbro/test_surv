@@ -342,7 +342,7 @@ export default {
 .StructureItem{
 	&-contrast{
 		mix-blend-mode: difference;
-		color: gray !important;
+		color: #ddd !important;
 	}
 }
 </style>

@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
-import { fetchDictionaries } from '@/stores/api'
+import {
+	fetchDictionaries,
+	fetchCentralOwner,
+} from '@/stores/api'
 
 
 export const useCompanyStore = defineStore('company', {
@@ -11,7 +14,8 @@ export const useCompanyStore = defineStore('company', {
 			users: [],
 			positions: [],
 			profile_groups: [],
-		}
+		},
+		centralOwner: null
 	}),
 	actions: {
 		async fetchDictionaries(refresh){
@@ -28,6 +32,15 @@ export const useCompanyStore = defineStore('company', {
 			}
 			this.isLoading = false
 		},
+		async fetchCentralOwner(){
+			try {
+				const {data} = await fetchCentralOwner()
+				this.centralOwner = data
+			}
+			catch (error) {
+				console.error('fetchCentralOwner', error)
+			}
+		}
 	}
 })
 
