@@ -5,7 +5,7 @@
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="[{'is-dragging': isDragging}, {'overflow-hidden': openEditCard}]"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 	>
 		<div
 			v-if="$can('structure_edit')"
@@ -64,19 +64,33 @@
 						:card="rootCard"
 						:level="0"
 						:dictionaries="dictionaries"
-						@isOpenEditCard="isOpenEditCard"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
 					/>
 				</template>
 			</div>
 		</div>
+
+		<StructureEditCard
+			v-if="editedCard"
+			:card="editedCard"
+			:users="dictionaries.users"
+			:positions="dictionaries.positions"
+			:departments-list="dictionaries.profile_groups"
+			@close="closeEditCard"
+		/>
+		<div
+			v-if="editedCard"
+			class="backdrop-structure-area"
+			@click="closeEditCard"
+		/>
 	</div>
 </template>
 
 <script>
 import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
+import StructureEditCard from './StructureEditCard'
 // import {users, positions, departments, structure} from './mockApi';
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
@@ -85,6 +99,7 @@ export default {
 	name: 'StructurePage',
 	components: {
 		StructureItem,
+		StructureEditCard,
 	},
 	data() {
 		return {
@@ -94,7 +109,6 @@ export default {
 			scrollLeft: 0,
 			scrollTop: 0,
 			zoom: 100,
-			openEditCard: false,
 			editStructure: false,
 			leftMarginMainCard: 0,
 		}
@@ -106,6 +120,7 @@ export default {
 		]),
 		...mapState(useStructureStore, [
 			'cards',
+			'editedCard',
 			'isEditMode',
 		]),
 		owner(){
@@ -140,7 +155,7 @@ export default {
 		},
 	},
 	watch: {
-		openEditCard(val) {
+		editedCard(val) {
 			if (val) {
 				this.stopDrag();
 			}
@@ -168,6 +183,7 @@ export default {
 			'structureGet',
 			'toggleEdit',
 			'getEmptyCard',
+			'closeEditCard',
 		]),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
@@ -195,9 +211,6 @@ export default {
 				addedDepartment.scrollIntoView({ behavior: 'smooth', block: 'center' })
 				this.drawLines()
 			})
-		},
-		isOpenEditCard(bool) {
-			this.openEditCard = bool;
 		},
 		scrollArea(event) {
 			if (event.ctrlKey) {
@@ -229,7 +242,7 @@ export default {
 			this.$forceUpdate();
 		},
 		startDrag(event) {
-			if(this.openEditCard) return
+			if(this.editedCard) return
 
 			this.isDragging = true;
 			this.startX = event.clientX;

@@ -59,6 +59,7 @@ export const useStructureStore = defineStore('structure', {
 		cards: [],
 		isEditMode: false,
 		newId: -1,
+		editedCard: null,
 	}),
 	actions: {
 		async structureGet(){
@@ -87,6 +88,12 @@ export const useStructureStore = defineStore('structure', {
 
 			this.cards.push(empty)
 		},
+		editCard(card){
+			this.editedCard = card
+		},
+		closeEditCard(){
+			this.editedCard = null
+		},
 		async createCard(card){
 			const request = cardToRequest(card)
 			const data = await structureCreate(request)
@@ -102,7 +109,7 @@ export const useStructureStore = defineStore('structure', {
 			const request = cardToRequest(card)
 			const data = await structureUpdate(card.id, request)
 			const old = this.cards.findIndex(c => c.id === card.id)
-			if(~old) this.cards.splice(old, 1, [card])
+			if(~old) this.cards.splice(old, 1, card)
 			return data
 		},
 		async deleteCard(cardId){

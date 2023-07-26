@@ -165,7 +165,7 @@
 				</button>
 			</div>
 			<button
-				v-if="level"
+				v-if="card.parent_id"
 				class="btn btn-remove"
 				@click="deleteDepartment"
 			>
@@ -192,10 +192,6 @@ export default {
 			type: Object,
 			default: null
 		},
-		selectedUsers: {
-			type: Array,
-			default: () => []
-		},
 		users: {
 			type: Array,
 			default: () => []
@@ -208,10 +204,6 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		level: {
-			type: Number,
-			default: 0
-		}
 	},
 	data() {
 		return {
@@ -220,7 +212,12 @@ export default {
 				name: this.card.name,
 			}],
 			director: this.card.manager ? this.users.find(user => user.id === this.card.manager.user_id) : '',
-			usersList: this.selectedUsers,
+			usersList: this.card.users.reduce((result, u) => {
+				if(this.card.manager && this.card.manager.user_id === u.id) return result
+				const user = this.users.find(user => user.id = u.id)
+				if(user) result.push(user)
+				return result
+			}, []),
 			result: this.card.description || '',
 			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
 			group: !!this.card.is_group || false,

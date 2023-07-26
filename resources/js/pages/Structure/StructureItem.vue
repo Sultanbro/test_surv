@@ -41,7 +41,7 @@
 				<i
 					v-if="isEditMode"
 					class="fa fa-cog structure-edit"
-					@click="openEditCard"
+					@click="editCard(card)"
 				/>
 			</div>
 
@@ -120,16 +120,6 @@
 				:class="{'has-result': card.description}"
 				@click="addNew"
 			/>
-			<StructureEditCard
-				v-if="editCard"
-				:card="card"
-				:selected-users="users"
-				:users="dictionaries.users"
-				:positions="dictionaries.positions"
-				:departments-list="dictionaries.profile_groups"
-				:level="level"
-				@close="closeEditCard"
-			/>
 		</div>
 
 		<!-- Потомки -->
@@ -150,7 +140,6 @@
 					:dictionaries="dictionaries"
 					:skip-users="localSkip"
 					@updateLines="drawLines"
-					@isOpenEditCard="isOpenEditCard"
 				/>
 			</div>
 		</template>
@@ -169,11 +158,6 @@
 			</p>
 		</div>
 		<div
-			v-if="editCard"
-			class="backdrop-structure-area"
-			@click="closeEditCard"
-		/>
-		<div
 			v-if="usersMore"
 			class="backdrop-structure-area"
 			@click="closeUsersMore"
@@ -183,14 +167,12 @@
 
 <script>
 import {mapState, mapActions} from 'pinia'
-import StructureEditCard from './StructureEditCard'
 import StructureUsersMore from './StructureUsersMore'
 import {useStructureStore} from '@/stores/Structure.js'
 
 export default {
 	name: 'StructureItem',
 	components: {
-		StructureEditCard,
 		StructureUsersMore,
 	},
 	props: {
@@ -224,7 +206,6 @@ export default {
 			halfWidth: 0,
 			structureAddTop: 0,
 			usersMore: false,
-			editCard: false,
 		}
 	},
 	computed: {
@@ -274,40 +255,15 @@ export default {
 		this.drawLines();
 	},
 	methods: {
-		...mapActions(useStructureStore, ['addCard']),
-		deleteDepartment() {
-			this.closeEditCard();
-			// const parent = this.$parent.department || this.$parent;
-			// const index = parent[parent.department ? 'departmentChildren' : 'structure'].findIndex(d => d.id === this.department.id);
-			// if (index !== -1) {
-			// 	parent[parent.department ? 'departmentChildren' : 'structure'].splice(index, 1);
-			// }
-			this.$emit('updateLines');
-			this.$forceUpdate();
-		},
-		saveEditCard() {
-			this.closeEditCard();
-			this.$emit('updateLines');
-			this.drawLines();
-		},
-		isOpenEditCard(bool) {
-			this.$emit('isOpenEditCard', bool);
-		},
-		openEditCard() {
-			this.editCard = true;
-			this.isOpenEditCard(true);
-		},
+		...mapActions(useStructureStore, [
+			'addCard',
+			'editCard',
+		]),
 		openUsersMore() {
 			this.usersMore = true;
-			this.isOpenEditCard(true);
-		},
-		closeEditCard() {
-			this.editCard = false;
-			this.isOpenEditCard(false);
 		},
 		closeUsersMore() {
 			this.usersMore = false;
-			this.isOpenEditCard(false);
 		},
 		drawLines() {
 			this.$nextTick(() => {
