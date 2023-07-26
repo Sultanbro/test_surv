@@ -10,8 +10,8 @@ export async function structureCreate(request){
 	return data
 }
 
-export async function structureUpdate(request){
-	const {data} = await axios.put(`/api/structure/${request.id}`, request)
+export async function structureUpdate(id, request){
+	const {data} = await axios.put(`/api/structure/${id}`, request)
 	return data
 }
 

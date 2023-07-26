@@ -28,6 +28,29 @@ function recursiveToFlat(struct, result = []){
 	return result
 }
 
+function cardToRequest(card){
+	const request = {
+		parent_id: card.parent_id,
+		description: card.description,
+		color: card.color,
+		user_ids: card.users?.map(user => user.id),
+		position_id: card.manager?.position_id,
+		manager_id: card.manager?.user_id,
+		status: card.status,
+		is_group: card.is_group,
+	}
+	if(card.group_id) request.group_id = card.group_id
+	if(card.name) request.name = card.name
+	return request
+}
+
+// function responseToCard(response){
+// 	const card = response.structure_card
+// 	card.users = response.structure_card_user.map(id => ({id}))
+// 	card.manager = response.structure_card_manager
+// 	return card
+// }
+
 export const useStructureStore = defineStore('structure', {
 	state: () => ({
 		isReady: false,
@@ -65,11 +88,21 @@ export const useStructureStore = defineStore('structure', {
 			this.cards.push(empty)
 		},
 		async createCard(card){
-			const data = await structureCreate(card)
+			const request = cardToRequest(card)
+			const data = await structureCreate(request)
+			// const created = responseToCard(data)
+			// console.log(card)
+			// this.cards.push(created)
+			// const temp = this.cards.findIndex(c => c.id = card.id)
+			// if(~temp) this.cards.splice(temp, 1)
+			await this.structureGet()
 			return data
 		},
 		async updateCard(card){
-			const data = await structureUpdate(card)
+			const request = cardToRequest(card)
+			const data = await structureUpdate(card.id, request)
+			const old = this.cards.findIndex(c => c.id === card.id)
+			if(~old) this.cards.splice(old, 1, [card])
 			return data
 		},
 		async deleteCard(cardId){
@@ -85,7 +118,7 @@ export const useStructureStore = defineStore('structure', {
 		},
 		getEmptyCard(){
 			return {
-				id: --this.newId,
+				id: JSON.parse(JSON.stringify(--this.newId)),
 				name: '',
 				parent_id: 0,
 				description: '',

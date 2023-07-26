@@ -272,14 +272,16 @@ export default {
 			if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
 
 			const saveData = {
-				id: this.card.id > 0 ? this.card.id : 0,
+				id: this.card.id,
 				parent_id: this.card.parent_id,
 				group_id: isGroup ? this.departmentName.id : null,
 				description: this.result,
 				color: this.bgColor,
-				user_ids: [this.director.id, ...this.usersList.map(user => user.id)],
-				position_id: this.position.id,
-				manager_id: this.director.id,
+				users: [{id: this.director.id}, ...this.usersList.map(user => ({id: user.id}))],
+				manager: {
+					position_id: this.position.id,
+					user_id: this.director.id,
+				},
 				status: this.autoUsers,
 				is_group: this.group,
 			}
@@ -288,11 +290,10 @@ export default {
 				saveData.name = this.nameTag[0].name
 			}
 
+			this.$emit('close')
 			try {
 				const data = await this[this.card.id > 0 ? 'updateCard' : 'createCard'](saveData)
 				if(data) this.$toast.success('Карточка сохранена')
-
-				this.$emit('close')
 			}
 			catch (error) {
 				this.$toast.error('Карточка не сохранена')
