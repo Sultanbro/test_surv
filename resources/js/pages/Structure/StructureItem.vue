@@ -240,6 +240,12 @@ export default {
 			return this.dictionaries.positions.find(pos => pos.id === this.card.manager.position_id)
 		},
 		users(){
+			if(this.card.status && this.card.group_id){
+				return this.dictionaries.users.filter(user => {
+					if(this.localSkip.includes(user.id)) return false
+					return !!user.profile_group?.find(group => group.id === this.card.group_id)
+				})
+			}
 			return this.card.users.reduce((result, userPivot) => {
 				if(this.localSkip.includes(userPivot.id)) return result
 				const user = this.dictionaries.users.find(u => u.id === userPivot.id)
