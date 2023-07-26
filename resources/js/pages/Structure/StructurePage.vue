@@ -63,7 +63,7 @@
 					<StructureItem
 						:card="rootCard"
 						:level="0"
-						:dictionaries="dictionaries"
+						:dictionaries="actualDictionaries"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
 					/>
@@ -74,9 +74,9 @@
 		<StructureEditCard
 			v-if="editedCard"
 			:card="editedCard"
-			:users="dictionaries.users"
-			:positions="dictionaries.positions"
-			:departments-list="dictionaries.profile_groups"
+			:users="actualDictionaries.users"
+			:positions="actualDictionaries.positions"
+			:departments-list="actualDictionaries.profile_groups"
 			@close="closeEditCard"
 		/>
 		<div
@@ -123,6 +123,19 @@ export default {
 			'editedCard',
 			'isEditMode',
 		]),
+		actualDictionaries(){
+			return {
+				users: this.dictionaries.users.filter(user => {
+					return !user.deleted_at && user.last_seen
+				}),
+				profile_groups: this.dictionaries.profile_groups.filter(group => {
+					return group.active
+				}),
+				positions: this.dictionaries.positions.filter(pos => {
+					return !pos.deleted_at
+				})
+			}
+		},
 		owner(){
 			if(!this.centralOwner) return null
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)

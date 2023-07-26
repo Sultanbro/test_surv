@@ -103,6 +103,7 @@ export const useStructureStore = defineStore('structure', {
 			// const temp = this.cards.findIndex(c => c.id = card.id)
 			// if(~temp) this.cards.splice(temp, 1)
 			await this.structureGet()
+			this.closeEditCard()
 			return data
 		},
 		async updateCard(card){
@@ -110,6 +111,7 @@ export const useStructureStore = defineStore('structure', {
 			const data = await structureUpdate(card.id, request)
 			const old = this.cards.findIndex(c => c.id === card.id)
 			if(~old) this.cards.splice(old, 1, card)
+			this.closeEditCard()
 			return data
 		},
 		async deleteCard(cardId){
@@ -120,7 +122,7 @@ export const useStructureStore = defineStore('structure', {
 
 			const index = this.cards.findIndex(card => card.id === cardId)
 			this.cards.splice(index, 1)
-
+			this.closeEditCard()
 			return true
 		},
 		getEmptyCard(){
@@ -137,11 +139,6 @@ export const useStructureStore = defineStore('structure', {
 				is_group: 0,
 				isNew: true
 			}
-		}
-	},
-	getters: {
-		rootCard(){
-			return this.cards.find(card => !card.parent_id)
 		}
 	}
 })
