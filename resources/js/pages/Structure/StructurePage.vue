@@ -79,11 +79,6 @@
 			:departments-list="actualDictionaries.profile_groups"
 			@close="closeEditCard"
 		/>
-		<div
-			v-if="editedCard"
-			class="backdrop-structure-area"
-			@click="closeEditCard"
-		/>
 	</div>
 </template>
 
