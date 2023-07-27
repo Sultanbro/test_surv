@@ -15,9 +15,9 @@
 		>
 			<div class="actions">
 				<button
-					v-if="false"
+					v-if="isDemo"
 					class="remove-demo"
-					@click="deleteDemoData"
+					@click="removeDemo"
 				>
 					Удалить демо данные
 				</button>
@@ -63,7 +63,7 @@
 					<StructureItem
 						:card="rootCard"
 						:level="0"
-						:dictionaries="actualDictionaries"
+						:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
 					/>
@@ -74,9 +74,9 @@
 		<StructureEditCard
 			v-if="editedCard"
 			:card="editedCard"
-			:users="actualDictionaries.users"
-			:positions="actualDictionaries.positions"
-			:departments-list="actualDictionaries.profile_groups"
+			:users="isDemo ? demo.dictionaries.users : actualDictionaries.users"
+			:positions="isDemo ? demo.dictionaries.users : actualDictionaries.positions"
+			:departments-list="isDemo ? demo.dictionaries.users : actualDictionaries.profile_groups"
 			@close="closeEditCard"
 		/>
 	</div>
@@ -89,6 +89,11 @@ import StructureEditCard from './StructureEditCard'
 // import {users, positions, departments, structure} from './mockApi';
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
+
+import {
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
 
 export default {
 	name: 'StructurePage',
@@ -117,6 +122,8 @@ export default {
 			'cards',
 			'editedCard',
 			'isEditMode',
+			'isDemo',
+			'demo',
 		]),
 		actualDictionaries(){
 			return {
@@ -159,6 +166,7 @@ export default {
 			return [ownerCard]
 		},
 		rootCard(){
+			if(this.isDemo) return this.demo.structure.find(card => !card.parentId)
 			return this.cardsOrFirst.find(card => !card.parentId)
 		},
 	},
@@ -172,6 +180,7 @@ export default {
 	async mounted() {
 		await this.fetchDictionaries()
 		await this.fetchCentralOwner()
+		await this.checkDemo()
 		await this.structureGet()
 		this.$nextTick(this.checkFirstCard)
 		this.drawLines()
@@ -192,6 +201,7 @@ export default {
 			'toggleEdit',
 			'getEmptyCard',
 			'closeEditCard',
+			'setDemo',
 		]),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
@@ -202,16 +212,6 @@ export default {
 					this.recursiveUpdate(childComponent);
 				});
 			}
-		},
-		addDepartment(){
-			const obj = {
-				id: Math.floor(Math.random() * 10000),
-				department: 'Новый департамент',
-				employeesCount: 0,
-				isNew: true
-			};
-			// this.structure.push(obj);
-			this.scrollToBlock(obj.id)
 		},
 		scrollToBlock(id){
 			this.$nextTick(() => {
@@ -225,12 +225,6 @@ export default {
 				event.preventDefault();
 				this.zoom = Math.min(Math.max(this.zoom + (event.deltaY > 0 ? -10 : 10), 10), 200);
 			}
-		},
-		deleteDemoData(){
-			// this.structure = [];
-			this.$nextTick(() => {
-				this.drawLines();
-			})
 		},
 		drawLines() {
 			if(!this.$refs.departmentsArea) return
@@ -281,7 +275,21 @@ export default {
 				loader.hide()
 			}
 		},
-		checkFirstCard(){}
+		checkFirstCard(){},
+		async checkDemo(){
+			const {settings} = await fetchSettings('structure_demo_removed')
+			if(!parseInt(settings.custom_structure_demo_removed)){
+				this.setDemo(true)
+			}
+		},
+		async removeDemo(){
+			await updateSettings({
+				type: 'structure_demo_removed',
+				custom_structure_demo_removed: 1
+			})
+			this.$toast.success('Демо данные удалены')
+			this.setDemo(false)
+		},
 	}
 }
 </script>

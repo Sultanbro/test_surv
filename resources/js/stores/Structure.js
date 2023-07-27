@@ -5,6 +5,10 @@ import {
 	structureUpdate,
 	structureDelete,
 } from '@/stores/api/structure'
+import {
+	dictionaries,
+	structure,
+} from '@/pages/Structure/mockApi.js'
 
 function recursiveToFlat(struct, result = []){
 	if(!struct) return result
@@ -60,6 +64,12 @@ export const useStructureStore = defineStore('structure', {
 		isEditMode: false,
 		newId: -1,
 		editedCard: null,
+		demo: {
+			dictionaries,
+			structure,
+			id: 1000,
+		},
+		isDemo: false,
 	}),
 	actions: {
 		async structureGet(){
@@ -95,6 +105,14 @@ export const useStructureStore = defineStore('structure', {
 			this.editedCard = null
 		},
 		async createCard(card){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(c => c.id === card.id)
+				this.demo.structure.splice(index, 1)
+				card.id = ++this.demo.id
+				this.demo.structure.push(card)
+				return card
+			}
+
 			const request = cardToRequest(card)
 			const data = await structureCreate(request)
 			// const created = responseToCard(data)
@@ -107,6 +125,12 @@ export const useStructureStore = defineStore('structure', {
 			return data
 		},
 		async updateCard(card){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(c => c.id === card.id)
+				this.demo.structure.splice(index, 1, card)
+				return card
+			}
+
 			const request = cardToRequest(card)
 			const data = await structureUpdate(card.id, request)
 			const old = this.cards.findIndex(c => c.id === card.id)
@@ -115,6 +139,12 @@ export const useStructureStore = defineStore('structure', {
 			return data
 		},
 		async deleteCard(cardId){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(card => card.id === cardId)
+				this.demo.structure.splice(index, 1)
+				return true
+			}
+
 			if(cardId === null) return
 			if(cardId > 0) {
 				await structureDelete(cardId)
@@ -139,6 +169,10 @@ export const useStructureStore = defineStore('structure', {
 				is_group: 0,
 				isNew: true
 			}
+		},
+		setDemo(toggle){
+			this.isDemo = toggle
+			return this.demo
 		}
 	}
 })
