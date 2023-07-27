@@ -652,10 +652,10 @@ class HrController extends Controller
                 $bitrix = new Bitrix('intellect');
 
                 if ($lead->inhouse) {
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1633576992" => Carbon::parse($request->date." ".$request->time)->format('Y-m-d H:i:s')]);
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1633576992" => Carbon::parse($request->date." ".$request->time)->subHour(3)->format('Y-m-d H:i:s')]);
                 }else{
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1568000119" => Carbon::parse($request->date." ".$request->time)->format('Y-m-d H:i:s')]);
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1648978687" => Carbon::parse($request->date." ".$request->time)->addDay()->format('Y-m-d H:i:s')]);
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1568000119" => Carbon::parse($request->date." ".$request->time)->subHour(3)->format('Y-m-d H:i:s')]);
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1648978687" => Carbon::parse($request->date." ".$request->time)->subHour(3)->addDay()->format('Y-m-d H:i:s')]);
                 }
             }
         }
