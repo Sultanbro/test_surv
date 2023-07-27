@@ -1,5 +1,4 @@
 <template>
-	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="StructureItem structure-item"
 		:class="[{'grouped' : card.is_group}, 'lvl' + level]"
@@ -47,7 +46,7 @@
 
 			<!-- Список сотрудников -->
 			<div
-				v-if="manager || (card.users && card.users.length)"
+				v-if="manager || card.is_vacant || (card.users && card.users.length)"
 				class="structure-card-body"
 			>
 				<template v-if="manager">
@@ -87,8 +86,18 @@
 						{{ manager.name }} {{ manager.last_name }}
 					</p>
 				</template>
+				<template v-else-if="card.is_vacant">
+					<img
+						src="/user.png"
+						alt="photo"
+						class="director-photo"
+					>
+					<p class="StructureItem-contrast position">
+						Должность вакантна
+					</p>
+				</template>
 				<hr
-					v-if="manager && users && users.length"
+					v-if="(manager || card.is_vacant) && users && users.length"
 					class="divider-users"
 				>
 				<template v-if="users && users.length">
@@ -104,7 +113,7 @@
 						</template>
 						<span
 							v-if="users.length > 5"
-							class="StructureItem-contrast user-group-more"
+							class="user-group-more"
 							@click="openUsersMore"
 						>{{ users.length - 6 }}</span>
 					</div>
@@ -114,6 +123,7 @@
 					/>
 				</template>
 			</div>
+
 			<i
 				v-if="isEditMode"
 				class="fa fa-plus-circle structure-add"
@@ -209,8 +219,16 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		...mapState(useStructureStore, ['cards', 'isEditMode', 'isDemo', 'demo']),
 		children(){
+			if(this.isDemo){
+				return this.demo.structure.reduce((result, child) => {
+					if(child.parent_id === this.card.id){
+						result.push(child)
+					}
+					return result
+				}, [])
+			}
 			return this.cards.reduce((result, child) => {
 				if(child.parent_id === this.card.id){
 					result.push(child)

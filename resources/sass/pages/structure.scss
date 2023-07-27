@@ -459,6 +459,14 @@
 			position: relative;
 			flex-shrink: 0;
 
+			&.lvl0 {
+				& > .structure-card{
+					&::before{
+						display: none;
+					}
+				}
+			}
+
 			&.lvl1 {
 				&:before {
 					content: "";
