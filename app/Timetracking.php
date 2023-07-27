@@ -3,10 +3,14 @@
 namespace App;
 
 use App\Repositories\Timetrack\TimetrackRepository;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+/**
+ * @mixin Builder
+ */
 class Timetracking extends Model
 {
     const DEFAULT_WORK_START_TIME = '09:00';
@@ -273,5 +277,13 @@ class Timetracking extends Model
             'date' => $date,
             'description' => 'Изменено время с аналитики на '.$total_hours.' минут',
         ]);
+    }
+
+    public static function getItemInWeek($userId){
+        $firstDayOfWeek = now()->startOfWeek();
+        $lastDayOfWeek = now()->endOfWeek();
+        return self::where('user_id', $userId)
+            ->whereBetween('created_at', [$firstDayOfWeek, $lastDayOfWeek])
+            ->count();
     }
 }

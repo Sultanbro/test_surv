@@ -37,6 +37,8 @@ class WorkChartModel extends Model
     const WORK_CHART_TYPE_REPLACEABLE = 2;
     const MAX_CHART_DAYS_REPLACEABLE = 30;
     const WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE = 15;
+    const WEEK_WITHOUT_DAYOFFS = 127;
+    const DAYS_IN_WEEK = 7;
 
     /**
      * @param string $name
