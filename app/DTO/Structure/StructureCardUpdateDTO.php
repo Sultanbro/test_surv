@@ -17,10 +17,10 @@ class StructureCardUpdateDTO extends FormRequest
             'parent_id' => 'nullable|exists:structure_card,id',
             'description' => 'nullable|string',
             'color' => 'nullable|string',
-            'user_ids' => 'required|array',
+            'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id',
             'position_id' => 'required|exists:position,id',
-            'manager_id' => 'required|exists:users,id',
+            'manager_id' => 'int|exists:users,id',
             'status' => 'boolean',
             'is_group' => 'boolean',
             'is_vacant' => 'boolean'
