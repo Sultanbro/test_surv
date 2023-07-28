@@ -55,27 +55,16 @@
 						alt="photo"
 						class="director-photo"
 					>
-					<div class="additional-info">
-						<img
-							:src="manager.avatar"
-							alt="photo"
-							class="addi-director-photo"
-						>
-						<div class="addi-content">
-							<div class="addi-fullname">
-								{{ manager.name }} {{ manager.last_name }}
-							</div>
-							<p class="addi-item">
-								<span>Дата рождения: </span>{{ $moment(manager.birthday).format('DD.MM.YYYY') }}
-							</p>
-							<p class="addi-item">
-								<span>Телефон: </span> {{ manager.phone }}
-							</p>
-							<p class="addi-item addi-email">
-								<span>E-mail: </span> {{ manager.email }}
-							</p>
-						</div>
-					</div>
+					<StructureInfo
+						:info="{
+							avatar: manager.avatar,
+							name: manager.name,
+							last_name: manager.last_name,
+							birthday: manager.birthday,
+							phone: card.parent_id ? manager.phone : '',
+							email: manager.email,
+						}"
+					/>
 					<p
 						v-if="position"
 						class="StructureItem-contrast position"
@@ -93,7 +82,7 @@
 						class="director-photo"
 					>
 					<p class="StructureItem-contrast position">
-						Должность вакантна
+						Вакантная позиция
 					</p>
 				</template>
 				<hr
@@ -109,18 +98,26 @@
 								:src="user.avatar"
 								alt="photo"
 								:title="`${user.name} ${user.last_name}`"
+								class="StructureItem-userAvatar"
 							>
+							<StructureInfo
+								:key="'i' + usrIdx"
+								:info="{
+									avatar: user.avatar,
+									name: user.name,
+									last_name: user.last_name,
+									birthday: user.birthday,
+									position: user.position_name,
+									email: user.email,
+								}"
+							/>
 						</template>
 						<span
 							v-if="users.length > 5"
 							class="user-group-more"
-							@click="openUsersMore"
+							@click="showMoreUsers(users)"
 						>{{ users.length - 6 }}</span>
 					</div>
-					<StructureUsersMore
-						v-if="usersMore && users.length > 5"
-						:users="users"
-					/>
 				</template>
 			</div>
 
@@ -167,23 +164,18 @@
 				{{ card.description }}
 			</p>
 		</div>
-		<div
-			v-if="usersMore"
-			class="backdrop-structure-area"
-			@click="closeUsersMore"
-		/>
 	</div>
 </template>
 
 <script>
 import {mapState, mapActions} from 'pinia'
-import StructureUsersMore from './StructureUsersMore'
+import StructureInfo from './StructureInfo'
 import {useStructureStore} from '@/stores/Structure.js'
 
 export default {
 	name: 'StructureItem',
 	components: {
-		StructureUsersMore,
+		StructureInfo,
 	},
 	props: {
 		card: {
@@ -214,12 +206,15 @@ export default {
 			endLine: '2px',
 			resultWidth: '0',
 			halfWidth: 0,
-			structureAddTop: 0,
-			usersMore: false,
 		}
 	},
 	computed: {
-		...mapState(useStructureStore, ['cards', 'isEditMode', 'isDemo', 'demo']),
+		...mapState(useStructureStore, [
+			'cards',
+			'isEditMode',
+			'isDemo',
+			'demo',
+		]),
 		children(){
 			if(this.isDemo){
 				return this.demo.structure.reduce((result, child) => {
@@ -268,9 +263,6 @@ export default {
 				if(this.localSkip.includes(userPivot.id)) return result
 				const user = this.dictionaries.users.find(u => u.id === userPivot.id)
 				if(user) result.push(user)
-				else{
-					console.log('not found', userPivot.id)
-				}
 				return result
 			}, [])
 		},
@@ -285,13 +277,8 @@ export default {
 		...mapActions(useStructureStore, [
 			'addCard',
 			'editCard',
+			'showMoreUsers'
 		]),
-		openUsersMore() {
-			this.usersMore = true;
-		},
-		closeUsersMore() {
-			this.usersMore = false;
-		},
 		drawLines() {
 			this.$nextTick(() => {
 				if(this.$refs.group){
@@ -319,6 +306,20 @@ export default {
 	&-contrast{
 		mix-blend-mode: difference;
 		color: #ddd !important;
+	}
+	&-userAvatar{
+		&:hover{
+			+ .StructureInfo{
+				right: -290px !important;
+				opacity: 1 !important;
+				visibility: visible !important;
+			}
+		}
+		+ .StructureInfo{
+			right: -270px;
+			opacity: 0;
+			visibility: hidden;
+		}
 	}
 }
 </style>

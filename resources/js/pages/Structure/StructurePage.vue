@@ -79,6 +79,12 @@
 			:departments-list="isDemo ? demo.dictionaries.users : actualDictionaries.profile_groups"
 			@close="closeEditCard"
 		/>
+
+
+		<StructureUsersMore
+			v-if="moreUsers"
+			:users="moreUsers"
+		/>
 	</div>
 </template>
 
@@ -86,6 +92,7 @@
 import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
 import StructureEditCard from './StructureEditCard'
+import StructureUsersMore from './StructureUsersMore'
 // import {users, positions, departments, structure} from './mockApi';
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
@@ -100,6 +107,7 @@ export default {
 	components: {
 		StructureItem,
 		StructureEditCard,
+		StructureUsersMore,
 	},
 	data() {
 		return {
@@ -124,6 +132,7 @@ export default {
 			'isEditMode',
 			'isDemo',
 			'demo',
+			'moreUsers',
 		]),
 		actualDictionaries(){
 			return {
@@ -178,9 +187,9 @@ export default {
 		},
 	},
 	async mounted() {
+		await this.checkDemo()
 		await this.fetchDictionaries()
 		await this.fetchCentralOwner()
-		await this.checkDemo()
 		await this.structureGet()
 		this.$nextTick(this.checkFirstCard)
 		this.drawLines()

@@ -64,6 +64,7 @@ export const useStructureStore = defineStore('structure', {
 		isEditMode: false,
 		newId: -1,
 		editedCard: null,
+		moreUsers: null,
 		demo: {
 			dictionaries,
 			structure,
@@ -100,6 +101,9 @@ export const useStructureStore = defineStore('structure', {
 		},
 		editCard(card){
 			this.editedCard = card
+		},
+		showMoreUsers(users){
+			this.moreUsers = users
 		},
 		closeEditCard(){
 			this.editedCard = null
