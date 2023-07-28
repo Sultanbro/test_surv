@@ -18,7 +18,7 @@ class RejectOvertimeService
         $groupId =  $user->inGroups()->first()->id;
         $groupHead = GroupUser::getHeadInGroup($groupId);
 
-        Redis::del($data['group_id']."_".$data['user_id']);
+        Redis::del($groupId."_".$data['user_id']);
         UserNotification::changeStatus($groupHead->user_id);
         return true;
     }
