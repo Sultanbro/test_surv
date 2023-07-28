@@ -22,7 +22,8 @@ class StructureCardUpdateDTO extends FormRequest
             'position_id' => 'required|exists:position,id',
             'manager_id' => 'required|exists:users,id',
             'status' => 'boolean',
-            'is_group' => 'boolean'
+            'is_group' => 'boolean',
+            'is_vacant' => 'boolean'
         ];
     }
 }

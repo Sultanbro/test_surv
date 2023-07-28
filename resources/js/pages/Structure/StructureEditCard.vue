@@ -38,7 +38,7 @@
 						/>
 						<multiselect
 							v-model="director"
-							:options="users"
+							:options="usersAndBlank"
 							label="name"
 							track-by="id"
 							placeholder="Выберите руководителя"
@@ -222,7 +222,16 @@ export default {
 				id: null,
 				name: this.card.name,
 			}],
-			director: this.card.manager ? this.users.find(user => user.id === this.card.manager.user_id) : '',
+			director: this.card.manager
+				? this.users.find(user => user.id === this.card.manager.user_id)
+				: this.card.is_vacant
+					? {
+						id: 0,
+						name: 'Вакантная',
+						last_name: 'позиция',
+						avatar: '/user.png',
+					}
+					: '',
 			result: this.card.description || '',
 			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
 			group: !!this.card.is_group || false,
@@ -257,6 +266,17 @@ export default {
 					name: '+ Создать новую должность'
 				}
 			]
+		},
+		usersAndBlank(){
+			return [
+				{
+					id: 0,
+					name: 'Вакантная',
+					last_name: 'позиция',
+					avatar: '/users.png',
+				},
+				...this.users,
+			]
 		}
 	},
 	watch: {
@@ -279,7 +299,7 @@ export default {
 			const isGroup = this.departmentName && this.departmentName.id
 			const hasName = this.nameTag.length
 			const hasPosition = this.position && this.position.id
-			const hasManager = this.director && this.director.id
+			const hasManager = this.director
 
 			if(!(isGroup || hasName)) return this.$toast.error('Укажите отдел или название департамента')
 			if(!hasManager) return this.$toast.error('Укажите руководителя')
@@ -295,12 +315,19 @@ export default {
 					{id: this.director.id},
 					...this.getUsers()
 				].filter(this.unique),
-				manager: {
-					position_id: this.position.id,
-					user_id: this.director.id,
-				},
 				status: this.autoUsers,
 				is_group: this.group,
+			}
+
+			if(this.director.id){
+				saveData.users.push({id: this.director.id})
+				saveData.manager = {
+					position_id: this.position.id,
+					user_id: this.director.id,
+				}
+			}
+			else{
+				saveData.is_vacant = true
 			}
 
 			if(!isGroup && hasName){
