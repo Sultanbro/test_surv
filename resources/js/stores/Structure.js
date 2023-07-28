@@ -5,6 +5,10 @@ import {
 	structureUpdate,
 	structureDelete,
 } from '@/stores/api/structure'
+import {
+	dictionaries,
+	structure,
+} from '@/pages/Structure/mockApi.js'
 
 function recursiveToFlat(struct, result = []){
 	if(!struct) return result
@@ -59,6 +63,13 @@ export const useStructureStore = defineStore('structure', {
 		cards: [],
 		isEditMode: false,
 		newId: -1,
+		editedCard: null,
+		demo: {
+			dictionaries,
+			structure,
+			id: 1000,
+		},
+		isDemo: false,
 	}),
 	actions: {
 		async structureGet(){
@@ -87,7 +98,21 @@ export const useStructureStore = defineStore('structure', {
 
 			this.cards.push(empty)
 		},
+		editCard(card){
+			this.editedCard = card
+		},
+		closeEditCard(){
+			this.editedCard = null
+		},
 		async createCard(card){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(c => c.id === card.id)
+				this.demo.structure.splice(index, 1)
+				card.id = ++this.demo.id
+				this.demo.structure.push(card)
+				return card
+			}
+
 			const request = cardToRequest(card)
 			const data = await structureCreate(request)
 			// const created = responseToCard(data)
@@ -96,16 +121,30 @@ export const useStructureStore = defineStore('structure', {
 			// const temp = this.cards.findIndex(c => c.id = card.id)
 			// if(~temp) this.cards.splice(temp, 1)
 			await this.structureGet()
+			this.closeEditCard()
 			return data
 		},
 		async updateCard(card){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(c => c.id === card.id)
+				this.demo.structure.splice(index, 1, card)
+				return card
+			}
+
 			const request = cardToRequest(card)
 			const data = await structureUpdate(card.id, request)
 			const old = this.cards.findIndex(c => c.id === card.id)
-			if(~old) this.cards.splice(old, 1, [card])
+			if(~old) this.cards.splice(old, 1, card)
+			this.closeEditCard()
 			return data
 		},
 		async deleteCard(cardId){
+			if(this.isDemo){
+				const index = this.demo.structure.findIndex(card => card.id === cardId)
+				this.demo.structure.splice(index, 1)
+				return true
+			}
+
 			if(cardId === null) return
 			if(cardId > 0) {
 				await structureDelete(cardId)
@@ -113,7 +152,7 @@ export const useStructureStore = defineStore('structure', {
 
 			const index = this.cards.findIndex(card => card.id === cardId)
 			this.cards.splice(index, 1)
-
+			this.closeEditCard()
 			return true
 		},
 		getEmptyCard(){
@@ -130,11 +169,10 @@ export const useStructureStore = defineStore('structure', {
 				is_group: 0,
 				isNew: true
 			}
-		}
-	},
-	getters: {
-		rootCard(){
-			return this.cards.find(card => !card.parent_id)
+		},
+		setDemo(toggle){
+			this.isDemo = toggle
+			return this.demo
 		}
 	}
 })

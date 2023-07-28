@@ -15,6 +15,7 @@ class DictionaryPositionResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->position,
+            'deleted_at' => $this->resource->deleted_at,
 //            'employees' => DictionaryEmployeeResource::collection($this->resource->users)->toArray($request)
         ];
     }

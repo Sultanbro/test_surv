@@ -41,7 +41,7 @@ export const useCompanyStore = defineStore('company', {
 				console.error('fetchCentralOwner', error)
 			}
 		}
-	}
+	},
 })
 
 // const store = useCompanyStore()

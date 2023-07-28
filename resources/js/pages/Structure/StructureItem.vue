@@ -1,5 +1,4 @@
 <template>
-	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="StructureItem structure-item"
 		:class="[{'grouped' : card.is_group}, 'lvl' + level]"
@@ -15,7 +14,7 @@
 		>
 			<div
 				class="structure-card-header"
-				:class="{'no-body': card.employeesCount === 0 && !manager}"
+				:class="{'no-body': employeesCount === 0 && !manager}"
 			>
 				<p
 					class="StructureItem-contrast department"
@@ -26,10 +25,10 @@
 
 				<!-- кол-во сотрудников -->
 				<p
-					v-if="card.employeesCount > 0"
+					v-if="employeesCount > 0"
 					class="StructureItem-contrast count"
 				>
-					{{ card.employeesCount }} сотрудников
+					{{ employeesCount }} сотрудников
 				</p>
 				<p
 					v-else
@@ -41,13 +40,13 @@
 				<i
 					v-if="isEditMode"
 					class="fa fa-cog structure-edit"
-					@click="openEditCard"
+					@click="editCard(card)"
 				/>
 			</div>
 
 			<!-- Список сотрудников -->
 			<div
-				v-if="manager || (card.users && card.users.length)"
+				v-if="manager || card.is_vacant || (card.users && card.users.length)"
 				class="structure-card-body"
 			>
 				<template v-if="manager">
@@ -87,8 +86,18 @@
 						{{ manager.name }} {{ manager.last_name }}
 					</p>
 				</template>
+				<template v-else-if="card.is_vacant">
+					<img
+						src="/user.png"
+						alt="photo"
+						class="director-photo"
+					>
+					<p class="StructureItem-contrast position">
+						Должность вакантна
+					</p>
+				</template>
 				<hr
-					v-if="manager && users && users.length"
+					v-if="(manager || card.is_vacant) && users && users.length"
 					class="divider-users"
 				>
 				<template v-if="users && users.length">
@@ -104,7 +113,7 @@
 						</template>
 						<span
 							v-if="users.length > 5"
-							class="StructureItem-contrast user-group-more"
+							class="user-group-more"
 							@click="openUsersMore"
 						>{{ users.length - 6 }}</span>
 					</div>
@@ -114,21 +123,12 @@
 					/>
 				</template>
 			</div>
+
 			<i
 				v-if="isEditMode"
 				class="fa fa-plus-circle structure-add"
 				:class="{'has-result': card.description}"
 				@click="addNew"
-			/>
-			<StructureEditCard
-				v-if="editCard"
-				:card="card"
-				:selected-users="users"
-				:users="dictionaries.users"
-				:positions="dictionaries.positions"
-				:departments-list="dictionaries.profile_groups"
-				:level="level"
-				@close="closeEditCard"
 			/>
 		</div>
 
@@ -150,7 +150,6 @@
 					:dictionaries="dictionaries"
 					:skip-users="localSkip"
 					@updateLines="drawLines"
-					@isOpenEditCard="isOpenEditCard"
 				/>
 			</div>
 		</template>
@@ -169,11 +168,6 @@
 			</p>
 		</div>
 		<div
-			v-if="editCard"
-			class="backdrop-structure-area"
-			@click="closeEditCard"
-		/>
-		<div
 			v-if="usersMore"
 			class="backdrop-structure-area"
 			@click="closeUsersMore"
@@ -183,14 +177,12 @@
 
 <script>
 import {mapState, mapActions} from 'pinia'
-import StructureEditCard from './StructureEditCard'
 import StructureUsersMore from './StructureUsersMore'
 import {useStructureStore} from '@/stores/Structure.js'
 
 export default {
 	name: 'StructureItem',
 	components: {
-		StructureEditCard,
 		StructureUsersMore,
 	},
 	props: {
@@ -224,12 +216,19 @@ export default {
 			halfWidth: 0,
 			structureAddTop: 0,
 			usersMore: false,
-			editCard: false,
 		}
 	},
 	computed: {
-		...mapState(useStructureStore, ['cards', 'isEditMode']),
+		...mapState(useStructureStore, ['cards', 'isEditMode', 'isDemo', 'demo']),
 		children(){
+			if(this.isDemo){
+				return this.demo.structure.reduce((result, child) => {
+					if(child.parent_id === this.card.id){
+						result.push(child)
+					}
+					return result
+				}, [])
+			}
 			return this.cards.reduce((result, child) => {
 				if(child.parent_id === this.card.id){
 					result.push(child)
@@ -259,6 +258,12 @@ export default {
 			return this.dictionaries.positions.find(pos => pos.id === this.card.manager.position_id)
 		},
 		users(){
+			if(this.card.status && this.card.group_id){
+				return this.dictionaries.users.filter(user => {
+					if(this.localSkip.includes(user.id)) return false
+					return !!user.profile_group?.find(group => group.id === this.card.group_id)
+				})
+			}
 			return this.card.users.reduce((result, userPivot) => {
 				if(this.localSkip.includes(userPivot.id)) return result
 				const user = this.dictionaries.users.find(u => u.id === userPivot.id)
@@ -268,46 +273,24 @@ export default {
 				}
 				return result
 			}, [])
+		},
+		employeesCount(){
+			return this.children.length + this.users.length
 		}
 	},
 	mounted() {
 		this.drawLines();
 	},
 	methods: {
-		...mapActions(useStructureStore, ['addCard']),
-		deleteDepartment() {
-			this.closeEditCard();
-			// const parent = this.$parent.department || this.$parent;
-			// const index = parent[parent.department ? 'departmentChildren' : 'structure'].findIndex(d => d.id === this.department.id);
-			// if (index !== -1) {
-			// 	parent[parent.department ? 'departmentChildren' : 'structure'].splice(index, 1);
-			// }
-			this.$emit('updateLines');
-			this.$forceUpdate();
-		},
-		saveEditCard() {
-			this.closeEditCard();
-			this.$emit('updateLines');
-			this.drawLines();
-		},
-		isOpenEditCard(bool) {
-			this.$emit('isOpenEditCard', bool);
-		},
-		openEditCard() {
-			this.editCard = true;
-			this.isOpenEditCard(true);
-		},
+		...mapActions(useStructureStore, [
+			'addCard',
+			'editCard',
+		]),
 		openUsersMore() {
 			this.usersMore = true;
-			this.isOpenEditCard(true);
-		},
-		closeEditCard() {
-			this.editCard = false;
-			this.isOpenEditCard(false);
 		},
 		closeUsersMore() {
 			this.usersMore = false;
-			this.isOpenEditCard(false);
 		},
 		drawLines() {
 			this.$nextTick(() => {
@@ -324,13 +307,6 @@ export default {
 			})
 		},
 		addNew() {
-			// const obj = {
-			// 	id: Math.floor(Math.random() * 10000),
-			// 	department: 'Новый департамент',
-			// 	employeesCount: 0,
-			// 	isNew: true
-			// };
-			// this.department.departmentChildren ? this.department.departmentChildren.push(obj) : this.department.departmentChildren = [obj];
 			this.addCard(this.card.id)
 			this.$forceUpdate()
 		}

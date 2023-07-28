@@ -5,7 +5,7 @@
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="[{'is-dragging': isDragging}, {'overflow-hidden': openEditCard}]"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 	>
 		<div
 			v-if="$can('structure_edit')"
@@ -15,9 +15,9 @@
 		>
 			<div class="actions">
 				<button
-					v-if="false"
+					v-if="isDemo"
 					class="remove-demo"
-					@click="deleteDemoData"
+					@click="removeDemo"
 				>
 					Удалить демо данные
 				</button>
@@ -63,28 +63,43 @@
 					<StructureItem
 						:card="rootCard"
 						:level="0"
-						:dictionaries="dictionaries"
-						@isOpenEditCard="isOpenEditCard"
+						:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
 						@scrollToBlock="scrollToBlock"
 						@updateLines="drawLines"
 					/>
 				</template>
 			</div>
 		</div>
+
+		<StructureEditCard
+			v-if="editedCard"
+			:card="editedCard"
+			:users="isDemo ? demo.dictionaries.users : actualDictionaries.users"
+			:positions="isDemo ? demo.dictionaries.users : actualDictionaries.positions"
+			:departments-list="isDemo ? demo.dictionaries.users : actualDictionaries.profile_groups"
+			@close="closeEditCard"
+		/>
 	</div>
 </template>
 
 <script>
 import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
+import StructureEditCard from './StructureEditCard'
 // import {users, positions, departments, structure} from './mockApi';
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
+
+import {
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
 
 export default {
 	name: 'StructurePage',
 	components: {
 		StructureItem,
+		StructureEditCard,
 	},
 	data() {
 		return {
@@ -94,7 +109,6 @@ export default {
 			scrollLeft: 0,
 			scrollTop: 0,
 			zoom: 100,
-			openEditCard: false,
 			editStructure: false,
 			leftMarginMainCard: 0,
 		}
@@ -106,8 +120,24 @@ export default {
 		]),
 		...mapState(useStructureStore, [
 			'cards',
+			'editedCard',
 			'isEditMode',
+			'isDemo',
+			'demo',
 		]),
+		actualDictionaries(){
+			return {
+				users: this.dictionaries.users.filter(user => {
+					return !user.deleted_at && user.last_seen
+				}),
+				profile_groups: this.dictionaries.profile_groups.filter(group => {
+					return group.active
+				}),
+				positions: this.dictionaries.positions.filter(pos => {
+					return !pos.deleted_at
+				})
+			}
+		},
 		owner(){
 			if(!this.centralOwner) return null
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
@@ -136,11 +166,12 @@ export default {
 			return [ownerCard]
 		},
 		rootCard(){
+			if(this.isDemo) return this.demo.structure.find(card => !card.parentId)
 			return this.cardsOrFirst.find(card => !card.parentId)
 		},
 	},
 	watch: {
-		openEditCard(val) {
+		editedCard(val) {
 			if (val) {
 				this.stopDrag();
 			}
@@ -149,6 +180,7 @@ export default {
 	async mounted() {
 		await this.fetchDictionaries()
 		await this.fetchCentralOwner()
+		await this.checkDemo()
 		await this.structureGet()
 		this.$nextTick(this.checkFirstCard)
 		this.drawLines()
@@ -168,6 +200,8 @@ export default {
 			'structureGet',
 			'toggleEdit',
 			'getEmptyCard',
+			'closeEditCard',
+			'setDemo',
 		]),
 		recursiveUpdate(component) {
 			if (component.drawLines) {
@@ -179,16 +213,6 @@ export default {
 				});
 			}
 		},
-		addDepartment(){
-			const obj = {
-				id: Math.floor(Math.random() * 10000),
-				department: 'Новый департамент',
-				employeesCount: 0,
-				isNew: true
-			};
-			// this.structure.push(obj);
-			this.scrollToBlock(obj.id)
-		},
 		scrollToBlock(id){
 			this.$nextTick(() => {
 				const addedDepartment = document.querySelector(`#id-${id}`)
@@ -196,20 +220,11 @@ export default {
 				this.drawLines()
 			})
 		},
-		isOpenEditCard(bool) {
-			this.openEditCard = bool;
-		},
 		scrollArea(event) {
 			if (event.ctrlKey) {
 				event.preventDefault();
 				this.zoom = Math.min(Math.max(this.zoom + (event.deltaY > 0 ? -10 : 10), 10), 200);
 			}
-		},
-		deleteDemoData(){
-			// this.structure = [];
-			this.$nextTick(() => {
-				this.drawLines();
-			})
 		},
 		drawLines() {
 			if(!this.$refs.departmentsArea) return
@@ -229,7 +244,7 @@ export default {
 			this.$forceUpdate();
 		},
 		startDrag(event) {
-			if(this.openEditCard) return
+			if(this.editedCard) return
 
 			this.isDragging = true;
 			this.startX = event.clientX;
@@ -260,7 +275,21 @@ export default {
 				loader.hide()
 			}
 		},
-		checkFirstCard(){}
+		checkFirstCard(){},
+		async checkDemo(){
+			const {settings} = await fetchSettings('structure_demo_removed')
+			if(!parseInt(settings.custom_structure_demo_removed)){
+				this.setDemo(true)
+			}
+		},
+		async removeDemo(){
+			await updateSettings({
+				type: 'structure_demo_removed',
+				custom_structure_demo_removed: 1
+			})
+			this.$toast.success('Демо данные удалены')
+			this.setDemo(false)
+		},
 	}
 }
 </script>
