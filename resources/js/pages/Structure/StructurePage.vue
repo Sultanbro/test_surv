@@ -159,7 +159,8 @@ export default {
 				...this.getEmptyCard(),
 				id: null,
 				parent_id: null,
-				name: 'Генеральный директор'
+				name: 'Генеральный директор',
+				is_vacant: false,
 			}
 			if(this.owner){
 				ownerCard.manager = {

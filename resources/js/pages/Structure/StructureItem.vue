@@ -81,7 +81,13 @@
 						alt="photo"
 						class="director-photo"
 					>
-					<p class="StructureItem-contrast position">
+					<p
+						v-if="position"
+						class="StructureItem-contrast position"
+					>
+						{{ position.name }}
+					</p>
+					<p class="StructureItem-contrast full-name">
 						Вакантная позиция
 					</p>
 				</template>

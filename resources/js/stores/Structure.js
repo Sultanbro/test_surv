@@ -21,6 +21,7 @@ function recursiveToFlat(struct, result = []){
 		created_at: struct.created_at,
 		updated_at: struct.updated_at,
 		group_id: struct.group_id,
+		is_vacant: struct.is_vacant,
 		status: struct.status,
 		users: struct.users,
 		manager: struct.manager,
@@ -42,6 +43,7 @@ function cardToRequest(card){
 		manager_id: card.manager?.user_id,
 		status: card.status,
 		is_group: card.is_group,
+		is_vacant: card.is_vacant,
 	}
 	if(card.group_id) request.group_id = card.group_id
 	if(card.name) request.name = card.name
@@ -90,6 +92,17 @@ export const useStructureStore = defineStore('structure', {
 			this.isEditMode = !this.isEditMode
 		},
 		addCard(parentId){
+			if(this.isDemo){
+				const card = this.demo.structure.find(card => card.id === parentId)
+				const empty = this.getEmptyCard()
+				empty.parent_id = parentId
+				if(card){
+					empty.color = card.color
+				}
+
+				this.demo.structure.push(empty)
+				return
+			}
 			const card = this.cards.find(card => card.id === parentId)
 			const empty = this.getEmptyCard()
 			empty.parent_id = parentId
@@ -171,6 +184,7 @@ export const useStructureStore = defineStore('structure', {
 				users: [],
 				manager: null,
 				is_group: 0,
+				is_vacant: 1,
 				isNew: true
 			}
 		},
