@@ -39,7 +39,7 @@ class OvertimeService
 
         if (!$notification) throw new Exception("Заявка не отправлена");
         Redis::set($groupId."_".$user->id , $data['date']);
-        Redis::expire($groupId."_".$user->id , 15);
+        Redis::expire($groupId."_".$user->id , 60*60*2);
 
         return $notification;
     }
