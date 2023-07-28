@@ -20,9 +20,14 @@ export default {
 							// serchForUserGroups in news dictionaries
 							if(user.deleted_at) return users
 							if(user.id === getters.user.id) return users
-							if(user.profile_group && user.profile_group.id === group.id){
-								users.push(user.id)
+							if(user.profile_group){
+								user.profile_group.forEach(group => {
+									if(user.profile_group.id === group.id){
+										users.push(user.id)
+									}
+								});
 							}
+
 							return users
 						}, [])
 					}

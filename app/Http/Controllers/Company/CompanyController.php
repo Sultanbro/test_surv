@@ -34,10 +34,7 @@ class CompanyController extends Controller
 
         return $this->response(
             message: 'Success',
-            data: array(
-                'name' => $owner->name,
-                'created_at' => $owner->created_at,
-            ),
+            data: $owner
         );
     }
 }

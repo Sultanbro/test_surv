@@ -14,15 +14,19 @@
 	}
 
 	.user-group-modal {
-		position: absolute;
-		top: 20px;
-		left: 350px;
-		z-index: 10002;
 		width: 400px;
+		padding: 20px;
+
+		position: fixed;
+		z-index: 10002;
+		top: 50%;
+		left: 50%;
+
 		text-align: left;
 		background-color: #fff;
 		border-radius: 12px;
-		padding: 20px;
+		transform: translate(-50%, -50%);
+
 		.user-group-list {
 			max-height: 500px;
 			overflow: auto;
@@ -52,14 +56,15 @@
 	}
 
 	.edit-card {
-		position: absolute;
-		top: 20px;
-		right: 20px;
+		position: fixed;
+		top: 50%;
+		left: 50%;
 		z-index: 10002;
 		width: 500px;
 		text-align: left;
 		background-color: #fff;
 		border-radius: 12px;
+		transform: translate(-50%, -50%);
 
 		.custom-switch {
 			margin: 0;
@@ -391,6 +396,8 @@
 
 		.departments-area {
 			display: flex;
+			min-height: calc(100vh - 100px);
+			padding: 0 20px;
 		}
 
 		.structure-group {
@@ -451,6 +458,14 @@
 			margin: 40px 8px 0 8px;
 			position: relative;
 			flex-shrink: 0;
+
+			&.lvl0 {
+				& > .structure-card{
+					&::before{
+						display: none;
+					}
+				}
+			}
 
 			&.lvl1 {
 				&:before {
@@ -746,6 +761,7 @@
 
 					&.is-new {
 						color: #999999;
+						min-height: 20px;
 					}
 				}
 
@@ -765,55 +781,7 @@
 					border-radius: 50%;
 				}
 
-				.additional-info {
-					position: absolute;
-					top: 20px;
-					right: -270px;
-					width: 360px;
-					z-index: 22;
-					padding: 20px 25px;
-					display: flex;
-					align-items: center;
-					text-align: left;
-					background-color: #fff;
-					border-radius: 12px;
-					border: 1px solid #a2b7d5;
-					box-shadow: 0px 25px 45px 0px rgba(46, 180, 255, 0.08);
-					opacity: 0;
-					visibility: hidden;
-					transition: 0.2s all ease;
 
-					.addi-director-photo {
-						width: 120px;
-						height: 120px;
-						object-fit: cover;
-						border-radius: 50%;
-					}
-
-					.addi-content {
-						margin-left: 15px;
-
-						.addi-fullname {
-							padding-bottom: 10px;
-							margin-bottom: 10px;
-							border-bottom: 1px dashed #d0def5;
-							font-size: 15px;
-							font-weight: 600;
-						}
-
-						.addi-item {
-							font-size: 13px;
-							margin-bottom: 5px;
-
-							span {
-								color: #8da0c1;
-							}
-							&.addi-email {
-								color: #156ae8;
-							}
-						}
-					}
-				}
 
 				.director-photo:hover + .additional-info {
 					right: -290px;
@@ -831,6 +799,56 @@
 				.full-name {
 					font-size: 17px;
 					font-weight: 500;
+					color: #156ae8;
+				}
+			}
+		}
+	}
+
+	.additional-info {
+		position: absolute;
+		top: 20px;
+		right: -270px;
+		width: 360px;
+		z-index: 22;
+		padding: 20px 25px;
+		display: flex;
+		align-items: center;
+		text-align: left;
+		background-color: #fff;
+		border-radius: 12px;
+		border: 1px solid #a2b7d5;
+		box-shadow: 0px 25px 45px 0px rgba(46, 180, 255, 0.08);
+		opacity: 0;
+		visibility: hidden;
+		transition: 0.2s all ease;
+
+		.addi-director-photo {
+			width: 120px;
+			height: 120px;
+			object-fit: cover;
+			border-radius: 50%;
+		}
+
+		.addi-content {
+			margin-left: 15px;
+
+			.addi-fullname {
+				padding-bottom: 10px;
+				margin-bottom: 10px;
+				border-bottom: 1px dashed #d0def5;
+				font-size: 15px;
+				font-weight: 600;
+			}
+
+			.addi-item {
+				font-size: 13px;
+				margin-bottom: 5px;
+
+				span {
+					color: #8da0c1;
+				}
+				&.addi-email {
 					color: #156ae8;
 				}
 			}
