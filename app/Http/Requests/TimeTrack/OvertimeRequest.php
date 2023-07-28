@@ -24,7 +24,6 @@ class OvertimeRequest extends FormRequest
     public function rules()
     {
         return [
-            "group_id" => "required",
             "date" => "required",
             "start_time" => "required"
         ];

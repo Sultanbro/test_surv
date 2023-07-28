@@ -13,10 +13,12 @@ class OvertimeService
 {
     public function handle($data){
         $user = Auth::user();
-        $groupHead = GroupUser::getHeadInGroup($data['group_id']);
+        $groupId =  $user->inGroups()->first()->id;
+
+        $groupHead = GroupUser::getHeadInGroup($groupId);
         if (!$groupHead) throw new Exception("Руководитель группы не найден");
 
-        $checkRequest = Redis::get($data['group_id']."_".$user->id);
+        $checkRequest = Redis::get($groupId."_".$user->id);
         if ($checkRequest) throw new Exception("Вы уже отправили заявку на этот день");
 
         UserNotification::changeStatus($groupHead->user_id);
@@ -36,8 +38,8 @@ class OvertimeService
         });
 
         if (!$notification) throw new Exception("Заявка не отправлена");
-        Redis::set($data['group_id']."_".$user->id , $data['date']);
-        Redis::expire($data['group_id']."_".$user->id , 60*60*2);
+        Redis::set($groupId."_".$user->id , $data['date']);
+        Redis::expire($groupId."_".$user->id , 15);
 
         return $notification;
     }
