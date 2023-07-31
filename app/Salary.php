@@ -526,8 +526,6 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $group = ProfileGroup::find($group_id);
-
         $users = User::withTrashed();
 
         $users->whereIn('users.id', array_unique($users_ids));
@@ -669,11 +667,10 @@ class Salary extends Model
             }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                if ($group->time_address != 0) {
-                    $dayInMonth = Carbon::create($date->year, $date->month, $i);
-                    $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
-                    if ($userStat) $statTotalHour = floatval($userStat->value);
-                }
+
+                $dayInMonth = Carbon::create($date->year, $date->month, $i);
+                $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth);
+                if ($userStat) $statTotalHour = floatval($userStat->value);
 
                 $d = '' . $i;
 
@@ -685,8 +682,6 @@ class Salary extends Model
                 $zarplata = $s ? $s->amount : 70000;
                 $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
-
-                // Проверяем установлена ли время отдыха
                 if ($workChart && $workChart->rest_time != null){
                     $lunchTime = $workChart->rest_time;
                     $hour = intval($lunchTime / 60);
@@ -700,8 +695,7 @@ class Salary extends Model
                     $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
                 }
 
-                // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
-                $workChartType = $workChart->work_charts_type ?? 0;
+                $workChartType = $user->workChart->work_charts_type ?? 0;
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);

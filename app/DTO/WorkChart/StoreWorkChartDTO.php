@@ -21,7 +21,6 @@ final class StoreWorkChartDTO
         public int $chartDayoffs,
         public int $usualSchedule,
         public int $restTime,
-        public int $floatingDayoffs,
     )
     {}
 
@@ -37,8 +36,7 @@ final class StoreWorkChartDTO
             'work_charts_type' => $this->chartWorkType,
             'name' => $this->chartWorkdays .'-'. $this->chartDayoffs,
             'workdays' => $this->chartWorkType == WorkChartModel::WORK_CHART_TYPE_USUAL ? $this->usualSchedule : null,
-            'rest_time' => $this->restTime,
-            'floating_dayoffs' => $this->floatingDayoffs,
+            'rest_time' => $this->restTime
         ];
     }
 }
