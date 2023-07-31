@@ -733,7 +733,6 @@ export default {
 		},
 
 		addPayment() {
-
 			this.payments_view = true;
 
 			this.payments.push({

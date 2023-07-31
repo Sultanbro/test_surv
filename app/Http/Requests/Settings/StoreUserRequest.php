@@ -46,7 +46,7 @@ class StoreUserRequest extends FormRequest
             'currency'          => ['string'],
             'weekdays'          => ['required', 'string'],
             'selectedCityInput' => ['nullable', 'string'],
-            'working_city'      => ['nullable'],
+            'working_city'      => ['nullable', 'numeric'],
             'file_name'         => ['file', 'mimes:jpg,png'],
             'head_group'        => ['numeric', 'exists:profile_groups,id'],
             'is_trainee'        => ['in:true,false'],
