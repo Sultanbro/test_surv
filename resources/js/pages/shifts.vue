@@ -308,7 +308,8 @@ export default {
 				restTime: 0,
 				workdays: 0,
 				dayoffs: 0,
-				usualSchedule: 0
+				usualSchedule: 0,
+				floatingDayoffs: 0
 			},
 			typeOptions: [
 				{
@@ -373,6 +374,7 @@ export default {
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
 			this.form.usualSchedule = shift.workdays
+			this.form.floatingВayoffs = shift.floating_dayoffs
 			this.sidebarName = `Редактирование ${shift.name}`;
 			this.showSidebar = true;
 		},
@@ -386,15 +388,16 @@ export default {
 			this.$toast.success('Смена удалена');
 		},
 		resetForm() {
-			this.editShiftId = null;
-			this.form.name = null;
-			this.form.workStartTime = null;
-			this.form.workEndTime = null;
-			this.form.type = 1;
-			this.form.restTime = 0;
-			this.form.workdays = 0;
-			this.form.dayoffs = 0;
+			this.editShiftId = null
+			this.form.name = null
+			this.form.workStartTime = null
+			this.form.workEndTime = null
+			this.form.type = 1
+			this.form.restTime = 0
+			this.form.workdays = 0
+			this.form.dayoffs = 0
 			this.form.usualSchedule = 0
+			this.form.floatingDayoffs = 0
 		},
 		async onSubmit() {
 			if(!this.form.name){
@@ -423,6 +426,7 @@ export default {
 				work_charts_type: this.form.type,
 				chart_workdays: this.form.workdays,
 				chart_dayoffs: this.form.dayoffs,
+				floating_dayoffs: this.form.floatingDayoffs,
 				usual_schedule: flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0')
 			}
 

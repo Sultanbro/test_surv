@@ -10,6 +10,9 @@ use App\Api\BitrixOld as Bitrix;
 use App\Events\WorkdayEvent;
 use App\Fine;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
+use App\Http\Requests\TimeTrack\OvertimeRequest;
+use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Kpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
@@ -31,6 +34,9 @@ use App\Service\Department\UserService;
 use App\Service\Fine\FineService;
 use App\Service\GroupUserService;
 use App\Service\Salary\SalaryService;
+use App\Service\Timetrack\AcceptOvertimeService;
+use App\Service\Timetrack\OvertimeService;
+use App\Service\Timetrack\RejectOvertimeService;
 use App\Service\Timetrack\TimetrackService;
 use App\Models\Timetrack\UserPresence;
 use App\Timetracking;
@@ -335,9 +341,9 @@ class TimetrackingController extends Controller
     /**
      * @throws Exception
      */
-    private function startDay() : String
+    private function startDay($userId = null) : String
     {
-        $user = auth()->user();
+        $user =  $userId ? User::find($userId) : auth()->user();
         $schedule = $user->schedule();
 
         $now = Carbon::now($user->timezone());
@@ -2246,5 +2252,48 @@ class TimetrackingController extends Controller
             $history->created_at = $history->created_at->addHours(6)->format('Y-m-d H:i:s');
             $history->updated_at = $history->updated_at->addHours(6)->format('Y-m-d H:i:s');
         }
+    }
+
+    /**
+     * Отправка заявку на сверхурочную работу
+     * @param OvertimeService $service
+     * @param OvertimeRequest $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function overtime(OvertimeService $service, OvertimeRequest $request){
+        $response = $service->handle($request->validated());
+
+        return $this->response(
+            message: 'Successfully send notification',
+            data: $response
+        );
+    }
+
+    public function accept(AcceptOvertimeRequest $request, AcceptOvertimeService $service){
+        $data = $request->validated();
+        $response = $service->handle($data);
+        if ($response) {
+            $this->startDay($data['user_id']);
+
+            return $this->response(
+                message: 'Successfully accepted',
+                data: $response
+            );
+        }
+
+        return $this->response(
+            message: 'Notifications not send',
+            data: false
+        );
+    }
+
+    public function reject(RejectOvertimeRequest $request, RejectOvertimeService $service){
+        $response = $service->handle($request->validated());
+
+        return $this->response(
+            message: 'Successfully rejected',
+            data: $response
+        );
     }
 }
