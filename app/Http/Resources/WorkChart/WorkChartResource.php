@@ -24,6 +24,7 @@ class WorkChartResource extends JsonResource
             'text_name' => $this->text_name,
             'rest_time' => $this->rest_time,
             'work_charts_type' => $this->workChartType,
+            'floating_dayoffs' => $this->floating_dayoffs,
             'created_at' => $this->created_at,
         ];
     }
