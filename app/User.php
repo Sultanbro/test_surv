@@ -1360,8 +1360,9 @@ class User extends Authenticatable implements Authorizable
     public function getCountWorkDays(): array
     {
         $workChart = $this->getWorkChart();
-        $floatingDayoffs = $workChart->floating_dayoffs;
-        if ($workChart && $workChart->workdays !== null && $floatingDayoffs === 0){
+
+        $floatingDayoffs = $workChart->floating_dayoffs ?? null;
+        if ($workChart && $workChart->workdays !== null && empty($floatingDayoffs)){
             return WorkChartModel::convertWorkDays($workChart->workdays);
         }
 
