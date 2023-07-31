@@ -170,6 +170,21 @@ export async function fetchAvailableBonuses(){
 	return data
 }
 
+export async function pushOvertime(request){
+	const { data } = await axios.post('/timetracking/overtime', request)
+	return data
+}
+
+export async function acceptOvertime(userId){
+	const { data } = await axios.get(`/timetracking/overtime/accept?user_id=${userId}`)
+	return data
+}
+
+export async function rejectOvertime(userId){
+	const { data } = await axios.get(`/timetracking/overtime/reject?user_id=${userId}`)
+	return data
+}
+
 /**
  * @typedef ProfilePersonalInfoResponse
  * @type {object}
