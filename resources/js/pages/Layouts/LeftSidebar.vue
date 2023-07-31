@@ -275,7 +275,6 @@ export default {
 					icon: 'icon-nd-struct',
 					height: 0,
 					route: 'structure',
-					hide: !(this.isAdmin && this.isMainProject)
 				},
 				{
 					name: 'База знаний',
