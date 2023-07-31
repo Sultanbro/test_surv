@@ -507,7 +507,7 @@ export default {
 								>
 								<input
 									name="working_city"
-									:value="user && user.working_city ? user.working_city : ''"
+									v-model="working_city"
 									hidden
 									id="working_city"
 								>

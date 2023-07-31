@@ -210,8 +210,10 @@ final class UserUpdateService
         $user->working_time_id  = $userDTO->workTimes;
         $user->weekdays     = $userDTO->weekdays;
         $user->first_work_day = $userDTO->firstWorkDay;
+        $user->working_country = $userDTO->workingCountry;
+        $user->working_city = $userDTO->workingCity;
 
-        $this->setCountryAndCity($user, $userDTO->workingCountry);
+        // $this->setCountryAndCity($user, $userDTO->workingCountry);
 
         $user->save();
 
