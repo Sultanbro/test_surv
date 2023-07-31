@@ -315,6 +315,10 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
     Route::any('/timetracking/status', [Timetrack\TimetrackingController::class, 'trackerstatus']);
 
+    Route::post('/timetracking/overtime', [Timetrack\TimetrackingController::class, 'overtime']);
+    Route::get('/timetracking/overtime/accept', [Timetrack\TimetrackingController::class, 'accept']);
+    Route::get('/timetracking/overtime/reject', [Timetrack\TimetrackingController::class, 'reject']);
+
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
     Route::any('/timetracking/zarplata-table-new', [Timetrack\TimetrackingController::class, 'zarplatatableNew']);
     Route::post('/timetracking/salary-balance',[Timetrack\SalaryWorkChartController::class,'salaryBalance']);
