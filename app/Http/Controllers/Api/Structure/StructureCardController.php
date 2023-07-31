@@ -37,8 +37,12 @@ class StructureCardController extends Controller
                 $userIds[] = $structureCardUser->user_id;
             }
         }
-        $structureCardManager = $this->structureCardService->createStructureCardManager($data['manager_id'], $structureCard->id, $data['position_id']);
-
+        if ($data['is_vacant'] == false) {
+            $structureCardManager = $this->structureCardService->createStructureCardManager($data['manager_id'], $structureCard->id, $data['position_id']);
+        }else
+        {
+         $structureCardManager = null;
+        }
         return response()->json([
             'structure_card' => $structureCard,
             'structure_card_user' => $userIds,

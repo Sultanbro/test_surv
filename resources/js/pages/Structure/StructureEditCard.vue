@@ -312,19 +312,18 @@ export default {
 				description: this.result,
 				color: this.bgColor,
 				users: [
-					{id: this.director.id},
 					...this.getUsers()
 				].filter(this.unique),
 				status: this.autoUsers,
 				is_group: this.group,
+				manager: {
+					position_id: this.position.id,
+				}
 			}
 
 			if(this.director.id){
 				saveData.users.push({id: this.director.id})
-				saveData.manager = {
-					position_id: this.position.id,
-					user_id: this.director.id,
-				}
+				saveData.manager.user_id = this.director.id
 			}
 			else{
 				saveData.is_vacant = true
