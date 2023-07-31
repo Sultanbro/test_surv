@@ -299,10 +299,8 @@ export default {
 			const isGroup = this.departmentName && this.departmentName.id
 			const hasName = this.nameTag.length
 			const hasPosition = this.position && this.position.id
-			const hasManager = this.director
 
 			if(!(isGroup || hasName)) return this.$toast.error('Укажите отдел или название департамента')
-			if(!hasManager) return this.$toast.error('Укажите руководителя')
 			if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
 
 			const saveData = {
