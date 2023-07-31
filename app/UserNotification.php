@@ -77,4 +77,21 @@ class UserNotification extends Model
             'about_id'  => $aboutId
         ]);
     }
+
+
+    /**
+     * Обновляем read_at для всех ране созданных заявок
+     * @return true
+     */
+    public static function changeStatus($userId){
+        $notifications = self::where('user_id', $userId)
+            ->where('title', 'Заявка на сверхурочную работу')
+            ->where('read_at', null)
+            ->get();
+        foreach ($notifications as $notification){
+            $notification->read_at = now();
+            $notification->save();
+        }
+        return true;
+    }
 }

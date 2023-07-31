@@ -29,13 +29,16 @@ class WorkChartModel extends Model
         'end_time',
         'work_charts_type',
         'workdays',
-        'rest_time'
+        'rest_time',
+        'floating_dayoffs'
     ];
 
     const WORK_CHART_TYPE_USUAL = 1;
     const WORK_CHART_TYPE_REPLACEABLE = 2;
     const MAX_CHART_DAYS_REPLACEABLE = 30;
     const WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE = 15;
+    const WEEK_WITHOUT_DAYOFFS = 127;
+    const DAYS_IN_WEEK = 7;
 
     /**
      * @param string $name
@@ -200,6 +203,7 @@ class WorkChartModel extends Model
             ->where('work_charts_type', $data['work_charts_type'])
             ->where('workdays', $data['workdays'])
             ->where('rest_time', $data['rest_time'])
+            ->where('floating_dayoffs', $data['floating_dayoffs'])
             ->exists();
     }
 
