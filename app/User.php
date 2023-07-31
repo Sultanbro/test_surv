@@ -1530,9 +1530,9 @@ class User extends Authenticatable implements Authorizable
         $workChart = $this->getWorkChart();
 
         if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
-            if ($workChart->floating_dayoffs > 0){
+            if ($workChart->floating_dayoffs){
                 $itemsInWeek = Timetracking::getItemInWeek($this->id);
-                if ($itemsInWeek > WorkChartModel::DAYS_IN_WEEK - $workChart->floating_dayoffs){
+                if ($itemsInWeek >= (WorkChartModel::DAYS_IN_WEEK - $workChart->floating_dayoffs)){
                     return false;
                 }else{
                     return true;
