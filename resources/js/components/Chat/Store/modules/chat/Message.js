@@ -160,7 +160,7 @@ export default {
 			}
 			// add chat if not exists
 			if (chat) {
-				commit('updateChatLastMessage', {chat, message, isSender});
+				commit('updateChatLastMessage', {chat, message, isSender, userId: getters.user.id});
 			}
 			else {
 				await API.getChatInfo(message.chat_id, chat => {

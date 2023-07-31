@@ -52,7 +52,7 @@
 					class="messenger__message-input"
 				>
 					<div
-						v-if="body && !isRecordingAudio"
+						v-if="(body || (files && files.length)) && !isRecordingAudio"
 						@click="performMessage"
 						class="messenger__message-icon"
 					>
