@@ -374,7 +374,7 @@ export default {
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
 			this.form.usualSchedule = shift.workdays
-			this.form.floatingВayoffs = shift.floating_dayoffs
+			this.form.floatingDayoffs = shift.floating_dayoffs
 			this.sidebarName = `Редактирование ${shift.name}`;
 			this.showSidebar = true;
 		},
