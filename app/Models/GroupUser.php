@@ -28,7 +28,6 @@ class GroupUser extends Model
     const STATUS_DROP = 'drop';
     const STATUS_ACTIVE = 'active';
     const STATUS_FIRED = 'fired';
-    const IS_HEAD = 1;
 
     public function user()
     {
@@ -63,17 +62,5 @@ class GroupUser extends Model
             return false;
         }
 
-    }
-
-
-    /**
-     * Получаем руководитель отдела по group id
-     * @param $groupId
-     * @return GroupUser
-     */
-    public static function getHeadInGroup($groupId){
-        return self::where('is_head', self::IS_HEAD)
-            ->where('group_id', $groupId)
-            ->first();
     }
 }

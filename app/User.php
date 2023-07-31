@@ -9,7 +9,6 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedSalary;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
-use App\Models\Anviz\Time;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
 use App\Models\CentralUser;
@@ -1359,24 +1358,16 @@ class User extends Authenticatable implements Authorizable
      */
     public function getCountWorkDays(): array
     {
-        $workChart = $this->getWorkChart();
-        $floatingDayoffs = $workChart->floating_dayoffs;
-        if ($workChart && $workChart->workdays !== null && $floatingDayoffs === 0){
-            return WorkChartModel::convertWorkDays($workChart->workdays);
+        $work_chart = $this->getWorkChart();
+        if ($work_chart && $work_chart->workdays !== null){
+            return WorkChartModel::convertWorkDays($work_chart->workdays);
         }
 
-        $type = $floatingDayoffs > 0
-            ? (string)WorkChartModel::DAYS_IN_WEEK - $floatingDayoffs."-".$floatingDayoffs
-            : $workChart?->name ?? "6-1";
-
+        $type = $work_chart?->name ?? "6-1";
 
         return match ($type) {
             "6-1" => [0],
             "5-2" => [6,0],
-            "4-3" => [5,6,0],
-            "3-4" => [4,5,6,0],
-            "2-5" => [3,4,5,6,0],
-            "1-6" => [2,3,4,5,6,0],
             "1-1", "2-2", "3-3" => [5,6,0],
             default => throw new InvalidArgumentException("Invalid chart type"),
         };
@@ -1529,15 +1520,6 @@ class User extends Authenticatable implements Authorizable
         $workChart = $this->getWorkChart();
 
         if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
-            if ($workChart->floating_dayoffs > 0){
-                $itemsInWeek = Timetracking::getItemInWeek($this->id);
-                if ($itemsInWeek > WorkChartModel::DAYS_IN_WEEK - $workChart->floating_dayoffs){
-                    return false;
-                }else{
-                    return true;
-                }
-            }
-
             $day = strrev(decbin($workChart->workdays));
 
             $numWeek = Carbon::today()->dayOfWeek;
