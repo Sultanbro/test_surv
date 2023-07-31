@@ -319,7 +319,7 @@ export default {
 				}
 			}
 
-			if(this.director.id){
+			if(this.director?.id){
 				saveData.users.push({id: this.director.id})
 				saveData.manager.user_id = this.director.id
 			}
