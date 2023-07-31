@@ -99,6 +99,7 @@ export default {
 		return {
 			galleryOpened: false,
 			isDemoOpen: false,
+			saveMedia: '',
 		};
 	},
 	computed: {
@@ -123,13 +124,17 @@ export default {
 	},
 	watch: {
 		isOpen: function (val) {
+			const viewport = document.querySelector('meta[name="viewport"]');
 			if (val) {
 				// set div messenger__open class
 				document.body.classList.add('messenger__open');
+				this.saveMedia = viewport.content
+				viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no';
 			}
 			else {
 				// remove div messenger__open class
 				document.body.classList.remove('messenger__open');
+				viewport.content = this.saveMedia
 			}
 		}
 	},
