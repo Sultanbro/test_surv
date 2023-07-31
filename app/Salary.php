@@ -797,6 +797,10 @@ class Salary extends Model
                 }
             }
 
+            if ($user->id === 26869){
+                dd($earning, $earnings, $hours, $total_hours);
+            }
+
             /**
              * Subtract from salary headphone price
              */
