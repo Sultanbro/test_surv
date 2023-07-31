@@ -164,6 +164,32 @@
 					</div>
 				</div>
 
+				<!-- Плавающие выходные -->
+				<div
+					v-if="form.type === 1"
+					class="form-group row"
+				>
+					<label
+						for="chartRest"
+						class="col-sm-4 col-form-label"
+					>
+						Плавающие выходные
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'В любой из рабочих дней человек сможет отдохнуть то количество которое вы указали в поле'"
+						>
+					</label>
+					<div class="col-sm-8 form-inline">
+						<input
+							id="chartRest"
+							v-model="form.floatingDayoffs"
+							type="number"
+							class="form-control"
+						>
+					</div>
+				</div>
+
 				<!-- Смена -->
 				<b-form-group
 					v-if="form.type === 2"
@@ -213,32 +239,6 @@
 							v-model="form.usualSchedule"
 							red
 						/>
-					</div>
-				</div>
-
-				<!-- Плавающие выходные -->
-				<div
-					v-if="form.type === 1"
-					class="form-group row"
-				>
-					<label
-						for="chartRest"
-						class="col-sm-4 col-form-label"
-					>
-						Плавающие выходные
-						<img
-							src="/images/dist/profit-info.svg"
-							class="img-info"
-							v-b-popover.hover.left="'В любой из рабочих дней человек сможет отдохнуть то количество которое вы указали в поле'"
-						>
-					</label>
-					<div class="col-sm-8 form-inline">
-						<input
-							id="chartRest"
-							v-model="form.floatingDayoffs"
-							type="number"
-							class="form-control"
-						>
 					</div>
 				</div>
 

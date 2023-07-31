@@ -19,10 +19,26 @@
 							<div class="notifications__title">
 								{{ item.title }}
 							</div>
-							<div
-								class="notifications__text"
-								v-html="item.message"
-							/>
+							<div class="notifications__text">
+								<template v-html="item.message" />
+								<div
+									v-if="item.title === 'Заявка на сверхурочную работу' && $moment(Date.now()).diff(item.created_at, 'hours') < 2"
+									class="Notification-actions"
+								>
+									<JobtronButton
+										small
+										@click="acceptOvertime(i)"
+									>
+										Принять
+									</JobtronButton>
+									<JobtronButton
+										small
+										@click="rejectOvertime(i)"
+									>
+										Отклонить
+									</JobtronButton>
+								</div>
+							</div>
 							<div
 								class="notifications__read"
 								@click="setRead(i)"
@@ -93,11 +109,17 @@
 import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
 import ProfileTabs from '@ui/ProfileTabs'
+import JobtronButton from '@ui/Button'
+import {
+	acceptOvertime,
+	rejectOvertime,
+} from '@/stores/api.js'
 
 export default {
 	name: 'NotificationsPopup',
 	components: {
 		ProfileTabs,
+		JobtronButton,
 	},
 	props: {},
 	data: function () {
@@ -107,7 +129,11 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(useNotificationsStore, ['read', 'unread', 'unreadQuantity']),
+		...mapState(useNotificationsStore, [
+			'read',
+			'unread',
+			'unreadQuantity'
+		]),
 	},
 	created() {
 		this.fetchData();
@@ -149,6 +175,19 @@ export default {
 				this.$toast.success('Уведомление прочитано')
 			})
 		},
+
+		acceptOvertime(index){
+			if(!this.unread[index]) return
+			const item = this.unread[index]
+			this.setRead(index)
+			acceptOvertime(item.about_id)
+		},
+		rejectOvertime(index){
+			if(!this.unread[index]) return
+			const item = this.unread[index]
+			this.setRead(index)
+			rejectOvertime(item.about_id)
+		},
 	},
 };
 </script>
@@ -172,6 +211,9 @@ export default {
 		&[data-score-rank="4"]{
 			background-color: #0051ff;
 		}
+	}
+	&-actions{
+
 	}
 }
 </style>
