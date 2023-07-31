@@ -139,12 +139,22 @@ class WorkChartModel extends Model
      */
     public function chartWorkDays(): array
     {
-        $workDays = $this->name;
+        $floatingDayoffs = $workChart->floating_dayoffs ?? null;
+        if ($floatingDayoffs){
+            $workDays = (string)WorkChartModel::DAYS_IN_WEEK - $floatingDayoffs."-".$floatingDayoffs;
+        }else{
+            $workDays = $this->name;
+        }
 
         return match ($workDays) {
-            "1-1", "2-2", "3-3" => [5, 6, 0],
-            "5-2"   => [6, 0],
-            "6-1"   => [0],
+            "6-1" => [0],
+            "5-2" => [6,0],
+            "4-3" => [5,6,0],
+            "3-4" => [4,5,6,0],
+            "2-5" => [3,4,5,6,0],
+            "1-6" => [2,3,4,5,6,0],
+            "1-1", "2-2", "3-3" => [5,6,0],
+            "7-0" => [1,2,3,4,5,6,0],
             default => throw new InvalidArgumentException("Invalid chart type"),
         };
     }

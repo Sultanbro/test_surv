@@ -1366,7 +1366,7 @@ class User extends Authenticatable implements Authorizable
             return WorkChartModel::convertWorkDays($workChart->workdays);
         }
 
-        $type = $floatingDayoffs > 0
+        $type = $floatingDayoffs
             ? (string)WorkChartModel::DAYS_IN_WEEK - $floatingDayoffs."-".$floatingDayoffs
             : $workChart?->name ?? "6-1";
 

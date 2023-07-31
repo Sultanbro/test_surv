@@ -640,7 +640,7 @@ class SalaryController extends Controller
             // ставка
             $allTotal[7] += intval($wage) ?? 0;
 
-            $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
+            $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id], $group_id);
 
             $salary = 0;
             $trainee_fees = 0;
