@@ -37,3 +37,7 @@ yarn-error.log
 .env
 .htaccess
 .DS_Store
+
+
+/deployment
+/mysql
