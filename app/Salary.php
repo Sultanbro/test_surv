@@ -689,11 +689,9 @@ class Salary extends Model
                 // Проверяем установлена ли время отдыха
                 if ($workChart && $workChart->rest_time != null){
                     $lunchTime = $workChart->rest_time;
-                    $hour = intval($lunchTime / 60);
-                    $minute = $lunchTime % 60;
-                    $totalHour = floatval($hour.".".$minute);
+                    $hour = floatval($lunchTime / 60);
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
                 }else{
                     $lunchTime = 1;
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
@@ -795,10 +793,6 @@ class Salary extends Model
                         $hours[$i] = round($statTotalHour, 1);
                     }
                 }
-            }
-
-            if ($user->id === 26869){
-                dd($earning, $earnings, $hours, $total_hours);
             }
 
             /**
