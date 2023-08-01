@@ -681,7 +681,7 @@ export default {
 	},
 
 	created() {
-		this.items = this.table
+		this.items = this.fixNameValue(this.table)
 		this.form()
 
 		this.calcGlobal()
@@ -696,6 +696,15 @@ export default {
 	},
 
 	methods: {
+		fixNameValue(items){
+			items.forEach(item => {
+				if(item.name){
+					if(!item.name.value && item.name.show_value){
+						item.name.value = item.name.show_value
+					}
+				}
+			})
+		},
 		setDependencies() {
 			let arr = [];
 
