@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql')->create('coordinates', function (Blueprint $table) {
-            $table->id();
-            $table->string('country')->nullable();
-            $table->string('city')->nullable();
-            $table->double('geo_lat', 10, 8);
-            $table->double('geo_lon', 11, 8);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('coordinates')) {
+            Schema::connection('mysql')->create('coordinates', function (Blueprint $table) {
+                $table->id();
+                $table->string('country')->nullable();
+                $table->string('city')->nullable();
+                $table->double('geo_lat', 10, 8);
+                $table->double('geo_lon', 11, 8);
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -30,6 +32,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('coordinates');
+        if (Schema::hasTable('coordinates'))
+        {
+            Schema::dropIfExists('coordinates');
+        }
     }
 };
