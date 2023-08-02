@@ -9,6 +9,7 @@ use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
 use App\Models\CentralUser;
+use App\Models\UserCoordinate;
 use App\Support\Core\CustomException;
 use App\User;
 use App\User as Model;
@@ -185,7 +186,8 @@ final class UserRepository extends CoreRepository
                 'working_city'      => $dto->workingCity,
                 'role_id'           => $dto->role_id ?? 1,
                 'is_admin'          => $dto->is_admin ?? 0,
-                'img_url'           => $dto->fileName
+                'img_url'           => $dto->fileName,
+                'coordinate_id'     => isset($dto->coordinates) ? $this->setCoordinate($dto->coordinates) : null,
             ]
         );
 
@@ -318,5 +320,26 @@ final class UserRepository extends CoreRepository
         return $this->model()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', $isTrainee))
             ->where(fn($query) => $query->whereNull('deleted_at')->orWhere(fn ($query) => $query->whereDate('deleted_at', '>=', $date)));
+    }
+
+    public function setCoordinate(array $coordinatesArray)
+    {
+        $coordinate = UserCoordinate::query()
+            ->where('geo_lat',$coordinatesArray['geo_lat'])
+            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->first();
+
+        if ($coordinate)
+        {
+            return $coordinate->id;
+        }
+        else
+        {
+            $coordinate = UserCoordinate::query()->create([
+                'geo_lat' => $coordinatesArray['geo_lat'],
+                'geo_lon' => $coordinatesArray['geo_lon']
+            ]);
+            return $coordinate->id;
+        }
     }
 }

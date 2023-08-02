@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Coordinate\CoordinateRepository;
+use App\Service\Coordinate\CoordinateService;
 use Illuminate\Support\Facades\Response;
 use \Symfony\Component\HttpFoundation\Response as HttpFoundation;
 use Illuminate\Support\ServiceProvider;
@@ -54,7 +56,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(CoordinateService::class, function ($app) {
+            return new CoordinateService(new CoordinateRepository());
+        });
     }
 
     private function registerMacros() : void

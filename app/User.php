@@ -19,6 +19,7 @@ use App\Models\Permission;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
+use App\Models\UserCoordinate;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use App\Traits\CurrencyTrait;
@@ -109,7 +110,8 @@ class User extends Authenticatable implements Authorizable
         'phone_2',
         'phone_3',
         'phone_4',
-        'work_chart_id'
+        'work_chart_id',
+        'coordinate_id'
     ];
 
     protected $casts = [
@@ -1606,5 +1608,13 @@ class User extends Authenticatable implements Authorizable
             throw new Exception(message: 'Проверьте график работы', code: 400);
         }
         return $workDays;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function coordinate():BelongsTo
+    {
+        return $this->belongsTo(UserCoordinate::class, 'coordinate_id');
     }
 }

@@ -11,6 +11,7 @@ use App\Enums\ErrorCode;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Coordinate;
+use App\Models\UserCoordinate;
 use App\Position;
 use App\Repositories\UserRepository;
 use App\Service\TaxService;
@@ -212,8 +213,8 @@ final class UserUpdateService
         $user->first_work_day = $userDTO->firstWorkDay;
         $user->working_country = $userDTO->workingCountry;
         $user->working_city = $userDTO->workingCity;
-
-        // $this->setCountryAndCity($user, $userDTO->workingCountry);
+        if ($userDTO->coordinates)$user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
+//         $this->setCountryAndCity($user, $userDTO->workingCountry);
 
         $user->save();
 
@@ -266,6 +267,27 @@ final class UserUpdateService
 
             $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $email .'<br><a href="/timetracking/edit-person?id=' . $existEmail->id . '"   target="_blank">' . $existEmail->last_name . ' ' . $existEmail->name . '</a>';
             redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
+        }
+    }
+
+    private function setCoordinate(array $coordinatesArray)
+    {
+        $coordinate = UserCoordinate::query()
+            ->where('geo_lat',$coordinatesArray['geo_lat'])
+            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->first();
+
+        if ($coordinate)
+        {
+            return $coordinate->id;
+        }
+        else
+        {
+            $coordinate = UserCoordinate::query()->create([
+                'geo_lat' => $coordinatesArray['geo_lat'],
+                'geo_lon' => $coordinatesArray['geo_lon']
+            ]);
+            return $coordinate->id;
         }
     }
 }

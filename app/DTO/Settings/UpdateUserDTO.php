@@ -57,6 +57,7 @@ class UpdateUserDTO
      * @param array|null $taxes
      * @param int|null $bitrixId
      * @param float|null $timezone
+     * @param array|null $coordinates
      */
     public function __construct(
         public int $userId,
@@ -107,7 +108,8 @@ class UpdateUserDTO
         public ?array $taxes,
         public ?int $bitrixId,
         public ?float $timezone,
-        public ?string $firstWorkDay
+        public ?string $firstWorkDay,
+        public ?array $coordinates
     )
     {}
 
@@ -163,6 +165,7 @@ class UpdateUserDTO
             'bitrix_id'         => $this->bitrixId,
             'timezone'          => $this->timezone,
             'first_work_day'    => $this->firstWorkDay,
+            'coordinates'    => $this->coordinates,
         ];
     }
 }

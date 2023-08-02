@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserCoordinate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
@@ -83,7 +84,8 @@ class CabinetController extends Controller
             'working_city' => $request->working_city,
             'birthday' => $request->birthday,
             'name' => $request['query']['name'],
-            'last_name' =>  $request['query']['last_name'], 
+            'last_name' =>  $request['query']['last_name'],
+            'coordinate_id' =>  isset($request->coordinates) ? $this->setCoordinate($request->coordinates) : null,
         ]);
 
         if (isset($request->cards)){
@@ -104,6 +106,26 @@ class CabinetController extends Controller
         return response(['success'=>'1']);
     }
 
+    public function setCoordinate(array $coordinatesArray)
+    {
+        $coordinate = UserCoordinate::query()
+            ->where('geo_lat',$coordinatesArray['geo_lat'])
+            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->first();
+
+        if ($coordinate)
+        {
+            return $coordinate->id;
+        }
+        else
+        {
+            $coordinate = UserCoordinate::query()->create([
+                'geo_lat' => $coordinatesArray['geo_lat'],
+                'geo_lon' => $coordinatesArray['geo_lon']
+            ]);
+            return $coordinate->id;
+        }
+    }
 
     /**
      * Удаление карты через профиль индивидуально Kairat
