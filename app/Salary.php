@@ -669,6 +669,7 @@ class Salary extends Model
             }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
+                $statTotalHour = null;
                 if ($group->time_address != 0) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
