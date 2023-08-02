@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('coordinates')) {
+        if (!Schema::connection('mysql')->hasTable('coordinates')) {
             Schema::connection('mysql')->create('coordinates', function (Blueprint $table) {
                 $table->id();
                 $table->string('country')->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down()
     {
-        if (Schema::hasTable('coordinates'))
+        if (Schema::connection('mysql')->hasTable('coordinates'))
         {
             Schema::dropIfExists('coordinates');
         }
