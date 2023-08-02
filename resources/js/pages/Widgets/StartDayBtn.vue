@@ -70,15 +70,36 @@
 				>---</p>
 			</template>
 		</a>
+
+		<JobtronButton
+			v-if="workdayStatus === 'workdone'"
+			@click="clickOvertime"
+			class="StartDayBtn-overtime mb-4"
+		>
+			Оставить заявку на&nbsp;сверхурочную
+		</JobtronButton>
 	</div>
 </template>
 
 <script>
+/* global Laravel */
+import { mapActions } from 'pinia'
+import { useProfileStatusStore } from '@/stores/ProfileStatus'
+import JobtronButton from '@ui/Button.vue'
 export default {
 	name: 'StartDayBtn',
+	components: {
+		JobtronButton,
+	},
 	props: {
-		workdayStatus: String,
-		status: String
+		workdayStatus: {
+			type: String,
+			default: ''
+		},
+		status: {
+			type: String,
+			default: ''
+		}
 	},
 	data() {
 		return {
@@ -86,7 +107,19 @@ export default {
 		}
 	},
 	created() {},
-	methods: {}
+	methods: {
+		...mapActions(useProfileStatusStore, ['pushOvertime']),
+		async clickOvertime(){
+			if(confirm('Хотите запросить у руководителя работу в выходной?')){
+				await this.pushOvertime({
+					user_id: Laravel.userId,
+					date: this.$moment(Date.now()).format('YYYY-MM-DD'),
+					start_time: this.$moment(Date.now()).format('HH:mm:ss'),
+				})
+				alert('Запрос на работу в выходной отправлен')
+			}
+		}
+	}
 }
 </script>
 
@@ -201,5 +234,18 @@ export default {
     visibility: hidden;
     transform: translateY(10px);
   }
+}
+</style>
+
+<style lang="scss">
+.StartDayBtn{
+	&-overtime{
+		display: flex;
+		width: 100%;
+		max-width: 28rem;
+		justify-content: center;
+		background-color: #608ee9;
+		border-radius: 1rem;
+	}
 }
 </style>

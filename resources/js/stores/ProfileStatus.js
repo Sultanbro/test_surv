@@ -1,5 +1,3 @@
-/* global Laravel */
-import moment from 'moment/moment'
 import { defineStore } from 'pinia'
 import {
 	fetchProfileStatus,
@@ -55,15 +53,7 @@ export const useProfileStatusStore = defineStore('profileStatus', {
 				}
 				else{
 					this.status = 'workdone'
-					// this.message = 'Вы не можете начать рабочий день в выходной'
-					if(confirm('Хотите запросить у руководителя работу в выходной?')){
-						await this.pushOvertime({
-							user_id: Laravel.userId,
-							date: moment(Date.now()).format('YYYY-MM-DD'),
-							start_time: body.start,
-						})
-						alert('Запрос на работу в выходной отправлен')
-					}
+					this.message = 'Вы не можете начать рабочий день в выходной'
 				}
 				if(data.error){
 					this.status = 'workdone';

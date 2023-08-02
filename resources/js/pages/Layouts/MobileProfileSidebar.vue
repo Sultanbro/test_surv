@@ -18,10 +18,10 @@
 				<div class="profile__balance">
 					Текущий баланс
 					<p
-						v-if="!isSalaryReady"
+						v-if="!balance.loading"
 						class="profile__balance-value"
 					>
-						{{ totalBalance }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 				</div>
 			</div>
@@ -57,7 +57,7 @@ export default {
 	},
 	computed: {
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'message']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'message']),
 		...mapState(useProfileSalaryStore, ['user_earnings']),
 		...mapState(useProfileSalaryStore, {isSalaryReady: 'isReady'}),
 		totalBalance(){
@@ -113,6 +113,9 @@ export default {
 				profileStatusStore.buttonStatus = 'error'
 				console.error('startDay', error)
 			}
+		},
+		separateNumber(x){
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 		},
 	}
 };
