@@ -561,8 +561,8 @@ class User extends Authenticatable implements Authorizable
             ->toArray();
 
         return ProfileGroup::whereIn('id', array_values($groups))
-            //->where('active', 1)
-            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
+//            ->where('active', 1)
+            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics','head_id'])
             ->get();
     }
 
