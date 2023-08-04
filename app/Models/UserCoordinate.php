@@ -19,12 +19,8 @@ class UserCoordinate extends Model
     ];
 
 
-    /**
-     * Get the user associated with the coordinate.
-     * @return hasOne
-     */
-    public function user():hasOne
+    public function users()
     {
-        return $this->hasOne(User::class, 'coordinate_id');
+        return $this->hasMany(User::class, 'coordinate_id');
     }
 }

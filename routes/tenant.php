@@ -758,14 +758,7 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
         });
 
-
-        Route::group(['prefix' => 'coordinate','as' => 'coordinate.'],function(){
-            Route::get('/', [App\Http\Controllers\Api\Coordinate\CoordinateController::class, 'index'])->name('index');
-            Route::post('/', [App\Http\Controllers\Api\Coordinate\CoordinateController::class, 'store'])->name('store');
-            Route::get('/{id}', [App\Http\Controllers\Api\Coordinate\CoordinateController::class, 'show'])->name('show');
-            Route::put('/{id}', [App\Http\Controllers\Api\Coordinate\CoordinateController::class, 'update'])->name('update');
-            Route::delete('/{id}', [App\Http\Controllers\Api\Coordinate\CoordinateController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('coordinates',[App\Http\Controllers\Coordinate\getCoordinateController::class,'get'])->name('get-coordinate');
 
 
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
