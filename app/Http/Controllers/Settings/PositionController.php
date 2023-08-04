@@ -30,7 +30,7 @@ final class PositionController extends Controller
      */
     public function store(StorePositionRequest $request): JsonResponse
     {
-        $response = $this->service->add($request->toDto()->position);
+        $response = $this->service->add($request->toDto()->toArray());
         return response()->success($response);
     }
 
@@ -95,7 +95,8 @@ final class PositionController extends Controller
             $dto->newName,
             $dto->indexation,
             $dto->sum,
-            $dto->description
+            $dto->description,
+            $dto->is_head
         );
 
         return response()->success($response);
