@@ -94,7 +94,9 @@ export default {
 	},
 	computed:{
 		showPositionGroup(){
-			return this.user && this.user.position_id === 45
+			if(!this.position) return false
+			const pos = this.positions.find(p => p.id === this.position)
+			return pos.is_head
 		},
 		weekdayClass(){
 			return this.weekdays.map(day => +day ? 'active' : '')

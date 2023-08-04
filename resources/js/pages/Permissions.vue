@@ -118,7 +118,10 @@
 										/>
 									</div>
 									<div class="check d-flex">
-										<label class="mb-0 pointer">
+										<label
+											v-if="!ignoreRules.includes(page.key + '_view')"
+											class="mb-0 pointer"
+										>
 											<input
 												class="pointer"
 												v-model="role.perms[page.key + '_view']"
@@ -128,7 +131,10 @@
 										</label>
 									</div>
 									<div class="check d-flex">
-										<label class="mb-0 pointer">
+										<label
+											v-if="!ignoreRules.includes(page.key + '_edit')"
+											class="mb-0 pointer"
+										>
 											<input
 												class="pointer"
 												v-model="role.perms[page.key + '_edit']"
@@ -150,7 +156,10 @@
 												{{ children.name }}
 											</div>
 											<div class="check d-flex">
-												<label class="mb-0 pointer">
+												<label
+													v-if="!ignoreRules.includes(children.key + '_view')"
+													class="mb-0 pointer"
+												>
 													<input
 														class="pointer"
 														v-model="role.perms[children.key + '_view']"
@@ -160,7 +169,10 @@
 												</label>
 											</div>
 											<div class="check d-flex">
-												<label class="mb-0 pointer">
+												<label
+													v-if="!ignoreRules.includes(children.key + '_edit')"
+													class="mb-0 pointer"
+												>
 													<input
 														class="pointer"
 														v-model="role.perms[children.key + '_edit']"
@@ -260,6 +272,10 @@ export default {
 			permissions: [],
 			showRoles: false,
 			isBp: window.location.hostname.split('.')[0] === 'bp',
+			ignoreRules: [
+				'news_view',
+				'structure_view',
+			]
 		};
 	},
 	computed: {

@@ -59,6 +59,12 @@
 							</template>
 						</multiselect>
 						<b-form-textarea
+							v-if="director && director.id === 0"
+							v-model="vacantDescription"
+							class="mt-3"
+							placeholder="Опишите условия на которых можно занять эту должность"
+						/>
+						<b-form-textarea
 							v-model="result"
 							class="mt-3"
 							placeholder="Результат"
@@ -191,6 +197,8 @@ import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
 import AccessSelectFormControl from '@ui/AccessSelect/AccessSelectFormControl.vue'
 import JobtronOverlay from '@ui/Overlay.vue'
 
+const DESC_DIVIDER = '◕◕'
+
 export default {
 	name: 'StructureEditCard',
 	components: {
@@ -232,7 +240,7 @@ export default {
 						avatar: '/user.png',
 					}
 					: '',
-			result: this.card.description || '',
+			result: (this.card.description || '').split(DESC_DIVIDER)[0],
 			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
 			group: !!this.card.is_group || false,
 			autoUsers: !!this.card.status || false,
@@ -248,6 +256,7 @@ export default {
 				return result
 			}, []),
 			isAccessSelect: false,
+			vacantDescription: (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)[1],
 		}
 	},
 	computed: {
@@ -285,6 +294,9 @@ export default {
 				this.$refs.createPosLink.click()
 			}
 		},
+		departmentName(value){
+			if(value?.id) this.autoManager()
+		}
 	},
 	mounted() {},
 	beforeUnmount() {},
@@ -295,6 +307,19 @@ export default {
 			'deleteCard',
 			'closeEditCard',
 		]),
+		autoManager(){
+			if(!this.users) return
+			const manager = this.users.find(user => {
+				if(!user.profile_group) return false
+				const group = user.profile_group.find(group => group.id === this.departmentName.id)
+				if(group) return group.is_head
+				return false
+			})
+			if(manager) {
+				this.director = manager
+				this.position = this.positions.find(pos => pos.id === manager.position_id)
+			}
+		},
 		async saveDepartment() {
 			const isGroup = this.departmentName && this.departmentName.id
 			const hasName = this.nameTag.length
@@ -307,7 +332,7 @@ export default {
 				id: this.card.id,
 				parent_id: this.card.parent_id,
 				group_id: isGroup ? this.departmentName.id : null,
-				description: this.result,
+				description: this.result + DESC_DIVIDER + this.vacantDescription,
 				color: this.bgColor,
 				users: [
 					...this.getUsers()
@@ -315,6 +340,7 @@ export default {
 				status: this.autoUsers,
 				is_group: this.group,
 				manager: {
+					user_id: null,
 					position_id: this.position.id,
 				}
 			}

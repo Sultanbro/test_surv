@@ -60,6 +60,28 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
+			<b-row class="align-items-center mt-4">
+				<b-col
+					cols="12"
+					md="4"
+				>
+					<b-form-group>
+						<b-form-checkbox
+							v-model="isHead"
+							:value="1"
+							:unchecked-value="0"
+							switch
+						>
+							Руководящая должность
+							<img
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								v-b-popover.hover.right="'Сотрудника с такой должностью можно будет назначить руководителем отдела'"
+							>
+						</b-form-checkbox>
+					</b-form-group>
+				</b-col>
+			</b-row>
 			<b-row class="align-items-center">
 				<b-col
 					cols="12"
@@ -207,6 +229,7 @@ export default {
 			indexation: 0,
 			sum: 0,
 			activebtn: null,
+			isHead: false,
 			desc: {
 				require: '',
 				actions: '',
@@ -266,6 +289,7 @@ export default {
 				this.new_position = data[0].position;
 				this.position_id = data[0].id;
 				this.indexation = data[0].indexation;
+				this.isHead = data[0].is_head;
 				this.sum = data[0].sum;
 				this.desc = {
 					require: data[0].require,
@@ -323,6 +347,7 @@ export default {
 					indexation: this.indexation,
 					sum: this.sum,
 					desc: this.desc,
+					is_head: this.isHead,
 				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
 				this.$toast.success(this.addNew ? 'Новая должность создана!' : 'Изменения сохранены');

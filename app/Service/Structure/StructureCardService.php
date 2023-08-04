@@ -90,31 +90,23 @@ class StructureCardService
         // Update manager in structure_card_manager table
         $positionId = $data['position_id'];
 
-        if ($data['is_vacant'] == false)
+        $managerId = $data['manager_id'];
+
+        $structureCardManager = StructureCardManager::where('card_id', $structureCard->id)->first();
+
+        if(!$structureCardManager)
         {
-            $managerId = $data['manager_id'];
-
-            $structureCardManager = StructureCardManager::where('card_id', $structureCard->id)->first();
-            if (!$structureCardManager) {
-                StructureCardManager::create([
-                    'user_id' => $managerId,
-                    'card_id' => $structureCard->id,
-                    'position_id' => $positionId,
-                ]);
-            } else {
-                $structureCardManager->update([
-                    'user_id' => $managerId,
-                    'position_id' => $positionId,
-                ]);
-            }
-        }else{
-            $structureCardManagerDelete = StructureCardManager::where('card_id', $structureCard->id)->first();
-            if ($structureCardManagerDelete) {
-                // The manager relationship record exists, delete it.
-                $structureCardManagerDelete->delete();
-            }
+            StructureCardManager::query()->create([
+                "user_id" => $managerId,
+                "position_id" => $positionId,
+                "card_id" => $structureCard->id
+            ]);
+        }else {
+            $structureCardManager->update([
+                'user_id' => $managerId,
+                'position_id' => $positionId,
+            ]);
         }
-
         if (isset($data['user_ids'])) {
             $structureCard->users()->sync($data['user_ids']);
         }

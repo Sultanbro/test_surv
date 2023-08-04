@@ -184,7 +184,7 @@ export const useStructureStore = defineStore('structure', {
 				users: [],
 				manager: null,
 				is_group: 0,
-				is_vacant: 1,
+				is_vacant: 0,
 				isNew: true
 			}
 		},

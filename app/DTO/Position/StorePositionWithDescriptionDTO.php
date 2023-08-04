@@ -16,7 +16,8 @@ class StorePositionWithDescriptionDTO
         public ?string $newName,
         public ?int $indexation,
         public ?int $sum,
-        public ?array $description
+        public ?array $description,
+        public ?bool $is_head
     )
     {
 

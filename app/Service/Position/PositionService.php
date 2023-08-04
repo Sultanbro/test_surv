@@ -24,18 +24,18 @@ final class PositionService
      *  "position": "name"
      * }
      *
-     * @param string $name
+     * @param array $dto
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      * @throws Exception
      */
     public function add(
-        string $name
+        array $data
     ): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder
     {
         try {
             return Position::query()->updateOrCreate(
-                ['position' => $name],
-                ['position' => $name]
+                ['position' => $data['position'],'is_head' => $data['is_head']],
+                ['position' => $data['position'],'is_head' => $data['is_head']]
             );
         }catch (\Throwable $exception)
         {
@@ -98,11 +98,12 @@ final class PositionService
         ?string $newName,
         ?int $indexation,
         ?int $sum,
-        ?array $description
+        ?array $description,
+        ?bool $is_head
     )
     {
         try {
-             return $this->positionRepository->updatePositionWithDescription($id, $newName, $indexation, $sum, $description);
+             return $this->positionRepository->updatePositionWithDescription($id, $newName, $indexation, $sum, $description,$is_head);
         } catch (Throwable $exception)
         {
             throw new Exception($exception->getMessage());

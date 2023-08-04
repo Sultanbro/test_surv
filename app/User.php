@@ -276,6 +276,7 @@ class User extends Authenticatable implements Authorizable
                 'from',
                 'to',
                 'status',
+                'is_head'
             ])->withTimestamps();
     }
     /**
@@ -561,11 +562,14 @@ class User extends Authenticatable implements Authorizable
             ->get()
             ->pluck('group_id')
             ->toArray();
-
         return ProfileGroup::whereIn('id', array_values($groups))
-            //->where('active', 1)
-            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
-            ->get();
+//            ->where('active', 1)
+            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics',])
+            ->get()
+            ->map(function ($item) use ($is_head) {
+                $item['is_head'] = $is_head;
+                return $item;
+            });
     }
 
     /**

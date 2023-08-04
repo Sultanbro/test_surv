@@ -20,7 +20,7 @@ class StructureCardUpdateDTO extends FormRequest
             'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id',
             'position_id' => 'required|exists:position,id',
-            'manager_id' => 'int|exists:users,id',
+            'manager_id' => 'nullable|exists:users,id',
             'status' => 'boolean',
             'is_group' => 'boolean',
             'is_vacant' => 'boolean'
