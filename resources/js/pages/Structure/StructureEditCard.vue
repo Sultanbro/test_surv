@@ -294,6 +294,9 @@ export default {
 				this.$refs.createPosLink.click()
 			}
 		},
+		departmentName(value){
+			if(value?.id) this.autoManager()
+		}
 	},
 	mounted() {},
 	beforeUnmount() {},
@@ -304,6 +307,19 @@ export default {
 			'deleteCard',
 			'closeEditCard',
 		]),
+		autoManager(){
+			if(!this.users) return
+			const manager = this.users.find(user => {
+				if(!user.profile_group) return false
+				const group = user.profile_group.find(group => group.id === this.departmentName.id)
+				if(group) return group.is_head
+				return false
+			})
+			if(manager) {
+				this.director = manager
+				this.position = this.positions.find(pos => pos.id === manager.position_id)
+			}
+		},
 		async saveDepartment() {
 			const isGroup = this.departmentName && this.departmentName.id
 			const hasName = this.nameTag.length
