@@ -94,11 +94,19 @@ class StructureCardService
 
         $structureCardManager = StructureCardManager::where('card_id', $structureCard->id)->first();
 
-        $structureCardManager->update([
-                    'user_id' => $managerId,
-                    'position_id' => $positionId,
-                ]);
-
+        if(!$structureCardManager)
+        {
+            StructureCardManager::query()->create([
+                "user_id" => $managerId,
+                "position_id" => $positionId,
+                "card_id" => $structureCard->id
+            ]);
+        }else {
+            $structureCardManager->update([
+                'user_id' => $managerId,
+                'position_id' => $positionId,
+            ]);
+        }
         if (isset($data['user_ids'])) {
             $structureCard->users()->sync($data['user_ids']);
         }
