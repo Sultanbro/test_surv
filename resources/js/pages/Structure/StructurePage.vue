@@ -61,6 +61,7 @@
 			>
 				<template v-if="rootCard">
 					<StructureItem
+						ref="rootCard"
 						:card="rootCard"
 						:level="0"
 						:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
@@ -194,6 +195,7 @@ export default {
 		await this.structureGet()
 		this.$nextTick(this.checkFirstCard)
 		this.drawLines()
+		this.autoZoom()
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
 		window.addEventListener('storage', this.checkTabEvents, false)
 	},
@@ -213,6 +215,19 @@ export default {
 			'closeEditCard',
 			'setDemo',
 		]),
+		autoZoom(){
+			this.$nextTick(() => {
+				if(!this.$refs.container) return
+				if(!this.$refs.rootCard) return
+				const widthAwailable = this.$refs.container.clientWidth - 40
+				const zoom = this.zoom / 100
+				const cardsWidth = this.$refs.rootCard.$el.clientWidth * zoom
+				if(cardsWidth > widthAwailable && this.zoom > 10){
+					this.zoom -= 2
+					requestAnimationFrame(this.autoZoom)
+				}
+			})
+		},
 		recursiveUpdate(component) {
 			if (component.drawLines) {
 				component.drawLines();
@@ -245,7 +260,7 @@ export default {
 			}
 			let sumWidth = 0;
 			children.forEach(c => sumWidth += c.offsetWidth);
-			this.leftMarginMainCard = `${Math.round((sumWidth / 2) - 167)}px`;
+			this.leftMarginMainCard = `${Math.round((sumWidth / 2) - 164)}px`;
 		},
 		updateLines() {
 			this.$nextTick(() => {

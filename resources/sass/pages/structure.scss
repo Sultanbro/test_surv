@@ -1,7 +1,7 @@
 .structure-container {
 	overflow: scroll;
 	height: 100vh;
-	padding: 50px;
+	padding: 20px;
 
 	&.is-dragging {
 		user-select: none;
@@ -397,7 +397,7 @@
 		.departments-area {
 			display: flex;
 			min-height: calc(100vh - 100px);
-			padding: 0 20px;
+			padding: 0;
 		}
 
 		.structure-group {
