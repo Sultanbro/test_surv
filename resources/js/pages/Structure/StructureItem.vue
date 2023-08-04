@@ -46,7 +46,7 @@
 
 			<!-- Список сотрудников -->
 			<div
-				v-if="manager || card.is_vacant || (card.users && card.users.length)"
+				v-if="manager || isVacant || (card.users && card.users.length)"
 				class="structure-card-body"
 			>
 				<template v-if="manager">
@@ -75,12 +75,15 @@
 						{{ manager.name }} {{ manager.last_name }}
 					</p>
 				</template>
-				<template v-else-if="card.is_vacant">
+				<template v-else-if="isVacant">
 					<img
 						src="/user.png"
 						alt="photo"
 						class="director-photo"
 					>
+					<StructureInfo v-if="description[1]">
+						{{ description[1] }}
+					</StructureInfo>
 					<p
 						v-if="position"
 						class="StructureItem-contrast position"
@@ -92,7 +95,7 @@
 					</p>
 				</template>
 				<hr
-					v-if="(manager || card.is_vacant) && users && users.length"
+					v-if="(manager || isVacant) && users && users.length"
 					class="divider-users"
 				>
 				<template v-if="users && users.length">
@@ -130,7 +133,7 @@
 			<i
 				v-if="isEditMode"
 				class="fa fa-plus-circle structure-add"
-				:class="{'has-result': card.description}"
+				:class="{'has-result': description[0]}"
 				@click="addNew"
 			/>
 		</div>
@@ -159,7 +162,7 @@
 
 		<!-- Результаты -->
 		<div
-			v-if="card.description"
+			v-if="description[0]"
 			class="structure-card-result"
 			:style="{ backgroundColor: card.color, width: resultWidth > 0 ? `${resultWidth}px` : null }"
 		>
@@ -167,7 +170,7 @@
 				Результаты
 			</p>
 			<p class="StructureItem-contrast result-text">
-				{{ card.description }}
+				{{ description[0] }}
 			</p>
 		</div>
 	</div>
@@ -177,6 +180,8 @@
 import {mapState, mapActions} from 'pinia'
 import StructureInfo from './StructureInfo'
 import {useStructureStore} from '@/stores/Structure.js'
+
+const DESC_DIVIDER = '◕◕'
 
 export default {
 	name: 'StructureItem',
@@ -251,7 +256,13 @@ export default {
 		manager(){
 			if(!this.card) return null
 			if(!this.card.manager) return null
-			return this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
+			const manager = this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
+			return manager || {
+				id: 0,
+				name: 'Вакантная',
+				last_name: 'позиция',
+				avatar: '/user.png',
+			}
 		},
 		position(){
 			if(!this.card) return null
@@ -274,7 +285,13 @@ export default {
 		},
 		employeesCount(){
 			return this.children.length + this.users.length
-		}
+		},
+		description(){
+			return (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)
+		},
+		isVacant(){
+			return this.card.is_vacant || (this.manager && this.manager.id === 0)
+		},
 	},
 	mounted() {
 		this.drawLines();
