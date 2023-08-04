@@ -681,7 +681,7 @@ export default {
 	},
 
 	created() {
-		this.items = this.table
+		this.items = this.fixNameValue(this.table)
 		this.form()
 
 		this.calcGlobal()
@@ -696,6 +696,16 @@ export default {
 	},
 
 	methods: {
+		fixNameValue(items){
+			items.forEach(item => {
+				if(item.name){
+					if(!item.name.value && item.name.show_value){
+						item.name.value = item.name.show_value
+					}
+				}
+			})
+			return items
+		},
 		setDependencies() {
 			let arr = [];
 
@@ -1578,6 +1588,7 @@ export default {
 		},
 
 		formula_searcher(){
+			if(this.items) return []
 			let items = [];
 			for (var i=0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {

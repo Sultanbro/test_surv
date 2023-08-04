@@ -664,7 +664,6 @@ class UserStat extends Model
     public static function getTimeTrackingActivity($user, $dayInMonth, $timeAddress){
         return self::where('user_id', $user->id)
             ->where('date', $dayInMonth->format('Y-m-d'))
-            ->where('created_at', '>', $dayInMonth->startOfMonth()->format('Y-m-d H:i:s'))
             ->where('activity_id', $timeAddress)
             ->first();
     }

@@ -669,7 +669,8 @@ class Salary extends Model
             }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                if ($group->time_address != 0) {
+                $statTotalHour = null;
+                if (isset($group->time_address) && $group->time_address != 0) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
                     if ($userStat) $statTotalHour = floatval($userStat->value);
@@ -689,11 +690,9 @@ class Salary extends Model
                 // Проверяем установлена ли время отдыха
                 if ($workChart && $workChart->rest_time != null){
                     $lunchTime = $workChart->rest_time;
-                    $hour = intval($lunchTime / 60);
-                    $minute = $lunchTime % 60;
-                    $totalHour = floatval($hour.".".$minute);
+                    $hour = floatval($lunchTime / 60);
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
                 }else{
                     $lunchTime = 1;
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);

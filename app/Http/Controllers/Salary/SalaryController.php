@@ -599,11 +599,11 @@ class SalaryController extends Controller
             }
 
             // рабочие дни
-            $ignore = $_user->chartWorkDays(); // Какие дни не учитывать в месяце
             $userModel = User::where('id', $user->id)->first();
 
             if ($userModel) $workDays = $userModel->getWorkDays($date);
-            else $workDays = workdays($date->year, $date->month, $ignore);
+            else if ($_user) $workDays = $_user->getWorkDays($date);
+            else return throw new Exception("User not found");
 
             if(!$edited_salary) $allTotal[6] += intval($workDays);
 
@@ -640,7 +640,7 @@ class SalaryController extends Controller
             // ставка
             $allTotal[7] += intval($wage) ?? 0;
 
-            $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
+            $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id], $group_id);
 
             $salary = 0;
             $trainee_fees = 0;
