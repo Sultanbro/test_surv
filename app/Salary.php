@@ -530,7 +530,7 @@ class Salary extends Model
 
         $group = ProfileGroup::find($group_id);
         $groupTimeAddress = false;
-        if (isset($group->time_address) && $group->time_address != 0) $groupTimeAddress = true;
+        if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
 
         $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
 
