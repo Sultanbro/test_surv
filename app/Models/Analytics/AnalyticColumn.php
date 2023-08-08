@@ -47,4 +47,11 @@ class AnalyticColumn extends Model
         }
 
     }
+
+    public static function getValuesBetweenDates($group_id, $start_date, $end_date) {
+        return self::whereBetween('date', [$start_date, $end_date])
+            ->where('group_id', $group_id)
+            ->get()
+            ->toArray();
+    }
 }
