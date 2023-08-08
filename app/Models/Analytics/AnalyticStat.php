@@ -38,6 +38,7 @@ class AnalyticStat extends Model
     CONST SALARY = 'salary'; // sum of salaries
     CONST REMOTE = 'remote'; // additional remote minutes
     CONST INHOUSE = 'inhouse'; // additional inhouse minutes
+    CONST SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
 
     /**
      * Form pivot table to vue
@@ -898,5 +899,22 @@ class AnalyticStat extends Model
 
         return round($impl - $impl_prev, 2);
 
+    }
+
+    public static function inHouseShowValue($groupId, $date){
+        return self::where("group_id", $groupId)
+            ->where("show_value", self::SHOW_VALUE_INHOUSE)
+            ->where('date', $date->format('Y-m-d'))
+            ->first();
+    }
+
+    public static function getValuesWithRow($analyticStat){
+        return self::where('group_id', $analyticStat->group_id)
+            ->where('date', $analyticStat->date)
+            ->where('row_id', $analyticStat->row_id)
+            ->where('type', self::INHOUSE)
+            ->where('value', '!=', null)
+            ->where('value', '!=', '')
+            ->get();
     }
 }

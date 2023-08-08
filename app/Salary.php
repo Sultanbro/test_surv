@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticColumn;
+use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\User;
@@ -527,6 +529,26 @@ class Salary extends Model
         $date = Carbon::parse($date)->day(1);
 
         $group = ProfileGroup::find($group_id);
+        $groupTimeAddress = false;
+        if (isset($group->time_address) && $group->time_address != 0) $groupTimeAddress = true;
+
+        $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
+
+        $statValues = [];
+        if ($analyticStat) {
+            $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
+
+            if ($checkValue->count() > 0) {
+                $columnValue = AnalyticColumn::getValuesBetweenDates($analyticStat->group_id, $date->startOfMonth()->format('Y-m-d'), $date->endOfMonth()->format('Y-m-d'));
+            }
+
+            foreach ($checkValue as $value) {
+                foreach ($columnValue as $column) {
+                    if ($column['id'] == $value->column_id) $nameColumn = $column['name'];
+                }
+                $statValues[$nameColumn] = $value->value;
+            }
+        }
 
         $users = User::withTrashed();
 
@@ -670,10 +692,16 @@ class Salary extends Model
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $statTotalHour = null;
-                if (isset($group->time_address) && $group->time_address != 0) {
+                if ($groupTimeAddress) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
-                    if ($userStat) $statTotalHour = floatval($userStat->value);
+                    if ($userStat){
+                        if (array_key_exists($i, $statValues)) {
+                            $statTotalHour = floatval($userStat->value) + floatval($statValues[$i])/60;
+                        } else {
+                            $statTotalHour = floatval($userStat->value);
+                        }
+                    }
                 }
 
                 $d = '' . $i;
