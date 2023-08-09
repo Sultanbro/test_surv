@@ -277,7 +277,7 @@
 								>
 							</div>
 						</div>
-						<div class="form-group row">
+						<!-- <div class="form-group row">
 							<label
 								class="col-sm-4 col-form-label font-weight-bold label-surv"
 							>Город<span class="red">*</span></label>
@@ -305,7 +305,7 @@
 									</li>
 								</ul>
 							</div>
-						</div>
+						</div> -->
 						<div class="form-group row">
 							<label
 								class="col-sm-4 col-form-label font-weight-bold label-surv"
