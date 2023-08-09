@@ -59,8 +59,16 @@ class StoreWorkChartRequest extends BaseWorkChartRequest
             startTime: $startTime,
             endTime: $endTime,
             chartWorkType: $chartWorkType,
-            chartWorkdays: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 1): $chartWorkdays,
-            chartDayoffs: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 0) : $chartDayoffs,
+            chartWorkdays: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL
+                ? $floatingDayoffs
+                    ? 7 - $floatingDayoffs
+                    : substr_count($usualSchedule, 1)
+                : $chartWorkdays,
+            chartDayoffs: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL
+                ? $floatingDayoffs
+                    ? $floatingDayoffs
+                    : substr_count($usualSchedule, 0)
+                : $chartDayoffs,
             usualSchedule: bindec((string)$usualSchedule),
             restTime: $rest_time,
             floatingDayoffs: $floatingDayoffs

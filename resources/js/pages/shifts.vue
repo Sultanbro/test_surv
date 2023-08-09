@@ -416,6 +416,16 @@ export default {
 				this.$toast.error('Выберите график');
 				return
 			}
+
+			if(this.form.floatingDayoffs > 6){{
+				this.$toast.error('Укажите корректное кол-во плавающих выходных');
+				return
+			}}
+
+			if(this.form.type === 2){
+				this.form.floatingDayoffs = 0
+			}
+
 			let loader = this.$loading.show();
 
 			const request = {
@@ -430,8 +440,7 @@ export default {
 				usual_schedule: flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0')
 			}
 
-			if(this.editShiftId) request._method = 'put'
-			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, request)
+			const {data} = await this.axios[this.editShiftId ? 'put' : 'post'](`/work-chart/${this.editShiftId || ''}`, request)
 			if(!data) {
 				this.$toast.error(`Не удалось ${this.editShiftId ? 'обновить' : 'добавить'} смену`)
 				loader.hide()
