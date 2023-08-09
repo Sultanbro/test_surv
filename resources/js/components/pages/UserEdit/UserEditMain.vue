@@ -492,7 +492,7 @@ export default {
 				/>
 			</div>
 
-			<div class="form-group row">
+			<!-- <div class="form-group row">
 				<label
 					for="workingDays"
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -561,7 +561,7 @@ export default {
 					:errors="errors"
 					name="selectedCityInput"
 				/>
-			</div>
+			</div> -->
 
 			<div class="form-group row">
 				<label
