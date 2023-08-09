@@ -353,7 +353,7 @@ export default {
 		},
 
 		async readAll(){
-			await this.axios.post('/mark-articles-as-viewed')
+			await this.axios.post('/news/mark-articles-as-viewed')
 			this.getUnviewedNewsCount()
 		},
 
