@@ -1,5 +1,8 @@
 <template>
-	<div :class="'news-header__filter ' + (showFilters ? 'news-header__filter--active' : '')">
+	<div
+		class="FilterComponent"
+		:class="'news-header__filter ' + (showFilters ? 'news-header__filter--active' : '')"
+	>
 		<div
 			:class="'news-filter ' + (showFilters ? 'news-filter--active' : '')"
 			@click="toggleShowFilters(true)"
@@ -174,6 +177,16 @@
 				</JobtronButton>
 			</div>
 		</div>
+
+		<JobtronButton
+			v-if="!showFilters"
+			@click="readAll"
+			title="Пометить все новости прочитанными"
+			small
+			class="FilterComponent-readAll"
+		>
+			<i class="fa fa-check-double" />
+		</JobtronButton>
 	</div>
 </template>
 
@@ -181,6 +194,7 @@
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 import 'vue2-datepicker/locale/ru';
+
 const {CalendarPanel} = DatePicker;
 
 import {
@@ -188,6 +202,7 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 
 import JobtronButton from '@ui/Button'
 
@@ -263,6 +278,7 @@ export default {
 	},
 	methods: {
 		...mapActions(useCompanyStore, ['fetchDictionaries']),
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
 		clearDate() {
 			this.dateType = '';
 		},
@@ -334,6 +350,11 @@ export default {
 				.catch(res => {
 					console.log(res)
 				});
+		},
+
+		async readAll(){
+			await this.axios.post('/mark-articles-as-viewed')
+			this.getUnviewedNewsCount()
 		},
 
 		async filterNews() {
@@ -411,6 +432,11 @@ export default {
 </script>
 
 <style lang="scss">
+.FilterComponent{
+	&-readAll{
+		font-size: 2rem;
+	}
+}
 .news-filter-modal__footer{
 	&-img{
 		filter: invert(100%) sepia(100%) saturate(38%) hue-rotate(254deg) brightness(110%) contrast(110%);
