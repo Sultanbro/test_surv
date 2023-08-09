@@ -117,7 +117,10 @@ export default {
 			taxesFillData: null,
 
 			test: null,
-			fieldErrors: {}
+			fieldErrors: {},
+			cityText: this.user?.working_country || '',
+			cityLat: 0,
+			cityLon: 0,
 		}
 	},
 	computed: {
@@ -184,6 +187,11 @@ export default {
 		user(user){
 			if(user){
 				this.fileurl = user.img_url || 'noavatar.png'
+				this.cityText = user.working_country
+				if(user.coordinate){
+					this.cityLat = user.coordinate.geo_lat
+					this.cityLon = user.coordinate.geo_lon
+				}
 			}
 		},
 	},
@@ -349,6 +357,7 @@ export default {
 			const position = formData.get('position');
 			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
+
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
@@ -380,6 +389,12 @@ export default {
 			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
+
+			if(this.cityLat || this.cityLon){
+				formData.set('selectedCityInput', this.cityText)
+				formData.set('coordinates[geo_lat]', this.cityLat)
+				formData.set('coordinates[geo_lon]', this.cityLon)
+			}
 
 			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
 				this.sendForm(formData, isNew);
@@ -540,6 +555,11 @@ export default {
 		toggleRestoreConfirm(state){
 			this.isRestoreConfirm = state
 		},
+		onChangeCity(city){
+			this.cityText = `Страна: ${city.country} Город: ${city.name}`
+			this.cityLat = city.coords[0]
+			this.cityLon = city.coords[1]
+		}
 	}
 }
 </script>
@@ -845,6 +865,7 @@ export default {
 									:errors="fieldErrors"
 									@valid_change="validChange"
 									@selectWorkChart="selectWorkChart"
+									@changeCity="onChangeCity"
 								/>
 
 								<div class="col-9 add_info">

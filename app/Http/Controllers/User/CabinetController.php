@@ -33,7 +33,9 @@ class CabinetController extends Controller
             ->where('is_admin', 1)
             ->get(['id', \DB::raw("CONCAT(name,' ',last_name) as email")]);
 
-        $user = User::find(auth()->user()->getAuthIdentifier());
+        $user = User::where('id', auth()->user()->getAuthIdentifier())
+            ->with('coordinate')
+            ->first();
 
         $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number','phone')->get()->toArray();
 
@@ -75,9 +77,9 @@ class CabinetController extends Controller
      * добавление карты и измение данный через профиль
      */
     public function editUserProfile(Request $request)
-    {   
+    {
         $user = User::find( auth()->id() );
-         
+
         (new UserSyncService)->update($user->email, [
             'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
             'working_country' => $request->working_country,

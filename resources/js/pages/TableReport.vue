@@ -1418,7 +1418,8 @@ export default {
 							dayHours[tt.date].hour = Number(tt.minutes / 60)
 							tt_hours = Number(tt.minutes / 60);
 						}
-					} else {
+					}
+					else {
 
 
 						if (tt.minutes > 0) {
