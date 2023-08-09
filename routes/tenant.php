@@ -597,6 +597,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');
+        Route::post('/mark-articles-as-viewed', [Article\ArticleController::class,'makeViewedArticles'])->name('make-article-viewed');
+
 
         Route::prefix('{article_id}')->name('actions.')->group(function () {
             Route::post('like', [Article\ArticleActionController::class, 'like'])->name('like');
