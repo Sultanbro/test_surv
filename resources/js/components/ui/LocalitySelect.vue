@@ -14,6 +14,7 @@
 		<div
 			v-if="!isFocus"
 			class="LocalitySelect-fake"
+			:title="outValue"
 		>
 			{{ outValue }}
 		</div>
@@ -205,6 +206,10 @@ export default {
 
 		background-color: #F7FAFC;
 		pointer-events: none;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 }
 </style>
