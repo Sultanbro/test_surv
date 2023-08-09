@@ -29,7 +29,7 @@ export default {
 		<div class="old__content">
 			<Cabinet
 				v-show="auth_role"
-				:auth_role="auth_role"
+				:auth-role="auth_role"
 			/>
 		</div>
 	</DefaultLayout>

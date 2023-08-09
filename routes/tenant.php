@@ -756,9 +756,9 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class,'all'])->name('get-all');
             Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
             Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
-
-
         });
+
+        Route::get('coordinates',[App\Http\Controllers\Coordinate\getCoordinateController::class,'get'])->name('get-coordinate');
 
 
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {

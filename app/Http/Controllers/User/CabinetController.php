@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserCoordinate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
@@ -32,7 +33,9 @@ class CabinetController extends Controller
             ->where('is_admin', 1)
             ->get(['id', \DB::raw("CONCAT(name,' ',last_name) as email")]);
 
-        $user = User::find(auth()->user()->getAuthIdentifier());
+        $user = User::where('id', auth()->user()->getAuthIdentifier())
+            ->with('coordinate')
+            ->first();
 
         $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number','phone')->get()->toArray();
 
@@ -74,16 +77,17 @@ class CabinetController extends Controller
      * добавление карты и измение данный через профиль
      */
     public function editUserProfile(Request $request)
-    {   
+    {
         $user = User::find( auth()->id() );
-         
+
         (new UserSyncService)->update($user->email, [
             'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
             'working_country' => $request->working_country,
             'working_city' => $request->working_city,
             'birthday' => $request->birthday,
             'name' => $request['query']['name'],
-            'last_name' =>  $request['query']['last_name'], 
+            'last_name' =>  $request['query']['last_name'],
+            'coordinate_id' =>  isset($request->coordinates) ? $this->setCoordinate($request->coordinates) : null,
         ]);
 
         if (isset($request->cards)){
@@ -104,6 +108,26 @@ class CabinetController extends Controller
         return response(['success'=>'1']);
     }
 
+    public function setCoordinate(array $coordinatesArray)
+    {
+        $coordinate = UserCoordinate::query()
+            ->where('geo_lat',$coordinatesArray['geo_lat'])
+            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->first();
+
+        if ($coordinate)
+        {
+            return $coordinate->id;
+        }
+        else
+        {
+            $coordinate = UserCoordinate::query()->create([
+                'geo_lat' => $coordinatesArray['geo_lat'],
+                'geo_lon' => $coordinatesArray['geo_lon']
+            ]);
+            return $coordinate->id;
+        }
+    }
 
     /**
      * Удаление карты через профиль индивидуально Kairat

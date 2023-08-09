@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios'
+import LocalitySelect from '@ui/LocalitySelect.vue'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
 import UserEditError from '@/components/pages/UserEdit/UserEditError'
@@ -9,6 +10,7 @@ const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9
 export default {
 	name: 'UserEditMain',
 	components: {
+		LocalitySelect,
 		ProfileGroups,
 		UserEditGroups,
 		UserEditError,
@@ -196,6 +198,9 @@ export default {
 			let decimal_portion = absolute_value - Math.floor(absolute_value);
 			let str = 'UTC'  + (timezone >= 0 ? '+' : '-') + String(Math.floor(absolute_value)) + (decimal_portion == 0 ? '' : ':') + (decimal_portion * 60 || '');
 			return str;
+		},
+		onChangeCity(city){
+			this.$emit('changeCity', city)
 		}
 	}
 }
@@ -283,6 +288,7 @@ export default {
 					name="email"
 				/>
 			</div>
+
 			<div
 				v-if="user"
 				class="form-group row"
@@ -385,6 +391,7 @@ export default {
 			/>
 			<!-- end of groups and books tab -->
 		</div>
+
 		<div class="col-12 col-xl-6">
 			<div class="form-group row">
 				<label
@@ -433,6 +440,7 @@ export default {
 					name="user_type"
 				/>
 			</div>
+
 			<div class="form-group row">
 				<label
 					for="programType"
@@ -483,6 +491,7 @@ export default {
 					name="program_type"
 				/>
 			</div>
+
 			<div class="form-group row">
 				<label
 					for="workingDays"
@@ -496,8 +505,8 @@ export default {
 						>
 							<div class="col-sm-12 position-relative">
 								<input
-									name="selectedCityInput"
 									v-model="country"
+									name="selectedCityInput"
 									required
 									id="selectedCityInput"
 									class="form-control"
@@ -508,10 +517,10 @@ export default {
 									autocomplete="off"
 								>
 								<input
-									name="working_city"
 									v-model="working_city"
-									hidden
+									name="working_city"
 									id="working_city"
+									hidden
 								>
 								<div
 									v-if="isSearchResult"
@@ -553,6 +562,20 @@ export default {
 					name="selectedCityInput"
 				/>
 			</div>
+
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Город</label>
+				<div class="col-sm-8">
+					<LocalitySelect
+						v-model="country"
+						@change="onChangeCity"
+					/>
+				</div>
+			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -584,6 +607,25 @@ export default {
 					name="work-chart"
 				/>
 			</div>
+
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label font-weight-bold">
+					Первый рабочий день
+				</label>
+				<div class="col-sm-8 d-flex">
+					<input
+						name="first_work_day"
+						v-model="first_work_day"
+						type="date"
+						class="form-control"
+					>
+				</div>
+				<UserEditError
+					:errors="errors"
+					name="first_work_day"
+				/>
+			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -615,6 +657,7 @@ export default {
 					name="timezone"
 				/>
 			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -656,24 +699,6 @@ export default {
 				<UserEditError
 					:errors="errors"
 					name="full_time"
-				/>
-			</div>
-
-			<div class="form-group row">
-				<label class="col-sm-4 col-form-label font-weight-bold">
-					Первый рабочий день
-				</label>
-				<div class="col-sm-8 d-flex">
-					<input
-						name="first_work_day"
-						v-model="first_work_day"
-						type="date"
-						class="form-control"
-					>
-				</div>
-				<UserEditError
-					:errors="errors"
-					name="first_work_day"
 				/>
 			</div>
 

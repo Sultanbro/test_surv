@@ -92,7 +92,8 @@ class StoreUserRequest extends FormRequest
             'taxes.*.percent'   => ['numeric'],
             'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
             'taxes.*.name'      => ['string'],
-            'bitrix_id'         => ['numeric']
+            'bitrix_id'         => ['numeric'],
+            'coordinates'         => ['array'],
         ];
     }
 
@@ -148,6 +149,7 @@ class StoreUserRequest extends FormRequest
         $taxes = Arr::get($validated, 'taxes');
         $bitrixId = Arr::get($validated, 'bitrix_id');
         $timezone = Arr::get($validated, 'timezone');
+        $coordinates = Arr::get($validated, 'coordinates');
 
         return new StoreUserDTO(
             $id,
@@ -198,6 +200,7 @@ class StoreUserRequest extends FormRequest
             $taxes,
             $bitrixId,
             $timezone,
+            $coordinates,
         );
     }
 }
