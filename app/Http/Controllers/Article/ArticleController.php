@@ -138,9 +138,12 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $unviewedIds = Article::getUnviewedArticleIds($user->id);
+        $unviewedArticles = Article::getUnviewedArticle($user->id);
 
-        $user->views()->sync($unviewedIds);
+        foreach($unviewedArticles as $item)
+        {
+            $item->views()->attach($user->id);
+        }
 
         return response()->json(['message' => "Success"]);
     }
