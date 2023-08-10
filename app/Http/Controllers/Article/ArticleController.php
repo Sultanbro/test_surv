@@ -15,6 +15,7 @@ use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Models\Article\Article;
 use App\Service\Article\ArticleService;
 use App\Service\PaginationService;
+use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -129,4 +130,20 @@ class ArticleController extends Controller
 
         return response()->json(['count' => $count]);
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function makeViewedArticles():JsonResponse
+    {
+        $user = Auth::user();
+
+        $unviewedIds = Article::getUnviewedArticleIds($user->id);
+
+        $user->views()->sync($unviewedIds);
+
+        return response()->json(['message' => "Success"]);
+    }
+
+
 }

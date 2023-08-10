@@ -146,6 +146,28 @@ class Article extends Model
             ->count();
     }
 
+    /**
+     * @param int $userId
+     * @return mixed[]
+     */
+    public static function getUnviewedArticleIds(int $userId):array
+    {
+        $user = User::getAuthUser($userId);
+
+        return Article::query()
+            ->leftJoin(
+                'article_views_users as views',
+                function($join) use ($userId) {
+                    $join->on('articles.id', '=', 'views.article_id');
+                    $join->on('views.user_id', '=', DB::raw($userId));
+                },
+            )
+            ->whereNull('views.user_id')
+            ->where('created_at', '>', $user->created_at)
+            ->pluck('id')
+            ->toArray();
+    }
+
     public function favourites(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id')->withTrashed();
