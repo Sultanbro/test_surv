@@ -1260,7 +1260,6 @@ class TimetrackingController extends Controller
                     ->whereIn('id', $user_ids)
                     ->get();
             }
-            dd($users);
 
             $data =[];
             foreach ($users as $userData) {
