@@ -10,6 +10,7 @@ use App\Traits\Filterable;
 use App\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -148,9 +149,9 @@ class Article extends Model
 
     /**
      * @param int $userId
-     * @return mixed[]
+     * @return Builder[]|Collection
      */
-    public static function getUnviewedArticleIds(int $userId):array
+    public static function getUnviewedArticle(int $userId):Collection|array
     {
         $user = User::getAuthUser($userId);
 
@@ -164,8 +165,7 @@ class Article extends Model
             )
             ->whereNull('views.user_id')
             ->where('created_at', '>', $user->created_at)
-            ->pluck('id')
-            ->toArray();
+            ->get();
     }
 
     public function favourites(): BelongsToMany
