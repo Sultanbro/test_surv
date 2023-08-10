@@ -14,17 +14,17 @@
 				<template v-if="page_item.name.includes(searchText) || searchText.length == 0">
 					<tr :key="p">
 						<td
-							@click="expand_user(p)"
 							class="pointer b-table-sticky-column"
+							@click="expand_user(p)"
 						>
 							<div class="d-flex px-2">
 								<i
-									class="fa fa-minus mt-1"
 									v-if="page_item.expanded"
+									class="fa fa-minus mt-1"
 								/>
 								<i
-									class="fa fa-plus mt-1"
 									v-else
+									class="fa fa-plus mt-1"
 								/>
 								<span class="ml-2">{{ p + 1 }}</span>
 							</div>
@@ -84,17 +84,17 @@
 				<template v-if="page_item[0].name.includes(searchText) || searchText.length == 0">
 					<tr :key="p">
 						<td
-							@click="expand_group(p)"
 							class="pointer b-table-sticky-column"
+							@click="expand_group(p)"
 						>
 							<div class="d-flex px-2">
 								<i
-									class="fa fa-minus mt-1"
 									v-if="page_item.expanded"
+									class="fa fa-minus mt-1"
 								/>
 								<i
-									class="fa fa-plus mt-1"
 									v-else
+									class="fa fa-plus mt-1"
 								/>
 								<span class="ml-2">{{ p + 1 + users.length }}</span>
 							</div>
@@ -117,17 +117,17 @@
 									>
 										<tr>
 											<th
-												@click="expand_group_user(i, p)"
 												class="pointer b-table-sticky-column"
+												@click="expand_group_user(i, p)"
 											>
 												<div class="d-flex px-2">
 													<i
-														class="fa fa-minus mt-1"
 														v-if="user.expended"
+														class="fa fa-minus mt-1"
 													/>
 													<i
-														class="fa fa-plus mt-1"
 														v-else
+														class="fa fa-plus mt-1"
 													/>
 													<span class="ml-2">{{ parseInt(i) + 1 }}</span>
 												</div>
@@ -234,19 +234,19 @@ export default {
 		groups: Array,
 		searchText: String
 	},
-	watch: {
-	},
 	data() {
 		return {
 		}
+	},
+	computed: {
+	},
+	watch: {
 	},
 
 	created() {
 	},
 
 	mounted() {
-	},
-	computed: {
 	},
 	methods: {
 		expand_user(i){

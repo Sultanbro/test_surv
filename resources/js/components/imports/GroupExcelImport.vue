@@ -6,9 +6,9 @@
 					<p class="heading">
 						Шаг 1: Загрузите Excel файл
 						<b-button
+							id="btn"
 							variant="default"
 							size="sm"
-							id="btn"
 							class="ml-2"
 						>
 							<i class="fa fa-info" />
@@ -50,8 +50,8 @@
 						</div>
 						<b-button
 							variant="primary"
-							@click="uploadFile"
 							class="mt-2 mb-2"
+							@click="uploadFile"
 						>
 							<i class="fa fa-file" /> Загрузить
 						</b-button>
@@ -59,9 +59,9 @@
 				</div>
 				<div class="col-md-12">
 					<p
-						style="color:red"
 						v-for="error in errors"
 						:key="error"
+						style="color:red"
 					>
 						{{ error }}
 					</p>
@@ -71,8 +71,8 @@
 
 
 		<div
-			class="mt-4"
 			v-if="!showStepTwo"
+			class="mt-4"
 		>
 			<h5>Примечания</h5>
 			<p>1. В табель можно импортировать только тех сотрудников, которые в должности "Оператор"</p>
@@ -103,9 +103,9 @@
 				</div>
 			</div>
 			<div
-				class="row"
 				v-for="item in items"
 				:key="item.name"
+				class="row"
 			>
 				<div class="col-md-5">
 					<input
@@ -118,13 +118,13 @@
 
 				<div class="col-md-5">
 					<select
-						class="form-control"
 						v-model="item.id"
+						class="form-control"
 					>
 						<option
-							:value="user.id"
 							v-for="user in users"
 							:key="user.id"
+							:value="user.id"
 						>
 							{{ user.name }} {{ user.last_name }} ID {{ user.id }}
 						</option>

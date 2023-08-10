@@ -2,26 +2,26 @@
 	<div class="readers-badge">
 		✔ Cообщение прочитано: {{ message.readers[0].name }}
 		<a
+			v-if="message.readers.length > 1"
 			href="javascript:"
 			class="readers-link"
 			@mouseover="showReadersList"
 			@mouseleave="hideReadersList"
-			v-if="message.readers.length > 1"
 		>
 			и еще {{ message.readers.length - 1 }} человек
 		</a>
 
 		<div
-			class="readers-list"
 			v-if="showReaders"
-			:style="{top:listY + 'px',left:listX+'px'}"
 			id="messenger_readers_list"
+			class="readers-list"
+			:style="{top:listY + 'px',left:listX+'px'}"
 		>
 			<div class="readers-list-body">
 				<div
-					class="readers-list-body-text"
 					v-for="(reader, index) in message.readers"
 					:key="index"
+					class="readers-list-body-text"
 				>
 					<!--          avatar -->
 					<div class="readers-list-body-text-avatar">

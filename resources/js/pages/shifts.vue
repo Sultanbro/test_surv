@@ -70,8 +70,8 @@
 			id="edit-shift-sidebar"
 			:title="sidebarName ? sidebarName : 'Сертификат'"
 			:open="showSidebar"
-			@close="closeSidebar"
 			width="600px"
+			@close="closeSidebar"
 		>
 			<b-form @submit.prevent="onSubmit">
 				<!-- Название -->
@@ -100,17 +100,17 @@
 					>
 						Рабочий график
 						<img
+							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
 						>
 					</label>
 					<div class="col-sm-8 form-inline">
 						<input
-							name="work_start_time"
-							v-model="form.workStartTime"
-							type="time"
 							id="workStartTime"
+							v-model="form.workStartTime"
+							name="work_start_time"
+							type="time"
 							class="form-control mr-2 work-start-time"
 						>
 						<label
@@ -118,10 +118,10 @@
 							class="col-form-label mx-3"
 						>До </label>
 						<input
-							name="work_start_end"
-							v-model="form.workEndTime"
-							type="time"
 							id="workEndTime"
+							v-model="form.workEndTime"
+							name="work_start_end"
+							type="time"
 							class="form-control mx-2 work-end-time"
 						>
 					</div>
@@ -135,9 +135,9 @@
 					>
 						Время отдыха
 						<img
+							v-b-popover.hover.left="'Укажите сколько времени в минутах положено отдыха (обед и т.п.). Это время будут не оплачиваемым'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.left="'Укажите сколько времени в минутах положено отдыха (обед и т.п.). Это время будут не оплачиваемым'"
 						>
 					</label>
 					<div class="col-sm-8 form-inline">
@@ -175,9 +175,9 @@
 					>
 						Плавающие выходные
 						<img
+							v-b-popover.hover.left="'В любой из рабочих дней человек сможет отдохнуть то количество которое вы указали в поле'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.left="'В любой из рабочих дней человек сможет отдохнуть то количество которое вы указали в поле'"
 						>
 					</label>
 					<div class="col-sm-8 form-inline">
@@ -229,9 +229,9 @@
 					>
 						Отметьте выходные дни
 						<img
+							v-b-popover.hover.left="'Отметив выходные дни сотрудник не сможет начать рабочй день в эти дни'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.left="'Отметив выходные дни сотрудник не сможет начать рабочй день в эти дни'"
 						>
 					</label>
 					<div class="col-sm-8">

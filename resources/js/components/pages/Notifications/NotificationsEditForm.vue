@@ -8,15 +8,15 @@
 			<div class="NotificationsEditForm-label">
 				Название уведомления
 				<img
+					v-b-popover.hover="'Название уведомления'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
-					v-b-popover.hover="'Название уведомления'"
 				>
 			</div>
 			<b-form-input
-				class="NotificationsEditForm-control"
 				v-model="value.name"
+				class="NotificationsEditForm-control"
 				type="text"
 				placeholder="Название"
 				required
@@ -31,10 +31,10 @@
 			<div class="NotificationsEditForm-label">
 				Кого уведомляем
 				<img
+					v-b-popover.hover="'Сотрудники, отделы или должности кому будет приходить уведомление'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
-					v-b-popover.hover="'Сотрудники, отделы или должности кому будет приходить уведомление'"
 				>
 			</div>
 			<div class="NotificationsEditForm-control NotificationsEditForm-badges form-control">
@@ -53,15 +53,15 @@
 			<div class="NotificationsEditForm-label">
 				Текст уведомления
 				<img
+					v-b-popover.hover="'Текст уведомления'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
-					v-b-popover.hover="'Текст уведомления'"
 				>
 			</div>
 			<b-form-textarea
-				class="NotificationsEditForm-control"
 				v-model="value.title"
+				class="NotificationsEditForm-control"
 				placeholder="Текст уведомления"
 				rows="3"
 				max-rows="6"
@@ -74,10 +74,10 @@
 			<div class="NotificationsEditForm-label">
 				Куда отправлять
 				<img
+					v-b-popover.hover="'Портал, почта или интеграция'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
-					v-b-popover.hover="'Портал, почта или интеграция'"
 				>
 			</div>
 			<div class="NotificationsEditForm-control">
@@ -102,10 +102,10 @@
 			<div class="NotificationsEditForm-label">
 				Периодичность отправки
 				<img
+					v-b-popover.hover="'В какаие дни и в какое время будут отправляться уведомления'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
-					v-b-popover.hover="'В какаие дни и в какое время будут отправляться уведомления'"
 				>
 			</div>
 			<div class="NotificationsEditForm-control">
@@ -148,8 +148,8 @@
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
 				:submit-button="'Применить'"
-				@submit="onSubmitAccess"
 				class="NotificationsEditForm-accessSelect"
+				@submit="onSubmitAccess"
 			/>
 		</JobtronOverlay>
 	</div>

@@ -29,8 +29,8 @@ export default {
 <template>
 	<DefaultLayout class="no-padding">
 		<div
-			class="old__content"
 			v-show="auth_user_id"
+			class="old__content"
 		>
 			<KBPage
 				:auth_user_id="auth_user_id"

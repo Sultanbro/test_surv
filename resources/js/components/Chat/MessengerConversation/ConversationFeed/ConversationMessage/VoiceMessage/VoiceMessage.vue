@@ -49,6 +49,14 @@ export default {
 		ChatIconPauseVoice,
 		ChatIconPlayVoice,
 	},
+	filters: {
+		durationFormat(value) {
+			const minutes = Math.floor(value / 60);
+			const seconds = Math.floor(value - minutes * 60);
+
+			return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+		},
+	},
 	props: {
 		audioSource: {
 			type: String,
@@ -79,7 +87,6 @@ export default {
 	},
 	watch: {
 		isActive(val) {
-			console.log('isActive', val);
 			if (!val) {
 				this.stop();
 			}
@@ -130,14 +137,6 @@ export default {
 					this.duration = this.$refs.audio.duration;
 				};
 			}
-		},
-	},
-	filters: {
-		durationFormat(value) {
-			const minutes = Math.floor(value / 60);
-			const seconds = Math.floor(value - minutes * 60);
-
-			return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
 		},
 	},
 };

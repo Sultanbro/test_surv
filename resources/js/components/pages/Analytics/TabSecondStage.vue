@@ -2,8 +2,8 @@
 	<div class="TabSecondStage">
 		<b-tabs type="card">
 			<b-tab
-				title="Сводная"
 				key="1"
+				title="Сводная"
 				card
 			>
 				<TableTraineeSage2
@@ -12,8 +12,8 @@
 				/>
 			</b-tab>
 			<b-tab
-				title="Оценка тренера"
 				key="2"
+				title="Оценка тренера"
 				card
 			>
 				<SvodTable
@@ -23,8 +23,8 @@
 				/>
 			</b-tab>
 			<b-tab
-				title="Отсутствие стажеров"
 				key="4"
+				title="Отсутствие стажеров"
 				card
 			>
 				<div class="row pt-4">

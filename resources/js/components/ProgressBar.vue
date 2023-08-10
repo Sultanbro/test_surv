@@ -12,8 +12,8 @@
 			@after-appear="enter"
 		>
 			<div
-				class="tracker-bar"
 				id="mytrans"
+				class="tracker-bar"
 			/>
 		</transition>
 	</div>

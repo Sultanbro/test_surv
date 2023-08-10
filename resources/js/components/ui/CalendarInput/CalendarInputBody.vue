@@ -12,12 +12,12 @@ import CalendarInputMain from './CalendarInputMain'
 import CalendarInputFooter from './CalendarInputFooter'
 export default {
 	name: 'CalendarInputBody',
-	inject: ['getRange', 'getOnlyMonth'],
 	components: {
 		CalendarInputHeader,
 		CalendarInputMain,
 		CalendarInputFooter,
 	},
+	inject: ['getRange', 'getOnlyMonth'],
 	computed: {
 		range(){
 			return this.getRange()

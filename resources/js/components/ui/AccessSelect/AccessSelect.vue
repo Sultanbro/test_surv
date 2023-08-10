@@ -17,8 +17,8 @@
 		/>
 		<AccessSelectTabs
 			v-if="tabs && tabs.length && !accessSearch"
-			:tabs="tabs"
 			v-model="selectedTab"
+			:tabs="tabs"
 			class="AccessSelect-tabs"
 		/>
 		<AccessSelectSearch
@@ -84,8 +84,8 @@
 			:count="accessList.length"
 			:submit-button="submitButton"
 			:submit-disabled="submitDisabled"
-			@submit="$emit('submit', accessList)"
 			class="AccessSelect-footer"
+			@submit="$emit('submit', accessList)"
 		/>
 		<slot
 			name="after"

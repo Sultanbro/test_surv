@@ -60,9 +60,9 @@
 						<div class="popupShowSelected">
 							<div v-if="selectedRole.role_1">
 								<p
-									class="list-role-1"
 									v-for="(item, index) in options_role_1"
 									:key="index"
+									class="list-role-1"
 								>
 									<a
 										class="btn btn-block"

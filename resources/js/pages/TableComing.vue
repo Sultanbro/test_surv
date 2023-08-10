@@ -7,14 +7,14 @@
 			<div class="row mb-3">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -22,14 +22,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -37,14 +37,14 @@
 				</div>
 				<div class="col-2">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentYear"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="year in years"
-							:value="year"
 							:key="year"
+							:value="year"
 						>
 							{{ year }}
 						</option>
@@ -67,14 +67,14 @@
 					ok-text="Да"
 					cancel-text="Нет"
 					title="Вы уверены?"
-					@ok="setTimeManually"
 					size="md"
+					@ok="setTimeManually"
 				>
 					<template v-for="error in errors">
 						<b-alert
+							:key="error"
 							show
 							variant="danger"
-							:key="error"
 						>
 							{{ error }}
 						</b-alert>
@@ -87,10 +87,10 @@
 				</b-modal>
 				<div class="table-container table-coming">
 					<b-table
+						id="comingTable"
 						responsive
 						:sticky-header="true"
 						class="text-nowrap text-right table-custom-table-coming"
-						id="comingTable"
 						:small="true"
 						:bordered="true"
 						:items="items"
@@ -113,16 +113,16 @@
 
 						<template #cell()="data">
 							<div
-								@click="setCurrentEditingCell(data)"
 								:class="{ fine: data.item.fines[data.field.key.toString()].length > 0}"
+								@click="setCurrentEditingCell(data)"
 							>
 								<input
-									@mouseover="$event.preventDefault()"
 									class="cell-input"
 									type="time"
 									:value="data.value"
 									:readonly="true"
 									ondblclick="this.readOnly='';"
+									@mouseover="$event.preventDefault()"
 									@change="changeTimeInCell"
 									@keyup.enter="openModal"
 								>

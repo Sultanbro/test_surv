@@ -31,13 +31,13 @@ export default {
 			default: 'Модальное окно'
 		}
 	},
-	created(){
-		this.items = JSON.parse(this.items)
-	},
 	data() {
 		return {
 
 		}
+	},
+	created(){
+		this.items = JSON.parse(this.items)
 	},
 	methods: {
 

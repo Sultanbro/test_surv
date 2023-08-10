@@ -20,8 +20,8 @@
 						v-model="activebtn"
 						:options="statuses"
 						size="md"
-						@change="selectGroup"
 						class="group-select col-lg-6 d-flex"
+						@change="selectGroup"
 					>
 						<template #first>
 							<b-form-select-option
@@ -45,20 +45,20 @@
 					class="add-grade"
 				>
 					<b-form-input
+						v-model="new_status"
 						type="text"
 						class="form-control"
-						v-model="new_status"
 					/>
 					<button
-						@click="addStatus"
 						class="btn btn-success ml-4"
+						@click="addStatus"
 					>
 						<i class="fa fa-plus" />
 					</button>
 					<button
 						class="btn btn-info rounded add-s ml-4"
-						@click="showArchiveModal = true"
 						title="Восстановить из архива"
+						@click="showArchiveModal = true"
 					>
 						<i class="fa fa-archive" />
 					</button>
@@ -74,8 +74,8 @@
 					class="add-grade"
 				>
 					<b-form-input
-						type="text"
 						v-model="gname"
+						type="text"
 					/>
 				</b-form-group>
 			</b-col>
@@ -97,15 +97,15 @@
 					</div>
 					<div class="fl">
 						<input
-							type="time"
 							v-model="timeon"
+							type="time"
 							class="form-control scscsc"
 							name="start_time"
 						>
 						<span class="before">до</span>
 						<input
-							type="time"
 							v-model="timeoff"
+							type="time"
 							value=""
 							class="form-control"
 							name="end_time"
@@ -123,8 +123,8 @@
 					</div>
 					<div class="fl">
 						<input
-							type="text"
 							v-model="time_address_text"
+							type="text"
 							class="form-control scscsc"
 							style="background: #fff"
 							disabled
@@ -142,8 +142,8 @@
 					</div>
 					<div class="fl">
 						<input
-							type="number"
 							v-model="workdays"
+							type="number"
 							class="form-control scscsc"
 							min="1"
 							max="7"
@@ -207,8 +207,8 @@
 
 				<div class="blu">
 					<b-form-checkbox
-						class="mt-3"
 						v-model="show_payment_terms"
+						class="mt-3"
 						:value="1"
 						:unchecked-value="0"
 						switch
@@ -256,14 +256,14 @@
 			</div>
 			<div class="col-lg-12 mb-3">
 				<button
-					@click="saveusers"
 					class="btn btn-success mr-2 rounded"
+					@click="saveusers"
 				>
 					Сохранить
 				</button>
 				<button
-					@click.stop="deleted"
 					class="btn btn-danger mr-2 rounded"
+					@click.stop="deleted"
 				>
 					<i class="fa fa-trash" /> Удалить группу
 				</button>
@@ -271,11 +271,11 @@
 		</div>
 
 		<Sidebar
+			v-if="showBonuses"
 			title="Бонусы"
 			:open="showBonuses"
-			@close="showBonuses = false"
-			v-if="showBonuses"
 			width="72%"
+			@close="showBonuses = false"
 		>
 			<table class="table table-bordered table-sm">
 				<tr>
@@ -309,9 +309,9 @@
 				>
 					<td>
 						<input
+							v-model="bonus.title"
 							type="text"
 							class="form-control form-control-sm"
-							v-model="bonus.title"
 						>
 					</td>
 					<td class="left">
@@ -323,9 +323,9 @@
 								Нет активности
 							</option>
 							<option
-								:value="activity.id"
 								v-for="activity in activities"
 								:key="activity.id"
+								:value="activity.id"
 							>
 								{{ activity.name }}
 							</option>
@@ -337,9 +337,9 @@
 							class="form-control form-control-sm"
 						>
 							<option
-								:value="unit.value"
 								v-for="unit in units"
 								:key="unit.value"
+								:value="unit.value"
 							>
 								{{ unit.title }}
 							</option>
@@ -347,9 +347,9 @@
 					</td>
 					<td class="left">
 						<input
+							v-model="bonus.quantity"
 							type="text"
 							class="form-control form-control-sm"
-							v-model="bonus.quantity"
 						>
 					</td>
 					<td class="left">
@@ -358,9 +358,9 @@
 							class="form-control form-control-sm"
 						>
 							<option
-								:value="daypart.value"
 								v-for="daypart in dayparts"
 								:key="daypart.value"
+								:value="daypart.value"
 							>
 								{{ daypart.title }}
 							</option>
@@ -368,15 +368,15 @@
 					</td>
 					<td class="left">
 						<input
+							v-model="bonus.sum"
 							type="text"
 							class="form-control form-control-sm"
-							v-model="bonus.sum"
 						>
 					</td>
 					<td class="left">
 						<textarea
-							class="form-control form-control-sm"
 							v-model="bonus.text"
+							class="form-control form-control-sm"
 						/>
 					</td>
 					<td class="left">
@@ -407,8 +407,8 @@
 					Добавить
 				</button>
 				<button
-					class="btn btn-danger btn-sm rounded"
 					v-if="showDeleteButton"
+					class="btn btn-danger btn-sm rounded"
 					@click="before_deleteBonus"
 				>
 					Удалить
@@ -453,9 +453,9 @@
 		<b-modal
 			v-model="showEditTimeAddress"
 			title="Подтягивать часы"
-			@ok="saveTimeAddress()"
 			size="lg"
 			class="modalle"
+			@ok="saveTimeAddress()"
 		>
 			<div class="row">
 				<div class="col-5 mt-1">
@@ -463,20 +463,20 @@
 						Источник часов
 
 						<i
-							class="fa fa-info-circle"
 							v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
+							class="fa fa-info-circle"
 						/>
 					</p>
 				</div>
 				<div class="col-7">
 					<select
-						class="form-control form-control-sm"
 						v-model="time_address"
+						class="form-control form-control-sm"
 					>
 						<option
-							:value="key"
 							v-for="(time, key) in time_variants"
 							:key="key"
+							:value="key"
 						>
 							{{ time }}
 						</option>
@@ -485,15 +485,15 @@
 			</div>
 
 			<div
-				class="row"
 				v-if="time_address == -1"
+				class="row"
 			>
 				<div class="col-5 mt-1">
 					<div class="fl">
 						ID диалера
 						<i
-							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
+							class="fa fa-info-circle ml-2"
 							title="Диалер в U-Calls"
 						/>
 					</div>
@@ -501,14 +501,14 @@
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
 						<input
-							type="text"
 							v-model="dialer_id"
+							type="text"
 							placeholder="ID"
 							class="form-control scscsc"
 						>
 						<input
-							type="number"
 							v-model="script_id"
+							type="number"
 							placeholder="ID скрипта"
 							class="form-control scscsc"
 						>
@@ -517,15 +517,15 @@
 			</div>
 
 			<div
-				class="row"
 				v-if="time_address == -1"
+				class="row"
 			>
 				<div class="col-5 mt-1">
 					<div class="fl">
 						Сколько минут считать, за полный рабочий день
 						<i
-							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'"
+							class="fa fa-info-circle ml-2"
 							title="Ставить полный рабочий день"
 						/>
 					</div>
@@ -533,14 +533,14 @@
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
 						<input
-							type="text"
 							v-model="talk_minutes"
+							type="text"
 							placeholder="ID"
 							class="form-control scscsc"
 						>
 						<input
-							type="number"
 							v-model="talk_hours"
+							type="number"
 							placeholder="ID скрипта"
 							class="form-control scscsc"
 						>
@@ -554,8 +554,8 @@
 						Исключения
 
 						<i
-							class="fa fa-info-circle"
 							v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
+							class="fa fa-info-circle"
 						/>
 					</p>
 				</div>
@@ -582,8 +582,8 @@
 			v-model="showArchiveModal"
 			size="md"
 			title="Восстановить из архива"
-			@ok="restoreGroup()"
 			class="modalle"
+			@ok="restoreGroup()"
 		>
 			<div>
 				<div class="col-5">
@@ -597,9 +597,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="archived_group.id"
 							v-for="(archived_group, key) in archived_groups"
 							:key="key"
+							:value="archived_group.id"
 						>
 							{{ archived_group.name }}
 						</option>
@@ -737,7 +737,7 @@ export default {
 					this.messageoff();
 				})
 				.catch((error) => {
-					console.log(error.response);
+					console.error(error.response);
 					this.$toast.info(error.response);
 				});
 		},
@@ -871,7 +871,7 @@ export default {
 					loader.hide();
 				})
 				.catch((error) => {
-					console.log(error.response);
+					console.error(error.response);
 					this.$toast.info(error.response);
 					loader.hide();
 				});

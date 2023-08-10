@@ -2,9 +2,9 @@
 	<transition name="fade">
 		<div
 			v-if="isShow"
-			@click="handleClickOverlay"
-			class="vc-overlay"
 			id="vueConfirm"
+			class="vc-overlay"
+			@click="handleClickOverlay"
 		>
 			<transition name="zoom">
 				<div
@@ -25,14 +25,14 @@
 						/>
 						<span v-if="dialog.auth">
 							<input
-								v-focus
 								v-model="password"
-								@keyup.13="e => handleClickButton(e, true)"
+								v-focus
 								class="vc-input"
 								type="password"
 								name="vc-password"
 								placeholder="Password"
 								autocomplete="off"
+								@keyup.13="e => handleClickButton(e, true)"
 							>
 						</span>
 					</span>
@@ -42,9 +42,9 @@
 					>
 						<button
 							v-if="dialog.button.no"
-							@click.stop="e => handleClickButton(e, false)"
 							class="vc-btn left"
 							type="button"
+							@click.stop="e => handleClickButton(e, false)"
 						>
 							{{ dialog.button.no }}
 						</button>
@@ -52,9 +52,9 @@
 						<button
 							v-if="dialog.button.yes"
 							:disabled="dialog.auth ? !password : false"
-							@click.stop="e => handleClickButton(e, true)"
 							class="vc-btn"
 							type="button"
+							@click.stop="e => handleClickButton(e, true)"
 						>
 							{{ dialog.button.yes }}
 						</button>

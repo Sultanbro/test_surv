@@ -2,7 +2,7 @@
 module.exports = {
 	root: true,
 	extends: [
-		'plugin:vue/strongly-recommended',
+		'plugin:vue/recommended',
 		'eslint:recommended'
 	],
 	parserOptions: {
@@ -22,7 +22,8 @@ module.exports = {
 			'closeBracket': 0,
 			// 'alignAttributesVertically': true,
 			'ignores': []
-		}]
+		}],
+		'no-console': ['error', {allow: ['warn', 'error']}]
 	},
 	ignorePatterns: [
 		'resources/js/plugins/datepicker/*',

@@ -2,31 +2,31 @@
 	<div>
 		<div class="d-flex">
 			<input
+				v-model="cell"
 				type="text"
 				class=" form-control form-control-sm mb-2 mr-2 rounded-none text-center"
 				style="width: 57px;"
-				v-model="cell"
 				disabled
 			>
 			<input
+				v-model="shortcut"
 				type="text"
 				class="w-full form-control form-control-sm mb-2 rounded-none"
-				v-model="shortcut"
 				disabled
 			>
 		</div>
 
 		<b-table
+			id="kaspisum"
+			:key="'table-kaspi'"
 			responsive
 			striped
 			class="text-nowrap text-right my-table summary-kaspi  mb-3 table-excel"
-			id="kaspisum"
 			:small="true"
 			:bordered="true"
 			:items="items"
 			:fields="fields"
 			primary-key="a"
-			:key="'table-kaspi'"
 		>
 			<template #thead-top>
 				<tr>
@@ -46,7 +46,6 @@
 
 			<template #cell()="data">
 				<input
-					type="number"
 					v-if="data.index == 4 && data.field.is_date
 						|| data.index == 5 && data.field.is_date
 						|| data.index == 8 && data.field.is_date
@@ -60,10 +59,11 @@
 						|| data.index == 22 && data.field.is_date
 						|| data.index == 23 && data.field.is_date
 					"
+					type="number"
 					class="form-control cell-input "
 					:class="data.item._cellVariants[data.field.key]"
-					@change="updateSettings($event,data)"
 					:value="data.value"
+					@change="updateSettings($event,data)"
 					@click="test(data)"
 				>
 

@@ -15,26 +15,6 @@
 </template>
 
 <script>
-/*
-  name: "professions",
-  props: ['positions'],
-
-
-
-addPosition() {
-  axios.post('/timetracking/settings/add', {
-    position: this.new_position,
-  }).then(response => {
-    this.$toast.info('Добавлена');
-    this.getPositions()
-    this.new_position = ''
-  }).catch(error => {
-    console.log(error.response)
-  })
-},
-
-
-*/
 export default {
 	data() {
 		return {
@@ -42,14 +22,8 @@ export default {
 			new_position: '',
 		}
 	},
-	mounted() {
-		// this.getPositions()
-	},
-	methods: {
-		addPosition() {
-			console.log('addPosition');
-		},
-	}
+	mounted() {},
+	methods: {}
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
 	<label class="input-text">
 		<input
+			v-model="localValue"
 			type="text"
 			class="input-text-input"
 			:placeholder="placeholder"
-			v-model="localValue"
 		>
 	</label>
 </template>

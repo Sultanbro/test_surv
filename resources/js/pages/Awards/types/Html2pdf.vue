@@ -8,9 +8,9 @@
 			}"
 		>
 			<section
+				ref="pdfContent"
 				class="content-wrapper"
 				:style="`width: ${pdfContentWidth};`"
-				ref="pdfContent"
 			>
 				<slot name="pdf-content" />
 			</section>
@@ -18,8 +18,8 @@
 
 		<transition name="transition-anim">
 			<section
-				class="pdf-preview"
 				v-if="pdfFile"
+				class="pdf-preview"
 			>
 				<button @click.self="closePreview()">
 					&times;

@@ -6,10 +6,10 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
@@ -62,12 +62,12 @@
 							@click="bonus.expanded = !bonus.expanded"
 						>
 							<i
-								class="fa fa-minus mt-1"
 								v-if="bonus.expanded"
+								class="fa fa-minus mt-1"
 							/>
 							<i
-								class="fa fa-plus mt-1"
 								v-else
+								class="fa fa-plus mt-1"
 							/>
 						</td>
 						<td class="text-left">
@@ -86,16 +86,16 @@
 								/>
 								<div v-else>
 									<i
-										class="fa fa-user ml-2 color-user"
 										v-if="bonus.target.type == 1"
+										class="fa fa-user ml-2 color-user"
 									/>
 									<i
-										class="fa fa-users ml-2 color-group"
 										v-if="bonus.target.type == 2"
+										class="fa fa-users ml-2 color-group"
 									/>
 									<i
-										class="fa fa-briefcase ml-2 color-position"
 										v-if="bonus.target.type == 3"
+										class="fa fa-briefcase ml-2 color-position"
 									/>
 									<span class="ml-2">{{ bonus.target.name }}</span>
 								</div>
@@ -116,9 +116,9 @@
 											<tr>
 												<th class="text-center px-1" />
 												<th
-													class="text-left"
 													v-for="(field, f) in fields"
 													:key="f"
+													class="text-left"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -137,8 +137,8 @@
 												<td />
 												<td>
 													<input
-														type="text"
 														v-model="item.title"
+														type="text"
 														@change="validate(item[field.key], field.key)"
 													>
 												</td>
@@ -159,8 +159,8 @@
 
 														<select
 															v-if="Number(item.source) == 1"
-															v-model="item.group_id"
 															:key="'a' + source_key"
+															v-model="item.group_id"
 														>
 															<option
 																value="0"
@@ -179,8 +179,8 @@
 
 														<select
 															v-if="Number(item.source) == 1"
-															v-model="item.activity_id"
 															:key="'b' + source_key"
+															v-model="item.activity_id"
 														>
 															<option
 																value="0"
@@ -238,32 +238,32 @@
 														</select>
 														<input
 															v-if="item.daypart == 1"
-															type="time"
 															v-model="item.from"
+															type="time"
 														>
 														<input
 															v-if="item.daypart == 1"
-															type="time"
 															v-model="item.to"
+															type="time"
 														>
 													</div>
 												</td>
 												<td>
 													<input
-														type="text"
 														v-model="item.sum"
-													>
-												</td>
-												<td>
-													<input
 														type="text"
-														v-model="item.quantity"
 													>
 												</td>
 												<td>
 													<input
-														type="textarea"
+														v-model="item.quantity"
+														type="text"
+													>
+												</td>
+												<td>
+													<input
 														v-model="item.text"
+														type="textarea"
 													>
 												</td>
 												<td>{{ item.created_at }}</td>
@@ -308,18 +308,18 @@
 					<template>
 						<tr :key="p">
 							<td
-								@click="expand(p)"
 								class="pointer b-table-sticky-column"
+								@click="expand(p)"
 							>
 								<div class="d-flex align-items-center px-2">
 									<span class="mr-2">{{ p + 1 }}</span>
 									<i
-										class="fa fa-minus mt-1"
 										v-if="page_item.expanded"
+										class="fa fa-minus mt-1"
 									/>
 									<i
-										class="fa fa-plus mt-1"
 										v-else
+										class="fa fa-plus mt-1"
 									/>
 								</div>
 							</td>
@@ -333,16 +333,16 @@
 						/>  -->
 								<div class="d-flex aic">
 									<i
-										class="fa fa-user ml-2 color-user"
 										v-if="page_item.type == 1"
+										class="fa fa-user ml-2 color-user"
 									/>
 									<i
-										class="fa fa-users ml-2 color-group"
 										v-if="page_item.type == 2"
+										class="fa fa-users ml-2 color-group"
 									/>
 									<i
-										class="fa fa-briefcase ml-2 color-position"
 										v-if="page_item.type == 3"
+										class="fa fa-briefcase ml-2 color-position"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
 									<i
@@ -375,10 +375,10 @@
 														{{ field.name }}
 														<img
 															v-if="field.key === 'sum'"
+															v-b-popover.hover.right.html="'Укажите в количестве<br> или в процентах %'"
 															class="KPIBonuses-icon-info"
 															src="/images/dist/profit-info.svg"
 															alt="info icon"
-															v-b-popover.hover.right.html="'Укажите в количестве<br> или в процентах %'"
 														>
 													</th>
 													<th />
@@ -430,8 +430,8 @@
 																</select>
 																<select
 																	v-if="Number(item.source) == 1"
-																	v-model="item.group_id"
 																	:key="'c' + source_key"
+																	v-model="item.group_id"
 																>
 																	<option
 																		value="0"
@@ -449,8 +449,8 @@
 																</select>
 																<select
 																	v-if="Number(item.source) == 1"
-																	v-model="item.activity_id"
 																	:key="'d' + source_key"
+																	v-model="item.activity_id"
 																>
 																	<option
 																		value="0"
@@ -509,20 +509,20 @@
 																</select>
 																<input
 																	v-if="item.daypart == 1"
-																	type="time"
 																	v-model="item.from"
+																	type="time"
 																>
 																<input
 																	v-if="item.daypart == 1"
-																	type="time"
 																	v-model="item.to"
+																	type="time"
 																>
 															</div>
 														</template>
 														<template v-else-if="field.key === 'sum'">
 															<input
-																:type="field.type"
 																v-model="item[field.key]"
+																:type="field.type"
 																@change="validate(item[field.key], field.key)"
 															>
 															{{ item.unit === 'percent' ? '%' : '' }}
@@ -532,8 +532,8 @@
 														</template>
 														<template v-else>
 															<input
-																:type="field.type"
 																v-model="item[field.key]"
+																:type="field.type"
 																@change="validate(item[field.key], field.key)"
 															>
 														</template>
@@ -590,8 +590,8 @@
 
 		<!-- pagination -->
 		<JwPagination
-			class=""
 			:key="paginationKey"
+			class=""
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -599,23 +599,23 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 
 		<!-- modal Adjust Visible fields -->
 		<b-modal
 			v-model="modalAdjustVisibleFields"
 			title="Настройка списка"
-			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 			ok-text="Закрыть"
 			size="lg"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 		>
 			<div class="row">
 				<div
-					class="col-md-4 mb-2"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="col-md-4 mb-2"
 				>
 					<b-form-checkbox
 						v-model="show_fields[field.key]"
@@ -633,15 +633,15 @@
 			v-if="false"
 			title="Настроить бонус"
 			:open="showSidebar"
-			@close="closeSidebar"
 			width="40%"
+			@close="closeSidebar"
 		>
 			<div class="row m-0">
 				<div
-					class="mb-3"
 					v-for="(field, f) in all_fields"
-					:class="field.alter_class"
 					:key="f"
+					class="mb-3"
+					:class="field.alter_class"
 				>
 					<div class="mb-2 mt-2 field">
 						{{ field.name }}

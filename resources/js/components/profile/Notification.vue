@@ -23,8 +23,8 @@
 		</div>
 		<div class="bgpanel" />
 		<div
-			class="panel"
 			v-if="showPanel"
+			class="panel"
 		>
 			<div class="tail" />
 			<div class="panel_head">
@@ -48,9 +48,9 @@
 				>
 					<div class="notification_list">
 						<div
-							class="notification_item"
 							v-for="noti in unreads"
 							:key="noti.id"
+							class="notification_item"
 						>
 							<div class="notifi_top">
 								<div
@@ -58,12 +58,12 @@
 									:class="{'hidden' : noti.type != 'important'}"
 								>
 									<span
-										class="label-wrapper_text"
 										v-if="noti.type == 'important'"
+										class="label-wrapper_text"
 									>ВАЖНОЕ</span>
 									<span
-										class="label-wrapper_text"
 										v-else
+										class="label-wrapper_text"
 									/>
 								</div>
 								<span class="notification-date">{{ noti.created_at }}</span>

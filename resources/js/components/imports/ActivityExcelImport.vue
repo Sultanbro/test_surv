@@ -6,9 +6,9 @@
 					<p class="heading">
 						Шаг 1: Загрузите Excel файл
 						<b-button
+							id="btn"
 							variant="default"
 							size="sm"
-							id="btn"
 							class="ml-2 rounded"
 						>
 							<i class="fa fa-info" />
@@ -48,8 +48,8 @@
 						</div>
 						<b-button
 							variant="primary"
-							@click="uploadFile"
 							class="mt-2 mb-2"
+							@click="uploadFile"
 						>
 							<i class="fa fa-file" /> Загрузить
 						</b-button>
@@ -57,9 +57,9 @@
 				</div>
 				<div class="col-md-12">
 					<p
-						style="color:red"
 						v-for="error in errors"
 						:key="error"
+						style="color:red"
 					>
 						{{ error }}
 					</p>
@@ -89,9 +89,9 @@
 				</div>
 			</div>
 			<div
-				class="row my-2 py-3 border-b"
 				v-for="item in items"
 				:key="item.name"
+				class="row my-2 py-3 border-b"
 			>
 				<div class="col-md-4">
 					<input
@@ -104,13 +104,13 @@
 
 				<div class="col-md-4">
 					<select
-						class="form-control"
 						v-model="item.id"
+						class="form-control"
 					>
 						<option
-							:value="user.id"
 							v-for="user in users"
 							:key="user.id"
+							:value="user.id"
 						>
 							{{ user.last_name }} {{ user.name }} ID {{ user.id }}
 						</option>
@@ -118,8 +118,8 @@
 				</div>
 				<div class="col-md-4">
 					<div
-						class=""
 						v-if="(group_id == 88 && activity_id == 164) || (group_id == 42 && activity_id == 1) || (group_id == 71)"
+						class=""
 					>
 						<div v-if="(group_id == 42 && activity_id == 1) || (group_id == 88 && activity_id == 164)">
 							<b>Дата:</b> {{ item.data }}
@@ -130,8 +130,8 @@
 					</div>
 
 					<div
-						class=""
 						v-if="(group_id == 88 && activity_id == 166) || (group_id == 42 && activity_id == 13) || (group_id == 71)"
+						class=""
 					>
 						<div>
 							<b>Сборы:</b> {{ item.gatherings }}
@@ -139,8 +139,8 @@
 					</div>
 
 					<div
-						class=""
 						v-if="(group_id == 88 && activity_id == 165) || (group_id == 42 && activity_id == 94) || (group_id == 71)"
+						class=""
 					>
 						<div>
 							<b>Ср. время:</b> {{ item.avg_time }}
@@ -150,8 +150,8 @@
 			</div>
 			<div class="row">
 				<div
-					class="col-sm-6 mt-2"
 					v-if="group_id == 71 || group_id == 88"
+					class="col-sm-6 mt-2"
 				>
 					<b-form-datepicker
 						id="example-datepicker"
@@ -162,8 +162,8 @@
 					/>
 				</div>
 				<div
-					class="col-sm-6 mt-2"
 					v-if="activity_id == 94"
+					class="col-sm-6 mt-2"
 				>
 					<b-form-datepicker
 						id="example-datepicker"
@@ -216,6 +216,17 @@ export default {
 			users: [],
 		}
 	},
+	watch:{
+		file(before){
+			if(before.size && before.size > 1024000)
+			{
+				alert('Файл слишком большой!');
+				this.file = undefined;
+			}else{
+				this.fileIsCorrect = true;
+			}
+		}
+	},
 	created() {
 		this.datepickerLabels =  {
 			labelPrevDecade: 'Пред 10 лет',
@@ -233,23 +244,7 @@ export default {
 			labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
 		};
 	},
-	watch:{
-		file(before){
-			if(before.size && before.size > 1024000)
-			{
-				alert('Файл слишком большой!');
-				this.file = undefined;
-			}else{
-				this.fileIsCorrect = true;
-			}
-
-			console.log(before.size);
-		}
-	},
 	methods: {
-		test(){
-			console.log('testing');
-		},
 		saveConnects() {
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/analytics/activity/importexcel/save', {

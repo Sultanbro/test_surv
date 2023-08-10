@@ -11,8 +11,8 @@
 				<div class="header_menu_avatar">
 					<div class="header__menu">
 						<div
-							class="header__menu-project"
 							v-scroll-lock="isCreatingProject"
+							class="header__menu-project"
 						>
 							<img
 								src="/images/dist/icon-settings.svg"
@@ -36,8 +36,8 @@
 								<div class="header__submenu-divider" />
 								<div
 									v-if="isOwner"
-									@click="onNewProject"
 									class="header__submenu-item"
+									@click="onNewProject"
 								>
 									Добавить проект
 								</div>
@@ -97,9 +97,8 @@
 		>
 			<template v-for="item in filteredItems.visible">
 				<LeftSidebarItem
-					:key="item.name"
 					v-if="!item.hide"
-					@calcsize="item.height = $event.offsetHeight"
+					:key="item.name"
 					:name="item.name"
 					:class="item.className"
 					:to="item.to"
@@ -109,12 +108,13 @@
 					:menu="item.menu"
 					:popover="item.popover"
 					:highlight="item.route === routeMenuItem"
+					@calcsize="item.height = $event.offsetHeight"
 				/>
 			</template>
 			<template v-if="filteredItems.more.length === 1">
 				<LeftSidebarItem
-					:key="filteredItems.more[0].name"
 					v-if="!filteredItems.more[0].hide"
+					:key="filteredItems.more[0].name"
 					:name="filteredItems.more[0].name"
 					:class="filteredItems.more[0].className"
 					:href="filteredItems.more[0].href"

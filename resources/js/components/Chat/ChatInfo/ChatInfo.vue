@@ -67,9 +67,9 @@
 				</div>
 				<input
 					v-else
-					type="text"
-					v-model="chatTitle"
 					id="ChatInfo-inputTitle"
+					v-model="chatTitle"
+					type="text"
 					class="ChatInfo-titleInput"
 				>
 				<div

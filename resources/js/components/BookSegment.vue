@@ -6,10 +6,10 @@
 				<div class="form-group">
 					<label>Страница</label>
 					<input
+						v-model="segment.page_start"
 						type="number"
 						min="1"
 						max="9999"
-						v-model="segment.page_start"
 						placeholder="Страница"
 						class="form-control mb-2"
 					>
@@ -33,14 +33,14 @@
 			</div>
 			<div class="col-9">
 				<questions
+					:id="segment.id"
 					ref="questions"
 					:questions="segment.questions"
-					:id="segment.id"
 					:pass_grade="segment.pass_grade"
-					@changePassGrade="changePassGrade"
-					@validate="validate"
 					type="book"
 					mode="edit"
+					@changePassGrade="changePassGrade"
+					@validate="validate"
 				/>
 			</div>
 		</div>
@@ -49,6 +49,7 @@
 <script>
 /* eslint-disable vue/no-mutating-props */
 export default {
+	name: 'BookSegment',
 	props: {
 		segment: {
 			required: true,
@@ -119,15 +120,12 @@ export default {
 		},
 
 		changePassGrade(grade) {
-			console.log('pass grade')
-
 			this.segment.pass_grade = grade;
 			let len = this.segment.questions.length;
 
 			if(grade > len) this.segment.pass_grade = len;
 			if(grade < 1) this.segment.pass_grade = 1;
 		},
-	},
-	name: 'BookSegment'
+	}
 };
 </script>

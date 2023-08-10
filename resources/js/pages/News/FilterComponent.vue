@@ -16,10 +16,10 @@
 				>
 				<input
 					v-show="showFilters"
-					type="text"
 					ref="newsFilterInput"
-					placeholder="Поиск"
 					v-model="query"
+					type="text"
+					placeholder="Поиск"
 					class="news-filter__query"
 				>
 			</div>
@@ -79,10 +79,10 @@
 						v-model="value"
 						range
 						:open.sync="daterangePopupOpen"
-						@clear="clearDatePicer"
 						format="DD.MM.YYYY"
 						range-separator=" – "
 						placeholder="Диапазон"
+						@clear="clearDatePicer"
 					>
 						<template #icon-calendar>
 							<img
@@ -107,9 +107,9 @@
 					<DatePicker
 						v-model="value"
 						:open.sync="datePopupOpen"
-						@clear="clearDatePicer"
 						format="DD.MM.YYYY"
 						placeholder="Точная дата"
+						@clear="clearDatePicer"
 					>
 						<template #icon-calendar>
 							<img
@@ -139,9 +139,9 @@
 							Автор
 						</option>
 						<option
-							:value="user.id"
 							v-for="user in users"
 							:key="user.id"
+							:value="user.id"
 							v-html="user.name"
 						/>
 					</select>
@@ -149,14 +149,14 @@
 
 				<div class="news-filter-modal__favourite mb-4">
 					<span
-						v-html="'Избранное'"
 						@click="searchFavourite = !searchFavourite"
+						v-html="'Избранное'"
 					/>
 					<label class="news-checkbox">
 						<input
 							type="checkbox"
-							@click="searchFavourite = !searchFavourite"
 							:checked="searchFavourite ? 'checked' : ''"
+							@click="searchFavourite = !searchFavourite"
 						>
 						<span class="news-checkmark" />
 					</label>
@@ -180,10 +180,10 @@
 
 		<JobtronButton
 			v-if="!showFilters"
-			@click="readAll"
 			title="Пометить все новости прочитанными"
 			small
 			class="FilterComponent-readAll"
+			@click="readAll"
 		>
 			<i class="fa fa-check-double" />
 		</JobtronButton>
@@ -254,6 +254,14 @@ export default {
 			return this.dictionaries.users
 		}
 	},
+	watch: {
+		// whenever question changes, this function will run
+		dateType() {
+			this.value = [];
+			this.datePickerValue = new Date(NaN);
+			this.innerValue = [new Date(NaN), new Date(NaN)];
+		},
+	},
 	created() {},
 	mounted() {
 		let dateInputs = document.getElementsByClassName('mx-input');
@@ -267,14 +275,6 @@ export default {
 		// });
 
 		this.fetchDictionaries();
-	},
-	watch: {
-		// whenever question changes, this function will run
-		dateType() {
-			this.value = [];
-			this.datePickerValue = new Date(NaN);
-			this.innerValue = [new Date(NaN), new Date(NaN)];
-		},
 	},
 	methods: {
 		...mapActions(useCompanyStore, ['fetchDictionaries']),
@@ -348,7 +348,7 @@ export default {
 					this.users = res.data.data.users;
 				})
 				.catch(res => {
-					console.log(res)
+					console.error(res)
 				});
 		},
 

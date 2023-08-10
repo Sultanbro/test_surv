@@ -10,12 +10,12 @@
 			>
 				<i class="fa fa-search" />
 				<input
-					type="text"
 					v-model="search.input"
-					@input="searchInput"
-					@blur="searchCheck"
+					type="text"
 					placeholder="Искать в базе..."
 					class="form-control"
+					@input="searchInput"
+					@blur="searchCheck"
 				>
 				<i
 					v-if="search.input.length"
@@ -102,9 +102,9 @@
 						:mode="mode"
 						:auth_user_id="auth_user_id"
 						:opened="true"
+						:parent_id="id"
 						@showPage="showPage"
 						@addPage="addPage"
-						:parent_id="id"
 					/>
 				</template>
 			</div>
@@ -147,8 +147,8 @@
 					>
 						<i
 							class="fa fa-pen"
-							@click="toggleMode"
 							:class="{'active': mode == 'edit'}"
+							@click="toggleMode"
 						/>
 					</div>
 
@@ -162,8 +162,8 @@
 							:asd="auth_user_id"
 						>
 							<input
-								type="text"
 								:ref="'mylink' + activesbook.id"
+								type="text"
 								class="hider"
 							>
 
@@ -237,9 +237,9 @@
 				<div>
 					<template v-if="activesbook != null">
 						<input
+							v-model="activesbook.title"
 							type="text"
 							class="article_title px-4 py-3"
-							v-model="activesbook.title"
 						>
 					</template>
 				</div>
@@ -248,8 +248,6 @@
 			<div class="content mt-3">
 				<template v-if="activesbook != null && edit_actives_book">
 					<Editor
-						@onKeyUp="editorSave"
-						@onChange="editorSave"
 						v-model="activesbook.text"
 						api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
 						:init="{
@@ -375,19 +373,21 @@
 								'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
 							],
 						}"
+						@onKeyUp="editorSave"
+						@onChange="editorSave"
 					/>
 
 
 					<Questions
+						:id="activesbook.id"
+						:key="questions_key"
 						:course_item_id="course_item_id"
 						:questions="activesbook.questions"
-						:id="activesbook.id"
 						type="kb"
 						:mode="mode"
 						:count_points="true"
-						@passed="passed"
-						:key="questions_key"
 						:pass_grade="activesbook.pass_grade"
+						@passed="passed"
 						@changePassGrade="changePassGrade"
 					/>
 				</template>
@@ -426,17 +426,17 @@
 						/>
 
 						<Questions
-							:questions="activesbook.questions"
 							:id="activesbook.id"
+							:key="questions_key"
+							:questions="activesbook.questions"
 							type="kb"
 							:mode="mode"
 							:count_points="true"
-							@passed="passed"
 							:pass="activesbook.item_model !== null"
-							:key="questions_key"
 							:pass_grade="activesbook.pass_grade"
-							@changePassGrade="changePassGrade"
 							:course_item_id="course_item_id"
+							@passed="passed"
+							@changePassGrade="changePassGrade"
 							@nextElement="nextElement"
 						/>
 						<div class="pb-5" />
@@ -465,20 +465,20 @@
 			title="Загрузить изображение"
 		>
 			<form
-				@submit.prevent="submit"
 				action="/upload/images/"
 				enctype="multipart/form-data"
 				method="post"
 				style=" max-width: 300px;margin: 0 auto;"
+				@submit.prevent="submit"
 			>
 				<div class="form-group">
 					<div class="custom-file">
 						<input
+							id="customFile"
 							type="file"
 							class="custom-file-input"
-							id="customFile"
-							@change="onAttachmentChange"
 							accept="image/*"
+							@change="onAttachmentChange"
 						>
 						<label
 							class="custom-file-label"
@@ -498,20 +498,20 @@
 			title="Загрузить аудио"
 		>
 			<form
-				@submit.prevent="submit"
 				action="/upload/audio/"
 				enctype="multipart/form-data"
 				method="post"
 				style=" max-width: 300px;margin: 0 auto;"
+				@submit.prevent="submit"
 			>
 				<div class="form-group">
 					<div class="custom-file">
 						<input
+							id="customFile"
 							type="file"
 							class="custom-file-input"
-							id="customFile"
-							@change="onAttachmentChangeaudio"
 							accept="audio/mp3"
+							@change="onAttachmentChangeaudio"
 						>
 						<label
 							class="custom-file-label"
@@ -1068,7 +1068,7 @@ export default {
 					success(response.data.location);
 					this.loader = false;
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.error(error));
 		},
 
 		submit() {
@@ -1094,7 +1094,7 @@ export default {
 						this.myprogress = 0;
 					}
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.error(error));
 		},
 
 		copyLink(book) {
@@ -1129,7 +1129,7 @@ export default {
 					this.showAudioModal = false;
 					this.loader = false;
 				})
-				.catch((error) => console.log(error));
+				.catch((error) => console.error(error));
 		},
 
 	},

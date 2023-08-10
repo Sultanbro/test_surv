@@ -4,14 +4,14 @@
 			<div class="col-md-2">
 				<a
 					id="showCheckSideBar"
-					@click="addNewCheckModalShow()"
 					class="btn btn-success"
 					style="color: white"
+					@click="addNewCheckModalShow()"
 				>Создать чек лист</a>
 				<img
+					v-b-popover.hover.right="'Для сотрудников, ежедневно выполняющих повторяющиеся действия.'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
-					v-b-popover.hover.right="'Для сотрудников, ежедневно выполняющих повторяющиеся действия.'"
 				>
 			</div>
 
@@ -37,9 +37,9 @@
 							<b-th scope="col">
 								Кол-показов
 								<i
+									v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
 									class="fa fa-info-circle"
 									style="cursor: pointer"
-									v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
 									title="Работают"
 								/>
 							</b-th>
@@ -54,14 +54,14 @@
 					</b-thead>
 					<b-tbody>
 						<b-tr
-							class="p-0"
 							v-for="(arrCheckList, index) in filteredRows"
 							:key="`employee-${index}`"
+							class="p-0"
 						>
 							<b-td>
 								<a
-									v-html="highlightMatches(arrCheckList.title)"
 									@click="editCheck(arrCheckList.id,arrCheckList.item_type)"
+									v-html="highlightMatches(arrCheckList.title)"
 								>
 									{{ arrCheckList.title }}
 								</a>
@@ -86,8 +86,8 @@
 							</b-td>
 							<b-td>
 								<a
-									@click="arrCheckDelete(arrCheckList.id)"
 									class="btn btn-danger btn-icon"
+									@click="arrCheckDelete(arrCheckList.id)"
 								>
 									<i
 										class="fa fa-trash"
@@ -105,8 +105,8 @@
 		<Sidebar
 			title="Создать чек лист"
 			:open="showCheckSideBar"
-			@close="closeSideBar()"
 			width="65%"
+			@close="closeSideBar()"
 		>
 			<div class="col-md-12 p-0">
 				<div class="col-12 p-0 mt-5">
@@ -118,11 +118,11 @@
 						<div class="col-md-4 p-0">
 							<div class="person">
 								<div
+									ref="select"
+									v-click-outside="close"
 									class="super-select"
 									style="width: unset"
-									ref="select"
 									:class="posClass"
-									v-click-outside="close"
 								>
 									<div
 										class="selected-items flex-wrap noscrollbar"
@@ -153,15 +153,15 @@
 									</div>
 
 									<div
-										class="show"
 										v-if="show"
+										class="show"
 									>
 										<div class="search">
 											<input
+												ref="search"
 												v-model="searchText"
 												type="text"
 												placeholder="Поиск..."
-												ref="search"
 												@keyup="onSearch()"
 											>
 										</div>
@@ -200,8 +200,8 @@
 												</div>
 
 												<div
-													class="type mt-5 active all"
 													v-if="select_all_btn && !single"
+													class="type mt-5 active all"
 													@click="selectAll"
 												>
 													<div class="text">
@@ -214,28 +214,28 @@
 
 											<div class="options">
 												<div
-													class="option"
 													v-for="(option, index) in filtered_options"
 													:key="index"
-													@click="addValue(index)"
+													class="option"
 													:class="{'selected': option.selected}"
+													@click="addValue(index)"
 												>
 													<i
-														class="fa fa-user"
 														v-if="option.type == 1"
+														class="fa fa-user"
 													/>
 													<i
-														class="fa fa-users"
 														v-if="option.type == 2"
+														class="fa fa-users"
 													/>
 													<i
-														class="fa fa-briefcase"
 														v-if="option.type == 3"
+														class="fa fa-briefcase"
 													/>
 													{{ option.name }}
 													<i
-														class="fa fa-times"
 														v-if="option.selected"
+														class="fa fa-times"
 														@click.stop="removeValueFromList(index)"
 													/>
 												</div>
@@ -271,9 +271,9 @@
 				</div>
 				<div class="row mt-4 pl-3">
 					<div
-						class="col-md-12 pr-0 mt-2"
 						v-for="(item, index) in arrCheckInput.tasks"
 						:key="index"
+						class="col-md-12 pr-0 mt-2"
 					>
 						<div class="row">
 							<div class="col-md-6 pr-0 mr-2">
@@ -281,8 +281,8 @@
 								<!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
 								<!--                              </div>-->
 								<input
-									style="width: 110%"
 									v-model="item.task"
+									style="width: 110%"
 									type="text"
 									placeholder="Впишите активность чек листа"
 									class="form-control btn-block "
@@ -297,12 +297,12 @@
 								style="position: relative"
 							>
 								<button
-									style="position: absolute;right: 11px"
 									v-if="index == '0'"
-									@click="deleteCheckList(index, item.id)"
+									style="position: absolute;right: 11px"
 									type="button"
 									title="Удалить чек-лист"
 									class="btn btn-secondary"
+									@click="deleteCheckList(index, item.id)"
 								>
 									<i
 										class="fa fa-trash"
@@ -311,12 +311,12 @@
 								</button>
 
 								<button
-									style="position: absolute;right: 11px"
 									v-else
-									@click="deleteCheckList(index, item.id)"
+									style="position: absolute;right: 11px"
 									type="button"
 									title="Удалить чек-лист"
 									class="btn btn-primary"
+									@click="deleteCheckList(index, item.id)"
 								>
 									<i
 										class="fa fa-trash"
@@ -331,11 +331,11 @@
 							v-if="errors.show"
 							class="alert mb-3 alert-danger p-2"
 						>
-							<span v-if="this.errors.message">
-								{{ this.errors.message }}
+							<span v-if="errors.message">
+								{{ errors.message }}
 							</span>
-							<span v-if="this.errors.countViewError">
-								{{ this.errors.countViewError }}
+							<span v-if="errors.countViewError">
+								{{ errors.countViewError }}
 							</span>
 
 							<button
@@ -349,9 +349,9 @@
 						<div class="col-md-6 p-0">
 							<button
 								type="button"
-								@click="addCheckList()"
 								title="Добавить новый пункт чек листа"
 								class="btn btn-success"
+								@click="addCheckList()"
 							>
 								Добавить пункт чек листа
 							</button>
@@ -359,9 +359,9 @@
 							<button
 								v-if="addButton"
 								type="button"
-								@click.prevent="saveCheckList()"
 								title="Сохранить"
 								class="btn btn-primary"
+								@click.prevent="saveCheckList()"
 							>
 								Cохранить
 							</button>
@@ -369,9 +369,9 @@
 							<button
 								v-if="editButton"
 								type="button"
-								@click.prevent="saveEditCheckList(arrCheckInput.tasks)"
 								title="Сохранить"
 								class="btn btn-primary"
+								@click.prevent="saveEditCheckList(arrCheckInput.tasks)"
 							>
 								Изменить Сохранение
 							</button>
@@ -461,10 +461,6 @@ export default {
 			searchText: '',
 			first_time: true,
 			selected_all: false,
-
-
-
-
 		}
 	},
 	computed: {
@@ -598,7 +594,6 @@ export default {
 		viewCheckList(){
 			this.axios.get('/timetracking/settings/list/check', {
 			}).then(response => {
-				console.log(response.data);
 				this.arrCheckLists = response.data;
 			})
 		},
@@ -643,14 +638,12 @@ export default {
 		saveEditCheckList(arrCheckInput){
 
 			//this.validateInput(arrCheckInput,this.countView)
-			console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
 
 
 
 
 			if (this.values.length > 0){
 				let loader = this.$loading.show();
-				console.log(this.values);
 				this.axios.post('/timetracking/settings/edit/check/save/', {
 					check_id:this.check_id,
 					allValueArray:this.values,
@@ -731,7 +724,6 @@ export default {
 				this.countView = response.data.show_count;
 
 				this.arrCheckInput = response.data;
-				console.log(this.arrCheckInput)
 				this.editValueThis.view = true
 				this.editValueThis.arr = response.data
 
@@ -795,7 +787,6 @@ export default {
 			this.saveButton = true
 			this.errors.save_checkbox = false
 			//this.validateInput(this.arrCheckInput.tasks,this.countView)
-			console.log(this.arrCheckInput.tasks);
 			if (this.values.length > 0 || this.values.length > 1){
 				let loader = this.$loading.show();
 				this.axios.post('/timetracking/settings/add/check', {
@@ -862,9 +853,6 @@ export default {
 			);
 		},
 		deleteCheckList(index, item){
-
-			// console.log(this.valueGroups ,'07777')
-			console.log(item.id);
 			if (index != 0){
 
 				this.arrCheckInput.tasks.splice(index, 1)

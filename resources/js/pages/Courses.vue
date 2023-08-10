@@ -5,18 +5,18 @@
 				Курсы
 			</h1>
 			<Draggable
+				:id="0"
 				:list="courses"
 				:group="{ name: 'g1' }"
 				:handle="'.PageCourses-listBars'"
-				:id="0"
 				class="PageCourses-list"
 				tag="div"
 				@end="saveOrder"
 			>
 				<div
 					v-for="(course, c_index) in courses"
-					:key="course.id"
 					:id="course.id"
+					:key="course.id"
 					class="PageCourses-listItem d-flex aic my-2"
 					:class="{'PageCourses-listItem_active': activeCourse && activeCourse.id === course.id}"
 					@click="selectCourse(c_index)"
@@ -67,15 +67,15 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="modals.add_course.name"
+				type="text"
 				placeholder="Название курса..."
 				class="form-control mb-2"
 			>
 			<button
 				class="btn btn-primary rounded m-auto"
-				@click="createCourse"
 				:disabled="modals.add_course.name.length < 2"
+				@click="createCourse"
 			>
 				<span>Сохранить</span>
 			</button>

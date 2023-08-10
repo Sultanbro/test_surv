@@ -2,8 +2,8 @@
 	<SideBar
 		width="50%"
 		:open="true"
-		@close="$emit('close')"
 		class="NotificationsTemplates"
+		@close="$emit('close')"
 	>
 		<template #header>
 			<div class="ui-sidebar__header-text">
@@ -47,8 +47,8 @@
 									:access-dictionaries="accessDictionaries"
 									search-position="beforeTabs"
 									:submit-button="'Применить'"
-									@submit="onSubmitAccess"
 									class="NotificationsEditForm-accessSelect"
+									@submit="onSubmitAccess"
 								/>
 							</JobtronOverlay>
 						</template>

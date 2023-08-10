@@ -4,8 +4,8 @@
 		class="d-flex mycourse"
 	>
 		<div
-			class="disable_course"
 			v-if="disable_course"
+			class="disable_course"
 		>
 			<!-- <div v-if="activeCourse != null" class="d-left">
            <div class="gggggg">
@@ -54,9 +54,9 @@
 			<!-- список курсов -->
 			<div v-if="activeCourse == null">
 				<div
-					class="section d-flex aic jcsb my-2"
 					v-for="course in courses"
 					:key="course.id"
+					class="section d-flex aic jcsb my-2"
 					@click="getCourse(course.id)"
 				>
 					<p class="mb-0">
@@ -97,9 +97,9 @@
 					</p>
 					<div class="course-items">
 						<div
-							class="course-item"
 							v-for="(item, c_index) in items"
 							:key="item.id"
+							class="course-item"
 							:class="{
 								'active': activeCourseItem != null && item.id == activeCourseItem.id,
 								'pass': item.status == 1
@@ -108,16 +108,16 @@
 						>
 							<div class="course-title d-flex align-items-start">
 								<i
-									class="fa fa-check icon"
 									v-if="item.status == 2"
+									class="fa fa-check icon"
 								/>
 								<i
-									class="fa fa-check-double icon"
 									v-else-if="item.status == 1"
+									class="fa fa-check-double icon"
 								/>
 								<i
-									class="fa fa-lock icon"
 									v-else
+									class="fa fa-lock icon"
 								/>
 								<span>{{ item.title }}</span>
 							</div>
@@ -147,6 +147,7 @@
 							<div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
 								<UpbooksRead
 									ref="upbook"
+									:key="activeCourseKey"
 									:book_id="activeCourseItem.item_id"
 									:mode="'read'"
 									:course_page="true"
@@ -155,7 +156,6 @@
 									:active_page="activeCourseItem.last_item"
 									:all_stages="all_stages"
 									:completed_stages="completed_stages"
-									:key="activeCourseKey"
 									@nextElement="nextElement"
 									@changeProgress="completed_stages++"
 									@forGenerateCertificate="generateCertificateStart"
@@ -163,8 +163,10 @@
 							</div>
 
 							<PlaylistEdit
-								ref="playlist"
+								v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'"
 								:id="activeCourseItem.item_id"
+								ref="playlist"
+								:key="activeCourseKey"
 								:course_item_id="activeCourseItem.id"
 								:is_course="true"
 								:myvideo="activeCourseItem.last_item"
@@ -172,11 +174,9 @@
 								:mode="'read'"
 								:all_stages="all_stages"
 								:completed_stages="completed_stages"
-								:key="activeCourseKey"
 								@nextElement="nextElement"
 								@changeProgress="completed_stages++"
 								@forGenerateCertificate="generateCertificateStart"
-								v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'"
 							/>
 
 							<div
@@ -185,6 +185,7 @@
 							>
 								<Booklist
 									ref="knowbase"
+									:key="activeCourseKey"
 									:trees="trees"
 									:parent_name="activeCourseItem.title"
 									:course_item_id="activeCourseItem.id"
@@ -196,7 +197,6 @@
 									:auth_user_id="0"
 									:all_stages="all_stages"
 									:completed_stages="completed_stages"
-									:key="activeCourseKey"
 									@changeProgress="completed_stages++"
 									@forGenerateCertificate="generateCertificateStart"
 									@nextElement="nextElement"
@@ -205,18 +205,18 @@
 						</div>
 
 						<div
-							class="p-4"
 							v-if="congrats"
+							class="p-4"
 						>
 							<h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
 							<p>Спасибо, что прошли курс несмотря ни на что!</p>
 						</div>
 						<SaveCertificate
 							v-if="generateCertificate"
-							@generate-success="generateSuccess"
 							:course_id="activeCourseItem.course_id"
 							:user_id="user_id"
 							:title="activeCourseItem.title"
+							@generate-success="generateSuccess"
 						/>
 					</div>
 				</div>
@@ -262,6 +262,12 @@ export default {
 			generateCertificate: false
 		};
 	},
+
+	computed: {
+		progress: function(){
+			return this.all_stages > 0 ? Number(Number((this.completed_stages / this.all_stages) * 100).toFixed(2)) : 0
+		},
+	},
 	watch:{
 		user_id(){
 			this.init()
@@ -271,12 +277,6 @@ export default {
 		if(this.user_id){
 			this.init()
 		}
-	},
-
-	computed: {
-		progress: function(){
-			return this.all_stages > 0 ? Number(Number((this.completed_stages / this.all_stages) * 100).toFixed(2)) : 0
-		},
 	},
 
 	mounted() {},
@@ -292,7 +292,6 @@ export default {
 			}
 		},
 		generateCertificateStart(model){
-			console.log(model);
 			if(model === 0){
 				this.generateCertificate = true;
 			}

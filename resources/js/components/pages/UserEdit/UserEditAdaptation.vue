@@ -73,19 +73,19 @@ export default {
 			</div>
 
 			<UserEditError
+				:key="'e1' + key"
 				:errors="errors"
 				:name="`adaptation_talks.${key}.inter_id`"
-				:key="'e1' + key"
 			/>
 			<UserEditError
+				:key="'e2' + key"
 				:errors="errors"
 				:name="`adaptation_talks.${key}.date`"
-				:key="'e2' + key"
 			/>
 			<UserEditError
+				:key="'e3' + key"
 				:errors="errors"
 				:name="`adaptation_talks.${key}.text`"
-				:key="'e3' + key"
 			/>
 		</template>
 	</div>

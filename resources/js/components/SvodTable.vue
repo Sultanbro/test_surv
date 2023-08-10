@@ -2,14 +2,14 @@
 	<div class="trainee_report">
 		<div>
 			<div
-				class="ramka mt-2"
 				v-for="(g, rdate) in all_groups"
 				:key="rdate"
+				class="ramka mt-2"
 			>
 				<b-tabs type="card">
 					<b-tab
-						title="Сводная"
 						key="1"
+						title="Сводная"
 						card
 					>
 						<p class="mt-2">
@@ -171,8 +171,8 @@
 					<template v-for="(item, index) in trainee_report">
 						<b-tab
 							v-if="item.group_id == g.group_id"
-							:title="item.date"
 							:key="index"
+							:title="item.date"
 							card
 						>
 							<p class="mt-2">

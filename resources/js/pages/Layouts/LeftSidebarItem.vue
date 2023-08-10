@@ -50,8 +50,8 @@
 			:items="menu"
 		/>
 		<span
-			class="news-counter"
 			v-if="to === '/news' && unviewedNewsCount > 0"
+			class="news-counter"
 		>
 			{{ unviewedNewsCount }}
 		</span>

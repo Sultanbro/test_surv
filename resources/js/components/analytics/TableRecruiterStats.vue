@@ -3,6 +3,8 @@
 		<div class="d-flex pt-4 gap-5">
 			<div class="TableRecruiterStats-table">
 				<JobtronTable
+					:key="componentKey"
+					ref="table"
 					responsive
 					striped
 					class="text-nowrap mb-3"
@@ -11,8 +13,6 @@
 					:items="sorted"
 					:fields="fields"
 					primary-key="a"
-					:key="componentKey"
-					ref="table"
 				>
 					<template #header(name)="{field}">
 						<div
@@ -33,8 +33,8 @@
 					<template #header="{field}">
 						<div
 							class="pointer relative"
-							@click.stop="openContext"
 							:data-key="field.key"
+							@click.stop="openContext"
 						>
 							{{ field.label }}
 							<PopupMenu
@@ -80,8 +80,8 @@
 							<div>{{ data.value }}</div>
 							<select
 								v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
-								class="form-control form-control-sm special-select"
 								v-model="data.item.profile"
+								class="form-control form-control-sm special-select"
 								@change="changeProfile(data.index)"
 							>
 								<option
@@ -104,14 +104,14 @@
 			<div class="f-200">
 				<JobtronButton
 					v-if="editable"
-					@click="showModal = !showModal"
 					class="mb-5"
+					@click="showModal = !showModal"
 				>
 					Кол-во лидов
 				</JobtronButton>
 				<select
-					class="form-control form-control-sm mb-5"
 					v-model="currentDay"
+					class="form-control form-control-sm mb-5"
 				>
 					<option
 						v-for="day in days"

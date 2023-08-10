@@ -1,8 +1,8 @@
 <template>
 	<div
-		class="ConversationFeed messenger__container-scroll"
-		ref="messengerContainer"
 		id="messenger_container"
+		ref="messengerContainer"
+		class="ConversationFeed messenger__container-scroll"
 		@click="contextMenuVisible = false"
 		@scroll="onScroll"
 	>
@@ -82,8 +82,8 @@
 
 					<!-- сообщение -->
 					<div
-						:key="message.id"
 						:id="'messenger_message_' + message.id"
+						:key="message.id"
 						class="messenger__message-wrapper"
 						@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
 					>
@@ -94,10 +94,10 @@
 						<ConversationMessage
 							v-else
 							:message="message"
-							@active="activeMessageId = message.id"
 							:active="activeMessageId === message.id"
 							:helper="renderHelper"
 							:last="index === d.length - 1"
+							@active="activeMessageId = message.id"
 							@loadImage="index === d.length - 1 && scrollBottom"
 							@contextbutton="showChatContextMenu(message, ...arguments)"
 						/>
@@ -115,8 +115,8 @@
 
 		<!-- Loader -->
 		<div
+			v-show="isLoading"
 			class="messenger__loader"
-			v-show="this.isLoading"
 		>
 			<div class="messenger__loader-spinner">
 				<div class="messenger__loader-spinner-item" />

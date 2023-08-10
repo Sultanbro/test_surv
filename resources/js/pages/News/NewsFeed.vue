@@ -3,40 +3,40 @@
 		<NewsCreate
 			v-if="isRedactor"
 			ref="newsCreate"
-			@update-news-list="getPosts"
 			:me="me"
+			@update-news-list="getPosts"
 		/>
 
 		<div class="news-container">
 			<div class="news-container__header">
 				<span class="news-header__title">Новости</span>
 				<FilterComponent
-					@searchNews="getPosts"
 					ref="filterComponent"
+					@searchNews="getPosts"
 					@toggleWhiteBg="showWhiteBg"
 				/>
 			</div>
 			<PostComponent
 				v-for="post in pinnedPosts"
 				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
-				@editPost="updatePost"
-				@update-news-list="getPosts"
 				:post="post"
 				:me="me"
+				@editPost="updatePost"
+				@update-news-list="getPosts"
 			/>
 
 			<PostComponent
 				v-for="post in posts"
 				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
-				@editPost="updatePost"
-				@update-news-list="getPosts"
 				:post="post"
 				:me="me"
+				@editPost="updatePost"
+				@update-news-list="getPosts"
 			/>
 			<div
 				class="news-paginate"
-				@click="getNextPage()"
 				:style="(nextPageURL != null && showPaginator == true) ? '' : 'opacity: 0;'"
+				@click="getNextPage()"
 			>
 				<img src="/icon/news/some-icons/next-page.svg">
 				<span>Загрузить ещё</span>

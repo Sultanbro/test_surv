@@ -1,17 +1,17 @@
 <template>
 	<Draggable
+		:id="parent_id"
 		class="dragArea"
 		tag="ul"
 		:handle="'.fa-bars'"
 		:list="tasks"
 		:group="{ name: 'g1' }"
-		:id="parent_id"
 		@end="saveOrder"
 	>
 		<template v-for="el in tasks">
 			<li
-				:key="el.id"
 				:id="el.id"
+				:key="el.id"
 				class="chapter"
 				:class="{
 					'opened': opened,
@@ -21,37 +21,37 @@
 				<div class="d-flex">
 					<div class="handles">
 						<i
-							class="fa fa-bars mover"
 							v-if="mode == 'edit'"
+							class="fa fa-bars mover"
 						/>
 						<i
-							class="fa fa-circle mover"
 							v-else
+							class="fa fa-circle mover"
 						/>
 						<div class="shower">
 							<i
-								class="fa fa-chevron-down pointer"
 								v-if="el.children.length > 0 && el.opened"
+								class="fa fa-chevron-down pointer"
 							/>
 							<i
-								class="fa fa-chevron-right pointer"
 								v-else-if="el.children.length > 0"
+								class="fa fa-chevron-right pointer"
 							/>
 							<i
-								class="fa fa-circle pointer"
 								v-else
+								class="fa fa-circle pointer"
 							/>
 						</div>
 					</div>
 					<p
-						@click.stop="toggleOpen(el)"
 						class="mb-0"
+						@click.stop="toggleOpen(el)"
 					>
 						{{ el.title }}
 					</p>
 					<div
-						class="chapter-btns"
 						v-if="mode == 'edit'"
+						class="chapter-btns"
 					>
 						<i
 							class="fa fa-plus mr-1"
@@ -61,13 +61,13 @@
 				</div>
 				<NestedDraggable
 					:tasks="el.children"
-					@showPage="showPage"
-					@addPage="addPage"
 					:parent_id="el.id"
 					:active="active"
 					:auth_user_id="auth_user_id"
 					:opened="el.opened"
 					:mode="mode"
+					@showPage="showPage"
+					@addPage="addPage"
 				/>
 			</li>
 		</template>
@@ -131,10 +131,6 @@ const NestedDraggable = {
 					this.$toast.success('Очередь сохранена');
 				})
 		},
-
-		log(e) {
-			console.log(e)
-		}
 	},
 };
 NestedDraggable.components = {

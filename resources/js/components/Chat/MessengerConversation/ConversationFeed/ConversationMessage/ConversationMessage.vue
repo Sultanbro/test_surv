@@ -89,9 +89,9 @@
 						class="messenger__message-files"
 					>
 						<div
-							class="messenger__message-file"
 							v-for="(file, index) in message.files"
 							:key="index"
+							class="messenger__message-file"
 						>
 							<template v-if="isImage(file)">
 								<div
@@ -99,9 +99,9 @@
 									@click="openImage(file)"
 								>
 									<img
-										@load="$emit('loadImage')"
 										:src="file.thumbnail_path ? file.thumbnail_path : file.file_path"
 										alt="file.name"
+										@load="$emit('loadImage')"
 									>
 								</div>
 							</template>
@@ -146,10 +146,10 @@
 					@reaction-click="reactMessage({message: message, emoji_id: $event})"
 				/>
 				<i
-					class="ConversationMessage-quoteButton fa fa-chevron-right"
-					@click.stop="onClickQuote"
 					v-click-outside="onClickOutsideQuote"
+					class="ConversationMessage-quoteButton fa fa-chevron-right"
 					:style="selectedBox || ''"
+					@click.stop="onClickQuote"
 				/>
 			</div>
 

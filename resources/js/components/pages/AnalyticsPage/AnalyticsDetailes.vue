@@ -3,13 +3,13 @@
 		<b-tabs
 			type="card"
 			class="mt-4"
-			@change="showSubTab"
 			:default-active-key="active_sub_tab"
+			@change="showSubTab"
 		>
 			<template #tabs-end>
 				<div
-					class="AnalyticsDetailes-controls ml-a"
 					v-click-outside="onClickOutside"
+					class="AnalyticsDetailes-controls ml-a"
 				>
 					<JobtronButton
 						class="ChatIcon-parent"
@@ -144,8 +144,8 @@
 		<b-modal
 			v-model="showOrder"
 			title="Порядок активностей"
-			@ok="save_order()"
 			size="md"
+			@ok="save_order()"
 		>
 			<Draggable
 				:list="activitySelect"
@@ -160,8 +160,8 @@
 						{{ act.name }}
 					</span>
 					<i
-						@click="delete_activity(act)"
 						class="fa fa-trash pointer ml-a"
+						@click="delete_activity(act)"
 					/>
 				</div>
 			</Draggable>
@@ -171,9 +171,9 @@
 		<b-modal
 			v-model="showActivityModal"
 			title="Добавить активность"
-			@ok="create_activity()"
 			size="lg"
 			class="modalle"
+			@ok="create_activity()"
 		>
 			<div class="fz-14">
 				<div class="row">

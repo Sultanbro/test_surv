@@ -39,26 +39,26 @@
 							type="checkbox"
 						>
 						<p
-							style="font-size: 14px"
 							v-if="item.quarter == 1"
+							style="font-size: 14px"
 						>
 							Период с 01.01.{{ item.year }} до 31.03.{{ item.year }}
 						</p>
 						<p
-							style="font-size: 14px"
 							v-if="item.quarter == 2"
+							style="font-size: 14px"
 						>
 							Период с 01.04.{{ item.year }} до 30.06.{{ item.year }}
 						</p>
 						<p
-							style="font-size: 14px"
 							v-if="item.quarter == 3"
+							style="font-size: 14px"
 						>
 							Период с 01.07.{{ item.year }} до 30.09.{{ item.year }}
 						</p>
 						<p
-							style="font-size: 14px"
 							v-if="item.quarter == 4"
+							style="font-size: 14px"
 						>
 							Период с 01.10.{{ item.year }} до 31.12.{{ item.year }}
 						</p>
@@ -90,18 +90,18 @@
 			<div class="col-6 p-0 ml-3">
 				<div v-if="errors.length">
 					<p
-						style="color: #c75f5f"
 						v-for="error in errors"
 						:key="error"
+						style="color: #c75f5f"
 					>
 						{{ error }}
 					</p>
 				</div>
 				<a
-					style="color: white;text-align: center;border-radius: unset"
 					id="selectedQuarter"
-					@click="selectedQuarter"
+					style="color: white;text-align: center;border-radius: unset"
 					class=" btn-block btn btn-success p-0 mt-3"
+					@click="selectedQuarter"
 				>Сохранить</a>
 			</div>
 		</div>

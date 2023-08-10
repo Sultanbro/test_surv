@@ -11,22 +11,22 @@
 			<div class="PricingPage-currency mt-4">
 				Валюта:
 				<JobtronButton
-					@click="currency = '₽'"
 					:fade="currency !== '₽'"
+					@click="currency = '₽'"
 				>
 					₽
 				</JobtronButton>
 				<JobtronButton
-					@click="currency = '₸'"
 					:fade="currency !== '₸'"
 					disabled
+					@click="currency = '₸'"
 				>
 					₸
 				</JobtronButton>
 				<JobtronButton
-					@click="currency = '$'"
 					:fade="currency !== '$'"
 					disabled
+					@click="currency = '$'"
 				>
 					$
 				</JobtronButton>

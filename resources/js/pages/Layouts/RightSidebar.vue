@@ -15,9 +15,9 @@
 			</a>
 			<a
 				v-if="isBp && user.is_admin !== 1"
+				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
 				href="javascript:void(0)"
 				class="header__right-icon"
-				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
 			>
 				<img
 					src="/images/dist/header-right-1.svg"

@@ -60,10 +60,10 @@ export default {
 				/>
 				<select
 					v-else
-					name="group"
 					id="group"
-					class="form-control"
 					v-model="group"
+					name="group"
+					class="form-control"
 					@change="checkValid($event)"
 				>
 					<option :value="null">

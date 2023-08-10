@@ -2,8 +2,8 @@
 	<div class="news-comment-reactions">
 		<div
 			v-for="(reaction, index) in reactionsList"
-			:key="index"
 			v-show="reaction.value != 0"
+			:key="index"
 			:class="'news-comment-reactions__item '
 				+ (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
 			@click="sendReaction(reaction.icon)"
@@ -22,8 +22,8 @@
 				v-html="'+'"
 			/>
 			<div
-				class="news-emoji-keyboard"
 				v-show="showKeyboard"
+				class="news-emoji-keyboard"
 			>
 				<div class="news-emoji-keyboard__container">
 					<div class="news-emoji-keyboard__arrow" />
@@ -32,8 +32,8 @@
 							v-for="reaction in reactionsList"
 							:key="reaction.icon"
 							class="news-emoji-keyboard__item"
-							v-html="reaction.icon"
 							@click="sendReaction(reaction.icon)"
+							v-html="reaction.icon"
 						/>
 					</div>
 				</div>
@@ -5576,7 +5576,7 @@ export default {
 					this.updateReactionList();
 				})
 				.catch(res => {
-					console.log(res);
+					console.error(res);
 				})
 		},
 	}

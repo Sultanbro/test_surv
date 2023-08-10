@@ -1,16 +1,16 @@
 <template>
 	<div class="mt-3">
 		<div
-			class="mb-0"
 			:key="myTable"
+			class="mb-0"
 		>
 			<b-table
 				v-if="dataLoaded"
+				id="tabelTable"
 				responsive
 				striped
 				:sticky-header="true"
 				class="text-nowrap text-right my-table mb-0"
-				id="tabelTable"
 				:small="true"
 				:bordered="true"
 				:items="items"
@@ -20,14 +20,14 @@
 			>
 				<template #head(avanses)>
 					<i
-						class="fa fa-info-circle"
 						v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
+						class="fa fa-info-circle"
 					/>
 				</template>
 				<template #head(fines)>
 					<i
-						class="fa fa-info-circle"
 						v-b-popover.hover.right.html="'Депримирование отмечено красным'"
+						class="fa fa-info-circle"
 					/>
 				</template>
 				<template #cell(avanses)="data">
@@ -56,11 +56,11 @@
 			</b-table>
 		</div>
 		<sidebar
+			v-if="openSidebar"
 			:title="sidebarTitle"
 			:open="openSidebar"
-			@close="openSidebar=false"
-			v-if="openSidebar"
 			width="350px"
+			@close="openSidebar=false"
 		>
 			<h6 class="mt-3">
 				Начислено
@@ -188,15 +188,6 @@ export default {
 		month: {}
 	},
 
-	watch: {
-		month: {
-			handler: function (val) {
-				this.dateInfo.currentMonth = val
-				this.fetchData()
-			},
-		},
-	},
-
 	data() {
 		return {
 			data: {},
@@ -223,6 +214,15 @@ export default {
 			dataLoaded: false,
 			myTable: 1
 		}
+	},
+
+	watch: {
+		month: {
+			handler: function (val) {
+				this.dateInfo.currentMonth = val
+				this.fetchData()
+			},
+		},
 	},
 
 	created() {

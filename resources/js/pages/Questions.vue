@@ -34,8 +34,8 @@
 				</div>
 
 				<input
-					type="text"
 					v-model="q.text"
+					type="text"
 					disabled
 					placeholder="Текст вопроса..."
 				>
@@ -70,8 +70,8 @@
 					<textarea
 						v-model="q.text"
 						placeholder="Текст вопроса..."
-						@keyup="changed = true"
 						class="form-control"
+						@keyup="changed = true"
 					/>
 					<div class="row">
 						<div class="col-12 col-md-4">
@@ -103,31 +103,31 @@
 							class="d-flex  w-full"
 						>
 							<input
-								type="checkbox"
 								v-model="v.right"
+								type="checkbox"
 								class="mr-2"
-								@change="changed = true"
 								title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+								@change="changed = true"
 							>
 
 							<input
-								type="text"
+								:ref="`variant${q_index}_${v_index}`"
 								v-model="v.text"
+								type="text"
 								placeholder="Введите вариант ответа..."
 								@keyup.enter="addVariant(q_index, v_index)"
 								@keyup.delete="deleteVariant(q_index, v_index)"
-								:ref="`variant${q_index}_${v_index}`"
 							>
 						</label>
 
 						<div class="question-form-group">
 							<input
-								type="checkbox"
-								v-model="v.checked"
-								class="mr-2"
-								@change="changed = true"
 								:id="'v-' + v_index + 'q' + q_index"
+								v-model="v.checked"
+								type="checkbox"
+								class="mr-2"
 								title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+								@change="changed = true"
 							>
 							<label
 								v-if="mode == 'read'"
@@ -155,8 +155,8 @@
 				</div>
 				<div v-else>
 					<input
-						type="text"
 						v-model="q.success"
+						type="text"
 					>
 				</div>
 
@@ -170,14 +170,14 @@
 						<p>
 							Бонусы
 							<i
-								class="fa fa-info-circle ml-2 mr-2"
 								v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'"
+								class="fa fa-info-circle ml-2 mr-2"
 								title="Бонусы"
 							/>
 						</p>
 						<input
-							type="number"
 							v-model="q.points"
+							type="number"
 							min="0"
 							max="999"
 						>
@@ -193,8 +193,8 @@
 				<button
 					v-if="points == -1 || !scores"
 					class="btn btn-success mr-2"
-					@click.stop="checkAnswers"
 					:disabled="timer_turned_on"
+					@click.stop="checkAnswers"
 				>
 					Проверить <span v-if="timer_turned_on">({{ timer }})</span>
 				</button>
@@ -253,16 +253,16 @@
 					>
 						Проходной балл:
 						<i
-							class="fa fa-info-circle"
 							v-b-popover.hover.right.html="'Правильных ответов для прохода'"
+							class="fa fa-info-circle"
 							title="Проходной балл"
 						/>
 					</p>
 
 					<div class="d-flex aic">
 						<input
-							class="form-control mr-2"
 							v-model="pass_grade_local"
+							class="form-control mr-2"
 							type="number"
 							:min="0"
 							:max="100"

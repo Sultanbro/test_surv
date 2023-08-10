@@ -1,7 +1,7 @@
 <template>
 	<div
-		:class="{'basic': id != 0}"
 		v-if="!deleted"
+		:class="{'basic': id != 0}"
 	>
 		<div class="d-flex justify-content-between">
 			<div class="mb-2 r-name">
@@ -9,16 +9,16 @@
 			</div>
 			<div>
 				<button
+					v-if="editable && id != 0"
 					class="btn btn-primary btn-sm rounded mb-2"
 					@click="deleteTable"
-					v-if="editable && id != 0"
 				>
 					<span>Удалить</span>
 				</button>
 				<button
+					v-if="editable"
 					class="btn btn-primary btn-sm rounded mb-2"
 					@click="toggleVisible"
-					v-if="editable"
 				>
 					<span v-if="visible">Скрыть</span>
 					<span v-else>Показать</span>
@@ -46,11 +46,11 @@
 						}"
 					>
 						<input
+							v-model="data.value"
 							type="number"
 							min="0"
 							class="form-control cell-input"
 							@change="updateSettings($event,data)"
-							v-model="data.value"
 						>
 					</div>
 
@@ -67,12 +67,12 @@
 
 				<template #cell(plan)="data">
 					<input
+						v-if="(data.index == 0 || data.index == 1 || data.index == 6 || data.index == 7 || data.index == 8) && editable"
+						v-model="data.value"
 						type="number"
 						min="0"
-						v-if="(data.index == 0 || data.index == 1 || data.index == 6 || data.index == 7 || data.index == 8) && editable"
 						class="form-control cell-input"
 						@change="updateSettings($event,data)"
-						v-model="data.value"
 					>
 					<div v-else>
 						{{ data.value }}

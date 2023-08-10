@@ -4,8 +4,8 @@
 			type="file"
 			:accept="accept"
 			:multiple="multiple"
-			@change="$emit('change', $event.target.files)"
 			class="InputFile-input"
+			@change="$emit('change', $event.target.files)"
 		>
 		<slot />
 	</label>

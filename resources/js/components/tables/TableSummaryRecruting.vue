@@ -14,11 +14,11 @@
 				<div v-if="data.index == S_EMPTY7 || data.index == S_EMPTY8 || data.index == S_EMPTY11" />
 				<div v-else>
 					<input
-						type="number"
 						v-if="data.field.key == 'plan' && (data.index != S_APPLIED || data.index != S_FIRED)"
+						type="number"
 						class="form-control cell-input"
-						@change="updateSettings($event,data)"
 						:value="data.value"
+						@change="updateSettings($event,data)"
 					>
 					<div v-else>
 						{{ data.value }}

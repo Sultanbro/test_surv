@@ -20,8 +20,8 @@ export default {
 			<div class="old__content">
 				<div class="">
 					<div
-						class="card p-3"
 						id="card1"
+						class="card p-3"
 					>
 						<h3>Учет времени</h3>
 						<p>
@@ -173,8 +173,8 @@ export default {
 						</div>
 					</div>
 					<div
-						class="card p-3"
 						id="card2"
+						class="card p-3"
 					>
 						<h3>Показатели в таблицах аналитики</h3>
 						<p>
@@ -298,8 +298,8 @@ export default {
 						</div>
 					</div>
 					<div
-						class="card p-3 text-black"
 						id="card3"
+						class="card p-3 text-black"
 					>
 						<h3>Правила выдачи оплаты</h3>
 						<p>

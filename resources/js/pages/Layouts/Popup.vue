@@ -1,9 +1,9 @@
 <template>
 	<div
+		v-scroll-lock="open"
 		class="overlay custom-scroll-y js-overlay"
 		:class="{'active': open}"
 		@click.self="$emit('close')"
-		v-scroll-lock="open"
 	>
 		<div
 			class="popup award js-popup"
@@ -26,9 +26,9 @@
 							{{ title }}
 							<router-link
 								v-if="addButton && isAdmin"
+								id="popover-popup-add"
 								:to="addButtonRoute"
 								class="popup-add-button"
-								id="popover-popup-add"
 							>
 								<i class="fa fa-plus" />
 							</router-link>

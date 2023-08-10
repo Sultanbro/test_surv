@@ -6,9 +6,9 @@
 		header-class="p-2 bg-secondary text-white font-weight-bold"
 	>
 		<div
-			class="temp-placeholder m-1"
 			v-for="(award, index) in values"
 			:key="index"
+			class="temp-placeholder m-1"
 		>
 			<span>{{ award.name }}</span>
 			<img
@@ -17,8 +17,8 @@
 			>
 		</div>
 		<div
-			class="text-center w-100"
 			v-if="values.length === 0"
+			class="text-center w-100"
 		>
 			Ничего нет
 		</div>

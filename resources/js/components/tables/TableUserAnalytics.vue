@@ -3,25 +3,25 @@
 		<b-tabs content-class="mt-3">
 			<template v-for="activity in activitiess"> 
 				<b-tab
-					card
 					v-if="![19,21].includes(activity.id)"
-					:title="activity.name"
 					:key="activity.id"
+					card
+					:title="activity.name"
 				>
 					<t-activity-collection
 						v-if="activity.type == 'collection'"
+						:key="activity.id"
 						:month="monthInfo"
 						:activity="activity"
 						:is_admin="false"
-						:key="activity.id"
 						:price="activity.price"
 					/>
 
 					<t-activity-new
 						v-else-if="activity.type == 'default'"
+						:key="activity.id"
 						:month="monthInfo"
 						:activity="activity"
-						:key="activity.id"
 						:group_id="activity.group_id"
 						:work_days="activity.workdays"
 						:editable="false"

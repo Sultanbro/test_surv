@@ -3,13 +3,13 @@
 		<!-- buttons -->
 		<div class="buttons d-flex mb-3">
 			<input
+				v-model="search_text"
 				type="text"
 				class="search form-control form-control-sm"
-				v-model="search_text"
 			>
 			<button
-				class="btn"
 				v-if="mode == 'edit'"
+				class="btn"
 				@click="add"
 			>
 				Добавить
@@ -18,14 +18,14 @@
 
 		<!-- words -->
 		<div
-			class="block"
 			v-for="(word, i) in filteredWords"
 			:key="i"
+			class="block"
 		>
 			<div class="word">
 				<input
-					type="text"
 					v-model="word.word"
+					type="text"
 					:disabled="mode == 'read'"
 					class="form-control"
 				>
@@ -38,8 +38,8 @@
 				/>
 			</div>
 			<div
-				class="action d-flex"
 				v-if="mode == 'edit'"
+				class="action d-flex"
 			>
 				<button
 					class="btn btn-sm"
@@ -69,14 +69,14 @@ export default {
 		}
 	},
 
-	created(){
-		this.fetch()
-	},
-
 	computed: {
 		filteredWords() {
 			return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
 		}
+	},
+
+	created(){
+		this.fetch()
 	},
 
 	methods: {

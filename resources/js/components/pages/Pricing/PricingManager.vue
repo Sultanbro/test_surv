@@ -1,8 +1,8 @@
 <template>
 	<b-row
+		v-if="manager"
 		align-v="center"
 		class="PricingManager"
-		v-if="manager"
 	>
 		<b-col
 			cols="6"

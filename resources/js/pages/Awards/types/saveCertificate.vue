@@ -1,6 +1,8 @@
 <template>
 	<div class="certificate-creator">
 		<VueHtml2pdf
+			v-if="!loading"
+			ref="html2Pdf"
 			:show-layout="false"
 			:float-layout="true"
 			:pdf-quality="2"
@@ -8,24 +10,22 @@
 			:enable-download="pdfDownloaded"
 			pdf-content-width="1000px"
 			:manual-pagination="true"
-			ref="html2Pdf"
 			:html-to-pdf-options="options"
 			@progress="onProgress($event)"
 			@beforeDownload="beforeDownload($event)"
 			@hasDownloaded="hasDownloaded($event)"
-			v-if="!loading"
 		>
 			<!-- 1 = 24.4мм -->
 			<template #pdf-content>
 				<section>
 					<div class="html2pdf__page-break">
 						<div
-							class="draggable-container"
 							v-if="Object.keys(styles).length > 0"
+							class="draggable-container"
 						>
 							<div
-								class="draggable-block"
 								id="draggable-block"
+								class="draggable-block"
 							>
 								<div
 									class="draggable"
@@ -105,10 +105,33 @@ export default {
 			}
 		}
 	},
+	async mounted() {
+		if (this.course_id) {
+			await this.axios
+				.get('/awards/course?course_id=' + this.course_id)
+				.then(response => {
+					const data = response.data.data;
+					this.award = data;
+					this.styles = JSON.parse(data.award.styles);
+					this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
+					this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
+					this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
+
+					if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
+						//
+					}
+					else {
+						this.loading = false;
+					}
+				})
+				.catch(error => {
+					console.error(error);
+				})
+		}
+	},
 	methods: {
 		onProgress(progress) {
 			this.progress = progress;
-			console.log(`PDF generation progress: ${progress}%`)
 		},
 		beforeDownload(){
 
@@ -123,7 +146,6 @@ export default {
 			formData.append('award_id', this.award.award_id);
 			formData.append('user_id', this.user_id);
 			formData.append('file', file);
-			console.log(file);
 			this.axios
 				.post('/awards/reward', formData, {
 					headers: {
@@ -131,11 +153,10 @@ export default {
 					},
 				})
 				.then(() => {
-					console.log('СЕРТИФИКАТ УСПЕШНО СГЕНЕРИРОВАН!');
 					this.$emit('generate-success');
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 				});
 		},
 		renderedEmbed() {
@@ -152,43 +173,18 @@ export default {
 			}
 			this.$refs.html2Pdf.generatePdf();
 		}
-	},
-	async mounted() {
-		if (this.course_id) {
-			await this.axios
-				.get('/awards/course?course_id=' + this.course_id)
-				.then(response => {
-					const data = response.data.data;
-					this.award = data;
-					console.log(this.award);
-					this.styles = JSON.parse(data.award.styles);
-					this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
-					this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
-					this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
-
-					if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
-						console.log('Ошибка генерации сертификата');
-					} else {
-						this.loading = false;
-					}
-				})
-				.catch(error => {
-					console.log(error);
-				})
-		}
 	}
 }
 </script>
 
 
 <style lang="scss">
-    .certificate-creator {
-        canvas {
-        }
+.certificate-creator {
+	canvas {}
 
-        .draggable-container {
-            position: relative;
-            width: 1000px;
-        }
-    }
+	.draggable-container {
+		position: relative;
+		width: 1000px;
+	}
+}
 </style>

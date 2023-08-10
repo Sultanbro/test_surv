@@ -16,17 +16,17 @@
 			<template v-for="(page_item, p) in items">
 				<tr :key="p">
 					<td
-						@click="page_item.expanded = !page_item.expanded"
 						class="pointer b-table-sticky-column"
+						@click="page_item.expanded = !page_item.expanded"
 					>
 						<div class="d-flex px-2">
 							<i
-								class="fa fa-minus mt-1"
 								v-if="page_item.expanded"
+								class="fa fa-minus mt-1"
 							/>
 							<i
-								class="fa fa-plus mt-1"
 								v-else
+								class="fa fa-plus mt-1"
 							/>
 							<span class="ml-2">{{ p + 1 }}</span>
 						</div>
@@ -46,9 +46,9 @@
 						<td :colspan="fields.length + 2">
 							<div class="table__wrapper">
 								<table
-									class="table b-table table-bordered table-sm table-responsive mb-0 table-inner"
 									v-for="(user, i) in page_item.users"
 									:key="i"
+									class="table b-table table-bordered table-sm table-responsive mb-0 table-inner"
 								>
 									<tr>
 										<th
@@ -57,12 +57,12 @@
 										>
 											<div class="d-flex px-2 ">
 												<i
-													class="fa fa-minus mt-1"
 													v-if="user.expanded"
+													class="fa fa-minus mt-1"
 												/>
 												<i
-													class="fa fa-plus mt-1"
 													v-else
+													class="fa fa-plus mt-1"
 												/>
 												<span class="ml-2 bg-transparent ">{{ user.id }}</span>
 											</div>
@@ -74,8 +74,8 @@
 										</th>
 										<template v-for="bonus in bonuses">
 											<th
-												:key="bonus.id"
 												v-if="bonus.targetable_id == page_item.id"
+												:key="bonus.id"
 											>
 												{{ bonus.title }} <b v-if="user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0]">{{ user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0].sum }} тг</b><b v-else> 0 тг</b>
 											</th>
@@ -245,9 +245,6 @@ export default {
 		group_names: Object,
 		month: Number
 	},
-	watch: {
-
-	},
 	data() {
 		return {
 			current_date: '2022-09-14',
@@ -266,6 +263,7 @@ export default {
 			return this.obtained_bonuses.filter(bonus => bonus.user_id === this.user.id)
 		}
 	},
+	watch: {},
 
 	created() {
 		this.getActivities();
@@ -334,10 +332,8 @@ export default {
 					expanded: false
 				});
 			})
-			console.log(this.obtained_bonuses);
 		},
-		adjustFields(){
-		},
+		adjustFields(){},
 		expand(item){
 			item.expanded = !item.expanded;
 		},

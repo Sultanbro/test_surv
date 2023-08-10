@@ -1,9 +1,9 @@
 <template>
 	<a
+		v-b-popover.hover.left.html="'Поиск по чату'"
 		href="javascript:"
 		class="header__right-icon loop"
 		@click="click"
-		v-b-popover.hover.left.html="'Поиск по чату'"
 	>
 		<img
 			src="/images/dist/header-right-3.svg"

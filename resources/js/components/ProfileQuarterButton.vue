@@ -11,8 +11,8 @@
 		<sidebar
 			title="Квартальная премия"
 			:open="showKpiSidebar"
-			@close="toggle()"
 			width="70%"
+			@close="toggle()"
 		>
 			<t-quarter
 				:activeuserid="activeuserid"

@@ -4,19 +4,19 @@
 		<a
 			href="javascript:void(0)"
 			class="profile__button"
-			@click="$emit('clickStart')"
 			:class="{
 				'profile__button_error': status === 'error',
 				'profile__button_started': workdayStatus === 'started',
 				'profile__button_loading': status === 'loading',
 				'profile__button_dayoff': workdayStatus === 'workdone'
 			}"
+			@click="$emit('clickStart')"
 		>
 			<svg
+				id="loader-1"
 				:class="{'visible': status === 'loading'}"
 				class="profile__loader"
 				version="1.1"
-				id="loader-1"
 				xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink"
 				x="0px"
@@ -73,8 +73,8 @@
 
 		<JobtronButton
 			v-if="workdayStatus === 'workdone'"
-			@click="clickOvertime"
 			class="StartDayBtn-overtime mb-4"
+			@click="clickOvertime"
 		>
 			Оставить заявку на&nbsp;сверхурочную
 		</JobtronButton>

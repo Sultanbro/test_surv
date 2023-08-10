@@ -9,9 +9,9 @@
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
-							class="notifications__item"
 							v-for="(item, i) in unread"
 							:key="i"
+							class="notifications__item"
 						>
 							<div class="notifications__item-date">
 								{{ $moment(item.created_at).format(dateFormat) }}
@@ -73,9 +73,9 @@
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
-							class="notifications__item"
 							v-for="(item, i) in read"
 							:key="i"
+							class="notifications__item"
 						>
 							<div class="notifications__item-date">
 								{{ $moment(item.created_at).format(dateFormat) }}

@@ -63,8 +63,8 @@
 				>
 					<template v-for="(el, e_index) in course.elements">
 						<li
-							:key="e_index"
 							:id="el.id"
+							:key="e_index"
 							class="PageCourse-item chapter opened d-flex aic mb-2"
 							:class="{'deleted' : el.deleted}"
 						>
@@ -79,14 +79,14 @@
 								/>
 							</div>
 							<p
-								@click="toggleOpen(el)"
 								class="mb-0"
+								@click="toggleOpen(el)"
 							>
 								{{ el.name }}
 								<i
 									v-if="el.deleted"
-									class="fa fa-info-circle pointer ml-2"
 									v-b-popover.hover.right.html="'Элемент был удален'"
+									class="fa fa-info-circle pointer ml-2"
 									title="Не найдено"
 								/>
 							</p>
@@ -118,8 +118,8 @@
 				Курс проходят:
 				<AccessSelectFormControl
 					:items="course.targets"
-					@click="isAccessOverlay = true"
 					class="mt-3"
+					@click="isAccessOverlay = true"
 				/>
 			</div>
 		</div>

@@ -4,14 +4,14 @@
 			<div class="row mb-3 ">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -19,14 +19,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -41,15 +41,15 @@
 					default-active-key="1"
 				>
 					<b-tab
-						title="Экзамены по книгам"
 						key="1"
+						title="Экзамены по книгам"
 					>
 						<b-table
+							id="tabelTable"
 							responsive
 							striped
 							:sticky-header="true"
 							class="text-nowrap text-center my-table"
-							id="tabelTable"
 							:small="true"
 							:bordered="true"
 							:items="items"
@@ -59,10 +59,10 @@
 						>
 							<template #cell(success)="data">
 								<input
-									type="checkbox"
-									@change="updateExam('success',data)"
 									v-model="data.value"
+									type="checkbox"
 									:disabled="!data.item.link"
+									@change="updateExam('success',data)"
 								>
 							</template>
 							<template #cell(exam_date)="data">
@@ -70,18 +70,18 @@
 							</template>
 							<template #cell(link)="data">
 								<input
-									class="form-control cell-input"
-									@change="updateExam('link',data)"
 									v-model="data.value"
+									class="form-control cell-input"
 									:disabled="dateInfo.currentMonth !== curMonth"
+									@change="updateExam('link',data)"
 								>
 							</template>
 						</b-table>
 					</b-tab>
 
 					<b-tab
-						title="Навыки (Skills)"
 						key="2"
+						title="Навыки (Skills)"
 					>
 						<table class="table b-table table-striped table-bordered table-sm skills-table">
 							<tr>
@@ -176,8 +176,6 @@ export default {
 				data.item.link = data.value
 			}
 
-			console.log(data.value)
-			console.log(data.item)
 			let loader = this.$loading.show()
 			this.axios.post('/timetracking/exam/update', {
 				key: data.field.key,
@@ -206,7 +204,7 @@ export default {
 				loader.hide()
 			}).catch(function (error) {
 				alert(error)
-				console.log(error)
+				console.error(error)
 				loader.hide();
 			});
 
@@ -251,7 +249,6 @@ export default {
 				group_id: this.currentGroup
 			}).then(response => {
 				if (response.data.error && response.data.error == 'access') {
-					console.log(response.data.error)
 					this.hasPremission = false
 					loader.hide();
 					return;

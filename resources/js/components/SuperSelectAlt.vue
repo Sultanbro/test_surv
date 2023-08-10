@@ -1,10 +1,10 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
 	<div
-		class="super-select"
 		ref="select-alt"
-		:class="posClass"
 		v-click-outside="close"
+		class="super-select"
+		:class="posClass"
 	>
 		<div
 			class="selected-items flex-wrap noscrollbar"
@@ -28,15 +28,15 @@
 		</div>
 
 		<div
-			class="show"
 			v-if="show"
+			class="show"
 		>
 			<div class="search">
 				<input
+					ref="search"
 					v-model="searchText"
 					type="text"
 					placeholder="Поиск..."
-					ref="search"
 					@keyup="onSearch()"
 				>
 			</div>
@@ -75,8 +75,8 @@
 					</div>
 
 					<div
-						class="type mt-5 active all"
 						v-if="select_all_btn && !single"
+						class="type mt-5 active all"
 						@click="selectAll"
 					>
 						<div class="text">
@@ -113,31 +113,31 @@
 						<i class="fa fa-plus" /> Добавить базу знания
 					</a>
 					<div
-						class="option"
 						v-for="(option, index) in filtered_options"
 						:key="index"
-						@click="addValue(index, option.type)"
+						class="option"
 						:class="{
 							'selected': option.selected,
 							'category': option.disabled,
 						}"
+						@click="addValue(index, option.type)"
 					>
 						<i
-							class="fa fa-book"
 							v-if="option.type == 1"
+							class="fa fa-book"
 						/>
 						<i
-							class="fa fa-play"
 							v-if="option.type == 2"
+							class="fa fa-play"
 						/>
 						<i
-							class="fa fa-database"
 							v-if="option.type == 3"
+							class="fa fa-database"
 						/>
 						{{ option.name }}
 						<i
-							class="fa fa-times"
 							v-if="option.selected"
+							class="fa fa-times"
 							@click.stop="removeValueFromList(index)"
 						/>
 					</div>
@@ -181,18 +181,12 @@ export default {
 		};
 	},
 	created() {
-
-		console.log(this.values,'019995');
-
 		this.checkSelectedAll();
 	},
 	methods: {
 		checkSelectedAll() {
 			if(this.values.length == 1 && this.values[0]['id']== 0 && this.values[0]['type'] == 0) {
 				this.selected_all = true;
-				console.log('okay');
-			} else {
-				console.log('wtf');
 			}
 		},
 
@@ -303,7 +297,7 @@ export default {
 					this.addSelectedAttr();
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 				});
 		},
 

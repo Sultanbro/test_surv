@@ -8,7 +8,6 @@ function getDataFromScript(dataScript){
 	}
 	catch(err){
 		console.error(err)
-		console.info('dataScript', dataScript, dataScript.innerHTML.replace(/&quot;/g,'"'))
 	}
 }
 

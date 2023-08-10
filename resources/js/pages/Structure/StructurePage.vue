@@ -1,11 +1,11 @@
 <template>
 	<div
-		class="structure-container"
 		ref="container"
+		class="structure-container"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 	>
 		<div
 			v-if="$can('structure_edit')"
@@ -40,8 +40,8 @@
 		>
 			<input
 				id="range-input"
-				class="range-input"
 				v-model.number="zoom"
+				class="range-input"
 				min="10"
 				max="200"
 				step="1"
@@ -56,8 +56,8 @@
 			}"
 		>
 			<div
-				class="departments-area"
 				ref="departmentsArea"
+				class="departments-area"
 			>
 				<template v-if="rootCard">
 					<StructureItem

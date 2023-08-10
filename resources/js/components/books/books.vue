@@ -33,8 +33,8 @@
 				<div class="d-flex">
 					<div>
 						<button
-							@click="toggleAbbBookWindow"
 							class="btn btn-success btn-sm mr-2"
+							@click="toggleAbbBookWindow"
 						>
 							Добавить книгу
 						</button>
@@ -66,8 +66,8 @@
 						class="mb-2"
 					/>
 					<button
-						@click="addBook"
 						class="btn btn-success btn-sm"
+						@click="addBook"
 					>
 						Сохранить
 					</button>
@@ -102,10 +102,10 @@
 
 			<template #cell(groups)="row">
 				<b-badge
-					variant="primary"
-					class="mr-1"
 					v-for="group_id in row.value"
 					:key="group_id"
+					variant="primary"
+					class="mr-1"
 				>
 					{{ groups[group_id] }}
 				</b-badge>
@@ -115,8 +115,8 @@
 				<div class="d-flex s-flex">
 					<div
 						size="sm"
-						@click="clickRow(row)"
 						class="edit_button mr-2"
+						@click="clickRow(row)"
 					>
 						<div v-if="row.detailsShowing">
 							<i class="fa fa-times" />
@@ -127,8 +127,8 @@
 					</div>
 					<div
 						size="sm"
-						@click="deleteBook(row.item.id)"
 						class="delete_button"
+						@click="deleteBook(row.item.id)"
 					>
 						<i class="fa fa-trash" />
 					</div>
@@ -153,8 +153,8 @@
 						class="mb-2"
 					/>
 					<button
-						@click="editBook"
 						class="btn btn-success btn-sm"
+						@click="editBook"
 					>
 						Сохранить
 					</button>
@@ -227,20 +227,6 @@ export default {
 			filterOn: ['title']
 		}
 	},
-	watch: {
-		selectedGroup: function () {
-			this.getBooks()
-		},
-		// filter: {
-		//     handler: function () {
-		//         this.$refs.table.refresh()
-		//     },
-		//     deep: true
-		// }
-	},
-	created() {
-		this.getBooks()
-	},
 	computed: {
 		sortOptions() {
 			return this.fields
@@ -260,6 +246,20 @@ export default {
 			this.totalRows = this.filtered.length
 			return this.filtered
 		},
+	},
+	watch: {
+		selectedGroup: function () {
+			this.getBooks()
+		},
+		// filter: {
+		//     handler: function () {
+		//         this.$refs.table.refresh()
+		//     },
+		//     deep: true
+		// }
+	},
+	created() {
+		this.getBooks()
 	},
 	mounted() {
 		this.totalRows = this.items.length
@@ -317,7 +317,7 @@ export default {
 
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},
@@ -345,7 +345,7 @@ export default {
 					this.messageoff()
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},
@@ -359,7 +359,7 @@ export default {
 					this.messageoff()
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},
@@ -382,9 +382,8 @@ export default {
 					let includes = false
 
 					el.groups.forEach((item) => {
-						console.log(item)
-						console.log(this.selectedGroup)
-						if(item == this.selectedGroup) includes = true})
+						if(item == this.selectedGroup) includes = true
+					})
 
 					return includes;
 				})

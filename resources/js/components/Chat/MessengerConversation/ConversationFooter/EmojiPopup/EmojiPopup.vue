@@ -1,7 +1,7 @@
 <template>
 	<emoji-picker
-		@emoji="append"
 		:search="search"
+		@emoji="append"
 	>
 		<template #emoji-invoker="{ events: { click: clickEvent } }">
 			<div
@@ -49,8 +49,8 @@
 								<span
 									v-for="(emoji, emojiName) in emojiGroup"
 									:key="emojiName"
-									@click="insert(emoji)"
 									:title="emojiName"
+									@click="insert(emoji)"
 								>{{ emoji }}</span>
 							</div>
 						</div>

@@ -5,18 +5,18 @@
 	>
 		<div class="row">
 			<div
-				class="col-3"
 				v-if="individual_request"
+				class="col-3"
 			>
 				<select
-					class="form-control"
 					v-model="currentGroup"
+					class="form-control"
 					@change="fetchData('selected_group')"
 				>
 					<option
 						v-for="group in groups"
-						:value="group.id"
 						:key="group.id"
+						:value="group.id"
 					>
 						{{ group.name }}
 					</option>
@@ -24,14 +24,14 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="monthInfo.currentMonth"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="month in $moment.months()"
-						:value="month"
 						:key="month"
+						:value="month"
 					>
 						{{ month }}
 					</option>
@@ -39,14 +39,14 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="currentYear"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -80,7 +80,7 @@
 		<!--    <h4 class="d-flex align-items-center">-->
 		<!--      <div class="mr-2 mt-2">{{ groupName }}</div>-->
 		<!--    </h4>-->
-		<div v-if="this.hasPermission">
+		<div v-if="hasPermission">
 			<b-tabs
 				v-model="tabIndex"
 				type="card"
@@ -88,19 +88,19 @@
 				:default-active-key="3"
 			>
 				<b-tab
-					title="Оценка диалогов"
 					:key="1"
+					title="Оценка диалогов"
 					card
 				>
 					<div>
 						<b-tabs
-							type="card"
 							v-if="dataLoaded"
+							type="card"
 							class="mt-4 overflow-hidden"
 						>
 							<b-tab
-								title="Неделя"
 								:key="1"
+								title="Неделя"
 								card
 							>
 								<div class="table-responsive table-container mt-4">
@@ -135,8 +135,8 @@
 																{{ item.groupName }}
 															</b-badge>
 															<b-badge
-																variant="primary"
 																v-else
+																variant="primary"
 															>
 																{{ item.groupName }}
 															</b-badge>
@@ -144,16 +144,16 @@
 													</div>
 												</td>
 												<td
-													:class="field.klass"
 													v-for="(field, key) in fields"
 													:key="key"
+													:class="field.klass"
 												>
 													<input
 														v-if="field.type == 'day' && can_add_records"
+														v-model="item.weeks[field.key]"
 														type="number"
 														:title="field.key + ' :' + item.name"
 														@change="updateWeekValue(item, field.key)"
-														v-model="item.weeks[field.key]"
 													>
 													<div v-else>
 														<div v-if="item.weeks[field.key] != 0">
@@ -167,8 +167,8 @@
 								</div>
 							</b-tab>
 							<b-tab
-								title="Месяц"
 								:key="2"
+								title="Месяц"
 								card
 							>
 								<div class="table-responsive table-container mt-4">
@@ -197,14 +197,14 @@
 														{{ item.name }}
 														<template v-if="item.groupName">
 															<b-badge
-																variant="success"
 																v-if="item.groupName == 'Просрочники'"
+																variant="success"
 															>
 																{{ item.groupName }}
 															</b-badge>
 															<b-badge
-																variant="primary"
 																v-else
+																variant="primary"
 															>
 																{{ item.groupName }}
 															</b-badge>
@@ -225,15 +225,15 @@
 							</b-tab>
 							<b-tab
 								v-if="can_add_records"
-								title="Оценка переговоров"
 								key="3"
+								title="Оценка переговоров"
 								card
 							>
 								<div class="row mt-4">
 									<div class="col-6 col-md-3 mb-4">
 										<select
-											class="form-control"
 											v-model="filters.currentEmployee"
+											class="form-control"
 											@change="filterRecords"
 										>
 											<option :value="0">
@@ -241,8 +241,8 @@
 											</option>
 											<option
 												v-for="item in items"
-												:value="item.id"
 												:key="item.id"
+												:value="item.id"
 											>
 												{{ item.name }}
 											</option>
@@ -250,17 +250,17 @@
 									</div>
 									<div class="col-2 col-md-1 d-flex align-items-center mb-4">
 										<select
-											class="form-control"
 											v-model="currentDay"
+											class="form-control"
 											@change="fetchData"
 										>
 											<option value="0">
 												Все дни
 											</option>
 											<option
-												v-for="day in this.monthInfo.daysInMonth"
-												:value="day"
+												v-for="day in monthInfo.daysInMonth"
 												:key="day"
+												:value="day"
 											>
 												{{ day }}
 											</option>
@@ -317,8 +317,8 @@
 									>
 										<template #cell(name)="{value, item}">
 											<div
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -345,8 +345,8 @@
 											</div>
 											<div
 												v-else
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -358,8 +358,8 @@
 												class="TableQuality-input"
 											>
 												<input
-													type="text"
 													v-model="item.phone"
+													type="text"
 													class="TableQuality-inputPhone text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
@@ -367,8 +367,8 @@
 											</div>
 											<div
 												v-else
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -380,8 +380,8 @@
 												class="TableQuality-input"
 											>
 												<input
-													type="text"
 													v-model="item.dayOfDelay"
+													type="text"
 													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
@@ -389,8 +389,8 @@
 											</div>
 											<div
 												v-else
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -398,8 +398,8 @@
 
 										<template #cell(interlocutor)="{value, item}">
 											<div
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -407,8 +407,8 @@
 
 										<template #cell(date)="{value, item}">
 											<div
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -424,8 +424,8 @@
 												class="TableQuality-input"
 											>
 												<input
-													type="number"
 													v-model="item['param' + pk]"
+													type="number"
 													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="changeStat(item)"
@@ -434,8 +434,8 @@
 											<div
 												v-else
 												:key="'e' + pk"
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -447,8 +447,8 @@
 												class="TableQuality-input"
 											>
 												<textarea
-													type="text"
 													v-model="item.comments"
+													type="text"
 													class="TableQuality-inputComment form-control"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
@@ -456,8 +456,8 @@
 											</div>
 											<div
 												v-else
-												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
+												@click="editMode(item)"
 											>
 												{{ value }}
 											</div>
@@ -490,9 +490,9 @@
 										:limit="3"
 									></pagination> -->
 									<b-pagination
-										@change="getResults"
 										:limit="3"
 										:total-rows="records.total"
+										@change="getResults"
 									/>
 								</div>
 							</b-tab>
@@ -500,8 +500,8 @@
 					</div>
 				</b-tab>
 				<b-tab
-					title="Прогресс по курсам"
 					:key="2"
+					title="Прогресс по курсам"
 					card
 				>
 					<CourseResults
@@ -512,20 +512,20 @@
 
 				<!-- Статус: скрыто. Компонент: components/tables/TableQuality.vue. Дата скрытия: 27.02.2023 14:46 -->
 				<b-tab
-					title="Чек Лист"
+					v-if="false"
 					:key="3"
+					title="Чек Лист"
 					type="card"
 					card
 					:active="check == 3"
-					v-if="false"
 				>
 					<b-tabs
 						type="card"
 						class="mt-4"
 					>
 						<b-tab
-							title="Неделя"
 							:key="1"
+							title="Неделя"
 						>
 							<div class="table-container table-responsive">
 								<table class="table table-bordered whitespace-no-wrap mt-4">
@@ -550,8 +550,8 @@
 												</th>
 												<template v-for="(field, key) in fields">
 													<td
-														:class="field.klass"
 														:key="key"
+														:class="field.klass"
 													>
 														<template v-if="currentGroup == check_r.gr_id">
 															<div v-if="field.name == 'Итог' ">
@@ -598,8 +598,8 @@
 							</div>
 						</b-tab>
 						<b-tab
-							title="Месяц"
 							:key="2"
+							title="Месяц"
 						>
 							<div class="table-container table-responsive">
 								<table class="table table-bordered whitespace-no-wrap mt-4">
@@ -626,8 +626,8 @@
 												</th>
 												<template v-for="(field, key) in monthFields">
 													<td
-														:class="field.klass"
 														:key="key"
+														:class="field.klass"
 													>
 														<template v-if="currentGroup == check_r.gr_id">
 															<div v-if="field.name == 'Итог' ">
@@ -695,16 +695,16 @@
 		<Sidebar
 			title="Настройки"
 			:open="showSettings"
-			@close="showSettings = false"
 			width="50%"
+			@close="showSettings = false"
 		>
 			<div class="row pr-4">
 				<div class="col-4 d-flex mb-3">
 					<div class="fl">
 						Источник оценок
 						<i
-							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'"
+							class="fa fa-info-circle ml-2"
 							title="Оценки контроля качества"
 						/>
 					</div>
@@ -737,15 +737,15 @@
 						<div class="col-4">
 							ID диалера
 							<i
-								class="fa fa-info-circle ml-2"
 								v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
+								class="fa fa-info-circle ml-2"
 								title="Диалер в U-Calls"
 							/>
 						</div>
 						<div class="col-8">
 							<input
-								type="text"
 								v-model="dialer_id"
+								type="text"
 								placeholder="ID"
 								class="form-control form-control-sm"
 							>
@@ -757,8 +757,8 @@
 						</div>
 						<div class="col-8">
 							<input
-								type="number"
 								v-model="script_id"
+								type="number"
 								placeholder="ID скрипта"
 								class="form-control form-control-sm"
 							>
@@ -784,8 +784,8 @@
 						</div>
 						<div class="col-8 mb-3">
 							<input
-								type="text"
 								v-model="crit.name"
+								type="text"
 								class="form-control form-control-sm"
 							>
 						</div>
@@ -832,13 +832,13 @@
 		<Sidebar
 			title="Индивидуальный чек лист"
 			:open="showChecklist"
-			@close="toggle()"
 			width="70%"
+			@close="toggle()"
 		>
 			<div
-				class="col-10 p-0 mt-2"
 				v-for="(val,ind) in checklists"
 				:key="ind"
+				class="col-10 p-0 mt-2"
 			>
 				<div class="mr-5">
 					<b-form-checkbox
@@ -864,9 +864,9 @@
 			<div class="col-md-12 mt-3">
 				<div class="col-md-6 p-0">
 					<button
-						@click.prevent="saveChecklist"
 						title="Сохранить"
 						class="btn btn-primary"
+						@click.prevent="saveChecklist"
 					>
 						Сохранить
 					</button>

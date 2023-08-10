@@ -12,9 +12,9 @@
 				<div
 					v-for="tab, tab_index in tabs"
 					:key="tab_index"
-					@click="switchTabs(tab_index)"
 					class="ProfileTabs-tab tab__item"
 					:class="{'ProfileTabs-tab_active': localValue === tab_index}"
+					@click="switchTabs(tab_index)"
 				>
 					{{ tab }}
 				</div>

@@ -6,10 +6,10 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
@@ -19,14 +19,14 @@
 					@apply="fetchData"
 				/>
 				<span
-					class="ml-2"
 					v-if="items"
+					class="ml-2"
 				>
 					Найдено: {{ items.length }}
 				</span>
 				<span
-					class="ml-2"
 					v-else
+					class="ml-2"
 				>
 					Найдено: 0
 				</span>
@@ -46,25 +46,25 @@
 
 		<StatsTableBonus
 			v-if="s_type_main == 2"
+			:key="bonus_groups"
 			:groups="bonus_groups"
 			:group_names="groups"
 			:month="month"
-			:key="bonus_groups"
 		/>
 
 		<StatsTableQuartal
 			v-if="s_type_main == 3"
+			:key="quartal_users"
 			:users="quartal_users"
 			:groups="quartal_groups"
-			:key="quartal_users"
 			:search-text="searchText"
 		/>
 
 		<!-- pagination -->
 		<JwPagination
 			v-if="s_type_main == 1"
-			class="mt-3"
 			:key="paginationKey"
+			class="mt-3"
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -72,8 +72,8 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 	</div>
 </template>
@@ -97,23 +97,6 @@ export default {
 		StatsTableQuartal,
 	},
 	props: {},
-	watch: {
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
-
-				if(val > 100) {
-					val = 100;
-					return;
-				}
-
-				this.paginationKey++;
-			}
-		},
-	},
 
 	data() {
 		return {
@@ -134,6 +117,23 @@ export default {
 			quartal_users: [],
 			quartal_groups: []
 		}
+	},
+	watch: {
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
+
+				if(val > 100) {
+					val = 100;
+					return;
+				}
+
+				this.paginationKey++;
+			}
+		},
 	},
 
 	created() {
@@ -180,18 +180,7 @@ export default {
 				});
 			}else if(this.s_type_main == 2){
 				this.axios.get('/statistics/bonuses').then(response => {
-					console.log(response.data);
 					this.bonus_groups = response.data;
-					/*this.bonus_groups = response.data.groups;
-                    this.bonus_groups = this.bonus_groups.map(res=> ({...res, expanded: false}));
-                    for(let i = 0; i < this.bonus_groups.length; i++){
-                        this.bonus_groups[i].users = this.bonus_groups[i].users.map(res=> ({...res, expanded: false, totals: {
-                                quantity: 0,
-                                sum:0,
-                                amount:0
-                            }
-                        }));
-                    }*/
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
@@ -203,7 +192,6 @@ export default {
 					//this.quartal_items = response.data;
 					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
 					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
-					console.log(this.quartal_groups);
 					loader.hide();
 				}).catch(error => {
 					loader.hide();

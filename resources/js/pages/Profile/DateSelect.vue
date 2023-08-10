@@ -17,12 +17,12 @@
 			v-if="isDatePicker"
 			:value="localValue"
 			:open="isDatePicker"
-			@close="onCloseDatePicker"
-			@input="onInput"
 			:only-month="true"
 			:start-year="Math.max(new Date(user.created_at).getFullYear(), 2020)"
 			:tabs="[]"
 			popup
+			@close="onCloseDatePicker"
+			@input="onInput"
 		/>
 	</div>
 </template>

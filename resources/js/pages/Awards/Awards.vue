@@ -8,9 +8,9 @@
 			Создать награду
 		</BButton>
 		<img
+			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
 			src="/images/dist/profit-info.svg"
 			class="img-info"
-			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
 		>
 
 		<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
@@ -19,8 +19,8 @@
 		<!--        </b-modal>-->
 
 		<div
-			class="table-container"
 			v-if="tableItems && tableItems.length > 0"
+			class="table-container"
 		>
 			<BTableSimple
 				id="awards-table"
@@ -102,8 +102,8 @@
 		/>
 		<b-modal
 			v-if="itemRemove"
-			centered
 			v-model="modal"
+			centered
 			:title="itemRemove.name"
 		>
 			Вы уверены, что хотите удалить награду?
@@ -133,6 +133,11 @@ export default {
 	components: {
 		EditAwardSidebar,
 	},
+	filters: {
+		splitDate: function(val){
+			return val.split('T')[0];
+		}
+	},
 	data() {
 		return {
 			modalRegenerate: false,
@@ -142,11 +147,6 @@ export default {
 			item: null,
 			tableItems: [],
 		};
-	},
-	filters: {
-		splitDate: function(val){
-			return val.split('T')[0];
-		}
 	},
 	mounted() {
 		this.getAwards();
@@ -166,7 +166,7 @@ export default {
 					loader.hide();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},
@@ -194,7 +194,7 @@ export default {
 					loader.hide();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},

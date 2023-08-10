@@ -1,13 +1,13 @@
 <template>
 	<div
-		class="messenger__wrapper"
 		v-show="isOpen"
+		class="messenger__wrapper"
 		@click.self="toggle"
 	>
 		<div
-			@keydown.esc="escapeChat"
 			id="messengerWindow"
 			class="messenger__card-window"
+			@keydown.esc="escapeChat"
 		>
 			<div class="messenger__chat-container">
 				<ChatNav :fullscreen="true" />

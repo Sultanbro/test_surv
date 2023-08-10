@@ -1,8 +1,8 @@
 <template>
 	<div class="auth_check">
 		<div
-			@click="toggle()"
 			class="btn-rm"
+			@click="toggle()"
 		>
 			<a class="text-white rounded">
 				<span class="far fa-address-card text-white " />
@@ -13,22 +13,22 @@
 		<sidebar
 			title="Индивидуальный чек лист"
 			:open="showAuthUserCheck"
-			@close="toggle()"
 			width="70%"
+			@close="toggle()"
 		>
 			<div class="col-md-12 p-0">
 				<div class="row">
 					<div class="col-12 p-0">
 						<div
-							class="col-md-12 pr-0 mt-2"
 							v-for="(item, index) in auth_check"
 							:key="index"
+							class="col-md-12 pr-0 mt-2"
 						>
 							<span class="font-weight-bold">{{ index }}</span>
 							<div
-								class="col-10 p-0 mt-2"
 								v-for="(val,ind) in item"
 								:key="ind"
+								class="col-10 p-0 mt-2"
 							>
 								<div class="mr-5">
 									<b-form-checkbox
@@ -41,12 +41,12 @@
 
 								<div style="position: absolute;right: 0px;top: 0px">
 									<input
+										v-model="val.checkedtasks[0].url"
 										type="url"
 										style="width: 150%"
-										v-model="val.checkedtasks[0].url"
-										@input="event => val.checkedtasks[0].url >= 0 ? linkIsSet = true : linkIsSet = false"
 										class="form-control form-control-sm"
 										placeholder="url"
+										@input="event => val.checkedtasks[0].url >= 0 ? linkIsSet = true : linkIsSet = false"
 									>
 								</div>
 							</div>
@@ -56,10 +56,10 @@
 					<div class="col-md-12 mt-3">
 						<div class="col-md-6 p-0">
 							<button
-								@click.prevent="saveChecklist"
 								title="Сохранить"
 								:disabled="linkIsSet"
 								:class=" linkIsSet ?'btn btn-danger':'btn btn-primary'"
+								@click.prevent="saveChecklist"
 							>
 								Выполнить
 							</button>
@@ -96,21 +96,13 @@ export default {
 			show_counts:[],
 		};
 	},
-
-	created() {
-		this.getTasks();
-		if (this.open_check == 1){
-			this.showAuthUserCheck = true;
+	computed:{
+		isChecked(){
+			return false;
 		}
-	},
-	mounted: function () {
-		window.setInterval(() => {
-			this.currentTime = new Date()
-		}, 1000)
 	},
 	watch: {
 		async currentTime(newValue) {
-			console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- '+ this.notification_time.getHours()+':'+ this.notification_time.getMinutes());
 
 			if(this.notification_time != null){
 				if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
@@ -126,10 +118,17 @@ export default {
 
 		}
 	},
-	computed:{
-		isChecked(){
-			return false;
+
+	created() {
+		this.getTasks();
+		if (this.open_check == 1){
+			this.showAuthUserCheck = true;
 		}
+	},
+	mounted: function () {
+		window.setInterval(() => {
+			this.currentTime = new Date()
+		}, 1000)
 	},
 	methods: {
 
@@ -225,7 +224,6 @@ export default {
 
 					if (ch['checked'] == true){
 						this.sendChecklist = false;
-						//console.log(this.isValidUrl(ch['https']));
 						if (this.isValidUrl(ch['url']) && ch['checked']){
 							this.sendChecklist = true;
 							this.$toast.success('Чек лист сохранен!');

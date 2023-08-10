@@ -2,17 +2,17 @@
 	<div class="time-start-panel">
 		<div class="listbtn">
 			<div
-				class="lstbtn"
 				v-if="program == 2"
+				class="lstbtn"
 			>
 				<div v-if="user_type == 'office'">
 					<template v-for="(btn, index) in btnlist_office">
 						<button
 							:key="index"
-							@click="btnclickk(btn.name)"
 							class="btn btn-secondary"
 							:disabled="activebtn == btn.name"
 							:class="{ activiti: activebtn == btn.name }"
+							@click="btnclickk(btn.name)"
 						>
 							<i
 								v-if="activebtn == btn.name"
@@ -27,10 +27,10 @@
 					<template v-for="(btn, index) in btnlist">
 						<button
 							:key="index"
-							@click="btnclickk(btn.name)"
 							class="btn btn-secondary"
 							:disabled="activebtn == btn.name"
 							:class="{ activiti: activebtn == btn.name }"
+							@click="btnclickk(btn.name)"
 						>
 							<i
 								v-if="activebtn == btn.name"
@@ -50,11 +50,11 @@
 
 		<transition name="fade">
 			<sidebar
+				v-show="ordersShow"
 				title="Заказы руководителей"
 				:open="ordersShow"
-				@close="ordersShow = false"
-				v-show="ordersShow"
 				width="40%"
+				@close="ordersShow = false"
 			>
 				<div class="mt-2 p-2">
 					<div class="form-group my-table">
@@ -81,8 +81,8 @@
 						</table>
 					</div>
 					<div
-						class=" mt-2 form-group row"
 						v-if="position_id == 45"
+						class=" mt-2 form-group row"
 					>
 						<label
 							for="firstName"
@@ -90,15 +90,15 @@
 						>Выберите отдел</label>
 						<div class="col-sm-12 relative mb-2">
 							<select
+								v-model="group_id"
 								type="number"
 								required="required"
-								v-model="group_id"
 								class="form-control"
 							>
 								<option
-									:value="group.id"
 									v-for="group in groups"
 									:key="group.id"
+									:value="group.id"
 								>
 									{{
 										group.name
@@ -112,9 +112,9 @@
 						>Количество</label>
 						<div class="col-sm-12 relative mb-2">
 							<input
+								v-model="quantity"
 								type="number"
 								required="required"
-								v-model="quantity"
 								class="form-control"
 							>
 						</div>
@@ -157,10 +157,10 @@
 					<div v-html="corp_book_page.text" />
 
 					<button
-						class="btn btn-primary rounded m-auto"
 						id="readCorpBook"
-						@click="hideBook"
+						class="btn btn-primary rounded m-auto"
 						disabled
+						@click="hideBook"
 					>
 						<span class="text">Я прочитал</span>
 						<span class="timer" />
@@ -176,6 +176,12 @@ import moment from 'moment';
 
 export default {
 	name: 'TimeTracking',
+
+	filters: {
+		splitNumber(value) {
+			return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+		},
+	},
 	props: ['activeuserid', 'usertype', 'program', 'user_type', 'position_id'],
 	data() {
 		return {
@@ -222,12 +228,6 @@ export default {
 			},
 		};
 	},
-
-	filters: {
-		splitNumber(value) {
-			return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-		},
-	},
 	created() {
 		this.axios
 			.post('/timetracking/status', {})
@@ -251,7 +251,7 @@ export default {
 				this.bonus = response.data.bonus;
 			})
 			.catch((error) => {
-				console.log(error);
+				console.error(error);
 			});
 
 		this.setMonth();
@@ -285,7 +285,7 @@ export default {
 					this.showCorpBookPage = false;
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 				});
 		},
 
@@ -316,13 +316,12 @@ export default {
 					required: this.quantity,
 				})
 				.then((response) => {
-					console.log(response.data);
 					this.orders = response.data;
 					loader.hide();
 				})
 				.catch((error) => {
 					loader.hide();
-					console.log(error);
+					console.error(error);
 				});
 		},
 
@@ -361,7 +360,7 @@ export default {
 					this.setButton(response.data.status);
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 				});
 		},
 		fetchstop(times) {
@@ -377,7 +376,7 @@ export default {
 					this.setButton(response.data.status);
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 				});
 		},
 		setButton(status) {

@@ -6,14 +6,14 @@
 		<div class="AnalyticsPage-filters row mb-4">
 			<div class="col-3">
 				<select
-					class="form-control"
 					v-model="currentGroup"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="group in ggroups"
-						:value="group.id"
 						:key="group.id"
+						:value="group.id"
 					>
 						{{ group.name }}
 					</option>
@@ -21,14 +21,14 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="monthInfo.currentMonth"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="month in $moment.months()"
-						:value="month"
 						:key="month"
+						:value="month"
 					>
 						{{ month }}
 					</option>
@@ -36,14 +36,14 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="currentYear"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -58,14 +58,14 @@
 				</div>
 			</div>
 			<div
-				class="col-2"
 				v-if="$laravel.is_admin"
+				class="col-2"
 			>
 				<button
 					v-if="!firstEnter && !dataLoaded"
 					class="btn btn-info rounded add-s"
-					@click="add_analytics()"
 					title="Создать аналитику"
+					@click="add_analytics()"
 				>
 					<i class="fa fa-plus-square" />
 				</button>
@@ -73,23 +73,23 @@
 				<button
 					v-if="!noan"
 					class="btn btn-info rounded add-s"
-					@click="archive()"
 					title="Архивировать"
+					@click="archive()"
 				>
 					<i class="fa fa-trash" />
 				</button>
 
 				<button
 					class="btn btn-info rounded add-s ml-2"
-					@click="showArchive = true"
 					title="Восстановить из архива"
+					@click="showArchive = true"
 				>
 					<i class="fa fa-archive" />
 				</button>
 			</div>
 			<div
-				class="col-1"
 				v-else
+				class="col-1"
 			/>
 		</div>
 		<template v-if="!firstEnter">
@@ -97,10 +97,10 @@
 				<template v-if="dataLoaded">
 					<div class="AnalyticsPage-header wrap mb-4">
 						<TopGauges
+							:key="123"
 							:utility_items="data.utility"
 							:editable="false"
 							wrapper_class="d-flex"
-							:key="123"
 							page="analytics"
 							class="AnalyticsPage-gauges"
 						/>
@@ -197,9 +197,9 @@
 		<b-modal
 			v-model="showArchive"
 			title="Восстановить из архива"
-			@ok="restore_analytics()"
 			size="lg"
 			class="modalle"
+			@ok="restore_analytics()"
 		>
 			<div class="row">
 				<div class="col-5">
@@ -213,9 +213,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="archived_group.id"
 							v-for="(archived_group, key) in archived_groups"
 							:key="key"
+							:value="archived_group.id"
 						>
 							{{ archived_group.name }}
 						</option>

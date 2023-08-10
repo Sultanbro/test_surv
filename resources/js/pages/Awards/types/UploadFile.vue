@@ -2,6 +2,8 @@
 	<div class="award-type-1">
 		<div class="d-flex file">
 			<BFormFile
+				id="file"
+				ref="file"
 				v-model="images"
 				class="form-file"
 				placeholder="Выберите Файл(ы)"
@@ -9,8 +11,6 @@
 				accept=".jpg, .png, .pdf"
 				multiple
 				type="file"
-				id="file"
-				ref="file"
 				:state="true"
 				:file-name-formatter="formatNames"
 			/>
@@ -28,28 +28,28 @@
 
 		<b-row v-if="hasImage">
 			<b-col
+				v-for="(image, index) in imageSrc"
+				:key="index"
 				cols="12"
 				md="4"
 				lg="3"
 				xl="2"
 				class="mt-4"
-				v-for="(image, index) in imageSrc"
-				:key="index"
 			>
 				<div class="image-preview">
 					<BImg
+						v-if="image.format !== 'pdf'"
 						v-b-modal="'myModal'"
 						:src="image.path"
 						class="mb-3 img"
 						fluid
 						block
 						rounded
-						v-if="image.format !== 'pdf'"
 						@click="modalOpen(image)"
 					/>
 					<div
-						@click="modalOpen(image)"
 						v-else
+						@click="modalOpen(image)"
 					>
 						<vue-pdf-embed :source="image.path" />
 					</div>
@@ -64,18 +64,18 @@
 			</h4>
 			<b-row>
 				<b-col
+					v-for="award in awards"
+					:key="award.id"
 					cols="12"
 					md="4"
 					xl="2"
 					lg="3"
 					class="mt-4"
-					v-for="award in awards"
-					:key="award.id"
 				>
 					<div class="image-preview active">
 						<div
-							class="image-preview-container"
 							v-if="award.format !== 'pdf'"
+							class="image-preview-container"
 						>
 							<BImg
 								v-b-modal="'myModal'"
@@ -92,8 +92,8 @@
 							/>
 						</div>
 						<div
-							class="image-preview-container"
 							v-else
+							class="image-preview-container"
 						>
 							<div @click="modalOpen(award)">
 								<vue-pdf-embed :source="award.tempPath" />
@@ -108,20 +108,20 @@
 			</b-row>
 		</template>
 		<BModal
-			v-model="modal"
 			v-if="selectedModal"
+			v-model="modal"
 			size="lg"
 			centered
 		>
 			<BImg
+				v-if="selectedModal.format !== 'pdf'"
 				:src="selectedModal.tempPath"
 				fluid
 				block
-				v-if="selectedModal.format !== 'pdf'"
 			/>
 			<vue-pdf-embed
-				:source="selectedModal.tempPath"
 				v-else
+				:source="selectedModal.tempPath"
 			/>
 			<template #modal-footer>
 				<b-button
@@ -172,9 +172,6 @@ export default {
 			return false
 		},
 	},
-	mounted() {
-		this.awards = this.awardsObj;
-	},
 	watch: {
 		images(newValue) {
 			if (newValue) {
@@ -192,9 +189,11 @@ export default {
 						});
 				});
 				this.$emit('image-download', this.images);
-				console.log(this.imageSrc);
 			}
 		},
+	},
+	mounted() {
+		this.awards = this.awardsObj;
 	},
 	methods: {
 		formatNames(files) {
@@ -219,7 +218,7 @@ export default {
 					loader.hide();
 				})
 				.catch(error => {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				})
 		},

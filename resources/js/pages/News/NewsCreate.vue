@@ -20,23 +20,23 @@
 				v-show="!editorOpen"
 				class="news-create__link news-icon"
 				alt="img"
-				@click="toggleInput(true, true, true)"
 				src="/icon/news/create-post/link.svg"
+				@click="toggleInput(true, true, true)"
 			>
 
 			<input
-				type="text"
+				v-show="editorOpen"
 				id="newsCreateInput"
 				ref="newsCreateInput"
-				placeholder="Заголовок новости"
 				v-model="postTitle"
-				v-show="editorOpen"
+				type="text"
+				placeholder="Заголовок новости"
 				class="news-create__title"
 			>
 
 			<span
-				class="news-create__title-error"
 				v-show="titleError"
+				class="news-create__title-error"
 				v-html="'Необходимо заполнить заголовок.'"
 			/>
 		</div>
@@ -46,22 +46,22 @@
 			class="news-create__form"
 		>
 			<ckeditor
-				:editor="editor"
 				v-model="editorData"
+				:editor="editor"
 				:config="editorConfig"
 			/>
 
 			<span
-				class="news-create__content-error"
 				v-show="contentError"
+				class="news-create__content-error"
 				v-html="'Необходимо заполнить контент новости.'"
 			/>
 
 			<div class="news-create__access-container">
 				<div
 					v-show="availableToEveryone"
-					@click="toggleAvailableToEveryone(!availableToEveryone)"
 					:class="'access-item ' + 'access-item--active'"
+					@click="toggleAvailableToEveryone(!availableToEveryone)"
 				>
 					<span v-html="'Всем пользователям'" />
 					<img src="/icon/news/create-post/remove.svg">
@@ -94,8 +94,8 @@
 			</div>
 
 			<span
-				class="news-create__content-error"
 				v-show="availableError"
+				class="news-create__content-error"
 				v-html="'Необходимо указать для кого предназначена новость.'"
 			/>
 		</div>
@@ -129,9 +129,9 @@
 
 		<div
 			v-show="showAccessModal"
+			v-scroll-lock="showAccessModal"
 			class="access-modal-bg"
 			@click.self="toggleAccessModal(false)"
-			v-scroll-lock="showAccessModal"
 		>
 			<div class="access-modal">
 				<div class="access-modal__search">
@@ -140,8 +140,8 @@
 						src="/icon/news/filter/search.svg"
 					>
 					<input
-						type="text"
 						v-model="accessSearch"
+						type="text"
 						class="access-modal__search-input"
 						placeholder="Быстрый поиск"
 					>
@@ -181,8 +181,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.users"
-							:key="item.id"
 							v-show="item.name && item.last_name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) || item.last_name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 						>
@@ -201,8 +201,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 									:checked="checked(item, 1) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -214,8 +214,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.profile_groups"
-							:key="item.id"
 							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 2)"
 						>
@@ -227,8 +227,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 2)"
 									:checked="checked(item, 2) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 2)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -240,8 +240,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.positions"
-							:key="item.id"
 							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 3)"
 						>
@@ -253,8 +253,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 3)"
 									:checked="checked(item, 3) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 3)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -607,7 +607,7 @@ export default {
 					this.toggleInput(false, false);
 				})
 				.catch(response => {
-					console.log(response)
+					console.error(response)
 				});
 			this.isEdit = false;
 		},
@@ -676,7 +676,7 @@ export default {
 					this.toggleInput(false, false);
 				})
 				.catch(response => {
-					console.log(response)
+					console.error(response)
 				});
 			this.isEdit = false;
 		},

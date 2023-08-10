@@ -9,8 +9,8 @@
 
 
 		<input
-			type="text"
 			:ref="'mylink'"
+			type="text"
 			class="hider"
 		>
 
@@ -50,8 +50,8 @@
 				</div>
 			</div>
 			<JobtronButton
-				@click="add"
 				class="mt-4"
+				@click="add"
 			>
 				Добавить
 			</JobtronButton>

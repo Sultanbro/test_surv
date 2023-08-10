@@ -10,8 +10,8 @@
 			<div>
 				<div v-if="is_admin">
 					<a
-						@click="showExcelImport = !showExcelImport"
 						class="btn btn-success rounded mr-2 text-white"
+						@click="showExcelImport = !showExcelImport"
 					>
 						<i class="fa fa-upload" />
 						Импорт</a>
@@ -21,8 +21,8 @@
 
 		<div class="custom-scroll">
 			<table
-				class="indicators-table-fixed"
 				:id="'sticky-'+ activity.id"
+				class="indicators-table-fixed"
 			>
 				<tr>
 					<th
@@ -46,8 +46,8 @@
 						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div
-							class="text-left pl-4"
 							v-if="is_admin"
+							class="text-left pl-4"
 						>
 							Итог к выдаче
 							<i
@@ -57,8 +57,8 @@
 							/>
 						</div>
 						<div
-							class=""
 							v-else
+							class=""
 						/>
 					</th>
 					<th
@@ -77,10 +77,10 @@
 					</th>
 
 					<th
-						class="text-center"
-						colspan="2"
 						v-for="day in month.daysInMonth"
 						:key="day"
+						class="text-center"
+						colspan="2"
 					>
 						<div>{{ day }}</div>
 					</th>
@@ -88,14 +88,14 @@
 				<tr>
 					<template v-for="day in month.daysInMonth">
 						<th
-							class="stickyy-h2"
 							:key="day"
+							class="stickyy-h2"
 						>
 							сборы
 						</th>
 						<th
-							class="stickyy-h2"
 							:key="day + 'a'"
+							class="stickyy-h2"
 						>
 							тенге
 						</th>
@@ -113,19 +113,19 @@
 						<div class="d-flex align-items-center max-content">
 							{{ item.lastname }} {{ item.name }}
 							<img
+								v-if="item.show_cup == 1"
 								src="images/dist/first-place.png"
 								alt="icon"
-								v-if="item.show_cup == 1"
 							>
 							<img
+								v-if="item.show_cup == 2"
 								src="images/dist/second-place.png"
 								alt="icon"
-								v-if="item.show_cup == 2"
 							>
 							<img
+								v-if="item.show_cup == 3"
 								src="images/dist/third-place.png"
 								alt="icon"
-								v-if="item.show_cup == 3"
 							>
 						</div>
 					</td>
@@ -151,10 +151,10 @@
 						>
 							<div>
 								<input
-									type="number"
 									v-model="item[day]"
-									@change="updateSettings($event, item, index, day)"
+									type="number"
 									class="form-control cell-input"
+									@change="updateSettings($event, item, index, day)"
 								>
 							</div>
 						</td>
@@ -162,8 +162,8 @@
 							v-else
 							:key="day"
 							:title="day + ': сборы'"
-							@click="editMode(item)"
 							:class="'text-center ' + item._cellVariants[day]"
+							@click="editMode(item)"
 						>
 							<div>{{ item[day] }}</div>
 						</td>
@@ -188,17 +188,17 @@
 		</div>
 
 		<sidebar
+			v-if="showExcelImport"
 			title="Импорт EXCEL"
 			:open="showExcelImport"
-			@close="showExcelImport=false"
-			v-if="showExcelImport"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<activity-excel-import
 				:group_id="42"
 				table="minutes"
-				@close="showExcelImport=false"
 				:activity_id="activity.id"
+				@close="showExcelImport=false"
 			/>
 		</sidebar>
 	</div>
@@ -321,7 +321,6 @@ export default {
 			this.itemsArray.forEach(account => {
 				if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 					row0_avg += parseFloat(account['plan']);
-					console.log(account['plan'])
 				}
 			})
 

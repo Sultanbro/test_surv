@@ -123,10 +123,10 @@
 					<b-col cols="4">
 						<span class="NotificationsV2-label">Количество напоминаний в день</span>
 						<img
+							v-b-popover.hover="'Указаное кол-во раз, в течение рабочего дня будет показан попап с уведомлениями'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							v-b-popover.hover="'Указаное кол-во раз, в течение рабочего дня будет показан попап с уведомлениями'"
 						>
 					</b-col>
 					<b-col cols="8">
@@ -149,8 +149,8 @@
 							/>
 							Шаблонное уведомление
 							<select
-								class="NotificationsV2-hiddenSelect custom-select"
 								v-model="template"
+								class="NotificationsV2-hiddenSelect custom-select"
 							>
 								<option
 									v-for="tpl in templates"

@@ -8,8 +8,8 @@
 			>
 				<template v-for="tab in tabs">
 					<li
-						:key="tab.htmlId"
 						:id="`${tab.htmlId}-tab`"
+						:key="tab.htmlId"
 						class="nav-item"
 					>
 						<span
@@ -19,8 +19,8 @@
 						>{{ tab.title }}
 						</span>
 						<span
-							class="beta"
 							v-if="tab.id === 4"
+							class="beta"
 						>beta</span>
 					</li>
 				</template>
@@ -32,8 +32,8 @@
 		>
 			<div
 				v-if="activeTab === 2 && can(['positions_view', 'settings_view'])"
-				class="tab-pane fade show active py-3"
 				id="nav-home"
+				class="tab-pane fade show active py-3"
 				role="tabpanel"
 				aria-labelledby="nav-home-tab"
 			>

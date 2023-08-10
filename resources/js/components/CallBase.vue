@@ -15,10 +15,10 @@
 				</th>
 				<th>
 					<input
-						type="number"
 						v-model="items.total"
-						@change="save()"
+						type="number"
 						class="form-control cell-input"
+						@change="save()"
 					>
 				</th>
 				<th
@@ -38,16 +38,16 @@
 				</td>
 				<td>{{ Number(items.current_credits.sum).toFixed(0) }}</td>
 				<td
-					class="px-0 day-minute text-center"
-					:key="day"
 					v-for="day in 31"
+					:key="day"
+					class="px-0 day-minute text-center"
 				>
 					<div>
 						<input
-							type="number"
 							v-model="items.current_credits[day]"
-							@change="save()"
+							type="number"
 							class="form-control cell-input"
+							@change="save()"
 						>
 					</div>
 				</td>
@@ -61,16 +61,16 @@
 				</td>
 				<td>{{ Number(items.current_given.sum).toFixed(0) }}</td>
 				<td
-					class="px-0 day-minute text-center"
-					:key="day"
 					v-for="day in 31"
+					:key="day"
+					class="px-0 day-minute text-center"
 				>
 					<div>
 						<input
-							type="number"
 							v-model="items.current_given[day]"
-							@change="save()"
+							type="number"
 							class="form-control cell-input"
+							@change="save()"
 						>
 					</div>
 				</td>
@@ -106,16 +106,16 @@
 				</td>
 				<td>{{ Number(items.next_credits.sum).toFixed(0) }}</td>
 				<td
-					class="px-0 day-minute text-center"
-					:key="day"
 					v-for="day in 31"
+					:key="day"
+					class="px-0 day-minute text-center"
 				>
 					<div>
 						<input
-							type="number"
 							v-model="items.next_credits[day]"
-							@change="save()"
+							type="number"
 							class="form-control cell-input"
+							@change="save()"
 						>
 					</div>
 				</td>
@@ -129,16 +129,16 @@
 				</td>
 				<td>{{ Number(items.next_given.sum).toFixed(0) }}</td>
 				<td
-					class="px-0 day-minute text-center"
-					:key="day"
 					v-for="day in 31"
+					:key="day"
+					class="px-0 day-minute text-center"
 				>
 					<div>
 						<input
-							type="number"
 							v-model="items.next_given[day]"
-							@change="save()"
+							type="number"
 							class="form-control cell-input"
+							@change="save()"
 						>
 					</div>
 				</td>
@@ -149,8 +149,8 @@
 
 <script>
 export default {
-	components: {},
 	name: 'CallBase',
+	components: {},
 	props: ['data', 'monthInfo'],
 	data() {
 		return {
@@ -254,7 +254,7 @@ export default {
 				.then(() => {
 					loader.hide();
 				})
-				.catch(() => console.log('Error'))
+				.catch(() => console.error('Error'))
 		}
 	}
 }

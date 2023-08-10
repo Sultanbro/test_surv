@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<b-modal
-			title="Настройка доступа"
 			v-model="openPremissionModal"
-			@ok="savePremission"
+			title="Настройка доступа"
 			size="lg"
 			class="modalle"
+			@ok="savePremission"
 		>
 			Выберите сотрудников, которым будет разрешено редактировать время
 
@@ -22,8 +22,8 @@
 			>
 				<template #selection="{ values, isOpen }">
 					<span
-						class="multiselect__single"
 						v-if="values.length && !isOpen"
+						class="multiselect__single"
 					>{{ values.length }} выбрано</span>
 				</template>
 			</multiselect>
@@ -50,16 +50,16 @@ export default {
 		currentGroup: Number,
 		page: String
 	},
-	watch: {
-		currentGroup() {
-			this.loadEditors()
-		}
-	},
 	data() {
 		return {
 			openPremissionModal: false,
 			users: [],
 			group_editors: []
+		}
+	},
+	watch: {
+		currentGroup() {
+			this.loadEditors()
 		}
 	},
 	mounted() {
@@ -88,18 +88,15 @@ export default {
 				group_id: this.currentGroup,
 				page: this.page
 			}).then(() => {}).catch(error => {
-				console.log(error)
+				console.error(error)
 			});
 			this.openPremissionModal = false
-
 		},
 		checkPremissions(activeuserid) {
-
 			let premission = false
 			this.group_editors.forEach(editor => {
 				if (editor.id == parseInt(activeuserid)) premission = true
 			})
-			console.log(premission)
 			return premission;
 		}
 	}

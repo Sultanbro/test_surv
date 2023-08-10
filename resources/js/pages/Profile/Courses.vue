@@ -13,9 +13,9 @@
 			<div class="courses__content__wrapper">
 				<template v-if="courses.length">
 					<div
-						class="courses__item"
 						v-for="(course, index) in unfinished"
 						:key="index"
+						class="courses__item"
 						:class="{'current': index == 0}"
 					>
 						<img
@@ -52,8 +52,8 @@
 							</template>
 						</div>
 						<div
-							class="courses__regress"
 							v-if="isRegressed(course)"
+							class="courses__regress"
 						>
 							<div class="courses__regress-message">
 								Курс обнулен!
@@ -79,8 +79,8 @@
 		</div>
 
 		<div
-			class="profit__info active"
 			v-if="activeCourse !== null"
+			class="profit__info active"
 		>
 			<div class="profit__info-title">
 				Информация о курсе: {{ activeCourse.name }}

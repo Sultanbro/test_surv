@@ -1,8 +1,8 @@
 <template>
 	<div class="video-player">
 		<videoPlayer
-			class="vjs-custom-skin"
 			ref="videoPlayer"
+			class="vjs-custom-skin"
 			:options="playerOptions"
 			:playsinline="true"
 			@play="onPlayerPlay"
@@ -67,9 +67,7 @@ export default {
 			// console.log('player current update state', playerCurrentState)
 		},
 
-		playerReadied(player) {
-			console.log(player)
-		},
+		playerReadied() {},
 	}
 }
 </script>

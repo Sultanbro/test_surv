@@ -9,8 +9,8 @@
 			:src="image"
 			:alt="/* shotrTitle */ ''"
 			:style="sizeStyle"
-			@error="imageError = true"
 			class="JobtronAvatar-img"
+			@error="imageError = true"
 		>
 		<span
 			v-else

@@ -26,8 +26,8 @@
 			title="Уведомления"
 			desc="Дополнительное поле с описанием функционала данного окна"
 			:open="popNotifications"
-			@close="popNotifications=false"
 			width="50%"
+			@close="popNotifications=false"
 		>
 			<popup-notifications />
 		</Popup>
@@ -38,8 +38,8 @@
 			title="Чек лист"
 			desc="Важно в течении дня выполнить все пункты чек листа"
 			:open="popChecklist"
-			@close="popChecklist=false"
 			width="75%"
+			@close="popChecklist=false"
 		>
 			<popup-checklist :data="checklistData" />
 		</Popup>
@@ -50,8 +50,8 @@
 			title="Вопросы и ответы"
 			desc="Часто задаваемые вопрпосы и ГИД по системе jobjtron"
 			:open="popFAQ"
-			@close="popFAQ=false"
 			width="80%"
+			@close="popFAQ=false"
 		>
 			<popup-faq />
 		</Popup>
@@ -62,8 +62,8 @@
 			title="Поиск"
 			desc="Дополнительное поле с описанием функционала данного окна"
 			:open="popSearch"
-			@close="popSearch=false"
 			width="50%"
+			@close="popSearch=false"
 		>
 			<popup-search />
 		</Popup>
@@ -74,8 +74,8 @@
 			title="Почта или что это?"
 			desc="Дополнительное поле с описанием функционала данного окна"
 			:open="popMail"
-			@close="popMail=false"
 			width="50%"
+			@close="popMail=false"
 		>
 			<popup-mail />
 		</Popup>
@@ -113,6 +113,15 @@ export default {
 		isProfileVisible(){
 			return this.$viewportSize.width >= 1360
 		}
+	},
+	created(){
+		this.fetchChecklist()
+	},
+	mounted(){
+		setTimeout(() => {
+			this.checkCheckList()
+			this.checklistTimer = setInterval(this.checkCheckList, 1000 * 60)
+		}, 1000)
 	},
 	methods: {
 		/**
@@ -196,15 +205,6 @@ export default {
 				if(key !== this.checklistSettings.date) delete this.checklistSettings.showed[key]
 			})
 		}
-	},
-	created(){
-		this.fetchChecklist()
-	},
-	mounted(){
-		setTimeout(() => {
-			this.checkCheckList()
-			this.checklistTimer = setInterval(this.checkCheckList, 1000 * 60)
-		}, 1000)
 	}
 }
 </script>

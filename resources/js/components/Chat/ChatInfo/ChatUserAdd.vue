@@ -21,8 +21,8 @@
 			:submit-disabled="requestProcess"
 			:access-dictionaries="notInChat"
 			:search-position="'beforeTabs'"
-			@submit="submitChat"
 			class="ChatUserAdd-select"
+			@submit="submitChat"
 		/>
 	</div>
 </template>

@@ -55,12 +55,12 @@
 				<template v-for="(wrap_item, w) in reversedItems">
 					<template>
 						<tr
-							class="main-row"
 							:key="w"
+							class="main-row"
 						>
 							<td
-								@click="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
 								class="pointer p-2 text-center"
+								@click="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
 							>
 								<div class="d-flex align-items-center justify-content-center px-2">
 									<span class="mr-2">{{ w + 1 }}</span>
@@ -135,9 +135,9 @@
 						</tr>
 						<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
 							<tr
+								:key="w + 'a'"
 								class="collapsable"
 								:class="{'active': kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] || !editable }"
-								:key="w + 'a'"
 							>
 								<td :colspan="editable ? 4 : 7">
 									<div class="table__wrapper w-100">
@@ -152,8 +152,8 @@
 													class="child-row"
 												>
 													<td
-														@click="user.expanded = !user.expanded"
 														class="pointer p-2 text-center"
+														@click="user.expanded = !user.expanded"
 													>
 														<div class="d-flex align-center justify-content-center px-2">
 															<span class="mr-2 bg-transparent">{{ i + 1 }}</span>

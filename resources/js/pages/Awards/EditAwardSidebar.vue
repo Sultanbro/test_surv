@@ -4,8 +4,8 @@
 		:title="name ? name : 'Сертификат'"
 		:open="open"
 		:class="isShow ? 'show' : ''"
-		@close="$emit('update:open', false)"
 		width="70%"
+		@close="$emit('update:open', false)"
 	>
 		<BForm
 			ref="newSertificateForm"
@@ -19,10 +19,10 @@
 			>
 				<template #label>
 					<label class="with-info">Название награды <img
+						id="info1"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
-						id="info1"
 					></label>
 					<b-popover
 						target="info1"
@@ -55,10 +55,10 @@
 			>
 				<template #label>
 					<label class="with-info">Описание награды <img
+						id="info2"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
-						id="info2"
 					></label>
 					<b-popover
 						target="info2"
@@ -88,10 +88,10 @@
 			>
 				<template #label>
 					<label class="with-info">Тип награды <img
+						id="info3"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
-						id="info3"
 					></label>
 					<b-popover
 						target="info3"
@@ -105,9 +105,9 @@
 					</b-popover>
 				</template>
 				<BDropdown
+					v-if="!readonly"
 					id="input-3"
 					:text="dropDownText"
-					v-if="!readonly"
 					required
 					class="dropdown-select-type"
 				>
@@ -117,10 +117,10 @@
 					>
 						Загрузка картинки
 						<img
+							id="info4"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info4"
 						>
 						<b-popover
 							target="info4"
@@ -139,10 +139,10 @@
 					>
 						Конструктор сертификата
 						<img
+							id="info5"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info5"
 						>
 						<b-popover
 							target="info5"
@@ -162,10 +162,10 @@
 					>
 						Данные начислений
 						<img
+							id="info6"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info6"
 						>
 						<b-popover
 							target="info6"
@@ -187,10 +187,10 @@
 							variant="secondary"
 						>{{ dropDownText }}</b-button>
 						<img
+							id="info7"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info7"
 						>
 						<b-popover
 							target="info7"
@@ -205,13 +205,17 @@
 
 			<BFormGroup class="file-type">
 				<UploadFile
-					@image-download="formFile"
 					v-if="type === 1"
 					:awards-obj="awards"
 					required
+					@image-download="formFile"
 				/>
 
 				<UploadSertificate
+					v-if="type === 2"
+					:id="category_id"
+					:awards="awards"
+					required
 					@image-download="formFileCertificate"
 					@styles-change="styleChange"
 					@add-course="addCourse"
@@ -219,10 +223,6 @@
 					@add-course-all="addCourseAll"
 					@remove-course-all="removeCourseAll"
 					@has-change-constructor="hasChangeConstructor"
-					v-if="type === 2"
-					:awards="awards"
-					:id="category_id"
-					required
 				/>
 
 				<ChoiceTop
@@ -233,9 +233,9 @@
 			</BFormGroup>
 
 			<BFormGroup
-				class="custom-switch custom-switch-sm"
-				id="input-group-4"
 				v-if="type === 1 || type === 2 "
+				id="input-group-4"
+				class="custom-switch custom-switch-sm"
 			>
 				<b-form-checkbox
 					v-model="hide"
@@ -301,6 +301,54 @@ export default {
 			hasFileCertificate: false
 		};
 	},
+	async mounted() {
+		setTimeout(() => {
+			this.isShow = true;
+		}, 20);
+		if (Object.keys(this.item).length > 0) {
+			let loader = this.$loading.show();
+			this.hasFileCertificate = true;
+			await this.axios
+				.get('/award-categories/get/awards/' + this.item.id)
+				.then(response => {
+					this.awards = response.data.data;
+				})
+				.catch(error => {
+					console.error(error);
+				});
+			this.readonly = true;
+			this.category_id = this.item.id;
+			this.type = this.item.type;
+			this.name = this.item.name;
+			this.description = this.item.description;
+			if(this.item.hide === 1){
+				this.hide = false;
+			}
+			if(this.item.hide === 0){
+				this.hide = true;
+			}
+			if (this.type === 2){
+				this.styles = this.awards[0].styles;
+			}
+
+			if (this.type === 3) {
+				this.targetable_type = this.awards[0].targetable_type;
+				this.targetable_id = this.awards[0].targetable_id;
+			}
+
+
+			if (this.item.type === 1) {
+				this.dropDownText = 'Загрузка картинки';
+			}
+			if (this.item.type === 2) {
+				this.dropDownText = 'Конструктор сертификата';
+			}
+			if (this.item.type === 3) {
+				this.dropDownText = 'Данные начислений';
+			}
+			loader.hide();
+		}
+	},
 	methods: {
 		choicedTop(data){
 			this.targetable_id = data.id;
@@ -349,7 +397,7 @@ export default {
 						this.category_id = response.data.data.id;
 					})
 					.catch(error => {
-						console.log(error);
+						console.error(error);
 					})
 			} else {
 				if (this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide) {
@@ -364,7 +412,7 @@ export default {
 						.then(() => {
 						})
 						.catch(error => {
-							console.log(error);
+							console.error(error);
 						})
 				}
 			}
@@ -405,7 +453,7 @@ export default {
 						this.$refs.newSertificateForm.reset();
 					})
 					.catch(function (error) {
-						console.log(error);
+						console.error(error);
 					});
 			} else if (Object.keys(this.item).length === 0 || this.type === 1) {
 				await this.axios
@@ -420,7 +468,7 @@ export default {
 						this.$refs.newSertificateForm.reset();
 					})
 					.catch(function (error) {
-						console.log(error);
+						console.error(error);
 					});
 			}
 		},
@@ -505,54 +553,6 @@ export default {
 		},
 		styleChange(styles) {
 			this.styles = JSON.stringify(styles);
-		}
-	},
-	async mounted() {
-		setTimeout(() => {
-			this.isShow = true;
-		}, 20);
-		if (Object.keys(this.item).length > 0) {
-			let loader = this.$loading.show();
-			this.hasFileCertificate = true;
-			await this.axios
-				.get('/award-categories/get/awards/' + this.item.id)
-				.then(response => {
-					this.awards = response.data.data;
-				})
-				.catch(error => {
-					console.log(error);
-				});
-			this.readonly = true;
-			this.category_id = this.item.id;
-			this.type = this.item.type;
-			this.name = this.item.name;
-			this.description = this.item.description;
-			if(this.item.hide === 1){
-				this.hide = false;
-			}
-			if(this.item.hide === 0){
-				this.hide = true;
-			}
-			if (this.type === 2){
-				this.styles = this.awards[0].styles;
-			}
-
-			if (this.type === 3) {
-				this.targetable_type = this.awards[0].targetable_type;
-				this.targetable_id = this.awards[0].targetable_id;
-			}
-
-
-			if (this.item.type === 1) {
-				this.dropDownText = 'Загрузка картинки';
-			}
-			if (this.item.type === 2) {
-				this.dropDownText = 'Конструктор сертификата';
-			}
-			if (this.item.type === 3) {
-				this.dropDownText = 'Данные начислений';
-			}
-			loader.hide();
 		}
 	}
 };

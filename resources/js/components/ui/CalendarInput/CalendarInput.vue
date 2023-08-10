@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="CalendarInput"
 		v-scroll-lock="open && !popup"
+		class="CalendarInput"
 	>
 		<div
 			v-if="!popup"
@@ -9,9 +9,9 @@
 			@click.self.stop="$emit('close')"
 		/>
 		<div
+			v-click-out="onClickOutside"
 			class="CalendarInput-content"
 			:class="{'CalendarInput-content_popup': popup}"
-			v-click-out="onClickOutside"
 		>
 			<CalendarInputBody />
 			<CalendarInputNav

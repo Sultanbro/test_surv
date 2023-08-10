@@ -13,12 +13,12 @@
 
 		<span v-if="isUploading">
 			<button
-				@click="isPaused ? resume() : pause()"
 				class="btn mr-1"
+				@click="isPaused ? resume() : pause()"
 			>{{ isPaused ? "продолжить" : "пауза" }}</button>
 			<button
-				@click="cancel()"
 				class="btn"
+				@click="cancel()"
 			>отмена</button>
 		</span>
 	</div>

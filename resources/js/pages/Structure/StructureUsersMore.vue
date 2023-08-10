@@ -1,8 +1,8 @@
 <template>
 	<div class="StructureUsersMore">
 		<div
-			class="StructureUsersMore user-group-modal"
 			ref="usersMore"
+			class="StructureUsersMore user-group-modal"
 		>
 			<template v-if="users.length">
 				<div class="user-group-list">

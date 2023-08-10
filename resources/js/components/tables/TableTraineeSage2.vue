@@ -16,8 +16,8 @@
 			<template #header(active)>
 				Кол-во<br> стажирующихся активных
 				<i
-					class="fa fa-info-circle"
 					v-b-popover.hover.right.html="'Стажеры, которые присутстовали на сегодня. В табели у них есть оранжевая отметка.'"
+					class="fa fa-info-circle"
 					title="Активные стажеры"
 				/>
 			</template>

@@ -19,9 +19,9 @@
 		<!-- Таблица начислений -->
 		<div class="col-xl-12">
 			<div
+				id="pulse"
 				class="ublock pt-0 relative"
 				style="border-top: 1px solid transparent;border-radius:0 0 5px 5px"
-				id="pulse"
 			>
 				<div class="row mb-3 mt-3">
 					<div class="col-9">
@@ -29,14 +29,14 @@
 					</div>
 					<div class="col-3">
 						<select
-							class="form-control"
 							v-model="month"
+							class="form-control"
 							@change="fetch()"
 						>
 							<option
 								v-for="month in $moment.months()"
-								:value="month"
 								:key="month"
+								:value="month"
 							>
 								{{ month }}
 								>

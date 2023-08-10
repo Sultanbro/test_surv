@@ -3,9 +3,9 @@
 		<!-- left side bar -->
 		<div class="controls">
 			<div
-				@click="$emit('back')"
-				class="btn w-full btn-success"
 				v-if="showBackBtn"
+				class="btn w-full btn-success"
+				@click="$emit('back')"
 			>
 				<i class="fa fa-arrow-left" />
 				Назад
@@ -58,21 +58,21 @@
 
 				<div class="upbook-items">
 					<div
-						class="item d-flex"
 						v-for="(segment, t) in segments"
 						:key="t"
+						class="item d-flex"
 						:class="{
 							'pass': segment.item_model !== null,
 							'active': page == segment.page
 						}"
 					>
 						<i
-							class="fa fa-check pointer mr-4"
 							v-if="segment.item_model !== null"
+							class="fa fa-check pointer mr-4"
 						/>
 						<i
-							class="fa fa-lock pointer mr-4"
 							v-else
+							class="fa fa-lock pointer mr-4"
 						/>
 						<p
 							class="mb-0 item-text"
@@ -106,8 +106,8 @@
 		>
 			<vue-pdf-embed
 				v-if="activeBook !== null"
-				:source="activeBook.link"
 				ref="pdfRef"
+				:source="activeBook.link"
 				:page="page"
 				class="plugin"
 				loading-failed="sad"
@@ -117,16 +117,16 @@
 
 		<!-- Test viewer -->
 		<div
-			class="test"
 			v-if="activeSegment !== null"
+			class="test"
 		>
 			<questions
+				:id="0"
+				:key="segment_key"
 				:course_item_id="course_item_id"
 				:questions="activeSegment.questions"
 				:pass="activeSegment.item_model !== null"
 				:pass_grade="activeSegment.pass_grade"
-				:id="0"
-				:key="segment_key"
 				type="book"
 				:mode="mode"
 				@continueRead="nextPage"

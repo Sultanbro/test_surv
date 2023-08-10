@@ -6,10 +6,10 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
@@ -62,12 +62,12 @@
 							@click="premium.expanded = !premium.expanded"
 						>
 							<i
-								class="fa fa-minus mt-1"
 								v-if="premium.expanded"
+								class="fa fa-minus mt-1"
 							/>
 							<i
-								class="fa fa-plus mt-1"
 								v-else
+								class="fa fa-plus mt-1"
 							/>
 						</td>
 						<td class="text-left">
@@ -88,16 +88,16 @@
 									class="d-flex aic"
 								>
 									<i
-										class="fa fa-user ml-2 color-user"
 										v-if="newPremiumArray[0].target.type == 1"
+										class="fa fa-user ml-2 color-user"
 									/>
 									<i
-										class="fa fa-users ml-2 color-group"
 										v-if="newPremiumArray[0].target.type == 2"
+										class="fa fa-users ml-2 color-group"
 									/>
 									<i
-										class="fa fa-briefcase ml-2 color-position"
 										v-if="newPremiumArray[0].target.type == 3"
+										class="fa fa-briefcase ml-2 color-position"
 									/>
 									<span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
 								</div>
@@ -113,9 +113,9 @@
 											<tr>
 												<th />
 												<th
-													class="text-left"
 													v-for="(field, f) in fields"
 													:key="f"
+													class="text-left"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -168,8 +168,8 @@
 
 															<select
 																v-if="Number(item.source) == 1"
-																v-model="item.group_id"
 																:key="'a' + source_key"
+																v-model="item.group_id"
 															>
 																<option
 																	value="0"
@@ -188,8 +188,8 @@
 
 															<select
 																v-if="Number(item.source) == 1"
-																v-model="item.activity_id"
 																:key="'b' + source_key"
+																v-model="item.activity_id"
 															>
 																<option
 																	value="0"
@@ -248,8 +248,8 @@
 
 													<template v-else>
 														<input
-															:type="field.type"
 															v-model="item[field.key]"
+															:type="field.type"
 															@change="validate(item[field.key], field.key)"
 														>
 													</template>
@@ -291,18 +291,18 @@
 					<template>
 						<tr :key="p">
 							<td
-								@click="expand(p)"
 								class="pointer"
+								@click="expand(p)"
 							>
 								<div class="d-flex align-items-center px-2">
 									<span class="mr-2">{{ p + 1 }}</span>
 									<i
-										class="fa fa-minus mt-1"
 										v-if="page_item.expanded"
+										class="fa fa-minus mt-1"
 									/>
 									<i
-										class="fa fa-plus mt-1"
 										v-else
+										class="fa fa-plus mt-1"
 									/>
 								</div>
 							</td>
@@ -316,16 +316,16 @@
                         />  -->
 								<div class="d-flex aic">
 									<i
-										class="fa fa-user ml-2 color-user"
 										v-if="page_item.type == 1"
+										class="fa fa-user ml-2 color-user"
 									/>
 									<i
-										class="fa fa-users ml-2 color-group"
 										v-if="page_item.type == 2"
+										class="fa fa-users ml-2 color-group"
 									/>
 									<i
-										class="fa fa-briefcase ml-2 color-position"
 										v-if="page_item.type == 3"
+										class="fa fa-briefcase ml-2 color-position"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
 									<i
@@ -348,9 +348,9 @@
 												<tr>
 													<th />
 													<th
-														class="text-left"
 														v-for="(field, f) in fields"
 														:key="f"
+														class="text-left"
 														:class="[
 															field.class,
 															{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -405,8 +405,8 @@
 																</select>
 																<select
 																	v-if="Number(item.source) == 1"
-																	v-model="item.group_id"
 																	:key="'c' + source_key"
+																	v-model="item.group_id"
 																>
 																	<option
 																		value="0"
@@ -424,8 +424,8 @@
 																</select>
 																<select
 																	v-if="Number(item.source) == 1"
-																	v-model="item.activity_id"
 																	:key="'d' + source_key"
+																	v-model="item.activity_id"
 																>
 																	<option
 																		value="0"
@@ -477,8 +477,8 @@
 														</template>
 														<template v-else>
 															<input
-																:type="field.type"
 																v-model="item[field.key]"
+																:type="field.type"
 																@change="validate(item[field.key], field.key)"
 															>
 														</template>
@@ -531,8 +531,8 @@
 
 		<!-- pagination -->
 		<JwPagination
-			class="mt-3"
 			:key="paginationKey"
+			class="mt-3"
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -540,23 +540,23 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 
 		<!-- modal Adjust Visible fields -->
 		<b-modal
 			v-model="modalAdjustVisibleFields"
 			title="Настройка списка"
-			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 			ok-text="Закрыть"
 			size="lg"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 		>
 			<div class="row">
 				<div
-					class="col-md-4 mb-2"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="col-md-4 mb-2"
 				>
 					<b-form-checkbox
 						v-model="show_fields[field.key]"
@@ -570,17 +570,17 @@
 		</b-modal>
 
 		<Sidebar
-			title="Настроить премию"
 			v-if="activeItem != null"
+			title="Настроить премию"
 			:open="showSidebar"
-			@close="closeSidebar"
 			width="40%"
+			@close="closeSidebar"
 		>
 			<div class="row m-0">
 				<div
-					class="mb-3"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="mb-3"
 					:class="field.alter_class"
 				>
 					<div class="mb-2 mt-2 field">
@@ -603,16 +603,16 @@
 							class="d-flex aic"
 						>
 							<i
-								class="fa fa-user ml-2 color-user"
 								v-if="activeItem.target.type == 1"
+								class="fa fa-user ml-2 color-user"
 							/>
 							<i
-								class="fa fa-users ml-2 color-group"
 								v-if="activeItem.target.type == 2"
+								class="fa fa-users ml-2 color-group"
 							/>
 							<i
-								class="fa fa-briefcase ml-2 color-position"
 								v-if="activeItem.target.type == 3"
+								class="fa fa-briefcase ml-2 color-position"
 							/>
 							<span class="ml-2">{{ activeItem.target.name }}</span>
 						</div>
@@ -649,8 +649,8 @@
 
 							<select
 								v-if="Number(activeItem.source) == 1"
-								v-model="activeItem.group_id"
 								:key="'a' + source_key"
+								v-model="activeItem.group_id"
 							>
 								<option
 									value="0"
@@ -668,8 +668,8 @@
 							</select>
 
 							<select
-								v-model="activeItem.activity_id"
 								:key="'b' + source_key"
+								v-model="activeItem.activity_id"
 							>
 								<option
 									value="0"
@@ -728,8 +728,8 @@
 
 					<div v-else>
 						<input
-							:type="field.type"
 							v-model="activeItem[field.key]"
+							:type="field.type"
 							@change="validate(activeItem[field.key], field.key)"
 						>
 					</div>

@@ -8,13 +8,13 @@
 		<div class="row my-4">
 			<div class="col-3">
 				<select
-					class="form-control"
 					v-model="currentMonth"
+					class="form-control"
 				>
 					<option
 						v-for="(month, index) in $moment.months()"
-						:value="index"
 						:key="month"
+						:value="index"
 					>
 						{{ month }}
 					</option>
@@ -22,13 +22,13 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="currentYear"
+					class="form-control"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -49,10 +49,10 @@
 		<template>
 			<div v-if="hasPremission && currentGroup == 48">
 				<b-tabs
+					v-model="activeTab"
 					type="card"
 					content-class="mt-4"
 					lazy
-					v-model="activeTab"
 				>
 					<b-tab
 						key="1"

@@ -15,9 +15,9 @@
 					<div class="messenger__messages-search-input">
 						<ChatIconSearch />
 						<input
+							v-model="searchMessagesQuery"
 							type="text"
 							placeholder="Введите текст для поиска"
-							v-model="searchMessagesQuery"
 						>
 						<div
 							v-show="searchMessagesQuery"
@@ -29,9 +29,9 @@
 					</div>
 					<div class="messenger__messages-search-date">
 						<input
-							class="messenger__messages-search-date-input"
 							v-model="searchMessagesDate"
 							v-mask="'##.##.####'"
+							class="messenger__messages-search-date-input"
 						>
 						<div
 							class="messenger__messages-search-date-calendar ChatIcon-parent"
@@ -43,8 +43,8 @@
 							v-if="showDatePicker"
 							v-model="date"
 							:open="showDatePicker"
-							@close="showDatePicker = false"
 							:tabs="['Текущий месяц', 'Прошлый месяц']"
+							@close="showDatePicker = false"
 						/>
 					</div>
 				</div>
@@ -68,9 +68,9 @@
 						<div class="messenger__messages-search-input">
 							<ChatIconSearch />
 							<input
+								v-model="searchFilesQuery"
 								type="text"
 								placeholder="Введите имя файла"
-								v-model="searchFilesQuery"
 							>
 							<div
 								v-show="searchFilesQuery"

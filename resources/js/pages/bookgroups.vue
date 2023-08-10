@@ -6,8 +6,8 @@
 					<b-form-select
 						:options="selectGroups"
 						size="md"
-						@change="groupselect"
 						class="group-select col-lg-6 d-flex"
+						@change="groupselect"
 					>
 						<template #first>
 							<b-form-select-option
@@ -22,24 +22,24 @@
 				<div class="col-lg-9 d-flex align-items-start">
 					<div class="add-grade">
 						<input
+							v-model="new_position"
 							type="text"
 							class="form-control"
-							v-model="new_position"
 						>
 						<button
-							@click="addGroup"
 							class="btn btn-success"
+							@click="addGroup"
 						>
 							Добавить список книг
 						</button>
 					</div>
 					<div
-						class="listgroup"
 						v-if="group_id"
+						class="listgroup"
 					>
 						<button
-							@click="deleteGroup"
 							class="btn btn-danger"
+							@click="deleteGroup"
 						>
 							Удалить список
 						</button>
@@ -95,7 +95,7 @@ export default {
 				this.getGroups()
 				this.new_position = ''
 			}).catch(error => {
-				console.log(error.response)
+				console.error(error.response)
 			})
 		},
 		deleteGroup() {
@@ -134,7 +134,7 @@ export default {
 					})
 				})
 			}).catch(error => {
-				console.log(error.response)
+				console.error(error.response)
 			})
 		},
 		refreshPositionsComponent() {

@@ -4,9 +4,9 @@
 			<div class="col-3 text-left">
 				<b-input-group size="sm">
 					<b-form-input
+						id="filterInput"
 						v-model="filter.email"
 						type="search"
-						id="filterInput"
 						placeholder="Поиск"
 					/>
 					<b-input-group-append>
@@ -43,9 +43,9 @@
 					class="btn btn-success rounded"
 				>Пригласить</a>
 				<b-button
-					@click="showModal = !showModal"
 					class="btn-primary rounded ml-1"
 					title="Показывать поля"
+					@click="showModal = !showModal"
 				>
 					<i
 						class="fa fa-eye"
@@ -53,9 +53,9 @@
 					/>
 				</b-button>
 				<b-button
-					@click="showFilterModal = !showFilterModal"
 					class="btn-primary rounded ml-1"
 					title="Дополнительные фильтры таблицы"
+					@click="showFilterModal = !showFilterModal"
 				>
 					<i
 						class="fa fa-filter"
@@ -74,6 +74,7 @@
 
 		<div class="table-responsive ul table-container">
 			<b-table
+				id="table"
 				ref="table"
 				bordered
 				show-empty
@@ -89,8 +90,6 @@
 				:sort-direction="sortDirection"
 				empty-filtered-text="Еще не найдено ни одной записи"
 				empty-text="Не найдено ни одной записи"
-				@filtered="onFiltered"
-				id="table"
 				:class="{
 					'hide-1': !showFields.number,
 					'hide-2': !showFields.id,
@@ -106,6 +105,7 @@
 					'hide-12': !showFields.applied,
 					'hide-13': !showFields.full_time,
 				}"
+				@filtered="onFiltered"
 			>
 				<template #cell(index)="row">
 					{{ row.index + 1 }}
@@ -197,15 +197,15 @@
 		<b-modal
 			v-model="showModal"
 			title="Настройка списка «Сотрудники»"
-			@ok="showModal = !showModal"
 			ok-text="Закрыть"
 			size="lg"
+			@ok="showModal = !showModal"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -317,16 +317,16 @@
 		<b-modal
 			v-model="showFilterModal"
 			title="Фильтр «Сотрудники»"
-			@ok="applyFilter"
 			ok-text="Применить"
 			size="md"
+			@ok="applyFilter"
 		>
 			<div class="row">
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
-							type="checkbox"
 							v-model="active.date"
+							type="checkbox"
 							class="mr-3"
 						>
 						<p
@@ -348,9 +348,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>От</label> <input
+								v-model="filter.start_date"
 								class="form-control mb-1 form-control-sm"
 								type="date"
-								v-model="filter.start_date"
 							>
 						</div>
 						<div class="d-flex align-items-center">
@@ -358,9 +358,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>До</label> <input
+								v-model="filter.end_date"
 								class="form-control form-control-sm"
 								type="date"
-								v-model="filter.end_date"
 							>
 						</div>
 					</div>
@@ -371,8 +371,8 @@
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
-							type="checkbox"
 							v-model="active.date_deactivate"
+							type="checkbox"
 							class="mr-3"
 						>
 						<p
@@ -394,9 +394,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>От</label> <input
+								v-model="filter.start_date_deactivate"
 								class="form-control mb-1 form-control-sm"
 								type="date"
-								v-model="filter.start_date_deactivate"
 							>
 						</div>
 						<div class="d-flex align-items-center">
@@ -404,9 +404,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>До</label> <input
+								v-model="filter.end_date_deactivate"
 								class="form-control form-control-sm"
 								type="date"
-								v-model="filter.end_date_deactivate"
 							>
 						</div>
 					</div>
@@ -420,8 +420,8 @@
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
-							type="checkbox"
 							v-model="active.date_applied"
+							type="checkbox"
 							class="mr-3"
 						>
 						<p
@@ -443,9 +443,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>От</label> <input
+								v-model="filter.start_date_applied"
 								class="form-control mb-1 form-control-sm"
 								type="date"
-								v-model="filter.start_date_applied"
 							>
 						</div>
 						<div class="d-flex align-items-center">
@@ -453,9 +453,9 @@
 								for=""
 								class=" mr-2 mb-0"
 							>До</label> <input
+								v-model="filter.end_date_applied"
 								class="form-control form-control-sm"
 								type="date"
-								v-model="filter.end_date_applied"
 							>
 						</div>
 					</div>
@@ -470,8 +470,8 @@
 				<div class="col-6">
 					<div class="d-flex align-items-center">
 						<select
-							class="form-control mb-1 form-control-sm"
 							v-model="filter.segment"
+							class="form-control mb-1 form-control-sm"
 						>
 							<option value="0">
 								Все сегменты
@@ -665,22 +665,6 @@ export default {
 			}
 		}
 	},
-	watch: {
-		showFields: {
-			handler: function (val) {
-				localStorage.showFields = JSON.stringify(val);
-			},
-			deep: true
-		},
-		positions(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.positions){
-			this.init()
-		}
-	},
 	computed: {
 		sortOptions() {
 			return this.fields
@@ -741,6 +725,22 @@ export default {
 		},
 		totalRows(){
 			return this.filtered.length || 0
+		}
+	},
+	watch: {
+		showFields: {
+			handler: function (val) {
+				localStorage.showFields = JSON.stringify(val);
+			},
+			deep: true
+		},
+		positions(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.positions){
+			this.init()
 		}
 	},
 	mounted() {},

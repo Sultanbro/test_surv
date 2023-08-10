@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="messenger__chat-wrapper"
 		v-if="pinnedMessage"
+		class="messenger__chat-wrapper"
 	>
 		<div
 			class="messenger__info-wrapper messenger__text-ellipsis"

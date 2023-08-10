@@ -23,8 +23,8 @@
 				/>
 				<div class="collapse-block">
 					<p
-						class="collapse-item"
 						v-b-toggle.collapse-director
+						class="collapse-item"
 					>
 						<i class="fa fa-plus" /> Руководитель
 					</p>
@@ -83,8 +83,8 @@
 					class="collapse-block"
 				>
 					<p
-						class="collapse-item"
 						v-b-toggle.collapse-users
+						class="collapse-item"
 					>
 						<i class="fa fa-plus" /> Сотрудники
 					</p>
@@ -98,8 +98,8 @@
 				<!-- Дополнительные настройки -->
 				<div class="collapse-block">
 					<p
-						class="collapse-item"
 						v-b-toggle.collapse-more
+						class="collapse-item"
 					>
 						<i class="fa fa-plus" /> Дополнительные настройки
 					</p>
@@ -115,8 +115,8 @@
 								</span>
 							</label>
 							<b-form-group
-								class="custom-switch custom-switch-sm"
 								id="input-group-4"
+								class="custom-switch custom-switch-sm"
 							>
 								<b-form-checkbox
 									v-model="group"

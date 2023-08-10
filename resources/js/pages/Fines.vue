@@ -25,14 +25,14 @@
 							>
 								<b-td>
 									<b-textarea
-										class="in-table-textarea"
 										v-model.trim="fine.name"
+										class="in-table-textarea"
 									/>
 								</b-td>
 								<b-td>
 									<b-form-input
-										type="number"
 										v-model.trim="fine.penalty_amount"
+										type="number"
 									/>
 								</b-td>
 								<b-td>
@@ -40,8 +40,8 @@
 										type="button"
 										:data-id="fine.id"
 										title="Удалить штраф"
-										@click="deleteFine(index)"
 										class="btn btn-danger"
+										@click="deleteFine(index)"
 									>
 										<i
 											class="fa fa-trash"
@@ -59,17 +59,17 @@
 			<div class="col mt-2 mb-4">
 				<button
 					type="button"
-					@click="addFine()"
 					title="Добавить новый штраф"
 					class="btn btn-primary"
+					@click="addFine()"
 				>
 					Добавить
 				</button>
 				<button
 					type="button"
-					@click="saveFines()"
 					title="Сохранить изменения в штрафах"
 					class="btn btn-success"
+					@click="saveFines()"
 				>
 					Сохранить <img
 						v-if="preloaderShow"
@@ -81,8 +81,8 @@
 			</div>
 		</div>
 		<div
-			class="row"
 			v-if="alert.show"
+			class="row"
 		>
 			<div class="col-8">
 				<div
@@ -128,7 +128,7 @@ export default {
 				this.fines = response.data.fines
 
 			}).catch(error => {
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -160,7 +160,7 @@ export default {
 					this.getFines()
 					this.preloaderShow = false;
 				}).catch(error => {
-					console.log(error)
+					console.error(error)
 				});
 			}
 		},
@@ -209,8 +209,6 @@ export default {
 			let editedFines = [];
 			this.savedfines.forEach((element) => {
 				let foundFine = this.fines.find(fine => fine.id === element.id)
-				console.log(foundFine);
-				console.log(element);
 				if (foundFine && (foundFine.name !== element.name || foundFine.penalty_amount !== element.penalty_amount)) {
 					editedFines.push(foundFine)
 				}

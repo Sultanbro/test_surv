@@ -6,6 +6,7 @@
         </div> -->
 			<div class="col-12">
 				<JobtronTable
+					:key="tableKey"
 					responsive
 					striped
 					class="text-nowrap mb-3 table-funnel"
@@ -13,13 +14,12 @@
 					:bordered="true"
 					:items="items"
 					:fields="fields"
-					:key="tableKey"
 					primary-key="a"
 				>
 					<template #header(name)="data">
 						<input
-							type="text"
 							:ref="'mylink' + segment"
+							type="text"
 							class="hider"
 						>
 						<span>{{ data.field.label }}</span>
@@ -43,10 +43,10 @@
 							class="TableFunnel-input"
 						>
 							<input
-								type="number"
 								v-model="data.value"
-								@change="updateSettings($event,data)"
+								type="number"
 								class="form-control form-control-sm"
+								@change="updateSettings($event,data)"
 							>
 						</div>
 						<div v-else>

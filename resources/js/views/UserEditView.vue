@@ -628,8 +628,8 @@ export default {
 							<template v-if="!user.deleted_at">
 								<button
 									v-if="isTrainee"
-									type="button"
 									id="deleteModalBtn"
+									type="button"
 									class="btn btn-danger rounded"
 									@click.prevent="toggleDeleteConfirm(true, 0)"
 								>
@@ -637,16 +637,16 @@ export default {
 								</button>
 								<template v-else>
 									<button
-										type="button"
 										id="deleteModalBtn"
+										type="button"
 										class="btn btn-danger rounded mr-2"
 										@click.prevent="toggleDeleteConfirm(true, 0)"
 									>
 										Уволить без отработки
 									</button>
 									<button
-										type="button"
 										id="deleteModalBtn2"
+										type="button"
 										class="btn btn-danger rounded"
 										@click.prevent="toggleDeleteConfirm(true, 1)"
 									>
@@ -671,12 +671,12 @@ export default {
 					</div> -->
 				</div>
 				<form
+					id="form"
 					ref="form"
 					:action="formAction"
 					method="post"
 					enctype="multipart/form-data"
 					class="form-horizontal"
-					id="form"
 					name="user_form"
 					@submit.prevent=""
 				>
@@ -688,35 +688,35 @@ export default {
 						class="form-control"
 					>
 					<input
+						id="trainee"
 						name="is_trainee"
 						:value="trainee"
 						type="hidden"
-						id="trainee"
 						class="form-control"
 					>
 					<input
+						id="increment_provided"
 						name="increment_provided"
 						:value="increment_provided"
 						type="hidden"
-						id="increment_provided"
 						class="form-control"
 					>
 					<template v-html="csrf" />
 					<div id="list-example">
 						<!-- PROFILE IMAGE -->
 						<input
+							id="upload_image"
 							name="image"
 							type="file"
 							accept="image/*"
 							hidden
-							id="upload_image"
 							@change="uploadImage"
 						>
 						<input
+							id="photo"
 							name="photo"
 							type="file"
 							hidden
-							id="photo"
 						>
 
 						<input
@@ -735,9 +735,9 @@ export default {
 							name="user_img"
 						>
 						<input
+							id="file_name_img"
 							name="file_name_img"
 							:value="filename"
-							id="file_name_img"
 							hidden
 						>
 
@@ -764,8 +764,8 @@ export default {
 													{{ userPosition }}
 												</p>
 												<button
-													@click.prevent="onClickAward"
 													class="btn btn-success"
+													@click.prevent="onClickAward"
 												>
 													Наградить
 												</button>
@@ -840,8 +840,8 @@ export default {
 					>
 						<!-- first tab -->
 						<div
-							class="xtab-pane xfade show active"
 							id="contact"
+							class="xtab-pane xfade show active"
 							role="tabpanel"
 							aria-labelledby="contact-tab"
 						>
@@ -887,8 +887,8 @@ export default {
 						</div>
 						<!-- second tab -->
 						<div
-							class="xtab-pane xfade"
 							id="phones"
+							class="xtab-pane xfade"
 							role="tabpanel"
 							aria-labelledby="phones-tab"
 						>
@@ -944,8 +944,8 @@ export default {
 		</div>
 		<template v-if="user">
 			<b-modal
-				v-model="isDeleteConfirm"
 				id="modal-deactivate"
+				v-model="isDeleteConfirm"
 				hide-footer
 				hide-header
 			>
@@ -959,11 +959,11 @@ export default {
 						</div>
 						<div class="text-center mb-3">
 							<form
+								id="deleteForm"
 								ref="deleteForm"
 								action="/timetracking/delete-person"
 								enctype="multipart/form-data"
 								method="post"
-								id="deleteForm"
 							>
 								<input
 									name="id"
@@ -972,10 +972,10 @@ export default {
 									class="form-control"
 								>
 								<input
+									id="delay"
 									name="delay"
 									:value="delay"
 									type="hidden"
-									id="delay"
 									class="form-control"
 								>
 								<template v-html="csrf" />
@@ -985,9 +985,9 @@ export default {
 								>
 									<div class="col-md-12 mb-2">
 										<select
+											id="cause"
 											v-model="fireCause"
 											name="cause"
-											id="cause"
 											class="form-control form-control-sm"
 										>
 											<option
@@ -1013,10 +1013,10 @@ export default {
 													style="width:100%"
 												>
 													<input
+														id="file-8"
 														ref="file8"
 														name="file8"
 														type="file"
-														id="file-8"
 														class="inputfile inputfile-1"
 														style="display:none"
 													>
@@ -1051,9 +1051,9 @@ export default {
 										</div>
 										<div class="col-md-6 d-flex justify-content-between flex-column">
 											<button
+												id="deleteUser"
 												type="submit"
 												class="btn btn-success rounded mb-2"
-												id="deleteUser"
 												@click.prevent="deleteUser"
 											>
 												Да
@@ -1070,10 +1070,10 @@ export default {
 									<template v-else>
 										<div class="col-md-12 mb-2">
 											<input
+												id="cause2"
 												name="cause2"
 												value=""
 												type="text"
-												id="cause2"
 												class="form-control form-control-sm"
 												placeholder="Или напишите свой вариант"
 											>
@@ -1109,8 +1109,8 @@ export default {
 				</div>
 			</b-modal>
 			<b-modal
-				v-model="isRestoreConfirm"
 				id="modal-activate"
+				v-model="isRestoreConfirm"
 				hide-footer
 				hide-header
 			>
@@ -1135,9 +1135,9 @@ export default {
 									class="form-control"
 								>
 								<button
+									id="deleteUserButton"
 									type="submit"
 									class="btn btn-success"
-									id="deleteUserButton"
 								>
 									Да
 								</button>
@@ -1170,8 +1170,8 @@ export default {
 			style="display: none !important;"
 		>
 			<svg
-				viewBox="0 0 512 512"
 				id="zip-icon"
+				viewBox="0 0 512 512"
 				x="0px"
 				y="0px"
 				style="enable-background:new 0 0 512 512;padding: 20px;"
@@ -1203,8 +1203,8 @@ export default {
 			/></svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="xls-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E2E5E7;"
@@ -1243,8 +1243,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="xlsx-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E2E5E7;"
@@ -1283,8 +1283,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="docx-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E1E6E9;"
@@ -1326,8 +1326,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="doc-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E1E6E9;"
@@ -1369,8 +1369,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="ppt-icon"
+				viewBox="0 0 512 512"
 			>
 				<g>
 					<path
@@ -1426,8 +1426,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="pptx-icon"
+				viewBox="0 0 512 512"
 			>
 				<g>
 					<path
@@ -1483,8 +1483,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="rar-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#ECEDEF;"
@@ -1567,8 +1567,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="pdf-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E2E5E7;"
@@ -1607,8 +1607,8 @@ export default {
 			</svg>
 
 			<svg
-				viewBox="0 0 512 512"
 				id="png-icon"
+				viewBox="0 0 512 512"
 			>
 				<path
 					style="fill:#E2E5E7;"
@@ -1818,8 +1818,8 @@ export default {
 				<div class="modal-content">
 					<div class="modal-header">
 						<a
-							@click="isUploadImageModal = false"
 							class="close"
+							@click="isUploadImageModal = false"
 						>&times;</a>
 					</div>
 					<div class="modal-body">

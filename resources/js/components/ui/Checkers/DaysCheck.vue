@@ -16,10 +16,10 @@
 			</div>
 		</div>
 		<img
+			v-b-popover.hover="'Если в месяце нет 31 числа то сообщение придет 30'"
 			src="/images/dist/profit-info.svg"
 			alt="info icon"
 			class="img-info"
-			v-b-popover.hover="'Если в месяце нет 31 числа то сообщение придет 30'"
 		>
 	</div>
 </template>

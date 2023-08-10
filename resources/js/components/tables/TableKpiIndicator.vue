@@ -1,21 +1,21 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
 	<tr
-		class="activitty"
 		v-if="!kpi_indicator.deleted"
+		class="activitty"
 	>
 		<td v-if="is_admin">
 			<input
-				type="checkbox"
 				v-model="kpi_indicator.checked"
+				type="checkbox"
 			>
 		</td>
 		<td class="left">
 			<input
-				type="text"
 				v-if="is_admin"
-				class="form-control"
 				v-model="kpi_indicator.name"
+				type="text"
+				class="form-control"
 			><span v-else>{{ kpi_indicator.name }}</span>
 		</td>
 		<td v-if="is_admin">
@@ -39,8 +39,8 @@
 					Не более, сред. зн.
 				</option>
 				<option
-					value="more_sum"
 					v-if="type == 'individual'"
+					value="more_sum"
 				>
 					Не менее, сумма
 				</option>
@@ -48,9 +48,9 @@
 		</td>
 		<td v-if="type == 'individual'">
 			<select
+				v-if="is_admin"
 				v-model="kpi_indicator.group_id"
 				class="form-control"
-				v-if="is_admin"
 			>
 				<option
 					value="0"
@@ -59,9 +59,9 @@
 					-
 				</option>
 				<option
-					v-for="group in this.groups"
-					:value="group.id"
+					v-for="group in groups"
 					:key="group.id"
+					:value="group.id"
 				>
 					{{ group.name }}
 				</option>
@@ -82,9 +82,9 @@
 						Не связан
 					</option>
 					<option
-						:value="activity.id"
 						v-for="activity in activities"
 						:key="activity.id"
+						:value="activity.id"
 					>
 						{{ activity.name }}
 					</option>
@@ -101,9 +101,9 @@
 						Ячейка из сводной
 					</option>
 					<option
-						:value="activity.id"
 						v-for="activity in activities[kpi_indicator.group_id]"
 						:key="activity.id"
+						:value="activity.id"
 					>
 						{{ activity.name }}
 					</option>
@@ -111,8 +111,8 @@
 
 				<input
 					v-if="kpi_indicator.activity_id == -1"
-					type="text"
 					v-model="kpi_indicator.cell"
+					type="text"
 					placeholder="A1"
 					class="form-control kpi-cell"
 				>
@@ -142,11 +142,11 @@
 					class="d-flex justify-content-center"
 				>
 					<b-input
+						v-if="is_admin"
+						v-model="kpi_indicator.daily_plan"
 						type="number"
 						min="0"
-						v-if="is_admin"
 						class="form-control number_input mr-2"
-						v-model="kpi_indicator.daily_plan"
 					/>
 					<div
 						style="display:inline-block"
@@ -172,22 +172,22 @@
 		<td>
 			<div class="d-flex justify-content-center">
 				<b-input
+					v-if="is_admin"
+					v-model="kpi_indicator.ud_ves"
 					type="number"
 					min="0"
 					max="100"
-					v-if="is_admin"
 					class="form-control number_input mr-2"
-					v-model="kpi_indicator.ud_ves"
 				/><span v-else>{{ kpi_indicator.ud_ves }}</span>
 			</div>
 		</td>
 		<td>{{ kpi_indicator.sum_prem }}</td>
 		<td>
 			<b-input
-				type="number"
 				v-if="is_admin"
-				class="form-control number_input"
 				v-model="kpi_indicator.completed"
+				type="number"
+				class="form-control number_input"
 			/><span v-else>{{ kpi_indicator.completed }}</span>
 		</td>
 		<td>{{ kpi_indicator.result }}</td>
@@ -231,24 +231,6 @@ export default {
 			default: null
 		}
 	},
-	watch: {
-		kpi_indicator: {
-			handler: function() {this.recalc()},
-			deep: true
-		},
-		nijn_porok: {
-			handler: function() {this.recalc()},
-		},
-		verh_porok: {
-			handler: function() {this.recalc()},
-		},
-		kpi_80_99: {
-			handler: function() {this.recalc()},
-		},
-		kpi_100: {
-			handler: function() {this.recalc()},
-		}
-	},
 	data() {
 		return {
 			planPlaceholder: '',
@@ -271,6 +253,24 @@ export default {
 				return this.kpi_indicator.daily_plan.toString() + this.kpi_indicator.unit;
 			}
 			return 0
+		}
+	},
+	watch: {
+		kpi_indicator: {
+			handler: function() {this.recalc()},
+			deep: true
+		},
+		nijn_porok: {
+			handler: function() {this.recalc()},
+		},
+		verh_porok: {
+			handler: function() {this.recalc()},
+		},
+		kpi_80_99: {
+			handler: function() {this.recalc()},
+		},
+		kpi_100: {
+			handler: function() {this.recalc()},
 		}
 	},
 	created() {

@@ -164,8 +164,8 @@
 			</div>
 		</div>
 		<div
-			class="cookie-alert"
 			v-if="!cookieViewed"
+			class="cookie-alert"
 		>
 			<span>Мы используем файлы cookie на нашем веб-сайте для поддержки технических функций, которые улучшают ваш
 				пользовательский опыт. Мы также собираем анонимные аналитические данные, как описано в нашей
@@ -191,15 +191,15 @@ export default {
 	components: {
 		FooterLink
 	},
-	computed: {
-		lang() {
-			return this.$root.$data.lang
-		}
-	},
 	data() {
 		return {
 			year: new Date().getFullYear(),
 			cookieViewed: false
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
 		}
 	},
 	mounted(){

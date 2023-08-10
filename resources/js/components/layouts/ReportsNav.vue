@@ -68,8 +68,8 @@ export default {
 					class="nav-item"
 				>
 					<router-link
-						:to="tab.path"
 						:id="tab.id"
+						:to="tab.path"
 						class="nav-link"
 						:class="{active: tab.id === activeTab}"
 					>

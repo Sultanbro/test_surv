@@ -14,9 +14,9 @@
 			v-if="isFolder"
 		>
 			<tree-item
-				class="item"
 				v-for="(child, index) in item.categoryes"
 				:key="index"
+				class="item"
 				:item="child"
 				@make-folder="$emit('make-folder', $event)"
 				@add-item="$emit('add-item', $event)"

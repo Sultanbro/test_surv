@@ -114,7 +114,6 @@ export default {
 	},
 	mounted(){
 		this.updatePageData()
-		console.log(this.$can());
 	},
 	methods:{
 		can(access){
@@ -155,8 +154,8 @@ export default {
 										<template v-for="tab in tabs">
 											<li
 												v-if="can(tab.access) && ckeckDomain(tab.domain)"
-												:key="tab.htmlId"
 												:id="`${tab.htmlId}-tab`"
+												:key="tab.htmlId"
 												class="nav-item"
 											>
 												<router-link
@@ -198,8 +197,8 @@ export default {
 									</div>
 									<div
 										v-if="activeTab === '2' && can(['positions_view', 'groups_view', 'settings_view'])"
-										class="tab-pane fade show active py-3"
 										id="nav-company"
+										class="tab-pane fade show active py-3"
 										role="tabpanel"
 										aria-labelledby="nav-home-tab"
 									>
@@ -229,8 +228,8 @@ export default {
 									</div> -->
 									<div
 										v-if="activeTab === '10' && can(['notification_view', 'settings_view'])"
-										class="tab-pane fade show active py-3"
 										id="nav-notifications-v2"
+										class="tab-pane fade show active py-3"
 										role="tabpanel"
 										aria-labelledby="nav-notifications-v2-tab"
 									>
@@ -238,8 +237,8 @@ export default {
 									</div>
 									<div
 										v-if="activeTab === '6' && can(['permissions_view', 'settings_view'])"
-										class="tab-pane fade show active py-3"
 										id="nav-bookgroups"
+										class="tab-pane fade show active py-3"
 										role="tabpanel"
 										aria-labelledby="nav-bookgroups-tab"
 									>
@@ -256,8 +255,8 @@ export default {
 									</div> -->
 									<div
 										v-if="activeTab === '8' && can('is_admin')"
-										class="tab-pane fade show active py-3"
 										id="integrations"
+										class="tab-pane fade show active py-3"
 										role="tabpanel"
 										aria-labelledby="nav-integrations-tab"
 									>
@@ -265,8 +264,8 @@ export default {
 									</div>
 									<div
 										v-if="activeTab === '9' && can(['awards_view', 'settings_view'])"
-										class="tab-pane fade show active py-3"
 										id="awards"
+										class="tab-pane fade show active py-3"
 										role="tabpanel"
 										aria-labelledby="nav-awards-tab"
 									>

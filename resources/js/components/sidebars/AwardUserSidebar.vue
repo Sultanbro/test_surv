@@ -1,18 +1,18 @@
 <template>
 	<Sidebar
 		id="award-user-sidebar"
+		v-scroll-lock="open"
 		title="Наградить пользователя"
 		:open="open"
 		:class="isShow ? 'show' : ''"
-		@close="open = false"
 		width="70%"
-		v-scroll-lock="open"
+		@close="open = false"
 	>
 		<b-tabs
 			v-if="awards.length > 0"
 			ref="tabAwardUser"
-			class="overflow-hidden"
 			v-model="tabIndex"
+			class="overflow-hidden"
 		>
 			<div class="prev-next">
 				<span
@@ -43,8 +43,8 @@
 						<button
 							class="award-user-btn-tab"
 							:class="{'active': switchTab === 2}"
-							@click="switchTab = 2"
 							:disabled="!award.hasOwnProperty('my')"
+							@click="switchTab = 2"
 						>
 							Выданные награды ({{ award.my ? award.my.length : 0 }})
 						</button>
@@ -62,18 +62,18 @@
 					<b-row class="avail mt-3">
 						<template v-for="item in award.available">
 							<b-col
+								v-if="item.type === 'public'"
+								:key="item.id"
 								cols="12"
 								md="2"
 								class="mt-4 remove-award-modal"
-								:key="item.id"
-								v-if="item.type === 'public'"
 							>
 								<div class="award-image">
 									<div @click="previewImage(item)">
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt=""
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
 											v-else
@@ -97,25 +97,25 @@
 				<div v-show="switchTab === 2 && award.hasOwnProperty('my')">
 					<b-row class="mt-3">
 						<b-col
+							v-for="item in award.my"
+							:key="item.id"
 							cols="12"
 							md="2"
 							class="mt-4"
-							v-for="item in award.my"
-							:key="item.id"
 						>
 							<div
 								class="award-image my-award"
 								@click="removeReward(item)"
 							>
 								<img
+									v-if="item.format !== 'pdf'"
 									:src="item.tempPath"
 									alt=""
-									v-if="item.format !== 'pdf'"
 								>
 								<vue-pdf-embed
+									v-else
 									ref="vuePdfEmbeds"
 									:source="item.tempPath"
-									v-else
 								/>
 								<i class="fa fa-trash" />
 							</div>
@@ -142,13 +142,13 @@
 			centered
 		>
 			<img
+				v-if="modalPreviewData.format !== 'pdf'"
 				:src="modalPreviewData.tempPath"
 				alt=""
-				v-if="modalPreviewData.format !== 'pdf'"
 			>
 			<vue-pdf-embed
-				:source="modalPreviewData.tempPath"
 				v-else
+				:source="modalPreviewData.tempPath"
 			/>
 			<template #modal-footer>
 				<b-button
@@ -172,35 +172,35 @@
 			</h4>
 			<hr class="my-4">
 			<div
-				class="award-image-remove"
 				v-if="modalRemoveRewardData"
+				class="award-image-remove"
 			>
 				<img
+					v-if="modalRemoveRewardData.format !== 'pdf'"
 					:src="modalRemoveRewardData.tempPath"
 					alt=""
-					v-if="modalRemoveRewardData.format !== 'pdf'"
 				>
 				<vue-pdf-embed
-					:source="modalRemoveRewardData.tempPath"
 					v-else
+					:source="modalRemoveRewardData.tempPath"
 				/>
 			</div>
 			<template #modal-footer>
 				<b-button
 					variant="secondary"
-					@click="modalRemoveReward = !modalRemoveReward"
 					:disabled="btnLoading"
+					@click="modalRemoveReward = !modalRemoveReward"
 				>
 					Отмена
 				</b-button>
 				<b-button
 					variant="danger"
-					@click="removeRewardUser(modalRemoveRewardData)"
 					:disabled="btnLoading"
+					@click="removeRewardUser(modalRemoveRewardData)"
 				>
 					<span
-						class="btn-spinner"
 						v-if="btnLoading"
+						class="btn-spinner"
 					/>
 					Отозвать награду
 				</b-button>
@@ -208,12 +208,12 @@
 		</BModal>
 
 		<BModal
+			v-if="currentAward"
 			v-model="modalAdd"
 			modal-class="selected-modal"
 			:title="'Добавление новой награды - ' + currentAward.name"
 			size="lg"
 			centered
-			v-if="currentAward"
 		>
 			<b-row class="mb-4">
 				<b-col
@@ -222,17 +222,17 @@
 					offset-md="3"
 				>
 					<label
+						ref="inputFileAdd"
 						for="file-add"
 						class="custom-file-upload"
 						:class="modalAddFile ? '' : 'error'"
-						ref="inputFileAdd"
 					/>
 					<input
+						id="file-add"
 						type="file"
 						accept="application/pdf, image/jpeg, image/png"
-						id="file-add"
-						@change="modalAddEvent"
 						style="display: none;"
+						@change="modalAddEvent"
 					>
 				</b-col>
 			</b-row>
@@ -241,9 +241,9 @@
 				<hr class="my-4">
 				<div class="result-container">
 					<img
+						v-if="modalAddFile.type !== 'application/pdf'"
 						:src="modalAddBase64"
 						alt=""
-						v-if="modalAddFile.type !== 'application/pdf'"
 					>
 					<vue-pdf-embed
 						v-else
@@ -254,20 +254,20 @@
 			<template #modal-footer>
 				<b-button
 					variant="secondary"
-					@click="modalAdd = !modalAdd"
 					:disabled="btnLoading"
+					@click="modalAdd = !modalAdd"
 				>
 					Отмена
 				</b-button>
 				<b-button
-					variant="success"
 					v-if="modalAddBase64"
-					@click="addAndSaveReward"
+					variant="success"
 					:disabled="btnLoading"
+					@click="addAndSaveReward"
 				>
 					<span
-						class="btn-spinner"
 						v-if="btnLoading"
+						class="btn-spinner"
 					/>
 					Наградить
 				</b-button>
@@ -291,9 +291,9 @@
 						{{ modalSelectData.type }}
 						<span class="image-mini">
 							<img
+								v-if="modalSelectData.format !== 'pdf'"
 								:src="modalSelectData.tempPath"
 								alt=""
-								v-if="modalSelectData.format !== 'pdf'"
 							>
 							<vue-pdf-embed
 								v-else
@@ -308,17 +308,17 @@
 					md="6"
 				>
 					<label
+						ref="inputFile"
 						for="file"
 						class="custom-file-upload"
 						:class="modalSelectFile ? '' : 'error'"
-						ref="inputFile"
 					/>
 					<input
+						id="file"
 						type="file"
 						accept="application/pdf, image/jpeg, image/png"
-						id="file"
-						@change="modalSelectDataUploadEvent"
 						style="display: none;"
+						@change="modalSelectDataUploadEvent"
 					>
 				</b-col>
 			</b-row>
@@ -331,9 +331,9 @@
 				<hr class="my-4">
 				<div class="result-container">
 					<img
+						v-if="modalSelectFile.type !== 'application/pdf'"
 						:src="modalSelectBase64"
 						alt=""
-						v-if="modalSelectFile.type !== 'application/pdf'"
 					>
 					<vue-pdf-embed
 						v-else
@@ -344,8 +344,8 @@
 			<template #modal-footer>
 				<div class="d-flex align-items-center justify-content-between w-100">
 					<BFormGroup
-						class="custom-switch custom-switch-sm m-0"
 						id="input-group-4"
+						class="custom-switch custom-switch-sm m-0"
 					>
 						<b-form-checkbox
 							v-model="newFileCheck"
@@ -358,32 +358,32 @@
 					<div>
 						<b-button
 							variant="secondary"
-							@click="modalSelect = !modalSelect"
 							:disabled="btnLoading"
+							@click="modalSelect = !modalSelect"
 						>
 							Отмена
 						</b-button>
 						<b-button
-							variant="success"
 							v-if="!newFileCheck"
-							@click="reward"
+							variant="success"
 							:disabled="btnLoading"
+							@click="reward"
 						>
 							<span
-								class="btn-spinner"
 								v-if="btnLoading"
+								class="btn-spinner"
 							/>
 							Наградить
 						</b-button>
 						<b-button
-							variant="success"
 							v-if="newFileCheck && modalSelectBase64"
-							@click="rewardNew"
+							variant="success"
 							:disabled="btnLoading"
+							@click="rewardNew"
 						>
 							<span
-								class="btn-spinner"
 								v-if="btnLoading"
+								class="btn-spinner"
 							/>
 							Наградить
 						</b-button>
@@ -452,17 +452,6 @@ export default {
 			}
 		}
 	},
-	mounted() {
-		setTimeout(() => {
-			this.isShow = true;
-		}, 500);
-		document.addEventListener('award-user-sidebar', (e) => {
-			this.open = true;
-			console.log('USER ID:', e.detail);
-			this.userId = e.detail;
-			this.getAll();
-		});
-	},
 	watch: {
 		modalAdd(val) {
 			if (!val) {
@@ -488,6 +477,16 @@ export default {
 			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
 		}
 	},
+	mounted() {
+		setTimeout(() => {
+			this.isShow = true;
+		}, 500);
+		document.addEventListener('award-user-sidebar', (e) => {
+			this.open = true;
+			this.userId = e.detail;
+			this.getAll();
+		});
+	},
 	methods: {
 		availableLength(available){
 			const avalFilter = available.filter(a => a.type === 'public');
@@ -503,7 +502,6 @@ export default {
 		},
 		downloadImage(data, name) {
 			var xhr = new XMLHttpRequest();
-			console.log(data);
 			xhr.open('GET', data.tempPath, true);
 
 			xhr.responseType = 'arraybuffer';
@@ -527,7 +525,6 @@ export default {
 				a.download = `${name}.${data.format}`;
 				document.body.appendChild(a);
 				a.click();
-				console.log(a);
 				document.body.removeChild(a);
 			};
 
@@ -544,7 +541,7 @@ export default {
 					loader.hide();
 				})
 				.catch(error => {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				})
 		},
@@ -553,16 +550,15 @@ export default {
 			this.btnLoading = true;
 			this.axios
 				.delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
-				.then(response => {
+				.then(() => {
 					this.modalRemoveReward = false;
 					this.$toast.success('Награда убрана');
-					console.log(response);
 					this.btnLoading = false;
 					loader.hide();
 					this.getAll();
 				})
 				.catch(error => {
-					console.log(error);
+					console.error(error);
 				})
 		},
 		removeReward(item) {
@@ -586,7 +582,7 @@ export default {
 					this.responseAward = response.data.data;
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 
@@ -601,8 +597,7 @@ export default {
 						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
-				.then(response => {
-					console.log(response);
+				.then(() => {
 					this.modalAdd = false;
 					this.$toast.success('Награжден');
 					setTimeout(() => {
@@ -614,8 +609,7 @@ export default {
 					loader.hide();
 				})
 				.catch(function (error) {
-					console.log('error');
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},
@@ -677,8 +671,7 @@ export default {
 						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
-				.then(response => {
-					console.log(response);
+				.then(() => {
 					this.$toast.success('Добавлено');
 					setTimeout(() => {
 						this.modalSelectData = {};
@@ -692,7 +685,7 @@ export default {
 					this.getAll();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},
@@ -710,8 +703,7 @@ export default {
 						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
-				.then(response => {
-					console.log(response);
+				.then(() => {
 					this.$toast.success('Добавлено');
 					setTimeout(() => {
 						this.modalSelectData = {};
@@ -725,7 +717,7 @@ export default {
 					this.getAll();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		}

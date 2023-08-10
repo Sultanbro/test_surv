@@ -11,45 +11,45 @@
 				@activate-tab="(n,p,e) => active = n"
 			>
 				<b-tab
-					title="KPI"
 					:key="0"
+					title="KPI"
 					card
 				>
 					<KPI v-if="active == 0" />
 				</b-tab>
 				<b-tab
-					title="Бонусы, %"
 					:key="1"
+					title="Бонусы, %"
 					card
 				>
 					<Bonuses v-if="active == 1" />
 				</b-tab>
 				<b-tab
-					title="Квартальная премия"
 					:key="2"
+					title="Квартальная премия"
 					card
 				>
 					<QuartalPremium v-if="active == 2" />
 				</b-tab>
 				<b-tab
-					title="Статистика"
 					:key="3"
+					title="Статистика"
 					card
 				>
 					<StatsV2 v-if="active == 3" />
 				</b-tab>
 				<b-tab
 					v-if="tenant === 'bp'"
-					title="Показатели"
 					:key="4"
+					title="Показатели"
 					card
 				>
 					<Indicators v-if="active == 4 && tenant === 'bp'" />
 				</b-tab>
 				<b-tab
 					v-if="false"
-					title="Статистика1"
 					:key="5"
+					title="Статистика1"
 					card
 				>
 					<Stats v-if="active == 5" />
@@ -65,16 +65,16 @@
 				@activate-tab="(n,p,e) => active = n"
 			>
 				<b-tab
-					title="Статистика"
 					:key="0"
+					title="Статистика"
 					card
 				>
 					<StatsV2 v-if="active == 0" />
 				</b-tab>
 				<b-tab
 					v-if="tenant === 'bp'"
-					title="Показатели"
 					:key="1"
+					title="Показатели"
 					card
 				>
 					<Indicators v-if="active == 1 && tenant === 'bp'" />

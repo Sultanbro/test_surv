@@ -19,22 +19,22 @@
 					<tr>
 						<th
 							v-for="field in fields"
+							:key="field.key"
 							:class="{
 								'text-center': field.key != '0',
 								'SalaryCell-weekend-0': field.weekend
 							}"
-							:key="field.key"
 						>
 							{{ field.label }}
 							<i
 								v-if="field.key == 'avanses'"
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
+								class="fa fa-info-circle"
 							/>
 							<i
 								v-if="field.key == 'fines'"
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Депримирование отмечено красным'"
+								class="fa fa-info-circle"
 							/>
 						</th>
 					</tr>
@@ -47,12 +47,12 @@
 						<td
 							v-for="field in fields"
 							:key="field.key"
-							@click="showHistory(field.key)"
 							:class="[{
 								'text-center': field.key,
 								'balance__table-day': parseInt(field.key) > 0,
 								'SalaryCell': item[field.key] && item[field.key].dayType,
 							}, item[field.key] ? `SalaryCell${field.weekend ? '-weekend' : ''}-${item[field.key].dayType || '0'}` : '']"
+							@click="showHistory(field.key)"
 						>
 							<template v-if="item[field.key] !== undefined">
 								{{ item[field.key].value }}
@@ -70,7 +70,7 @@
 		>
 			<div class="balance__inner">
 				<div class="balance__title">
-					История за {{ this.currentDay }} {{ this.currentMonth }}
+					История за {{ currentDay }} {{ currentMonth }}
 				</div>
 
 				<BalanceItem title="Начислено">

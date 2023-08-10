@@ -28,20 +28,20 @@
 							<span @click="closeCitation">x</span>
 						</div>
 						<textarea
-							v-model="body"
-							@keydown.enter="performMessage"
-							@paste="pasteMessage"
 							id="messengerMessageInput"
+							v-model="body"
 							class="messenger__textarea"
 							placeholder="Ввести сообщение"
+							@keydown.enter="performMessage"
+							@paste="pasteMessage"
 						/>
 					</div>
 					<label class="messenger__attachment">
 						<input
 							type="file"
 							style="display:none"
-							@change="prepareFiles"
 							multiple="multiple"
+							@change="prepareFiles"
 						>
 						<ChatIconUpload class="mt-2" />
 					</label>
@@ -53,8 +53,8 @@
 				>
 					<div
 						v-if="(body || (files && files.length)) && !isRecordingAudio"
-						@click="performMessage"
 						class="messenger__message-icon"
+						@click="performMessage"
 					>
 						<ChatIconSend />
 					</div>

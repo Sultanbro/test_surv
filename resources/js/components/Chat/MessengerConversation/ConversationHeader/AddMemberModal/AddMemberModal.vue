@@ -11,8 +11,8 @@
 					alt=""
 				>
 				<input
-					type="text"
 					v-model="accessSearch"
+					type="text"
 					class="access-modal__search-input"
 					placeholder="Быстрый поиск"
 				>
@@ -46,8 +46,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.users"
-						:key="item.id"
 						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 					>
@@ -67,8 +67,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 								:checked="checked(item, 1) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 							>
 							<span class="news-checkmark" />
 						</label>
@@ -80,8 +80,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.profile_groups"
-						:key="item.id"
 						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 					>
@@ -98,8 +98,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 								:checked="checked(item, 2) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 							>
 							<span class="news-checkmark" />
 						</label>
@@ -111,8 +111,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.positions"
-						:key="item.id"
 						v-show="item.position ? item.position.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.position, 3)"
 					>
@@ -124,8 +124,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.position, 3)"
 								:checked="checked(item, 3) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.position, 3)"
 							>
 							<span class="news-checkmark" />
 						</label>

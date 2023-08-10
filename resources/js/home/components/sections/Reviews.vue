@@ -146,19 +146,6 @@ export default {
 		Slide,
 		HooperNavigation
 	},
-	computed: {
-		lang() {
-			return this.$root.$data.lang
-		},
-		isDesktop() {
-			return this.$viewportSize.width >= 1260
-		},
-		content() {
-			return this.mode === 'photos'
-				? this.photos
-				: this.videos
-		}
-	},
 	data() {
 		return {
 			activeVideo: 0,
@@ -227,6 +214,19 @@ export default {
 					}
 				}
 			}
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isDesktop() {
+			return this.$viewportSize.width >= 1260
+		},
+		content() {
+			return this.mode === 'photos'
+				? this.photos
+				: this.videos
 		}
 	},
 	mounted() {

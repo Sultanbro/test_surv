@@ -13,9 +13,9 @@
 		<!-- Заголовок списка результатов -->
 		<ConversationSearchTitle
 			:title="title"
+			class="px-2"
 			@forward="forwardFiles"
 			@delete="deleteFiles"
-			class="px-2"
 		/>
 
 		<!-- Поиск -->

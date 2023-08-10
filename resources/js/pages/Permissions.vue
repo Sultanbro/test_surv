@@ -31,8 +31,8 @@
 					md="9"
 				>
 					<div
-						class="table-container"
 						v-if="role == null"
+						class="table-container"
 					>
 						<b-table-simple class="table-bordered custom-table-permissions">
 							<b-thead>
@@ -42,8 +42,8 @@
 									<b-th>
 										Отделы
 										<i
-											class="fa fa-info-circle ml-2"
 											v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'"
+											class="fa fa-info-circle ml-2"
 											title="Доступ к отделам"
 										/>
 									</b-th>
@@ -54,12 +54,12 @@
 								<PermissionItem
 									v-for="(item, i) in filtered_items"
 									:key="item.id"
-									@deleteItem="deleteItem(i)"
-									@updateItem="updateItem(i)"
 									:item="item"
 									:groups="groups"
 									:users="users"
 									:roles="roles"
+									@deleteItem="deleteItem(i)"
+									@updateItem="updateItem(i)"
 								/>
 							</b-tbody>
 						</b-table-simple>
@@ -80,8 +80,8 @@
 						</div>
 
 						<input
-							type="text"
 							v-model="role.name"
+							type="text"
 							class="role-title form-control mb-3"
 						>
 
@@ -100,8 +100,8 @@
 
 							<template v-for="(page, index) in filteredPages">
 								<div
-									class="item d-flex"
 									:key="index"
+									class="item d-flex"
 								>
 									<div
 										class="name mr-3"
@@ -109,12 +109,12 @@
 									>
 										{{ page.name }}
 										<i
-											class="fa fa-chevron-up"
 											v-if="page.opened && page.children.length > 0"
+											class="fa fa-chevron-up"
 										/>
 										<i
-											class="fa fa-chevron-down"
 											v-if="!page.opened && page.children.length > 0"
+											class="fa fa-chevron-down"
 										/>
 									</div>
 									<div class="check d-flex">
@@ -123,8 +123,8 @@
 											class="mb-0 pointer"
 										>
 											<input
-												class="pointer"
 												v-model="role.perms[page.key + '_view']"
+												class="pointer"
 												type="checkbox"
 												@change="checkParent(index, 'view')"
 											>
@@ -136,8 +136,8 @@
 											class="mb-0 pointer"
 										>
 											<input
-												class="pointer"
 												v-model="role.perms[page.key + '_edit']"
+												class="pointer"
 												type="checkbox"
 												@change="checkParent(index, 'edit')"
 											>
@@ -148,9 +148,9 @@
 								<template v-if="page.children.length > 0">
 									<template v-if="page.opened">
 										<div
-											class="item d-flex child"
 											v-for="children in filteredPageChildren(index)"
 											:key="children.key"
+											class="item d-flex child"
 										>
 											<div class="name mr-3">
 												{{ children.name }}
@@ -161,8 +161,8 @@
 													class="mb-0 pointer"
 												>
 													<input
-														class="pointer"
 														v-model="role.perms[children.key + '_view']"
+														class="pointer"
 														type="checkbox"
 														@change="checkChild(index, 'view')"
 													>
@@ -174,8 +174,8 @@
 													class="mb-0 pointer"
 												>
 													<input
-														class="pointer"
 														v-model="role.perms[children.key + '_edit']"
+														class="pointer"
 														type="checkbox"
 														@change="checkChild(index, 'edit')"
 													>
@@ -207,16 +207,16 @@
 							<div class="contrast role-title">
 								<b>Список ролей</b>
 								<img
+									v-b-popover.hover.bottom="'В Роли указывается что доступно для просмотра и Редактирования'"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
-									v-b-popover.hover.bottom="'В Роли указывается что доступно для просмотра и Редактирования'"
 								>
 							</div>
 							<div class="role-body">
 								<div
-									class="role-item"
 									v-for="(item, i) in roles"
 									:key="i"
+									class="role-item"
 								>
 									<div
 										class="name"

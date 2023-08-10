@@ -5,9 +5,9 @@
 			:class="[activeClass]"
 		>
 			<div
+				id="hoverPulse"
 				class="filler"
 				@click="showSalarySidebar = true"
-				id="hoverPulse"
 			>
 				<img
 					src="/images/money1.png"
@@ -96,9 +96,9 @@
 		</div>
 
 		<div
+			v-if="has_quartal_premiums"
 			class="flexy"
 			:class="[activeClass]"
-			v-if="has_quartal_premiums"
 		>
 			<div
 				class="filler"
@@ -163,8 +163,8 @@
 		<sidebar
 			title="Баланс оклада"
 			:open="showSalarySidebar"
-			@close="showSalarySidebar = false"
 			width="40%"
+			@close="showSalarySidebar = false"
 		>
 			<div class="mt-2">
 				<table class="table table-bordered table-sm ue-table">
@@ -207,11 +207,11 @@
 
 
 		<sidebar
+			v-if="showKpiSidebar"
 			title="KPI"
 			:open="showKpiSidebar"
-			@close="showKpiSidebar = false"
-			v-if="showKpiSidebar"
 			width="80%"
+			@close="showKpiSidebar = false"
 		>
 			<!-- table -->
 			<t-stats
@@ -248,8 +248,8 @@
 		<sidebar
 			title="Бонусы"
 			:open="showBonusSidebar"
-			@close="showBonusSidebar = false"
 			width="40%"
+			@close="showBonusSidebar = false"
 		>
 			<div class="mt-2 p-2">
 				<template v-if="data.bonusHistory.length > 0">
@@ -298,8 +298,8 @@
 		<sidebar
 			title="Квартальная премия"
 			:open="showQuartalPremiumSidebar"
-			@close="showQuartalPremiumSidebar = false"
 			width="60%"
+			@close="showQuartalPremiumSidebar = false"
 		>
 			<t-stats-quartal
 				:users="quartal_premiums"

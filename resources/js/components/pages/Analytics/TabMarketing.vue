@@ -6,16 +6,16 @@
 			default-active-key="0"
 		>
 			<b-tab
-				title="Сводная"
 				key="0"
+				title="Сводная"
 				card
 			>
 				<div class="row pt-4">
 					<div class="col-8">
 						<div class="TabMarketing-funnels">
 							<TableFunnel
-								class="mb-4"
 								:id="0"
+								class="mb-4"
 								:table="funnels['all']['all']"
 								title="Сводная таблица"
 								segment="segments"
@@ -23,8 +23,8 @@
 								:date="date"
 							/>
 							<TableFunnel
-								class="mb-4"
 								:id="1"
+								class="mb-4"
 								:table="funnels['all']['hh']"
 								title="hh.ru"
 								segment="hh"
@@ -32,8 +32,8 @@
 								:date="date"
 							/>
 							<TableFunnel
-								class="mb-4"
 								:id="2"
+								class="mb-4"
 								:table="funnels['all']['insta']"
 								title="Job.bpartners.kz"
 								segment="insta"
@@ -56,22 +56,22 @@
 			>
 				<div class="pt-4">
 					<TableFunnel
+						:key="5 * 1000 * (Number(i) + 10 * Number(i))"
 						class="mb-4"
 						:table="funnels['month'][i]['hh']"
 						title="hh.ru"
 						segment="hh"
 						type="week"
 						:date="mon.date"
-						:key="5 * 1000 * (Number(i) + 10 * Number(i))"
 					/>
 					<TableFunnel
+						:key="6 * 1000 * (Number(i) + 10 * Number(i))"
 						class="mb-4"
 						:table="funnels['month'][i]['insta']"
 						title="Job.bpartners.kz"
 						segment="insta"
 						type="week"
 						:date="mon.date"
-						:key="6 * 1000 * (Number(i) + 10 * Number(i))"
 					/>
 				</div>
 			</b-tab>

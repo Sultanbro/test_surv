@@ -2,10 +2,10 @@
 	<div
 		class="flowchart-node"
 		:style="nodeStyle"
+		:class="{selected: options.selected === id}"
 		@mousedown="handleMousedown"
 		@mouseover="handleMouseOver"
 		@mouseleave="handleMouseLeave"
-		:class="{selected: options.selected === id}"
 	>
 		<template v-if="type!='start'">
 			<div
@@ -54,34 +54,34 @@
 
 			<div
 				v-else
-				v-text="type"
 				class="node-type"
+				v-text="type"
 			/>
 
 			<div
-				v-text="label"
 				class="node-label"
+				v-text="label"
 			/>
 			<div
 				v-if="type==='Музыка'"
-				v-text="audio_file"
 				class="audio_file"
+				v-text="audio_file"
 			/>
 			<div
 				v-if="type==='Кнопка'"
-				v-text="key_button"
 				class="node-key"
+				v-text="key_button"
 			/>
 			<div
 				v-if="type==='Кнопка'"
-				v-text="action_button"
 				class="node-action"
+				v-text="action_button"
 			/>
 			<div
 				v-if="action_button==='Позвонить оператору' || action_button==='Связать с номером' ||
 					action_button==='Перенести в отдел'"
-				v-text="connect_with"
 				class="node-connection"
+				v-text="connect_with"
 			/>
 		</div>
 
@@ -220,8 +220,6 @@ export default {
 			}
 		}
 	},
-	mounted() {
-	},
 	computed: {
 		nodeStyle() {
 			return {
@@ -230,6 +228,8 @@ export default {
 				transform: `scale(${this.options.scale})`,
 			}
 		}
+	},
+	mounted() {
 	},
 	methods: {
 		handleMousedown(e) {

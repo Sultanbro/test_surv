@@ -32,10 +32,10 @@
 				:preserve-search="true"
 				:hide-selected="true"
 				placeholder="Выберите"
-				@select="onSelect"
-				@remove="onRemove"
 				label="name"
 				track-by="name"
+				@select="onSelect"
+				@remove="onRemove"
 			/>
 		</b-td>
 		<b-td class="actions">

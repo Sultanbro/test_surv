@@ -65,19 +65,19 @@ export default {
 					>
 						Мобильный
 						<img
+							v-b-popover.hover="'Только на этот номер могут отправляться сообщения васап'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							v-b-popover.hover="'Только на этот номер могут отправляться сообщения васап'"
 						>
 					</label>
 					<div class="col-sm-12">
 						<input
-							name="phone"
-							type="text"
+							id="phone"
 							v-model="mainPhone"
 							v-mask="'+7(###) ###-##-##'"
-							id="phone"
+							name="phone"
+							type="text"
 							class="phone_mask form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>
@@ -90,11 +90,11 @@ export default {
 					>Домашний</label>
 					<div class="col-sm-12">
 						<input
+							id="phone_1"
+							v-mask="'+7(###) ###-##-##'"
 							name="phone_1"
 							:value="user ? user.phone_1 : old_phone_1"
 							type="text"
-							v-mask="'+7(###) ###-##-##'"
-							id="phone_1"
 							class="phone_mask form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>
@@ -107,11 +107,11 @@ export default {
 					>Супруга/Муж</label>
 					<div class="col-sm-12">
 						<input
+							id="phone_2"
+							v-mask="'+7(###) ###-##-##'"
 							name="phone_2"
 							:value="user ? user.phone_2 : old_phone_2"
 							type="text"
-							v-mask="'+7(###) ###-##-##'"
-							id="phone_2"
 							class="phone_mask form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>
@@ -124,11 +124,11 @@ export default {
 					>Друг/Брат/Сестра</label>
 					<div class="col-sm-12">
 						<input
+							id="phone_3"
+							v-mask="'+7(###) ###-##-##'"
 							name="phone_3"
 							:value="user ? user.phone_3 : old_phone_3"
 							type="text"
-							v-mask="'+7(###) ###-##-##'"
-							id="phone_3"
 							class="phone_mask form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>
@@ -141,11 +141,11 @@ export default {
 					>Сын/Дочь</label>
 					<div class="col-sm-12">
 						<input
+							id="phone_4"
+							v-mask="'+7(###) ###-##-##'"
 							name="phone_4"
 							:value="user ? user.phone_4 : old_phone_4"
 							type="text"
-							v-mask="'+7(###) ###-##-##'"
-							id="phone_4"
 							class="phone_mask form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>

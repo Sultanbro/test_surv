@@ -3,8 +3,8 @@
 	<div>
 		<a
 			href="#"
-			@click.prevent="opener(), active(tre)"
 			class="chapter"
+			@click.prevent="opener(), active(tre)"
 		>
 			<i
 				v-if="open == true"
@@ -21,31 +21,31 @@
 
 		<i
 			class="fa fa-file"
-			@click.prevent="bookshow"
 			aria-hidden="true"
+			@click.prevent="bookshow"
 		/>
 		<i
 			class="fa fa-plus"
-			@click.prevent="bookshowbook"
 			aria-hidden="true"
+			@click.prevent="bookshowbook"
 		/>
 		<i
 			title="удалить"
 			class="fa fa-trash-o"
-			@click="deletecat(tre)"
 			aria-hidden="true"
+			@click="deletecat(tre)"
 		/>
 		<i
 			title="переименовать"
 			class="fa fa-pencil"
-			@click.prevent="namefile(tre)"
 			aria-hidden="true"
+			@click.prevent="namefile(tre)"
 		/>
 		<i
 			title="переместить"
-			@click.prevent="moveto(tre)"
 			class="fa fa-long-arrow-right"
 			aria-hidden="true"
+			@click.prevent="moveto(tre)"
 		/>
 
 
@@ -60,8 +60,8 @@
 			<template v-if="books">
 				<draggable
 					v-model="books"
-					@end="onEndSort(books,tre.id)"
 					:options="{handle:'.fa-arrows-v'}"
+					@end="onEndSort(books,tre.id)"
 				>
 					<template v-for="book in books">
 						<li
@@ -85,20 +85,20 @@
 							</a>
 							<i
 								class="fa fa-trash-o"
-								@click="deletebook(book)"
 								aria-hidden="true"
+								@click="deletebook(book)"
 							/>
 
 							<i
 								class="fa fa-pencil"
-								@click.prevent="renames(book)"
 								aria-hidden="true"
+								@click.prevent="renames(book)"
 							/>
 							<input
-								ref="bookrename"
 								v-if="renamebook"
-								@keyup.enter="renamebooks(book)"
+								ref="bookrename"
 								v-model="book.title"
+								@keyup.enter="renamebooks(book)"
 							>
 						</li>
 					</template>
@@ -107,22 +107,22 @@
 
 			<draggable
 				v-model="tree"
-				@end="onEndSortcat(tree)"
 				:options="{handle:'.fa-arrows-v'}"
+				@end="onEndSortcat(tree)"
 			>
 				<template v-for="trez in tree">
 					<bookitem
 						v-if="trez.parent_cat_id == tre.id"
 						:key="trez.id"
+						:tre="trez"
+						:tree="tree"
+						:books="books"
 						@moveto="moveto"
 						@rename="rename"
 						@renamebooks="renamebooks"
 						@onEndSort="onEndSort"
 						@onEndSortcat="onEndSortcat"
 						@deletebook="deletebook"
-						:tre="trez"
-						:tree="tree"
-						:books="books"
 						@active="active"
 						@deletecat="deletecat"
 						@addcat="addcat"
@@ -134,26 +134,26 @@
 		</ul>
 
 		<input
-			ref="renamefile"
 			v-if="renamefile"
-			@keyup.enter="rename(tre)"
+			ref="renamefile"
 			v-model="tre.name"
+			@keyup.enter="rename(tre)"
 		>
 
 
 
 		<input
-			ref="adddglabook"
 			v-if="showaddbook"
-			@keyup.enter="addcat(tre.id,newbook)"
+			ref="adddglabook"
 			v-model="newbook"
+			@keyup.enter="addcat(tre.id,newbook)"
 		>
 
 		<input
-			ref="showbk"
 			v-if="showbk"
-			@keyup.enter="addpage(tre.id,newpage)"
+			ref="showbk"
 			v-model="newpage"
+			@keyup.enter="addpage(tre.id,newpage)"
 		>
 	</div>
 </template>
@@ -173,10 +173,10 @@ export default {
 			newpage: 'Новая страница'
 		}
 	},
+	computed: {},
 	mounted() {
 
 	},
-	computed: {},
 	methods: {
 		moveto(tre){
 

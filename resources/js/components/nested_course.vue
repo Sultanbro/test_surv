@@ -2,29 +2,29 @@
 	<ul class="dragArea">
 		<li
 			v-for="el in tasks"
+			:id="el.id"
+			:key="el.id"
 			class="chapter opened"
 			:class="{
 				'pass' : el.item_model !== null,
 				'active': active == el.id,
 				'disabled' : el.item_model === null && first_active != el.id
 			}"
-			:id="el.id"
-			:key="el.id"
 		>
 			<div class="d-flex titles">
 				<div class="handles d-flex aic">
 					<div>
 						<i
-							class="fa fa-check-double pointer"
 							v-if="el.item_model != null"
+							class="fa fa-check-double pointer"
 						/>
 						<i
-							class="fa fa-unlock pointer"
 							v-else-if="first_active == el.id"
+							class="fa fa-unlock pointer"
 						/>
 						<i
-							class="fa fa-lock pointer"
 							v-else
+							class="fa fa-lock pointer"
 						/>
 					</div>
 				</div>
@@ -37,8 +37,8 @@
 			</div>
 			<NestedCourse
 				:tasks="el.children"
-				@showPage="showPage"
 				:active="active"
+				@showPage="showPage"
 			/>
 		</li>
 	</ul>
@@ -58,7 +58,6 @@ const NestedCourse = {
 	watch: {
 		active: function() {
 			if(this.first_active == 0) this.first_active = this.active
-			console.log('watch actibe')
 		}
 	},
 	data() {
@@ -75,15 +74,9 @@ const NestedCourse = {
 				item = this.tasks[i]
 			}
 
-			console.log('nested SHowpage')
-			console.log(item)
-			console.log(this.first_active)
-
 			if(id != this.first_active) {
 				if(item != null && item.item_model == null) return;
 			}
-
-			console.log('nested SHowpage emit')
 			this.$emit('showPage', id);
 		},
 	},
