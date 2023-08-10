@@ -1505,7 +1505,7 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return int
      */
-    public function countWorkHours(): int
+    public function countWorkHours(): float
     {
         $schedule = $this->schedule(true);
         $workChart = $this->workChart;
