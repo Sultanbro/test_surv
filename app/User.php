@@ -1510,10 +1510,8 @@ class User extends Authenticatable implements Authorizable
         if ($workChart && $workChart->rest_time != null){
             $lunchTime = $workChart->rest_time;
             $hour = floatval($lunchTime / 60);
-            $minute = $lunchTime % 60;
-            $totalHour = floatval($hour.".".$minute);
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-            $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+            $working_hours = round($userWorkHours / 3600, 1) - $hour;
         }else{
             $lunchTime = 1;
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
