@@ -8,7 +8,9 @@
 				+ (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
 			@click="sendReaction(reaction.icon)"
 		>
+			<!-- eslint-disable-next-line -->
 			<span v-html="reaction.value" />
+			<!-- eslint-disable-next-line -->
 			<span v-html="reaction.icon" />
 		</div>
 
@@ -19,8 +21,7 @@
 			<span
 				class="news-comment-reactions__show-keyboard"
 				@click="toggleEmojiKeyboard(true)"
-				v-html="'+'"
-			/>
+			>+</span>
 			<div
 				v-show="showKeyboard"
 				class="news-emoji-keyboard"
@@ -28,6 +29,7 @@
 				<div class="news-emoji-keyboard__container">
 					<div class="news-emoji-keyboard__arrow" />
 					<div class="news-emoji-keyboard__items">
+						<!-- eslint-disable -->
 						<span
 							v-for="reaction in reactionsList"
 							:key="reaction.icon"
@@ -35,6 +37,7 @@
 							@click="sendReaction(reaction.icon)"
 							v-html="reaction.icon"
 						/>
+						<!-- eslint-enable -->
 					</div>
 				</div>
 			</div>
@@ -43,17 +46,21 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 export default {
 	name: 'ReactionComponent',
 	props: {
 		articleId: {
+			type: Number,
 			required: true,
 		},
 		commentId: {
+			type: Number,
 			required: true
 		},
 		reactions: {
+			type: Array,
 			required: true
 		},
 	},

@@ -1,7 +1,7 @@
 <template>
 	<div class="mt-5">
 		<b-tabs content-class="mt-3">
-			<template v-for="activity in activitiess"> 
+			<template v-for="activity in activitiess">
 				<b-tab
 					v-if="![19,21].includes(activity.id)"
 					:key="activity.id"
@@ -29,9 +29,9 @@
 					/>
 				</b-tab>
 			</template>
-        
+
 			<b-tab title="Контроль Качества">
-				<t-quality-weekly 
+				<t-quality-weekly
 					:month-info="monthInfo"
 					:items="quality"
 				/>
@@ -42,8 +42,17 @@
 
 <script>
 export default {
-	name: 'TableUserAnalytics', 
-	props: ['activities', 'quality'],
+	name: 'TableUserAnalytics',
+	props: {
+		activities: {
+			type: Array,
+			default: () => [],
+		},
+		quality: {
+			type: Array,
+			default: () => [],
+		},
+	},
 	data() {
 		return {
 			activitiess: [],
@@ -77,15 +86,15 @@ export default {
 			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-            
-			this.currentYear = this.$moment().format('YYYY') //Установка выбранного года 
-			this.monthInfo.currentYear = this.currentYear;
-		},    
 
-	} 
+			this.currentYear = this.$moment().format('YYYY') //Установка выбранного года
+			this.monthInfo.currentYear = this.currentYear;
+		},
+
+	}
 }
 </script>
 
 <style>
 
-</style> 
+</style>

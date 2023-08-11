@@ -67,10 +67,12 @@
 								<p class="search-item-title">
 									{{ item.title }}
 								</p>
+								<!-- eslint-disable -->
 								<div
 									class="search-item-text"
 									v-html="item.text"
 								/>
+								<!-- eslint-enable -->
 							</div>
 						</template>
 
@@ -363,6 +365,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
 const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
@@ -380,7 +385,8 @@ export default {
 	},
 	props: {
 		auth_user_id: {
-			type:Number
+			type:Number,
+			default: 0
 		},
 		can_edit: {
 			type: Boolean,

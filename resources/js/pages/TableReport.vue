@@ -220,6 +220,7 @@
 									<template #title>
 										Время работы
 									</template>
+									<!-- eslint-disable-next-line -->
 									<div v-html="dataItem.value.tooltip" />
 								</b-popover>
 							</div>
@@ -297,10 +298,12 @@
 										<p class="fz12">
 											<b class="text-black">Автор:</b> {{ item.author }} <br>
 										</p>
+										<!-- eslint-disable -->
 										<p
 											class="fz14 mb-0"
 											v-html="item.description"
 										/><br>
+										<!-- eslint-enable -->
 										<hr>
 									</div>
 								</div>
@@ -445,6 +448,7 @@
 											:key="fine.value"
 											:value="fine.value"
 										>
+											<!-- eslint-disable-next-line -->
 											<span v-html="fine.text" />
 										</b-form-checkbox>
 									</b-form-checkbox-group>
@@ -495,10 +499,12 @@
 								<p class="fz12">
 									<b class="text-black">Автор:</b> {{ item.author }} <br>
 								</p>
+								<!-- eslint-disable -->
 								<p
 									class="fz14 mb-0"
 									v-html="item.description"
 								/><br>
+								<!-- eslint-enable -->
 								<hr>
 							</div>
 						</div>
@@ -622,6 +628,7 @@
 									:key="key"
 									:value="fine.value"
 								>
+									<!-- eslint-disable-next-line -->
 									<span v-html="fine.text" />
 								</b-form-checkbox>
 							</b-form-checkbox-group>
@@ -823,6 +830,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table

@@ -157,6 +157,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapActions, mapState } from 'pinia'
 import SideBar from '@/components/ui/Sidebar'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix

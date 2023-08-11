@@ -3,7 +3,7 @@
 		<!-- buttons -->
 		<div class="buttons d-flex mb-3">
 			<input
-				v-model="search_text"
+				v-model="searchText"
 				type="text"
 				class="search form-control form-control-sm"
 			>
@@ -61,17 +61,22 @@
 <script>
 export default {
 	name: 'GlossaryComponent',
-	props: ['mode'],
+	props: {
+		mode: {
+			type: String,
+			default: 'read'
+		}
+	},
 	data(){
 		return {
 			words: [],
-			search_text: ''
+			searchText: ''
 		}
 	},
 
 	computed: {
 		filteredWords() {
-			return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
+			return this.words.filter(el => el.word.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1);
 		}
 	},
 
@@ -100,7 +105,7 @@ export default {
 		},
 
 		add() {
-			this.search_text = '';
+			this.searchText = '';
 			this.words.unshift({
 				id: 0,
 				word: '',

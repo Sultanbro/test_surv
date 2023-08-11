@@ -138,20 +138,21 @@
 						>
 							Автор
 						</option>
+						<!-- eslint-disable -->
 						<option
 							v-for="user in users"
 							:key="user.id"
 							:value="user.id"
 							v-html="user.name"
 						/>
+						<!-- eslint-enable -->
 					</select>
 				</div>
 
 				<div class="news-filter-modal__favourite mb-4">
-					<span
-						@click="searchFavourite = !searchFavourite"
-						v-html="'Избранное'"
-					/>
+					<span @click="searchFavourite = !searchFavourite">
+						Избранное
+					</span>
 					<label class="news-checkbox">
 						<input
 							type="checkbox"

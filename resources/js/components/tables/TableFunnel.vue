@@ -69,12 +69,30 @@ export default {
 		JobtronTable,
 	},
 	props: {
-		table: Array,
-		title: String,
-		type: String,
-		segment: String,
-		date: String,
-		id: Number,
+		table: {
+			type: Array,
+			default: () => []
+		},
+		title: {
+			type: String,
+			default: ''
+		},
+		type: {
+			type: String,
+			default: ''
+		},
+		segment: {
+			type: String,
+			default: ''
+		},
+		date: {
+			type: String,
+			default: ''
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
 		// rates: Array,
 		// daysInMonth: {
 		//     default: new Date().getDate(),
@@ -259,6 +277,7 @@ export default {
 
 			this.axios.post('/timetracking/update-settings-extra', {
 				date: this.date,
+				/* eslint-disable-next-line camelcase */
 				group_id: 48,
 				settings: this.items,
 				type: this.segment

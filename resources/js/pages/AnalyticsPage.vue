@@ -227,6 +227,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import AnalyticStat from '@/components/AnalyticStat'
 import CallBase from '@/components/CallBase'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
@@ -258,7 +260,19 @@ export default {
 		TopGauges,
 		AnalyticsDetailes,
 	},
-	props: ['groups', 'activeuserid', 'isAdmin'],
+	props: {
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+		isAdmin: {
+			type: Boolean,
+		},
+	},
 	data() {
 		return {
 			data: [],

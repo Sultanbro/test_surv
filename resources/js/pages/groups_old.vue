@@ -611,18 +611,33 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
 	name: 'PageGroups',
 	components: {
 		Sidebar,
 	},
-	props: [
-		'statuseses',
-		'corpbooks',
-		'activeuserid',
-		'archived_groupss',
-	],
+	props: {
+		statuseses: {
+			type: Array,
+			default: () => []
+		},
+		corpbooks: {
+			type: Array,
+			default: () => []
+		},
+		archived_groupss: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+	},
 	data() {
 		return {
 			message: null,

@@ -186,13 +186,16 @@
 	</div>
 </template>
 
-
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'ActivityExcelImport',
 	props: {
 		group_id: {
 			type: Number,
+			default: 0
 		},
 		table: {
 			type: String,
@@ -200,6 +203,7 @@ export default {
 		},
 		activity_id: {
 			type: Number,
+			default: 0
 		}
 	},
 	data() {

@@ -35,6 +35,7 @@ export const useNotificationsStore = defineStore('notifications', {
 		async setNotificationsRead(id){
 			try{
 				const { message } = await setNotificationsRead({
+					/* eslint-disable-next-line camelcase */
 					user_notification_id: id,
 				})
 				if(message !== 'Success') return message

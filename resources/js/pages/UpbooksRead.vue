@@ -146,6 +146,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
 	name: 'UpbooksRead',
@@ -155,26 +158,36 @@ export default {
 	},
 
 	props: {
-		book_id: Number,
+		book_id: {
+			type: Number,
+			default: 0,
+		},
 		mode: {
+			type: String,
 			default: 'read'
 		},
 		showBackBtn: {
+			type: Boolean,
 			default: false
 		},
 		course_page: {
+			type: Boolean,
 			default: false,
 		},
 		active_page: {
+			type: Number,
 			default: 0
 		},
 		course_item_id: {
+			type: Number,
 			default: 0
 		},
 		all_stages: {
+			type: Number,
 			default: 0
 		},
 		completed_stages: {
+			type: Number,
 			default: 0
 		},
 	},

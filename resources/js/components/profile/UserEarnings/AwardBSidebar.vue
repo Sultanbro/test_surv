@@ -67,7 +67,10 @@ export default {
 	},
 	props: {
 		open: Boolean,
-		awards: Array,
+		awards: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {

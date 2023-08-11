@@ -9,9 +9,9 @@
 					Ваш баланс
 				</h2>
 				<user-earnings
-					:data="user_earnings"
+					:data="userEarnings"
 					:activeuserid="user_id"
-					:has_quartal_premiums="has_qp"
+					:has_quartal_premiums="hasQp"
 					:month="month"
 				/>
 			</div>
@@ -34,11 +34,11 @@
 							@change="fetch()"
 						>
 							<option
-								v-for="month in $moment.months()"
-								:key="month"
-								:value="month"
+								v-for="monthName in $moment.months()"
+								:key="monthName"
+								:value="monthName"
 							>
-								{{ month }}
+								{{ monthName }}
 								>
 							</option>
 						</select>
@@ -60,7 +60,9 @@ export default {
 	name: 'ProfileSalaryInfo',
 
 	props: {
+		/* eslint-disable-next-line camelcase, vue/prop-name-casing */
 		user_id: {
+			type: Number,
 			required: true
 		},
 	},
@@ -70,7 +72,7 @@ export default {
 			page: 1,
 			date: new Date(),
 			month: null,
-			user_earnings: {
+			userEarnings: {
 				'quarter_bonus' : 0,
 				'oklad' : 0,
 				'bonus' : 0,
@@ -95,7 +97,7 @@ export default {
 				}]
 			},
 			quarters: [],
-			has_qp: false
+			hasQp: false
 		};
 	},
 
@@ -116,8 +118,8 @@ export default {
 			this.axios.post('/profile/salary/get', {
 				month: this.$moment(this.month, 'MMMM').format('M')
 			}).then(response => {
-				this.user_earnings = response.data.user_earnings
-				this.has_qp = response.data.has_qp
+				this.userEarnings = response.data.user_earnings
+				this.hasQp = response.data.has_qp
 				loader.hide()
 			}).catch(error => {
 				loader.hide()

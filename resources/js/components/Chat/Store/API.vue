@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable camelcase */
+
 import axios from 'axios';
 
 const REST_URI = '/messenger/api/v2/';

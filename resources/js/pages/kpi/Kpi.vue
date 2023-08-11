@@ -261,6 +261,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import KpiItems from '@/pages/kpi/KpiItems'

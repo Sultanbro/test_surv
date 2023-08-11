@@ -180,11 +180,14 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'SuperFilter',
 	props: {
 		groups: {
-			default: []
+			type: Array,
+			default: () => []
 		}
 	},
 	data() {

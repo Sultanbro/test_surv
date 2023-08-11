@@ -26,11 +26,20 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'ProfileQuarterButton',
 	props: {
-		user_id: Number,
-		activeuserid: Number,
+		user_id: {
+			type: Number,
+			default: 0
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
 	},
 	data() {
 		return {

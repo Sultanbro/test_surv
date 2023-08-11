@@ -46,16 +46,22 @@
 		</div>
 	</div>
 </template>
+
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 export default {
 	name: 'BookSegment',
 	props: {
 		segment: {
+			type: Object,
 			required: true,
 		},
 		book_id: {
-			type: Number
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
@@ -63,19 +69,14 @@ export default {
 			validated: false,
 		}
 	},
-	created() {
-
-	},
+	created() {},
 	methods: {
-
 		validate(status) {
 			this.validated = status
 		},
 
 		deleteSegment() {
-			if(!confirm('Вы уверены? Их потом не восстановить')) {
-				return false;
-			}
+			if(!confirm('Вы уверены? Их потом не восстановить')) return false;
 
 			this.axios
 				.post('/admin/upbooks/segments/delete', {
@@ -91,7 +92,6 @@ export default {
 		},
 
 		saveSegment() {
-
 			this.$refs.questions.validate();
 			if(!this.validated) {
 				return;

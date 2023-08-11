@@ -43,10 +43,12 @@
 						/>
 						<h4>{{ video.title }}</h4>
 					</div>
+					<!-- eslint-disable -->
 					<div
 						class="text"
 						v-html="video.desc"
 					/>
+					<!-- eslint-enable -->
 				</div>
 				<div
 					v-if="mode == 'edit' && !group_edit"
@@ -149,7 +151,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 import Draggable from 'vuedraggable'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
@@ -159,7 +164,33 @@ export default {
 		Sidebar,
 		Draggable,
 	},
-	props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
+	props: {
+		videos: {
+			type: Array,
+			default: () => [],
+		},
+		mode: {
+			type: String,
+			default: 'read',
+		},
+		group_edit: {
+			type: Boolean,
+		},
+		g_index: {
+			type: Number,
+			default: 0
+		},
+		c_index: {
+			type: Number,
+			default: 0
+		},
+		active: {
+			type: Boolean,
+		},
+		is_course: {
+			type: Boolean,
+		},
+	},
 	data(){
 		return {
 			modal: false,

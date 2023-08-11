@@ -558,11 +558,11 @@
 																{{ check_r.total_day }}
 															</div>
 
-															<template v-for="(checked_day,index) in check_r.day">
-																<template v-if="index == field.name">
+															<template v-for="(checked_day, dayIndex) in check_r.day">
+																<template v-if="dayIndex == field.name">
 																	<div
-																		:key="index"
-																		@click="showSidebar(check_r.user_id, index)"
+																		:key="dayIndex"
+																		@click="showSidebar(check_r.user_id, dayIndex)"
 																	>
 																		{{ checked_day }}
 																	</div>
@@ -633,8 +633,8 @@
 															<div v-if="field.name == 'Итог' ">
 																{{ check_r.total_month }}
 															</div>
-															<template v-for="(checked_m,index) in check_r.month">
-																<template v-if="index == field.key">
+															<template v-for="(checked_m, monthIndex) in check_r.month">
+																<template v-if="monthIndex == field.key">
 																	{{ checked_m }}
 																</template>
 															</template>
@@ -877,6 +877,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { mapState } from 'pinia'
 import { mapGetters } from 'vuex'
 import { usePortalStore } from '@/stores/Portal'
@@ -903,15 +906,26 @@ export default {
 		JobtronSwitch,
 	},
 	props: {
-		groups: Array,
+		groups: {
+			type: Array,
+			default: () => []
+		},
 		individual_type:{
-			default:null
+			type: Object,
+			default: null
 		},
 		individual_type_id:{
-			default:null
+			type: Number,
+			default: null
 		},
-		active_group: String,
-		check: String,
+		active_group: {
+			type: String,
+			default: ''
+		},
+		check: {
+			type: String,
+			default: ''
+		},
 	},
 	data() {
 		const now = new Date()
@@ -1734,9 +1748,6 @@ export default {
 						value: Number(record['param' + k]),
 					};
 				}
-
-				// r//ecord['param' + k] = Number(record.param_values[k].value);
-				total += Number(record['param' + k]);
 			});
 
 			record.changed = true;

@@ -32,8 +32,9 @@
 								<span
 									:class="'news-item__access-text ' + (userAccessListShow ? 'news-item__access-text--active' : '')"
 									@click="toggleUsersAccessList"
-									v-html="currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ')"
-								/>
+								>
+									{{ currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ') }}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -65,10 +66,9 @@
 										alt="img"
 										src="/icon/news/news-popup/favorite.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное'"
-									/>
+									<span class="news-menu-popup__text">
+										{{ currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное' }}
+									</span>
 								</div>
 								<div
 									class="news-menu-popup__item"
@@ -79,10 +79,9 @@
 										alt="img"
 										src="/icon/news/news-popup/copy-link.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Скопировать ссылку'"
-									/>
+									<span class="news-menu-popup__text">
+										Скопировать ссылку
+									</span>
 								</div>
 								<div
 									v-if="$can('news_edit')"
@@ -95,10 +94,9 @@
 										alt="img"
 										src="/icon/news/news-popup/edit.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Редактировать'"
-									/>
+									<span class="news-menu-popup__text">
+										Редактировать
+									</span>
 								</div>
 								<div
 									v-if="$can('news_edit')"
@@ -111,10 +109,9 @@
 										alt="img"
 										src="/icon/news/news-popup/delete.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Удалить'"
-									/>
+									<span class="news-menu-popup__text">
+										Удалить
+									</span>
 								</div>
 							</div>
 						</div>
@@ -129,12 +126,14 @@
 			<div class="news-item__title">
 				{{ currentPost.title }}
 			</div>
+			<!-- eslint-disable -->
 			<div
 				v-show="showFullContent"
 				ref="newsItemContent"
 				class="news-item__content"
 				v-html="content"
 			/>
+			<!-- eslint-enable -->
 			<div
 				v-if="showModalImages"
 				class="gallery-modal"
@@ -169,8 +168,9 @@
 				v-show="currentPost.is_pinned"
 				class="news-item__show-full"
 				@click="toggleShowFullContent"
-				v-html="showFullContent ? 'Скрыть подробности' : 'Показать полностью'"
-			/>
+			>
+				{{ showFullContent ? 'Скрыть подробности' : 'Показать полностью' }}
+			</span>
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">
 					<div class="news-item__footer-action">
@@ -206,10 +206,9 @@
 							class="news-icon hover-pointer"
 							src="/icon/news/some-icons/file.svg"
 						>
-						<span
-							class="news-item__footer-count"
-							v-html="currentPost.files.length"
-						/>
+						<span class="news-item__footer-count">
+							{{ currentPost.files.length }}
+						</span>
 					</div>
 					<!--                    <div class="news-item__footer-action">-->
 					<!--                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/menu.svg">-->
@@ -276,7 +275,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
@@ -289,9 +290,11 @@ export default {
 	},
 	props: {
 		post: {
+			type: Object,
 			required: true
 		},
 		me: {
+			type: Object,
 			required: true
 		}
 	},

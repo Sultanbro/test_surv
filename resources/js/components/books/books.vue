@@ -165,11 +165,16 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-side-effects-in-computed-properties */
+
 export default {
 	name: 'BooksComponent',
 	props: {
-		selectedGroup: Number,
+		selectedGroup: {
+			type: Number,
+			default: 0
+		},
 	},
 	data() {
 		return {

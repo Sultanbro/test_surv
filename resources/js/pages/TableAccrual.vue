@@ -194,19 +194,19 @@
 					show-empty
 					empty-text="Нет данных"
 				>
-					<template #cell(name)="data">
+					<template #cell(name)="nameData">
 						<div class="badge_table">
-							{{ data.value }}
+							{{ nameData.value }}
 							<b-badge
-								v-if="data.index !== 0 && data.value"
+								v-if="nameData.index !== 0 && nameData.value"
 								pill
 								variant="success"
 								class="mr-2"
 							>
-								{{ data.item.user_type }}
+								{{ nameData.item.user_type }}
 							</b-badge>
 							<i
-								v-if="data.index == 0"
+								v-if="nameData.index == 0"
 								v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
 								class="fa fa-info-circle"
 								title="Заметка"
@@ -214,76 +214,77 @@
 						</div>
 					</template>
 
-					<template #cell(bonus)="data">
+					<template #cell(bonus)="bonusData">
 						<div
 							class="pointer"
-							@click="defineClickNumber('bonus', data)"
+							@click="defineClickNumber('bonus', bonusData)"
 						>
-							{{ data.value }}
+							{{ bonusData.value }}
 							<div
-								v-if="data.item.edited_bonus !== null && data.index != 0"
+								v-if="bonusData.item.edited_bonus !== null && bonusData.index != 0"
 								class="cell-border"
 							/>
 						</div>
 					</template>
 
-					<template #cell(kpi)="data">
+					<template #cell(kpi)="kpiData">
 						<!-- @click="fetchKPIStatistics(data.item.user_id)" -->
 						<div
 							class="pointer"
-							@click="defineClickNumber('kpi', data)"
+							@click="defineClickNumber('kpi', kpiData)"
 						>
-							{{ data.value }}
+							{{ kpiData.value }}
 							<div
-								v-if="data.item.edited_kpi !== null && data.index != 0"
+								v-if="kpiData.item.edited_kpi !== null && kpiData.index != 0"
 								class="cell-border"
 							/>
 						</div>
 					</template>
 
-					<template #cell(total)="data">
-						<div>{{ data.value }}</div>
+					<template #cell(total)="totalData">
+						<div>{{ totalData.value }}</div>
 					</template>
 
-					<template #cell(fines)="data">
-						<div>{{ data.value }}</div>
+					<template #cell(fines)="finesData">
+						<div>{{ finesData.value }}</div>
 					</template>
 
-					<template #cell(avans)="data">
-						<div>{{ data.value }}</div>
-					</template>
-					<template #cell(taxes)="data">
-						<div>{{ data.value }}</div>
+					<template #cell(avans)="avansData">
+						<div>{{ avansData.value }}</div>
 					</template>
 
-					<template #cell(final)="data">
+					<template #cell(taxes)="taxesData">
+						<div>{{ taxesData.value }}</div>
+					</template>
+
+					<template #cell(final)="finalData">
 						<div
 							v-if="user_types == '1'"
 							class="pointer"
-							@click="defineClickNumber('final', data)"
+							@click="defineClickNumber('final', finalData)"
 						>
-							{{ data.value }}
+							{{ finalData.value }}
 							<div
-								v-if="data.item.edited_salary !== null && data.index != 0"
+								v-if="finalData.item.edited_salary !== null && finalData.index != 0"
 								class="cell-border"
 							/>
 						</div>
 						<div v-else>
-							{{ data.value }}
+							{{ finalData.value }}
 						</div>
 					</template>
 
-					<template #cell()="data">
+					<template #cell()="cellData">
 						<div
 							:class="[
 								{
-									'SalaryCell': data.item.dayType && data.item.dayType[data.field.key],
+									'SalaryCell': cellData.item.dayType && cellData.item.dayType[cellData.field.key],
 								},
-								data.item.dayType ? `SalaryCell${data.field.weekend ? '-weekend' : ''}-${data.item.dayType[data.field.key] || '0'}` : '',
+								cellData.item.dayType ? `SalaryCell${cellData.field.weekend ? '-weekend' : ''}-${cellData.item.dayType[cellData.field.key] || '0'}` : '',
 							]"
-							@click="detectClick(data)"
+							@click="detectClick(cellData)"
 						>
-							{{ data.value }}
+							{{ cellData.value }}
 						</div>
 					</template>
 				</b-table>
@@ -479,10 +480,12 @@
 						<p class="fz12">
 							<b class="text-black">Автор:</b> {{ item.author }} <br>
 						</p>
+						<!-- eslint-disable -->
 						<p
 							class="fz14 mb-0"
 							v-html="item.description"
 						/>
+						<!-- eslint-enable -->
 						<br>
 						<hr>
 					</div>
@@ -675,10 +678,12 @@
 								<p class="fz12">
 									<b class="text-black">Автор:</b> {{ item.author }} <br>
 								</p>
+								<!-- eslint-disable -->
 								<p
 									class="fz14 mb-0"
 									v-html="item.description"
 								/><br>
+								<!-- eslint-enable -->
 								<hr>
 							</div>
 						</div>
@@ -740,6 +745,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
@@ -757,9 +765,18 @@ export default {
 		KpiContent,
 	},
 	props: {
-		groupss: Array,
-		activeuserid: String,
-		activeuserpos: Number,
+		groupss: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
+		activeuserpos: {
+			type: Number,
+			default: 0
+		},
 		can_edit: Boolean,
 		is_admin: Boolean,
 	},

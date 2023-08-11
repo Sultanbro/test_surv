@@ -22,9 +22,11 @@ export default {
 	},
 	props: {
 		src: {
+			type: String,
 			default: ''
 		},
 		autoplay: {
+			type: Boolean,
 			default: true
 		}
 	},

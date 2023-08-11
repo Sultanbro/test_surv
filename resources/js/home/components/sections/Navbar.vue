@@ -205,9 +205,9 @@ export default {
 				this.isUserMenuActive = !this.isUserMenuActive
 			})
 		},
-		cabinetRedirect(tenant_id){
+		cabinetRedirect(tenantId){
 			const url = new URL(window.location.href)
-			url.hostname = `${tenant_id}.${this.hostname}`
+			url.hostname = `${tenantId}.${this.hostname}`
 			window.location.assign(url.href)
 		},
 		logout(){

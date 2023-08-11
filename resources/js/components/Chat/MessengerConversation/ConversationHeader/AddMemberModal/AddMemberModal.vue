@@ -184,6 +184,7 @@ export default {
 		accessDictionaries() {
 			return {
 				users: this.users,
+				/* eslint-disable-next-line camelcase */
 				profile_groups: this.profileGroups,
 				positions: this.positions,
 			}
@@ -287,14 +288,14 @@ export default {
 				// add new members
 				// remove old members
 				this.accessList.push(this.user);
-				let add_members = members.filter(member => !this.chat.users.find(user => user.id === member.id));
-				let remove_members = members.filter(user => !this.accessList.find(member => member.id === user.id));
+				let addMembers = members.filter(member => !this.chat.users.find(user => user.id === member.id));
+				let removeMembers = members.filter(user => !this.accessList.find(member => member.id === user.id));
 
-				if (add_members.length > 0) {
-					this.addMembers(add_members);
+				if (addMembers.length > 0) {
+					this.addMembers(addMembers);
 				}
-				if (remove_members.length > 0) {
-					this.removeMembers(remove_members);
+				if (removeMembers.length > 0) {
+					this.removeMembers(removeMembers);
 				}
 			}
 			this.$emit('close');

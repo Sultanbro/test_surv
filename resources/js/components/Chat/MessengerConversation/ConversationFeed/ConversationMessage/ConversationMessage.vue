@@ -44,10 +44,12 @@
 							{{ message.parent.body }}
 						</div>
 					</div>
+					<!-- eslint-disable -->
 					<div
 						class="messenger__format-container"
 						v-html="messageBody"
 					/>
+					<!-- eslint-enable -->
 					<ConversationMessageGallery
 						v-if="isGallery"
 						:files="message.files"
@@ -189,6 +191,20 @@ export default {
 		ConversationMessageMeta,
 		ConversationMessageGallery,
 		JobtronAvatar,
+	},
+	filters: {
+		moment: function (date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				return moment(date).format('HH:mm');
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера, ' + moment(date).format('HH:mm');
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD.MM, HH:mm');
+		},
 	},
 	inject: [
 		'ChatApp'
@@ -354,20 +370,6 @@ export default {
 			}
 
 			this.selectedBox = null
-		},
-	},
-	filters: {
-		moment: function (date) {
-			// if today show only hour and minutes
-			if (moment(date).isSame(moment(), 'day')) {
-				return moment(date).format('HH:mm');
-			}
-			// if yesterday show only hour and minutes and yesterday
-			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-				return 'Вчера, ' + moment(date).format('HH:mm');
-			}
-			// if older than yesterday show hour, minutes, day and month
-			return moment(date).format('DD.MM, HH:mm');
 		},
 	},
 }

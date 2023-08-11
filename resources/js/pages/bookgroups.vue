@@ -22,7 +22,7 @@
 				<div class="col-lg-9 d-flex align-items-start">
 					<div class="add-grade">
 						<input
-							v-model="new_position"
+							v-model="newPosition"
 							type="text"
 							class="form-control"
 						>
@@ -34,7 +34,7 @@
 						</button>
 					</div>
 					<div
-						v-if="group_id"
+						v-if="groupId"
 						class="listgroup"
 					>
 						<button
@@ -51,7 +51,7 @@
 				<div>
 					<Books
 						ref="books"
-						:selected-group="group_id"
+						:selected-group="groupId"
 					/>
 				</div>
 			</div>
@@ -72,10 +72,10 @@ export default {
 			groups: [],
 			message: null,
 			selectGroups: [],
-			new_position: '',
+			newPosition: '',
 			options: [],
 			value: [],
-			group_id: 0
+			groupId: 0
 		}
 	},
 	created() {
@@ -84,7 +84,7 @@ export default {
 	methods: {
 		addGroup() {
 			this.axios.post('/bp_books/groups/add', {
-				name: this.new_position,
+				name: this.newPosition,
 			}).then(response => {
 				if (response.data.message) {
 					this.$toast.info(response.data.message);
@@ -93,7 +93,7 @@ export default {
 				}
 
 				this.getGroups()
-				this.new_position = ''
+				this.newPosition = ''
 			}).catch(error => {
 				console.error(error.response)
 			})
@@ -101,20 +101,21 @@ export default {
 		deleteGroup() {
 			if (confirm('Вы уверены что хотите удалить отдел?')) {
 				this.axios.post('/bp_books/groups/delete', {
-					id: this.group_id,
+					id: this.groupId,
 				}).then(() => {
 					this.$toast.info('Список удален');
-					this.group_id = 0
+					this.groupId = 0
 					this.getGroups()
 				})
 			}
 		},
 		groupselect(value) {
 			this.axios.post('/bp_books/groups', {
+				/* eslint-disable-next-line camelcase */
 				group_id: value,
 			})
 				.then(response => {
-					if (response.data) this.group_id = response.data.group_id
+					if (response.data) this.groupId = response.data.group_id
 				})
 		},
 		messageoff() {

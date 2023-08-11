@@ -428,6 +428,7 @@ export default {
 
 			let loader = this.$loading.show();
 
+			/* eslint-disable camelcase */
 			const request = {
 				name: this.form.name,
 				start_time: this.form.workStartTime,
@@ -439,6 +440,7 @@ export default {
 				floating_dayoffs: this.form.floatingDayoffs,
 				usual_schedule: flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0')
 			}
+			/* eslint-enable camelcase */
 
 			const {data} = await this.axios[this.editShiftId ? 'put' : 'post'](`/work-chart/${this.editShiftId || ''}`, request)
 			if(!data) {

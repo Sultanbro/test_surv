@@ -16,7 +16,7 @@
 						label="position"
 						@select="selectPosition"
 					>
-						<template slot="afterList">
+						<template #afterList>
 							<li class="multiselect-add-li">
 								<span
 									class="multiselect-add-btn"
@@ -215,8 +215,11 @@
 </template>
 
 <script>
+/* eslint-disable camelcase, vue/require-prop-types */
+
 // если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
 // если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
+
 export default {
 	name: 'CompanyProfessions',
 	props: ['positions'],

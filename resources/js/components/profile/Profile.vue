@@ -5,7 +5,12 @@
 <script>
 export default {
 	name: 'ProfileComponent',
-	props: ['user'],
+	props: {
+		user: {
+			type: String,
+			default: '{}'
+		}
+	},
 	data() {
 		return {
 			u: {},

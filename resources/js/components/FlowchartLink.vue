@@ -11,8 +11,8 @@
 			v-if="show.delete"
 			@click="deleteLink"
 		>
-			<text 
-				text-anchor="middle" 
+			<text
+				text-anchor="middle"
 				:transform="arrowTransform"
 				font-size="22"
 			>&times;</text>
@@ -44,7 +44,10 @@ export default {
 				return [0, 0]
 			}
 		},
-		id: Number,
+		id: {
+			type: Number,
+			default: 0
+		},
 	},
 	data() {
 		return {

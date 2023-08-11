@@ -279,12 +279,19 @@
 
 <script>
 /* eslint-disable vue/no-mutating-props */
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'PageQuestions',
 	props: {
-		questions: Array,
+		questions: {
+			type: Array,
+			default: () => []
+		},
 		type: {
 			type: String,
+			default: ''
 		},
 		course_item_id: {
 			type: Number,
@@ -303,6 +310,7 @@ export default {
 			default: false
 		},
 		pass_grade: {
+			type: Number,
 			default: 1
 		},
 		dontRepat: {

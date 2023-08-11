@@ -224,6 +224,7 @@ export default {
 		},
 
 		fetchBefore() {
+			/* eslint-disable camelcase */
 			this.fetchData({
 				data_from: {
 					year: this.currentYear,
@@ -231,6 +232,7 @@ export default {
 				},
 				user_id: this.$laravel.userId
 			})
+			/* eslint-enable camelcase */
 		},
 
 		fetchData(filters = null) {
@@ -257,6 +259,7 @@ export default {
 		},
 
 		defineSourcesAndGroups() {
+			/* eslint-disable camelcase */
 			this.items.forEach(p => {
 				p.items.forEach(el => {
 					el.source = 0;
@@ -271,6 +274,7 @@ export default {
 					}
 				});
 			})
+			/* eslint-enable camelcase */
 		},
 	}
 };

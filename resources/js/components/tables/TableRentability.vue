@@ -140,8 +140,14 @@
 export default {
 	name: 'TableRentability',
 	props: {
-		year: Number,
-		month: Number
+		year: {
+			type: Number,
+			default: 0
+		},
+		month: {
+			type: Number,
+			default: 0
+		}
 	},
 	data() {
 		return {
@@ -223,6 +229,7 @@ export default {
 					year: this.year,
 					month: month,
 					value: item['l' + month],
+					/* eslint-disable-next-line camelcase */
 					group_id: item.group_id,
 				})
 				.then(() => {

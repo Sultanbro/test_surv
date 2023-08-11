@@ -181,6 +181,24 @@ export default {
 		ChatIconHistoryDoc,
 		VueDraggableResizable,
 	},
+	filters: {
+		countdownFormat(value) {
+			let seconds = Math.floor(value / 100);
+			let minutes = Math.floor(seconds / 60);
+			let santiseconds = value % 100;
+			seconds = seconds % 60;
+			return `${minutes}:${seconds < 10 ? '0' + seconds : seconds},${santiseconds < 10 ? '0' + santiseconds : santiseconds}`;
+		},
+		fileSizeFormat(value) {
+			if (value < 1024) {
+				return `${value} B`;
+			} else if (value < 1024 * 1024) {
+				return `${Math.floor(value / 1024)} KB`;
+			} else {
+				return `${Math.floor(value / 1024 / 1024)} MB`;
+			}
+		}
+	},
 	inject: [
 		'ChatApp'
 	],
@@ -339,24 +357,6 @@ export default {
 			else this.body = '> ' + text.split('\n').join('\n> ') + '\n'
 		}
 	},
-	filters: {
-		countdownFormat(value) {
-			let seconds = Math.floor(value / 100);
-			let minutes = Math.floor(seconds / 60);
-			let santiseconds = value % 100;
-			seconds = seconds % 60;
-			return `${minutes}:${seconds < 10 ? '0' + seconds : seconds},${santiseconds < 10 ? '0' + santiseconds : santiseconds}`;
-		},
-		fileSizeFormat(value) {
-			if (value < 1024) {
-				return `${value} B`;
-			} else if (value < 1024 * 1024) {
-				return `${Math.floor(value / 1024)} KB`;
-			} else {
-				return `${Math.floor(value / 1024 / 1024)} MB`;
-			}
-		}
-	}
 }
 </script>
 

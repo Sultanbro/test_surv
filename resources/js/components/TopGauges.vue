@@ -348,13 +348,32 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VGauge from 'vgauge'
 export default {
 	name: 'TopGauges',
 	components:{
 		VGauge,
 	},
-	props: ['utility_items', 'editable', 'wrapper_class', 'page'],
+	props: {
+		utility_items: {
+			type: Array,
+			default: null
+		},
+		editable: {
+			type: Boolean,
+		},
+		wrapper_class: {
+			type: String,
+			default: ''
+		},
+		page: {
+			type: Number,
+			default: null
+		}
+	},
 	data() {
 		return {
 			utility: [],

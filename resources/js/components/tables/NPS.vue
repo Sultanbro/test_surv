@@ -103,6 +103,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'

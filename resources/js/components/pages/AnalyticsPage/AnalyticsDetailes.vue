@@ -44,9 +44,9 @@
 				</div>
 			</template>
 			<b-tab
-				v-for="(activity, index) in activities"
+				v-for="(activityItem, index) in activities"
 				:key="index"
-				:title="activity.name"
+				:title="activityItem.name"
 				@change="showSubTab(index)"
 			>
 				<!-- Switch month and year of Activity in detailed -->
@@ -71,33 +71,33 @@
 					<!-- Month tab of activity in detailed -->
 					<div v-if="activityStates.at(index) === 'month'">
 						<TableActivityNew
-							v-if="activity.type == 'default'"
-							:key="activity.id"
+							v-if="activityItem.type == 'default'"
+							:key="activityItem.id"
 							:month="monthInfo"
-							:activity="activity"
+							:activity="activityItem"
 							:group_id="currentGroup"
 							:work_days="monthInfo.workDays"
-							:editable="activity.editable == 1 ? true : false"
-							:hidden-users="activityHiddenUsers[activity.id] || []"
+							:editable="activityItem.editable == 1 ? true : false"
+							:hidden-users="activityHiddenUsers[activityItem.id] || []"
 							class="AnalyticsDetailes-monthTable"
 						/>
 
 						<TableActivityCollection
-							v-if="activity.type == 'collection'"
-							:key="activity.id"
+							v-if="activityItem.type == 'collection'"
+							:key="activityItem.id"
 							:month="monthInfo"
 							:activity="activity"
 							:is_admin="true"
-							:price="activity.price"
+							:price="activityItem.price"
 							class="AnalyticsDetailes-monthTable"
 						/>
 
 						<TableQualityWeekly
-							v-if="activity.type == 'quality'"
-							:key="activity.id"
+							v-if="activityItem.type == 'quality'"
+							:key="activityItem.id"
 							:month-info="monthInfo"
-							:items="activity.records"
-							:editable="activity.editable == 1 ? true : false"
+							:items="activityItem.records"
+							:editable="activityItem.editable == 1 ? true : false"
 							class="AnalyticsDetailes-monthTable"
 						/>
 					</div>
@@ -272,6 +272,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
 import TableActivityCollection from '@/components/tables/TableActivityCollection'
 import TableQualityWeekly from '@/components/tables/TableQualityWeekly'

@@ -1,4 +1,7 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import axios from 'axios'
 import LocalitySelect from '@ui/LocalitySelect.vue'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user

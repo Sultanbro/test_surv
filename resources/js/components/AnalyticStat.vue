@@ -616,6 +616,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import {
 	IconDelete,
 	ChatIconPlus,
@@ -628,7 +631,35 @@ export default {
 		IconDelete,
 		ChatIconPlus,
 	},
-	props: ['monthInfo', 'activeuserid', 'isAdmin', 'table', 'group_id', 'fields', 'activities'],
+	props: {
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		table: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: null
+		},
+		fields: {
+			type: Array,
+			default: null
+		},
+		activities: {
+			type: Array,
+			default: null
+		},
+		isAdmin: {
+			type: Boolean
+		},
+	},
 	data() {
 		return {
 			active: '1',

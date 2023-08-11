@@ -133,6 +133,7 @@ export default {
 			type: Object,
 			default: () => ({
 				users: [],
+				/* eslint-disable-next-line camelcase */
 				profile_groups: [],
 				positions: [],
 			})

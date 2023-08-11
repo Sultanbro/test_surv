@@ -15,7 +15,7 @@
 					<tr :key="p">
 						<td
 							class="pointer b-table-sticky-column"
-							@click="expand_user(p)"
+							@click="expandUser(p)"
 						>
 							<div class="d-flex px-2">
 								<i
@@ -85,7 +85,7 @@
 					<tr :key="p">
 						<td
 							class="pointer b-table-sticky-column"
-							@click="expand_group(p)"
+							@click="expandGroup(p)"
 						>
 							<div class="d-flex px-2">
 								<i
@@ -118,7 +118,7 @@
 										<tr>
 											<th
 												class="pointer b-table-sticky-column"
-												@click="expand_group_user(i, p)"
+												@click="expandGroupUser(i, p)"
 											>
 												<div class="d-flex px-2">
 													<i
@@ -230,9 +230,18 @@
 export default {
 	name: 'StatsTableQuartal',
 	props: {
-		users: Array,
-		groups: Array,
-		searchText: String
+		users: {
+			type: Array,
+			default: () => []
+		},
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		searchText: {
+			type: String,
+			default: ''
+		}
 	},
 	data() {
 		return {
@@ -249,13 +258,13 @@ export default {
 	mounted() {
 	},
 	methods: {
-		expand_user(i){
+		expandUser(i){
 			this.users[i].expanded = !this.users[i].expanded
 		},
-		expand_group(i){
+		expandGroup(i){
 			this.groups[i].expanded = !this.groups[i].expanded
 		},
-		expand_group_user(i,p){
+		expandGroupUser(i,p){
 			this.groups[p][i].expended = !this.groups[p][i].expended
 		}
 	},

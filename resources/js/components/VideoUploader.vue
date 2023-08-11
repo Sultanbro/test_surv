@@ -81,6 +81,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 export default {
 	name: 'VideoUploader',
@@ -88,9 +91,18 @@ export default {
 		UploadFiles,
 	},
 	props: {
-		token: String,
-		playlist_id: Number,
-		group_id: Number
+		token: {
+			type: String,
+			default: ''
+		},
+		playlist_id: {
+			type: Number,
+			default: 0
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		}
 	},
 	data(){
 		return {

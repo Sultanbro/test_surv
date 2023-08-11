@@ -52,6 +52,7 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 import JobtronCup from '@ui/Cup'
 
 export default {
@@ -60,8 +61,14 @@ export default {
 		JobtronCup,
 	},
 	props: {
-		monthInfo: Object,
-		items: Array,
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		items: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {

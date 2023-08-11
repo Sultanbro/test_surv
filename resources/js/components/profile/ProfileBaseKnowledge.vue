@@ -19,7 +19,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 const MEMBER = 1;
 const HEAD = 2;
 
@@ -27,15 +30,19 @@ export default {
 	name: 'ProfileBaseKnowledge',
 	props: {
 		user_id: {
+			type: Number,
 			default: null
 		},
 		groups: {
+			type: Array,
 			default: null
 		},
 		in_groups: {
-			default: []
+			type: Array,
+			default: () => []
 		},
 		user_role: {
+			type: Number,
 			default: MEMBER
 		},
 	},

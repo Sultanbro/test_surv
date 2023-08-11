@@ -31,7 +31,19 @@
 <script>
 export default {
 	name: 'UIRating',
-	props: ['grade', 'maxStars', 'hasCounter'],
+	props: {
+		grade: {
+			type: Number,
+			required: true
+		},
+		maxStars: {
+			type: Array,
+			required: true
+		},
+		hasCounter: {
+			type: Boolean,
+		},
+	},
 	data() {
 		return {
 			stars: this.grade

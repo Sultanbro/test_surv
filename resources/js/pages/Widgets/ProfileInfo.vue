@@ -30,6 +30,7 @@
 				</router-link>
 			</div>
 			<div class="ProfileInfo-group ProfileInfo-border py-2">
+				<!-- eslint-disable vue/no-v-html -->
 				<span v-html="data.groups" />
 				<router-link
 					v-if="isAdmin && moreThanDays"

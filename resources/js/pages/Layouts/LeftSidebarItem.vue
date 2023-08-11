@@ -67,22 +67,47 @@ export default {
 	components: {
 		LeftSidebarMenu
 	},
-	props: [
-		'href',
-		'to',
-		'name',
-		'icon',
-		'img',
-		'menu',
-		'popover',
-		'highlight'
-	],
+	props: {
+		href: {
+			type: String,
+			default: '',
+		},
+		to: {
+			type: String,
+			default: '',
+		},
+		name: {
+			type: String,
+			default: '',
+		},
+		icon: {
+			type: String,
+			default: '',
+		},
+		img: {
+			type: String,
+			default: '',
+		},
+		menu: {
+			type: Array,
+			default: null,
+		},
+		popover: {
+			type: String,
+			default: '',
+		},
+		highlight: {
+			type: Boolean,
+		},
+	},
+
+	computed: {
+		...mapState(useUnviewedNewsStore, ['unviewedNewsCount']),
+	},
+
 	mounted(){
 		this.$emit('calcsize', this.$el)
 	},
-	computed: {
-		...mapState(useUnviewedNewsStore, ['unviewedNewsCount']),
-	}
 }
 </script>
 

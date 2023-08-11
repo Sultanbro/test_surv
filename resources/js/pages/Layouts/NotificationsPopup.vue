@@ -20,6 +20,7 @@
 								{{ item.title }}
 							</div>
 							<div class="notifications__text">
+								<!-- eslint-disable-next-line -->
 								<template v-html="item.message" />
 								<div
 									v-if="item.title === 'Заявка на сверхурочную работу' && $moment(Date.now()).diff(item.created_at, 'hours') < 2"
@@ -83,10 +84,12 @@
 							<div class="notifications__title">
 								{{ item.title }}
 							</div>
+							<!-- eslint-disable -->
 							<div
 								class="notifications__text"
 								v-html="item.message"
 							/>
+							<!-- eslint-enable -->
 							<div class="notifications__item-date absolute">
 								{{ $moment(item.read_at).format(dateFormat) }}
 							</div>

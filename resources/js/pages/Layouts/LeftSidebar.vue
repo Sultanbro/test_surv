@@ -170,56 +170,6 @@ export default {
 			resizeObserver: null,
 		};
 	},
-	methods: {
-		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
-		onResize(){
-			if(!this.$refs.nav) return
-			this.height = this.$refs.nav.offsetHeight
-		},
-		onNewProject(){
-			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
-			this.isCreatingProject = true
-			const loader = this.$loading.show({
-				zIndex: 99999
-			})
-			this.$toast.info('Ваш кабинет создается', {
-				timeout: 20000,
-				closeOnClick: false,
-				pauseOnFocusLoss: true,
-				pauseOnHover: true,
-				draggable: false,
-				showCloseButtonOnHover: false,
-				hideProgressBar: true,
-				closeButton: false,
-				icon: true
-			})
-			this.axios.post('/projects/create', {}).then(response => {
-				if(response.data) location.assign(response.data.link)
-			}).catch(error => {
-				loader.hide()
-				this.isCreatingProject = false
-				this.$toast.error('Ошибка при создании кабинета')
-				console.error(error)
-			})
-		},
-		updateAvatar(avatar){
-			this.avatar = avatar
-		},
-		logout(){
-			const formData = new FormData();
-			formData.append('_token', this.$laravel.csrfToken);
-
-			const protocol = window.location.protocol
-			const redirectHost = window.location.hostname.split('.')
-			if (protocol === 'https:') {
-				redirectHost.splice(0, 1)
-			}
-
-			this.axios.post('/logout', formData).then(() => {
-				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
-			})
-		}
-	},
 	computed: {
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
@@ -435,10 +385,62 @@ export default {
 		this.startAutoCheck();
 		bus.$on('user-avatar-update', this.updateAvatar)
 	},
+
 	beforeUnmount(){
 		if(this.resizeObserver) this.resizeObserver.disconnect()
 		bus.$off('user-avatar-update', this.updateAvatar)
-	}
+	},
+
+	methods: {
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
+		onResize(){
+			if(!this.$refs.nav) return
+			this.height = this.$refs.nav.offsetHeight
+		},
+		onNewProject(){
+			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
+			this.isCreatingProject = true
+			const loader = this.$loading.show({
+				zIndex: 99999
+			})
+			this.$toast.info('Ваш кабинет создается', {
+				timeout: 20000,
+				closeOnClick: false,
+				pauseOnFocusLoss: true,
+				pauseOnHover: true,
+				draggable: false,
+				showCloseButtonOnHover: false,
+				hideProgressBar: true,
+				closeButton: false,
+				icon: true
+			})
+			this.axios.post('/projects/create', {}).then(response => {
+				if(response.data) location.assign(response.data.link)
+			}).catch(error => {
+				loader.hide()
+				this.isCreatingProject = false
+				this.$toast.error('Ошибка при создании кабинета')
+				console.error(error)
+			})
+		},
+		updateAvatar(avatar){
+			this.avatar = avatar
+		},
+		logout(){
+			const formData = new FormData();
+			formData.append('_token', this.$laravel.csrfToken);
+
+			const protocol = window.location.protocol
+			const redirectHost = window.location.hostname.split('.')
+			if (protocol === 'https:') {
+				redirectHost.splice(0, 1)
+			}
+
+			this.axios.post('/logout', formData).then(() => {
+				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
+			})
+		}
+	},
 };
 </script>
 

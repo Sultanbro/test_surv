@@ -503,9 +503,12 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'PageUserlist',
 	props: {
+		// eslint-disable-next-line vue/prop-name-casing
 		is_admin: {
 			type: Boolean,
 			default: false,
@@ -521,7 +524,7 @@ export default {
 	},
 	data() {
 		return {
-			my_positions: [],
+			myPositions: [],
 			position: 0,
 			jobFilters: [{ text: 'Должность', value: 0 }],
 			sel: false,
@@ -746,8 +749,8 @@ export default {
 	mounted() {},
 	methods: {
 		init(){
-			this.my_positions = this.positions;
-			this.my_positions.forEach(value => {
+			this.myPositions = this.positions;
+			this.myPositions.forEach(value => {
 				this.jobFilters.push({ text: value.position, value: value.id });
 			});
 			this.getUsers()

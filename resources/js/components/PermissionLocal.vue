@@ -124,9 +124,7 @@
 </template>
 
 <script>
-// import Multiselect from 'vue-multiselect'
-// Vue.component('multiselect', Multiselect)
-
+/* eslint-disable camelcase */
 
 export default {
 	name: 'PermissionLocal',

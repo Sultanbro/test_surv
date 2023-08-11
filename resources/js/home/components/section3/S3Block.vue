@@ -19,7 +19,10 @@
 <script>
 export default {
 	props: {
-		img: String,
+		img: {
+			type: String,
+			default: ''
+		},
 		alt: {
 			type: String,
 			default() {

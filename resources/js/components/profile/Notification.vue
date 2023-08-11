@@ -72,10 +72,12 @@
 							<div class="notification-title">
 								{{ noti.title }}
 							</div>
+							<!-- eslint-disable -->
 							<div
 								class="notification-text"
 								v-html="noti.message"
 							/>
+							<!-- eslint-enable -->
 							<a @click="markRead(noti.id)">
 								<div class="notification-change"><i class="fa fa-check" /></div>
 							</a>
@@ -99,11 +101,22 @@
 <script>
 export default {
 	name: 'ProfileNotification',
-	props: [
-		'unread',
-		'read_notifications',
-		'unread_notifications',
-	],
+	props: {
+		unread: {
+			type: String,
+			default: ''
+		},
+		/* eslint-disable-next-line */
+		read_notifications: {
+			type: Array,
+			default: () => []
+		},
+		/* eslint-disable-next-line */
+		unread_notifications: {
+			type: Array,
+			default: () => []
+		}
+	},
 	data() {
 		return {
 			password: '',

@@ -216,6 +216,7 @@
 						{{ corp_book.title }}
 					</h3>
 
+					<!-- eslint-disable-next-line -->
 					<div v-html="corp_book.text" />
 
 					<button
@@ -416,6 +417,7 @@ export default {
 		},
 	},
 	watch: {
+		/* eslint-disable-next-line camelcase */
 		corp_book(){
 			this.initCorpBook()
 		},

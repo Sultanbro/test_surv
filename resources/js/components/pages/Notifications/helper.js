@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 const tenant = location.hostname.split('.')[0]
 const titleTip = ['bp', 'test'].includes(tenant) ? '* к уведомлению будет автоматически прикреплена ссылка на опросник' : '* вставьте в сообщение ссылку на опросник которая будет отправляться'
 

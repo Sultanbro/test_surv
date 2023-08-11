@@ -26,7 +26,7 @@
 						label="group"
 						@select="selectGroup"
 					>
-						<template slot="afterList">
+						<template #afterList>
 							<li class="multiselect-add-li">
 								<span
 									class="multiselect-add-btn"
@@ -421,15 +421,27 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { getShiftDays } from '@/composables/shifts'
 
 export default {
 	name: 'CompanyGroups',
-	props: [
-		'statuseses',
-		'activeuserid',
-		'archived_groupss',
-	],
+	props: {
+		statuseses: {
+			type: Array,
+			default: () => []
+		},
+		archived_groupss: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+	},
 	data() {
 		return {
 			isBp: window.location.hostname.split('.')[0] === 'bp',

@@ -109,6 +109,7 @@ export default {
 			default: 'kpi'
 		},
 		access: {
+			type: String,
 			default: 'view'
 		}
 	},
@@ -142,6 +143,7 @@ export default {
 		},
 
 		changeStatus(item, e){
+			/* eslint-disable camelcase */
 			this.axios.post('/bonus/set/status', {
 				premium_id: item.id,
 				is_active: e
@@ -150,6 +152,7 @@ export default {
 			}).catch(() => {
 				this.$toast.error('Статус не изменен')
 			})
+			/* eslint-enable camelcase */
 		},
 		fetchData() {
 			let loader = this.$loading.show();

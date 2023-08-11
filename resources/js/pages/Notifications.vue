@@ -157,6 +157,7 @@
 												</b-form-checkbox>
 											</b-td>
 											<b-td>
+												<!-- eslint-disable vue/no-v-html -->
 												<div
 													class="p-2"
 													v-html="item.message"
@@ -165,6 +166,7 @@
 													class="description"
 													v-html="item.note"
 												/>
+												<!-- eslint-disable vue/no-v-html -->
 											</b-td>
 											<b-td>
 												<multiselect
@@ -494,13 +496,25 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'PageNotifications',
-	props: [
-		'groups_with_id',
-		'users',
-		'positions',
-	],
+	props: {
+		groups_with_id: {
+			type: Array,
+			default: () => []
+		},
+		users: {
+			type: Array,
+			default: () => []
+		},
+		positions: {
+			type: Array,
+			default: () => []
+		},
+	},
 	data() {
 		return {
 			isLoading: false,

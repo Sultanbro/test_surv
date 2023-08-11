@@ -134,15 +134,11 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 export default {
 	name: 'ModalRole',
-	props: {
-		groups:{},
-		allusers:{},
-		positions:{},
-		editValueThis:{}
-	},
+	props: {},
 	data() {
 		return {
 			flag_type:true,

@@ -13,8 +13,8 @@
 				</th>
 			</tr>
 			<tr />
-			<template v-for="(page_item, p) in items">
-				<tr :key="p">
+			<template v-for="(page_item, index) in items">
+				<tr :key="index">
 					<td
 						class="pointer b-table-sticky-column"
 						@click="page_item.expanded = !page_item.expanded"
@@ -28,7 +28,7 @@
 								v-else
 								class="fa fa-plus mt-1"
 							/>
-							<span class="ml-2">{{ p + 1 }}</span>
+							<span class="ml-2">{{ index + 1 }}</span>
 						</div>
 					</td>
 					<td class="text-left">
@@ -39,15 +39,15 @@
 				</tr>
 				<template v-if="page_item.expanded">
 					<tr
-						:key="'tr' + p"
+						:key="'tr' + index"
 						class="collapsable"
 						:class="{'active': page_item.expanded }"
 					>
 						<td :colspan="fields.length + 2">
 							<div class="table__wrapper">
 								<table
-									v-for="(user, i) in page_item.users"
-									:key="i"
+									v-for="(user, userIndex) in page_item.users"
+									:key="userIndex"
 									class="table b-table table-bordered table-sm table-responsive mb-0 table-inner"
 								>
 									<tr>
@@ -93,28 +93,18 @@
 												<th>Заработано</th>
 											</tr>
 											<tr
-												v-for="(bonus, p) in filteredBonuses"
-												:key="p"
+												v-for="(bonus, bonusIndex) in filteredBonuses"
+												:key="bonusIndex"
 											>
 												<td class="text-white text-center">
-													{{ p + 1 }}
+													{{ bonusIndex + 1 }}
 												</td>
-												<!--<td>{{ activities[page_item.activity_id].name }}</td>-->
 												<td>{{ bonus.comment }}</td>
 												<td>{{ bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") ) }}</td>
 												<td>{{ bonus.amount }}</td>
 												<td>{{ bonus.date }}</td>
 												<td>{{ bonus.amount * parseInt(bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") )) }}</td>
 											</tr>
-											<!--<tr v-for="(bonus, p) in obtained_bonuses.filter(b => {return b.user_id === user.id && isCurrentMonth(b.date) })" v-if="bonus.comment.substring( bonus.comment.indexOf(':') + 1, bonus.comment.lastIndexOf(';') ) > 0" >
-                                            <td class="text-white text-center">{{ p + 1}}</td>
-                                            <td>{{ activities[page_item.activity_id].name }}</td>
-                                            <td>{{ bonus.comment }}</td>
-                                            <td>{{ bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") ) }}</td>
-                                            <td>{{ bonus.amount }}</td>
-                                            <td>{{ bonus.date }}</td>
-                                            <td>{{ bonus.amount * parseInt(bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") )) }}</td>
-                                        </tr>-->
 										</table>
 									</template>
 								</table>
@@ -204,7 +194,7 @@
                                             <th>Период</th>
                                             <th>Заработано</th>
                                         </tr>
-                                        <tr v-for="item1 in calculated_bonuses(user.obtained_bonuses)">
+                                        <tr v-for="item1 in calculatedBonuses(user.obtained_bonuses)">
                                             <td></td>
                                             <td>{{ item1.title }}</td>
                                             <td>{{ item1.text }}</td>
@@ -241,26 +231,34 @@
 export default {
 	name: 'StatsTableBonus',
 	props: {
-		groups: Array,
-		group_names: Object,
-		month: Number
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		/* eslint-disable-next-line camelcase, vue/prop-name-casing */
+		group_names: {
+			type: Object,
+			default: null,
+		},
+		month: {
+			type: Number,
+			default: 0
+		}
 	},
 	data() {
 		return {
-			current_date: '2022-09-14',
 			bonuses: [],
-			obtained_bonuses: [],
+			obtainedBonuses: [],
 			users:[],
 			activities: [],
 			fields: [],
 			items: [],
-			user_collapsed: false,
-			my_groups: []
+			myGroups: []
 		}
 	},
 	computed: {
 		filteredBonuses(){
-			return this.obtained_bonuses.filter(bonus => bonus.user_id === this.user.id)
+			return this.obtainedBonuses.filter(bonus => bonus.user_id === this.user.id)
 		}
 	},
 	watch: {},
@@ -273,9 +271,9 @@ export default {
 	mounted() {
 	},
 	methods: {
-		getTotalSum(bonus_id, user_id){
+		getTotalSum(bonusId, userId){
 			let sum = 0;
-			let obtained = this.obtained_bonuses.filter(bonus => { return bonus.bonus_id == bonus_id && bonus.user_id == user_id && this.isCurrentMonth(bonus.date)});
+			let obtained = this.obtainedBonuses.filter(bonus => { return bonus.bonus_id == bonusId && bonus.user_id == userId && this.isCurrentMonth(bonus.date)});
 			obtained.forEach(bonus => {
 
 				sum += bonus.comment.substring( bonus.comment.indexOf(':') + 1, bonus.comment.lastIndexOf(';') ) * bonus.amount;
@@ -299,9 +297,10 @@ export default {
 						if(!this.bonuses.some(bonus2 => { return bonus2.id === bonus1.id })) this.bonuses.push(bonus1);
 					});
 					group[0].users.forEach(user => {
-						let my_obtained_bonuses = user.obtained_bonuses.filter( bonus => { return bonus.amount > 0 && this.isCurrentMonth(bonus.date) });
-						this.obtained_bonuses = this.obtained_bonuses.concat(my_obtained_bonuses);
-						if(my_obtained_bonuses.length > 0){
+						let myObtainedBonuses = user.obtained_bonuses.filter( bonus => { return bonus.amount > 0 && this.isCurrentMonth(bonus.date) });
+						this.obtainedBonuses = this.obtainedBonuses.concat(myObtainedBonuses);
+						if(myObtainedBonuses.length > 0){
+							/* eslint-disable camelcase */
 							this.users.push({
 								id: user.id,
 								name: user.full_name,
@@ -309,26 +308,29 @@ export default {
 								bonus_totals: this.bonuses.filter(bonus => { return bonus.targetable_id == group[0].id}).map(res => ({ bonus_id: res.id, sum: this.getTotalSum(res.id, user.id) })) ,
 								expanded: false
 							});
+							/* eslint-enable camelcase */
 						}
 					});
-					var item = this.my_groups.filter(item => { return item.id === group[0].id });
+					var item = this.myGroups.filter(item => { return item.id === group[0].id });
 					if(!item.length){
-						this.my_groups.push({
+						/* eslint-disable camelcase */
+						this.myGroups.push({
 							id: group[0].id,
 							name: group[0].name,
 							activity_id: group[0].activity_id,
 							expanded: false
 						});
+						/* eslint-enable camelcase */
 					}
 				}
 			});
-			this.my_groups.forEach(group => {
-				let my_users = this.users.filter(user => { return user.group_id == group.id });
+			this.myGroups.forEach(group => {
+				let myUsers = this.users.filter(user => { return user.group_id == group.id });
 				this.items.push({
 					id: group.id,
 					activity: group.activity_id,
 					name: group.name,
-					users: my_users,
+					users: myUsers,
 					expanded: false
 				});
 			})
@@ -353,18 +355,18 @@ export default {
 
             return bonuses;
         },*/
-		calculated_bonuses(obtained_bonuses){
-			var bonus_titles = [];
-			var bonus_prices = [];
-			obtained_bonuses.forEach(bonus => {
-				if(!bonus_titles.some(s => {return s === bonus.comment})){
-					bonus_titles.push(bonus.comment);
-					bonus_prices.push({title: bonus.comment, sum: bonus.amount, date: bonus.date});
+		calculatedBonuses(obtainedBonuses){
+			var bonusTitles = [];
+			var bonusPrices = [];
+			obtainedBonuses.forEach(bonus => {
+				if(!bonusTitles.some(s => {return s === bonus.comment})){
+					bonusTitles.push(bonus.comment);
+					bonusPrices.push({title: bonus.comment, sum: bonus.amount, date: bonus.date});
 				}else{
-					bonus_prices.filter(p => {return p.title === bonus.title})[0].quantity += bonus.quantity;
+					bonusPrices.filter(p => {return p.title === bonus.title})[0].quantity += bonus.quantity;
 				}
 			});
-			return bonus_prices;
+			return bonusPrices;
 		}
 	},
 

@@ -468,6 +468,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 import BookSegment from '@/components/BookSegment' // загрузка файлов
@@ -482,7 +485,8 @@ export default {
 	},
 	props: {
 		token: {
-			type: String
+			type: String,
+			default: ''
 		},
 		can_edit: {
 			type: Boolean,

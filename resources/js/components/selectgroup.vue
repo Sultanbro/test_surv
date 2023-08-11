@@ -41,7 +41,20 @@
 <script>
 export default {
 	name: 'SelectGroup',
-	props: ['tree','selecttree','perenos'],
+	props: {
+		tree: {
+			type: Array,
+			default: null,
+		},
+		selecttree: {
+			type: Number,
+			default: null,
+		},
+		perenos: {
+			type: Number,
+			default: null,
+		},
+	},
 	data() {
 		return {
 			selecttrees:null,

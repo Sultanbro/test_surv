@@ -1,5 +1,8 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 import {mask} from 'vue-the-mask'
 
 export default {
@@ -14,11 +17,26 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		old_phone: String,
-		old_phone_1: String,
-		old_phone_2: String,
-		old_phone_3: String,
-		old_phone_4: String
+		old_phone: {
+			type: String,
+			default: ''
+		},
+		old_phone_1: {
+			type: String,
+			default: ''
+		},
+		old_phone_2: {
+			type: String,
+			default: ''
+		},
+		old_phone_3: {
+			type: String,
+			default: ''
+		},
+		old_phone_4: {
+			type: String,
+			default: ''
+		}
 	},
 	data() {
 		return{

@@ -35,7 +35,7 @@
 
 			<button
 				class="btn-add"
-				@click="modals.add_course.show = true"
+				@click="modals.addCourse.show = true"
 			>
 				Добавить курс
 			</button>
@@ -60,21 +60,21 @@
 		</div>
 
 		<b-modal
-			v-model="modals.add_course.show"
+			v-model="modals.addCourse.show"
 			title="Новый курс"
 			size="md"
 			class="modalle"
 			hide-footer
 		>
 			<input
-				v-model="modals.add_course.name"
+				v-model="modals.addCourse.name"
 				type="text"
 				placeholder="Название курса..."
 				class="form-control mb-2"
 			>
 			<button
 				class="btn btn-primary rounded m-auto"
-				:disabled="modals.add_course.name.length < 2"
+				:disabled="modals.addCourse.name.length < 2"
 				@click="createCourse"
 			>
 				<span>Сохранить</span>
@@ -100,7 +100,7 @@ export default {
 			courses: [],
 			activeCourse: null,
 			modals: {
-				add_course: {
+				addCourse: {
 					show: false,
 					name: ''
 				}
@@ -139,16 +139,16 @@ export default {
 		},
 
 		async createCourse() {
-			if (this.modals.add_course.name.length <= 2) return alert('Слишком короткое название!')
+			if (this.modals.addCourse.name.length <= 2) return alert('Слишком короткое название!')
 
 			const loader = this.$loading.show();
 
 			try {
 				const {data} = await this.axios.post('/admin/courses/create', {
-					name: this.modals.add_course.name,
+					name: this.modals.addCourse.name,
 				})
-				this.modals.add_course.show = false;
-				this.modals.add_course.name = '';
+				this.modals.addCourse.show = false;
+				this.modals.addCourse.name = '';
 
 				this.courses.push({
 					id: data.id,
@@ -193,10 +193,10 @@ export default {
 				this.courses = data.courses;
 
 				const urlParams = new URLSearchParams(window.location.search);
-				const course_id = urlParams.get('id');
+				const courseId = urlParams.get('id');
 
-				if(course_id) {
-					const i = this.courses.findIndex(el => el.id == course_id)
+				if(courseId) {
+					const i = this.courses.findIndex(el => el.id == courseId)
 					if(i != -1) this.activeCourse = this.courses[i]
 				}
 				else if (this.courses.length > 0) {

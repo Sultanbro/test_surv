@@ -37,8 +37,9 @@
 			<span
 				v-show="titleError"
 				class="news-create__title-error"
-				v-html="'Необходимо заполнить заголовок.'"
-			/>
+			>
+				Необходимо заполнить заголовок.
+			</span>
 		</div>
 
 		<div
@@ -54,8 +55,9 @@
 			<span
 				v-show="contentError"
 				class="news-create__content-error"
-				v-html="'Необходимо заполнить контент новости.'"
-			/>
+			>
+				Необходимо заполнить контент новости.
+			</span>
 
 			<div class="news-create__access-container">
 				<div
@@ -63,7 +65,7 @@
 					:class="'access-item ' + 'access-item--active'"
 					@click="toggleAvailableToEveryone(!availableToEveryone)"
 				>
-					<span v-html="'Всем пользователям'" />
+					<span>Всем пользователям</span>
 					<img src="/icon/news/create-post/remove.svg">
 				</div>
 
@@ -77,6 +79,7 @@
 						class="access-item__img"
 						:src="item.image"
 					>
+					<!-- eslint-disable-next-line -->
 					<span v-html="item.name" />
 					<img
 						src="/icon/news/create-post/remove.svg"
@@ -96,8 +99,9 @@
 			<span
 				v-show="availableError"
 				class="news-create__content-error"
-				v-html="'Необходимо указать для кого предназначена новость.'"
-			/>
+			>
+				Необходимо указать для кого предназначена новость.
+			</span>
 		</div>
 
 		<div
@@ -113,7 +117,7 @@
 				class="news-create__submit"
 				@click="!isEdit ? createPost() : updatePost()"
 			>
-				<span v-html="isEdit ? 'Сохранить' : 'Отправить'" />
+				<span>{{ isEdit ? 'Сохранить' : 'Отправить' }}</span>
 			</a>
 		</div>
 
@@ -263,10 +267,9 @@
 				</div>
 
 				<div class="access-modal__footer">
-					<span
-						class="access-modal__selected-count"
-						v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"
-					/>
+					<span class="access-modal__selected-count">
+						{{ enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов']) }}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -281,12 +284,6 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
-
-function SimpleUploadAdapterPlugin(editor) {
-	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-		return new UploadAdapter(loader);
-	};
-}
 
 class UploadAdapter {
 	constructor(loader) {
@@ -351,6 +348,13 @@ class UploadAdapter {
 	}
 }
 
+
+function SimpleUploadAdapterPlugin(editor) {
+	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+		return new UploadAdapter(loader);
+	};
+}
+
 export default {
 	name: 'NewsCreate',
 	components: {
@@ -358,6 +362,7 @@ export default {
 	},
 	props: {
 		me: {
+			type: Object,
 			required: true
 		},
 	},

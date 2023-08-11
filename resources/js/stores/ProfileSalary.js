@@ -1,4 +1,6 @@
 /* global Laravel */
+/* eslint-disable camelcase */
+
 import { defineStore } from 'pinia'
 import moment from 'moment'
 import {

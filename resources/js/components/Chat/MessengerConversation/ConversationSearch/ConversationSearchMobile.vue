@@ -120,6 +120,7 @@ export default {
 		async search(){
 			if(this.isLoading) return
 			this.isLoading = true
+			/* eslint-disable camelcase */
 			if(this.searchFilesFilter === 'users'){
 				await this.findMessagesInChat({
 					text: this.searchMessagesQuery,
@@ -133,6 +134,7 @@ export default {
 					chat_id: this.chat.id,
 				})
 			}
+			/* eslint-enable camelcase */
 			this.isLoading = false
 		},
 		goto(message, event) {

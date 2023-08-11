@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import fetchProfilePersonalInfoData from './mock/profile/fetchProfilePersonalInfo.json'
 import fetchProfileBalanceData from './mock/profile/fetchProfileBalance.json'
 import fetchProfileKpiData from './mock/profile/fetchProfileKpi.json'

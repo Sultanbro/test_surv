@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable camelcase */
+
 import DefaultLayout from '@/layouts/DefaultLayout'
 import UserEditMain from '@/components/pages/UserEdit/UserEditMain'
 import UserEditAdditional from '@/components/pages/UserEdit/UserEditAdditional'
@@ -664,11 +666,6 @@ export default {
 							</button>
 						</template>
 					</div>
-
-					<!-- <div class="bread d-flex align-items-center ml-3">
-						<a href="/timetracking/settings?tab=1">Настройки <i class="fa fa-chevron-right"></i></a>
-						<a href="/timetracking/settings?tab=1">Сотрудники</a>
-					</div> -->
 				</div>
 				<form
 					id="form"
@@ -701,7 +698,11 @@ export default {
 						type="hidden"
 						class="form-control"
 					>
+					<!-- eslint-disable vue/no-lone-template -->
+					<!-- eslint-disable vue/no-v-html -->
 					<template v-html="csrf" />
+					<!-- eslint-enable vue/no-lone-template -->
+					<!-- eslint-enable vue/no-v-html -->
 					<div id="list-example">
 						<!-- PROFILE IMAGE -->
 						<input
@@ -978,7 +979,11 @@ export default {
 									type="hidden"
 									class="form-control"
 								>
+								<!-- eslint-disable vue/no-lone-template -->
+								<!-- eslint-disable vue/no-v-html -->
 								<template v-html="csrf" />
+								<!-- eslint-enable vue/no-lone-template -->
+								<!-- eslint-enable vue/no-v-html -->
 								<div
 									class="row align-items-center justify-content-center p-3"
 									style="padding-bottom:0!important"

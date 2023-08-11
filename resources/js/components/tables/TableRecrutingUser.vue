@@ -102,18 +102,32 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 export default {
 	name: 'TableRecrutingUser',
 	props: {
-		name: String,
-		id: Number,
-		records: Array,
+		name: {
+			type: String,
+			default: ''
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
+		records: {
+			type: Array,
+			default: () => []
+		},
 		workdays: {
 			type: Number,
 			default: 27
 		},
-		month: Object,
+		month: {
+			type: Object,
+			default: null
+		},
 		editable: {
 			type: Boolean,
 			default: false

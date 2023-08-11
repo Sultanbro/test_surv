@@ -29,8 +29,14 @@
 export default {
 	name: 'AwardsCard',
 	props: {
-		header: String,
-		values: Array
+		header: {
+			type: String,
+			default: ''
+		},
+		values: {
+			type: Array,
+			default: () => []
+		}
 		/*
 			values: [{
 				imgSrc: string

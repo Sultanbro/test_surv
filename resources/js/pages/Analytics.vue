@@ -46,99 +46,97 @@
 		</div>
 
 		<!-- tabs -->
-		<template>
-			<div v-if="hasPremission && currentGroup == 48">
-				<b-tabs
-					v-model="activeTab"
-					type="card"
-					content-class="mt-4"
-					lazy
+		<div v-if="hasPremission && currentGroup == 48">
+			<b-tabs
+				v-model="activeTab"
+				type="card"
+				content-class="mt-4"
+				lazy
+			>
+				<b-tab
+					key="1"
+					card
 				>
-					<b-tab
-						key="1"
-						card
+					<template #title>
+						<b class="roman">I</b> Рекрутинг
+					</template>
+					<b-tabs
+						type="card"
+						lazy
 					>
-						<template #title>
-							<b class="roman">I</b> Рекрутинг
-						</template>
-						<b-tabs
-							type="card"
-							lazy
-						>
-							<b-tab title="Сводная">
-								<TabPivot
-									:year="currentYear"
-									:month="currentMonth"
-									:refresh="refresh"
-								/>
-							</b-tab>
-							<b-tab title="Стажеры">
-								<TabInterns
-									:year="currentYear"
-									:month="currentMonth"
-									:refresh="refresh"
-								/>
-							</b-tab>
-						</b-tabs>
-					</b-tab>
-					<b-tab
-						key="2"
-						card
-					>
-						<template #title>
-							<b class="roman">II</b> Этап стажировки
-						</template>
-						<TabSecondStage
-							:year="currentYear"
-							:month="currentMonth"
-							:refresh="refresh"
-							:groups="groups"
-						/>
-					</b-tab>
-					<b-tab
-						key="3"
-						card
-					>
-						<template #title>
-							<b class="roman">III</b> Отдел заботы
-						</template>
-						<!-- Пока пусто -->
-					</b-tab>
-					<b-tab
-						key="4"
-						card
-					>
-						<template #title>
-							<b class="roman">IV</b> Увольнение
-						</template>
-						<TabDismissal
-							:year="currentYear"
-							:month="currentMonth"
-							:refresh="refresh"
-						/>
-					</b-tab>
-					<b-tab
-						key="5"
-						card
-					>
-						<template #title>
-							<b class="roman">V</b> Маркетинг
-						</template>
-						<TabMarketing
-							:year="currentYear"
-							:month="currentMonth"
-							:refresh="refresh"
-							:months="months"
-						/>
-					</b-tab>
-				</b-tabs>
-			</div>
-			<div v-else>
-				<p>У вас нет доступа к этой группе</p>
-			</div>
+						<b-tab title="Сводная">
+							<TabPivot
+								:year="currentYear"
+								:month="currentMonth"
+								:refresh="refresh"
+							/>
+						</b-tab>
+						<b-tab title="Стажеры">
+							<TabInterns
+								:year="currentYear"
+								:month="currentMonth"
+								:refresh="refresh"
+							/>
+						</b-tab>
+					</b-tabs>
+				</b-tab>
+				<b-tab
+					key="2"
+					card
+				>
+					<template #title>
+						<b class="roman">II</b> Этап стажировки
+					</template>
+					<TabSecondStage
+						:year="currentYear"
+						:month="currentMonth"
+						:refresh="refresh"
+						:groups="groups"
+					/>
+				</b-tab>
+				<b-tab
+					key="3"
+					card
+				>
+					<template #title>
+						<b class="roman">III</b> Отдел заботы
+					</template>
+					<!-- Пока пусто -->
+				</b-tab>
+				<b-tab
+					key="4"
+					card
+				>
+					<template #title>
+						<b class="roman">IV</b> Увольнение
+					</template>
+					<TabDismissal
+						:year="currentYear"
+						:month="currentMonth"
+						:refresh="refresh"
+					/>
+				</b-tab>
+				<b-tab
+					key="5"
+					card
+				>
+					<template #title>
+						<b class="roman">V</b> Маркетинг
+					</template>
+					<TabMarketing
+						:year="currentYear"
+						:month="currentMonth"
+						:refresh="refresh"
+						:months="months"
+					/>
+				</b-tab>
+			</b-tabs>
+		</div>
+		<div v-else>
+			<p>У вас нет доступа к этой группе</p>
+		</div>
+		<div class="empty-space" />
 
-			<div class="empty-space" />
-		</template>
 		<Loading
 			:active="isLoading"
 			:can-cancel="false"
@@ -196,11 +194,6 @@ export default {
 			refresh: 0,
 		}
 	},
-	watch: {
-		groups(){
-			this.init()
-		},
-	},
 	computed: {
 		...mapState(useHRStore, [
 			'isLoading',
@@ -234,6 +227,11 @@ export default {
 		},
 		hasPremission(){
 			return !this.error
+		},
+	},
+	watch: {
+		groups(){
+			this.init()
 		},
 	},
 	created() {

@@ -79,10 +79,10 @@ export default {
 
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
-		const post_id = urlParams.get('post_id');
-		if (post_id != null) {
+		const postId = urlParams.get('post_id');
+		if (postId != null) {
 			let params = {
-				params: '?post_id=' + post_id,
+				params: '?post_id=' + postId,
 			};
 			this.getPosts(params);
 		} else {

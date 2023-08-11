@@ -41,7 +41,16 @@
 <script>
 export default {
 	name: 'SelectGroupBook',
-	props: ['cat', 'indexcat'],
+	props: {
+		cat: {
+			type: Object,
+			required: true
+		},
+		indexcat: {
+			type: Number,
+			default: 0
+		}
+	},
 	methods: {
 		addbook(cat) {
 			this.$emit('addbook', cat)
@@ -51,7 +60,6 @@ export default {
 		},
 
 		addbookk(cat) {
-
 			this.$emit('addbookk', cat)
 		}
 	}

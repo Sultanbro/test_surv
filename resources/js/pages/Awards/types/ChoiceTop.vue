@@ -31,6 +31,7 @@ export default {
 		SuperSelect,
 	},
 	props: {
+		/* eslint-disable camelcase, vue/prop-name-casing */
 		targetable_id: {
 			type: Number,
 			default: null

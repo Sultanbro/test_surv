@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 const users = [
 	{
 		id: 1,
@@ -768,7 +770,25 @@ const profile_groups = [
 		active: 1,
 	},
 ]
+
 const resultText = 'Жулимэ — это суета материального мира, попытка сделать из жулимэ монету. Если у тебя ворс неблагородный, если ты делаешь монету из плохого ворса, то ты не сигмач.';
+
+const dictionaries = {
+	users,
+	profile_groups,
+	positions,
+}
+
+function getUsers(count){
+	const rUsers = users.slice(-14);
+	const result = []
+	for(let i = 0; i < count; ++i){
+		const user = rUsers[Math.floor(Math.random() * rUsers.length)];
+		result.push(user)
+	}
+	return result
+}
+
 const structure = [
 	{
 		id: 1,
@@ -1485,22 +1505,6 @@ const structure_old = [
 		]
 	},
 ];
-
-function getUsers(count){
-	const rUsers = users.slice(-14);
-	const result = []
-	for(let i = 0; i < count; ++i){
-		const user = rUsers[Math.floor(Math.random() * rUsers.length)];
-		result.push(user)
-	}
-	return result
-}
-
-const dictionaries = {
-	users,
-	profile_groups,
-	positions,
-}
 
 export {
 	structure_old,

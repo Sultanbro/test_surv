@@ -474,6 +474,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import Multiselect from 'vue-multiselect'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'

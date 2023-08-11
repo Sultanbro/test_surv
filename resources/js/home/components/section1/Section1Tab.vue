@@ -2,8 +2,14 @@
 export default {
 	name: 'Section1Tab',
 	props: {
-		activeTab: String,
-		tabId: String,
+		activeTab: {
+			type: String,
+			default: ''
+		},
+		tabId: {
+			type: String,
+			default: ''
+		},
 	},
 	computed: {
 		lang () {

@@ -52,7 +52,7 @@
 							</b-thead>
 							<b-tbody>
 								<PermissionItem
-									v-for="(item, i) in filtered_items"
+									v-for="(item, i) in filteredItems"
 									:key="item.id"
 									:item="item"
 									:groups="groups"
@@ -282,7 +282,7 @@ export default {
 		filteredPages(){
 			return this.isBp ? this.pages : this.pages.filter(p => p.key !== 'faq');
 		},
-		filtered_items(){
+		filteredItems(){
 			if(!this.searchText) return this.items
 			const lowerText = this.searchText.toLowerCase()
 			return this.items.filter(el => {
@@ -340,6 +340,7 @@ export default {
 			this.items.unshift(
 				{
 					id: 0,
+					/* eslint-disable-next-line camelcase */
 					groups_all: false,
 					targets: [],
 					roles: [],
@@ -354,9 +355,9 @@ export default {
 				return false;
 			}
 
-			if(this.filtered_items[i].id == 0) {
+			if(this.filteredItems[i].id == 0) {
 
-				let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+				let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 				if(index != -1) this.items.splice(index, 1);
 				return false;
 			}
@@ -364,10 +365,10 @@ export default {
 			let loader = this.$loading.show();
 			this.axios
 				.post( '/permissions/delete-target', {
-					id: this.filtered_items[i].id
+					id: this.filteredItems[i].id
 				})
 				.then(() => {
-					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 					if(index != -1) this.items.splice(index, 1);
 
 					loader.hide();
@@ -384,11 +385,11 @@ export default {
 			let loader = this.$loading.show();
 			this.axios
 				.post( '/permissions/update-target', {
-					item: this.filtered_items[i],
+					item: this.filteredItems[i],
 				})
 				.then((response) => {
 
-					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 					if(index != -1) this.items.id = response.data.id;
 
 					loader.hide();

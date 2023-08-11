@@ -111,11 +111,13 @@ export default {
 		...mapActions(useProfileStatusStore, ['pushOvertime']),
 		async clickOvertime(){
 			if(confirm('Хотите запросить у руководителя работу в выходной?')){
+				/* eslint-disable camelcase */
 				await this.pushOvertime({
 					user_id: Laravel.userId,
 					date: this.$moment(Date.now()).format('YYYY-MM-DD'),
 					start_time: this.$moment(Date.now()).format('HH:mm:ss'),
 				})
+				/* eslint-enable camelcase */
 				alert('Запрос на работу в выходной отправлен')
 			}
 		}

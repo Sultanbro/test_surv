@@ -242,6 +242,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import D3Funnel from 'd3-funnel';
 import ProgressBar from '@ui/ProgressBar'
 import JobtronButton from '@ui/Button'
@@ -253,7 +255,10 @@ export default {
 		JobtronButton,
 	},
 	props: {
-		records: Object,
+		records: {
+			type: Object,
+			default: null
+		},
 		isAnalyticsPage: Boolean,
 	},
 	data: function () {

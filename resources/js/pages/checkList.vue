@@ -59,12 +59,12 @@
 							class="p-0"
 						>
 							<b-td>
+								<!-- eslint-disable vue/no-v-html -->
 								<a
 									@click="editCheck(arrCheckList.id,arrCheckList.item_type)"
 									v-html="highlightMatches(arrCheckList.title)"
-								>
-									{{ arrCheckList.title }}
-								</a>
+								/>
+								<!-- eslint-disable vue/no-v-html -->
 							</b-td>
 							<b-td>
 								{{ arrCheckList.show_count }}
@@ -385,6 +385,9 @@
 
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
 	name: 'TableQuarter',

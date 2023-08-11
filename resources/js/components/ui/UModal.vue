@@ -7,12 +7,14 @@
 			visible
 		>
 			<div class="d-block">
+				<!-- eslint-disable -->
 				<div
 					v-for="item in items"
 					:key="item"
 					class="modal-p"
 					v-html="item"
 				/>
+				<!-- eslint-enable -->
 			</div>
 		</b-modal>
 	</div>
@@ -25,9 +27,11 @@ export default {
 	name: 'UModal',
 	props: {
 		items: {
+			type: Array,
 			default: null
 		},
 		title: {
+			type: String,
 			default: 'Модальное окно'
 		}
 	},

@@ -152,6 +152,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'SuperSelect',
 	props: {

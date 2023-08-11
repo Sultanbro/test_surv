@@ -55,11 +55,11 @@
 							class="form-control form-control-sm mt-2"
 						>
 							<option
-								v-for="(lang, index) in langs"
+								v-for="(langItem, index) in langs"
 								:key="index"
 								:value="index"
 							>
-								{{ lang }}
+								{{ langItem }}
 							</option>
 						</select>
 					</div>
@@ -202,10 +202,12 @@
 
 				<template #cell(resp)="data">
 					<div>
+						<!-- eslint-disable -->
 						<div
 							class="resp_user"
 							v-html="data.value"
 						/>
+						<!-- eslint-enable -->
 					</div>
 				</template>
 
@@ -404,11 +406,11 @@
 					class="form-control form-control-sm"
 				>
 					<option
-						v-for="(lang, index) in langs"
+						v-for="(langItem, index) in langs"
 						:key="index"
 						:value="index"
 					>
-						{{ lang }}
+						{{ langItem }}
 					</option>
 				</select>
 				<select
@@ -464,7 +466,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+/* eslint-disable vue/prop-name-casing */
+
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
 
@@ -475,11 +480,26 @@ export default {
 		JobtronButton,
 	},
 	props: {
-		skypes: Array,
-		segments: Object,
-		groups: Array,
-		month: Object,
-		invite_groups: Object,
+		skypes: {
+			type: Array,
+			default: () => [],
+		},
+		segments: {
+			type: Object,
+			default: null
+		},
+		groups: {
+			type: Array,
+			default: () => [],
+		},
+		month: {
+			type: Object,
+			default: null
+		},
+		invite_groups: {
+			type: Object,
+			default: null
+		},
 	},
 	data: function () {
 		return {
@@ -665,7 +685,8 @@ export default {
 
 	methods: {
 		getDates(s, e) {
-			for(var a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
+			const a = []
+			for(var d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
 				a.push(new Date(d));
 			}
 			return a;

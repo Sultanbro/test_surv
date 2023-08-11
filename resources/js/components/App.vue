@@ -124,9 +124,11 @@
 
 
 		<transition v-if="showModal">
-			<h3 slot="header">
-				custom header
-			</h3>
+			<template #header>
+				<h3>
+					custom header
+				</h3>
+			</template>
 
 
 			<div
@@ -286,21 +288,27 @@
 	</div>
 </template>
 
-
-
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 import SimpleFlowchart from './SimpleFlowchart.vue'
 
-
 export default {
-
 	name: 'App',
 	components: {
 		SimpleFlowchart
 	},
-	props: ['script_schema', 'script_id'],
-
+	props: {
+		script_schema: {
+			type: String,
+			default: '{}'
+		},
+		script_id: {
+			type: Number,
+			default: null
+		},
+	},
 	data() {
 
 		this.modalVisibility = false,

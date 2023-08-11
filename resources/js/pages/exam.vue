@@ -57,23 +57,23 @@
 							show-empty
 							empty-text="Нет данных"
 						>
-							<template #cell(success)="data">
+							<template #cell(success)="successData">
 								<input
-									v-model="data.value"
+									v-model="successData.value"
 									type="checkbox"
-									:disabled="!data.item.link"
-									@change="updateExam('success',data)"
+									:disabled="!successData.item.link"
+									@change="updateExam('success', successData)"
 								>
 							</template>
-							<template #cell(exam_date)="data">
-								{{ data.value }}
+							<template #cell(exam_date)="examData">
+								{{ examData.value }}
 							</template>
-							<template #cell(link)="data">
+							<template #cell(link)="linkData">
 								<input
-									v-model="data.value"
+									v-model="linkData.value"
 									class="form-control cell-input"
 									:disabled="dateInfo.currentMonth !== curMonth"
-									@change="updateExam('link',data)"
+									@change="updateExam('link', linkData)"
 								>
 							</template>
 						</b-table>
@@ -97,6 +97,7 @@
 								<td style="background:aliceblue">
 									{{ skill.name }}
 								</td>
+								<!-- eslint-disable-next-line -->
 								<td v-html="skill.last_time" />
 								<td>
 									<b-badge
@@ -107,6 +108,7 @@
 										#Руководил
 									</b-badge>
 								</td>
+								<!-- eslint-disable-next-line -->
 								<td v-html="skill.text" />
 							</tr>
 						</table>
@@ -125,16 +127,24 @@
 export default {
 	name: 'TableExam',
 	props: {
-		groups: Array,
-		fines: Array,
-		activeuserid: String
+		groups: {
+			type: Array,
+			default: () => [],
+		},
+		fines: {
+			type: Array,
+			default: () => [],
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
 	},
 	data() {
 		return {
 			data: {},
 			items: [],
 			fields: [],
-			group_editors: [],
 			users: [],
 			hasPremission: false,
 			curMonth: null,
@@ -177,6 +187,7 @@ export default {
 			}
 
 			let loader = this.$loading.show()
+			/* eslint-disable camelcase */
 			this.axios.post('/timetracking/exam/update', {
 				key: data.field.key,
 				value: data.item.success,
@@ -207,7 +218,7 @@ export default {
 				console.error(error)
 				loader.hide();
 			});
-
+			/* eslint-enable camelcase */
 		},
 		//Установка заголовока таблицы
 		setFields() {
@@ -243,6 +254,7 @@ export default {
 		//Загрузка данных для таблицы
 		fetchData() {
 			let loader = this.$loading.show();
+			/* eslint-disable camelcase */
 			this.axios.post('/timetracking/exam', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
@@ -264,12 +276,13 @@ export default {
 				this.dataLoaded = true
 				loader.hide()
 			})
-
+			/* eslint-enable camelcase */
 		},
 		//Добавление загруженных данных в таблицу
 		loadItems() {
 			let items = []
 			this.data.users.forEach(item => {
+				/* eslint-disable camelcase */
 				items.push({
 					name: item.full_name,
 					book_name: item.book_name,
@@ -279,6 +292,7 @@ export default {
 					exam_date: item.exam_date,
 					link: item.link,
 				})
+				/* eslint-enable camelcase */
 			})
 			this.items = items
 		}

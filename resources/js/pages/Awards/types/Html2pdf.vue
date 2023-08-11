@@ -61,7 +61,8 @@ export default {
 		},
 
 		paginateElementsByHeight: {
-			type: Number
+			type: Number,
+			default: 0
 		},
 
 		filename: {
@@ -75,6 +76,7 @@ export default {
 		},
 
 		pdfFormat: {
+			type: String,
 			default: 'a4',
 		},
 
@@ -84,11 +86,13 @@ export default {
 		},
 
 		pdfContentWidth: {
+			type: String,
 			default: '800px'
 		},
 
 		htmlToPdfOptions: {
-			type: Object
+			type: Object,
+			default: null
 		},
 
 		manualPagination: {

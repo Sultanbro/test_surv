@@ -20,7 +20,12 @@
 
 export default {
 	name: 'BookBP',
-	props: ['grouid'],
+	props: {
+		grouid: {
+			type: Number,
+			default: 0
+		}
+	},
 	data() {
 		return {
 			categoryes: {

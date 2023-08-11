@@ -291,6 +291,9 @@
 
 <script>
 /* eslint-disable vue/no-mutating-props */
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import {newKpiItem, /* numberize,  */calcCompleted, calcSum} from './kpis.js';
 import {sources, methods} from './helpers.js';
 
@@ -298,45 +301,59 @@ export default {
 	name: 'KpiItemsV2',
 	props: {
 		my_sum:{
+			type: Number,
 			default:0
 		},
 		kpi_id: {
+			type: Number,
 			default: 0
 		},
 		expanded: {
+			type: Boolean,
 			default: false,
 		},
 		items: {
-			default: []
+			type: Array,
+			default: () => []
 		},
 		activities: {
-			default: {}
+			type: Object,
+			default: () => ({})
 		},
 		groups: {
-			default: {}
+			type: Object,
+			default: () => ({})
 		},
 		completed_80: {
+			type: Number,
 			default: 0,
 		},
 		completed_100: {
+			type: Number,
 			default: 0,
 		},
 		lower_limit: {
+			type: Number,
 			default: 80,
 		},
 		upper_limit: {
+			type: Number,
 			default: 100,
 		},
 		editable: {
+			type: Boolean,
 			default: false
 		},
 		kpi_page: {
+			type: Boolean,
 			default: false
 		},
 		allow_overfulfillment: {
+			type: Boolean,
 			default: false
 		},
 		date: {
+			type: Object,
 			default: null
 		},
 	},

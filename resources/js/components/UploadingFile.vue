@@ -26,11 +26,20 @@
 
 <script>
 export default {
-	props: [
-		'file',
-		'status',
-		'progress',
-	],
+	props: {
+		file: {
+			type: Object,
+			default: null
+		},
+		status: {
+			type: String,
+			default: ''
+		},
+		progress: {
+			type: Number,
+			default: 0
+		},
+	},
 	data(){
 		return {
 			isPaused: false // we upload straight away by default

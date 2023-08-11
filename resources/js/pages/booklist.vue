@@ -66,10 +66,12 @@
 							<p class="search-item-title">
 								{{ item.title }}
 							</p>
+							<!-- eslint-disable -->
 							<div
 								class="search-item-text"
 								v-html="item.text"
 							/>
+							<!-- eslint-enable -->
 						</div>
 					</template>
 
@@ -420,10 +422,12 @@
 								</div>
 							</div>
 						</div>
+						<!-- eslint-disable -->
 						<div
 							class="bp-text"
 							v-html="activesbook.text"
 						/>
+						<!-- eslint-enable -->
 
 						<Questions
 							:id="activesbook.id"
@@ -536,6 +540,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { mapGetters } from 'vuex'
 import NestedDraggable from '@/components/nested'
 import NestedCourse from '@/components/nested_course'
@@ -553,32 +560,52 @@ export default {
 		ProgressBar,
 	},
 	props: {
-		trees: Array,
-		parent_id: Number,
-		auth_user_id: Number,
-		parent_name: String,
+		trees: {
+			type: Array,
+			default: () => []
+		},
+		parent_id: {
+			type: Number,
+			default: 0
+		},
+		auth_user_id: {
+			type: Number,
+			default: 0
+		},
+		parent_name: {
+			type: String,
+			default: '',
+		},
 		show_page_id: {
+			type: Number,
 			default: 0,
 		},
 		can_edit: {
+			type: Boolean,
 			default: false,
 		},
 		mode: {
+			type: String,
 			default: 'read'
 		},
 		course_page: {
+			type: Number,
 			default: 0,
 		},
 		enable_url_manipulation: {
+			type: Boolean,
 			default: true,
 		},
 		course_item_id: {
+			type: Number,
 			default: 0
 		},
 		all_stages: {
+			type: Number,
 			default: 0
 		},
 		completed_stages: {
+			type: Number,
 			default: 0
 		},
 	},

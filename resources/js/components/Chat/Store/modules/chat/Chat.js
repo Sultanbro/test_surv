@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import API from '../../API.vue';
 import Vue from 'vue'
 
@@ -198,13 +200,13 @@ export default {
 			})
 		},
 		async pinChat({commit}, chat) {
-			await API.pinChat(chat.id);
 			chat.pinned = true;
+			await API.pinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async unpinChat({commit}, chat) {
-			await API.unpinChat(chat.id);
 			chat.pinned = false;
+			await API.unpinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async muteChat({commit}, chatId) {

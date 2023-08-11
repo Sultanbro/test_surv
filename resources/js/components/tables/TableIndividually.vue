@@ -20,8 +20,14 @@
 export default {
 	name: 'TableIndividually',
 	props: {
-		data: Object,
-		month: Object,
+		data: {
+			type: Object,
+			default: null
+		},
+		month: {
+			type: Object,
+			default: null
+		},
 	},
 	data() {
 		return {

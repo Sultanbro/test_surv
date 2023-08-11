@@ -138,14 +138,14 @@
 							<!-- playlists -->
 							<div class="video-container">
 								<div
-									v-for="(playlist, p_index) in activeCat.playlists"
-									:key="playlist.id"
+									v-for="(playlistItem, p_index) in activeCat.playlists"
+									:key="playlistItem.id"
 									class="playlist mb-4"
 									@click="selectPl(p_index)"
 								>
 									<div class="left">
 										<img
-											:src="playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img"
+											:src="playlistItem.img == '' || playlistItem.img == null ? '/images/author.jpg' : playlistItem.img"
 											alt="image"
 										>
 										<div
@@ -153,13 +153,13 @@
 											class="d-flex btns"
 										>
 											<i
-												v-if="playlist.id != 0"
+												v-if="playlistItem.id != 0"
 												class="fa fa-pen"
 												title="Переместить"
 												@click.stop="movePl(p_index)"
 											/>
 											<i
-												v-if="playlist.id != 0"
+												v-if="playlistItem.id != 0"
 												class="fa fa-trash text-danger ml-2"
 												@click.stop="deletePl(p_index)"
 											/>
@@ -168,10 +168,10 @@
 
 									<div class="right">
 										<div class="title">
-											{{ playlist.title }}
+											{{ playlistItem.title }}
 										</div>
 										<div class="text">
-											{{ playlist.text }}
+											{{ playlistItem.text }}
 										</div>
 									</div>
 								</div>
@@ -366,6 +366,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
@@ -375,14 +377,27 @@ export default {
 		PlaylistEdit
 	},
 	props: {
-		token: String,
+		token: {
+			type: String,
+			default: ''
+		},
+		/* eslint-disable vue/prop-name-casing */
 		can_edit: {
 			type: Boolean,
 			default: false
 		},
-		category: Number,
-		playlist: Number,
-		video: Number
+		category: {
+			type: Number,
+			default: 0,
+		},
+		playlist: {
+			type: Number,
+			default: 0,
+		},
+		video: {
+			type: Number,
+			default: 0,
+		},
 	},
 	data: function() {
 		return {

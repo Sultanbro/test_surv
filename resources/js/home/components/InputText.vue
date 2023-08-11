@@ -12,8 +12,14 @@
 <script>
 export default {
 	props: {
-		placeholder: String,
-		value: String
+		placeholder: {
+			type: String,
+			default: ''
+		},
+		value: {
+			type: String,
+			default: ''
+		}
 	},
 	data(){
 		return {

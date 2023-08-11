@@ -98,28 +98,28 @@
 						show-empty
 						empty-text="Нет данных"
 					>
-						<template #cell(name)="data">
+						<template #cell(name)="nameData">
 							<div>
-								{{ data.value }}
+								{{ nameData.value }}
 								<b-badge
-									v-if="data.field.key == 'name' && data.value"
+									v-if="nameData.field.key == 'name' && nameData.value"
 									pill
 									variant="success"
 								>
-									{{ data.item.user_type }}
+									{{ nameData.item.user_type }}
 								</b-badge>
 							</div>
 						</template>
 
-						<template #cell()="data">
+						<template #cell()="cellData">
 							<div
-								:class="{ fine: data.item.fines[data.field.key.toString()].length > 0}"
-								@click="setCurrentEditingCell(data)"
+								:class="{fine: cellData.item.fines[cellData.field.key.toString()].length > 0}"
+								@click="setCurrentEditingCell(cellData)"
 							>
 								<input
 									class="cell-input"
 									type="time"
-									:value="data.value"
+									:value="cellData.value"
 									:readonly="true"
 									ondblclick="this.readOnly='';"
 									@mouseover="$event.preventDefault()"
@@ -139,6 +139,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
@@ -146,8 +148,14 @@ import { useYearOptions } from '../composables/yearOptions'
 export default {
 	name: 'TableComing',
 	props: {
-		groups: Array,
-		activeuserid: String,
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
 	},
 	data() {
 		return {

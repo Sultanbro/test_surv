@@ -57,13 +57,32 @@
 export default {
 	name: 'LayoutsPopup',
 	props: {
-		title: {},
-		desc: {},
-		open: {},
-		width: {},
-		addButton: {},
-		addButtonRoute: {},
-		addButtonPopoverText: {}
+		title: {
+			type: String,
+			default: ''
+		},
+		desc: {
+			type: String,
+			default: ''
+		},
+		open: {
+			type: Boolean
+		},
+		width: {
+			type: String,
+			default: ''
+		},
+		addButton: {
+			type: Boolean
+		},
+		addButtonRoute: {
+			type: String,
+			default: ''
+		},
+		addButtonPopoverText: {
+			type: String,
+			default: ''
+		}
 	},
 	computed: {
 		isAdmin(){

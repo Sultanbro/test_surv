@@ -201,6 +201,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JobtronButton from '@ui/Button'
 import ProgressBar from '@ui/ProgressBar'
 const BY_USER = 1;
@@ -218,10 +220,12 @@ export default {
 	},
 	props: {
 		monthInfo: {
-			required: false
+			type: Object,
+			default: null
 		},
 		currentGroup: {
-			required: false
+			type: Object,
+			default: null
 		}
 	},
 	data() {

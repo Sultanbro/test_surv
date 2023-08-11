@@ -399,6 +399,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
@@ -428,7 +430,16 @@ export default {
 		JobtronButton,
 		SideBar,
 	},
-	props: ['data', 'activeuserid'],
+	props: {
+		data: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: null
+		},
+	},
 	data() {
 		const now = new Date()
 		return {
@@ -483,11 +494,6 @@ export default {
 			isArchiveOpen: false,
 		}
 	},
-	watch: {
-		data(){
-			this.init()
-		}
-	},
 	computed: {
 		...mapState(usePortalStore, ['portal']),
 		years(){
@@ -508,6 +514,11 @@ export default {
 				return this.proceedsSwitch
 			}
 			return this.utilitySwitch
+		}
+	},
+	watch: {
+		data(){
+			this.init()
 		}
 	},
 	created() {

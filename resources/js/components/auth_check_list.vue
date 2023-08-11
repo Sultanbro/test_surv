@@ -72,14 +72,21 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'AuthCheckList',
 	props: {
 		// user_id:'',
 
-		auth_check_list: Array,
+		auth_check_list: {
+			type: Array,
+			default: () => []
+		},
 		open_check:{
-			default:0
+			type: Number,
+			default: 0
 		},
 	},
 	data() {

@@ -186,8 +186,8 @@ export default {
 			const mement = this.$moment(this.searchMessagesDate, 'DD.MM.YYYY')
 			this.findMessagesInChat({
 				text: this.searchMessagesQuery,
+				/* eslint-disable-next-line camelcase */
 				chat_id: this.chat.id,
-				// date: this.searchMessagesDate,
 				month: +mement.format('M'),
 				year: +mement.format('YYYY'),
 			});
@@ -196,6 +196,7 @@ export default {
 			if(!this.chat) return
 			this.findFilesInChat({
 				text: '' + this.searchFilesQuery,
+				/* eslint-disable-next-line camelcase */
 				chat_id: this.chat.id,
 			});
 		},

@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export const absence_causes = [
 	'Был на основной работе',
 	'Бросает трубку',

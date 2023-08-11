@@ -205,6 +205,7 @@
 <script>
 /* eslint-disable vue/no-mutating-props */
 import KpiItems from '@/pages/kpi/KpiItems'
+/* eslint-disable-next-line camelcase */
 import {kpi_fields} from './kpis.js'
 
 export default {
@@ -214,42 +215,42 @@ export default {
 	},
 	props: {
 		searchText: {
+			type: String,
 			default: '',
 		},
 		items: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		activities: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		groups: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		editable: {
+			type: Boolean,
 			default: false
 		},
 		date: {
+			type: Object,
 			default: null
 		}
 	},
 
 	data() {
 		return {
-			show_fields: [],
-			all_fields: kpi_fields,
+			showFields: [],
 			fields: [],
-			non_editable_fields: [
-				'created_at',
-				'updated_at',
-				'created_by',
-				'updated_by',
-			]
 		}
 	},
 
 	watch: {
-		show_fields: {
+		showFields: {
 			handler: function (val) {
+				/* eslint-disable-next-line camelcase */
 				localStorage.kpi_show_fields = JSON.stringify(val);
 				this.prepareFields();
 			},
@@ -270,16 +271,18 @@ export default {
 		},
 
 		prepareFields() {
-			let visible_fields = []
+			const visibleFields = []
 
+			/* eslint-disable-next-line camelcase */
 			kpi_fields.forEach(field => {
-				if(this.show_fields[field.key] != undefined
-					&& this.show_fields[field.key]
+				if(this.showFields[field.key] != undefined
+					&& this.showFields[field.key]
 				) {
-					visible_fields.push(field)
+					visibleFields.push(field)
 				}
 			});
 
+			/* eslint-disable-next-line camelcase */
 			this.fields = kpi_fields;
 		},
 
@@ -287,8 +290,8 @@ export default {
 
 			this.items.forEach(kpi => {
 
-				let kpi_sum = 0;
-				let kpi_count = 0;
+				let kpiSum = 0;
+				let kpiCount = 0;
 
 				kpi.users.forEach(user => {
 
@@ -309,14 +312,14 @@ export default {
 					user.avg = avg;
 
 					// all kpi sum
-					kpi_sum += Number(avg);
-					kpi_count++;
+					kpiSum += Number(avg);
+					kpiCount++;
 				});
 
 				/**
 				* count avg completed percent of kpi by users
 				*/
-				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
+				kpi.avg = kpiCount > 0 ? Number(Number(kpiSum / kpiCount * 100).toFixed(2)) : 0;
 
 			});
 		},

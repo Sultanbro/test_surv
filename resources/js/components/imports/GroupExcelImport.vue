@@ -152,14 +152,19 @@
 
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'GroupExcelImport',
 	props: {
 		status: {
 			type: String,
+			default: ''
 		},
 		group_id: {
 			type: Number,
+			default: 0
 		}
 	},
 	data() {

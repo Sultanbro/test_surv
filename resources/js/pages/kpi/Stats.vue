@@ -79,6 +79,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import StatsTable from '@/pages/kpi/StatsTable'
@@ -107,12 +109,10 @@ export default {
 			paginationKey: 1,
 			pageSize: 20,
 			items: [],
-			all_items: [],
 			page_items: [],
 			groups: {},
 			date: null,
 			activities: [],
-			bonus_items: [],
 			bonus_groups: [],
 			quartal_users: [],
 			quartal_groups: []

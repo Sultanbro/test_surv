@@ -13,7 +13,12 @@
 <script>
 export default {
 	name: 'BalanceItem',
-	props: ['title']
+	props: {
+		title: {
+			type: String,
+			default: ''
+		}
+	}
 }
 </script>
 

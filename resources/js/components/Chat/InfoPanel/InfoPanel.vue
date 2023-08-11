@@ -99,13 +99,13 @@ export default {
 	components: {
 		AlternativeAvatar
 	},
-	computed: {
-		...mapGetters(['user', 'chat', 'isInfoPanel'])
-	},
 	data() {
 		return {
 			editMode: false,
 		};
+	},
+	computed: {
+		...mapGetters(['user', 'chat', 'isInfoPanel'])
 	},
 	methods: {
 		...mapActions(['editChatTitle', 'removeMembers']),

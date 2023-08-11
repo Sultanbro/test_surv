@@ -31,8 +31,9 @@
 								v-show="comment.author.id == me.id"
 								class="news-comment__action hover-pointer"
 								@click="destroyComment(comment.id)"
-								v-html="'Удалить'"
-							/>
+							>
+								Удалить
+							</div>
 						</div>
 						<div class="news-footer__reactions">
 							<img
@@ -89,8 +90,9 @@
 								v-show="childComment.author.id == me.id"
 								class="news-comment__action hover-pointer"
 								@click="destroyComment(childComment.id)"
-								v-html="'Удалить'"
-							/>
+							>
+								Удалить
+							</div>
 						</div>
 						<div class="news-footer__reactions">
 							<img
@@ -129,14 +131,14 @@ export default {
 	},
 	props: {
 		me: {
+			type: Object,
 			required: true
 		}
 	},
 	data() {
 		return {
-
 			comments: [],
-			comments_count: 0,
+			commentsCount: 0,
 			postId: null,
 		}
 	},
@@ -150,10 +152,11 @@ export default {
 			await this.axios.get('/news/' + postId + '/comments')
 				.then(response => {
 					this.comments = response.data.data.comments;
-					this.comments_count = response.data.data.comments_count;
+					this.commentsCount = response.data.data.comments_count;
 
 					this.$emit('changeCommentsCount', {
-						comments_count: this.comments_count,
+						/* eslint-disable-next-line camelcase */
+						comments_count: this.commentsCount,
 					});
 				})
 				.catch(() => {
@@ -187,6 +190,7 @@ export default {
 		},
 
 		changeLikeComment(searchId, data) {
+			/* eslint-disable camelcase */
 			let comment = this.comments.find(comment => comment.id === searchId);
 
 			if (comment != null) {
@@ -202,6 +206,7 @@ export default {
 					}
 				})
 			});
+			/* eslint-enable camelcase */
 		}
 	}
 }

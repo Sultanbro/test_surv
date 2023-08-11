@@ -236,6 +236,7 @@ export default {
 					? {
 						id: 0,
 						name: 'Вакантная',
+						/* eslint-disable-next-line camelcase */
 						last_name: 'позиция',
 						avatar: '/user.png',
 					}
@@ -281,6 +282,7 @@ export default {
 				{
 					id: 0,
 					name: 'Вакантная',
+					/* eslint-disable-next-line camelcase */
 					last_name: 'позиция',
 					avatar: '/users.png',
 				},
@@ -328,6 +330,7 @@ export default {
 			if(!(isGroup || hasName)) return this.$toast.error('Укажите отдел или название департамента')
 			if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
 
+			/* eslint-disable camelcase */
 			const saveData = {
 				id: this.card.id,
 				parent_id: this.card.parent_id,
@@ -352,6 +355,7 @@ export default {
 			else{
 				saveData.is_vacant = true
 			}
+			/* eslint-enable camelcase */
 
 			if(!isGroup && hasName){
 				saveData.name = this.nameTag[0].name

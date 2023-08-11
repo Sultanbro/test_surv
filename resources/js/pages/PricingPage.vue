@@ -171,6 +171,17 @@ export default {
 			return this.currencyTranslate[this.currency]
 		},
 	},
+
+	created(){
+		this.fetchCurrent(Laravel.userId)
+		if(this.$route.query.status){
+			this.fetchStatus().then(status => {
+				if(status) return this.$toast.success('Платеж прошел успешно')
+				this.$toast.error('Платеж прошел неуспешно')
+			})
+		}
+	},
+
 	methods: {
 		...mapActions(usePricingStore, [
 			'postPaymentData',
@@ -193,12 +204,14 @@ export default {
 		async submitPayment(){
 			if(!this.selectedRate) return
 			try{
+				/* eslint-disable camelcase */
 				const url = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.additionalUsers || 0,
 					auto_payment: this.autoPayment
 				})
+				/* eslint-enable camelcase */
 				window.location.assign(url)
 			}
 			catch(error){
@@ -212,15 +225,6 @@ export default {
 			this.isPromoLoading = false
 		}
 	},
-	created(){
-		this.fetchCurrent(Laravel.userId)
-		if(this.$route.query.status){
-			this.fetchStatus().then(status => {
-				if(status) return this.$toast.success('Платеж прошел успешно')
-				this.$toast.error('Платеж прошел неуспешно')
-			})
-		}
-	}
 };
 </script>
 

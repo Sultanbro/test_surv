@@ -41,14 +41,21 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 import {bus} from '../../bus';
 
 export default {
 	name: 'GroupPremission',
 	props: {
-		currentGroup: Number,
-		page: String
+		currentGroup: {
+			type: Number,
+			default: 0
+		},
+		page: {
+			type: String,
+			default: ''
+		}
 	},
 	data() {
 		return {

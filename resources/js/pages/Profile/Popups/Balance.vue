@@ -206,7 +206,7 @@ export default {
 				}
 			},
 			totalFines: 0,
-			total_avanses: 0,
+			totalAvanses: 0,
 			selectedDate: this.$moment().format('DD.MM.YYYY'),
 			currentDay: now.getDate(),
 			history: null,
@@ -268,7 +268,7 @@ export default {
 			return this.$moment(`${this.currentMonth} ${this.currentYear}`, 'MMMM YYYY').daysInMonth()
 		},
 		items(){
-			const totalSalary = Number(this.data.total.salaries) - Number(this.totalFines) - Number(this.total_avanses)
+			const totalSalary = Number(this.data.total.salaries) - Number(this.totalFines) - Number(this.totalAvanses)
 			return [
 				{
 					...this.data.times,
@@ -278,7 +278,7 @@ export default {
 					...this.data.salaries,
 					0: {value: 'Начисления'},
 					total: {value: Number(totalSalary).toFixed(0)},
-					avanses: {value: Number(this.total_avanses).toFixed(0)},
+					avanses: {value: Number(this.totalAvanses).toFixed(0)},
 					fines: {value: Number(this.totalFines).toFixed(0)},
 				},
 				{
@@ -312,6 +312,7 @@ export default {
 
 			const data = this.data.salaries[this.currentDay]
 
+			/* eslint-disable camelcase */
 			this.history = {
 				fines: data.fines,
 				avanses: data.avanses,
@@ -322,6 +323,7 @@ export default {
 				value: data.value,
 				calculated: data.calculated
 			}
+			/* eslint-enable camelcase */
 
 			if(day){
 				setTimeout(() => {
@@ -345,7 +347,7 @@ export default {
 			}).then(({data}) => {
 				this.data = this.prepareData(data.data)
 				this.totalFines = data.totalFines
-				this.total_avanses = data.total_avanses
+				this.totalAvanses = data.total_avanses
 
 				this.showHistory()
 				this.loading = false

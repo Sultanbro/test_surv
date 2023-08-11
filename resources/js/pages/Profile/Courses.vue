@@ -100,6 +100,7 @@
 						class="profit__info-image"
 					>
 					<div class="profit__info-about">
+						<!-- eslint-disable vue/no-v-html -->
 						<div
 							class="profit__info-text"
 							v-html="activeCourse.text"
@@ -108,6 +109,7 @@
 							class="profit__info-text mobile"
 							v-html="activeCourse.text"
 						/>
+						<!-- eslint-enable vue/no-v-html -->
 						<div class="profit__info__wrapper">
 							<template v-if="courseInfo[activeCourse.id] && courseInfo[activeCourse.id].items">
 								<div
@@ -269,18 +271,18 @@ export default {
 
 			// https://github.com/kenwheeler/slick/issues/3694
 			// but it's better to replace slick with native for vue
-			const $slick_slider = VJQuery('.courses__content__wrapper')
-			$slick_slider.on('afterChange', function (e, slick) {
+			const $slickSlider = VJQuery('.courses__content__wrapper')
+			$slickSlider.on('afterChange', function (e, slick) {
 				var lElRect = slick.$slides[slick.slideCount - 1].getBoundingClientRect()
 				var rOffset = lElRect.x + lElRect.width
-				var wraRect = $slick_slider.find('.slick-list').get(0).getBoundingClientRect()
+				var wraRect = $slickSlider.find('.slick-list').get(0).getBoundingClientRect()
 				if (rOffset < (wraRect.x + wraRect.width)) {
-					$slick_slider.find('.slick-next').addClass('slick-disabled')
+					$slickSlider.find('.slick-next').addClass('slick-disabled')
 				}
 			})
-			$slick_slider.on('breakpoint', () => {
+			$slickSlider.on('breakpoint', () => {
 				setTimeout(() => {
-					$slick_slider.find('.slick-slide').forEach(el => {
+					$slickSlider.find('.slick-slide').forEach(el => {
 						el.style.width = (parseFloat(el.style.width) - 4) + 'px'
 					})
 				}, 1)

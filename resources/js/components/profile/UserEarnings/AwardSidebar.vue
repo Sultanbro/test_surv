@@ -139,7 +139,10 @@ export default {
 	components: { AwardsCard },
 	props: {
 		open: Boolean,
-		awards: Array,
+		awards: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {

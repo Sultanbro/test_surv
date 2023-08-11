@@ -118,9 +118,10 @@
 	</div>
 </template>
 
-
-
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'FlowchartNode',
 	props: {
@@ -137,7 +138,7 @@ export default {
 			validator(val) {
 				return typeof val === 'number'
 			}
-		},    
+		},
 		y: {
 			type: Number,
 			default: 0,
@@ -223,7 +224,7 @@ export default {
 	computed: {
 		nodeStyle() {
 			return {
-				top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop + 
+				top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop +
 				left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft +
 				transform: `scale(${this.options.scale})`,
 			}

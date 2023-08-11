@@ -148,12 +148,16 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 export default {
 	name: 'SuperselectAlt',
 	props: {
 		values: {
 			type: Array,
+			default: () => []
 		},
 		single: {
 			type: Boolean,

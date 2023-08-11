@@ -271,6 +271,7 @@
 						>
 							<td>{{ item.date }}</td>
 							<td>{{ item.sum }}</td>
+							<!-- eslint-disable-next-line -->
 							<td v-html="item.comment" />
 						</tr>
 					</table>
@@ -280,6 +281,7 @@
 					<h6 style="color:#13547e;">
 						Зарабатывайте бонусы выполняя дополнительные активности:
 					</h6>
+					<!-- eslint-disable-next-line -->
 					<div v-html="data.potential_bonuses" />
 				</div>
 
@@ -323,16 +325,29 @@
 </template>
 
 <script>
-/* import AwardSidebar from './AwardSidebar' */
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import AwardBSidebar from './AwardBSidebar'
 
 export default {
 	name: 'UserEarnings',
-	components: { /* AwardSidebar, */ AwardBSidebar },
+	components: {
+		AwardBSidebar,
+	},
 	props: {
-		month: {},
-		data: Object,
-		activeuserid: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		data: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
 		has_quartal_premiums: Boolean
 	},
 

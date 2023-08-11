@@ -193,6 +193,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Sidebar from '@/components/ui/Sidebar'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
 import JobtronCup from '@ui/Cup'
@@ -205,10 +208,17 @@ export default {
 		ActivityExcelImport,
 	},
 	props: {
-		month: Object,
-		activity: Object,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
 		is_admin: Boolean,
 		price: {
+			type: Number,
 			default: 50,
 		}
 	},

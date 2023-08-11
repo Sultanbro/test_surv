@@ -195,39 +195,52 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
 /* eslint-disable vue/no-side-effects-in-computed-properties */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'TableKpiIndicator',
 	props:  {
 		kpi_indicator: {
+			type: Object,
 			default: null,
 		},
 		is_admin: {
+			type: Boolean,
 			default: false,
 		},
 		nijn_porok: {
+			type: Number,
 			default: 80,
 		},
 		verh_porok: {
+			type: Number,
 			default: 100,
 		},
 		kpi_80_99: {
+			type: Number,
 			default: 0,
 		},
 		kpi_100: {
+			type: Number,
 			default: 0,
 		},
 		activities: {
+			type: Array,
 			default: null,
 		},
 		workdays: {
+			type: Number,
 			default: 27,
 		},
 		type: {
+			type: String,
 			default: 'common',
 		},
 		groups: {
+			type: Array,
 			default: null
 		}
 	},

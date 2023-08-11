@@ -19,7 +19,6 @@ export default {
 	data() {
 		return {
 			data: this.positions,
-			new_position: '',
 		}
 	},
 	mounted() {},

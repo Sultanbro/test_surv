@@ -44,35 +44,35 @@
 				</tr>
 			</template>
 
-			<template #cell()="data">
+			<template #cell()="cellData">
 				<input
-					v-if="data.index == 4 && data.field.is_date
-						|| data.index == 5 && data.field.is_date
-						|| data.index == 8 && data.field.is_date
-						|| data.index == 13 && data.field.is_date
-						|| data.index == 14 && data.field.is_date
-						|| data.index == 15 && data.field.is_date
-						|| data.index == 16 && data.field.is_date
-						|| data.index == 17 && data.field.is_date
-						|| data.index == 18 && data.field.is_date
-						|| data.index == 20 && data.field.is_date
-						|| data.index == 22 && data.field.is_date
-						|| data.index == 23 && data.field.is_date
+					v-if="cellData.index == 4 && cellData.field.is_date
+						|| cellData.index == 5 && cellData.field.is_date
+						|| cellData.index == 8 && cellData.field.is_date
+						|| cellData.index == 13 && cellData.field.is_date
+						|| cellData.index == 14 && cellData.field.is_date
+						|| cellData.index == 15 && cellData.field.is_date
+						|| cellData.index == 16 && cellData.field.is_date
+						|| cellData.index == 17 && cellData.field.is_date
+						|| cellData.index == 18 && cellData.field.is_date
+						|| cellData.index == 20 && cellData.field.is_date
+						|| cellData.index == 22 && cellData.field.is_date
+						|| cellData.index == 23 && cellData.field.is_date
 					"
 					type="number"
 					class="form-control cell-input "
-					:class="data.item._cellVariants[data.field.key]"
-					:value="data.value"
-					@change="updateSettings($event,data)"
-					@click="test(data)"
+					:class="cellData.item._cellVariants[cellData.field.key]"
+					:value="cellData.value"
+					@change="updateSettings($event,cellData)"
+					@click="test(cellData)"
 				>
 
 				<div
 					v-else
-					:class="data.item._cellVariants[data.field.key]"
-					@click="test(data)"
+					:class="cellData.item._cellVariants[cellData.field.key]"
+					@click="test(cellData)"
 				>
-					{{ data.value }}
+					{{ cellData.value }}
 				</div>
 			</template>
 		</b-table>
@@ -80,7 +80,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 // function send(message) {
 // 	const TOKEN = '1286740490:AAGiR2ch8MqzfP3IVee3Q0Mw4gZu6-ZbnVE';
 // 	const KAIR = '577504834';
@@ -121,11 +123,26 @@ const S23_CONNECTION_LACK_INHOUSE = 23 // отсутствие связи inhous
 export default {
 	name: 'TableSummaryKaspi',
 	props: {
-		data: {},
-		month: Object,
-		totals: {},
-		currentYear: Number,
-		currentGroup: Number,
+		data: {
+			type: Object,
+			default: null
+		},
+		month: {
+			type: Object,
+			default: null
+		},
+		totals: {
+			type: Array,
+			default: () => []
+		},
+		currentYear: {
+			type: Number,
+			default: 0
+		},
+		currentGroup: {
+			type: Number,
+			default: 0
+		},
 	},
 	data: function () {
 		return {

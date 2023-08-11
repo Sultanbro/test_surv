@@ -154,6 +154,7 @@
 						{{ corp_book_page.title }}
 					</h3>
 
+					<!-- eslint-disable-next-line -->
 					<div v-html="corp_book_page.text" />
 
 					<button
@@ -172,6 +173,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import moment from 'moment';
 
 export default {
@@ -182,7 +186,24 @@ export default {
 			return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 		},
 	},
-	props: ['activeuserid', 'usertype', 'program', 'user_type', 'position_id'],
+	props: {
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+		user_type: {
+			type: String,
+			default: ''
+		},
+		program: {
+			type: Number,
+			default: 0
+		},
+		position_id: {
+			type: Number,
+			default: 0
+		},
+	},
 	data() {
 		return {
 			openSidebar: false,

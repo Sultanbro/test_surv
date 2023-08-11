@@ -30,7 +30,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 // const S_CREATED = 0; // Создано новых лидов за день
 // const S_CALLS_OUT = 1; // ИСХ успешные соединения
 // const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
@@ -51,8 +53,14 @@ const S_APPLIED = 15; // Приняты на работу
 export default {
 	name: 'TableSummaryRecruting',
 	props: {
-		records: Array,
-		month: Object,
+		records: {
+			type: Array,
+			default: () => []
+		},
+		month: {
+			type: Object,
+			default: null
+		},
 	},
 	data: function () {
 		return {

@@ -151,7 +151,16 @@
 export default {
 	name: 'CallBase',
 	components: {},
-	props: ['data', 'monthInfo'],
+	props: {
+		data: {
+			type: Array,
+			default: null
+		},
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+	},
 	data() {
 		return {
 			items: [],

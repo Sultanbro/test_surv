@@ -210,6 +210,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'TableDecomposition',
 	props: {

@@ -40,10 +40,12 @@
 								>
 							</a>
 						</div>
+						<!-- eslint-disable vue/no-v-html -->
 						<div
 							class="profit__inner-text"
 							v-html="slide.text"
 						/>
+						<!-- eslint-enable vue/no-v-html -->
 					</div>
 					<div class="profit__arrows">
 						<a
@@ -83,10 +85,12 @@
 								</a>
 							</div>
 						</div>
+						<!-- eslint-disable vue/no-v-html -->
 						<div
 							class="profit__inner-text profit-right"
 							v-html="slide.text"
 						/>
+						<!-- eslint-enable vue/no-v-html -->
 					</div>
 					<div class="profit__arrows">
 						<a
@@ -280,11 +284,11 @@ export default {
 			});
 
 			if(this.$viewportSize.width > 767){
-				const $slick_sliders = VJQuery('.profit__carousel')
-				$slick_sliders.on('afterChange', () => {
-					this.evenSlides($slick_sliders)
+				const $slickSliders = VJQuery('.profit__carousel')
+				$slickSliders.on('afterChange', () => {
+					this.evenSlides($slickSliders)
 				})
-				this.evenSlides($slick_sliders)
+				this.evenSlides($slickSliders)
 			}
 
 			/**
@@ -308,16 +312,16 @@ export default {
 			// 	[...rightSlides].forEach(data => {data.style.minHeight = height + 'px'});
 			// }
 		},
-		evenSlides($slick_sliders){
+		evenSlides($slickSliders){
 			let height = 0
-			$slick_sliders.each((i, el) => {
+			$slickSliders.each((i, el) => {
 				const $slider = VJQuery(el)
 				const slideIndex = $slider.slick('slickCurrentSlide')
 				const h = $slider.find('.profit__inner-item').eq(slideIndex).height()
 				if(h > height) height = h
 			})
-			$slick_sliders.find('.slick-list').height(height)
-			$slick_sliders.find('.slick-slide').height(height)
+			$slickSliders.find('.slick-list').height(height)
+			$slickSliders.find('.slick-slide').height(height)
 		}
 	}
 };

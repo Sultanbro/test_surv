@@ -202,6 +202,7 @@ export default {
 			type: Object,
 			default: () => ({
 				users: [],
+				/* eslint-disable-next-line camelcase */
 				profile_groups: [],
 				positions: [],
 			})
@@ -260,6 +261,7 @@ export default {
 			return manager || {
 				id: 0,
 				name: 'Вакантная',
+				/* eslint-disable-next-line camelcase */
 				last_name: 'позиция',
 				avatar: '/user.png',
 			}

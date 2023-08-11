@@ -30,27 +30,27 @@
 						class="fa fa-info-circle"
 					/>
 				</template>
-				<template #cell(avanses)="data">
-					<div v-if="data.index == 1">
-						{{ data.value.value }}
+				<template #cell(avanses)="avansesData">
+					<div v-if="avansesData.index == 1">
+						{{ avansesData.value.value }}
 					</div>
 				</template>
-				<template #cell(fines)="data">
-					<div v-if="data.index == 1">
-						{{ data.value.value }}
+				<template #cell(fines)="finesData">
+					<div v-if="finesData.index == 1">
+						{{ finesData.value.value }}
 					</div>
 				</template>
-				<template #cell()="data">
+				<template #cell()="cellData">
 					<div
 						:class="{
-							'day-fine':data.value.hasFine,
-							'day-training':data.value.training,
-							'day-avans': data.value.hasAvans,
-							'day-bonus':data.value.hasBonus,
+							'day-fine':cellData.value.hasFine,
+							'day-training':cellData.value.training,
+							'day-avans': cellData.value.hasAvans,
+							'day-bonus':cellData.value.hasBonus,
 						}"
-						@click="openDay(data.value)"
+						@click="openDay(cellData.value)"
 					>
-						{{ data.value.value }}
+						{{ cellData.value.value }}
 					</div>
 				</template>
 			</b-table>
@@ -177,15 +177,23 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 export default {
 	name: 'TableUserSalary',
 	props: {
 		activeuserid: {
 			type: Number,
+			default: 0
 		},
-		date: {},
-		month: {}
+		date: {
+			type: Number,
+			default: 0
+		},
+		month: {
+			type: String,
+			default: ''
+		}
 	},
 
 	data() {

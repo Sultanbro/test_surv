@@ -8,7 +8,7 @@
 			:class="{
 				'pass' : el.item_model !== null,
 				'active': active == el.id,
-				'disabled' : el.item_model === null && first_active != el.id
+				'disabled' : el.item_model === null && firstActive != el.id
 			}"
 		>
 			<div class="d-flex titles">
@@ -19,7 +19,7 @@
 							class="fa fa-check-double pointer"
 						/>
 						<i
-							v-else-if="first_active == el.id"
+							v-else-if="firstActive == el.id"
 							class="fa fa-unlock pointer"
 						/>
 						<i
@@ -57,12 +57,12 @@ const NestedCourse = {
 	},
 	watch: {
 		active: function() {
-			if(this.first_active == 0) this.first_active = this.active
+			if(this.firstActive == 0) this.firstActive = this.active
 		}
 	},
 	data() {
 		return {
-			first_active: 0
+			firstActive: 0
 		}
 	},
 	methods: {
@@ -74,7 +74,7 @@ const NestedCourse = {
 				item = this.tasks[i]
 			}
 
-			if(id != this.first_active) {
+			if(id != this.firstActive) {
 				if(item != null && item.item_model == null) return;
 			}
 			this.$emit('showPage', id);

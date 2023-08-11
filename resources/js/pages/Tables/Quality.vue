@@ -72,11 +72,19 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'TableQuality',
 	props: {
-		monthInfo: Object,
-		items: Array,
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		items: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {

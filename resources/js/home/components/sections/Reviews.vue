@@ -70,6 +70,7 @@
 										class="jReviews-item-thumbnail"
 									/>
 								</Slide>
+								<!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -->
 								<hooper-navigation slot="hooper-addons" />
 							</Hooper>
 						</div>
@@ -114,6 +115,7 @@
 										>
 									</div>
 								</Slide>
+								<!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -->
 								<hooper-navigation slot="hooper-addons" />
 							</Hooper>
 						</div>

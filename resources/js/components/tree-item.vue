@@ -29,7 +29,10 @@
 export default {
 	name: 'TreeItem',
 	props: {
-		item: Object
+		item: {
+			type: Object,
+			default: null
+		}
 	},
 	data() {
 		return {

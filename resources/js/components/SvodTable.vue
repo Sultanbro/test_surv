@@ -428,13 +428,25 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import ProgressBar from '@/components/ProgressBar' // в ответах quiz
 import Rating from './ui/Rating.vue'
 
 export default {
 	name: 'TraineeReport',
 	components: { Rating, ProgressBar },
-	props: ['groups', 'trainee_report'],
+	props: {
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		trainee_report: {
+			type: Array,
+			default: () => []
+		},
+	},
 	data() {
 		return {
 			report_group_id: 0,

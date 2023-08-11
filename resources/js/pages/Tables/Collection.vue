@@ -205,13 +205,23 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'TableCollection',
 	props: {
-		month: Object,
-		activity: Object,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
 		is_admin: Boolean,
 		price: {
+			type: Number,
 			default: 50,
 		}
 	},

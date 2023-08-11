@@ -1,4 +1,7 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 
 export default {
@@ -70,11 +73,11 @@ export default {
 						Выберите отдел
 					</option>
 					<option
-						v-for="group in groups"
-						:key="group.id"
-						:value="group.id"
+						v-for="groupItem in groups"
+						:key="groupItem.id"
+						:value="groupItem.id"
 					>
-						{{ group.name }}
+						{{ groupItem.name }}
 					</option>
 				</select>
 			</div>

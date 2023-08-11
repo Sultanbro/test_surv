@@ -451,18 +451,32 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 export default {
 	name: 'TableDefault',
 	props: {
-		month: Object,
-		activity: Object,
-		group_id: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		},
 		color_invert: {
 			type: Boolean,
 			default: false
 		},
-		work_days: Number, // 5 или 6 дней в неделю
+		work_days: {
+			type: Number,
+			default: 5,
+		}, // 5 или 6 дней в неделю
 		editable: {
 			type: Boolean,
 			default: true

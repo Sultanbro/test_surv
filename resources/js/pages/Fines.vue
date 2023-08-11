@@ -137,6 +137,7 @@ export default {
 			this.fines.push({
 				id: 0,
 				name: 'Новый штраф',
+				/* eslint-disable-next-line camelcase */
 				penalty_amount: 0
 			});
 		},

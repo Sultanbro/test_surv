@@ -73,7 +73,10 @@
 		</template>
 	</Draggable>
 </template>
+
 <script>
+/* eslint-disable camelcase */
+
 import Draggable from 'vuedraggable'
 const NestedDraggable = {
 	name: 'NestedDraggable',

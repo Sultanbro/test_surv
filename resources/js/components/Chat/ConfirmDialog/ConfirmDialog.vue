@@ -13,6 +13,7 @@
 					class="vc-container"
 				>
 					<span class="vc-text-grid">
+						<!-- eslint-disable -->
 						<h4
 							v-if="dialog.title"
 							class="vc-title"
@@ -23,6 +24,7 @@
 							class="vc-text"
 							v-html="dialog.message"
 						/>
+						<!-- eslint-enable -->
 						<span v-if="dialog.auth">
 							<input
 								v-model="password"

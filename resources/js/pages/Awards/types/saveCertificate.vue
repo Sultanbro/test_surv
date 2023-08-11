@@ -62,6 +62,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import VueHtml2pdf from './Html2pdf';
 

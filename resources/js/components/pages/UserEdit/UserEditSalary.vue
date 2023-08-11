@@ -1,5 +1,8 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 import {mask} from 'vue-the-mask'
 
 export default {
@@ -10,13 +13,34 @@ export default {
 			type: Object,
 			default: null,
 		},
-		old_zarplata: String,
-		old_kaspi_cardholder: String,
-		old_kaspi: String,
-		old_card_kaspi: String,
-		old_jysan_cardholder: String,
-		old_jysan: String,
-		old_card_jysan: String,
+		old_zarplata: {
+			type: String,
+			default: ''
+		},
+		old_kaspi_cardholder: {
+			type: String,
+			default: ''
+		},
+		old_kaspi: {
+			type: String,
+			default: ''
+		},
+		old_card_kaspi: {
+			type: String,
+			default: ''
+		},
+		old_jysan_cardholder: {
+			type: String,
+			default: ''
+		},
+		old_jysan: {
+			type: String,
+			default: ''
+		},
+		old_card_jysan: {
+			type: String,
+			default: ''
+		},
 		taxes: {
 			type: Array,
 			default: () => ([])

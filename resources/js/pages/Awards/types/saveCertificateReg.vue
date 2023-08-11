@@ -72,6 +72,7 @@ export default {
 		VueHtml2pdf,
 	},
 	props: {
+		/* eslint-disable camelcase, vue/prop-name-casing */
 		course_id: {
 			type: Number,
 			default: null

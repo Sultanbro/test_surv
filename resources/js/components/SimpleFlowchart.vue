@@ -33,7 +33,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../position';

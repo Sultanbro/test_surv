@@ -549,6 +549,7 @@ export default {
 			let loader = this.$loading.show();
 			this.btnLoading = true;
 			this.axios
+				/* eslint-disable-next-line camelcase */
 				.delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
 				.then(() => {
 					this.modalRemoveReward = false;

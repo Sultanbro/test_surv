@@ -1,7 +1,12 @@
 <script>
 export default {
 	name: 'ReportsNav',
-	props: ['activeTab'],
+	props: {
+		activeTab: {
+			type: String,
+			default: ''
+		}
+	},
 	data(){
 		return {
 			tenant: window.location.hostname.split('.')[0],

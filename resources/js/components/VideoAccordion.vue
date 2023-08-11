@@ -96,6 +96,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import VideoList from '@/components/VideoList'
 import VideoUploader from '@/components/VideoUploader'
 

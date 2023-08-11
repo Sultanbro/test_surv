@@ -161,7 +161,20 @@
 <script>
 export default {
 	name: 'BookItem',
-	props: ['tre', 'tree', 'books'],
+	props: {
+		tre: {
+			type: Array,
+			default: null,
+		},
+		tree: {
+			type: Array,
+			default: null,
+		},
+		books: {
+			type: Array,
+			default: null,
+		},
+	},
 	data() {
 		return {
 			renamebook:false,

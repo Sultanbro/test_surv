@@ -156,6 +156,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapGetters } from 'vuex'
 import JobtronOverlay from '@ui/Overlay'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'

@@ -161,6 +161,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import {fields/* , newItem */} from './indicators.js';
 import {sources, methods, views} from './helpers.js';

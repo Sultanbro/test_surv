@@ -30,12 +30,25 @@ export default {
 	components: {
 		UploadingFile
 	},
-	props: [
-		'token',
-		'type',
-		'file_types',
-		'id'
-	],
+	props: {
+		token: {
+			type: String,
+			default: ''
+		},
+		type: {
+			type: String,
+			default: ''
+		},
+		/* eslint-disable-next-line */
+		file_types: {
+			type: Array,
+			default: () => []
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
+	},
 	data(){
 		return {
 			files: [], // our local files array, we will pack in extra data to force reactivity

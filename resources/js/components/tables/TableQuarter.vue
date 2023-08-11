@@ -109,23 +109,30 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 export default {
 	name: 'TableQuarter',
 	props: {
 		group: {
-			default: 'Ежегодный  квартальный календарь',
+			type: String,
+			default: 'Ежегодный квартальный календарь',
 		},
 		activeuserid: {
+			type: Number,
 			default: 0,
 		},
 		is_admin: {
+			type: Boolean,
 			default: false,
 		},
 		user_id: {
+			type: Number,
 			default: 0,
 		},
 		type: {
+			type: String,
 			default: 'common',
 		},
 	},

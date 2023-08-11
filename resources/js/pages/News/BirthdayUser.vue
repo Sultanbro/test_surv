@@ -6,6 +6,7 @@
 			alt="img"
 		>
 		<div class="news-birthday-card__body">
+			<!-- eslint-disable -->
 			<span
 				class="news-birthday-card__name"
 				v-html="user.name"
@@ -14,6 +15,7 @@
 				:class="'news-birthday-card__birthday ' + getCardColor(user)"
 				v-html="user.date_human"
 			/>
+			<!-- eslint-enable -->
 		</div>
 		<div
 			:class="'news-birthday-card__gift ' +(success ? 'news-birthday-card__gift--success' : (hover ? 'news-birthday-card__gift--hover' : ''))"
@@ -122,6 +124,7 @@
 						class="news-birthday-card__image"
 					>
 					<div class="news-birthday-card__body">
+						<!-- eslint-disable -->
 						<span
 							class="news-birthday-card__name"
 							v-html="user.name"
@@ -130,6 +133,7 @@
 							:class="'news-birthday-card__birthday ' + getCardColor(user)"
 							v-html="user.date_human"
 						/>
+						<!-- eslint-enable -->
 					</div>
 					<a class="news-gift-second__send">
 						<span @click="sendMoney">Подарить!</span>
@@ -147,6 +151,7 @@ export default {
 	name: 'BirthdayUser',
 	props: {
 		user: {
+			type: Object,
 			required: true
 		}
 	},

@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable camelcase */
+
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
 const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/components/layouts/ReportsNav.vue')

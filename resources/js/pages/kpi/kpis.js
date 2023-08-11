@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 var kpi_fields = [
 	{
 		name: 'Кому',

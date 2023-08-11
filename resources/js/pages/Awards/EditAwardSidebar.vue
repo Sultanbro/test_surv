@@ -256,6 +256,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import UploadFile from './types/UploadFile.vue';
 import ChoiceTop from './types/ChoiceTop.vue';

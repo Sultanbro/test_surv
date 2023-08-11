@@ -199,6 +199,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VideoPlayerItem from '@/components/VideoPlayerItem' // плеер
 import Questions from '@/pages/Questions' // вопросы тестов
 import SimpleSidebar from '@/components/ui/SimpleSidebar'
@@ -214,24 +217,44 @@ export default {
 		SimpleSidebar
 	},
 	props: {
-		token: String,
-		id: Number,
-		auth_user_id: Number,
-		myvideo: Number,
-		mode: String,
+		token: {
+			type: String,
+			default: ''
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
+		auth_user_id: {
+			type: Number,
+			default: 0
+		},
+		myvideo: {
+			type: Number,
+			default: 0
+		},
+		mode: {
+			type: String,
+			default: ''
+		},
 		enable_url_manipulation: {
+			type: Boolean,
 			default: true
 		},
 		is_course: {
+			type: Boolean,
 			default: false
 		},
 		course_item_id: {
+			type: Number,
 			default: 0
 		},
 		all_stages: {
+			type: Number,
 			default: 0
 		},
 		completed_stages: {
+			type: Number,
 			default: 0
 		},
 	},

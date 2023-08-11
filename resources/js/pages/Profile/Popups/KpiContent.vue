@@ -178,12 +178,10 @@ export default {
 	methods: {
 		countAvg() {
 			this.items.forEach(kpi => {
-
-				let kpi_sum = 0;
-				let kpi_count = 0;
+				let kpiSum = 0;
+				let kpiCount = 0;
 
 				kpi.users.forEach(user => {
-
 					let count = 0;
 					let sum = 0;
 					let avg = 0;
@@ -201,15 +199,14 @@ export default {
 					user.avg = avg;
 
 					// all kpi sum
-					kpi_sum += Number(avg);
-					kpi_count++;
+					kpiSum += Number(avg);
+					kpiCount++;
 				});
 
 				/**
 				 * count avg completed percent of kpi by users
 				 */
-				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-
+				kpi.avg = kpiCount > 0 ? Number(Number(kpiSum / kpiCount * 100).toFixed(2)) : 0;
 			});
 		},
 	}
