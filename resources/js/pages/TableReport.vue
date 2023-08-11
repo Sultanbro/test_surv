@@ -249,7 +249,6 @@
 			</div>
 		</div>
 
-
 		<Sidebar
 			v-if="showExcelImport"
 			title="Импорт EXCEL"
@@ -259,7 +258,6 @@
 		>
 			<GroupExcelImport :group_id="currentGroup" />
 		</Sidebar>
-
 
 		<aside
 			v-if="openSidebar"
@@ -293,8 +291,8 @@
 										class="mb-3"
 									>
 										<p class="fz12">
-											<b class="text-black">Дата:</b> {{ (new
-												Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}
+											<b class="text-black">Дата:</b>
+											{{ (new Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}
 										</p>
 										<p class="fz12">
 											<b class="text-black">Автор:</b> {{ item.author }} <br>
@@ -314,8 +312,6 @@
 
 						<template v-if="canEdit">
 							<b-tab title="📆 Статус">
-								<!-- <div v-html="sidebarContent.history"></div>
-					<div v-html="sidebarContent.historyTotal"></div> -->
 								<template v-if="!sidebarContent.data.item.is_trainee">
 									<div class="temari">
 										<div
@@ -514,8 +510,6 @@
 
 				<template v-if="canEdit">
 					<b-tab title="📆">
-						<!-- <div v-html="sidebarContent.history"></div>
-            <div v-html="sidebarContent.historyTotal"></div> -->
 						<template v-if="!sidebarContent.data.item.is_trainee">
 							<div class="temari">
 								<div
@@ -643,7 +637,6 @@
 			</b-tabs>
 		</Sidebar>
 
-
 		<b-modal
 			v-model="modalVisibleFines"
 			ok-text="Да"
@@ -716,7 +709,6 @@
 			/>
 		</b-modal>
 
-
 		<b-modal
 			v-model="modalVisibleAbsence"
 			ok-text="Да"
@@ -774,7 +766,6 @@
 				</b-alert>
 			</template>
 
-
 			<select
 				class="form-control"
 				v-model="commentFiring2"
@@ -804,7 +795,6 @@
 				class="mt-3"
 			/>
 		</b-modal>
-
 
 		<b-modal
 			v-model="modalVisible"
@@ -1036,16 +1026,16 @@ export default {
 				return '';
 			}
 
-			this.axios.post('/autochecker/' + this.currentGroup, {})
-				.then(response => {
-					if (response.data.code == 200) {
-						this.$toast.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
-					} else {
-						this.$toast.error('Попробуйте нажать еще раз')
-					}
-				}).catch(error => {
-					alert(error)
-				});
+			this.axios.post('/autochecker/' + this.currentGroup, {}).then(response => {
+				if (response.data.code == 200) {
+					this.$toast.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
+				}
+				else {
+					this.$toast.error('Попробуйте нажать еще раз')
+				}
+			}).catch(error => {
+				alert(error)
+			});
 		},
 
 		openModalDay(dayType) {
@@ -1088,7 +1078,8 @@ export default {
 
 			try {
 				this.$toast.info('C ' + this.currentEditingCell.item[this.currentEditingCell.field.key].hour + ' на ' + hour);
-			} catch (e) {
+			}
+			catch (e) {
 				alert(e);
 			}
 		},
@@ -1136,7 +1127,6 @@ export default {
 					'Content-Type': 'multipart/form-data'
 				}
 			}).then(response => {
-
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 				[this.sidebarContent.day] = `day-${this.currentDayType.type}`
 
@@ -1144,11 +1134,9 @@ export default {
 
 				this.fetchData()
 
-
 				this.openSidebar = false
 
 				if (response.data.success == 1) {
-
 					this.sidebarHistory.push(response.data.history)
 					this.modalVisibleFiring = false
 					this.commentFiring = ''
@@ -1174,7 +1162,6 @@ export default {
 				comment: ' ',
 				year: this.dateInfo.currentYear,
 			}).then(response => {
-
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 				[day] = `day-${this.currentDayType.type}`
 
@@ -1182,9 +1169,7 @@ export default {
 
 				this.fetchData()
 
-
 				this.openSidebar = false
-
 				if (response.data.success == 1) {
 					this.sidebarHistory.push(response.data.history)
 					this.currentDayType = {}
@@ -1204,14 +1189,12 @@ export default {
 					comment: this.commentDay,
 					year: this.dateInfo.currentYear,
 				}).then(response => {
-
 					let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 					[this.sidebarContent.day] = `day-${this.currentDayType.type}`
 
 					this.items[this.sidebarContent.data.index]['_cellVariants'] = v
 
 					this.fetchData()
-
 
 					this.openSidebar = false
 
@@ -1224,7 +1207,8 @@ export default {
 				}).catch(error => {
 					alert(error)
 				});
-			} else {
+			}
+			else {
 				this.errors = ['Комментарий обязателен']
 			}
 		},
@@ -1247,7 +1231,8 @@ export default {
 					loader.hide()
 					alert(error)
 				});
-			} else {
+			}
+			else {
 				this.errors = ['Комментарий обязателен']
 			}
 		},
@@ -1326,16 +1311,14 @@ export default {
 			if (url === null) {
 				if (this.url_page === '') {
 					url = '/timetracking/reports';
-				} else {
+				}
+				else {
 					url = this.url_page;
 				}
-			} else {
-				// /timetracking/reports?page=2
+			}
+			else {
 				this.url_page = url;
 			}
-
-			/*console.log('URL');
-				console.log(url);*/
 
 			let loader = this.$loading.show();
 
@@ -1361,7 +1344,6 @@ export default {
 				this.setFields()
 				this.loadItems()
 
-
 				this.dataLoaded = true
 				setTimeout(() => {
 					var container = document.querySelector('.table-responsive')
@@ -1380,7 +1362,6 @@ export default {
 
 		//Добавление загруженных данных в таблицу
 		loadItems() {
-
 			let items = []
 
 			let daily_totals = {};
@@ -1390,7 +1371,6 @@ export default {
 			}
 
 			this.data.users.forEach(item => {
-
 				let dayHours = []
 				let startEnd = []
 
@@ -1420,19 +1400,9 @@ export default {
 						}
 					}
 					else {
-
-
 						if (tt.minutes > 0) {
 							dayHours[tt.date].hour += Number(tt.minutes / 60);
 							tt_hours += Number(tt.minutes / 60);
-						}
-
-
-						var maxHour = item.working_time_id === 1 ? 8 : 9;
-
-						if (dayHours[tt.date].hour > maxHour && tt.updated === 0) {
-							dayHours[tt.date].hour = maxHour;
-							tt_hours = maxHour;
 						}
 					}
 
@@ -1442,7 +1412,6 @@ export default {
 						daily_totals[tt.date] += Number(tt_hours);
 					}
 				})
-
 
 				//Время, история
 				dayHours.forEach((dh, key) => {
@@ -1467,14 +1436,11 @@ export default {
 					if (item.dayTypes) v[k] = `day-${item.dayTypes[k]}`
 				});
 
-
 				Object.keys(item.fines).forEach(k => {
 					if (item.fines[k].status == 1) {
 						v[parseInt(item.fines[k].date)] += ' table-day-2'
 					}
-
 				});
-
 
 				Object.keys(item.weekdays).forEach(k => {
 					if (Number(item.weekdays[k]) == 1) {
@@ -1485,7 +1451,6 @@ export default {
 				var variants = {
 					_cellVariants: v
 				}
-
 
 				items.push({
 					name: `${item.name} ${item.last_name}`,
@@ -1502,7 +1467,6 @@ export default {
 					...variants,
 					...dayHours,
 				})
-
 			})
 			this.items = items
 
@@ -1514,10 +1478,10 @@ export default {
 		},
 
 		editDay(data) {
-
 			try {
 				this.$toast.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
-			} catch (err) {
+			}
+			catch (err) {
 				console.error('editDay')
 			}
 
@@ -1558,7 +1522,8 @@ export default {
 					loader.hide()
 					alert(error)
 				});
-			} else {
+			}
+			else {
 				this.errors = ['Комментарий обязателен']
 			}
 		},
@@ -1622,7 +1587,6 @@ export default {
 
 				this.fetchData()
 
-
 				this.openSidebar = false
 
 				if (response.data.success == 1) {
@@ -1637,8 +1601,6 @@ export default {
 			}).catch(error => {
 				alert(error)
 			});
-
-
 		},
 
 		detectClick(data) {
@@ -1651,17 +1613,18 @@ export default {
 					setTimeout(function () {
 						if (self.numClicks === 1) {
 							self.openDay(data)
-						} else {
+						}
+						else {
 							self.editDay(data)
 						}
 						self.numClicks = 0;
 					}, 300);
 				}
 
-			} else { // ANOTHER GGROUPS JUST OPEN SIDEBAR
+			}
+			else { // ANOTHER GGROUPS JUST OPEN SIDEBAR
 				this.openDay(data);
 			}
-
 		},
 
 		sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
@@ -1675,7 +1638,8 @@ export default {
 			) {
 				// If both compared fields are native numbers or both are native dates
 				return a < b ? -1 : a > b ? 1 : 0
-			} else {
+			}
+			else {
 				// Otherwise stringify the field data and use String.prototype.localeCompare
 				return (b || '').toString().localeCompare((a || '').toString(), compareLocale, compareOptions)
 			}
@@ -1685,337 +1649,335 @@ export default {
 </script>
 
 <style lang="scss">
-
-
-	.table-report-sidebar{
-		position: fixed;
+.table-report-sidebar{
+	position: fixed;
+	top: 0;
+	right: 6rem;
+	z-index: 100;
+	width: 100%;
+	height: 100%;
+	.table-report-backdrop{
+		position: absolute;
 		top: 0;
-		right: 6rem;
-		z-index: 100;
+		left: 0;
+		z-index: 10;
 		width: 100%;
 		height: 100%;
-		.table-report-backdrop{
-			position: absolute;
-			top: 0;
-			left: 0;
-			z-index: 10;
-			width: 100%;
-			height: 100%;
-			background-color: #333;
-			opacity: 0.5;
-		}
-		.table-report-content{
-			position: absolute;
-			top: 0;
-			right: 0;
-			width: 400px;
-			height: 100vh;
-			border-radius: 20px 0 0 20px;
-			z-index: 15;
-			background-color: #fff;
-			.table-report-header{
-				background: #ECF0F9;
-				padding: 3rem;
-				display: flex;
-				align-items: center;
-				.table-report-title{
-					font-size: 16px;
-					font-weight: 600;
-					line-height: 1;
-				}
-				.table-report-close{
-					width: 35px;
-					height: 35px;
-					cursor: pointer;
-					margin-right: 15px;
-				}
+		background-color: #333;
+		opacity: 0.5;
+	}
+	.table-report-content{
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 400px;
+		height: 100vh;
+		border-radius: 20px 0 0 20px;
+		z-index: 15;
+		background-color: #fff;
+		.table-report-header{
+			background: #ECF0F9;
+			padding: 3rem;
+			display: flex;
+			align-items: center;
+			.table-report-title{
+				font-size: 16px;
+				font-weight: 600;
+				line-height: 1;
 			}
-			.table-report-body{
-				.nav-tabs{
-					.nav-item{
-						.nav-link{
-							color: #8D8D8D;
-							font-size: 1.7rem;
-							font-weight: 600;
-							transition: color 0.3s;
-							padding-top: 1.5rem;
-							cursor: pointer;
-							margin-right: 0;
-							border-bottom: none;
-							&.active{
-								border-top: 4px solid #ED2353;
-								color: #ED2353;
-							}
+			.table-report-close{
+				width: 35px;
+				height: 35px;
+				cursor: pointer;
+				margin-right: 15px;
+			}
+		}
+		.table-report-body{
+			.nav-tabs{
+				.nav-item{
+					.nav-link{
+						color: #8D8D8D;
+						font-size: 1.7rem;
+						font-weight: 600;
+						transition: color 0.3s;
+						padding-top: 1.5rem;
+						cursor: pointer;
+						margin-right: 0;
+						border-bottom: none;
+						&.active{
+							border-top: 4px solid #ED2353;
+							color: #ED2353;
 						}
 					}
 				}
-				.tab-content{
-					padding: 0 20px;
-				}
+			}
+			.tab-content{
+				padding: 0 20px;
 			}
 		}
 	}
-	.hovered-text {
-		margin-top: 15px;
-		color: #62788B;
+}
+.hovered-text {
+	margin-top: 15px;
+	color: #62788B;
+}
+
+.table-custom-report {
+	th, td {
+		vertical-align: middle;
+
+		.td-div {
+			height: 40px;
+			min-width: 50px;
+			padding: 0 10px;
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
 	}
 
-	.table-custom-report {
+	thead {
 		th, td {
+			text-align: center;
+			padding: 10px !important;
 			vertical-align: middle;
 
-			.td-div {
-				height: 40px;
-				min-width: 50px;
-				padding: 0 10px;
-				position: relative;
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
+			&:first-child {
+				padding: 0 15px !important;
 			}
 		}
+	}
 
-		thead {
-			th, td {
-				text-align: center;
-				padding: 10px !important;
-				vertical-align: middle;
+	tbody {
+		th, td {
+			padding: 0 !important;
 
-				&:first-child {
-					padding: 0 15px !important;
-				}
+			&:first-child {
+				padding: 0 15px !important;
 			}
 		}
+	}
 
-		tbody {
-			th, td {
-				padding: 0 !important;
+	.td-lightgreen {
+		background-color: #B7E100;
+	}
 
-				&:first-child {
-					padding: 0 15px !important;
-				}
-			}
-		}
+	.table-day-2 {
+		color: #333;
+		background-color: #f58c94;
 
-		.td-lightgreen {
-			background-color: #B7E100;
-		}
-
-		.table-day-2 {
+		input {
 			color: #333;
-			background-color: #f58c94;
-
-			input {
-				color: #333;
-			}
-		}
-
-		.table-day-3 {
-			color: rgb(0, 0, 0);
-			background-color: aqua !important;
-		}
-
-		.table-day-4 {
-			color: rgb(0, 0, 0);
-			background-color: rgb(200, 162, 200) !important;
-		}
-
-		.table-day-5 {
-			color: rgb(0, 0, 0);
-			background-color: #ffd76d !important;
-		}
-
-		.table-day-6 {
-			color: #fff;
-			background-color: pink !important;
-		}
-
-		.table-day-7 {
-			color: #fff;
-			background-color: #ffc107 !important;
-		}
-
-		.cell-border {
-			position: absolute;
-			right: -1px;
-			bottom: -5px;
-			border-top: 6px solid transparent;
-			border-bottom: 6px solid transparent;
-			border-left: 6px solid #b8daff;
-			-webkit-transform: rotate(45deg);
-			transform: rotate(45deg);
 		}
 	}
 
-
-	.editmode {
-		opacity: 0;
-		height: 36px;
-	}
-
-	.editmode:active {
-		opacity: 1;
-	}
-
-	.history {
-		height: 100vh;
-		overflow-y: auto;
-
-		p {
-			font-size: 14px;
-			color: #424242;
-		}
-	}
-
-	.fines-modal {
-		overflow-y: auto;
-		max-height: calc(100vh - 225px);
-		.custom-checkbox{
-			margin-bottom: 10px;
-		}
-	}
-
-
-	.b-table-sticky-header {
-		max-height: calc(100vh - 250px);
-	}
-
-	.table-day-1 {
+	.table-day-3 {
 		color: rgb(0, 0, 0);
-		background: #fef1cb !important;
+		background-color: aqua !important;
 	}
 
-	.temari{
-		.btn {
-		}
-		.button-day{
-			&_0{
-				border: 1px solid #999;
-				color: #333;
-				background-color: #fff;
-				&:hover{
-					background-color: #d8d8d8;
-				}
-			}
-			&_1{
-				border: 1px solid #958d73;
-				background-color: #e5dab6;
-				color: #333;
-				&:hover{
-					background-color: #c7bd9e;
-				}
-			}
-			&_2{
-				.img-info{
-					filter: contrast(100);
-				}
-			}
-			&_3{
-				border: 1px solid #4489c9;
-				background-color: #4c9ee5;
-				color: #fff;
-				&:hover{
-					background-color: #4489c9;
-				}
-				.img-info{
-					filter: contrast(100);
-				}
-			}
-			&_5{
-				border: 1px solid #e6983f;
-				background-color: #faa544;
-				color: #fff;
-				&:hover{
-					background-color: #e6983f;
-				}
-				.img-info{
-					filter: contrast(100);
-				}
-			}
-			&_6{
-				border: 1px solid #98116c;
-				background-color: #bc1585;
-				color: #fff;
-				&:hover{
-					background-color: #98116c;
-				}
-				.img-info{
-					filter: contrast(100);
-				}
-			}
-			&_7{
-				border: 1px solid #bf2216;
-				background-color: #df271a;
-				color: #fff;
-				&:hover{
-					background-color: #bf2216;
-				}
-				.img-info{
-					filter: contrast(100);
-				}
-			}
-		}
+	.table-day-4 {
+		color: rgb(0, 0, 0);
+		background-color: rgb(200, 162, 200) !important;
 	}
 
+	.table-day-5 {
+		color: rgb(0, 0, 0);
+		background-color: #ffd76d !important;
+	}
 
-	.my-table .day.Sat.table-day-2, .my-table .day.Sun.table-day-2 {
+	.table-day-6 {
 		color: #fff;
-		background-color: red;
+		background-color: pink !important;
 	}
 
+	.table-day-7 {
+		color: #fff;
+		background-color: #ffc107 !important;
+	}
 
-	.updated {
-		.cell-border {
-			border-left-color: red;
+	.cell-border {
+		position: absolute;
+		right: -1px;
+		bottom: -5px;
+		border-top: 6px solid transparent;
+		border-bottom: 6px solid transparent;
+		border-left: 6px solid #b8daff;
+		-webkit-transform: rotate(45deg);
+		transform: rotate(45deg);
+	}
+}
+
+
+.editmode {
+	opacity: 0;
+	height: 36px;
+}
+
+.editmode:active {
+	opacity: 1;
+}
+
+.history {
+	height: 100vh;
+	overflow-y: auto;
+
+	p {
+		font-size: 14px;
+		color: #424242;
+	}
+}
+
+.fines-modal {
+	overflow-y: auto;
+	max-height: calc(100vh - 225px);
+	.custom-checkbox{
+		margin-bottom: 10px;
+	}
+}
+
+
+.b-table-sticky-header {
+	max-height: calc(100vh - 250px);
+}
+
+.table-day-1 {
+	color: rgb(0, 0, 0);
+	background: #fef1cb !important;
+}
+
+.temari{
+	.btn {
+	}
+	.button-day{
+		&_0{
+			border: 1px solid #999;
+			color: #333;
+			background-color: #fff;
+			&:hover{
+				background-color: #d8d8d8;
+			}
+		}
+		&_1{
+			border: 1px solid #958d73;
+			background-color: #e5dab6;
+			color: #333;
+			&:hover{
+				background-color: #c7bd9e;
+			}
+		}
+		&_2{
+			.img-info{
+				filter: contrast(100);
+			}
+		}
+		&_3{
+			border: 1px solid #4489c9;
+			background-color: #4c9ee5;
+			color: #fff;
+			&:hover{
+				background-color: #4489c9;
+			}
+			.img-info{
+				filter: contrast(100);
+			}
+		}
+		&_5{
+			border: 1px solid #e6983f;
+			background-color: #faa544;
+			color: #fff;
+			&:hover{
+				background-color: #e6983f;
+			}
+			.img-info{
+				filter: contrast(100);
+			}
+		}
+		&_6{
+			border: 1px solid #98116c;
+			background-color: #bc1585;
+			color: #fff;
+			&:hover{
+				background-color: #98116c;
+			}
+			.img-info{
+				filter: contrast(100);
+			}
+		}
+		&_7{
+			border: 1px solid #bf2216;
+			background-color: #df271a;
+			color: #fff;
+			&:hover{
+				background-color: #bf2216;
+			}
+			.img-info{
+				filter: contrast(100);
+			}
 		}
 	}
+}
 
 
-	.badgy {
-		font-size: 0.75em;
+.my-table .day.Sat.table-day-2, .my-table .day.Sun.table-day-2 {
+	color: #fff;
+	background-color: red;
+}
+
+
+.updated {
+	.cell-border {
+		border-left-color: red;
 	}
+}
 
-	.temari {
-		height: calc(100vh - 180px);
-		display: flex;
-		flex-direction: column;
-	}
 
-	.ddf div {
-		display: flex;
-	}
+.badgy {
+	font-size: 0.75em;
+}
 
-	.ddf .custom-control {
-		margin-right: 15px;
-	}
+.temari {
+	height: calc(100vh - 180px);
+	display: flex;
+	flex-direction: column;
+}
 
-	.fz12 {
-		line-height: 1.4em;
-		font-size: 12px;
-		margin-bottom: 0;
-	}
+.ddf div {
+	display: flex;
+}
 
-	.fz14 {
-		font-size: 14px;
-		line-height: 1.4em;
-		padding: 10px 0;
-	}
+.ddf .custom-control {
+	margin-right: 15px;
+}
 
-	hr {
-		margin: 2px !important;
-	}
+.fz12 {
+	line-height: 1.4em;
+	font-size: 12px;
+	margin-bottom: 0;
+}
 
-	.hider {
-		position: absolute;
-		left: -10px;
-		width: 10px;
-		height: 10px;
-		opacity: 0;
-		display: block;
-	}
+.fz14 {
+	font-size: 14px;
+	line-height: 1.4em;
+	padding: 10px 0;
+}
 
-	.ddpointer {
-		margin-top: 2px;
-		cursor: pointer;
-	}
+hr {
+	margin: 2px !important;
+}
+
+.hider {
+	position: absolute;
+	left: -10px;
+	width: 10px;
+	height: 10px;
+	opacity: 0;
+	display: block;
+}
+
+.ddpointer {
+	margin-top: 2px;
+	cursor: pointer;
+}
 </style>
