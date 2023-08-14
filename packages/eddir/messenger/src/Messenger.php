@@ -819,13 +819,22 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function addUserToChat( int $chatId, int $userId, User $promote ): MessengerChat {
+    public function addUserToChat( int $chatId, int | array $userId, User $promote ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
         $chat->members()->syncWithoutDetaching( $userId );
 
-        $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
-            'user' => User::find( $userId )->toArray(),
-        ] );
+        if(is_int($userId)){
+            $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
+                'user' => User::find( $userId )->toArray(),
+            ] );
+        }
+        else{
+            foreach($_userId => $userId){
+                $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
+                    'user' => User::find( $_userId )->toArray(),
+                ] );
+            }
+        }
 
         return $chat;
     }
