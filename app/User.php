@@ -1505,17 +1505,15 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return int
      */
-    public function countWorkHours(): int
+    public function countWorkHours(): float
     {
         $schedule = $this->schedule(true);
         $workChart = $this->workChart;
         if ($workChart && $workChart->rest_time != null){
             $lunchTime = $workChart->rest_time;
-            $hour = intval($lunchTime / 60);
-            $minute = $lunchTime % 60;
-            $totalHour = floatval($hour.".".$minute);
+            $hour = floatval($lunchTime / 60);
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-            $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+            $working_hours = round($userWorkHours / 3600, 1) - $hour;
         }else{
             $lunchTime = 1;
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);

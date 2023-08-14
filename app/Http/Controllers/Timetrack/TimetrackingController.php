@@ -1209,17 +1209,57 @@ class TimetrackingController extends Controller
                 ];
             }
 
-            $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
-                ->with([
-                    'timetracking' => function ($q) use ($request) {
-                        $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
-                            ->orderBy('date')
-                            ->whereMonth('enter', $request->month)
-                            ->whereYear('enter', $request->year);
-                    }
-                ])
-                ->whereIn('id', $user_ids)
-                ->get();
+            if(isset($request['filter']) && $request->filter == "deactivated")
+            {
+                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                    ->whereNotNull('deleted_at')
+                    ->with([
+                        'timetracking' => function ($q) use ($request) {
+                            $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
+                                ->orderBy('date')
+                                ->whereMonth('enter', $request->month)
+                                ->whereYear('enter', $request->year);
+                        }
+                    ])
+                    ->whereIn('id', $user_ids)
+                    ->get();
+            }
+            elseif (isset($request['filter']) && $request->filter == "trainees")
+            {
+                $workingUsers = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d'));
+                $user_ids = collect($workingUsers)->pluck('id')->toArray();
+                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                    ->with([
+                        'timetracking' => function ($q) use ($request) {
+                            $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
+                                ->orderBy('date')
+                                ->whereMonth('enter', $request->month)
+                                ->whereYear('enter', $request->year);
+                        },
+                        'description'
+                    ])
+                    ->whereHas('description', function ($query) {
+                        $query->where('is_trainee', 1)
+                        ->where('fire_date',null);
+                    })
+                    ->whereIn('id', $user_ids)
+                    ->get();
+            }
+            else {
+
+                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                    ->with([
+                        'timetracking' => function ($q) use ($request) {
+                            $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
+                                ->orderBy('date')
+                                ->whereMonth('enter', $request->month)
+                                ->whereYear('enter', $request->year);
+                        }
+                    ])
+                    ->whereNull('deleted_at')
+                    ->whereIn('id', $user_ids)
+                    ->get();
+            }
 
             $data =[];
             foreach ($users as $userData) {
