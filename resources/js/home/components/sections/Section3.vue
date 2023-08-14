@@ -1,8 +1,8 @@
 <template>
 	<section id="jSec3">
 		<a
-			name="features"
 			id="features"
+			name="features"
 			class="ancor"
 		/>
 		<div class="section-content">

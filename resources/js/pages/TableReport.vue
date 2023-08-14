@@ -7,14 +7,14 @@
 			<div class="row mb-4">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -22,14 +22,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -37,14 +37,14 @@
 				</div>
 				<div class="col-2">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentYear"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="year in years"
-							:value="year"
 							:key="year"
+							:value="year"
 						>
 							{{ year }}
 						</option>
@@ -90,8 +90,8 @@
 						<button
 							v-if="currentGroup != 23 && user_types == 2 && isBp"
 							class="btn rounded btn-primary ml-2"
-							@click="copy()"
 							:style="{'padding': '2px 8px'}"
+							@click="copy()"
 						>
 							<i class="fa fa-clone ddpointer" />
 							Начать отметку
@@ -99,15 +99,15 @@
 					</div>
 					<div class="col-6 d-flex align-items-center justify-content-end">
 						<input
-							type="text"
 							:ref="'mylink' + currentGroup"
+							type="text"
 							class="hider"
 						>
 						<button
 							v-if="(currentGroup == 42 && canEdit) || (currentGroup == 88 && canEdit)"
-							@click="showExcelImport = !showExcelImport"
 							class="btn btn-primary mr-2 rounded"
 							:style="{'padding': '2px 8px'}"
+							@click="showExcelImport = !showExcelImport"
 						>
 							<i class="fa fa-upload" />
 							Импорт EXCEL
@@ -121,11 +121,11 @@
 
 				<div class="table-container">
 					<b-table
+						id="tabelTable"
 						responsive
 						bordered
 						:sticky-header="true"
 						class="text-nowrap text-right table-custom-report"
-						id="tabelTable"
 						:small="true"
 						:items="items"
 						:fields="fields"
@@ -137,9 +137,9 @@
 					>
 						<template #head(total)>
 							<img
+								v-b-popover.hover.right="'Общее количество часов по строке'"
 								src="/images/dist/profit-info.svg"
 								class="img-info"
-								v-b-popover.hover.right="'Общее количество часов по строке'"
 							>
 						</template>
 						<template #cell(name)="name">
@@ -179,24 +179,24 @@
 
 						<template #cell()="dataItem">
 							<div
-								@mouseover="dayInfo(dataItem)"
-								@click="detectClick(dataItem)"
 								class="td-div"
 								:class="{
 									'updated': dataItem.value.updated,
 									'pointer': dataItem.item._cellVariants
 								}"
+								@mouseover="dayInfo(dataItem)"
+								@click="detectClick(dataItem)"
 							>
 								<template v-if="dataItem.value.hour">
 									<input
 										class="cell-input"
 										type="number"
-										@mouseover="$event.preventDefault()"
 										:min="0"
 										:max="24"
 										:step="0.1"
 										:value="dataItem.value.hour"
 										:readonly="true"
+										@mouseover="$event.preventDefault()"
 										@dblclick="readOnlyFix"
 										@change="openModal"
 									>
@@ -208,8 +208,8 @@
 
 								<div
 									v-if="dataItem.value.tooltip"
-									class="cell-border"
 									:id="`cell-border-${dataItem.item.id}-${dataItem.field.key}`"
+									class="cell-border"
 								/>
 								<b-popover
 									v-if="dataItem.value.tooltip"
@@ -220,6 +220,7 @@
 									<template #title>
 										Время работы
 									</template>
+									<!-- eslint-disable-next-line -->
 									<div v-html="dataItem.value.tooltip" />
 								</b-popover>
 							</div>
@@ -254,8 +255,8 @@
 			v-if="showExcelImport"
 			title="Импорт EXCEL"
 			:open="showExcelImport"
-			@close="showExcelImport=false"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<GroupExcelImport :group_id="currentGroup" />
 		</Sidebar>
@@ -299,10 +300,12 @@
 										<p class="fz12">
 											<b class="text-black">Автор:</b> {{ item.author }} <br>
 										</p>
+										<!-- eslint-disable -->
 										<p
 											class="fz14 mb-0"
 											v-html="item.description"
 										/><br>
+										<!-- eslint-enable -->
 										<hr>
 									</div>
 								</div>
@@ -325,51 +328,51 @@
 										>
 											<b-button
 												block
-												@click="openModalDay(dateType)"
 												:class="'button-day_' + dateType.type"
+												@click="openModalDay(dateType)"
 											>
 												{{ dateType.label }}
 												<img
 													v-if="dateType.popover"
+													v-b-popover.hover.bottom="dateType.popover"
 													src="/images/dist/profit-info.svg"
 													class="img-info"
-													v-b-popover.hover.bottom="dateType.popover"
 												>
 											</b-button>
 										</div>
 										<div class="mt-auto">
 											<b-button
 												block
+												:class="'button-day_7'"
 												@click="openFiringModal({
 													label: 'Уволить без отработки',
 													color: '#d35dd3',
 													type: 4
 												}, 1)"
-												:class="'button-day_7'"
 											>
 												Уволить без отработки
 												<img
+													v-b-popover.hover.top="'У сотрудника сразу закроется доступ к профилю'"
 													src="/images/dist/profit-info.svg"
 													class="img-info"
-													v-b-popover.hover.top="'У сотрудника сразу закроется доступ к профилю'"
 												>
 											</b-button>
 										</div>
 										<div class="mt-2">
 											<b-button
 												block
+												:class="'button-day_7'"
 												@click="openFiringModal({
 													label: 'Уволить с отработкой',
 													color: '#c8a2c8',
 													type: 4
 												}, 2)"
-												:class="'button-day_7'"
 											>
 												Уволить с отработкой
 												<img
+													v-b-popover.hover.top="'Доступ к профилю закроется через 14 календарных дней'"
 													src="/images/dist/profit-info.svg"
 													class="img-info"
-													v-b-popover.hover.top="'Доступ к профилю закроется через 14 календарных дней'"
 												>
 											</b-button>
 										</div>
@@ -434,9 +437,9 @@
 									<template #label>
 										Система депремирования
 										<img
+											v-b-popover.hover.bottom="'При активации, от окладной части будет вычитаться соответственные суммы депремирований'"
 											src="/images/dist/profit-info.svg"
 											class="img-info"
-											v-b-popover.hover.bottom="'При активации, от окладной части будет вычитаться соответственные суммы депремирований'"
 										>
 									</template>
 									<b-form-checkbox-group
@@ -446,9 +449,10 @@
 									>
 										<b-form-checkbox
 											v-for="fine in fines"
-											:value="fine.value"
 											:key="fine.value"
+											:value="fine.value"
 										>
+											<!-- eslint-disable-next-line -->
 											<span v-html="fine.text" />
 										</b-form-checkbox>
 									</b-form-checkbox-group>
@@ -474,8 +478,8 @@
 			v-if="false"
 			:title="sidebarTitle"
 			:open="openSidebar"
-			@close="openSidebar=false"
 			width="350px"
+			@close="openSidebar=false"
 		>
 			<b-tabs
 				content-class="mt-3"
@@ -499,10 +503,12 @@
 								<p class="fz12">
 									<b class="text-black">Автор:</b> {{ item.author }} <br>
 								</p>
+								<!-- eslint-disable -->
 								<p
 									class="fz14 mb-0"
 									v-html="item.description"
 								/><br>
+								<!-- eslint-enable -->
 								<hr>
 							</div>
 						</div>
@@ -525,8 +531,8 @@
 								>
 									<b-button
 										block
-										@click="openModalDay(dateType)"
 										:class="'table-day-'+dateType.type"
+										@click="openModalDay(dateType)"
 									>
 										{{ dateType.label }}
 									</b-button>
@@ -534,12 +540,12 @@
 								<div class="mt-auto">
 									<b-button
 										block
+										:class="'table-day-4'"
 										@click="openFiringModal({
 											label: 'Уволить без отработки',
 											color: '#d35dd3',
 											type: 4
 										}, 1)"
-										:class="'table-day-4'"
 									>
 										Уволить без отработки
 									</b-button>
@@ -547,12 +553,12 @@
 								<div class="mt-2">
 									<b-button
 										block
+										:class="'table-day-4'"
 										@click="openFiringModal({
 											label: 'Уволить с отработкой',
 											color: '#c8a2c8',
 											type: 4
 										}, 2)"
-										:class="'table-day-4'"
 									>
 										Уволить с отработкой
 									</b-button>
@@ -625,9 +631,10 @@
 							>
 								<b-form-checkbox
 									v-for="fine, key in fines"
-									:value="fine.value"
 									:key="key"
+									:value="fine.value"
 								>
+									<!-- eslint-disable-next-line -->
 									<span v-html="fine.text" />
 								</b-form-checkbox>
 							</b-form-checkbox-group>
@@ -649,14 +656,14 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			title="Вы уверены?"
-			@ok="saveFines"
 			size="md"
+			@ok="saveFines"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -673,14 +680,14 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			:title="modalTitle"
-			@ok="setDayType"
 			size="md"
+			@ok="setDayType"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -697,14 +704,14 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			:title="'Принятие на работу'"
-			@ok="applyPerson"
 			size="md"
+			@ok="applyPerson"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -722,22 +729,22 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			title="Отсутствовал на стажировке"
-			@ok="setUserAbsent"
 			size="md"
+			@ok="setUserAbsent"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
 			</template>
 
 			<select
-				class="form-control"
 				v-model="commentAbsent"
+				class="form-control"
 			>
 				<option
 					value=""
@@ -761,14 +768,14 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			:title="modalTitle"
-			@ok="setUserFired"
 			size="md"
+			@ok="setUserFired"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -776,8 +783,8 @@
 
 
 			<select
-				class="form-control"
 				v-model="commentFiring2"
+				class="form-control"
 			>
 				<option
 					value=""
@@ -811,14 +818,14 @@
 			ok-text="Да"
 			cancel-text="Нет"
 			title="Вы уверены?"
-			@ok="updateHour"
 			size="md"
+			@ok="updateHour"
 		>
 			<template v-for="error in errors">
 				<b-alert
+					:key="error"
 					show
 					variant="danger"
-					:key="error"
 				>
 					{{ error }}
 				</b-alert>
@@ -833,6 +840,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table

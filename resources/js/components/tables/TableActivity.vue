@@ -1,8 +1,8 @@
 <template>
 	<div class="mb-3">
 		<div
-			class="d-flex align-items-center mb-2"
 			v-if="show_headers"
+			class="d-flex align-items-center mb-2"
 		>
 			<h4 class="mr-2">
 				{{ activity.name }}
@@ -53,8 +53,8 @@
 			<div v-if="group_id == 58 || group_id == 59 || group_id == 42">
 				<!-- Ozon -->
 				<a
-					@click="showExcelImport = !showExcelImport"
 					class="btn btn-success rounded mr-2 text-white"
+					@click="showExcelImport = !showExcelImport"
 				>
 					<i class="fa fa-upload" />
 					Импорт</a>
@@ -64,8 +64,8 @@
 			<div>
 				<a
 					href="#"
-					@click="exportData()"
 					class="btn btn-success rounded"
+					@click="exportData()"
 				>
 					<i class="far fa-file-excel" />
 					Экспорт</a>
@@ -127,14 +127,14 @@
 					<div class="wd d-flex">
 						{{ item.lastname }} {{ item.name }}
 						<b-badge
-							variant="success"
 							v-if="item.group == 'Просрочники'"
+							variant="success"
 						>
 							{{ item.group }}
 						</b-badge>
 						<b-badge
-							variant="primary"
 							v-else
+							variant="primary"
 						>
 							{{ item.group }}
 						</b-badge>
@@ -198,18 +198,18 @@
 					>
 						<div>
 							<input
-								type="number"
 								v-model="item[day]"
-								@change="updateSettings($event, item, index, day)"
+								type="number"
 								class="form-control cell-input"
+								@change="updateSettings($event, item, index, day)"
 							>
 						</div>
 					</td>
 					<td
 						v-else
-						@click="editMode(item)"
 						:key="day + 'a'"
 						:class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+						@click="editMode(item)"
 					>
 						<div v-if="item[day]">
 							{{ item[day] }}{{ activity.unit }}
@@ -220,23 +220,25 @@
 		</table>
 
 		<sidebar
+			v-if="showExcelImport"
 			title="Импорт EXCEL"
 			:open="showExcelImport"
-			@close="showExcelImport=false"
-			v-if="showExcelImport"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<activity-excel-import
 				:group_id="group_id"
 				table="minutes"
-				@close="showExcelImport=false"
 				:activity_id="activity.id"
+				@close="showExcelImport=false"
 			/>
 		</sidebar>
 	</div>
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 // const KASPI_NAP = 35;
 // const KASPI_PROS = 42;
@@ -248,14 +250,26 @@
 export default {
 	name: 'TActivity',
 	props: {
-		month: Object,
-		activity: Object,
-		group_id: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		},
 		color_invert: {
 			type: Boolean,
 			default: false
 		},
-		work_days: Number, // 5 или 6 дней в неделю
+		work_days: {
+			type: Number,
+			default: 0
+		}, // 5 или 6 дней в неделю
 		editable: {
 			type: Boolean,
 			default: true
@@ -456,8 +470,6 @@ export default {
 
 			let avg;
 			avg = quantity != 0 ? total / quantity : 0;
-			console.log('TOTAL ' + total)
-			console.log('AVG ' + avg)
 			let plan = quantity == 0 ? '' : Number(avg).toFixed(1);
 			this.itemsArray[0]['plan'] = this.activity.unit == '%' && plan != '' ? plan + '%' : plan;
 

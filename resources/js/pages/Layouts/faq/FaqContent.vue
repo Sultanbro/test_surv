@@ -3,10 +3,12 @@
 		<p class="faq-content-title">
 			{{ itemContent.title }}
 		</p>
+		<!-- eslint-disable vue/no-v-html -->
 		<div
 			class="faq-content-body"
 			v-html="filteredContent.html"
 		/>
+		<!-- eslint-enable vue/no-v-html -->
 	</div>
 </template>
 

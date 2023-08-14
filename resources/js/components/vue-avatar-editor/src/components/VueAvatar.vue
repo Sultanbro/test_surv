@@ -1,41 +1,26 @@
 <template>
 	<div>
 		<canvas
+			ref="canvas"
 			:width="canvasWidth"
 			:height="canvasHeight"
-			ref="canvas"
+			:class="cursor"
 			@dragover.prevent
 			@drop="onDrop"
 			@mousedown="onDragStart"
 			@mouseup="onDragEnd"
 			@mousemove="onMouseMove"
 			@click="clicked"
-			:class="cursor"
 		/>
 
 		<input
-			type="file"
 			id="ab-1"
-			@change="fileSelected"
+			type="file"
 			style="display:none;"
+			@change="fileSelected"
 		>
 	</div>
 </template>
-<style type="text/css">
-    .cursorPointer{
-        cursor: pointer;
-    }
-    .cursorGrab{
-        cursor: grab;
-        cursor: -webkit-grab;
-        cursor: -moz-grab;
-    }
-    .cursorGrabbing{
-        cursor: grabbing;
-        cursor: -webkit-grabbing;
-        cursor: -moz-grabbing;
-    }
-</style>
 <script>
 const drawRoundedRect = (context, x, y, width, height, borderRadius) => {
 	if (borderRadius === 0) {
@@ -439,3 +424,18 @@ export default {
 	}
 }
 </script>
+<style type="text/css">
+    .cursorPointer{
+        cursor: pointer;
+    }
+    .cursorGrab{
+        cursor: grab;
+        cursor: -webkit-grab;
+        cursor: -moz-grab;
+    }
+    .cursorGrabbing{
+        cursor: grabbing;
+        cursor: -webkit-grabbing;
+        cursor: -moz-grabbing;
+    }
+</style>

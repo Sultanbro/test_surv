@@ -11,10 +11,12 @@
 			<div class="ui-sidebar__header d-flexy">
 				<slot name="header">
 					<span class="ui-sidebar__header-text">{{ title }}</span>
+					<!-- eslint-disable -->
 					<span
 						class="ui-sidebar__header-link"
 						v-html="link"
 					/>
+					<!-- eslint-enable -->
 				</slot>
 			</div>
 			<div class="ui-sidebar__content">
@@ -28,10 +30,19 @@
 export default {
 	name: 'UISidebar',
 	props: {
-		title: {},
-		open: {},
-		width: {},
+		title: {
+			type: String,
+			default: ''
+		},
+		open: {
+			type: Boolean
+		},
+		width: {
+			type: String,
+			default: ''
+		},
 		link: {
+			type: String,
 			default: ''
 		},
 	},

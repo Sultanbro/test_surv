@@ -11,12 +11,12 @@ export default {
 	},
 	data(){
 		return {
-			auth_role: null,
+			authRole: null,
 		}
 	},
 	mounted(){
 		useAsyncPageData('/cabinet').then(data => {
-			this.auth_role = data.auth_role || null
+			this.authRole = data.auth_role || null
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
@@ -28,8 +28,8 @@ export default {
 	<DefaultLayout class="no-padding">
 		<div class="old__content">
 			<Cabinet
-				v-show="auth_role"
-				:auth-role="auth_role"
+				v-show="authRole"
+				:auth-role="authRole"
 			/>
 		</div>
 	</DefaultLayout>

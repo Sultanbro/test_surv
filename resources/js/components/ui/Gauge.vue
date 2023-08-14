@@ -4,7 +4,16 @@
 <script>
 export default {
 	name: 'UIGauge',
-	props: ['value', 'max'],
+	props: {
+		value: {
+			type: Number,
+			default: 0
+		},
+		max: {
+			type: Number,
+			default: 0
+		}
+	},
 	data() {
 		return {
 			stroke: '1256.6370614359173,2513.2741228718346',
@@ -12,7 +21,6 @@ export default {
 			start: 1256.6370614359173,
 			percent: 0,
 			radius: '400',
-			needle_degree: '',
 			gauge: null
 		}
 	},

@@ -28,8 +28,8 @@ export default {
 				>Примечание для внешнего рекрутера</label>
 				<div class="col-sm-8">
 					<textarea
-						name="recruiter_comment"
 						id="recruiter_comment"
+						name="recruiter_comment"
 						class="form-control"
 						placeholder="Коментарии"
 						:value="user ? user.recruiter_comment : ''"

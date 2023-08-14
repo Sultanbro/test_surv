@@ -1,15 +1,15 @@
 <template>
 	<div class="mb-0">
 		<b-table
+			v-for="(item, index) in items"
+			:key="index"
 			responsive
 			:sticky-header="true"
 			class="text-nowrap text-right my-table"
 			:small="true"
 			:bordered="true"
-			v-for="(item, index) in items"
 			:items="item.items"
 			:fields="item.fields"
-			:key="index"
 			show-empty
 			empty-text="Нет данных"
 		/>
@@ -20,8 +20,21 @@
 export default {
 	name: 'TableIndividually',
 	props: {
-		data: Object,
-		month: Object,
+		data: {
+			type: Object,
+			default: null
+		},
+		month: {
+			type: Object,
+			default: null
+		},
+	},
+	data() {
+		return {
+			hide: false,
+			items: [],
+			fields: [],
+		};
 	},
 	watch: {
 		// эта функция запускается при любом изменении данных
@@ -149,13 +162,6 @@ export default {
 
 			this.items = rows;
 		},
-	},
-	data() {
-		return {
-			hide: false,
-			items: [],
-			fields: [],
-		};
 	},
 };
 </script>

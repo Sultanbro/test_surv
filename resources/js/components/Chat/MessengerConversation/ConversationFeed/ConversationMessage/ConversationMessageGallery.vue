@@ -7,10 +7,10 @@
 			@click="openImage(file)"
 		>
 			<img
-				@load="$emit('loadImage')"
 				:src="file.thumbnail_path ? file.thumbnail_path : file.file_path"
 				:alt="file.name"
 				class="ConversationMessageGallery-image"
+				@load="$emit('loadImage')"
 			>
 			<div
 				v-if="files.length > 2 && key === 1"

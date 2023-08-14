@@ -7,14 +7,14 @@
 			<div class="row mb-3">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -22,14 +22,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -37,14 +37,14 @@
 				</div>
 				<div class="col-2">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentYear"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="year in years"
-							:value="year"
 							:key="year"
+							:value="year"
 						>
 							{{ year }}
 						</option>
@@ -90,14 +90,14 @@
 					ok-text="Да"
 					cancel-text="Нет"
 					title="Вы уверены?"
-					@ok="setTimeManually"
 					size="md"
+					@ok="setTimeManually"
 				>
 					<template v-for="error in errors">
 						<b-alert
+							:key="error"
 							show
 							variant="danger"
-							:key="error"
 						>
 							{{ error }}
 						</b-alert>
@@ -110,10 +110,10 @@
 				</b-modal>
 				<div class="table-container table-coming">
 					<b-table
+						id="comingTable"
 						responsive
 						:sticky-header="true"
 						class="text-nowrap text-right table-custom-table-coming"
-						id="comingTable"
 						:small="true"
 						:bordered="true"
 						:items="items"
@@ -121,31 +121,31 @@
 						show-empty
 						empty-text="Нет данных"
 					>
-						<template #cell(name)="data">
+						<template #cell(name)="nameData">
 							<div>
-								{{ data.value }}
+								{{ nameData.value }}
 								<b-badge
-									v-if="data.field.key == 'name' && data.value"
+									v-if="nameData.field.key == 'name' && nameData.value"
 									pill
 									variant="success"
 								>
-									{{ data.item.user_type }}
+									{{ nameData.item.user_type }}
 								</b-badge>
 							</div>
 						</template>
 
-						<template #cell()="data">
+						<template #cell()="cellData">
 							<div
-								@click="setCurrentEditingCell(data)"
-								:class="{ fine: data.item.fines[data.field.key.toString()].length > 0}"
+								:class="{fine: cellData.item.fines[cellData.field.key.toString()].length > 0}"
+								@click="setCurrentEditingCell(cellData)"
 							>
 								<input
-									@mouseover="$event.preventDefault()"
 									class="cell-input"
 									type="time"
-									:value="data.value"
+									:value="cellData.value"
 									:readonly="true"
 									ondblclick="this.readOnly='';"
+									@mouseover="$event.preventDefault()"
 									@change="changeTimeInCell"
 									@keyup.enter="openModal"
 								>
@@ -162,6 +162,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
@@ -171,11 +173,11 @@ export default {
 	props: {
 		groups: {
 			type: Array,
-			default: () => [],
+			default: () => []
 		},
 		activeuserid: {
 			type: String,
-			default: '',
+			default: ''
 		},
 	},
 	data() {

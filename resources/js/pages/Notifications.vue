@@ -7,39 +7,39 @@
 		>
 			<!-- user notis -->
 			<b-tab
-				title="Индивидуальные"
 				key="1"
+				title="Индивидуальные"
 			>
 				<div class="row align-items-center py-4">
 					<div class="col-lg-3 col-md-6">
 						<multiselect
+							v-model="activeuser"
 							label="name"
 							:options="user_with_notifications"
-							v-model="activeuser"
 							placeholder="Выберите сотрудника из списка"
 						/>
 					</div>
 					<div class="col-lg-3 col-md-6">
 						<button
 							v-if="activeuser"
-							@click="deleteUser"
 							class="btn-primary btn"
+							@click="deleteUser"
 						>
 							Исключить сотрудника
 						</button>
 					</div>
 					<div class="col-lg-3 col-md-6">
 						<multiselect
+							v-model="newUser"
 							label="name"
 							:options="users"
-							v-model="newUser"
 							placeholder="Выберите из списка"
 						/>
 					</div>
 					<div class="col-lg-3 col-md-6">
 						<button
-							@click="addUser"
 							class="btn-primary btn"
+							@click="addUser"
 						>
 							Добавить сотрудника
 						</button>
@@ -47,8 +47,8 @@
 				</div>
 
 				<div
-					class="mt-4"
 					v-if="activeuser"
+					class="mt-4"
 				>
 					<div class="">
 						<h5 class="mr-2">
@@ -69,15 +69,15 @@
 					</div>
 
 					<div
-						class="row mt-2"
 						v-for="(noti, key) in activeuser_notifications"
 						:key="key"
+						class="row mt-2"
 					>
 						<div class="col-lg-3">
 							<multiselect
+								v-model="noti[0]"
 								label="title"
 								:options="templates"
-								v-model="noti[0]"
 								placeholder="Выберите из списка"
 							/>
 						</div>
@@ -114,8 +114,8 @@
 
 
 			<b-tab
-				title="Шаблоны"
 				key="2"
+				title="Шаблоны"
 			>
 				<b-tabs
 					type="card"
@@ -123,8 +123,8 @@
 					class="specialtab mt-5"
 				>
 					<b-tab
-						title="Индивидуальные"
 						key="1"
+						title="Индивидуальные"
 						card
 					>
 						<!-- individual notis -->
@@ -145,18 +145,19 @@
 									<b-tbody>
 										<b-tr
 											v-for="(item, status_index) in user_templates"
-											:class="{ active: item.editable }"
 											:key="item.id"
+											:class="{ active: item.editable }"
 										>
 											<b-td>
 												<b-form-checkbox
-													switch
 													v-model="item.editable"
+													switch
 												>
 													{{ item.title }}
 												</b-form-checkbox>
 											</b-td>
 											<b-td>
+												<!-- eslint-disable vue/no-v-html -->
 												<div
 													class="p-2"
 													v-html="item.message"
@@ -165,11 +166,12 @@
 													class="description"
 													v-html="item.note"
 												/>
+												<!-- eslint-disable vue/no-v-html -->
 											</b-td>
 											<b-td>
 												<multiselect
-													v-model="item.selectedGroups"
 													id="ajax"
+													v-model="item.selectedGroups"
 													label="name"
 													track-by="id"
 													placeholder="Выберите сотрудников"
@@ -203,8 +205,8 @@
 											<b-td>
 												<button
 													class="btn btn-primary btn-sm rounded"
-													@click="updateNotification(item, status_index)"
 													:disabled="!item.editable"
+													@click="updateNotification(item, status_index)"
 												>
 													Сохранить
 												</button>
@@ -217,8 +219,8 @@
 						<!-- end of individual notis -->
 					</b-tab>
 					<b-tab
-						title="Должностные"
 						key="2"
+						title="Должностные"
 					>
 						<!-- position notis -->
 						<div
@@ -238,13 +240,13 @@
 									<b-tbody>
 										<b-tr
 											v-for="(item, status_index) in position_templates"
-											:class="{ active: item.editable }"
 											:key="item.id"
+											:class="{ active: item.editable }"
 										>
 											<b-td>
 												<b-form-checkbox
-													switch
 													v-model="item.editable"
+													switch
 												>
 													{{ item.title }}
 												</b-form-checkbox>
@@ -261,8 +263,8 @@
 											</b-td>
 											<b-td>
 												<multiselect
-													v-model="item.selectedGroups"
 													id="ajax"
+													v-model="item.selectedGroups"
 													label="name"
 													track-by="id"
 													placeholder="Выберите позиции"
@@ -296,8 +298,8 @@
 											<b-td>
 												<button
 													class="btn btn-primary btn-sm rounded"
-													@click="updateNotification(item, status_index)"
 													:disabled="!item.editable"
+													@click="updateNotification(item, status_index)"
 												>
 													Сохранить
 												</button>
@@ -311,8 +313,8 @@
 					</b-tab>
 
 					<b-tab
-						title="Групповые"
 						key="3"
+						title="Групповые"
 						card
 					>
 						<!-- group notis -->
@@ -334,13 +336,13 @@
 									<b-tbody>
 										<b-tr
 											v-for="(item, status_index) in group_templates"
-											:class="{ active: item.editable }"
 											:key="item.id"
+											:class="{ active: item.editable }"
 										>
 											<b-td>
 												<b-form-checkbox
-													switch
 													v-model="item.editable"
+													switch
 												>
 													{{ item.title }}
 												</b-form-checkbox>
@@ -352,9 +354,9 @@
 													style="min-width: 200px;"
 												>
 													<b-form-select-option
-														:value="action.value"
 														v-for="(action, index) in actions"
 														:key="index"
+														:value="action.value"
 													>
 														{{ action.title }}
 													</b-form-select-option>
@@ -372,8 +374,8 @@
 											</b-td>
 											<b-td>
 												<multiselect
-													v-model="item.selectedGroups"
 													id="ajax"
+													v-model="item.selectedGroups"
 													label="name"
 													track-by="id"
 													placeholder="Выберите группы"
@@ -407,8 +409,8 @@
 											<b-td>
 												<button
 													class="btn btn-primary btn-sm rounded"
-													@click="updateNotification(item, status_index)"
 													:disabled="!item.editable"
+													@click="updateNotification(item, status_index)"
 												>
 													Сохранить
 												</button>
@@ -422,8 +424,8 @@
 					</b-tab>
 
 					<b-tab
-						title="Другие"
 						key="4"
+						title="Другие"
 						card
 					>
 						<!-- group notis -->
@@ -444,8 +446,8 @@
 									<b-tbody>
 										<b-tr
 											v-for="item in other_templates"
-											:class="{ active: item.editable }"
 											:key="item.id"
+											:class="{ active: item.editable }"
 										>
 											<b-td>
 												{{ item.title }}
@@ -457,9 +459,9 @@
 													style="min-width: 200px;"
 												>
 													<b-form-select-option
-														:value="action.value"
 														v-for="(action, index) in actions"
 														:key="index"
+														:value="action.value"
 													>
 														{{ action.title }}
 													</b-form-select-option>
@@ -494,22 +496,24 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'PageNotifications',
-	props: [
-		'groups_with_id',
-		'users',
-		'positions',
-	],
-	watch: {
-		activeuser: {
-			handler () {
-				this.selectUser()
-			}
+	props: {
+		groups_with_id: {
+			type: Array,
+			default: () => []
 		},
-		positions(){
-			this.init()
-		}
+		users: {
+			type: Array,
+			default: () => []
+		},
+		positions: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
@@ -556,6 +560,16 @@ export default {
 			}
 		}
 	},
+	watch: {
+		activeuser: {
+			handler () {
+				this.selectUser()
+			}
+		},
+		positions(){
+			this.init()
+		}
+	},
 	created() {
 		if(this.positions){
 			this.init()
@@ -597,7 +611,7 @@ export default {
 				this.$toast.success('Успешно изменено!');
 
 			}).catch(error => {
-				console.log(error.response)
+				console.error(error.response)
 				this.$toast.error('Ошибка!');
 			});
 		},
@@ -630,9 +644,7 @@ export default {
 			this.selectUser()
 		},
 
-		optionSelected(e) {
-			console.log(e)
-		},
+		optionSelected() {},
 
 		fetchData () {
 			this.axios.get('/timetracking/settings/notifications/get').then(response => {
@@ -655,7 +667,7 @@ export default {
 					this.$toast.success('Сохранено');
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.error('Ошибка!');
 				});
 		},
@@ -677,7 +689,7 @@ export default {
 
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					this.$toast.error('Ошибка!');
 				});
 		},
@@ -691,21 +703,6 @@ export default {
 					this.activeuser_notifications = [];
 					if(response.data) {
 						this.activeuser_notifications =  response.data.notifications;
-						// let array = response.data.notifications;
-
-						// array.forEach((el, index) => {
-						//     el[1].forEach(group => {
-						//         let item = this.groups.find(x => x.id === group);
-
-						//         if(item === undefined) {
-						//             array[index][1] = item
-						//         }
-						//     });
-						// });
-
-						// console.log(array)
-						// this.activeuser_notifications = array
-
 					}
 
 				})

@@ -6,6 +6,7 @@
         </div> -->
 			<div class="col-12">
 				<JobtronTable
+					:key="tableKey"
 					responsive
 					striped
 					class="text-nowrap mb-3 table-funnel"
@@ -13,13 +14,12 @@
 					:bordered="true"
 					:items="items"
 					:fields="fields"
-					:key="tableKey"
 					primary-key="a"
 				>
 					<template #header(name)="data">
 						<input
-							type="text"
 							:ref="'mylink' + segment"
+							type="text"
 							class="hider"
 						>
 						<span>{{ data.field.label }}</span>
@@ -43,10 +43,10 @@
 							class="TableFunnel-input"
 						>
 							<input
-								type="number"
 								v-model="data.value"
-								@change="updateSettings($event,data)"
+								type="number"
 								class="form-control form-control-sm"
+								@change="updateSettings($event,data)"
 							>
 						</div>
 						<div v-else>
@@ -69,12 +69,30 @@ export default {
 		JobtronTable,
 	},
 	props: {
-		table: Array,
-		title: String,
-		type: String,
-		segment: String,
-		date: String,
-		id: Number,
+		table: {
+			type: Array,
+			default: () => []
+		},
+		title: {
+			type: String,
+			default: ''
+		},
+		type: {
+			type: String,
+			default: ''
+		},
+		segment: {
+			type: String,
+			default: ''
+		},
+		date: {
+			type: String,
+			default: ''
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
 		// rates: Array,
 		// daysInMonth: {
 		//     default: new Date().getDate(),
@@ -259,6 +277,7 @@ export default {
 
 			this.axios.post('/timetracking/update-settings-extra', {
 				date: this.date,
+				/* eslint-disable-next-line camelcase */
 				group_id: 48,
 				settings: this.items,
 				type: this.segment

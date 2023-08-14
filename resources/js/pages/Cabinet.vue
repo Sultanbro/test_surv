@@ -13,9 +13,9 @@
 					<li class="position-relative lp-item">
 						<a
 							class="lp-link"
-							@click="page = 'profile'"
 							:class="{ active: page == 'profile' }"
 							tabindex="0"
+							@click="page = 'profile'"
 						>
 							<i class="fa fa-user" />
 							Настройка собственного профиля
@@ -27,9 +27,9 @@
 					>
 						<a
 							class="lp-link"
-							@click="page = 'admin'"
 							:class="{ active: page == 'admin' }"
 							tabindex="0"
+							@click="page = 'admin'"
 						>
 							<i class="fa fa-key" />
 							Административные настройки
@@ -58,23 +58,23 @@
 					<div class="form-group d-flex aic">
 						<label class="mr-3 mb-0 w-200px">Субдомен</label>
 						<input
-							class="form-control mt-1 input-surv"
 							id="view_own_orders"
-							type="text"
 							v-model="domain"
+							class="form-control mt-1 input-surv"
+							type="text"
 							:disabled="true"
 						>
 					</div>
 
 					<!-- Статус: скрыто. Компонент: pages/Cabinet. Дата скрытия: 21.02.2023 15:30 -->
 					<div
-						class="form-group d-flex aic"
 						v-if="false"
+						class="form-group d-flex aic"
 					>
 						<label class="mb-0 mr-3 w-200px">Часовой пояс</label>
 						<input
-							class="form-control mt-1 input-surv"
 							id="view_own_orders"
+							class="form-control mt-1 input-surv"
 							type="text"
 						>
 					</div>
@@ -92,23 +92,23 @@
 							label="email"
 							track-by="email"
 							:taggable="true"
-							@tag="addTag"
 							class="multiselect-surv"
+							@tag="addTag"
 						/>
 					</div>
 
 					<div
-						class="d-flex aic video-add-content"
 						v-if="authRole.is_admin === 1"
+						class="d-flex aic video-add-content"
 					>
 						<label class="w-200px mb-0 mr-3">Вводное видео</label>
 						<div class="d-flex aic w-100">
 							<div class="form-group w-100">
 								<img
+									id="info1"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
 									alt="info icon"
-									id="info1"
 								>
 								<b-popover
 									target="info1"
@@ -120,19 +120,19 @@
 									</p>
 								</b-popover>
 								<input
-									class="form-control videoDays"
 									id="videoUrl"
+									v-model="videoUrl"
+									class="form-control videoDays"
 									type="text"
 									placeholder="Вставьте ссылку на youtube"
-									v-model="videoUrl"
 								>
 							</div>
 							<div class="form-group w-25 ml-4">
 								<img
+									id="info2"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
 									alt="info icon"
-									id="info2"
 								>
 								<b-popover
 									target="info2"
@@ -144,10 +144,10 @@
 									</p>
 								</b-popover>
 								<input
-									class="form-control"
 									id="videoTime"
-									type="number"
 									v-model="videoDays"
+									class="form-control"
+									type="number"
 								>
 							</div>
 						</div>
@@ -163,8 +163,8 @@
 							</button>
 						</div>
 						<div
-							class="col-12 col-md-6"
 							v-if="videoId"
+							class="col-12 col-md-6"
 						>
 							<div class="youtube-content">
 								<iframe
@@ -204,13 +204,13 @@
 
 							<div class="col-sm-8 p-0">
 								<input
+									id="firstName"
+									v-model="user.name"
 									class="form-control input-surv"
 									type="text"
 									name="name"
-									id="firstName"
 									required
 									placeholder="Имя сотрудника"
-									v-model="user.name"
 								>
 							</div>
 						</div>
@@ -220,13 +220,13 @@
 							>Фамилия <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="lastName"
+									v-model="user.last_name"
 									class="form-control input-surv"
 									type="text"
 									name="last_name"
-									id="lastName"
 									required
 									placeholder="Фамилия сотрудника"
-									v-model="user.last_name"
 								>
 							</div>
 						</div>
@@ -236,13 +236,13 @@
 							>Email <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="email"
+									v-model="user.email"
 									class="form-control input-surv"
 									type="text"
 									name="email"
-									id="email"
 									required
 									placeholder="email"
-									v-model="user.email"
 								>
 							</div>
 						</div>
@@ -252,12 +252,12 @@
 							>Новый пароль</label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="new_pwd"
 									v-model="password"
 									minlength="5"
 									class="form-control input-surv"
 									type="password"
 									name="new_pwd"
-									id="new_pwd"
 									placeholder="********"
 								>
 							</div>
@@ -268,11 +268,11 @@
 							>День рождения <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="birthday"
 									v-model="birthday"
 									class="form-control input-surv"
 									type="date"
 									name="birthday"
-									id="birthday"
 									required
 								>
 							</div>
@@ -330,17 +330,17 @@
 									class="profile-img"
 								>
 								<div
-									class="my-4 text-left"
 									v-else
+									class="my-4 text-left"
 								>
 									Загрузите свою фотографию
 								</div>
 								<input
+									id="CabinetProfileImage"
+									ref="file"
 									type="file"
 									class="hidden-file-input"
-									id="CabinetProfileImage"
 									aria-describedby="CabinetProfileImage"
-									ref="file"
 									accept="image/*"
 									@change="handleFileUpload()"
 								>
@@ -365,9 +365,9 @@
 						<!-- Cards -->
 						<template v-if="payments_view">
 							<div
-								class="col-12 p-0 row payment-profile"
 								v-for="(payment, index) in payments"
 								:key="index"
+								class="col-12 p-0 row payment-profile"
 							>
 								<div class="col-2">
 									<input
@@ -400,9 +400,9 @@
 								<div class="col-2">
 									<input
 										v-model="payment.number"
+										v-mask="`#### #### #### ####`"
 										class="form-control card-number input-surv"
 										placeholder="Номер карты"
-										v-mask="`#### #### #### ####`"
 									>
 								</div>
 								<div class="col-2 position-relative">
@@ -427,8 +427,8 @@
 						</template>
 
 						<div
-							class="mt-2 p-0"
 							v-if="cardValidatre.error"
+							class="mt-2 p-0"
 						>
 							<div class="alert alert-danger">
 								<span>Заполните все поля</span>
@@ -438,9 +438,9 @@
 						<div class="p-0 row mt-5">
 							<div class="col-3">
 								<button
-									@click="addPayment()"
 									style="color: white"
 									class="btn btn-phone btn-primary"
+									@click="addPayment()"
 								>
 									Добавить карту
 								</button>
@@ -448,10 +448,10 @@
 
 							<div class="col-3">
 								<button
-									@click.prevent="editProfileUser()"
 									style="color: white"
 									class="btn btn-success"
 									type="button"
+									@click.prevent="editProfileUser()"
 								>
 									Сохранить
 								</button>
@@ -474,6 +474,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import Multiselect from 'vue-multiselect'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'

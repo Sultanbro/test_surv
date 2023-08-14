@@ -4,8 +4,8 @@
 		:class="{'v-loading': loading}"
 	>
 		<div
-			class="d-flex align-items-center mb-2"
 			v-if="show_headers"
+			class="d-flex align-items-center mb-2"
 		>
 			<h4 class="mr-2">
 				{{ activity.name }} <i
@@ -66,9 +66,9 @@
 
 			<div>
 				<a
-					@click="showExcelImport = !showExcelImport"
 					v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
 					class="btn btn-success rounded mr-2 text-white"
+					@click="showExcelImport = !showExcelImport"
 				>
 					<i class="fa fa-upload" />
 					Импорт</a>
@@ -78,8 +78,8 @@
 			<div>
 				<a
 					href="javascript:"
-					@click="exportData()"
 					class="btn btn-success rounded"
+					@click="exportData()"
 				>
 					<i class="far fa-file-excel" />
 					Экспорт</a>
@@ -179,8 +179,8 @@
 
 				<template v-for="day in month.daysInMonth">
 					<th
-						class="text-center px-1"
 						:key="day"
+						class="text-center px-1"
 					>
 						<div>{{ day }}</div>
 					</th>
@@ -213,19 +213,19 @@
 					<div class="d-flex max-content">
 						{{ item.lastname }} {{ item.name }}
 						<img
+							v-if="item.show_cup == 1"
 							src="images/dist/first-place.png"
 							alt="icon"
-							v-if="item.show_cup == 1"
 						>
 						<img
+							v-if="item.show_cup == 2"
 							src="images/dist/second-place.png"
 							alt="icon"
-							v-if="item.show_cup == 2"
 						>
 						<img
+							v-if="item.show_cup == 3"
 							src="images/dist/third-place.png"
 							alt="icon"
-							v-if="item.show_cup == 3"
 						>
 					</div>
 				</td>
@@ -283,18 +283,18 @@
 					>
 						<div>
 							<input
-								type="number"
 								v-model="item[day]"
-								@change="updateSettings($event, item, index, day)"
+								type="number"
 								class="form-control cell-input"
+								@change="updateSettings($event, item, index, day)"
 							>
 						</div>
 					</td>
 					<td
 						v-else-if="holidays.includes(day) && item[day] > 0"
 						:key="day + 'a'"
-						@click="editMode(item)"
 						:class="'text-center ' + item._cellVariants[day]"
+						@click="editMode(item)"
 					>
 						<div v-if="item[day]">
 							{{ item[day] }}{{ activity.unit }}
@@ -304,8 +304,8 @@
 					<td
 						v-else-if="holidays.includes(day)"
 						:key="day + 'b'"
-						@click="editMode(item)"
 						:class="'text-center mywarning'"
+						@click="editMode(item)"
 					>
 						<div v-if="item[day]">
 							{{ item[day] }}{{ activity.unit }}
@@ -314,9 +314,9 @@
 					</td>
 					<td
 						v-else
-						@click="editMode(item)"
 						:key="day + 'c'"
 						:class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']"
+						@click="editMode(item)"
 					>
 						<div v-if="item[day]">
 							{{ item[day] }}{{ activity.unit }}
@@ -328,17 +328,17 @@
 		</table>
 
 		<sidebar
+			v-if="showExcelImport"
 			title="Импорт EXCEL"
 			:open="showExcelImport"
-			@close="showExcelImport=false"
-			v-if="showExcelImport"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<activity-excel-import
 				:group_id="group_id"
 				table="minutes"
-				@close="showExcelImport=false"
 				:activity_id="activity.id"
+				@close="showExcelImport=false"
 			/>
 		</sidebar>
 
@@ -346,9 +346,9 @@
 		<b-modal
 			v-model="showEditModal"
 			title="Настройки активности"
-			@ok="saveActivity()"
 			size="lg"
 			class="modalle"
+			@ok="saveActivity()"
 		>
 			<div class="row">
 				<div class="col-5">
@@ -358,9 +358,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.name"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="local_activity.name"
 					>
 				</div>
 			</div>
@@ -377,9 +377,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="key"
 							v-for="(value, key) in plan_units"
 							:key="key"
+							:value="key"
 						>
 							{{ value }}
 						</option>
@@ -395,9 +395,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.daily_plan"
 						type="number"
 						class="form-control form-control-sm"
-						v-model="local_activity.daily_plan"
 					>
 				</div>
 			</div>
@@ -410,9 +410,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.weekdays"
 						type="number"
 						class="form-control form-control-sm"
-						v-model="local_activity.weekdays"
 						min="1"
 						max="7"
 					>
@@ -427,9 +427,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.unit"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="local_activity.unit"
 					>
 				</div>
 			</div>
@@ -440,9 +440,9 @@
 						Редактируемый
 					</p>
 					<input
+						v-model="local_activity.editable"
 						type="checkbox"
 						class="form-control form-control-sm"
-						v-model="local_activity.editable"
 					>
 				</div>
 			</div>
@@ -451,18 +451,32 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 export default {
 	name: 'TableDefault',
 	props: {
-		month: Object,
-		activity: Object,
-		group_id: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		},
 		color_invert: {
 			type: Boolean,
 			default: false
 		},
-		work_days: Number, // 5 или 6 дней в неделю
+		work_days: {
+			type: Number,
+			default: 5,
+		}, // 5 или 6 дней в неделю
 		editable: {
 			type: Boolean,
 			default: true
@@ -759,8 +773,6 @@ export default {
 					this.itemsArray[0][key] = 0;
 				}
 			}
-
-			console.log('TOTAL ' + total)
 
 
 

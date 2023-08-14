@@ -52,7 +52,7 @@ export default {
 	},
 	watch: {
 		imageError() {
-			console.log('imageError', this.image, this.title);
+			console.error('imageError', this.image, this.title);
 		},
 	},
 }

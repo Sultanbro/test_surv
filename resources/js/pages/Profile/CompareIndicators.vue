@@ -110,7 +110,7 @@ export default {
 
 				this.showBtn(response.data)
 				this.loading = false
-			}).catch((e) => console.log(e))
+			}).catch((e) => console.error(e))
 		},
 
 		/**

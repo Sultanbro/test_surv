@@ -40,6 +40,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import JobtronTable from '@ui/Table'
 
 export default {
@@ -48,10 +51,22 @@ export default {
 		JobtronTable,
 	},
 	props: {
-		staff: Array,
-		staff_by_group: Array,
-		staff_longevity: Array,
-		causes: Array,
+		staff: {
+			type: Array,
+			default: () => [],
+		},
+		staff_by_group: {
+			type: Array,
+			default: () => [],
+		},
+		staff_longevity: {
+			type: Array,
+			default: () => [],
+		},
+		causes: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	data: function () {
 		const headerClass = 'text-left first-width'

@@ -5,10 +5,10 @@
 	>
 		<div class="listdrag">
 			<input
+				id="namesshema"
 				v-model="namesshema"
 				type="text"
 				class="form-control"
-				id="namesshema"
 				placeholder="Название схемы"
 			>
 
@@ -112,6 +112,7 @@
 		</div>
 		<simple-flowchart
 			:scene.sync="scene"
+			:height="600"
 			@nodeClick="nodeClick"
 			@nodeDelete="nodeDelete"
 			@linkBreak="linkBreak"
@@ -119,14 +120,15 @@
 			@canvasClick="canvasClick"
 			@onLogin="oneLogin"
 			@addNodes="addNode"
-			:height="600"
 		/>
 
 
 		<transition v-if="showModal">
-			<h3 slot="header">
-				custom header
-			</h3>
+			<template #header>
+				<h3>
+					custom header
+				</h3>
+			</template>
 
 
 			<div
@@ -166,24 +168,24 @@
 								<div class="tool-wrapper">
 									<label>Описание</label>
 									<input
-										type="text"
 										v-model="newNodeLabel"
+										type="text"
 									>
 
 									<template v-if="selectedNode.type==='smsforward'">
 										<label>Код интеграции</label>
 										<input
+											v-model="integrationsms"
 											class="form-control"
 											type="text"
-											v-model="integrationsms"
 										>
 
 										<label>Текст для смс</label>
 										<div class="blocksms">
 											<textarea
-												@keyup="simvoli"
-												class="form-control "
 												v-model="smsforward"
+												class="form-control "
+												@keyup="simvoli"
 											/>
 											<div class="foot">
 												<em><span>{{ length }}</span>/<span>{{ length_sms }}</span> осталось символов <span class="count_sms">({{ count_sms }} смс)</span></em>
@@ -194,9 +196,9 @@
 									<template v-if="selectedNode.type==='forwarding'">
 										<label>Номер для переадресации</label>
 										<input
+											v-model="forwardphone"
 											class="form-control"
 											type="text"
-											v-model="forwardphone"
 										>
 									</template>
 
@@ -213,8 +215,8 @@
 										<template v-if="selectaudio=='text'">
 											<label>Текст для синтеза речи</label>
 											<textarea
-												class="form-control"
 												v-model="description"
+												class="form-control"
 											/>
 											<template v-if="audiolisttwo!=null">
 												<audio
@@ -236,11 +238,11 @@
 										<template v-if="selectaudio=='file'">
 											<label>Прикрепить файл (*.mp3)</label>
 											<input
+												ref="file"
 												class="form-control"
 												type="file"
-												@change="uploadFile()"
-												ref="file"
 												accept=".mp3"
+												@change="uploadFile()"
 											>
 
 											<audio
@@ -286,29 +288,27 @@
 	</div>
 </template>
 
-
-
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 
 import SimpleFlowchart from './SimpleFlowchart.vue'
 
-
 export default {
-
 	name: 'App',
 	components: {
 		SimpleFlowchart
 	},
-	props: ['script_schema', 'script_id'],
-	mounted: function () {
-
-		if (this.script_schema) {
-			this.scene = JSON.parse(JSON.parse(this.script_schema));
-		}
-
-
+	props: {
+		script_schema: {
+			type: String,
+			default: '{}'
+		},
+		script_id: {
+			type: Number,
+			default: null
+		},
 	},
-
 	data() {
 
 		this.modalVisibility = false,
@@ -390,6 +390,14 @@ export default {
 			]
 		}
 	},
+	mounted: function () {
+
+		if (this.script_schema) {
+			this.scene = JSON.parse(JSON.parse(this.script_schema));
+		}
+
+
+	},
 	methods: {
 		simvoli(){
 
@@ -397,13 +405,11 @@ export default {
 				message: this.smsforward,
 				latin: 1,
 			}).then(response => {
-				console.log(response)
 				this.length = response.data.length
 				this.length_sms = response.data.length_sms
 				this.count_sms = response.data.count_sms
 			}).catch(error => {
-
-				console.log(error)
+				console.error(error)
 			});
 
 		},
@@ -413,20 +419,16 @@ export default {
 			this.axios.post('/schema/syntez',{
 				message:this.description,
 			}).then(response => {
-				console.log(response)
 				this.audiolisttwo=response.data
 
 			}).catch(error => {
-
-				console.log(error)
+				console.error(error)
 			});
 		},
 		onMouseDown: function (e) {
 			if (e.which != 1) return;
-			console.log('e.which', e.which);
 			var elem = e.target.closest('.draggable');
 			if (!elem) return;
-			console.log('elem', elem);
 			this.dragObject.elem = elem;
 			// запомним, что элемент нажат на текущих координатах pageX/pageY
 			this.dragObject.downX = e.pageX;
@@ -483,24 +485,14 @@ export default {
 			var dropElem = this.findDroppable(e);
 
 			if (!dropElem) {
-
-				// self.onDragCancel(this.dragObject);
 				this.dragObject.avatar.rollback();
-			} else {
-				//      self.onDragEnd(this.dragObject, dropElem);
-				//   this.dragObject.avatar.rollback();
-
-				console.log('dropElem',dropElem);
-				//   console.log('x',e.clientX,' y',e.clientY);
-
+			}
+			else {
 				this.dragObject.elem.style.display = 'none';
 
 				this.addNode(type);
 				this.dragObject.elem.style.display = null;
 				this.dragObject.avatar.rollback();
-
-
-
 			}
 		},
 
@@ -566,9 +558,6 @@ export default {
 
 		},
 		oneLogin (data) {
-
-
-			console.log('data',data);
 			this.selectedNode = data;
 			this.newNodeLabel = data.label;
 			this.newNodeKey = data.key_button;
@@ -594,9 +583,7 @@ export default {
 
 			this.lidnoanswer = data.lidnoanswer;
 		},
-		canvasClick(e) {
-			console.log('canvas Click, event:', e)
-		},
+		canvasClick() {},
 		uploadFile() {
 			this.audiolist = null
 			this.files = this.$refs.file.files[0];
@@ -706,19 +693,10 @@ export default {
 			this.smsforward=''
 			this.audiolisttwo=null
 		},
-		nodeClick(id) {
-			console.log('node click', id);
-
-		},
-		nodeDelete(id) {
-			console.log('node delete', id);
-		},
-		linkBreak(id) {
-			console.log('link break', id);
-		},
-		linkAdded(link) {
-			console.log('new link added:', link);
-		},
+		nodeClick() {},
+		nodeDelete() {},
+		linkBreak() {},
+		linkAdded() {},
 
 		schemaSave: function () {
 			/* global _ */
@@ -741,13 +719,9 @@ export default {
 				links.push(item)
 			});
 			var ins = this.files_upload.length;
-			console.log(ins);
 			for (var x = 0; x < ins; x++) {
 				formData.append('file[]', file[x]);
 			}
-			console.log('nodes',nodes);
-			console.log('links',links);
-			console.log('config',this.configuration);
 
 			if (this.script_id) {
 				formData.append('id', this.script_id);
@@ -766,7 +740,7 @@ export default {
 				alert('Сценарий успешно сохранен!');
 			}).catch(error => {
 				alert('Ошибка в графике или обратитесь в службу поддержки');
-				console.log(error.response)
+				console.error(error.response)
 			});
 
 		},

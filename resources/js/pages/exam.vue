@@ -4,14 +4,14 @@
 			<div class="row mb-3 ">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -19,14 +19,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -41,15 +41,15 @@
 					default-active-key="1"
 				>
 					<b-tab
-						title="Экзамены по книгам"
 						key="1"
+						title="Экзамены по книгам"
 					>
 						<b-table
+							id="tabelTable"
 							responsive
 							striped
 							:sticky-header="true"
 							class="text-nowrap text-center my-table"
-							id="tabelTable"
 							:small="true"
 							:bordered="true"
 							:items="items"
@@ -57,31 +57,31 @@
 							show-empty
 							empty-text="Нет данных"
 						>
-							<template #cell(success)="data">
+							<template #cell(success)="successData">
 								<input
+									v-model="successData.value"
 									type="checkbox"
-									@change="updateExam('success',data)"
-									v-model="data.value"
-									:disabled="!data.item.link"
+									:disabled="!successData.item.link"
+									@change="updateExam('success', successData)"
 								>
 							</template>
-							<template #cell(exam_date)="data">
-								{{ data.value }}
+							<template #cell(exam_date)="examData">
+								{{ examData.value }}
 							</template>
-							<template #cell(link)="data">
+							<template #cell(link)="linkData">
 								<input
+									v-model="linkData.value"
 									class="form-control cell-input"
-									@change="updateExam('link',data)"
-									v-model="data.value"
 									:disabled="dateInfo.currentMonth !== curMonth"
+									@change="updateExam('link', linkData)"
 								>
 							</template>
 						</b-table>
 					</b-tab>
 
 					<b-tab
-						title="Навыки (Skills)"
 						key="2"
+						title="Навыки (Skills)"
 					>
 						<table class="table b-table table-striped table-bordered table-sm skills-table">
 							<tr>
@@ -97,6 +97,7 @@
 								<td style="background:aliceblue">
 									{{ skill.name }}
 								</td>
+								<!-- eslint-disable-next-line -->
 								<td v-html="skill.last_time" />
 								<td>
 									<b-badge
@@ -107,6 +108,7 @@
 										#Руководил
 									</b-badge>
 								</td>
+								<!-- eslint-disable-next-line -->
 								<td v-html="skill.text" />
 							</tr>
 						</table>
@@ -125,16 +127,24 @@
 export default {
 	name: 'TableExam',
 	props: {
-		groups: Array,
-		fines: Array,
-		activeuserid: String
+		groups: {
+			type: Array,
+			default: () => [],
+		},
+		fines: {
+			type: Array,
+			default: () => [],
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
 	},
 	data() {
 		return {
 			data: {},
 			items: [],
 			fields: [],
-			group_editors: [],
 			users: [],
 			hasPremission: false,
 			curMonth: null,
@@ -176,9 +186,8 @@ export default {
 				data.item.link = data.value
 			}
 
-			console.log(data.value)
-			console.log(data.item)
 			let loader = this.$loading.show()
+			/* eslint-disable camelcase */
 			this.axios.post('/timetracking/exam/update', {
 				key: data.field.key,
 				value: data.item.success,
@@ -206,10 +215,10 @@ export default {
 				loader.hide()
 			}).catch(function (error) {
 				alert(error)
-				console.log(error)
+				console.error(error)
 				loader.hide();
 			});
-
+			/* eslint-enable camelcase */
 		},
 		//Установка заголовока таблицы
 		setFields() {
@@ -245,13 +254,13 @@ export default {
 		//Загрузка данных для таблицы
 		fetchData() {
 			let loader = this.$loading.show();
+			/* eslint-disable camelcase */
 			this.axios.post('/timetracking/exam', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
 				group_id: this.currentGroup
 			}).then(response => {
 				if (response.data.error && response.data.error == 'access') {
-					console.log(response.data.error)
 					this.hasPremission = false
 					loader.hide();
 					return;
@@ -267,12 +276,13 @@ export default {
 				this.dataLoaded = true
 				loader.hide()
 			})
-
+			/* eslint-enable camelcase */
 		},
 		//Добавление загруженных данных в таблицу
 		loadItems() {
 			let items = []
 			this.data.users.forEach(item => {
+				/* eslint-disable camelcase */
 				items.push({
 					name: item.full_name,
 					book_name: item.book_name,
@@ -282,6 +292,7 @@ export default {
 					exam_date: item.exam_date,
 					link: item.link,
 				})
+				/* eslint-enable camelcase */
 			})
 			this.items = items
 		}

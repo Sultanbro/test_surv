@@ -1,9 +1,9 @@
 <template>
 	<div class="news-item__comments">
 		<div
-			class="news-comments"
 			v-for="comment in comments"
 			:key="comment.id + comment.content"
+			class="news-comments"
 		>
 			<div class="news-comment">
 				<img
@@ -31,21 +31,22 @@
 								v-show="comment.author.id == me.id"
 								class="news-comment__action hover-pointer"
 								@click="destroyComment(comment.id)"
-								v-html="'Удалить'"
-							/>
+							>
+								Удалить
+							</div>
 						</div>
 						<div class="news-footer__reactions">
 							<img
-								class="hover-pointer"
 								v-if="comment.is_liked == true"
-								@click="likeComment(comment.id)"
+								class="hover-pointer"
 								src="/icon/news/post-actions/like-active.svg"
+								@click="likeComment(comment.id)"
 							>
 							<img
 								v-else
 								class="news-icon hover-pointer"
-								@click="likeComment(comment.id)"
 								src="/icon/news/post-actions/like.svg"
+								@click="likeComment(comment.id)"
 							>
 							<span class="news-item__footer-count">{{ comment.likes_count }}</span>
 						</div>
@@ -60,9 +61,9 @@
 			</div>
 
 			<div
-				class="news-comment news-comment--child"
 				v-for="childComment in comment.comments"
 				:key="childComment.id + childComment.content"
+				class="news-comment news-comment--child"
 			>
 				<img
 					class="news-comment__avatar"
@@ -89,21 +90,22 @@
 								v-show="childComment.author.id == me.id"
 								class="news-comment__action hover-pointer"
 								@click="destroyComment(childComment.id)"
-								v-html="'Удалить'"
-							/>
+							>
+								Удалить
+							</div>
 						</div>
 						<div class="news-footer__reactions">
 							<img
-								class="hover-pointer"
 								v-if="childComment.is_liked == true"
-								@click="likeComment(childComment.id)"
+								class="hover-pointer"
 								src="/icon/news/post-actions/like-active.svg"
+								@click="likeComment(childComment.id)"
 							>
 							<img
 								v-else
 								class="news-icon hover-pointer"
-								@click="likeComment(childComment.id)"
 								src="/icon/news/post-actions/like.svg"
+								@click="likeComment(childComment.id)"
 							>
 							<span class="news-item__footer-count">{{ childComment.likes_count }}</span>
 						</div>
@@ -129,14 +131,14 @@ export default {
 	},
 	props: {
 		me: {
+			type: Object,
 			required: true
 		}
 	},
 	data() {
 		return {
-
 			comments: [],
-			comments_count: 0,
+			commentsCount: 0,
 			postId: null,
 		}
 	},
@@ -150,10 +152,11 @@ export default {
 			await this.axios.get('/news/' + postId + '/comments')
 				.then(response => {
 					this.comments = response.data.data.comments;
-					this.comments_count = response.data.data.comments_count;
+					this.commentsCount = response.data.data.comments_count;
 
 					this.$emit('changeCommentsCount', {
-						comments_count: this.comments_count,
+						/* eslint-disable-next-line camelcase */
+						comments_count: this.commentsCount,
 					});
 				})
 				.catch(() => {
@@ -182,11 +185,12 @@ export default {
 					this.getComments(this.postId);
 				})
 				.catch(res => {
-					console.log(res);
+					console.error(res);
 				});
 		},
 
 		changeLikeComment(searchId, data) {
+			/* eslint-disable camelcase */
 			let comment = this.comments.find(comment => comment.id === searchId);
 
 			if (comment != null) {
@@ -202,6 +206,7 @@ export default {
 					}
 				})
 			});
+			/* eslint-enable camelcase */
 		}
 	}
 }

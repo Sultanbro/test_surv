@@ -35,7 +35,11 @@
 <script>
 export default {
 	props: {
-		lang: String
+		lang: {
+			type: String,
+			default: 'ru'
+		},
+
 	},
 	data() {
 		return {

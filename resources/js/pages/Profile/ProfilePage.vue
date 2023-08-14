@@ -12,9 +12,9 @@
 				:class="{ _active: anim.intro }"
 			/>
 			<IntroStats
-				@pop="pop"
 				ref="intro"
 				:class="{ _active: anim.intro }"
+				@pop="pop"
 			/>
 			<!-- <new-intro-smart-table/> -->
 		</div>
@@ -24,24 +24,24 @@
 			:class="{ _active: anim.profileSidebar }"
 		/>
 		<Courses
-			@init="intro['courses'] = true"
 			ref="courses"
 			:class="{ _active: anim.courses }"
+			@init="intro['courses'] = true"
 		/>
 		<Profit
-			@init="intro['profit'] = true"
 			ref="profit"
 			:class="{ _active: anim.profit }"
+			@init="intro['profit'] = true"
 		/>
 		<TraineeEstimation
-			@init="intro['estimation'] = true"
 			ref="estimation"
 			:class="{ _active: anim.estimation }"
+			@init="intro['estimation'] = true"
 		/>
 		<CompareIndicators
-			@init="intro['indicators'] = true"
 			ref="indicators"
 			:class="{ _active: anim.indicators }"
+			@init="intro['indicators'] = true"
 		/>
 
 		<Popup
@@ -49,8 +49,8 @@
 			title="Баланс оклада"
 			desc="Заработанная сумма именно от окладной части"
 			:open="popBalance"
-			@close="popBalance=false"
 			:width="popupWidth"
+			@close="popBalance=false"
 		>
 			<Balance />
 		</Popup>
@@ -60,8 +60,8 @@
 			title="Kpi"
 			desc="Выполняя дополнительные активности, заработайте больше денег"
 			:open="popKpi"
-			@close="popKpi=false"
 			:width="popupWidth"
+			@close="popKpi=false"
 		>
 			<Kpi />
 		</Popup>
@@ -71,8 +71,8 @@
 			title="Бонусы"
 			desc="Зарабатывайте бонусы, выполняя дополнительные активности"
 			:open="popBonuses"
-			@close="popBonuses=false"
 			:width="popupWidth"
+			@close="popBonuses=false"
 		>
 			<Bonuses />
 		</Popup>
@@ -82,8 +82,8 @@
 			title="Квартальные премии"
 			desc=""
 			:open="popQuartalPremiums"
-			@close="popQuartalPremiums=false"
 			:width="popupWidth"
+			@close="popQuartalPremiums=false"
 		>
 			<PopupQuartal />
 		</Popup>
@@ -93,11 +93,11 @@
 			title="Награды"
 			:desc="descNominations"
 			:open="popNominations"
-			@close="popNominations=false"
 			:width="popupWidth"
 			:add-button="true"
 			:add-button-route="'/timetracking/settings?tab=9#nav-awards'"
 			:add-button-popover-text="'Добавить новую награду'"
+			@close="popNominations=false"
 		>
 			<Nominations @get-desc="getDesc" />
 		</Popup>

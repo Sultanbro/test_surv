@@ -6,10 +6,10 @@
 			/>
 			{{ cat.name }}
 			<i
-				@click="addbookk(cat)"
 				class="fa fa-plus-circle"
 				title="новая книга"
 				aria-hidden="true"
+				@click="addbookk(cat)"
 			>Добавить</i>
 
 			<!-- <i @click="deletebook(cat,indexcat)" class="fa fa-trash-o" aria-hidden="true" ></i>
@@ -23,8 +23,8 @@
 					<selectgroup
 						:key="index"
 						:cat="cats"
-						@addbook="addbook"
 						:indexcat="index"
+						@addbook="addbook"
 						@deletebook="deletebook"
 						@addbookk="addbookk"
 					/>
@@ -41,7 +41,16 @@
 <script>
 export default {
 	name: 'SelectGroupBook',
-	props: ['cat', 'indexcat'],
+	props: {
+		cat: {
+			type: Object,
+			required: true
+		},
+		indexcat: {
+			type: Number,
+			default: 0
+		}
+	},
 	methods: {
 		addbook(cat) {
 			this.$emit('addbook', cat)
@@ -51,7 +60,6 @@ export default {
 		},
 
 		addbookk(cat) {
-
 			this.$emit('addbookk', cat)
 		}
 	}

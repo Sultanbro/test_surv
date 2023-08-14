@@ -6,10 +6,10 @@
 				<div class="form-group">
 					<label>Страница</label>
 					<input
+						v-model="segment.page_start"
 						type="number"
 						min="1"
 						max="9999"
-						v-model="segment.page_start"
 						placeholder="Страница"
 						class="form-control mb-2"
 					>
@@ -33,28 +33,35 @@
 			</div>
 			<div class="col-9">
 				<questions
+					:id="segment.id"
 					ref="questions"
 					:questions="segment.questions"
-					:id="segment.id"
 					:pass_grade="segment.pass_grade"
-					@changePassGrade="changePassGrade"
-					@validate="validate"
 					type="book"
 					mode="edit"
+					@changePassGrade="changePassGrade"
+					@validate="validate"
 				/>
 			</div>
 		</div>
 	</div>
 </template>
+
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 export default {
+	name: 'BookSegment',
 	props: {
 		segment: {
+			type: Object,
 			required: true,
 		},
 		book_id: {
-			type: Number
+			type: Number,
+			default: 0
 		}
 	},
 	data() {
@@ -62,19 +69,14 @@ export default {
 			validated: false,
 		}
 	},
-	created() {
-
-	},
+	created() {},
 	methods: {
-
 		validate(status) {
 			this.validated = status
 		},
 
 		deleteSegment() {
-			if(!confirm('Вы уверены? Их потом не восстановить')) {
-				return false;
-			}
+			if(!confirm('Вы уверены? Их потом не восстановить')) return false;
 
 			this.axios
 				.post('/admin/upbooks/segments/delete', {
@@ -90,7 +92,6 @@ export default {
 		},
 
 		saveSegment() {
-
 			this.$refs.questions.validate();
 			if(!this.validated) {
 				return;
@@ -119,15 +120,12 @@ export default {
 		},
 
 		changePassGrade(grade) {
-			console.log('pass grade')
-
 			this.segment.pass_grade = grade;
 			let len = this.segment.questions.length;
 
 			if(grade > len) this.segment.pass_grade = len;
 			if(grade < 1) this.segment.pass_grade = 1;
 		},
-	},
-	name: 'BookSegment'
+	}
 };
 </script>

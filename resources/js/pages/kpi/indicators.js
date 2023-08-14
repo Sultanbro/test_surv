@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 var fields = [
 	{
 		name: 'Название',

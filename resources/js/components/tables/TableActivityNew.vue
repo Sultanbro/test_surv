@@ -6,8 +6,8 @@
 		>
 			<!-- Filtees -->
 			<div
-				class="TableActivityNew-filters ml-3"
 				v-click-outside="onClickFiltersOutside"
+				class="TableActivityNew-filters ml-3"
 			>
 				<JobtronButton
 					class="ChatIcon-parent"
@@ -48,8 +48,8 @@
 
 			<!-- Controls -->
 			<div
-				class="TableActivityNew-contlors ml-3"
 				v-click-outside="onClickControlsOutside"
+				class="TableActivityNew-contlors ml-3"
 			>
 				<JobtronButton
 					class="ChatIcon-parent"
@@ -244,18 +244,18 @@
 									<input
 										v-model="item[day]"
 										type="number"
+										class="form-control cell-input"
 										@change="updateSettings($event, item, index, day)"
 										@focusout="viewMode(item)"
-										class="form-control cell-input"
 									>
 								</div>
 							</td>
 							<td
 								v-else-if="holidays.includes(day) && item[day] > 0"
 								:key="day + 'a'"
-								@click="editMode(item)"
 								class="TableActivityNew-data px-0 day-minute text-center Fri"
 								:class="'table-' + item._cellVariants[day]"
+								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -264,8 +264,8 @@
 							<td
 								v-else-if="holidays.includes(day)"
 								:key="day + 'b'"
-								@click="editMode(item)"
 								class="TableActivityNew-data day-minute text-center Fri mywarning"
+								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -274,9 +274,9 @@
 							<td
 								v-else
 								:key="day + 'c'"
-								@click="editMode(item)"
 								class="TableActivityNew-data px-0 day-minute text-center Fri"
 								:class="[item[day] > 0 || holidays.includes(day) ? ' table-' + item._cellVariants[day] : 'table-text-center']"
+								@click="editMode(item)"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -292,14 +292,14 @@
 			v-if="showExcelImport"
 			:open="showExcelImport"
 			title="Импорт EXCEL"
-			@close="showExcelImport=false"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<ActivityExcelImport
 				:group_id="group_id"
 				table="minutes"
-				@close="showExcelImport=false"
 				:activity_id="activity.id"
+				@close="showExcelImport=false"
 			/>
 		</Sidebar>
 
@@ -307,10 +307,10 @@
 		<b-modal
 			v-model="showEditModal"
 			title="Настройки активности"
-			@ok="saveActivity()"
 			size="lg"
 			class="modalle"
 			no-enforce-focus
+			@ok="saveActivity()"
 		>
 			<div class="row mb-3">
 				<div class="col-5">
@@ -320,9 +320,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.name"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="local_activity.name"
 					>
 				</div>
 			</div>
@@ -422,8 +422,8 @@
 				<div class="col-7 offset-5 d-flex align-items-center">
 					<div class="custom-control custom-checkbox">
 						<input
-							v-model="local_activity.editable"
 							id="checkbox-edit"
+							v-model="local_activity.editable"
 							type="checkbox"
 							class="custom-control-input"
 						>
@@ -439,8 +439,8 @@
 		</b-modal>
 		<JobtronOverlay
 			v-if="showHideUsersOverlay"
-			@close="showHideUsersOverlay = false"
 			:z="10000"
+			@close="showHideUsersOverlay = false"
 		>
 			<AccessSelect
 				:value="activityUsersToShowForm"
@@ -448,15 +448,18 @@
 				search-position="beforeTabs"
 				:submit-button="'Сохранить'"
 				:access-dictionaries="accessDictionaries"
-				@submit="onSubmitHideUsers"
 				absolute
 				class="TableActivityNew-accessSelect"
+				@submit="onSubmitHideUsers"
 			/>
 		</JobtronOverlay>
 	</div>
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Sidebar from '@/components/ui/Sidebar'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronSelect from '@ui/Select'
@@ -483,14 +486,26 @@ export default {
 		ActivityExcelImport,
 	},
 	props: {
-		month: Object,
-		activity: Object,
-		group_id: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		},
 		color_invert: {
 			type: Boolean,
 			default: false
 		},
-		work_days: Number, // 5 или 6 дней в неделю
+		work_days: {
+			type: Number,
+			default: 5
+		}, // 5 или 6 дней в неделю
 		editable: {
 			type: Boolean,
 			default: true

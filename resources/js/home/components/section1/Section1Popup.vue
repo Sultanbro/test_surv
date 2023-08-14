@@ -2,8 +2,14 @@
 export default {
 	name: 'Section1Popup',
 	props: {
-		lang: String,
-		type: String,
+		lang: {
+			type: String,
+			default: ''
+		},
+		type: {
+			type: String,
+			default: ''
+		},
 	},
 	data(){
 		return {}

@@ -28,20 +28,20 @@
 							<span @click="closeCitation">x</span>
 						</div>
 						<textarea
-							v-model="body"
-							@keydown.enter="performMessage"
-							@paste="pasteMessage"
 							id="messengerMessageInput"
+							v-model="body"
 							class="messenger__textarea"
 							placeholder="Ввести сообщение"
+							@keydown.enter="performMessage"
+							@paste="pasteMessage"
 						/>
 					</div>
 					<label class="messenger__attachment">
 						<input
 							type="file"
 							style="display:none"
-							@change="prepareFiles"
 							multiple="multiple"
+							@change="prepareFiles"
 						>
 						<ChatIconUpload class="mt-2" />
 					</label>
@@ -53,8 +53,8 @@
 				>
 					<div
 						v-if="(body || (files && files.length)) && !isRecordingAudio"
-						@click="performMessage"
 						class="messenger__message-icon"
+						@click="performMessage"
 					>
 						<ChatIconSend />
 					</div>
@@ -180,6 +180,24 @@ export default {
 		ChatIconSend,
 		ChatIconHistoryDoc,
 		VueDraggableResizable,
+	},
+	filters: {
+		countdownFormat(value) {
+			let seconds = Math.floor(value / 100);
+			let minutes = Math.floor(seconds / 60);
+			let santiseconds = value % 100;
+			seconds = seconds % 60;
+			return `${minutes}:${seconds < 10 ? '0' + seconds : seconds},${santiseconds < 10 ? '0' + santiseconds : santiseconds}`;
+		},
+		fileSizeFormat(value) {
+			if (value < 1024) {
+				return `${value} B`;
+			} else if (value < 1024 * 1024) {
+				return `${Math.floor(value / 1024)} KB`;
+			} else {
+				return `${Math.floor(value / 1024 / 1024)} MB`;
+			}
+		}
 	},
 	inject: [
 		'ChatApp'
@@ -339,24 +357,6 @@ export default {
 			else this.body = '> ' + text.split('\n').join('\n> ') + '\n'
 		}
 	},
-	filters: {
-		countdownFormat(value) {
-			let seconds = Math.floor(value / 100);
-			let minutes = Math.floor(seconds / 60);
-			let santiseconds = value % 100;
-			seconds = seconds % 60;
-			return `${minutes}:${seconds < 10 ? '0' + seconds : seconds},${santiseconds < 10 ? '0' + santiseconds : santiseconds}`;
-		},
-		fileSizeFormat(value) {
-			if (value < 1024) {
-				return `${value} B`;
-			} else if (value < 1024 * 1024) {
-				return `${Math.floor(value / 1024)} KB`;
-			} else {
-				return `${Math.floor(value / 1024 / 1024)} MB`;
-			}
-		}
-	}
 }
 </script>
 

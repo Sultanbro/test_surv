@@ -28,9 +28,9 @@
 
 				<form id="upload-modal-form">
 					<input
-						type="file"
 						id="upload-modal-input"
 						ref="input"
+						type="file"
 					>
 					<label
 						id="upload-modal-label"
@@ -87,6 +87,9 @@ export default {
 				this.filename = ''
 			}
 		}
+	},
+	created () {
+		this.file = undefined
 	},
 	methods: {
 
@@ -166,9 +169,6 @@ export default {
 		getFile () {
 			return this.file
 		}
-	},
-	created () {
-		this.file = undefined
 	}
 }
 </script>

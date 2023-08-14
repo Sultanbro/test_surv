@@ -22,6 +22,16 @@ export default {
 			abort: false
 		};
 	},
+	watch: {
+		audioBlob() {
+			if (!this.abort) {
+				this.$emit('stop', {
+					blob: this.audioBlob,
+					src: URL.createObjectURL(this.audioBlob),
+				});
+			}
+		},
+	},
 	methods: {
 		async initialize() {
 			let stream;
@@ -72,7 +82,7 @@ export default {
 				this.$emit('start');
 				return true;
 			} catch (e) {
-				console.log(e);
+				console.error(e);
 				alert('Запись недоступна. Разрешите доступ к микрофону или смените браузер.');
 				return false;
 			}
@@ -96,16 +106,6 @@ export default {
 			this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
 			this.mediaRecorder.stream.getAudioTracks()[0].stop();
 			this.mediaRecorder = null;
-		},
-	},
-	watch: {
-		audioBlob() {
-			if (!this.abort) {
-				this.$emit('stop', {
-					blob: this.audioBlob,
-					src: URL.createObjectURL(this.audioBlob),
-				});
-			}
 		},
 	},
 };

@@ -6,6 +6,7 @@
 	>
 		<ContextMenu
 			v-if="fullscreen"
+			v-click-outside="onClickOutside"
 			:show="true"
 			:x="contextMenuX"
 			:y="contextMenuY"
@@ -13,7 +14,6 @@
 			:class="{
 				'ContextMenu_visible': contextMenuVisible
 			}"
-			v-click-outside="onClickOutside"
 		>
 			<template v-if="contextMenuChat">
 				<div

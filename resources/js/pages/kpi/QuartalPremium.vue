@@ -6,10 +6,10 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
@@ -62,12 +62,12 @@
 							@click="premium.expanded = !premium.expanded"
 						>
 							<i
-								class="fa fa-minus mt-1"
 								v-if="premium.expanded"
+								class="fa fa-minus mt-1"
 							/>
 							<i
-								class="fa fa-plus mt-1"
 								v-else
+								class="fa fa-plus mt-1"
 							/>
 						</td>
 						<td class="text-left">
@@ -88,16 +88,16 @@
 									class="d-flex aic"
 								>
 									<i
-										class="fa fa-user ml-2 color-user"
 										v-if="newPremiumArray[0].target.type == 1"
+										class="fa fa-user ml-2 color-user"
 									/>
 									<i
-										class="fa fa-users ml-2 color-group"
 										v-if="newPremiumArray[0].target.type == 2"
+										class="fa fa-users ml-2 color-group"
 									/>
 									<i
-										class="fa fa-briefcase ml-2 color-position"
 										v-if="newPremiumArray[0].target.type == 3"
+										class="fa fa-briefcase ml-2 color-position"
 									/>
 									<span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
 								</div>
@@ -113,9 +113,9 @@
 											<tr>
 												<th />
 												<th
-													class="text-left"
 													v-for="(field, f) in fields"
 													:key="f"
+													class="text-left"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -168,8 +168,8 @@
 
 															<select
 																v-if="Number(item.source) == 1"
-																v-model="item.group_id"
 																:key="'a' + source_key"
+																v-model="item.group_id"
 															>
 																<option
 																	value="0"
@@ -188,8 +188,8 @@
 
 															<select
 																v-if="Number(item.source) == 1"
-																v-model="item.activity_id"
 																:key="'b' + source_key"
+																v-model="item.activity_id"
 															>
 																<option
 																	value="0"
@@ -248,8 +248,8 @@
 
 													<template v-else>
 														<input
-															:type="field.type"
 															v-model="item[field.key]"
+															:type="field.type"
 															@change="validate(item[field.key], field.key)"
 														>
 													</template>
@@ -288,164 +288,124 @@
 					</template>
 				</template>
 				<template v-for="(page_item, p) in page_items">
-					<template>
-						<tr :key="p">
-							<td
-								@click="expand(p)"
-								class="pointer"
-							>
-								<div class="d-flex align-items-center px-2">
-									<span class="mr-2">{{ p + 1 }}</span>
-									<i
-										class="fa fa-minus mt-1"
-										v-if="page_item.expanded"
-									/>
-									<i
-										class="fa fa-plus mt-1"
-										v-else
-									/>
-								</div>
-							</td>
-							<td class="text-left">
-								<!-- <superselect
-                            v-if="item.target == null"
-                            class="w-full"
-                            :values="[]"
-                            :single="true"
-                            @choose="(target) => item.target = target"
-                        />  -->
-								<div class="d-flex aic">
-									<i
-										class="fa fa-user ml-2 color-user"
-										v-if="page_item.type == 1"
-									/>
-									<i
-										class="fa fa-users ml-2 color-group"
-										v-if="page_item.type == 2"
-									/>
-									<i
-										class="fa fa-briefcase ml-2 color-position"
-										v-if="page_item.type == 3"
-									/>
-									<span class="ml-2">{{ page_item.name }}</span>
-									<i
-										class="fa fa-save btn btn-success btn-icon ml-a"
-										@click="saveAll(p)"
-									/>
-								</div>
-							</td>
-						</tr>
-						<template v-if="page_item.items !== undefined && page_item.items.length > 0">
-							<tr
-								:key="p + 'a'"
-								class="collapsable"
-								:class="{'active': page_item.expanded}"
-							>
-								<td :colspan="fields.length + 2">
-									<div class="table__wrapper w-100">
-										<table class="table table-responsive table-inner">
-											<thead>
-												<tr>
-													<th />
-													<th
-														class="text-left"
-														v-for="(field, f) in fields"
-														:key="f"
-														:class="[
-															field.class,
-															{'b-table-sticky-column l-2 hidden' : field.key == 'target'
-															}]"
-													>
-														{{ field.name }}
-													</th>
-													<th />
-												</tr>
-											</thead>
-											<tbody>
-												<tr
-													v-for="(item, i) in page_item.items"
-													:key="i"
+					<tr :key="p">
+						<td
+							class="pointer"
+							@click="expand(p)"
+						>
+							<div class="d-flex align-items-center px-2">
+								<span class="mr-2">{{ p + 1 }}</span>
+								<i
+									v-if="page_item.expanded"
+									class="fa fa-minus mt-1"
+								/>
+								<i
+									v-else
+									class="fa fa-plus mt-1"
+								/>
+							</div>
+						</td>
+						<td class="text-left">
+							<!-- <superselect
+													v-if="item.target == null"
+													class="w-full"
+													:values="[]"
+													:single="true"
+													@choose="(target) => item.target = target"
+											/>  -->
+							<div class="d-flex aic">
+								<i
+									v-if="page_item.type == 1"
+									class="fa fa-user ml-2 color-user"
+								/>
+								<i
+									v-if="page_item.type == 2"
+									class="fa fa-users ml-2 color-group"
+								/>
+								<i
+									v-if="page_item.type == 3"
+									class="fa fa-briefcase ml-2 color-position"
+								/>
+								<span class="ml-2">{{ page_item.name }}</span>
+								<i
+									class="fa fa-save btn btn-success btn-icon ml-a"
+									@click="saveAll(p)"
+								/>
+							</div>
+						</td>
+					</tr>
+					<template v-if="page_item.items !== undefined && page_item.items.length > 0">
+						<tr
+							:key="p + 'a'"
+							class="collapsable"
+							:class="{'active': page_item.expanded}"
+						>
+							<td :colspan="fields.length + 2">
+								<div class="table__wrapper w-100">
+									<table class="table table-responsive table-inner">
+										<thead>
+											<tr>
+												<th />
+												<th
+													v-for="(field, f) in fields"
+													:key="f"
+													class="text-left"
+													:class="[
+														field.class,
+														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
+														}]"
 												>
-													<td class="text-center">
-														<!--                                           <input class="ml-2" type="checkbox" />-->
-														<div>{{ i + 1 }}</div>
-													</td>
-													<td
-														v-for="(field, f) in fields"
-														:key="f"
-														:class="[
-															field.class,
-															{'b-table-sticky-column l-2 hidden' : field.key == 'target'},
-															{'no-hover' : field.key == 'activity_id' && item.source != undefined}
-														]"
-													>
-														<template v-if="field.key == 'target'" />
-														<template v-else-if="field.key == 'created_by' && item.creator != null">
-															{{ item.creator.last_name + ' ' + item.creator.name }}
-														</template>
-														<template v-else-if="field.key == 'updated_by' && item.updater != null">
-															{{ item.updater.last_name + ' ' + item.updater.name }}
-														</template>
-														<template v-else-if="non_editable_fields.includes(field.key)">
-															{{ item[field.key] }}
-														</template>
-														<template v-else-if="field.key == 'activity_id' && item.source != undefined">
-															<div class="d-flex">
-																<select
-																	v-model="item.source"
-																	@change="++source_key"
-																>
-																	<option
-																		v-for="key in Object.keys(sources)"
-																		:key="key"
-																		:value="key"
-																	>
-																		{{ sources[key] }}
-																	</option>
-																</select>
-																<select
-																	v-if="Number(item.source) == 1"
-																	v-model="item.group_id"
-																	:key="'c' + source_key"
-																>
-																	<option
-																		value="0"
-																		selected
-																	>
-																		-
-																	</option>
-																	<option
-																		v-for="(group, id) in groups"
-																		:key="id"
-																		:value="id"
-																	>
-																		{{ group }}
-																	</option>
-																</select>
-																<select
-																	v-if="Number(item.source) == 1"
-																	v-model="item.activity_id"
-																	:key="'d' + source_key"
-																>
-																	<option
-																		value="0"
-																		selected
-																	>
-																		-
-																	</option>
-																	<option
-																		v-for="activity in grouped_activities(item.source, item.group_id)"
-																		:key="activity.id"
-																		:value="activity.id"
-																	>
-																		{{ activity.name }}
-																	</option>
-																</select>
-															</div>
-														</template>
-														<template v-else-if="field.key == 'unit'">
+													{{ field.name }}
+												</th>
+												<th />
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(item, i) in page_item.items"
+												:key="i"
+											>
+												<td class="text-center">
+													<!--                                           <input class="ml-2" type="checkbox" />-->
+													<div>{{ i + 1 }}</div>
+												</td>
+												<td
+													v-for="(field, f) in fields"
+													:key="f"
+													:class="[
+														field.class,
+														{'b-table-sticky-column l-2 hidden' : field.key == 'target'},
+														{'no-hover' : field.key == 'activity_id' && item.source != undefined}
+													]"
+												>
+													<template v-if="field.key == 'target'" />
+													<template v-else-if="field.key == 'created_by' && item.creator != null">
+														{{ item.creator.last_name + ' ' + item.creator.name }}
+													</template>
+													<template v-else-if="field.key == 'updated_by' && item.updater != null">
+														{{ item.updater.last_name + ' ' + item.updater.name }}
+													</template>
+													<template v-else-if="non_editable_fields.includes(field.key)">
+														{{ item[field.key] }}
+													</template>
+													<template v-else-if="field.key == 'activity_id' && item.source != undefined">
+														<div class="d-flex">
 															<select
-																v-model="item.unit"
+																v-model="item.source"
+																@change="++source_key"
+															>
+																<option
+																	v-for="key in Object.keys(sources)"
+																	:key="key"
+																	:value="key"
+																>
+																	{{ sources[key] }}
+																</option>
+															</select>
+															<select
+																v-if="Number(item.source) == 1"
+																:key="'c' + source_key"
+																v-model="item.group_id"
 															>
 																<option
 																	value="0"
@@ -454,76 +414,114 @@
 																	-
 																</option>
 																<option
-																	v-for="key in Object.keys(units)"
-																	:key="key"
-																	:value="key"
+																	v-for="(group, id) in groups"
+																	:key="id"
+																	:value="id"
 																>
-																	{{ units[key] }}
+																	{{ group }}
 																</option>
 															</select>
-														</template>
-														<template v-else-if="field.key == 'daypart'">
 															<select
-																v-model="item.daypart"
+																v-if="Number(item.source) == 1"
+																:key="'d' + source_key"
+																v-model="item.activity_id"
 															>
 																<option
-																	v-for="key in Object.keys(dayparts)"
-																	:key="key"
-																	:value="key"
+																	value="0"
+																	selected
 																>
-																	{{ dayparts[key] }}
+																	-
+																</option>
+																<option
+																	v-for="activity in grouped_activities(item.source, item.group_id)"
+																	:key="activity.id"
+																	:value="activity.id"
+																>
+																	{{ activity.name }}
 																</option>
 															</select>
-														</template>
-														<template v-else>
-															<input
-																:type="field.type"
-																v-model="item[field.key]"
-																@change="validate(item[field.key], field.key)"
-															>
-														</template>
-													</td>
-													<td class="no-hover">
-														<div class="d-flex px-2">
-															<b-form-checkbox
-																class="kpi-status-switch"
-																switch
-																:checked="!!item.is_active"
-																:disabled="statusRequest"
-																@input="changeStatus(item, $event)"
-															>
-																&nbsp;
-															</b-form-checkbox>
-															<i
-																class="fa fa-save btn btn-success btn-icon"
-																@click="saveItemFromTable(p, i)"
-															/>
-															<i
-																class="fa fa-trash btn btn-danger btn-icon"
-																@click="deleteItem(p, i)"
-															/>
 														</div>
-													</td>
-												</tr>
-												<tr>
-													<td
-														colspan="13"
-														class="plus-item"
-													>
-														<div
-															class="px-4 py-3"
-															@click="addPremiumGroup(page_item)"
+													</template>
+													<template v-else-if="field.key == 'unit'">
+														<select
+															v-model="item.unit"
 														>
-															<i class="fa fa-plus mr-2" /> <b>Добавить премию</b>
-														</div>
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</td>
-							</tr>
-						</template>
+															<option
+																value="0"
+																selected
+															>
+																-
+															</option>
+															<option
+																v-for="key in Object.keys(units)"
+																:key="key"
+																:value="key"
+															>
+																{{ units[key] }}
+															</option>
+														</select>
+													</template>
+													<template v-else-if="field.key == 'daypart'">
+														<select
+															v-model="item.daypart"
+														>
+															<option
+																v-for="key in Object.keys(dayparts)"
+																:key="key"
+																:value="key"
+															>
+																{{ dayparts[key] }}
+															</option>
+														</select>
+													</template>
+													<template v-else>
+														<input
+															v-model="item[field.key]"
+															:type="field.type"
+															@change="validate(item[field.key], field.key)"
+														>
+													</template>
+												</td>
+												<td class="no-hover">
+													<div class="d-flex px-2">
+														<b-form-checkbox
+															class="kpi-status-switch"
+															switch
+															:checked="!!item.is_active"
+															:disabled="statusRequest"
+															@input="changeStatus(item, $event)"
+														>
+															&nbsp;
+														</b-form-checkbox>
+														<i
+															class="fa fa-save btn btn-success btn-icon"
+															@click="saveItemFromTable(p, i)"
+														/>
+														<i
+															class="fa fa-trash btn btn-danger btn-icon"
+															@click="deleteItem(p, i)"
+														/>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td
+													colspan="13"
+													class="plus-item"
+												>
+													<div
+														class="px-4 py-3"
+														@click="addPremiumGroup(page_item)"
+													>
+														<i class="fa fa-plus mr-2" /> <b>Добавить премию</b>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
 					</template>
 				</template>
 			</tbody>
@@ -531,8 +529,8 @@
 
 		<!-- pagination -->
 		<JwPagination
-			class="mt-3"
 			:key="paginationKey"
+			class="mt-3"
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -540,23 +538,23 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 
 		<!-- modal Adjust Visible fields -->
 		<b-modal
 			v-model="modalAdjustVisibleFields"
 			title="Настройка списка"
-			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 			ok-text="Закрыть"
 			size="lg"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 		>
 			<div class="row">
 				<div
-					class="col-md-4 mb-2"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="col-md-4 mb-2"
 				>
 					<b-form-checkbox
 						v-model="show_fields[field.key]"
@@ -570,17 +568,17 @@
 		</b-modal>
 
 		<Sidebar
-			title="Настроить премию"
 			v-if="activeItem != null"
+			title="Настроить премию"
 			:open="showSidebar"
-			@close="closeSidebar"
 			width="40%"
+			@close="closeSidebar"
 		>
 			<div class="row m-0">
 				<div
-					class="mb-3"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="mb-3"
 					:class="field.alter_class"
 				>
 					<div class="mb-2 mt-2 field">
@@ -603,16 +601,16 @@
 							class="d-flex aic"
 						>
 							<i
-								class="fa fa-user ml-2 color-user"
 								v-if="activeItem.target.type == 1"
+								class="fa fa-user ml-2 color-user"
 							/>
 							<i
-								class="fa fa-users ml-2 color-group"
 								v-if="activeItem.target.type == 2"
+								class="fa fa-users ml-2 color-group"
 							/>
 							<i
-								class="fa fa-briefcase ml-2 color-position"
 								v-if="activeItem.target.type == 3"
+								class="fa fa-briefcase ml-2 color-position"
 							/>
 							<span class="ml-2">{{ activeItem.target.name }}</span>
 						</div>
@@ -649,8 +647,8 @@
 
 							<select
 								v-if="Number(activeItem.source) == 1"
-								v-model="activeItem.group_id"
 								:key="'a' + source_key"
+								v-model="activeItem.group_id"
 							>
 								<option
 									value="0"
@@ -668,8 +666,8 @@
 							</select>
 
 							<select
-								v-model="activeItem.activity_id"
 								:key="'b' + source_key"
+								v-model="activeItem.activity_id"
 							>
 								<option
 									value="0"
@@ -728,8 +726,8 @@
 
 					<div v-else>
 						<input
-							:type="field.type"
 							v-model="activeItem[field.key]"
+							:type="field.type"
 							@change="validate(activeItem[field.key], field.key)"
 						>
 					</div>
@@ -751,6 +749,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import SuperSelect from '@/components/SuperSelect'

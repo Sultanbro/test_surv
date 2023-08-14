@@ -11,9 +11,9 @@
 							<div>Сотрудник</div>
 						</th>
 						<th
-							:class="field.klass"
 							v-for="(field, key) in fields"
 							:key="key"
+							:class="field.klass"
 						>
 							<div>{{ field.name }}</div>
 						</th>
@@ -36,8 +36,8 @@
 						</td>
 						<template v-for="(field, key) in fields">
 							<td
-								:class="field.klass"
 								:key="key"
+								:class="field.klass"
 							>
 								<div v-if="item[field.key] != 0">
 									{{ item[field.key] }}
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 import JobtronCup from '@ui/Cup'
 
 export default {
@@ -60,8 +61,14 @@ export default {
 		JobtronCup,
 	},
 	props: {
-		monthInfo: Object,
-		items: Array,
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		items: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
@@ -114,7 +121,6 @@ export default {
 
 			this.total_avg = total_avg
 			this.total_count = total_count
-			console.log('OKK avg is ' + total_count + ' - ' + total_avg);
 		},
 
 		// createUserIdList() {
@@ -151,7 +157,6 @@ export default {
 				let d = i
 				if(d.toString().length == 1) d = '0' + d;
 				if(m.length == 1) m = '0' + m;
-				//console.log(this.currentYear + '-' + m + '-' + d)
 
 				let date = this.$moment(this.monthInfo.currentYear + '-' + m + '-' + d);
 				let dow = date.day();

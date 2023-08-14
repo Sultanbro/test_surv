@@ -9,10 +9,10 @@
 			@end="saveOrder"
 		>
 			<div
-				class="video-block"
 				v-for="(video, v_index) in videos"
-				:key="video.id"
 				:id="video.id"
+				:key="video.id"
+				class="video-block"
 				:class="{
 					'active': (active == video.id),
 					'disabled': active != video.id && mode == 'read' && video.item_model == null
@@ -20,8 +20,8 @@
 				@click="showVideo(video, v_index)"
 			>
 				<div
-					class="mover"
 					v-if="mode == 'edit' && !group_edit"
+					class="mover"
 				>
 					<i class="fa fa-bars" />
 				</div>
@@ -34,23 +34,25 @@
 				<div class="desc">
 					<div class="d-flex align-items-start">
 						<i
-							class="fa fa-lock mr-3"
 							v-if="active != video.id && mode == 'read' && video.item_model == null"
+							class="fa fa-lock mr-3"
 						/>
 						<i
-							class="fa fa-play mr-3"
 							v-if="active == video.id"
+							class="fa fa-play mr-3"
 						/>
 						<h4>{{ video.title }}</h4>
 					</div>
+					<!-- eslint-disable -->
 					<div
 						class="text"
 						v-html="video.desc"
 					/>
+					<!-- eslint-enable -->
 				</div>
 				<div
-					class="controls d-flex"
 					v-if="mode == 'edit' && !group_edit"
+					class="controls d-flex"
 				>
 					<div class="more">
 						<i class="fas fa-ellipsis-h mr-2" />
@@ -108,17 +110,17 @@
 			v-model="modal"
 			title="Переместить видео"
 			:open="modal"
-			@close="modal = false"
 			width="50%"
+			@close="modal = false"
 		>
 			<div class="d-flex mb-2 p-3 aic">
 				<p class="mb-0 mr-2">
 					Плейлист
 				</p>
 				<v-select
+					v-model="playlist"
 					:options="playlists"
 					label="title"
-					v-model="playlist"
 					class="group-select w-full"
 				/>
 			</div>
@@ -128,9 +130,9 @@
 					Отдел
 				</p>
 				<v-select
+					v-model="group"
 					:options="groups"
 					label="title"
-					v-model="group"
 					class="group-select w-full"
 				/>
 			</div>
@@ -149,7 +151,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 import Draggable from 'vuedraggable'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
@@ -159,7 +164,33 @@ export default {
 		Sidebar,
 		Draggable,
 	},
-	props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
+	props: {
+		videos: {
+			type: Array,
+			default: () => [],
+		},
+		mode: {
+			type: String,
+			default: 'read',
+		},
+		group_edit: {
+			type: Boolean,
+		},
+		g_index: {
+			type: Number,
+			default: 0
+		},
+		c_index: {
+			type: Number,
+			default: 0
+		},
+		active: {
+			type: Boolean,
+		},
+		is_course: {
+			type: Boolean,
+		},
+	},
 	data(){
 		return {
 			modal: false,
@@ -249,7 +280,7 @@ export default {
 				})
 				.catch(e => {
 					loader.hide()
-					console.log(e)
+					console.error(e)
 				})
 		},
 

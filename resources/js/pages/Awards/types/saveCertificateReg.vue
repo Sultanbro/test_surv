@@ -1,6 +1,8 @@
 <template>
 	<div class="certificate-creator">
 		<VueHtml2pdf
+			v-if="!loading"
+			ref="html2Pdf"
 			:show-layout="false"
 			:float-layout="true"
 			:pdf-quality="2"
@@ -8,24 +10,22 @@
 			:enable-download="pdfDownloaded"
 			pdf-content-width="1000px"
 			:manual-pagination="true"
-			ref="html2Pdf"
 			:html-to-pdf-options="options"
 			@progress="onProgress($event)"
 			@beforeDownload="beforeDownload($event)"
 			@hasDownloaded="hasDownloaded($event)"
-			v-if="!loading"
 		>
 			<!-- 1 = 24.4мм -->
 			<template #pdf-content>
 				<section>
 					<div class="html2pdf__page-break">
 						<div
-							class="draggable-container"
 							v-if="Object.keys(styles).length > 0"
+							class="draggable-container"
 						>
 							<div
-								class="draggable-block"
 								id="draggable-block"
+								class="draggable-block"
 							>
 								<div
 									class="draggable"
@@ -72,6 +72,7 @@ export default {
 		VueHtml2pdf,
 	},
 	props: {
+		/* eslint-disable camelcase, vue/prop-name-casing */
 		course_id: {
 			type: Number,
 			default: null
@@ -101,41 +102,6 @@ export default {
 			}
 		}
 	},
-	methods: {
-		onProgress(progress) {
-			this.progress = progress;
-			// console.log(`PDF generation progress: ${progress}%`)
-		},
-		beforeDownload() {
-
-		},
-		hasDownloaded(blobPdf) {
-			this.pdfDownloaded = true;
-			let file = new File([blobPdf], `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`, {
-				type: blobPdf.type,
-			});
-			console.log(file);
-			let log = {
-				title: `User ID - ${this.item.id}. Курс - ${this.item.course.name}. ФИО - ${this.item.user.name} ${this.item.user.last_name}`,
-				fileName: `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`
-			};
-			this.$emit('generated', file, log);
-		},
-		renderedEmbed() {
-			const canvas = document.querySelector('.vue-pdf-embed canvas');
-			let canvasHeight = canvas.offsetHeight;
-			let canvasWidth = canvas.offsetWidth;
-			let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
-			let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
-			this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
-			if (canvasWidthCalc > canvasHeightCalc) {
-				this.options.jsPDF.orientation = 'landscape';
-			} else {
-				this.options.jsPDF.orientation = 'portrait';
-			}
-			this.$refs.html2Pdf.generatePdf();
-		}
-	},
 	async mounted() {
 		if (this.course_id) {
 			if (Object.keys(this.item).length !== 0) {
@@ -158,9 +124,42 @@ export default {
 						}
 					})
 					.catch(error => {
-						console.log(error);
+						console.error(error);
 					})
 			}
+		}
+	},
+	methods: {
+		onProgress(progress) {
+			this.progress = progress;
+		},
+		beforeDownload() {
+
+		},
+		hasDownloaded(blobPdf) {
+			this.pdfDownloaded = true;
+			let file = new File([blobPdf], `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`, {
+				type: blobPdf.type,
+			});
+			let log = {
+				title: `User ID - ${this.item.id}. Курс - ${this.item.course.name}. ФИО - ${this.item.user.name} ${this.item.user.last_name}`,
+				fileName: `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`
+			};
+			this.$emit('generated', file, log);
+		},
+		renderedEmbed() {
+			const canvas = document.querySelector('.vue-pdf-embed canvas');
+			let canvasHeight = canvas.offsetHeight;
+			let canvasWidth = canvas.offsetWidth;
+			let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
+			let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
+			this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
+			if (canvasWidthCalc > canvasHeightCalc) {
+				this.options.jsPDF.orientation = 'landscape';
+			} else {
+				this.options.jsPDF.orientation = 'portrait';
+			}
+			this.$refs.html2Pdf.generatePdf();
 		}
 	}
 }

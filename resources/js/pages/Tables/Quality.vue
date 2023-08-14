@@ -39,26 +39,26 @@
 						<div class="d-flex max-content">
 							{{ item.name }}
 							<img
+								v-if="item.show_cup == 1"
 								src="images/dist/first-place.png"
 								alt="icon"
-								v-if="item.show_cup == 1"
 							>
 							<img
+								v-if="item.show_cup == 2"
 								src="images/dist/second-place.png"
 								alt="icon"
-								v-if="item.show_cup == 2"
 							>
 							<img
+								v-if="item.show_cup == 3"
 								src="images/dist/third-place.png"
 								alt="icon"
-								v-if="item.show_cup == 3"
 							>
 						</div>
 					</td>
 					<template v-for="(field, key) in fields">
 						<td
-							:class="field.class"
 							:key="key"
+							:class="field.class"
 						>
 							<div v-if="item[field.key] != 0">
 								{{ item[field.key] }}
@@ -72,11 +72,19 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'TableQuality',
 	props: {
-		monthInfo: Object,
-		items: Array,
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		items: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {

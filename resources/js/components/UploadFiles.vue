@@ -1,8 +1,8 @@
 <template>
 	<div class="upload-files">
 		<div
-			class="file-dropzone"
 			ref="filedropzone"
+			class="file-dropzone"
 		>
 			<div class="dropzone-display">
 				<div class="p-5">
@@ -30,28 +30,29 @@ export default {
 	components: {
 		UploadingFile
 	},
+	props: {
+		token: {
+			type: String,
+			default: ''
+		},
+		type: {
+			type: String,
+			default: ''
+		},
+		/* eslint-disable-next-line */
+		file_types: {
+			type: Array,
+			default: () => []
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
+	},
 	data(){
 		return {
 			files: [], // our local files array, we will pack in extra data to force reactivity
 			r: false
-		}
-	},
-	props: [
-		'token',
-		'type',
-		'file_types',
-		'id'
-	],
-	methods: {
-		// finds the file in the local files array
-		findFile(file){
-			let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
-			return  x ? x : {}
-		},
-		// cancel an individual file
-		cancelFile(file){
-			this.findFile(file).status = 'canceled'
-			file.cancel()
 		}
 	},
 	mounted(){
@@ -110,6 +111,18 @@ export default {
 				localFile.progress = progress
 
 		})
+	},
+	methods: {
+		// finds the file in the local files array
+		findFile(file){
+			let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
+			return  x ? x : {}
+		},
+		// cancel an individual file
+		cancelFile(file){
+			this.findFile(file).status = 'canceled'
+			file.cancel()
+		}
 	}
 }
 </script>

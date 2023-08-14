@@ -20,6 +20,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'

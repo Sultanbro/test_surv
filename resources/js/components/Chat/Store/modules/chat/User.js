@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import API from '../../API.vue';
 import { useCompanyStore } from '@/stores/Company'
 

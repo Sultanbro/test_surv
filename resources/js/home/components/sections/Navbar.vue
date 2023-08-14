@@ -90,8 +90,8 @@
 										<div
 											v-for="cabinet in laravel.cabinets"
 											:key="cabinet.tenant_id"
-											@click="cabinetRedirect(cabinet.tenant_id)"
 											class="jNav-menu-link"
+											@click="cabinetRedirect(cabinet.tenant_id)"
 										>{{ cabinet.tenant_id }}</div>
 										<div class="jNav-menu-user-menu-item">
 											<button
@@ -173,6 +173,18 @@ export default {
 		}
 	},
 
+	mounted() {
+		window.addEventListener('scroll', this.changeLogoSizeByScroll);
+		this.csrf = document.getElementById('csrf')?.value
+
+		const search = new URLSearchParams(location.search)
+		if(search.has('logout')) this.logout()
+	},
+
+	beforeDestroy() {
+		window.removeEventListener('scroll', this.changeLogoSizeByScroll);
+	},
+
 	methods: {
 		changeLogoSizeByScroll() {
 			document.body.scrollTop > 20
@@ -193,9 +205,9 @@ export default {
 				this.isUserMenuActive = !this.isUserMenuActive
 			})
 		},
-		cabinetRedirect(tenant_id){
+		cabinetRedirect(tenantId){
 			const url = new URL(window.location.href)
-			url.hostname = `${tenant_id}.${this.hostname}`
+			url.hostname = `${tenantId}.${this.hostname}`
 			window.location.assign(url.href)
 		},
 		logout(){
@@ -205,18 +217,6 @@ export default {
 				location.assign('/')
 			})
 		}
-	},
-
-	mounted() {
-		window.addEventListener('scroll', this.changeLogoSizeByScroll);
-		this.csrf = document.getElementById('csrf')?.value
-
-		const search = new URLSearchParams(location.search)
-		if(search.has('logout')) this.logout()
-	},
-
-	beforeDestroy() {
-		window.removeEventListener('scroll', this.changeLogoSizeByScroll);
 	}
 }
 </script>

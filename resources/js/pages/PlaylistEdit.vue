@@ -3,17 +3,17 @@
 		<!-- Header -->
 
 		<div
-			class="mb-4 m-0 row"
 			v-if="!is_course"
+			class="mb-4 m-0 row"
 		>
 			<div class="col-12 col-md-8">
 				<div class="s w-full">
 					<div class="d-flex flex-column">
 						<input
 							v-if="mode == 'edit'"
+							v-model="playlist.title"
 							type="text"
 							class="form-control form-control-sm w-full p-itle mb-0 mr-2"
-							v-model="playlist.title"
 							name="title"
 						>
 						<p
@@ -34,12 +34,12 @@
 					<div class="form-group mt-2">
 						<textarea
 							v-if="mode == 'edit'"
+							v-model="playlist.text"
 							name="text"
 							class="form-control textarea h-70"
 							required
 							title="Описание плейлиста"
 							placeholder="Описание плейлиста"
-							v-model="playlist.text"
 						/>
 						<p
 							v-else
@@ -52,8 +52,8 @@
 			</div>
 			<div class="col-12 col-md-4">
 				<img
-					class="book-img mb-2"
 					v-if="playlist.img != ''"
+					class="book-img mb-2"
 					:src="playlist.img"
 				>
 				<b-form-file
@@ -73,18 +73,18 @@
 			<div class="col-lg-8 video-playlist-left">
 				<template v-if="activeVideo != null">
 					<VideoPlayerItem
-						:src="activeVideoLink"
 						:key="video_changed"
+						:src="activeVideoLink"
 						:autoplay="course_item_id != 0"
 					/>
 
 					<div class="row mb-2 mt-3">
 						<div class="col-md-12">
 							<input
-								type="text"
 								v-if="mode == 'edit'"
-								class="form-control"
 								v-model="activeVideo.title"
+								type="text"
+								class="form-control"
 								:disabled="mode == 'read'"
 							>
 							<p
@@ -97,8 +97,8 @@
 					</div>
 
 					<div
-						class="row mb-2"
 						v-if="mode == 'edit'"
+						class="row mb-2"
 					>
 						<div class="col-md-12">
 							<button
@@ -114,21 +114,21 @@
 					<div class="vid mt-3">
 						<Questions
 							v-if="activeVideo.questions.length > 0 && mode != 'edit'"
-							:questions="activeVideo.questions"
-							:course_item_id="course_item_id"
 							:id="activeVideo.id"
 							:key="refreshTest"
+							:questions="activeVideo.questions"
+							:course_item_id="course_item_id"
 							type="video"
 							:pass_grade="activeVideo.pass_grade"
 							:pass="activeVideo.item_model !== null"
-							@passed="passedTest()"
 							:mode="mode"
+							@passed="passedTest()"
 							@nextElement="nextElement"
 						/>
 						<!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
 						<button
-							class="next-btn btn btn-primary"
 							v-if="activeVideo.questions.length == 0 && mode == 'read'"
+							class="next-btn btn btn-primary"
 							@click="nextElement()"
 						>
 							Следующее видео
@@ -159,29 +159,29 @@
 		<SimpleSidebar
 			title="Редактировать вопросы к видео"
 			:open="show_tests && activeVideo != null"
-			@close="show_tests = false"
 			width="50%"
 			class="sidebar-video-edit"
+			@close="show_tests = false"
 		>
 			<template #body>
 				<div v-if="activeVideo != null">
 					<div class="form-group">
 						<label>Название видео</label>
 						<input
+							ref="activevideo_input"
+							v-model="activeVideo.title"
 							type="text"
 							class="form-control"
-							v-model="activeVideo.title"
-							ref="activevideo_input"
 						>
 					</div>
 					<Questions
-						:questions="activeVideo.questions"
 						:id="activeVideo.id"
+						:key="refreshTest"
+						:questions="activeVideo.questions"
 						:pass_grade="activeVideo.pass_grade"
 						type="video"
-						:key="refreshTest"
-						@changePassGrade="changePassGrade"
 						:mode="'edit'"
+						@changePassGrade="changePassGrade"
 					/>
 				</div>
 			</template>
@@ -199,6 +199,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VideoPlayerItem from '@/components/VideoPlayerItem' // плеер
 import Questions from '@/pages/Questions' // вопросы тестов
 import SimpleSidebar from '@/components/ui/SimpleSidebar'
@@ -214,24 +217,44 @@ export default {
 		SimpleSidebar
 	},
 	props: {
-		token: String,
-		id: Number,
-		auth_user_id: Number,
-		myvideo: Number,
-		mode: String,
+		token: {
+			type: String,
+			default: ''
+		},
+		id: {
+			type: Number,
+			default: 0
+		},
+		auth_user_id: {
+			type: Number,
+			default: 0
+		},
+		myvideo: {
+			type: Number,
+			default: 0
+		},
+		mode: {
+			type: String,
+			default: ''
+		},
 		enable_url_manipulation: {
+			type: Boolean,
 			default: true
 		},
 		is_course: {
+			type: Boolean,
 			default: false
 		},
 		course_item_id: {
+			type: Number,
 			default: 0
 		},
 		all_stages: {
+			type: Number,
 			default: 0
 		},
 		completed_stages: {
+			type: Number,
 			default: 0
 		},
 	},

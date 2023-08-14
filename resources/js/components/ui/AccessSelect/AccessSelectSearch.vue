@@ -7,9 +7,9 @@
 		<input
 			type="text"
 			:value="value"
-			@input="$emit('input', $event.target.value)"
 			class="AccessSelectSearch-input"
 			placeholder="Быстрый поиск"
+			@input="$emit('input', $event.target.value)"
 		>
 		<div
 			v-if="value"

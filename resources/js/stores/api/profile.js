@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 /** @module stores/api/profile */
 /* global Laravel */
 import axios from 'axios'

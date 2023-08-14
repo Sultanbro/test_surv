@@ -6,6 +6,7 @@
 			alt="img"
 		>
 		<div class="news-birthday-card__body">
+			<!-- eslint-disable -->
 			<span
 				class="news-birthday-card__name"
 				v-html="user.name"
@@ -14,6 +15,7 @@
 				:class="'news-birthday-card__birthday ' + getCardColor(user)"
 				v-html="user.date_human"
 			/>
+			<!-- eslint-enable -->
 		</div>
 		<div
 			:class="'news-birthday-card__gift ' +(success ? 'news-birthday-card__gift--success' : (hover ? 'news-birthday-card__gift--hover' : ''))"
@@ -69,10 +71,10 @@
 
 				<div class="news-gift-popup__body">
 					<input
+						v-model="summ"
 						class="news-gift-popup__input"
 						type="number"
 						placeholder="Укажите сумму"
-						v-model="summ"
 					>
 					<a class="news-gift-popup__submit">
 						<span @click="toggleSecondModal(summ)">Отправить</span>
@@ -122,6 +124,7 @@
 						class="news-birthday-card__image"
 					>
 					<div class="news-birthday-card__body">
+						<!-- eslint-disable -->
 						<span
 							class="news-birthday-card__name"
 							v-html="user.name"
@@ -130,6 +133,7 @@
 							:class="'news-birthday-card__birthday ' + getCardColor(user)"
 							v-html="user.date_human"
 						/>
+						<!-- eslint-enable -->
 					</div>
 					<a class="news-gift-second__send">
 						<span @click="sendMoney">Подарить!</span>
@@ -147,6 +151,7 @@ export default {
 	name: 'BirthdayUser',
 	props: {
 		user: {
+			type: Object,
 			required: true
 		}
 	},
@@ -192,33 +197,29 @@ export default {
 			this.summ = '';
 			await this.axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
 				.then(res => {
-					console.log(res);
 					this.createAvans(res.data.data)
-
 				})
 				.catch(res => {
-					console.log(res);
+					console.error(res);
 				})
 		},
 		async createAvans(data) {
 			await this.axios.post('/timetracking/salaries/update', data.avansData)
-				.then(res => {
-					console.log(res)
+				.then(() => {
 					this.sendBonuses(data.bonusData)
 				})
-				.catch( res =>{
-					console.log(res)
+				.catch(res => {
+					console.error(res)
 				})
 		},
 		async sendBonuses(data) {
 			await this.axios.post('/timetracking/salaries/update', data)
-				.then(res => {
-					console.log(res)
+				.then(() => {
 					this.success = true;
 					setTimeout(() => {  this.success = false;}, 5000);
 				})
-				.catch( res =>{
-					console.log(res)
+				.catch(res => {
+					console.error(res)
 				})
 		},
 

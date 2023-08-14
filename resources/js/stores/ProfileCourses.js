@@ -1,7 +1,8 @@
+/* eslint-disable camelcase */
+
 import Vue from 'vue'
 import { defineStore } from 'pinia'
 import { fetchProfileCourses, fetchMyCourseInfo } from '@/stores/api'
-
 
 export const useProfileCoursesStore = defineStore('profileCourses', {
 	state: () => ({

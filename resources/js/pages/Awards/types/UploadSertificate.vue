@@ -2,14 +2,14 @@
 	<div class="upload-certificate">
 		<div class="d-flex file">
 			<BFormFile
+				id="file"
+				ref="file"
 				v-model="image"
 				class="form-file"
 				placeholder="Выберите Сертификат"
 				drop-placeholder="Перетащите файл сюда..."
 				accept=".pdf"
 				type="file"
-				id="file"
-				ref="file"
 			/>
 			<BButton
 				v-if="imageSrc"
@@ -75,9 +75,9 @@
 					placeholder="Выберите курсы"
 					label="name"
 					track-by="name"
+					:preselect-first="false"
 					@select="onSelect"
 					@remove="onRemove"
-					:preselect-first="false"
 				/>
 			</b-col>
 			<b-col
@@ -153,14 +153,6 @@ export default {
 			variant: 'success'
 		};
 	},
-	mounted() {
-		if (this.awards.length > 0) {
-			this.imageSrc = this.awards[0].tempPath;
-			this.styles = this.awards[0].styles;
-			this.$emit('has-change-constructor', true);
-		}
-		this.getCourses();
-	},
 	watch: {
 		image(newValue) {
 			this.imageSrc = null;
@@ -176,6 +168,14 @@ export default {
 					});
 			}
 		},
+	},
+	mounted() {
+		if (this.awards.length > 0) {
+			this.imageSrc = this.awards[0].tempPath;
+			this.styles = this.awards[0].styles;
+			this.$emit('has-change-constructor', true);
+		}
+		this.getCourses();
 	},
 	methods: {
 		openModalCertificate() {
@@ -216,7 +216,7 @@ export default {
 					loader.hide();
 				})
 				.catch(error => {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				})
 		},

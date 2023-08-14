@@ -2,8 +2,8 @@
 	<SideBar
 		width="50%"
 		:open="true"
-		@close="$emit('close')"
 		class="NotificationsTemplates"
+		@close="$emit('close')"
 	>
 		<template #header>
 			<div class="ui-sidebar__header-text">
@@ -47,8 +47,8 @@
 									:access-dictionaries="accessDictionaries"
 									search-position="beforeTabs"
 									:submit-button="'Применить'"
-									@submit="onSubmitAccess"
 									class="NotificationsEditForm-accessSelect"
+									@submit="onSubmitAccess"
 								/>
 							</JobtronOverlay>
 						</template>
@@ -145,6 +145,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapGetters } from 'vuex'
 import JobtronOverlay from '@ui/Overlay'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'

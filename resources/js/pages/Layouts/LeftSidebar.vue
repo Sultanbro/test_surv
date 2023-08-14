@@ -11,8 +11,8 @@
 				<div class="header_menu_avatar">
 					<div class="header__menu">
 						<div
-							class="header__menu-project"
 							v-scroll-lock="isCreatingProject"
+							class="header__menu-project"
 						>
 							<img
 								src="/images/dist/icon-settings.svg"
@@ -36,8 +36,8 @@
 								<div class="header__submenu-divider" />
 								<div
 									v-if="isOwner"
-									@click="onNewProject"
 									class="header__submenu-item"
+									@click="onNewProject"
 								>
 									Добавить проект
 								</div>
@@ -97,9 +97,8 @@
 		>
 			<template v-for="item in filteredItems.visible">
 				<LeftSidebarItem
-					:key="item.name"
 					v-if="!item.hide"
-					@calcsize="item.height = $event.offsetHeight"
+					:key="item.name"
 					:name="item.name"
 					:class="item.className"
 					:to="item.to"
@@ -109,12 +108,13 @@
 					:menu="item.menu"
 					:popover="item.popover"
 					:highlight="item.route === routeMenuItem"
+					@calcsize="item.height = $event.offsetHeight"
 				/>
 			</template>
 			<template v-if="filteredItems.more.length === 1">
 				<LeftSidebarItem
-					:key="filteredItems.more[0].name"
 					v-if="!filteredItems.more[0].hide"
+					:key="filteredItems.more[0].name"
 					:name="filteredItems.more[0].name"
 					:class="filteredItems.more[0].className"
 					:href="filteredItems.more[0].href"
@@ -169,56 +169,6 @@ export default {
 			isCreatingProject: false,
 			resizeObserver: null,
 		};
-	},
-	methods: {
-		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
-		onResize(){
-			if(!this.$refs.nav) return
-			this.height = this.$refs.nav.offsetHeight
-		},
-		onNewProject(){
-			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
-			this.isCreatingProject = true
-			const loader = this.$loading.show({
-				zIndex: 99999
-			})
-			this.$toast.info('Ваш кабинет создается', {
-				timeout: 20000,
-				closeOnClick: false,
-				pauseOnFocusLoss: true,
-				pauseOnHover: true,
-				draggable: false,
-				showCloseButtonOnHover: false,
-				hideProgressBar: true,
-				closeButton: false,
-				icon: true
-			})
-			this.axios.post('/projects/create', {}).then(response => {
-				if(response.data) location.assign(response.data.link)
-			}).catch(error => {
-				loader.hide()
-				this.isCreatingProject = false
-				this.$toast.error('Ошибка при создании кабинета')
-				console.error(error)
-			})
-		},
-		updateAvatar(avatar){
-			this.avatar = avatar
-		},
-		logout(){
-			const formData = new FormData();
-			formData.append('_token', this.$laravel.csrfToken);
-
-			const protocol = window.location.protocol
-			const redirectHost = window.location.hostname.split('.')
-			if (protocol === 'https:') {
-				redirectHost.splice(0, 1)
-			}
-
-			this.axios.post('/logout', formData).then(() => {
-				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
-			})
-		}
 	},
 	computed: {
 		isMainProject(){
@@ -435,10 +385,62 @@ export default {
 		this.startAutoCheck();
 		bus.$on('user-avatar-update', this.updateAvatar)
 	},
+
 	beforeUnmount(){
 		if(this.resizeObserver) this.resizeObserver.disconnect()
 		bus.$off('user-avatar-update', this.updateAvatar)
-	}
+	},
+
+	methods: {
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
+		onResize(){
+			if(!this.$refs.nav) return
+			this.height = this.$refs.nav.offsetHeight
+		},
+		onNewProject(){
+			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
+			this.isCreatingProject = true
+			const loader = this.$loading.show({
+				zIndex: 99999
+			})
+			this.$toast.info('Ваш кабинет создается', {
+				timeout: 20000,
+				closeOnClick: false,
+				pauseOnFocusLoss: true,
+				pauseOnHover: true,
+				draggable: false,
+				showCloseButtonOnHover: false,
+				hideProgressBar: true,
+				closeButton: false,
+				icon: true
+			})
+			this.axios.post('/projects/create', {}).then(response => {
+				if(response.data) location.assign(response.data.link)
+			}).catch(error => {
+				loader.hide()
+				this.isCreatingProject = false
+				this.$toast.error('Ошибка при создании кабинета')
+				console.error(error)
+			})
+		},
+		updateAvatar(avatar){
+			this.avatar = avatar
+		},
+		logout(){
+			const formData = new FormData();
+			formData.append('_token', this.$laravel.csrfToken);
+
+			const protocol = window.location.protocol
+			const redirectHost = window.location.hostname.split('.')
+			if (protocol === 'https:') {
+				redirectHost.splice(0, 1)
+			}
+
+			this.axios.post('/logout', formData).then(() => {
+				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
+			})
+		}
+	},
 };
 </script>
 

@@ -1,19 +1,19 @@
 <template>
 	<div class="mb-0">
 		<div
-			class="row mb-3 mt-3"
 			v-if="show_header"
+			class="row mb-3 mt-3"
 		>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="currentYear"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -34,16 +34,16 @@
 
 		<div class="table-responsive table-container mt-4">
 			<table
-				class="table custom-table-nps table-bordered"
 				:key="ukey"
+				class="table custom-table-nps table-bordered"
 			>
 				<thead>
 					<tr>
 						<template v-for="(field, key) in fields">
 							<th
+								:key="key"
 								class="NPS-th"
 								:class="field.klass"
-								:key="key"
 								@click="doSort(field.key)"
 							>
 								{{ field.name }}
@@ -58,8 +58,8 @@
 					>
 						<template v-for="(field, key) in fields">
 							<td
-								:class="field.klass"
 								:key="key"
+								:class="field.klass"
 							>
 								<div
 									class="inner"
@@ -103,6 +103,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'

@@ -28,9 +28,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-5"
 						name="file5"
 						type="file"
-						id="file-5"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(0)"
@@ -44,8 +44,8 @@ export default {
 							<span>Удостоверение личности</span>
 						</label>
 						<a
-							download
 							v-if="user && user.downloads && user.downloads.ud_lich"
+							download
 							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/ud_lich/${user.downloads.ud_lich}`"
 						>Скачать</a>
@@ -62,9 +62,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-1"
 						name="file1"
 						type="file"
-						id="file-1"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(1)"
@@ -78,8 +78,8 @@ export default {
 							<span>Договор оказания услуг</span>
 						</label>
 						<a
-							download
 							v-if="user && user.downloads && user.downloads.dog_okaz_usl"
+							download
 							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/dog_okaz_usl/${user.downloads.dog_okaz_usl}`"
 						>Скачать</a>
@@ -96,9 +96,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-2"
 						name="file2"
 						type="file"
-						id="file-2"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(2)"
@@ -112,8 +112,8 @@ export default {
 							<span>Сохранение комм. тайны</span>
 						</label>
 						<a
-							download
 							v-if="user && user.downloads && user.downloads.sohr_kom_tainy"
+							download
 							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}}/sohr_kom_tainy/${user.downloads.sohr_kom_tainy}`"
 						>Скачать</a>
@@ -130,9 +130,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-3"
 						name="file3"
 						type="file"
-						id="file-3"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(3)"
@@ -146,9 +146,9 @@ export default {
 							<span>Договор о неконкуренции</span>
 						</label>
 						<a
+							v-if="user && user.downloads && user.downloads.dog_o_nekonk"
 							download
 							class="btn btn-success btn-block"
-							v-if="user && user.downloads && user.downloads.dog_o_nekonk"
 							:href="`/static/profiles/${user.id}/dog_o_nekonk/${user.downloads.dog_o_nekonk}`"
 						>Скачать</a>
 					</template>
@@ -164,9 +164,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-4"
 						name="file4"
 						type="file"
-						id="file-4"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(4)"
@@ -180,8 +180,8 @@ export default {
 							<span>Трудовой <br> договор</span>
 						</label>
 						<a
-							download
 							v-if="user && user.downloads && user.downloads.trud_dog"
+							download
 							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/trud_dog/${user.downloads.trud_dog}`"
 						>Скачать</a>
@@ -199,9 +199,9 @@ export default {
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">
 					<input
+						id="file-7"
 						name="file7"
 						type="file"
-						id="file-7"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
 						@change="hasFile(5)"
@@ -215,8 +215,8 @@ export default {
 							<span>Архив <br>документов</span>
 						</label>
 						<a
-							download
 							v-if="user && user.downloads && user.downloads.archive"
+							download
 							class="btn btn-success btn-block"
 							:href="`/static/profiles/${user.id}/archive/${user.downloads.archive}`"
 						>Скачать</a>
@@ -232,10 +232,10 @@ export default {
 			</div>
 			<!-- может лишний -->
 			<input
+				id="file-6"
 				name="logo"
 				type="file"
 				accept="image/*,.pdf"
-				id="file-6"
 				class="inputfile inputfile-1"
 				data-multiple-caption="{count} files selected"
 				style="display: none;"

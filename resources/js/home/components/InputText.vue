@@ -1,10 +1,10 @@
 <template>
 	<label class="input-text">
 		<input
+			v-model="localValue"
 			type="text"
 			class="input-text-input"
 			:placeholder="placeholder"
-			v-model="localValue"
 		>
 	</label>
 </template>
@@ -12,8 +12,14 @@
 <script>
 export default {
 	props: {
-		placeholder: String,
-		value: String
+		placeholder: {
+			type: String,
+			default: ''
+		},
+		value: {
+			type: String,
+			default: ''
+		}
 	},
 	data(){
 		return {

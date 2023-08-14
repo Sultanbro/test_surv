@@ -36,13 +36,13 @@
 						<b-td>с {{ shift.time_beg }} по {{ shift.time_end }}</b-td>
 						<b-td>
 							<div
-								class="weekdays"
 								v-if="shift.day_off.length"
+								class="weekdays"
 							>
 								<div
-									class="weekday"
 									v-for="(day, idx) in shift.day_off"
 									:key="idx"
+									class="weekday"
 								>
 									{{ day }}
 								</div>
@@ -82,8 +82,8 @@
 			id="edit-shift-sidebar"
 			:title="sidebarName ? sidebarName : 'Сертификат'"
 			:open="showSidebar"
-			@close="closeSidebar"
 			width="600px"
+			@close="closeSidebar"
 		>
 			<b-form @submit.prevent="onSubmit">
 				<b-form-group
@@ -102,10 +102,10 @@
 					>Рабочий график</label>
 					<div class="col-sm-8 form-inline">
 						<input
-							name="work_start_time"
-							v-model="form.workStartTime"
-							type="time"
 							id="workStartTime"
+							v-model="form.workStartTime"
+							name="work_start_time"
+							type="time"
 							class="form-control mr-2 work-start-time"
 						>
 						<label
@@ -113,10 +113,10 @@
 							class="col-form-label mx-3"
 						>До </label>
 						<input
-							name="work_start_end"
-							v-model="form.workEndTime"
-							type="time"
 							id="workEndTime"
+							v-model="form.workEndTime"
+							name="work_start_end"
+							type="time"
 							class="form-control mx-2 work-end-time"
 						>
 					</div>
@@ -130,10 +130,10 @@
 						class="col-sm-4 col-form-label"
 					>Рабочие дни
 						<img
+							id="info1"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info1"
 						>
 					</label>
 					<b-popover
@@ -147,10 +147,10 @@
 					</b-popover>
 					<div class="col-sm-8 form-inline weekdays-container">
 						<input
+							id="weekdays-input"
+							v-model="form.weekdaysString"
 							name="weekdays"
 							type="hidden"
-							v-model="form.weekdaysString"
-							id="weekdays-input"
 						>
 
 						<div
@@ -310,8 +310,7 @@ export default {
 		},
 		async deleteShift() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete('/timetracking/work-chart/' + this.editShiftId);
-			console.log(response.data);
+			await this.axios.delete('/timetracking/work-chart/' + this.editShiftId);
 			this.modal = false;
 			loader.hide();
 			this.resetForm();

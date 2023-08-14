@@ -8,44 +8,44 @@
 						KPI
 					</th>
 					<th
-						class="px-2"
 						v-if="editable"
+						class="px-2"
 					>
 						Средний %
 					</th>
 					<th
-						class="px-2"
 						v-if="!editable"
+						class="px-2"
 					>
 						Нижний порог отсчета
 					</th>
 					<th
-						class="px-2"
 						v-if="!editable"
+						class="px-2"
 					>
 						Верхний порог отсчета
 					</th>
 					<th
-						class="px-2"
 						v-if="!editable"
+						class="px-2"
 					>
 						При выполнении на 80-99%
 					</th>
 					<th
-						class="px-2"
 						v-if="!editable"
+						class="px-2"
 					>
 						При выполнении на 100%
 					</th>
 					<th
-						class="px-2"
 						v-if="!editable"
+						class="px-2"
 					>
 						Заработано
 					</th>
 					<th
-						class="px-2"
 						v-if="editable"
+						class="px-2"
 					>
 						Средний %
 					</th>
@@ -55,22 +55,22 @@
 				<template v-for="(wrap_item, w) in items.slice().reverse()">
 					<template v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
 						<tr
-							class="main-row"
 							:key="w"
+							class="main-row"
 						>
 							<td
-								@click="wrap_item.expanded = !wrap_item.expanded"
 								class="pointer p-2 text-center"
+								@click="wrap_item.expanded = !wrap_item.expanded"
 							>
 								<div class="d-flex align-items-center justify-content-center px-2">
 									<span class="mr-2">{{ w + 1 }}</span>
 									<i
-										class="fa fa-minus mt-1"
 										v-if="wrap_item.expanded"
+										class="fa fa-minus mt-1"
 									/>
 									<i
-										class="fa fa-plus mt-1"
 										v-else
+										class="fa fa-plus mt-1"
 									/>
 								</div>
 							</td>
@@ -79,38 +79,38 @@
 								<span v-else>---</span>
 							</td>
 							<td
-								class="p-4"
 								v-if="editable"
+								class="p-4"
 							>
 								{{ wrap_item.avg }}%
 							</td>
 							<td
-								class="p-4"
 								v-if="!editable"
+								class="p-4"
 							>
 								{{ wrap_item.lower_limit }}%
 							</td>
 							<td
-								class="p-4"
 								v-if="!editable"
+								class="p-4"
 							>
 								{{ wrap_item.upper_limit }}%
 							</td>
 							<td
-								class="p-4"
 								v-if="!editable"
+								class="p-4"
 							>
 								{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}
 							</td>
 							<td
-								class="p-4"
 								v-if="!editable"
+								class="p-4"
 							>
 								{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}
 							</td>
 							<td
-								class="p-4"
 								v-if="!editable"
+								class="p-4"
 							>
 								{{ wrap_item.my_sum }}
 							</td>
@@ -118,32 +118,32 @@
 						</tr>
 						<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
 							<tr
+								:key="w + 'a'"
 								class="collapsable"
 								:class="{'active': wrap_item.expanded || !editable }"
-								:key="w + 'a'"
 							>
 								<td :colspan="editable ? 4 : 7">
 									<div class="table__wrapper w-100">
 										<table class="child-table">
 											<template v-for="(user, i) in wrap_item.users">
 												<tr
+													v-if="editable"
 													:key="i"
 													class="child-row"
-													v-if="editable"
 												>
 													<td
-														@click="user.expanded = !user.expanded"
 														class="pointer p-2 text-center"
+														@click="user.expanded = !user.expanded"
 													>
 														<div class="d-flex align-center justify-content-center px-2">
 															<span class="mr-2 bg-transparent">{{ i + 1 }}</span>
 															<i
-																class="fa fa-minus mt-1"
 																v-if="user.expanded"
+																class="fa fa-minus mt-1"
 															/>
 															<i
-																class="fa fa-plus mt-1"
 																v-else
+																class="fa fa-plus mt-1"
 															/>
 														</div>
 													</td>
@@ -152,9 +152,9 @@
 													</td>
 													<template v-if="user.items !== undefined">
 														<td
-															class="px-2"
 															v-for="(kpi_item, index) in user.items"
 															:key="index"
+															class="px-2"
 														>
 															{{ kpi_item.name }} <b>{{ kpi_item.percent }}%</b>
 														</td>
@@ -162,9 +162,9 @@
 												</tr>
 												<template v-if="user.items !== undefined">
 													<tr
+														:key="i + 'a'"
 														class="collapsable"
 														:class="{'active': user.expanded}"
-														:key="i + 'a'"
 													>
 														<td :colspan="fields.length + 2">
 															<div class="table__wrapper__second w-100">
@@ -205,6 +205,7 @@
 <script>
 /* eslint-disable vue/no-mutating-props */
 import KpiItems from '@/pages/kpi/KpiItems'
+/* eslint-disable-next-line camelcase */
 import {kpi_fields} from './kpis.js'
 
 export default {
@@ -214,47 +215,47 @@ export default {
 	},
 	props: {
 		searchText: {
+			type: String,
 			default: '',
 		},
 		items: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		activities: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		groups: {
-			default: [],
+			type: Array,
+			default: () => [],
 		},
 		editable: {
+			type: Boolean,
 			default: false
 		},
 		date: {
+			type: Object,
 			default: null
 		}
 	},
 
+	data() {
+		return {
+			showFields: [],
+			fields: [],
+		}
+	},
+
 	watch: {
-		show_fields: {
+		showFields: {
 			handler: function (val) {
+				/* eslint-disable-next-line camelcase */
 				localStorage.kpi_show_fields = JSON.stringify(val);
 				this.prepareFields();
 			},
 			deep: true
 		},
-	},
-
-	data() {
-		return {
-			show_fields: [],
-			all_fields: kpi_fields,
-			fields: [],
-			non_editable_fields: [
-				'created_at',
-				'updated_at',
-				'created_by',
-				'updated_by',
-			]
-		}
 	},
 
 	created() {
@@ -270,16 +271,18 @@ export default {
 		},
 
 		prepareFields() {
-			let visible_fields = []
+			const visibleFields = []
 
+			/* eslint-disable-next-line camelcase */
 			kpi_fields.forEach(field => {
-				if(this.show_fields[field.key] != undefined
-					&& this.show_fields[field.key]
+				if(this.showFields[field.key] != undefined
+					&& this.showFields[field.key]
 				) {
-					visible_fields.push(field)
+					visibleFields.push(field)
 				}
 			});
 
+			/* eslint-disable-next-line camelcase */
 			this.fields = kpi_fields;
 		},
 
@@ -287,8 +290,8 @@ export default {
 
 			this.items.forEach(kpi => {
 
-				let kpi_sum = 0;
-				let kpi_count = 0;
+				let kpiSum = 0;
+				let kpiCount = 0;
 
 				kpi.users.forEach(user => {
 
@@ -309,15 +312,14 @@ export default {
 					user.avg = avg;
 
 					// all kpi sum
-					kpi_sum += Number(avg);
-					kpi_count++;
+					kpiSum += Number(avg);
+					kpiCount++;
 				});
 
-				console.log(kpi_count, kpi_sum);
 				/**
 				* count avg completed percent of kpi by users
 				*/
-				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
+				kpi.avg = kpiCount > 0 ? Number(Number(kpiSum / kpiCount * 100).toFixed(2)) : 0;
 
 			});
 		},

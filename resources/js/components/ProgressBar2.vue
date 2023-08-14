@@ -20,8 +20,14 @@
 export default {
 	name: 'ProgressBar2',
 	props: {
-		percentage: Number,
-		label: String,
+		percentage: {
+			type: Number,
+			default: 0
+		},
+		label: {
+			type: String,
+			default: ''
+		},
 	},
 	methods: {
 		beforeEnter (el) {

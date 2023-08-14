@@ -12,6 +12,7 @@
 				<p class="ui-simple-sidebar-title">
 					{{ title }}
 				</p>
+				<!-- eslint-disable-next-line -->
 				<span v-html="link" />
 			</div>
 			<div class="ui-simple-sidebar-body">
@@ -28,10 +29,19 @@
 export default {
 	name: 'UISidebar',
 	props: {
-		title: {},
-		open: {},
-		width: {},
+		title: {
+			type: String,
+			default: ''
+		},
+		open: {
+			type: Boolean
+		},
+		width: {
+			type: String,
+			default: ''
+		},
 		link: {
+			type: String,
 			default: ''
 		},
 	},

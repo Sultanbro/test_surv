@@ -11,8 +11,8 @@
 					alt=""
 				>
 				<input
-					type="text"
 					v-model="accessSearch"
+					type="text"
 					class="access-modal__search-input"
 					placeholder="Быстрый поиск"
 				>
@@ -46,8 +46,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.users"
-						:key="item.id"
 						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 					>
@@ -67,8 +67,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 								:checked="checked(item, 1) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 							>
 							<span class="news-checkmark" />
 						</label>
@@ -80,8 +80,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.profile_groups"
-						:key="item.id"
 						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 					>
@@ -98,8 +98,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 								:checked="checked(item, 2) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 							>
 							<span class="news-checkmark" />
 						</label>
@@ -111,8 +111,8 @@
 				>
 					<div
 						v-for="item in accessDictionaries.positions"
-						:key="item.id"
 						v-show="item.position ? item.position.toLowerCase().includes(accessSearch.toLowerCase()) : false"
+						:key="item.id"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.position, 3)"
 					>
@@ -124,8 +124,8 @@
 						<label class="news-checkbox">
 							<input
 								type="checkbox"
-								@click="changeAccessList($event, item.id, item.position, 3)"
 								:checked="checked(item, 3) ? 'checked' : ''"
+								@click="changeAccessList($event, item.id, item.position, 3)"
 							>
 							<span class="news-checkmark" />
 						</label>
@@ -184,6 +184,7 @@ export default {
 		accessDictionaries() {
 			return {
 				users: this.users,
+				/* eslint-disable-next-line camelcase */
 				profile_groups: this.profileGroups,
 				positions: this.positions,
 			}
@@ -287,14 +288,14 @@ export default {
 				// add new members
 				// remove old members
 				this.accessList.push(this.user);
-				let add_members = members.filter(member => !this.chat.users.find(user => user.id === member.id));
-				let remove_members = members.filter(user => !this.accessList.find(member => member.id === user.id));
+				let addMembers = members.filter(member => !this.chat.users.find(user => user.id === member.id));
+				let removeMembers = members.filter(user => !this.accessList.find(member => member.id === user.id));
 
-				if (add_members.length > 0) {
-					this.addMembers(add_members);
+				if (addMembers.length > 0) {
+					this.addMembers(addMembers);
 				}
-				if (remove_members.length > 0) {
-					this.removeMembers(remove_members);
+				if (removeMembers.length > 0) {
+					this.removeMembers(removeMembers);
 				}
 			}
 			this.$emit('close');

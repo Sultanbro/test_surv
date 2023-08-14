@@ -5,31 +5,31 @@
 	>
 		<BFormGroup>
 			<div
-				class="dropdown"
 				v-if="options"
+				class="dropdown"
 			>
 				<!-- Dropdown Input -->
 				<input
+					v-model="searchFilter"
 					class="dropdown-input"
 					:name="name"
+					:disabled="disabled"
+					:placeholder="placeholder"
 					@focus="showOptions()"
 					@blur="exit()"
 					@keyup="keyMonitor"
-					v-model="searchFilter"
-					:disabled="disabled"
-					:placeholder="placeholder"
 				>
 
 				<!-- Dropdown Menu -->
 				<div
-					class="dropdown-content"
 					v-show="optionsShown"
+					class="dropdown-content"
 				>
 					<div
-						class="dropdown-item"
-						@mousedown="selectOption(option)"
 						v-for="(option, index) in filteredOptions"
 						:key="index"
+						class="dropdown-item"
+						@mousedown="selectOption(option)"
 					>
 						{{ option.name || option.id || "-" }}
 					</div>
@@ -42,7 +42,6 @@
 <script>
 export default {
 	name: 'FormUsers',
-	template: 'Dropdown',
 	props: {
 		name: {
 			type: String,
@@ -82,9 +81,6 @@ export default {
 			searchFilter: '',
 		};
 	},
-	created() {
-		this.$emit('selected', this.selected);
-	},
 	computed: {
 		filteredOptions() {
 			const filtered = [];
@@ -96,6 +92,19 @@ export default {
 			}
 			return filtered;
 		},
+	},
+	watch: {
+		searchFilter() {
+			if (this.filteredOptions.length === 0) {
+				this.selected = {};
+			} else {
+				this.selected = this.filteredOptions[0];
+			}
+			this.$emit('filter', this.searchFilter);
+		},
+	},
+	created() {
+		this.$emit('selected', this.selected);
 	},
 	methods: {
 		selectOption(option) {
@@ -126,16 +135,7 @@ export default {
 				this.selectOption(this.filteredOptions[0]);
 		},
 	},
-	watch: {
-		searchFilter() {
-			if (this.filteredOptions.length === 0) {
-				this.selected = {};
-			} else {
-				this.selected = this.filteredOptions[0];
-			}
-			this.$emit('filter', this.searchFilter);
-		},
-	},
+	template: 'Dropdown',
 };
 </script>
 

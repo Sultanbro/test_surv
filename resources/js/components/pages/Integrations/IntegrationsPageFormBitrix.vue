@@ -7,8 +7,8 @@
 			</span>
 			<span class="IntegrationsPageForm-control">
 				<b-form-input
-					type="text"
 					v-model="domain"
+					type="text"
 				/>
 			</span>
 		</label>
@@ -20,8 +20,8 @@
 			</span>
 			<span class="IntegrationsPageForm-control">
 				<b-form-input
-					type="text"
 					v-model="oauth"
+					type="text"
 				/>
 			</span>
 		</label>

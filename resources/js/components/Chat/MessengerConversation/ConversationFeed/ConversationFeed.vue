@@ -1,8 +1,8 @@
 <template>
 	<div
-		class="ConversationFeed messenger__container-scroll"
-		ref="messengerContainer"
 		id="messenger_container"
+		ref="messengerContainer"
+		class="ConversationFeed messenger__container-scroll"
 		@click="contextMenuVisible = false"
 		@scroll="onScroll"
 	>
@@ -17,6 +17,7 @@
 			}"
 		>
 			<div class="messenger__context-menu_reactions">
+				<!-- eslint-disable -->
 				<div
 					v-for="reaction, key in reactions"
 					:key="key"
@@ -24,6 +25,7 @@
 					@click="react(key)"
 					v-html="reaction"
 				/>
+				<!-- eslint-enable -->
 			</div>
 
 			<div
@@ -82,8 +84,8 @@
 
 					<!-- сообщение -->
 					<div
-						:key="message.id"
 						:id="'messenger_message_' + message.id"
+						:key="message.id"
 						class="messenger__message-wrapper"
 						@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
 					>
@@ -94,10 +96,10 @@
 						<ConversationMessage
 							v-else
 							:message="message"
-							@active="activeMessageId = message.id"
 							:active="activeMessageId === message.id"
 							:helper="renderHelper"
 							:last="index === d.length - 1"
+							@active="activeMessageId = message.id"
 							@loadImage="index === d.length - 1 && scrollBottom"
 							@contextbutton="showChatContextMenu(message, ...arguments)"
 						/>
@@ -115,8 +117,8 @@
 
 		<!-- Loader -->
 		<div
+			v-show="isLoading"
 			class="messenger__loader"
-			v-show="this.isLoading"
 		>
 			<div class="messenger__loader-spinner">
 				<div class="messenger__loader-spinner-item" />
@@ -143,6 +145,21 @@ export default {
 		ConversationFeedReaders,
 		ConversationServiceMessage,
 		ContextMenu,
+	},
+	filters: {
+		formatDate(date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				// return moment(date).format('HH:mm');
+				return 'Сегодня'
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера';
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD MMMM');
+		},
 	},
 	inject: [
 		'ChatApp'
@@ -308,24 +325,10 @@ export default {
 			});
 		},
 		react(emoji) {
+			/* eslint-disable-next-line camelcase */
 			this.reactMessage({message: this.contextMenuMessage, emoji_id: emoji});
 		},
 	},
-	filters: {
-		formatDate(date) {
-			// if today show only hour and minutes
-			if (moment(date).isSame(moment(), 'day')) {
-				// return moment(date).format('HH:mm');
-				return 'Сегодня'
-			}
-			// if yesterday show only hour and minutes and yesterday
-			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-				return 'Вчера';
-			}
-			// if older than yesterday show hour, minutes, day and month
-			return moment(date).format('DD MMMM');
-		},
-	}
 }
 </script>
 

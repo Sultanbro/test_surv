@@ -1,7 +1,12 @@
 <script>
 export default {
 	name: 'ReportsNav',
-	props: ['activeTab'],
+	props: {
+		activeTab: {
+			type: String,
+			default: ''
+		}
+	},
 	data(){
 		return {
 			tenant: window.location.hostname.split('.')[0],
@@ -68,8 +73,8 @@ export default {
 					class="nav-item"
 				>
 					<router-link
-						:to="tab.path"
 						:id="tab.id"
+						:to="tab.path"
 						class="nav-link"
 						:class="{active: tab.id === activeTab}"
 					>

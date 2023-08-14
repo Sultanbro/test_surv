@@ -7,10 +7,9 @@
 		>
 			<SuperSelect
 				v-if="done"
-				style="width: 80%;"
 				:key="1"
+				style="width: 80%;"
 				:onlytype="2"
-				@choose="superselectChoice"
 				:single="true"
 				:placeholder="'Выберите должность или отдел'"
 				:disable_type="1"
@@ -18,6 +17,7 @@
 				:available_courses="courses"
 				:pre_build="true"
 				:select_all_btn="false"
+				@choose="superselectChoice"
 			/>
 		</b-col>
 	</b-row>
@@ -31,6 +31,7 @@ export default {
 		SuperSelect,
 	},
 	props: {
+		/* eslint-disable camelcase, vue/prop-name-casing */
 		targetable_id: {
 			type: Number,
 			default: null
@@ -65,7 +66,7 @@ export default {
 				});
 				this.done = true;
 				loader.hide();
-			}).catch(error => {console.log(error)});
+			}).catch(error => {console.error(error)});
 	},
 	methods: {
 		superselectChoice(values) {

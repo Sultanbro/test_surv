@@ -4,28 +4,28 @@
 		:class="{'opened' : isOpen,'nest' : nest}"
 	>
 		<div
-			class="faq-list-item"
 			v-for="(item, index) in list"
 			:key="item.id"
+			class="faq-list-item"
 		>
 			<p
 				class="faq-list-item-title"
-				@click="openNested(index, item)"
 				:class="{'active': item.id === activeItemId, 'parent' : item.children}"
+				@click="openNested(index, item)"
 			>
 				{{ item.title }}
 				<i
-					class="fa fa-chevron-down"
 					v-if="item.children && item.id !== activeItemId"
+					class="fa fa-chevron-down"
 				/>
 				<i
-					class="fa fa-chevron-up"
 					v-if="item.children && item.id === activeItemId"
+					class="fa fa-chevron-up"
 				/>
 			</p>
 			<FaqList
-				:list="item.children"
 				v-if="item.children"
+				:list="item.children"
 				:nest="true"
 				:active-item-id="itemId"
 				:is-open="isOpen && index === openedIndex"

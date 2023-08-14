@@ -9,9 +9,9 @@
 					Темы видео
 				</h1>
 				<div
-					class="section d-flex aic jcsb my-2"
 					v-for="(cat, index) in categories"
 					:key="cat.id"
+					class="section d-flex aic jcsb my-2"
 					:class="{'active': activeCat != null && activeCat.id == cat.id}"
 					@click="selectCat(index)"
 				>
@@ -21,13 +21,13 @@
 
 					<div class="d-flex">
 						<i
-							class="fa fa-pen ml-2"
 							v-if="cat.id != 0 && mode == 'edit'"
+							class="fa fa-pen ml-2"
 							@click.stop="editCat(index)"
 						/>
 						<i
-							class="fa fa-trash text-danger ml-2"
 							v-if="cat.id != 0 && mode == 'edit'"
+							class="fa fa-trash text-danger ml-2"
 							@click.stop="deleteCat(index)"
 						/>
 					</div>
@@ -35,9 +35,9 @@
 
 
 				<button
+					v-if="mode == 'edit'"
 					class="btn-add"
 					@click="showAddCategory = true"
-					v-if="mode == 'edit'"
 				>
 					Добавить категорию
 				</button>
@@ -67,20 +67,20 @@
 						</div>
 						<div class="control-btns d-flex">
 							<div
-								class="mode_changer"
 								v-if="can_edit"
+								class="mode_changer"
 							>
 								<i
-									class="fa fa-pen"
-									@click="toggleMode"
-									:class="{'active': mode == 'edit'}"
 									v-b-popover.hover.top="'Включить редактирование видео'"
+									class="fa fa-pen"
+									:class="{'active': mode == 'edit'}"
+									@click="toggleMode"
 								/>
 							</div>
 
 							<div
-								class="mode_changer ml-2"
 								v-if="activePlaylist == null && mode == 'edit'"
+								class="mode_changer ml-2"
 							>
 								<i
 									class="icon-nd-settings"
@@ -89,9 +89,9 @@
 							</div>
 
 							<i
+								v-if="mode == 'edit' && activePlaylist == null"
 								class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"
 								@click="showAddPlaylist = true"
-								v-if="mode == 'edit' && activePlaylist == null"
 							/>
 
 
@@ -101,18 +101,18 @@
 							<template v-if="activePlaylist && mode == 'edit'">
 								<i
 									class="btn btn-info fa-upload fa ml-2 d-flex px-2 aic"
-									@click="uploadVideo"
 									title="Добавить видео"
+									@click="uploadVideo"
 								/>
 								<i
 									class="btn btn-info fa fa-folder-plus ml-2 d-flex px-2 aic"
-									@click="addGroup"
 									title="Добавить отдел"
+									@click="addGroup"
 								/>
 								<i
 									class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"
-									@click="savePlaylistEdit"
 									title="Сохранить плейлист"
+									@click="savePlaylistEdit"
 								/>
 							</template>
 						</div>
@@ -124,43 +124,43 @@
 				<div class="rp-content">
 					<div v-if="activeCat != null">
 						<PlaylistEdit
-							ref="playlist"
-							@back="back"
-							:token="token"
+							v-if="activePlaylist != null"
 							:id="activePlaylist.id"
+							ref="playlist"
+							:token="token"
 							:is_course="false"
 							:auth_user_id="user_id"
 							:mode="mode"
 							:myvideo="myvideo"
-							v-if="activePlaylist != null"
+							@back="back"
 						/>
 						<div v-else>
 							<!-- playlists -->
 							<div class="video-container">
 								<div
+									v-for="(playlistItem, p_index) in activeCat.playlists"
+									:key="playlistItem.id"
 									class="playlist mb-4"
-									v-for="(playlist, p_index) in activeCat.playlists"
-									:key="playlist.id"
 									@click="selectPl(p_index)"
 								>
 									<div class="left">
 										<img
-											:src="playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img"
+											:src="playlistItem.img == '' || playlistItem.img == null ? '/images/author.jpg' : playlistItem.img"
 											alt="image"
 										>
 										<div
-											class="d-flex btns"
 											v-if="mode == 'edit'"
+											class="d-flex btns"
 										>
 											<i
+												v-if="playlistItem.id != 0"
 												class="fa fa-pen"
-												v-if="playlist.id != 0"
 												title="Переместить"
 												@click.stop="movePl(p_index)"
 											/>
 											<i
+												v-if="playlistItem.id != 0"
 												class="fa fa-trash text-danger ml-2"
-												v-if="playlist.id != 0"
 												@click.stop="deletePl(p_index)"
 											/>
 										</div>
@@ -168,10 +168,10 @@
 
 									<div class="right">
 										<div class="title">
-											{{ playlist.title }}
+											{{ playlistItem.title }}
 										</div>
 										<div class="text">
-											{{ playlist.text }}
+											{{ playlistItem.text }}
 										</div>
 									</div>
 								</div>
@@ -192,8 +192,8 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="newPlaylist"
+				type="text"
 				placeholder="Название..."
 				class="form-control mb-2"
 			>
@@ -214,8 +214,8 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="newcat"
+				type="text"
 				placeholder="Название категории..."
 				class="form-control mb-2"
 			>
@@ -236,8 +236,8 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="newcat"
+				type="text"
 				placeholder="Название категории..."
 				class="form-control mb-2"
 			>
@@ -253,8 +253,8 @@
 		<SimpleSidebar
 			title="Редактировать плейлист"
 			:open="showEditPlaylist"
-			@close="showEditPlaylist = false"
 			width="50%"
+			@close="showEditPlaylist = false"
 		>
 			<template #body>
 				<div
@@ -268,8 +268,8 @@
 									Название
 								</p>
 								<input
-									type="text"
 									v-model="editingPlaylist.title"
+									type="text"
 									placeholder="Название плейлиста..."
 									class="form-control mb-2"
 								>
@@ -291,13 +291,13 @@
 									Категория
 								</p>
 								<select
-									class="form-control"
 									v-model="editingPlaylist.category_id"
+									class="form-control"
 								>
 									<option
 										v-for="cat in categories"
-										:value="cat.id"
 										:key="cat.id"
+										:value="cat.id"
 									>
 										{{ cat.title }}
 									</option>
@@ -307,8 +307,8 @@
 
 						<div class="right f-30 pl-4">
 							<img
-								class="book-img mb-5"
 								v-if="editingPlaylist.img != ''"
+								class="book-img mb-5"
 								:src="editingPlaylist.img"
 							>
 							<b-form-file
@@ -339,14 +339,14 @@
 		<SimpleSidebar
 			title="Настройки видеокурсов"
 			:open="showSettings"
-			@close="showSettings = false"
 			width="400px"
+			@close="showSettings = false"
 		>
 			<template #body>
 				<label class="d-flex">
 					<input
-						type="checkbox"
 						v-model="allow_save_video_without_test"
+						type="checkbox"
 						class="form- mb-2 mr-2"
 					>
 					<p>Разрешить сохранять видео без тестовых вопросов</p>
@@ -366,6 +366,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
@@ -375,14 +377,27 @@ export default {
 		PlaylistEdit
 	},
 	props: {
-		token: String,
+		token: {
+			type: String,
+			default: ''
+		},
+		/* eslint-disable vue/prop-name-casing */
 		can_edit: {
 			type: Boolean,
 			default: false
 		},
-		category: Number,
-		playlist: Number,
-		video: Number
+		category: {
+			type: Number,
+			default: 0,
+		},
+		playlist: {
+			type: Number,
+			default: 0,
+		},
+		video: {
+			type: Number,
+			default: 0,
+		},
 	},
 	data: function() {
 		return {
@@ -559,7 +574,7 @@ export default {
 					this.$toast.success('Сохранено');
 				})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				})
 		},

@@ -10,9 +10,9 @@
 					<div class="p-o pl-3">
 						<!-- как это вобще работает?????? -->
 						<date-picker
+							v-model="filter.dates"
 							value="test"
 							placeholder="Дата подписи"
-							v-model="filter.dates"
 							:lang="lang"
 							range
 							multiple
@@ -23,8 +23,8 @@
 				<div class="col-8 col-md-8 d-flex justify-end gap-3">
 					<div class="TableSkype-select mb-4">
 						<select
-							class="form-control form-control-sm mt-2"
 							v-model="filter.currentInviteGroup"
+							class="form-control form-control-sm mt-2"
 						>
 							<option
 								v-for="(invite_group, index) in invite_groups"
@@ -37,8 +37,8 @@
 					</div>
 					<div class="TableSkype-select mb-4">
 						<select
-							class="form-control form-control-sm mt-2"
 							v-model="filter.user_type"
+							class="form-control form-control-sm mt-2"
 						>
 							<option
 								v-for="(user_type, index) in user_types"
@@ -51,22 +51,22 @@
 					</div>
 					<div class="TableSkype-select mb-4">
 						<select
-							class="form-control form-control-sm mt-2"
 							v-model="filter.lang"
+							class="form-control form-control-sm mt-2"
 						>
 							<option
-								v-for="(lang, index) in langs"
+								v-for="(langItem, index) in langs"
 								:key="index"
 								:value="index"
 							>
-								{{ lang }}
+								{{ langItem }}
 							</option>
 						</select>
 					</div>
 					<div class="TableSkype-select mb-4">
 						<select
-							class="form-control form-control-sm mt-2"
 							v-model="filter.wishtime"
+							class="form-control form-control-sm mt-2"
 						>
 							<option
 								v-for="(wishtime, index) in wishtimes"
@@ -114,10 +114,10 @@
 						</JobtronButton>
 						<JobtronButton
 							class="ml-4 fz-11"
-							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
 							title="Показывать поля"
 							fade
 							small
+							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
 						>
 							<i
 								class="icon-nd-settings"
@@ -163,8 +163,8 @@
 
 				<template #cell(checked)="data">
 					<input
-						type="checkbox"
 						v-model="checkedBoxes"
+						type="checkbox"
 						:value="data.item.id"
 					>
 				</template>
@@ -202,10 +202,12 @@
 
 				<template #cell(resp)="data">
 					<div>
+						<!-- eslint-disable -->
 						<div
 							class="resp_user"
 							v-html="data.value"
 						/>
+						<!-- eslint-enable -->
 					</div>
 				</template>
 
@@ -312,14 +314,14 @@
 			<div class="row align-items-center">
 				<div class="col-sm-3">
 					<select
-						required="required"
 						v-model="selected.group_id"
+						required="required"
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="group.id"
 							v-for="group in groups"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -339,9 +341,9 @@
 				</div>
 				<div class="col-sm-1">
 					<input
+						v-model="selected.time"
 						type="time"
 						class="form-control form-control-sm timer"
-						v-model="selected.time"
 					>
 				</div>
 				<div class="col-sm-2">
@@ -373,15 +375,15 @@
 			ok-text="Сохранить"
 			cancel-text="Отмена"
 			title="Новый лид"
-			@ok="saveLead"
 			size="lg"
 			class="modalle"
+			@ok="saveLead"
 		>
 			<b-alert
-				show
-				variant="danger"
 				v-for="error in errors"
 				:key="error"
+				show
+				variant="danger"
 			>
 				{{ error }}
 			</b-alert>
@@ -399,27 +401,27 @@
 			/>
 			<div class="d-flex gap-3">
 				<select
-					required="required"
 					v-model="lead.lang"
+					required="required"
 					class="form-control form-control-sm"
 				>
 					<option
-						:value="index"
-						v-for="(lang, index) in langs"
+						v-for="(langItem, index) in langs"
 						:key="index"
+						:value="index"
 					>
-						{{ lang }}
+						{{ langItem }}
 					</option>
 				</select>
 				<select
-					required="required"
 					v-model="lead.wishtime"
+					required="required"
 					class="form-control form-control-sm"
 				>
 					<option
-						:value="index"
 						v-for="(wishtime, index) in wishtimes"
 						:key="index"
+						:value="index"
 					>
 						{{ wishtime }}
 					</option>
@@ -430,25 +432,25 @@
 		<b-modal
 			v-model="showSkypeFieldsModal"
 			title="Настройка списка"
-			@ok="showSkypeFieldsModal = !showSkypeFieldsModal"
 			ok-text="Закрыть"
 			size="lg"
 			class="modalle"
+			@ok="showSkypeFieldsModal = !showSkypeFieldsModal"
 		>
 			<b-alert
-				show
-				variant="danger"
 				v-for="error in errors"
 				:key="error"
+				show
+				variant="danger"
 			>
 				{{ error }}
 			</b-alert>
 
 			<div class="row">
 				<div
-					class="col-md-4 mb-2"
 					v-for="(field, key) in showSkypeFields"
 					:key="key"
+					class="col-md-4 mb-2"
 				>
 					<b-form-checkbox
 						v-if="key !== 'file'"
@@ -464,7 +466,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+/* eslint-disable vue/prop-name-casing */
+
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
 
@@ -475,11 +480,26 @@ export default {
 		JobtronButton,
 	},
 	props: {
-		skypes: Array,
-		segments: Object,
-		groups: Array,
-		month: Object,
-		invite_groups: Object,
+		skypes: {
+			type: Array,
+			default: () => [],
+		},
+		segments: {
+			type: Object,
+			default: null
+		},
+		groups: {
+			type: Array,
+			default: () => [],
+		},
+		month: {
+			type: Object,
+			default: null
+		},
+		invite_groups: {
+			type: Object,
+			default: null
+		},
 	},
 	data: function () {
 		return {
@@ -665,7 +685,8 @@ export default {
 
 	methods: {
 		getDates(s, e) {
-			for(var a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
+			const a = []
+			for(var d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
 				a.push(new Date(d));
 			}
 			return a;

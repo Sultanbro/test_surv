@@ -123,10 +123,10 @@
 					<b-col cols="4">
 						<span class="NotificationsV2-label">Количество напоминаний в день</span>
 						<img
+							v-b-popover.hover="'Указаное кол-во раз, в течение рабочего дня будет показан попап с уведомлениями'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							v-b-popover.hover="'Указаное кол-во раз, в течение рабочего дня будет показан попап с уведомлениями'"
 						>
 					</b-col>
 					<b-col cols="8">
@@ -149,8 +149,8 @@
 							/>
 							Шаблонное уведомление
 							<select
-								class="NotificationsV2-hiddenSelect custom-select"
 								v-model="template"
+								class="NotificationsV2-hiddenSelect custom-select"
 							>
 								<option
 									v-for="tpl in templates"
@@ -232,6 +232,7 @@ export default {
 	data(){
 		return {
 			notifications: null,
+			/* eslint-disable camelcase */
 			periodNames: {
 				monthly: 'по дням месяца',
 				weekly: 'по дням недели',
@@ -247,6 +248,7 @@ export default {
 				manager_assessment: 'Все сотрудники отделов',
 				coach_assessment: 'Стажеры первого дня',
 			},
+			/* eslint-enable camelcase */
 			selectedNotification: null,
 			search: '',
 			services,
@@ -324,6 +326,7 @@ export default {
 			return notifications.map(notification => {
 				return {
 					...notification,
+					/* eslint-disable-next-line camelcase */
 					type_of_mailing: JSON.parse(notification.type_of_mailing),
 					recipients: notification.recipients ? notification.recipients.map(recipient => {
 						return {
@@ -387,6 +390,7 @@ export default {
 			}
 		},
 		getBlankNotification(){
+			/* eslint-disable camelcase */
 			return {
 				id: 0,
 				name: '',
@@ -400,6 +404,7 @@ export default {
 				type_of_mailing: [],
 				is_template: false,
 			}
+			/* eslint-enable camelcase */
 		},
 		onSave(notification){
 			const errors = this.validate(notification)
@@ -453,12 +458,14 @@ export default {
 		async onSaveSettings(){
 			await updateSettings({
 				type: 'notifications_remind_count',
+				/* eslint-disable-next-line camelcase */
 				custom_notifications_remind_count: this.settings.showCount
 			})
 			this.$toast.success('Настройки сохранены')
 			this.isSettings = false
 		},
 		onNewTemplate(template = ''){
+			/* eslint-disable camelcase */
 			this.selectedTemplate = {
 				template,
 				id: 0,
@@ -473,6 +480,7 @@ export default {
 				type_of_mailing: [],
 				is_template: true,
 			}
+			/* eslint-enable camelcase */
 		},
 		onCloseTemplate(){
 			this.template = ''

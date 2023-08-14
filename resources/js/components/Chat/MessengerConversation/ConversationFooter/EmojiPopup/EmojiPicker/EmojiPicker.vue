@@ -27,6 +27,9 @@ import clickOutside from '../../../../directives/clickOutside.ts'
 
 export default /*#__PURE__*/{
 	name: 'EmojiPicker',
+	directives: {
+		clickOutside
+	},
 	props: {
 		search: {
 			type: String,
@@ -75,6 +78,12 @@ export default /*#__PURE__*/{
 			return this.emojiTable
 		},
 	},
+	mounted() {
+		document.addEventListener('keyup', this.escape)
+	},
+	destroyed() {
+		document.removeEventListener('keyup', this.escape)
+	},
 	methods: {
 		insert(emoji) {
 			this.$emit('emoji', emoji)
@@ -98,15 +107,6 @@ export default /*#__PURE__*/{
 				this.display.visible = false
 			}
 		},
-	},
-	directives: {
-		clickOutside
-	},
-	mounted() {
-		document.addEventListener('keyup', this.escape)
-	},
-	destroyed() {
-		document.removeEventListener('keyup', this.escape)
 	},
 }
 </script>

@@ -29,11 +29,6 @@ export default{
 		},
 
 	},
-	methods:{
-		setScale:function(scale){
-			this.scale = scale
-		}
-	},
 	data:function(){
 		return {
 			scale:1
@@ -42,6 +37,11 @@ export default{
 	watch:{
 		scale:function(){
 			this.$emit('vue-avatar-editor-scale:change-scale', this.scale)
+		}
+	},
+	methods:{
+		setScale:function(scale){
+			this.scale = scale
 		}
 	}
 }

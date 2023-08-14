@@ -18,8 +18,8 @@
 				>
 					<span>
 						<i
-							class="fa fa-pen pulse-anim"
 							id="info-position"
+							class="fa fa-pen pulse-anim"
 						/>
 						<b-popover
 							target="info-position"
@@ -30,6 +30,7 @@
 				</router-link>
 			</div>
 			<div class="ProfileInfo-group ProfileInfo-border py-2">
+				<!-- eslint-disable vue/no-v-html -->
 				<span v-html="data.groups" />
 				<router-link
 					v-if="isAdmin && moreThanDays"
@@ -37,8 +38,8 @@
 				>
 					<span>
 						<i
-							class="fa fa-pen pulse-anim"
 							id="info-groups"
+							class="fa fa-pen pulse-anim"
 						/>
 						<b-popover
 							target="info-groups"
@@ -52,8 +53,8 @@
 				ОКЛАД: {{ data.salary }} {{ currency }}
 			</div>
 			<div
-				class="ProfileInfo-worktime"
 				v-if="workChartUser"
+				class="ProfileInfo-worktime"
 			>
 				<p class="ProfileInfo-border wsnw">
 					{{ workChartUser.name }}

@@ -1,11 +1,11 @@
 <template>
 	<div class="LocalitySelect">
 		<input
+			v-model="localValue"
 			type="text"
 			placeholder="Поиск городов"
 			class="LocalitySelect-input form-control"
 			autocomplete="off"
-			v-model="localValue"
 			@input="onInput"
 			@focus="onFocus"
 			@blur="onBlur"
@@ -140,7 +140,6 @@ export default {
 			}, 100)
 		},
 		onSelect(opt){
-			console.log('test')
 			this.localValue = opt.name
 			this.outValue = `Страна: ${opt.country}, Город: ${opt.name}`
 			this.$emit('change', opt)

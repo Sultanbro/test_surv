@@ -7,44 +7,44 @@
 			:class="{'opened': group.opened || group.title == 'Без группы' }"
 		>
 			<div
-				class="g-title"
 				v-if="group.title != 'Без группы'"
+				class="g-title"
 				@click="toggleGroup(g_index)"
 			>
 				<input
+					v-if="mode !== 'read'"
+					v-model="group.title"
 					type="text"
 					class="group-input"
-					v-model="group.title"
 					:disabled="mode == 'read'"
 					@change="saveGroup(g_index)"
-					v-if="mode !== 'read'"
 				>
 				<span
-					class="g-text"
 					v-if="mode == 'read'"
+					class="g-text"
 				>{{ group.title }}</span>
 				<div class="btns">
 					<i
+						v-if="mode == 'edit'"
 						class="fa fa-folder-plus"
-						@click.stop="addGroup(g_index)"
 						title="Добавить отдел"
-						v-if="mode == 'edit'"
+						@click.stop="addGroup(g_index)"
 					/>
 					<i
+						v-if="mode == 'edit'"
 						class="fa fa-upload"
-						@click.stop="uploadVideo(g_index)"
 						title="Загрузить видео"
-						v-if="mode == 'edit'"
+						@click.stop="uploadVideo(g_index)"
 					/>
 					<i
+						v-if="mode == 'edit'"
 						class="fa fa-trash"
-						@click.stop="deleteGroup(g_index)"
 						title="Удалить отдел"
-						v-if="mode == 'edit'"
+						@click.stop="deleteGroup(g_index)"
 					/>
 					<i
-						class="fa fa-chevron-down chevron"
 						v-if="group.children.length > 0 || group.videos.length > 0"
+						class="fa fa-chevron-down chevron"
 					/>
 				</div>
 			</div>
@@ -69,12 +69,12 @@
 				:active="active"
 				:g_index="g_index"
 				:c_index="-1"
+				:is_course="is_course"
 				@showVideo="showVideo"
 				@showTests="showTests"
 				@moveTo="moveTo"
 				@deleteVideo="deleteVideo"
 				@order-changed="$emit('order-changed')"
-				:is_course="is_course"
 			/>
 		</div>
 
@@ -96,6 +96,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import VideoList from '@/components/VideoList'
 import VideoUploader from '@/components/VideoUploader'
 
@@ -117,7 +119,6 @@ const VideoAccordion = {
 		},
 
 		toggleGroup(i, open = false) {
-			console.log('togglegroup ' + i)
 			let status = this.groups[i].opened;
 			this.groups.forEach(el => {
 				el.opened = false;
@@ -161,7 +162,6 @@ const VideoAccordion = {
 		},
 
 		addGroup(i) {
-			console.log('add group accrodion')
 			this.axios
 				.post('/playlists/groups/create', {
 					parent_id: i == -1 ? 0 : this.groups[i].id,
@@ -199,8 +199,6 @@ const VideoAccordion = {
 		},
 
 		saveGroup(i) {
-
-			console.log(this.groups[i])
 			this.axios
 				.post('/playlists/groups/save', {
 					id: this.groups[i].id,
@@ -218,8 +216,6 @@ const VideoAccordion = {
 
 
 		uploadVideo(i) {
-			console.log('upload video accordion', i)
-			console.log('upload video accordion', this.groups[i].id)
 			this.group_id = this.groups[i].id
 
 			this.uploader = true
@@ -230,7 +226,6 @@ const VideoAccordion = {
 				'Вы точно хотите удалить отдел?', ' Думаю, вы случайно нажали удалить отдел. Удалить отдел?', 'Удалить отдел не смотря ни на что?'
 			]
 			var randElement = arrStr[Math.floor(Math.random() * arrStr.length)];
-			console.log(randElement);
 
 			if(!confirm(randElement)) {
 				return;

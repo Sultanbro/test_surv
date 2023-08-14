@@ -44,8 +44,8 @@
 						</td>
 						<td>
 							<input
-								type="text"
 								v-model="item.name"
+								type="text"
 							>
 						</td>
 						<td class="text-center">
@@ -76,8 +76,8 @@
 
 								<select
 									v-if="item.source == 1"
-									v-model="item.group_id"
 									:key="'c' + source_key"
+									v-model="item.group_id"
 									@change="++source_key"
 								>
 									<option
@@ -88,17 +88,17 @@
 									</option>
 									<option
 										v-for="(group, id) in groups"
-										:value="id"
 										:key="id"
+										:value="id"
 									>
 										{{ group }}
 									</option>
 								</select>
 
 								<select
-									:class="{'hidden' : item.source == 0}"
-									v-model="item.activity_id"
 									:key="'d' + source_key"
+									v-model="item.activity_id"
+									:class="{'hidden' : item.source == 0}"
 								>
 									<option
 										value="0"
@@ -132,28 +132,28 @@
 
 								<input
 									v-if="item.source == 1 && isCell(item.activity_id)"
-									type="text"
 									v-model="item.cell"
+									type="text"
 									placeholder="Ячейка: C7"
 								>
 							</div>
 						</td>
 						<td class="text-center w-sm">
 							<input
-								type="text"
 								v-model="item.unit"
+								type="text"
 							>
 						</td>
 						<td class="text-center">
 							<input
-								type="number"
 								v-model="item.plan"
+								type="number"
 							>
 						</td>
 						<td class="text-center">
 							<input
-								type="number"
 								v-model="item.share"
+								type="number"
 								min="0"
 								max="100"
 							>
@@ -166,14 +166,14 @@
 						</td>
 						<td class="no-hover">
 							<i
+								v-if="item.deleted != undefined && item.deleted"
 								class="fa fa-arrow-up mx-3 btn btn-danger btn-icon"
 								@click="restoreItem(i)"
-								v-if="item.deleted != undefined && item.deleted"
 							/>
 							<i
+								v-else
 								class="fa fa-trash mx-3 btn btn-danger btn-icon"
 								@click="deleteItem(i)"
-								v-else
 							/>
 						</td>
 					</tr>
@@ -221,15 +221,15 @@
 						>
 							<input
 								v-if="[1,3,5].includes(item.method)"
-								type="number"
 								v-model="item.fact"
+								type="number"
 								min="0"
 								@change="updateStat(i)"
 							>
 							<input
 								v-else
-								type="number"
 								v-model="item.avg"
+								type="number"
 								min="0"
 								@change="updateStat(i)"
 							>
@@ -263,8 +263,8 @@
 		<sidebar
 			title="Показатели"
 			:open="show_description"
-			@close="toggle()"
 			width="70%"
+			@close="toggle()"
 		>
 			<p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
 			<p>Первый select источник:</p>
@@ -291,6 +291,9 @@
 
 <script>
 /* eslint-disable vue/no-mutating-props */
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import {newKpiItem, /* numberize,  */calcCompleted, calcSum} from './kpis.js';
 import {sources, methods} from './helpers.js';
 
@@ -298,45 +301,59 @@ export default {
 	name: 'KpiItemsV2',
 	props: {
 		my_sum:{
+			type: Number,
 			default:0
 		},
 		kpi_id: {
+			type: Number,
 			default: 0
 		},
 		expanded: {
+			type: Boolean,
 			default: false,
 		},
 		items: {
-			default: []
+			type: Array,
+			default: () => []
 		},
 		activities: {
-			default: {}
+			type: Object,
+			default: () => ({})
 		},
 		groups: {
-			default: {}
+			type: Object,
+			default: () => ({})
 		},
 		completed_80: {
+			type: Number,
 			default: 0,
 		},
 		completed_100: {
+			type: Number,
 			default: 0,
 		},
 		lower_limit: {
+			type: Number,
 			default: 80,
 		},
 		upper_limit: {
+			type: Number,
 			default: 100,
 		},
 		editable: {
+			type: Boolean,
 			default: false
 		},
 		kpi_page: {
+			type: Boolean,
 			default: false
 		},
 		allow_overfulfillment: {
+			type: Boolean,
 			default: false
 		},
 		date: {
+			type: Object,
 			default: null
 		},
 	},

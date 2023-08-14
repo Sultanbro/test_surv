@@ -9,11 +9,11 @@
 	>
 		<ul class="list">
 			<li
-				@click="rate(star)"
 				v-for="star in maxStars"
-				:class="{ 'active': star <= stars }"
 				:key="star.stars"
+				:class="{ 'active': star <= stars }"
 				class="star"
+				@click="rate(star)"
 			>
 				<i :class="star <= stars ? 'fa fa-star' : 'fa fa-star-o'" />
 			</li>
@@ -31,7 +31,19 @@
 <script>
 export default {
 	name: 'UIRating',
-	props: ['grade', 'maxStars', 'hasCounter'],
+	props: {
+		grade: {
+			type: Number,
+			required: true
+		},
+		maxStars: {
+			type: Array,
+			required: true
+		},
+		hasCounter: {
+			type: Boolean,
+		},
+	},
 	data() {
 		return {
 			stars: this.grade

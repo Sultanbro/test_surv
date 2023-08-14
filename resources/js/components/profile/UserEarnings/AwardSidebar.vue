@@ -3,8 +3,8 @@
 		id="award-sidebar"
 		title="Награды"
 		:open="open"
-		@close="$emit('update:open', false)"
 		width="60%"
+		@close="$emit('update:open', false)"
 	>
 		<div
 			id="award-headers"
@@ -33,10 +33,10 @@
 
 				<!-- Award headers with fetch data -->
 				<b-button
-					block
-					variant="info"
 					v-for="(award, index) in awardsLocal"
 					:key="index"
+					block
+					variant="info"
 					:pressed="award.pressed"
 					@click="awardsClickHandler(index)"
 				>
@@ -58,10 +58,10 @@
 				bg-variant="light"
 			>
 				<b-button
-					block
-					variant="info"
 					v-for="(award, index) in awardsLocal"
 					:key="index"
+					block
+					variant="info"
 					:pressed="award.pressed"
 					@click="awardsClickHandler(index)"
 				>
@@ -71,10 +71,10 @@
 				</b-button>
 
 				<b-button
-					block
-					variant="info"
 					v-for="(fakeAward, index) in fakeAwardsLocal"
 					:key="index"
+					block
+					variant="info"
 					:pressed="fakeAward.pressed"
 					@click="awardsClickHandler(index)"
 				>
@@ -97,10 +97,10 @@
 					</template>
 					<b-card-group>
 						<b-card
-							:class="index === 1 && 'mx-sm-2'"
-							header-class="p-2 text-center"
 							v-for="(item, index) in featuredUsers"
 							:key="index"
+							:class="index === 1 && 'mx-sm-2'"
+							header-class="p-2 text-center"
 						>
 							<template #header>
 								<b>{{ index + 1 }} место</b>
@@ -139,7 +139,10 @@ export default {
 	components: { AwardsCard },
 	props: {
 		open: Boolean,
-		awards: Array,
+		awards: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
@@ -163,6 +166,12 @@ export default {
 			],
 			nominationsSelected: false,
 		};
+	},
+	mounted() {
+		if (this.awards.length) {
+			this.awardsClickHandler(0);
+		}
+
 	},
 	methods: {
 		// EVENT HANDLERS
@@ -238,13 +247,6 @@ export default {
 		clearAwardCards() {
 			this.updateAwardCards({ all: [], my: [], notMy: [] });
 		},
-	},
-	mounted() {
-		console.log('reactive');
-		if (this.awards.length) {
-			this.awardsClickHandler(0);
-		}
-
 	},
 };
 </script>

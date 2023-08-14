@@ -1,12 +1,12 @@
 <template>
 	<div
-		class="super-filter"
 		v-click-outside="close"
+		class="super-filter"
 	>
 		<div class="d-flex relative">
 			<input
-				class="searcher form-control mr-2 pr-3"
 				v-model="searchText"
+				class="searcher form-control mr-2 pr-3"
 				type="text"
 				placeholder="Поиск по совпадениям..."
 				@click="show = true"
@@ -76,8 +76,8 @@
 				>
 					<option
 						v-for="(month, i) in $moment.months()"
-						:value="i + 1"
 						:key="month"
+						:value="i + 1"
 					>
 						{{ month }}
 					</option>
@@ -90,8 +90,8 @@
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -119,30 +119,30 @@
 
 				<!-- Choose month and year -->
 				<select
+					v-if="created_at.variant == 5"
 					v-model="created_at.month"
 					class="form-control mr-2"
-					v-if="created_at.variant == 5"
 					@change="changeDate('created_at', 'month')"
 				>
 					<option
 						v-for="(month, i) in $moment.months()"
-						:value="i + 1"
 						:key="month"
+						:value="i + 1"
 					>
 						{{ month }}
 					</option>
 				</select>
 
 				<select
+					v-if="created_at.variant == 5"
 					v-model="created_at.year"
 					class="form-control"
-					v-if="created_at.variant == 5"
 					@change="changeDate('created_at', 'year')"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -150,16 +150,16 @@
 
 				<!-- Choose month and year -->
 				<input
-					type="date"
 					v-if="created_at.variant == 6"
 					v-model="created_at.from"
+					type="date"
 					class="form-control form-control-sm mr-2"
 					@change="changeDate('created_at', 'from')"
 				>
 				<input
-					type="date"
 					v-if="created_at.variant == 6"
 					v-model="created_at.to"
+					type="date"
 					class="form-control form-control-sm"
 					@change="changeDate('created_at', 'to')"
 				>
@@ -180,11 +180,14 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'SuperFilter',
 	props: {
 		groups: {
-			default: []
+			type: Array,
+			default: () => []
 		}
 	},
 	data() {

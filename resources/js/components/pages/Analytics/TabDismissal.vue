@@ -2,8 +2,8 @@
 	<div class="TabDismissal">
 		<b-tabs>
 			<b-tab
-				title="Причины и процент текучки"
 				key="1"
+				title="Причины и процент текучки"
 				card
 			>
 				<div class="pt-4">
@@ -16,15 +16,15 @@
 				</div>
 			</b-tab>
 			<b-tab
-				title="Причины: Бот"
 				key="2"
+				title="Причины: Бот"
 				card
 			>
 				<ReasonsBot :quiz="quiz" />
 			</b-tab>
 			<b-tab
-				title="Причины увольнения"
 				key="3"
+				title="Причины увольнения"
 				card
 			>
 				<div class="row">

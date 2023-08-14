@@ -1,8 +1,8 @@
 <template>
 	<div v-if="token">
 		<div
-			class="upbooks-page"
 			v-if="activeBook === null"
+			class="upbooks-page"
 		>
 			<div class="lp">
 				<h1 class="page-title">
@@ -10,11 +10,11 @@
 				</h1>
 
 				<div
+					v-for="(cat, c_index) in categories"
+					:key="cat.id"
 					class="section d-flex aic jcsb"
 					:class="{'active': selectedCategory === c_index}"
 					:style="'position:relative;'"
-					v-for="(cat, c_index) in categories"
-					:key="cat.id"
 					@click="selectCategory(c_index)"
 				>
 					<p>{{ cat.name }}</p>
@@ -23,23 +23,23 @@
 						:style="'position:absolute; right: 0; z-index: 2'"
 					>
 						<i
-							class="fa fa-pen"
 							v-if="cat.id != 0 && mode == 'edit'"
+							class="fa fa-pen"
 							@click.stop="editCat(c_index)"
 						/>
 
 						<i
-							class="fa fa-trash"
 							v-if="cat.id != 0 && mode == 'edit'"
+							class="fa fa-trash"
 							@click.stop="deleteCat(c_index)"
 						/>
 					</div>
 				</div>
 
 				<button
+					v-if="mode == 'edit'"
 					class="btn-add"
 					@click="modals.add_category.show = true"
-					v-if="mode == 'edit'"
 				>
 					Добавить категорию
 				</button>
@@ -68,20 +68,20 @@
 
 
 							<div
-								class="mode_changer ml-2"
 								v-if="can_edit"
+								class="mode_changer ml-2"
 							>
 								<i
-									class="fa fa-pen"
-									@click="toggleMode"
-									:class="{'active': mode == 'edit'}"
 									v-b-popover.hover.top="'Включить редактирование книг'"
+									class="fa fa-pen"
+									:class="{'active': mode == 'edit'}"
+									@click="toggleMode"
 								/>
 							</div>
 
 							<div
-								class="mode_changer ml-2"
 								v-if="can_edit"
+								class="mode_changer ml-2"
 							>
 								<i
 									class="icon-nd-settings"
@@ -94,14 +94,14 @@
 				</div>
 
 				<div
-					class="boxes"
 					v-if="activeCategory != null"
+					class="boxes"
 				>
 					<div
-						class="box-content"
-						@click="go(book)"
 						v-for="(book, b_index) in activeCategory.books"
 						:key="book.id"
+						class="box-content"
+						@click="go(book)"
 					>
 						<div class="box">
 							<div class="left">
@@ -116,9 +116,9 @@
 										@click.stop="deleteBook(b_index)"
 									/>
 									<i
+										v-if="mode == 'edit'"
 										class="fa fa-pen mr-1"
 										@click.stop="editBook(book)"
-										v-if="mode == 'edit'"
 									/>
 									<i
 										class="fa fa-info"
@@ -147,8 +147,8 @@
 			v-else
 			:book_id="activeBook.id"
 			mode="read"
-			@back="back"
 			:show-back-btn="true"
+			@back="back"
 		/>
 
 		<b-modal
@@ -160,8 +160,8 @@
 			hide-header
 		>
 			<input
-				type="text"
 				v-model="modals.add_category.name"
+				type="text"
 				placeholder="Название категории..."
 				class="form-control mb-2"
 			>
@@ -178,14 +178,14 @@
 		<SimpleSidebar
 			title="Загрузить книгу"
 			:open="modals.upload_book.show"
-			@close="modals.upload_book.show = false"
 			width="50%"
+			@close="modals.upload_book.show = false"
 		>
 			<template #body>
 				<UploadFiles
+					:id="0"
 					:token="token"
 					type="book"
-					:id="0"
 					:file_types="['pdf']"
 					@onupload="onupload"
 				/>
@@ -197,8 +197,8 @@
 					<div class="form-group">
 						<label>Название книги</label>
 						<input
-							type="text"
 							v-model="modals.upload_book.file.model.title"
+							type="text"
 							placeholder="Название книги..."
 							class="form-control"
 						>
@@ -206,8 +206,8 @@
 					<div class="form-group">
 						<label>Название автора</label>
 						<input
-							type="text"
 							v-model="modals.upload_book.file.model.author"
+							type="text"
 							placeholder="Название автора..."
 							class="form-control"
 						>
@@ -215,13 +215,13 @@
 					<div class="form-group">
 						<label>Категория</label>
 						<select
-							class="form-control"
 							v-model="modals.upload_book.file.model.group_id"
+							class="form-control"
 						>
 							<option
 								v-for="cat in categories"
-								:value="cat.id"
 								:key="cat.id"
+								:value="cat.id"
 							>
 								{{ cat.name }}
 							</option>
@@ -230,9 +230,9 @@
 					<div class="form-group">
 						<label>Описание книги</label>
 						<textarea
+							v-model="modals.upload_book.file.model.description"
 							class="form-control mt-2 mb-2"
 							placeholder="Описание..."
-							v-model="modals.upload_book.file.model.description"
 						/>
 					</div>
 					<div class="form-group">
@@ -248,8 +248,8 @@
 					</div>
 					<div class="img-preview">
 						<img
-							class="book-img"
 							v-if="modals.upload_book.file.model.img != ''"
+							class="book-img"
 							:src="modals.upload_book.file.model.img"
 						>
 					</div>
@@ -258,9 +258,9 @@
 
 			<template #footer>
 				<button
+					v-if="modals.upload_book.file"
 					class="btn btn-primary rounded m-auto"
 					@click="saveBook"
-					v-if="modals.upload_book.file"
 				>
 					<span>Сохранить</span>
 				</button>
@@ -271,13 +271,13 @@
 		<SimpleSidebar
 			title="О книге"
 			:open="details != null"
-			@close="details = null"
 			width="40%"
+			@close="details = null"
 		>
 			<template #body>
 				<div
-					class="d-flex"
 					v-if="details != null"
+					class="d-flex"
 				>
 					<div class="left f-70">
 						<p class="mb-2 font-bold">
@@ -289,8 +289,8 @@
 					</div>
 					<div class="right f-30 pl-4">
 						<img
-							class="book-img mb-5"
 							v-if="details.img != ''"
+							class="book-img mb-5"
 							:src="details.img"
 						>
 					</div>
@@ -303,9 +303,9 @@
 		<SimpleSidebar
 			title="Редактировать книгу"
 			:open="modals.edit_book.show"
-			@close="modals.edit_book.show = false"
 			width="70%"
 			class="upbook-edit-book"
+			@close="modals.edit_book.show = false"
 		>
 			<template #body>
 				<div v-if="modals.edit_book.item != null">
@@ -315,8 +315,8 @@
 								Название книги
 							</p>
 							<input
-								type="text"
 								v-model="modals.edit_book.item.title"
+								type="text"
 								placeholder="Название книги..."
 								class="form-control mt-2 mb-2"
 							>
@@ -324,8 +324,8 @@
 								Название автора
 							</p>
 							<input
-								type="text"
 								v-model="modals.edit_book.item.author"
+								type="text"
 								placeholder="Название автора..."
 								class="form-control mt-2 mb-2"
 							>
@@ -333,21 +333,21 @@
 								Описание книги
 							</p>
 							<textarea
+								v-model="modals.edit_book.item.description"
 								class="form-control mt-2 mb-2"
 								placeholder="Описание..."
-								v-model="modals.edit_book.item.description"
 							/>
 							<p class="mb-2 font-bold">
 								Категория
 							</p>
 							<select
-								class="form-control mb-2"
 								v-model="modals.edit_book.item.group_id"
+								class="form-control mb-2"
 							>
 								<option
 									v-for="cat in categories"
-									:value="cat.id"
 									:key="cat.id"
+									:value="cat.id"
 								>
 									{{ cat.name }}
 								</option>
@@ -356,8 +356,8 @@
 
 						<div class="right f-30 pl-4">
 							<img
-								class="book-img mb-5"
 								v-if="modals.edit_book.item.img != ''"
+								class="book-img mb-5"
 								:src="modals.edit_book.item.img"
 							>
 							<b-form-file
@@ -372,8 +372,8 @@
 					</div>
 
 					<div
-						class="segments mt-4"
 						v-if="modals.edit_book.segments.length > 0"
+						class="segments mt-4"
 					>
 						<div class="row mb-3">
 							<div class="col-3">
@@ -385,11 +385,11 @@
 						</div>
 
 						<BookSegment
+							v-for="(segment, s) in modals.edit_book.segments"
+							:key="s"
 							:segment="segment"
 							:book_id="modals.edit_book.item.id"
 							@deleteSegment="deleteSegment(s)"
-							v-for="(segment, s) in modals.edit_book.segments"
-							:key="s"
 						/>
 					</div>
 				</div>
@@ -417,14 +417,14 @@
 		<SimpleSidebar
 			title="Настройки книг"
 			:open="showSettings"
-			@close="showSettings = false"
 			width="400px"
+			@close="showSettings = false"
 		>
 			<template #body>
 				<label class="d-flex">
 					<input
-						type="checkbox"
 						v-model="allow_save_book_without_test"
+						type="checkbox"
 						class="form- mb-2 mr-2"
 					>
 					<p>Разрешить сохранять книги без тестовых вопросов</p>
@@ -452,8 +452,8 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="editcat_name"
+				type="text"
 				placeholder="Название категории..."
 				class="form-control mb-2"
 			>
@@ -468,6 +468,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 import BookSegment from '@/components/BookSegment' // загрузка файлов
@@ -482,7 +485,8 @@ export default {
 	},
 	props: {
 		token: {
-			type: String
+			type: String,
+			default: ''
 		},
 		can_edit: {
 			type: Boolean,
@@ -638,8 +642,6 @@ export default {
 		create_book() {},
 
 		onupload(item) {
-			console.log('onupload');
-			console.log(item);
 			this.modals.upload_book.file = item;
 			this.modals.upload_book.file.model.group_id = this.activeCategory.id
 		},

@@ -13,12 +13,12 @@
 				<div class="form-search-kb">
 					<i class="fa fa-search" />
 					<input
-						type="text"
 						v-model="search.input"
-						@input="searchInput"
-						@blur="searchCheck"
+						type="text"
 						placeholder="Искать в базе..."
 						class="form-control"
+						@input="searchInput"
+						@blur="searchCheck"
 					>
 					<i
 						v-if="search.input.length"
@@ -67,10 +67,12 @@
 								<p class="search-item-title">
 									{{ item.title }}
 								</p>
+								<!-- eslint-disable -->
 								<div
 									class="search-item-text"
 									v-html="item.text"
 								/>
+								<!-- eslint-enable -->
 							</div>
 						</template>
 
@@ -90,20 +92,20 @@
 					</div>
 					<Draggable
 						v-if="!search.items.length && !search.input.length"
+						:id="null"
 						class="dragArea ml-0"
 						tag="div"
 						handle=".fa-bars"
 						:list="books"
-						:id="null"
 						:group="{ name: 'g1' }"
 						@start="startChangeOrder"
 						@end="saveOrder"
 					>
 						<template v-for="(book, b_index) in books">
 							<div
+								:id="book.id"
 								:key="book.id"
 								class="section d-flex aic jcsb"
-								:id="book.id"
 								@click.stop="selectSection(book)"
 							>
 								<div class="d-flex aic">
@@ -200,10 +202,10 @@
 								class="mode_changer mr-2"
 							>
 								<i
-									class="fa fa-pen"
-									@click="toggleMode"
-									:class="{'active': mode == 'edit'}"
 									v-b-popover.hover.top="'Включить редактирование Базы знаний'"
+									class="fa fa-pen"
+									:class="{'active': mode == 'edit'}"
+									@click="toggleMode"
 								/>
 							</div>
 							<div
@@ -240,11 +242,11 @@
 				:parent_id="activeBook.id"
 				:show_page_id="show_page_id"
 				:course_item_id="0"
-				@back="back"
-				@toggleMode="toggleMode"
 				:mode="mode"
 				:enable_url_manipulation="true"
 				:auth_user_id="auth_user_id"
+				@back="back"
+				@toggleMode="toggleMode"
 			/>
 		</div>
 
@@ -260,8 +262,8 @@
 			hide-footer
 		>
 			<input
-				type="text"
 				v-model="section_name"
+				type="text"
 				placeholder="Название раздела..."
 				class="form-control mb-2"
 			>
@@ -278,30 +280,30 @@
 		<SimpleSidebar
 			title="Настройки базы знаний"
 			:open="showBookSettings"
-			@close="showBookSettings = false"
 			width="400px"
+			@close="showBookSettings = false"
 		>
 			<template #body>
 				<label class="d-flex mb-2">
 					<input
-						type="checkbox"
 						v-model="send_notification_after_edit"
+						type="checkbox"
 						class="form- mb-2 mr-2"
 					>
 					<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
 				</label>
 				<label class="d-flex mb-2">
 					<input
-						type="checkbox"
 						v-model="show_page_from_kb_everyday"
+						type="checkbox"
 						class="form- mb-2 mr-2"
 					>
 					<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
 				</label>
 				<label class="d-flex mb-2">
 					<input
-						type="checkbox"
 						v-model="allow_save_kb_without_test"
+						type="checkbox"
 						class="form- mb-2 mr-2"
 					>
 					<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
@@ -327,8 +329,8 @@
 		>
 			<div v-if="update_book != null">
 				<input
-					type="text"
 					v-model="update_book.title"
+					type="text"
 					placeholder="Название раздела..."
 					class="form-control mb-2"
 				>
@@ -363,6 +365,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
 const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
@@ -380,7 +385,8 @@ export default {
 	},
 	props: {
 		auth_user_id: {
-			type:Number
+			type:Number,
+			default: 0
 		},
 		can_edit: {
 			type: Boolean,
@@ -583,7 +589,6 @@ export default {
 			this.showEdit = true;
 
 			this.update_book = book;
-			console.log(book)
 			this.axios
 				.post('/kb/page/get-access', {
 					id: book.id,
@@ -679,7 +684,6 @@ export default {
 		},
 
 		saveOrder(event) {
-			console.log(event)
 			this.axios.post('/kb/page/save-order', {
 				id: event.item.id,
 				order: event.newIndex, // oldIndex
@@ -696,14 +700,11 @@ export default {
 			this.clearSearch();
 		},
 
-		startChangeOrder(event) {
-			console.log(event)
-		},
+		startChangeOrder() {},
 
 		openGlossary() {
 			this.show_glossary = true;
 		}
-
 	},
 };
 </script>

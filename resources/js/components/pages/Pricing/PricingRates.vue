@@ -63,8 +63,8 @@
 				<tr class="PricingRates-row">
 					<td
 						class="PricingRates-col PricingRates-action"
-						@click="showFeatures = !showFeatures"
 						:colspan="items.length + 1"
+						@click="showFeatures = !showFeatures"
 					>
 						Все возможности
 					</td>

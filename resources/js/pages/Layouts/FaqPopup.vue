@@ -25,11 +25,11 @@ import FaqList from './faq/FaqList';
 import FaqContent from './faq/FaqContent';
 export default {
 	name: 'FaqPopup',
-	props: {},
 	components: {
 		FaqList,
 		FaqContent
 	},
+	props: {},
 	data: function () {
 		return {
 			itemId: 1,

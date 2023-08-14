@@ -5,13 +5,13 @@
 	>
 		<div class="messenger__chat-info">
 			<div
-				class="messenger__chat-info-title"
 				v-if="!chat.private"
+				class="messenger__chat-info-title"
 			>
 				<div
 					v-if="!editMode"
-					@click="editMode = true"
 					class="messenger__chat-info-title-text"
+					@click="editMode = true"
 				>
 					<span>{{ chat.title }}</span>
 					<div class="messenger__chat-info__button">
@@ -27,8 +27,8 @@
 				</div>
 				<div
 					v-if="editMode"
-					@keyup.enter="changeTitle"
 					class="messenger__chat-info-title-text"
+					@keyup.enter="changeTitle"
 				>
 					<input
 						v-model="chat.title"
@@ -38,11 +38,11 @@
 					>
 					<div class="messenger__chat-info__button">
 						<svg
-							@click="changeTitle"
 							xmlns="http://www.w3.org/2000/svg"
 							width="25"
 							height="25"
 							viewBox="0 0 448 512"
+							@click="changeTitle"
 						>
 							<path
 								d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 416c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64s-28.7 64-64 64z"
@@ -54,9 +54,9 @@
 			<div class="messenger__chat-info-members">
 				<div class="messenger__chat-info-members-list">
 					<div
-						class="messenger__chat-info-members-list-item"
 						v-for="member in chat.users"
 						:key="member.id"
+						class="messenger__chat-info-members-list-item"
 					>
 						<AlternativeAvatar
 							:title="member.name"
@@ -68,8 +68,8 @@
 						<!--            крестик справа в конца-->
 						<div
 							v-if="!chat.private && member.id !== user.id"
-							@click="removeMembers([member])"
 							class="messenger__chat-info-members-list-item-remove"
+							@click="removeMembers([member])"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -99,13 +99,13 @@ export default {
 	components: {
 		AlternativeAvatar
 	},
-	computed: {
-		...mapGetters(['user', 'chat', 'isInfoPanel'])
-	},
 	data() {
 		return {
 			editMode: false,
 		};
+	},
+	computed: {
+		...mapGetters(['user', 'chat', 'isInfoPanel'])
 	},
 	methods: {
 		...mapActions(['editChatTitle', 'removeMembers']),

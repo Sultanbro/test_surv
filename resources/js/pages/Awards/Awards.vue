@@ -8,9 +8,9 @@
 			Создать награду
 		</BButton>
 		<img
+			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
 			src="/images/dist/profit-info.svg"
 			class="img-info"
-			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
 		>
 
 		<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
@@ -19,8 +19,8 @@
 		<!--        </b-modal>-->
 
 		<div
-			class="table-container"
 			v-if="tableItems && tableItems.length > 0"
+			class="table-container"
 		>
 			<BTableSimple
 				id="awards-table"
@@ -43,41 +43,41 @@
 				</BThead>
 				<BTbody>
 					<BTr
-						v-for="(item, key) in tableItems"
-						:key="item.name + key"
+						v-for="(tableItem, key) in tableItems"
+						:key="tableItem.name + key"
 					>
 						<BTd>{{ key + 1 }}</BTd>
 						<BTd>
 							<div
 								class="clickable"
-								@click="rowClickedHandler(item)"
+								@click="rowClickedHandler(tableItem)"
 							>
-								{{ item.name }}
+								{{ tableItem.name }}
 							</div>
 						</BTd>
 						<BTd class="td-desc">
 							<div class="desc">
-								{{ item.description }}
+								{{ tableItem.description }}
 							</div>
 							<div class="full-text">
-								{{ item.description }}
+								{{ tableItem.description }}
 							</div>
 						</BTd>
-						<BTd v-if="item.type === 1">
+						<BTd v-if="tableItem.type === 1">
 							Картинка
 						</BTd>
-						<BTd v-if="item.type === 2">
+						<BTd v-if="tableItem.type === 2">
 							Конструктор
 						</BTd>
-						<BTd v-if="item.type === 3">
+						<BTd v-if="tableItem.type === 3">
 							Данные начислений
 						</BTd>
-						<BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
-						<BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
+						<BTd>{{ tableItem.created_at | splitDate(tableItem.created_at) }}</BTd>
+						<BTd>{{ tableItem.creator.name }} {{ tableItem.creator.last_name }}</BTd>
 						<BTd @click.stop>
 							<b-button
 								class="btn btn-danger btn-icon"
-								@click="modalShow(item)"
+								@click="modalShow(tableItem)"
 							>
 								<i class="fa fa-trash" />
 							</b-button>
@@ -102,8 +102,8 @@
 		/>
 		<b-modal
 			v-if="itemRemove"
-			centered
 			v-model="modal"
+			centered
 			:title="itemRemove.name"
 		>
 			Вы уверены, что хотите удалить награду?
@@ -133,6 +133,11 @@ export default {
 	components: {
 		EditAwardSidebar,
 	},
+	filters: {
+		splitDate: function(val){
+			return val.split('T')[0];
+		}
+	},
 	data() {
 		return {
 			modalRegenerate: false,
@@ -142,11 +147,6 @@ export default {
 			item: null,
 			tableItems: [],
 		};
-	},
-	filters: {
-		splitDate: function(val){
-			return val.split('T')[0];
-		}
 	},
 	mounted() {
 		this.getAwards();
@@ -166,7 +166,7 @@ export default {
 					loader.hide();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},
@@ -194,7 +194,7 @@ export default {
 					loader.hide();
 				})
 				.catch(function (error) {
-					console.log(error);
+					console.error(error);
 					loader.hide();
 				});
 		},

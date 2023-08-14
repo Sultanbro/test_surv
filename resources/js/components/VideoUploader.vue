@@ -20,16 +20,16 @@
 		<!-- first step -->
 		<div v-if="step == 1">
 			<UploadFiles
+				:id="playlist_id"
 				:token="token"
 				type="video"
-				:id="playlist_id"
 				:file_types="['mp4', 'flv']"
 				@onupload="onupload"
 			/>
 
 			<div
-				class="uploaded_files"
 				v-if="file !== null"
+				class="uploaded_files"
 			>
 				<p>
 					<b>Загружено {{ Number(file.size / 1024 / 1024).toFixed(3) }}mb</b>
@@ -41,17 +41,17 @@
 		<!-- second step -->
 		<div v-if="step == 2">
 			<div
-				class="row mb-2"
 				v-if="file !== null"
+				class="row mb-2"
 			>
 				<div class="col-md-4">
 					Название
 				</div>
 				<div class="col-md-8">
 					<input
+						v-model="file.model.title"
 						type="text"
 						class="form-control"
-						v-model="file.model.title"
 					>
 				</div>
 
@@ -81,6 +81,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 export default {
 	name: 'VideoUploader',
@@ -88,9 +91,18 @@ export default {
 		UploadFiles,
 	},
 	props: {
-		token: String,
-		playlist_id: Number,
-		group_id: Number
+		token: {
+			type: String,
+			default: ''
+		},
+		playlist_id: {
+			type: Number,
+			default: 0
+		},
+		group_id: {
+			type: Number,
+			default: 0
+		}
 	},
 	data(){
 		return {
@@ -110,8 +122,6 @@ export default {
 
 	methods: {
 		onupload(item) {
-			console.log('onupload');
-			console.log(item);
 			this.file = item;
 			this.step = 2;
 		},

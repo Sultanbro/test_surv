@@ -13,15 +13,15 @@
 		</div>
 
 		<input
-			type="text"
 			v-model="title"
+			type="text"
 			class="ChatNewChat-input"
 			placeholder="Название чата"
 		>
 
 		<JobtronSearch
-			class="mb-3"
 			v-model="search"
+			class="mb-3"
 		/>
 
 		<div class="ChatNewChat-content">
@@ -33,8 +33,8 @@
 				:search-position="''"
 				:access-dictionaries="accessDictionaries"
 				:search="search"
-				@submit="submitGroup"
 				class="ChatNewChat-select"
+				@submit="submitGroup"
 			/>
 		</div>
 	</div>

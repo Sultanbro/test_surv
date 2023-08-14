@@ -35,7 +35,10 @@ export default {
 		CheckListPopupItem
 	},
 	props: {
-		data: Object
+		data: {
+			type: Object,
+			default: null
+		}
 	},
 	data() {
 		return {}
