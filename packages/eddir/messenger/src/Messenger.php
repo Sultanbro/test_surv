@@ -828,12 +828,15 @@ class Messenger {
                 'user' => User::find( $userId )->toArray(),
             ] );
         }
-        else{
-            foreach($_userId => $userId){
+        else if(is_array($userId)){
+            foreach($_userId as $user => $userId){
                 $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
-                    'user' => User::find( $_userId )->toArray(),
+                    'user' => User::find( $user )->toArray(),
                 ] );
             }
+        }
+        else{
+            dd($userId);
         }
 
         return $chat;
