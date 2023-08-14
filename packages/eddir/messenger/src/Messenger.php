@@ -793,11 +793,11 @@ class Messenger {
         $chat->save();
 
         $chat->members()->syncWithoutDetaching( collect($members)->pluck('id') );
+        $chat->members()->syncWithoutDetaching( $user->id, [ 'is_admin' => true ] );
         DB::table('messenger_chat_users')
             ->where('chat_id', $chat->id)
             ->where('user_id', $user->id)
             ->update([ 'is_admin' => true ]);
-        // $chat->members()->syncWithoutDetaching( $user->id, [ 'is_admin' => true ] );
 
 
         $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_CREATED, [
