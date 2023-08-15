@@ -274,8 +274,8 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.records = this.activity.records;
-			this.accountsNumber = this.activity.records.length
+			this.records = this.activity.records || [];
+			this.accountsNumber = (this.activity.records || []).length
 			if(this.is_admin) this.setFirstRowAsTotals()
 			this.calculateRecordsValues()
 			if(this.is_admin) this.calculateTotalsRow()

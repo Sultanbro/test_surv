@@ -685,8 +685,8 @@ export default {
 				return result
 			}, [])
 
-			this.records = this.activity.records;
-			this.accountsNumber = this.activity.records.length
+			this.records = this.activity.records || [];
+			this.accountsNumber = (this.activity.records || []).length
 
 			if(this.show_headers) this.setFirstRowAsTotals()
 			this.calculateRecordsValues()
