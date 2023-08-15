@@ -282,7 +282,7 @@ export default {
 					id: 0,
 					name: 'Вакантная',
 					last_name: 'позиция',
-					avatar: '/users.png',
+					avatar: '/user.png',
 				},
 				...this.users,
 			]
