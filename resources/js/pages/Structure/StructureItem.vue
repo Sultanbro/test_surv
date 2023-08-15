@@ -49,7 +49,28 @@
 				v-if="manager || isVacant || (card.users && card.users.length)"
 				class="structure-card-body"
 			>
-				<template v-if="manager">
+				<template v-if="isVacant">
+					<img
+						src="/user.png"
+						alt="photo"
+						class="director-photo"
+					>
+					<StructureInfo v-if="description[1]">
+						<template #default>
+							{{ description[1] }}
+						</template>
+					</StructureInfo>
+					<p
+						v-if="position"
+						class="StructureItem-contrast position"
+					>
+						{{ position.name }}
+					</p>
+					<p class="StructureItem-contrast full-name">
+						Вакантная позиция
+					</p>
+				</template>
+				<template v-else-if="manager">
 					<img
 						:src="manager.avatar"
 						alt="photo"
@@ -73,25 +94,6 @@
 					</p>
 					<p class="StructureItem-contrast full-name">
 						{{ manager.name }} {{ manager.last_name }}
-					</p>
-				</template>
-				<template v-else-if="isVacant">
-					<img
-						src="/user.png"
-						alt="photo"
-						class="director-photo"
-					>
-					<StructureInfo v-if="description[1]">
-						{{ description[1] }}
-					</StructureInfo>
-					<p
-						v-if="position"
-						class="StructureItem-contrast position"
-					>
-						{{ position.name }}
-					</p>
-					<p class="StructureItem-contrast full-name">
-						Вакантная позиция
 					</p>
 				</template>
 				<hr

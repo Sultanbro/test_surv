@@ -230,15 +230,15 @@ export default {
 				id: null,
 				name: this.card.name,
 			}],
-			director: this.card.manager
-				? this.users.find(user => user.id === this.card.manager.user_id)
-				: this.card.is_vacant
-					? {
-						id: 0,
-						name: 'Вакантная',
-						last_name: 'позиция',
-						avatar: '/user.png',
-					}
+			director: this.card.is_vacant
+				? {
+					id: 0,
+					name: 'Вакантная',
+					last_name: 'позиция',
+					avatar: '/user.png',
+				}
+				: this.card.manager
+					? this.users.find(user => user.id === this.card.manager.user_id)
 					: '',
 			result: (this.card.description || '').split(DESC_DIVIDER)[0],
 			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
