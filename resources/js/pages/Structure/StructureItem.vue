@@ -310,6 +310,11 @@ export default {
 			return this.users.some(user => user.id === Laravel.userId)
 		}
 	},
+	watch: {
+		card(){
+			this.drawLines()
+		}
+	},
 	mounted() {
 		this.drawLines();
 	},
