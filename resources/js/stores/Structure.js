@@ -45,6 +45,7 @@ function cardToRequest(card){
 		is_group: card.is_group,
 		is_vacant: card.is_vacant,
 	}
+	if(!request.position_id) request.position_id = null
 	if(card.group_id) request.group_id = card.group_id
 	if(card.name) request.name = card.name
 	return request

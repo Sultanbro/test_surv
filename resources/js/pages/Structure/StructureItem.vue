@@ -259,12 +259,14 @@ export default {
 			if(!this.card) return null
 			if(!this.card.manager) return null
 			const manager = this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
-			return manager || {
+			if(manager) return manager
+			if(this.card.is_vacant) return {
 				id: 0,
 				name: 'Вакантная',
 				last_name: 'позиция',
 				avatar: '/user.png',
 			}
+			return null
 		},
 		position(){
 			if(!this.card) return null
@@ -292,7 +294,7 @@ export default {
 			return (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)
 		},
 		isVacant(){
-			return this.card.is_vacant || (this.manager && this.manager.id === 0)
+			return this.card.is_vacant || (this.manager && this.manager.user_id === 0)
 		},
 	},
 	mounted() {
