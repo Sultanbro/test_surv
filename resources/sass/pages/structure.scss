@@ -414,6 +414,10 @@
 				right: var(--end-line);
 				z-index: 12;
 			}
+
+			.structure-item .structure-card .structure-card-body{
+				border-radius: none !important;
+			}
 		}
 
 		.structure-card-result {
@@ -588,7 +592,7 @@
 					border-radius: 0 0 12px 12px;
 
 					& > div:last-child {
-						border-radius: 0 0 12px 12px !important;
+						border-radius: 0 0 12px 12px;
 					}
 				}
 			}
