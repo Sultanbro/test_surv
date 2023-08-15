@@ -34,8 +34,8 @@ final class PositionService
     {
         try {
             return Position::query()->updateOrCreate(
-                ['position' => $data['position'],'is_head' => $data['is_head']],
-                ['position' => $data['position'],'is_head' => $data['is_head']]
+                ['position' => $data['position'],'is_head' => $data['is_head'] ? $data['is_head'] : false],
+                ['position' => $data['position'],'is_head' => $data['is_head'] ? $data['is_head'] : false]
             );
         }catch (\Throwable $exception)
         {
