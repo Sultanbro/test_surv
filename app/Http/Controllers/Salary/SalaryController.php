@@ -1070,12 +1070,34 @@ class SalaryController extends Controller
         return $res;
     }
 
-    public function bonuses(Request $request) {
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function bonuses(Request $request):mixed
+    {
         $date  = Carbon::parse($request->date);
-        return TimetrackingHistory::where('user_id', $request->user_id)
+        return TimetrackingHistory::query()
+            ->where('user_id', $request->user_id)
             ->whereYear('date', $date->year)
             ->whereMonth('date', $date->month)
             ->where('description', 'like', 'Добавлен <b>бонус</b>%')
+            ->get();
+    }
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function advances(Request $request):mixed
+    {
+        $date  = Carbon::parse($request->date);
+        return TimetrackingHistory::query()
+            ->where('user_id', $request->user_id)
+            ->whereYear('date', $date->year)
+            ->whereMonth('date', $date->month)
+            ->where('description', 'like', 'Добавлен <b>аванс</b>%')
             ->get();
     }
 }
