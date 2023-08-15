@@ -86,7 +86,7 @@
 							v-if="activityItem.type == 'collection'"
 							:key="activityItem.id"
 							:month="monthInfo"
-							:activity="activity"
+							:activity="activityItem"
 							:is_admin="true"
 							:price="activityItem.price"
 							class="AnalyticsDetailes-monthTable"
