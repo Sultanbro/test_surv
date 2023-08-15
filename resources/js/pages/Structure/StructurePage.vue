@@ -220,9 +220,11 @@ export default {
 				if(!this.$refs.container) return
 				if(!this.$refs.rootCard) return
 				const widthAwailable = this.$refs.container.clientWidth - 40
+				const heightAwailable = this.$refs.container.clientHeight - 40
 				const zoom = this.zoom / 100
 				const cardsWidth = this.$refs.rootCard.$el.clientWidth * zoom
-				if(cardsWidth > widthAwailable && this.zoom > 10){
+				const cardsHeight = this.$refs.rootCard.$el.clientHeight * zoom
+				if((cardsWidth > widthAwailable || cardsHeight > heightAwailable) && this.zoom > 10){
 					this.zoom -= 2
 					requestAnimationFrame(this.autoZoom)
 				}
