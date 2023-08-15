@@ -138,6 +138,11 @@
 				:class="{'has-result': description[0]}"
 				@click="addNew"
 			/>
+
+			<PulseCard
+				v-if="isCurrentUserCard"
+				size="3"
+			/>
 		</div>
 
 		<!-- Потомки -->
@@ -182,6 +187,7 @@
 import {mapState, mapActions} from 'pinia'
 import StructureInfo from './StructureInfo'
 import {useStructureStore} from '@/stores/Structure.js'
+import PulseCard from '@ui/PulseCard.vue'
 
 const DESC_DIVIDER = '◕◕'
 
@@ -189,6 +195,7 @@ export default {
 	name: 'StructureItem',
 	components: {
 		StructureInfo,
+		PulseCard,
 	},
 	props: {
 		card: {
@@ -296,6 +303,12 @@ export default {
 		isVacant(){
 			return this.card.is_vacant || (this.manager && this.manager.user_id === 0)
 		},
+		isCurrentUserCard(){
+			/* global Laravel */
+			if(this.manager && this.manager.id === Laravel.userId) return true
+
+			return this.users.some(user => user.id === Laravel.userId)
+		}
 	},
 	mounted() {
 		this.drawLines();
@@ -347,6 +360,15 @@ export default {
 			opacity: 0;
 			visibility: hidden;
 		}
+	}
+	.PulseCard{
+		border-radius: 12px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		pointer-events: none;
 	}
 }
 </style>

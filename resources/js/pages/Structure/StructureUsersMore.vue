@@ -64,20 +64,8 @@ export default {
 	},
 	computed: {
 		...mapState(useStructureStore, ['moreUsers']),
-		shouldPositionAtTop() {
-			const { top } = this.$refs.usersMore.getBoundingClientRect();
-			return window.innerHeight - top < 540;
-		},
-		topStyle() {
-			const difference = window.innerHeight - this.$refs.usersMore.getBoundingClientRect().top;
-			return `-${540 - difference + 50}px`;
-		},
 	},
-	mounted() {
-		if (this.shouldPositionAtTop) {
-			this.$refs.usersMore.style.top = this.topStyle;
-		}
-	},
+	mounted() {},
 	methods: {
 		...mapActions(useStructureStore, ['showMoreUsers'])
 	}
