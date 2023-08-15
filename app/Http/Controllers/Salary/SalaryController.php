@@ -1100,4 +1100,35 @@ class SalaryController extends Controller
             ->where('description', 'like', 'Добавлен <b>аванс</b>%')
             ->get();
     }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function fines(Request $request):mixed
+    {
+        $date = Carbon::parse($request->date);
+        $user = User::query()->find($request->user_id);
+
+        return $user->fines()
+            ->whereYear('day',$date->year)
+            ->whereMonth('day',$date->month)
+            ->get();
+
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function taxes(Request $request):mixed
+    {
+        $date = Carbon::parse($request->date);
+        $user = User::query()->find($request->user_id);
+
+        return $user->taxes()
+            ->whereYear('user_tax.created_at',$date->year)
+            ->whereMonth('user_tax.created_at',$date->month)
+            ->get();
+    }
 }

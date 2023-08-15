@@ -397,6 +397,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/salaries/approve-salary', [Salary\SalaryController::class, 'approveSalary']);
     Route::post('/timetracking/salaries/bonuses', [Salary\SalaryController::class, 'bonuses']);
     Route::post('/timetracking/salaries/advances', [Salary\SalaryController::class, 'advances'])->name('advances');
+    Route::post('/timetracking/salaries/fines', [Salary\SalaryController::class, 'fines'])->name('fines');
+    Route::post('/timetracking/salaries/taxes', [Salary\SalaryController::class, 'taxes'])->name('taxes');
     Route::post('/profile/salary/get', [Salary\ProfileSalaryController::class, 'get']);
     Route::post('/timetracking/quarter/store', [Salary\QuartalBonusController::class, 'storePersonQuartal']); /// добавление квартала
     Route::post('/timetracking/quarter/delete', [Salary\QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
