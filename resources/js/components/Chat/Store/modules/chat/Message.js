@@ -170,7 +170,7 @@ export default {
 				});
 			}
 
-			if (!chat?.is_mute && !isSender) dispatch('sendNotification', {
+			if (!(chat?.is_mute) && !isSender) dispatch('sendNotification', {
 				title: `${message.sender.name} ${message.sender.last_name}`,
 				body: message.body,
 				icon: `/users_img/${message.sender.img_url}`,
@@ -442,7 +442,7 @@ export default {
 					const isUserFirst = !prevMsg || !!prevMsg.event || prevMsg.sender_id !== message.sender_id
 					const isUserLast = !nextMsg || !!nextMsg.event || nextMsg.sender_id !== message.sender_id
 					const own = message.sender_id === getters.user.id
-					const isMessageRead = message.readers && ~message.readers.findIndex(reader => reader.id === getters.user.id)
+					const isMessageRead = message.readers && ~message.readers?.findIndex(reader => reader.id === getters.user.id)
 					let isUnreadFirst = false
 					if (!message.event && !own && !unread && !isMessageRead) {
 						unread = true
