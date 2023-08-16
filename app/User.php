@@ -204,7 +204,7 @@ class User extends Authenticatable implements Authorizable
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'user_tax')
-            ->withPivot(['created_at'])
+            ->withPivot(['created_at', 'value'])
             ->withTimestamps();
     }
 
