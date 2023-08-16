@@ -141,7 +141,7 @@
 
 			<PulseCard
 				v-if="isCurrentUserCard"
-				size="3"
+				:size="3"
 			/>
 		</div>
 

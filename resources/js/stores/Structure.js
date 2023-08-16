@@ -146,12 +146,15 @@ export const useStructureStore = defineStore('structure', {
 			if(this.isDemo){
 				const index = this.demo.structure.findIndex(c => c.id === card.id)
 				this.demo.structure.splice(index, 1, card)
+				if(card.color !== this.demo.structure[index].color) this.updateColor(card.id, card.color)
 				return card
 			}
 
 			const request = cardToRequest(card)
 			const data = await structureUpdate(card.id, request)
 			const old = this.cards.findIndex(c => c.id === card.id)
+			console.log(~old, card.color, this.cards[old].color)
+			if(~old && card.color !== this.cards[old].color) await this.updateColor(card.id, card.color)
 			if(~old) this.cards.splice(old, 1, card)
 			this.closeEditCard()
 			return data
@@ -172,6 +175,18 @@ export const useStructureStore = defineStore('structure', {
 			this.cards.splice(index, 1)
 			this.closeEditCard()
 			return true
+		},
+		async updateColor(cardId, color){
+			const topCard = this.cards.find(card => card.id === cardId)
+			if(!topCard) return
+			for(const card of this.cards){
+				if(card.parent_id === cardId){
+					await this.updateCard({
+						...card,
+						color,
+					})
+				}
+			}
 		},
 		getEmptyCard(){
 			return {
