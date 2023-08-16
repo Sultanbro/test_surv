@@ -398,13 +398,24 @@ export default {
 					if(group) return group.is_head
 					return false
 				})
+				if(!manager ?? card.manager?.user_id){
+					await this.updateCard({
+						...card,
+						manager: {
+							user_id: null,
+							position_id: card.manager?.position_id
+						},
+						is_vacant: true
+					})
+				}
 				if(manager && manager.id !== card.manager?.user_id){
 					await this.updateCard({
 						...card,
 						manager: {
 							user_id: manager.id,
 							position_id: manager.position_id
-						}
+						},
+						is_vacant: false
 					})
 				}
 			}
