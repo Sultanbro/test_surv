@@ -28,9 +28,12 @@
 				>
 					<i class="fa fa-pen" />
 				</button>
-				<!-- <button class="icon-btn">
+				<button
+					class="icon-btn"
+					@click="toggleSettings"
+				>
 					<i class="icon-nd-settings" />
-				</button> -->
+				</button>
 			</div>
 		</div>
 		<div
@@ -86,15 +89,41 @@
 			v-if="moreUsers"
 			:users="moreUsers"
 		/>
+
+		<SimpleSidebar
+			title="Настройки"
+			:open="isSettings"
+			width="30%"
+			@close="isSettings = false"
+		>
+			<template #body>
+				<b-form-checkbox
+					v-model="settings.autoManager"
+					switch
+					size="lg"
+				>
+					Обновлять автоматически информацию о&nbsp;руководителях отделов
+				</b-form-checkbox>
+			</template>
+			<template #footer>
+				<JobtronButton
+					@click="onSaveSettings"
+				>
+					Сохранить
+				</JobtronButton>
+			</template>
+		</SimpleSidebar>
 	</div>
 </template>
 
 <script>
-import {mapState, mapActions} from 'pinia'
 import StructureItem from './StructureItem';
 import StructureEditCard from './StructureEditCard'
 import StructureUsersMore from './StructureUsersMore'
-// import {users, positions, departments, structure} from './mockApi';
+import SimpleSidebar from '@ui/SimpleSidebar.vue'
+import JobtronButton from '@ui/Button.vue'
+
+import {mapState, mapActions} from 'pinia'
 import {useCompanyStore} from '@/stores/Company.js'
 import {useStructureStore} from '@/stores/Structure.js'
 
@@ -109,6 +138,8 @@ export default {
 		StructureItem,
 		StructureEditCard,
 		StructureUsersMore,
+		SimpleSidebar,
+		JobtronButton,
 	},
 	data() {
 		return {
@@ -120,6 +151,10 @@ export default {
 			zoom: 100,
 			editStructure: false,
 			leftMarginMainCard: 0,
+			isSettings: false,
+			settings: {
+				autoManager: false
+			}
 		}
 	},
 	computed: {
@@ -190,12 +225,13 @@ export default {
 	},
 	async mounted() {
 		await this.checkDemo()
+		await this.fetchSettings()
 		await this.fetchDictionaries()
 		await this.fetchCentralOwner()
 		await this.structureGet()
-		this.$nextTick(this.checkFirstCard)
 		this.drawLines()
 		this.autoZoom()
+		if(this.settings.autoManager) this.updateManagers()
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
 		window.addEventListener('storage', this.checkTabEvents, false)
 	},
@@ -214,7 +250,10 @@ export default {
 			'getEmptyCard',
 			'closeEditCard',
 			'setDemo',
+			'updateCard',
 		]),
+
+		// ScrollZoom
 		autoZoom(){
 			this.$nextTick(() => {
 				if(!this.$refs.container) return
@@ -230,16 +269,6 @@ export default {
 				}
 			})
 		},
-		recursiveUpdate(component) {
-			if (component.drawLines) {
-				component.drawLines();
-			}
-			if (component.$children) {
-				component.$children.forEach(childComponent => {
-					this.recursiveUpdate(childComponent);
-				});
-			}
-		},
 		scrollToBlock(id){
 			this.$nextTick(() => {
 				const addedDepartment = document.querySelector(`#id-${id}`)
@@ -251,6 +280,19 @@ export default {
 			if (event.ctrlKey) {
 				event.preventDefault();
 				this.zoom = Math.min(Math.max(this.zoom + (event.deltaY > 0 ? -10 : 10), 10), 200);
+			}
+		},
+		// ScrollZoom
+
+		// Lines
+		recursiveUpdate(component) {
+			if (component.drawLines) {
+				component.drawLines();
+			}
+			if (component.$children) {
+				component.$children.forEach(childComponent => {
+					this.recursiveUpdate(childComponent);
+				});
 			}
 		},
 		drawLines() {
@@ -270,6 +312,9 @@ export default {
 			})
 			this.$forceUpdate();
 		},
+		// Lines
+
+		// DND
 		startDrag(event) {
 			if(this.editedCard) return
 
@@ -291,18 +336,30 @@ export default {
 			this.$refs.container.scrollLeft = this.scrollLeft - deltaX;
 			this.$refs.container.scrollTop = this.scrollTop - deltaY;
 		},
-		async checkTabEvents(event){
-			if (event.key !== 'event.updatePositions') return
-			const message = JSON.parse(event.newValue);
-			if (!message) return
+		// DND
 
-			if (message.command) {
-				const loader = this.$loading.show()
-				await this.fetchDictionaries(true)
-				loader.hide()
-			}
+		// Settings
+		async fetchSettings(){
+			const {settings} = await fetchSettings('structure_auto_manager')
+			this.settings.autoManager = parseInt(settings.custom_structure_auto_manager)
 		},
-		checkFirstCard(){},
+		async updateSettings(){
+			await updateSettings({
+				type: 'structure_auto_manager',
+				custom_structure_auto_manager: this.settings.autoManager
+			})
+			this.$toast.success('Настройки сохранены')
+		},
+		toggleSettings(){
+			this.isSettings = !this.isSettings
+		},
+		onSaveSettings(){
+			this.isSettings = false
+			this.updateSettings()
+		},
+		// Settings
+
+		// Demo
 		async checkDemo(){
 			const {settings} = await fetchSettings('structure_demo_removed')
 			if(!parseInt(settings.custom_structure_demo_removed)){
@@ -317,6 +374,41 @@ export default {
 			this.$toast.success('Демо данные удалены')
 			this.setDemo(false)
 		},
+		// Demo
+
+		async checkTabEvents(event){
+			if (event.key !== 'event.updatePositions') return
+			const message = JSON.parse(event.newValue);
+			if (!message) return
+
+			if (message.command) {
+				const loader = this.$loading.show()
+				await this.fetchDictionaries(true)
+				loader.hide()
+			}
+		},
+
+		async updateManagers(){
+			if(!this.dictionaries.users) return
+			for(const card of this.cards){
+				if(!card.group_id) continue
+				const manager = this.dictionaries.users.find(user => {
+					if(!user.profile_group) return false
+					const group = user.profile_group.find(group => group.id === card.group_id)
+					if(group) return group.is_head
+					return false
+				})
+				if(manager && manager.id !== card.manager?.user_id){
+					await this.updateCard({
+						...card,
+						manager: {
+							user_id: manager.id,
+							position_id: manager.position_id
+						}
+					})
+				}
+			}
+		}
 	}
 }
 </script>
