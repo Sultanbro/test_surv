@@ -314,7 +314,7 @@ class HeadhunterNegotiationsApi2 extends Command
 
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'Бухгалтер'
-                ])) continue;
+                ])) continue;                                               // создаются все вакансии, кроме-тех, которые содержат эти слова
 
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
                 
@@ -347,10 +347,10 @@ class HeadhunterNegotiationsApi2 extends Command
     {
         foreach ($words as $word) {
             if (Str::contains(Str::lower($name), Str::lower($word))) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public function getVacancyIds(): array
