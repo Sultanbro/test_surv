@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Position;
 
 use App\DTO\Position\AnyPositionDTO;
+use App\DTO\Position\DeletePositionDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -30,15 +31,13 @@ class DeletePositionRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return AnyPositionDTO
-     */
-    public function toDto(): AnyPositionDTO
+
+    public function toDto()
     {
         $validated = $this->validated();
 
         $position = Arr::get($validated, 'position');
 
-        return new AnyPositionDTO($position);
+        return new DeletePositionDTO($position);
     }
 }
