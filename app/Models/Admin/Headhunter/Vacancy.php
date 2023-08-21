@@ -19,5 +19,6 @@ class Vacancy extends Model
         'manager_id',
         'city',
         'status',
+        'from'
     ];
 }

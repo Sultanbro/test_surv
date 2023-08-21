@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
+use Illuminate\Support\Str;
 
 class HeadhunterNegotiationsApi2 extends Command
 {
@@ -311,6 +312,10 @@ class HeadhunterNegotiationsApi2 extends Command
                     // save logs
                 }
 
+                if($this->vacancyNameHasNotWords($hh_vacancy->name, [
+                    'Бухгалтер'
+                ])) continue;                                               // создаются все вакансии, кроме-тех, которые содержат эти слова
+
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
                 
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
@@ -340,18 +345,12 @@ class HeadhunterNegotiationsApi2 extends Command
 
     private function vacancyNameHasNotWords(String $name, array $words) : bool
     {
-        $nameWords = explode(' ', $name);
-
-        $arr = [];
-        foreach($nameWords as $key => $word) {
-            $arr[] = strtolower($word);
+        foreach ($words as $word) {
+            if (Str::contains(Str::lower($name), Str::lower($word))) {
+                return true;
+            }
         }
-
-        $has = false;
-        foreach($arr as $key => $word) {
-            if(in_array($word, $words)) $has = true;
-        }
-        return !$has;
+        return false;
     }
 
     public function getVacancyIds(): array
