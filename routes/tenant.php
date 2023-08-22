@@ -762,7 +762,6 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
 
         Route::get('coordinates',[App\Http\Controllers\Coordinate\getCoordinateController::class,'get'])->name('get-coordinate');
 
-
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
             Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
