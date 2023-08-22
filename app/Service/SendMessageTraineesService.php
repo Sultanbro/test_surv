@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Jobs\SendNotificationJob;
 use App\User;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Support\Facades\Artisan;
 
 class SendMessageTraineesService
 {
@@ -35,7 +36,7 @@ class SendMessageTraineesService
             SendNotificationJob::dispatch($user, $message)->delay(now()->addMinutes($key+0.5));
 
         }
-        exec('php artisan queue:work --stop-when-empty');
+        Artisan::call('queue:work --stop-when-empty', []);
 
         return true;
     }

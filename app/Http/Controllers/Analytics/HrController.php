@@ -543,6 +543,7 @@ class HrController extends Controller
                 if($user_type == 'remote') {
                     $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
+                $userIds[]=$user->id;
 
                 
                 
@@ -570,8 +571,10 @@ class HrController extends Controller
 
                 $user->segment = $lead->segment;
                 $userIds[]=$user->id;
+
                 $user->save();
             }
+
 
             $lead->save();
 
