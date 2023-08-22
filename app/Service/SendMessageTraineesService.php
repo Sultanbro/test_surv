@@ -2,11 +2,9 @@
 
 namespace App\Service;
 
-use App\Classes\Helpers\Phone;
+use App\Jobs\SendNotificationJob;
 use App\User;
 use Illuminate\Http\Client\HttpClientException;
-use Illuminate\Support\Facades\Http;
-use stdClass;
 
 class SendMessageTraineesService
 {
@@ -18,7 +16,7 @@ class SendMessageTraineesService
     public function handle(array $userIds)
     {
         $users = User::query()->where('phone','!=','')->whereIn('id',$userIds)->get();
-        foreach($users as $user)
+        foreach($users as $key=>$user)
         {
             $message ='Уважаемый(ая) '.$user->name .' '.$user->last_name.'
 Добро пожаловать в нашу большую семью Контакт-Центра "Business Partner" 😀
@@ -34,43 +32,11 @@ class SendMessageTraineesService
 
 Спасибочки за внимание 😉';
 
-            $this->sendNotification($user,$message);
-            sleep(120);
+            SendNotificationJob::dispatch($user, $message)->delay(now()->addMinutes($key+0.5));
+
         }
+        exec('php artisan queue:work --stop-when-empty');
 
         return true;
-    }
-
-    /**
-     * @param User|stdClass $user
-     * @param string $message
-     * @return void
-     * @throws HttpClientException
-     */
-    private function sendNotification(
-        User|stdClass $user,
-        string $message
-    ): void
-    {
-        $phone      = Phone::normalize($user->phone);
-        $channelId  = config('wazzup')['channel_id'];
-        $token  = config('wazzup')['token'];
-
-        $response = Http::withHeaders([
-            "Content-Type"  => "application/json",
-            "Authorization" => "Bearer $token"
-        ])
-            ->timeout(10000)
-            ->post("https://api.wazzup24.com/v3/message", [
-                'channelId' => $channelId,
-                'chatId'    => $phone,
-                'text'      => $message,
-                'chatType'  => 'whatsapp',
-            ]);
-
-        if (!$response->successful())
-        {
-            throw new HttpClientException($response->body());
-        }
     }
 }

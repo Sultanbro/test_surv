@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'token' => '4f44c83e4c0e4ddcac37ad9c6a94c654',
-    'channel_id' => 'c1518ae8-8509-4e06-b476-528217d37de4'
+    'token' => '036685d03a7d44c6be6020f8716ed184',
+    'channel_id' => 'db384837-8601-4e41-9cbe-40d8189be337'
 ];
