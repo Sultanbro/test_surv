@@ -3,10 +3,12 @@
 namespace App\Service\Timetrack;
 
 use App\DayType;
+use App\Models\WorkChart\WorkChartModel;
 use App\Salary;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -114,9 +116,33 @@ class TimetrackService
                 ->first();
 
             $zarplata = $s ? $s->amount : 70000;
-            $workingHours = $user->workingTime ? $user->workingTime->time : 9;
-            $ignore = $user->working_day_id == 1 ? [6, 0] : [0];   // Какие дни не учитывать в месяце
-            $workdays = workdays($date->year, $date->month, $ignore);
+            $schedule = $user->schedule(true);
+            $workChart = $user->workChart;
+
+            // Проверяем установлена ли время отдыха
+            if ($workChart && $workChart->rest_time != null){
+                $lunchTime = $workChart->rest_time;
+                $hour = floatval($lunchTime / 60);
+                $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                $workingHours = round($userWorkHours / 3600, 1) - $hour;
+            }else{
+                $lunchTime = 1;
+                $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                $workingHours = round($userWorkHours / 3600, 1) - $lunchTime;
+            }
+
+            // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
+            $workChartType = $workChart->work_charts_type ?? 0;
+            if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
+                $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
+                $workdays = workdays($date->year, $date->month, $ignore);
+            }
+            elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+                $workdays = $user->getCountWorkDaysMonth();
+            }
+            else {
+                throw new Exception(message: 'Проверьте график работы', code: 400);
+            }
 
             $hourlyPay = round($zarplata / $workdays / $workingHours, 2);
 
