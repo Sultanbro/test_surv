@@ -20,6 +20,10 @@ class SendNotificationJob implements ShouldQueue
     protected $user;
     protected $message;
 
+    /**
+     * @param User $user
+     * @param string $message
+     */
     public function __construct(User $user, string $message)
     {
         $this->user = $user;
@@ -40,7 +44,7 @@ class SendNotificationJob implements ShouldQueue
      * @return void
      * @throws HttpClientException
      */
-    public function sendNotification(
+    private function sendNotification(
         User|stdClass $user,
         string $message
     ): void
@@ -53,7 +57,7 @@ class SendNotificationJob implements ShouldQueue
             "Content-Type"  => "application/json",
             "Authorization" => "Bearer $token"
         ])
-            ->timeout(10)
+            ->timeout(100)
             ->post("https://api.wazzup24.com/v3/message", [
                 'channelId' => $channelId,
                 'chatId'    => $phone,
