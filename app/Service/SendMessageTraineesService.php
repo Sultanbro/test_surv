@@ -58,7 +58,7 @@ class SendMessageTraineesService
             "Content-Type"  => "application/json",
             "Authorization" => "Bearer $token"
         ])
-            ->timeout(10)
+            ->timeout(100)
             ->post("https://api.wazzup24.com/v3/message", [
                 'channelId' => $channelId,
                 'chatId'    => $phone,
