@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Classes\Helpers\Phone;
+use App\Jobs\SendNotificationJob;
 use App\User;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Facades\Http;
@@ -33,42 +34,44 @@ class SendMessageTraineesService
 
 Спасибочки за внимание 😉';
 
-            $this->sendNotification($user,$message);
+//            $this->sendNotification($user,$message);
+            SendNotificationJob::dispatch($user, $message)->delay(now()->addMinutes($key+1));
+
         }
 
         return true;
     }
 
-    /**
-     * @param User|stdClass $user
-     * @param string $message
-     * @return void
-     * @throws HttpClientException
-     */
-    public function sendNotification(
-        User|stdClass $user,
-        string $message
-    ): void
-    {
-        $phone      = Phone::normalize($user->phone);
-        $channelId  = config('wazzup')['channel_id'];
-        $token  = config('wazzup')['token'];
-
-        $response = Http::withHeaders([
-            "Content-Type"  => "application/json",
-            "Authorization" => "Bearer $token"
-        ])
-            ->timeout(100)
-            ->post("https://api.wazzup24.com/v3/message", [
-                'channelId' => $channelId,
-                'chatId'    => $phone,
-                'text'      => $message,
-                'chatType'  => 'whatsapp',
-            ]);
-
-        if (!$response->successful())
-        {
-            throw new HttpClientException($response->body());
-        }
-    }
+//    /**
+//     * @param User|stdClass $user
+//     * @param string $message
+//     * @return void
+//     * @throws HttpClientException
+//     */
+//    public function sendNotification(
+//        User|stdClass $user,
+//        string $message
+//    ): void
+//    {
+//        $phone      = Phone::normalize($user->phone);
+//        $channelId  = config('wazzup')['channel_id'];
+//        $token  = config('wazzup')['token'];
+//
+//        $response = Http::withHeaders([
+//            "Content-Type"  => "application/json",
+//            "Authorization" => "Bearer $token"
+//        ])
+//            ->timeout(100)
+//            ->post("https://api.wazzup24.com/v3/message", [
+//                'channelId' => $channelId,
+//                'chatId'    => $phone,
+//                'text'      => $message,
+//                'chatType'  => 'whatsapp',
+//            ]);
+//
+//        if (!$response->successful())
+//        {
+//            throw new HttpClientException($response->body());
+//        }
+//    }
 }

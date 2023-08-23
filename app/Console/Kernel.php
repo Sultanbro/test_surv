@@ -7,6 +7,7 @@ use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
+use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\SetExitTimetracking;
@@ -32,6 +33,7 @@ class Kernel extends ConsoleKernel
         StartDayForItDepartmentCommand::class,
         RecruiterStats::class,
         RestartQueue::class,
+        ListenQueue::class,
         CheckLate::class,
         Pusher::class,
         NotificationTemplatePusher::class,
@@ -87,6 +89,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
 
         $schedule->command('tenants:run restart-queue --tenants=bp')->dailyAt('00:10');
+        $schedule->command('tenants:run listen-queue --tenants=bp')->everyTenMinutes();
         $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
         $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
         $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
