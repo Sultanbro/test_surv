@@ -85,18 +85,38 @@ class KnowBase extends Model implements CourseInterface
         }
     }
 
+    public static function getAllChildrenIds($parentId, &$result = [])
+    {
+        $children = KnowBase::where('parent_id', $parentId)->get();
 
+        foreach ($children as $child) {
+            $result[] = $child->id;
+           self::getAllChildrenIds($child->id, $result);
+        }
+
+        return $result; // Return the accumulated result array
+    }
     public  static function getRandomPage()
     {
         $corp_book_ids = self::getBooks(); // книги в группе
         if(count($corp_book_ids) == 0) return null;
-       
+        $book_ids=[];
+        foreach(array_unique($corp_book_ids) as $book_id)
+        {
+            $book_ids[]=self::getAllChildrenIds($book_id);
+        }
+
+        $combinedArray = [];
+        foreach ($book_ids as $innerArray) {
+            $combinedArray = array_merge($combinedArray, $innerArray);
+        }
+
         $books = KnowBase::query()
-            ->with('questions')
-            ->where('text', '!=' , '')
-            ->whereNotNull('text')
-            ->whereIn('id', $corp_book_ids)
-            ->get();
+                ->with('questions')
+                ->where('text', '!=' , '')
+                ->whereNotNull('text')
+                ->whereIn('id', array_unique($combinedArray))
+                ->get();
 
         return $books->count() > 0 ? $books->random() : null;
     }
