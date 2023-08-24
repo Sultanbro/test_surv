@@ -39,7 +39,7 @@ class RecruiterStats extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->date = Carbon::now()->setTimezone('Asia/Almaty')->format('Y-m-d');
+        $this->date = date('Y-m-d');
         $this->year = date('Y');
         $this->month = date('m');
         $this->day = date('d');
@@ -158,7 +158,7 @@ class RecruiterStats extends Command
             $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE'); // 
             usleep(1000000); // 1 sec
             
-            $carbon_date = Carbon::parse($this->date);
+            $carbon_date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
             $start_date = $carbon_date->startOfDay()->toIso8601String();
             $end_date = $carbon_date->endOfDay()->toIso8601String();
 
@@ -183,7 +183,7 @@ class RecruiterStats extends Command
      */
     private function saveTotalStats()
     {    
-        $date = Carbon::parse($this->date);
+        $date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
         $start_hour = $date->startOfDay()->toIso8601String();
         $end_hour = $date->endOfDay()->toIso8601String();
 
