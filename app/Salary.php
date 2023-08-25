@@ -776,10 +776,10 @@ class Salary extends Model
                     } else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
-                        $earning = $hourly_pay * $worktime * $internshipPayRate;
+                        $earning = $hourly_pay * $working_hours * $internshipPayRate;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
-                        $hours[$i] = round($worktime / 2, 1);
+                        $hours[$i] = round($working_hours / 2, 1);
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;
