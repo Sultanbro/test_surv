@@ -16,6 +16,7 @@ use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
+use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
@@ -668,6 +669,9 @@ class User extends Authenticatable implements Authorizable
 
             (new UserService)->fireUser($user->id, $fireDate);
 
+            //delete from structure cards
+            $user->structureCards()->detach();
+
             $user->deleted_at = Carbon::now();
 
             if($request->day && $request->month) $user->deleted_at = $fireDate;
@@ -768,6 +772,14 @@ class User extends Authenticatable implements Authorizable
     {
         $user = User::whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
         return $user;
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function structureCards():BelongsToMany
+    {
+        return $this->belongsToMany(StructureCard::class, 'structure_card_users');
     }
 
     public static function generateRandomString($length = 8)
