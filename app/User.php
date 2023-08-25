@@ -1149,11 +1149,11 @@ class User extends Authenticatable implements Authorizable
      */
     public function internshipPayRate()
     {
-        $groups = ProfileGroup::userIn($this->id);
+        $groups = GroupUser::getUsers($this->id);
         $rate = 0;
-        foreach ($groups as $key => $group_id) {
-            $group = ProfileGroup::find($group_id);
-            if($group && $group->paid_internship == 1) {
+        foreach ($groups as $key => $group) {
+            $profileGroup = ProfileGroup::find($group->group_id);
+            if($profileGroup && $profileGroup->paid_internship == 1) {
                 $rate = 0.5;
                 break;
             }

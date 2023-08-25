@@ -76,4 +76,9 @@ class GroupUser extends Model
             ->where('group_id', $groupId)
             ->first();
     }
+
+    public static function getUsers($userId){
+        return self::where('user_id', $userId)
+            ->get();
+    }
 }
