@@ -101,17 +101,20 @@ class KnowBase extends Model implements CourseInterface
 
         $corp_book_ids = self::getBooks(); // книги в группе
         if(count($corp_book_ids) == 0) return null;
-        $book_ids=[];
-//        foreach(array_unique($corp_book_ids) as $book_id)
-//        {
-//            $book_ids[]=self::getAllChildrenIds($book_id);
-//        }
+        if(auth()->user()->is_admin !==1)
+           {
+               $book_ids=[];
+               foreach(array_unique($corp_book_ids) as $book_id)
+               {
+                   $book_ids[]=self::getAllChildrenIds($book_id);
+               }
 
-        $combinedArray = [];
-        foreach ($book_ids as $innerArray) {
-            $combinedArray = array_merge($combinedArray, $innerArray);
-        }
-
+               $corp_book_ids = [];
+               foreach ($book_ids as $innerArray)
+               {
+                   $corp_book_ids = array_merge($corp_book_ids, $innerArray);
+               }
+           }
         $books = KnowBase::query()
                 ->with('questions')
                 ->where('text', '!=' , '')
