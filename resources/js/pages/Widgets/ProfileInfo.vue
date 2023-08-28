@@ -63,7 +63,7 @@
 					{{ workChartUser.start_time }} - {{ workChartUser.end_time }}
 				</p>
 				<p class="ProfileInfo-border wsnw">
-					{{ data.workingTime }} часов
+					{{ data.workingTime }}
 				</p>
 			</div>
 		</template>
