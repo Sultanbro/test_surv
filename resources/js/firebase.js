@@ -49,6 +49,7 @@ const AXIOS_SEPARATOR = '#️⃣'
 axios.interceptors.response.use((response) => response, (error) => {
 	const msg = error?.response?.data?.message
 	if(msg === 'Unauthenticated.') return location.reload()
-	weblog('axios: ' + msg, error.response.config.method + AXIOS_SEPARATOR + error.response.config.url + AXIOS_SEPARATOR + error.response.config.data)
+	const data = error.response.config.data instanceof FormData ? JSON.stringify(Object.fromEntries(error.response.config.data)) : JSON.stringify(error.response.config.data)
+	weblog('axios: ' + msg, error.response.config.method + AXIOS_SEPARATOR + error.response.config.url + AXIOS_SEPARATOR + data)
 	throw error;
 });
