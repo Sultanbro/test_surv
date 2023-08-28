@@ -230,19 +230,19 @@ export default {
 				id: null,
 				name: this.card.name,
 			}],
-			director: this.card.manager
-				? this.users.find(user => user.id === this.card.manager.user_id)
-				: this.card.is_vacant
-					? {
-						id: 0,
-						name: 'Вакантная',
-						/* eslint-disable-next-line camelcase */
-						last_name: 'позиция',
-						avatar: '/user.png',
-					}
+			director: this.card.is_vacant
+				? {
+					id: 0,
+					name: 'Вакантная',
+          /* eslint-disable-next-line camelcase */
+					last_name: 'позиция',
+					avatar: '/user.png',
+				}
+				: this.card.manager
+					? this.users.find(user => user.id === this.card.manager.user_id)
 					: '',
 			result: (this.card.description || '').split(DESC_DIVIDER)[0],
-			position: this.card.manager ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
+			position: this.card.manager && this.card.manager.position_id ? this.positions.find(pos => pos.id === this.card.manager.position_id) : '',
 			group: !!this.card.is_group || false,
 			autoUsers: !!this.card.status || false,
 			bgColor: this.card.color || '#d0def5',
@@ -284,7 +284,7 @@ export default {
 					name: 'Вакантная',
 					/* eslint-disable-next-line camelcase */
 					last_name: 'позиция',
-					avatar: '/users.png',
+					avatar: '/user.png',
 				},
 				...this.users,
 			]
@@ -325,10 +325,10 @@ export default {
 		async saveDepartment() {
 			const isGroup = this.departmentName && this.departmentName.id
 			const hasName = this.nameTag.length
-			const hasPosition = this.position && this.position.id
+			// const hasPosition = this.position && this.position.id
 
 			if(!(isGroup || hasName)) return this.$toast.error('Укажите отдел или название департамента')
-			if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
+			// if(!hasPosition) return this.$toast.error('Укажите должность руководителя')
 
 			/* eslint-disable camelcase */
 			const saveData = {
@@ -344,15 +344,16 @@ export default {
 				is_group: this.group,
 				manager: {
 					user_id: null,
-					position_id: this.position.id,
-				}
+					position_id: this.position?.id,
+				},
+				is_vacant: !!(this.director && this.director.id === 0)
 			}
 
 			if(this.director?.id){
 				saveData.users.push({id: this.director.id})
 				saveData.manager.user_id = this.director.id
 			}
-			else{
+			else if (this.director){
 				saveData.is_vacant = true
 			}
 			/* eslint-enable camelcase */

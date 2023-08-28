@@ -49,7 +49,28 @@
 				v-if="manager || isVacant || (card.users && card.users.length)"
 				class="structure-card-body"
 			>
-				<template v-if="manager">
+				<template v-if="isVacant">
+					<img
+						src="/user.png"
+						alt="photo"
+						class="director-photo"
+					>
+					<StructureInfo v-if="description[1]">
+						<template #default>
+							{{ description[1] }}
+						</template>
+					</StructureInfo>
+					<p
+						v-if="position"
+						class="StructureItem-contrast position"
+					>
+						{{ position.name }}
+					</p>
+					<p class="StructureItem-contrast full-name">
+						Вакантная позиция
+					</p>
+				</template>
+				<template v-else-if="manager">
 					<img
 						:src="manager.avatar"
 						alt="photo"
@@ -73,25 +94,6 @@
 					</p>
 					<p class="StructureItem-contrast full-name">
 						{{ manager.name }} {{ manager.last_name }}
-					</p>
-				</template>
-				<template v-else-if="isVacant">
-					<img
-						src="/user.png"
-						alt="photo"
-						class="director-photo"
-					>
-					<StructureInfo v-if="description[1]">
-						{{ description[1] }}
-					</StructureInfo>
-					<p
-						v-if="position"
-						class="StructureItem-contrast position"
-					>
-						{{ position.name }}
-					</p>
-					<p class="StructureItem-contrast full-name">
-						Вакантная позиция
 					</p>
 				</template>
 				<hr
@@ -135,6 +137,11 @@
 				class="fa fa-plus-circle structure-add"
 				:class="{'has-result': description[0]}"
 				@click="addNew"
+			/>
+
+			<PulseCard
+				v-if="isCurrentUserCard"
+				:size="3"
 			/>
 		</div>
 
@@ -180,6 +187,7 @@
 import {mapState, mapActions} from 'pinia'
 import StructureInfo from './StructureInfo'
 import {useStructureStore} from '@/stores/Structure.js'
+import PulseCard from '@ui/PulseCard.vue'
 
 const DESC_DIVIDER = '◕◕'
 
@@ -187,6 +195,7 @@ export default {
 	name: 'StructureItem',
 	components: {
 		StructureInfo,
+		PulseCard,
 	},
 	props: {
 		card: {
@@ -258,13 +267,15 @@ export default {
 			if(!this.card) return null
 			if(!this.card.manager) return null
 			const manager = this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
-			return manager || {
+			if(manager) return manager
+			if(this.card.is_vacant) return {
 				id: 0,
 				name: 'Вакантная',
 				/* eslint-disable-next-line camelcase */
 				last_name: 'позиция',
 				avatar: '/user.png',
 			}
+			return null
 		},
 		position(){
 			if(!this.card) return null
@@ -292,8 +303,19 @@ export default {
 			return (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)
 		},
 		isVacant(){
-			return this.card.is_vacant || (this.manager && this.manager.id === 0)
+			return this.card.is_vacant || (this.manager && this.manager.user_id === 0)
 		},
+		isCurrentUserCard(){
+			/* global Laravel */
+			if(this.manager && this.manager.id === Laravel.userId) return true
+
+			return this.users.some(user => user.id === Laravel.userId)
+		}
+	},
+	watch: {
+		card(){
+			this.drawLines()
+		}
 	},
 	mounted() {
 		this.drawLines();
@@ -345,6 +367,15 @@ export default {
 			opacity: 0;
 			visibility: hidden;
 		}
+	}
+	.PulseCard{
+		border-radius: 12px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		pointer-events: none;
 	}
 }
 </style>

@@ -307,7 +307,10 @@ export default {
 			})
 		},
 		async addPosition() {
-			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position})
+			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {
+				position: this.new_position,
+				is_head: this.isHead,
+			})
 			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
 
 			const data = responseAdd.data.data;
