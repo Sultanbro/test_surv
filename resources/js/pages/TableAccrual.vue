@@ -246,15 +246,30 @@
 					</template>
 
 					<template #cell(fines)="finesData">
-						<div>{{ finesData.value }}</div>
+						<div
+							class="pointer"
+							@click="showFineSidebar(finesData)"
+						>
+							{{ finesData.value }}
+						</div>
 					</template>
 
 					<template #cell(avans)="avansData">
-						<div>{{ avansData.value }}</div>
+						<div
+							class="pointer"
+							@click="showAvansSidebar(avansData)"
+						>
+							{{ avansData.value }}
+						</div>
 					</template>
 
 					<template #cell(taxes)="taxesData">
-						<div>{{ taxesData.value }}</div>
+						<div
+							class="pointer"
+							@click="showTaxesSidebar(taxesData)"
+						>
+							{{ taxesData.value }}
+						</div>
 					</template>
 
 					<template #cell(final)="finalData">
@@ -695,6 +710,92 @@
 			</div>
 		</Sidebar>
 
+		<!-- Авансы -->
+		<Sidebar
+			v-if="isAvansSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isAvansSidebar"
+			@close="isAvansSidebar = false"
+		>
+			<div class="px-2">
+				<div
+					v-for="avansItem in avans_history"
+					:key="avansItem.id"
+					class="AvansHistoryItem"
+				>
+					<div class="AvansHistoryItem-date">
+						<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+					</div>
+					<!-- eslint-disable vue/no-v-html -->
+					<div
+						class="AvansHistoryItem-text"
+						v-html="avansItem.description"
+					/>
+					<hr>
+					<!-- eslint-enable vue/no-v-html -->
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- Штрафы -->
+		<Sidebar
+			v-if="isFineSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isFineSidebar"
+			@close="isFineSidebar = false"
+		>
+			<div class="px-2">
+				<template v-for="fineItem, fineIndex in fine_history">
+					<div
+						v-if="fineItem.pivot.status === 1"
+						:key="fineIndex"
+						class="AvansHistoryItem"
+					>
+						<div class="AvansHistoryItem-date">
+							<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+						</div>
+						<!-- eslint-disable vue/no-v-html -->
+						<div
+							class="AvansHistoryItem-text"
+							v-html="fineItem.name"
+						/>
+						<hr>
+						<!-- eslint-enable vue/no-v-html -->
+					</div>
+				</template>
+			</div>
+		</Sidebar>
+
+		<!-- Налоги -->
+		<Sidebar
+			v-if="isTaxesSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="isTaxesSidebar"
+			@close="isTaxesSidebar = false"
+		>
+			<div class="px-2">
+				<div
+					v-for="taxItem, taxIndex in texes_history"
+					:key="taxIndex"
+					class="AvansHistoryItem"
+				>
+					<div class="AvansHistoryItem-date">
+						<b>{{ $moment(taxItem.pivot.created_at).format('DD.MM.YYYY') }}</b> {{ taxItem.pivot.value }}{{ taxItem.is_percent ? '%' : '' }}
+					</div>
+					<!-- eslint-disable vue/no-v-html -->
+					<div
+						class="AvansHistoryItem-text"
+						v-html="taxItem.name"
+					/>
+					<hr>
+					<!-- eslint-enable vue/no-v-html -->
+				</div>
+			</div>
+		</Sidebar>
+
 		<!-- premium -->
 		<b-modal
 			v-model="editPremiunWindow"
@@ -857,6 +958,15 @@ export default {
 			kpiFields: kpi_fields,
 			kpiItems: [],
 			// stats:
+
+			isAvansSidebar: false,
+			avans_history: [],
+
+			isFineSidebar: false,
+			fine_history: [],
+
+			isTaxesSidebar: false,
+			taxes_history: [],
 		};
 	},
 	computed: {
@@ -1347,6 +1457,60 @@ export default {
 			}).then((response) => {
 				this.bonus_history = response.data;
 			});
+		},
+
+		async showAvansSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.avans_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/advances',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.avans_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Авансы'
+			this.isAvansSidebar = true
+			loader.hide()
+		},
+
+		async showFineSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.fine_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/fines',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.fine_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
+			this.isFineSidebar = true
+			loader.hide()
+		},
+
+		async showTaxesSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.texes_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/taxes',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.texes_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Налоги'
+			this.isTaxesSidebar = true
+			loader.hide()
 		},
 
 		editPremium() {
@@ -1983,5 +2147,13 @@ hr {
 }
 .fz-08 {
 	font-size: 0.8rem;
+}
+
+.AvansHistoryItem{
+	padding: 4px 0;
+	line-height: 1.3;
+	&-text{
+		font-size: 0.95em;
+	}
 }
 </style>
