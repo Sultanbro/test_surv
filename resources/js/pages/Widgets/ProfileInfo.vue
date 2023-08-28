@@ -63,7 +63,7 @@
 					{{ workChartUser.start_time }} - {{ workChartUser.end_time }}
 				</p>
 				<p class="ProfileInfo-border wsnw">
-					{{ hour }} часов
+					{{ data.workingTime }} часов
 				</p>
 			</div>
 		</template>
@@ -89,15 +89,6 @@ export default {
 	computed: {
 		...mapState(useWorkChartStore, ['workChartList']),
 		...mapState(useWorkChartStore, {isWorkChartLoading: 'isLoading'}),
-		hour() {
-			const $start = this.$moment.utc(this.workChartUser.start_time, 'HH: mm')
-			const $end = this.$moment.utc(this.workChartUser.end_time, 'HH: mm')
-
-			if($end > $start) return this.$moment.duration($end.diff($start)).asHours()
-			const before = this.$moment.duration(this.$moment.utc('24:00', 'HH: mm').diff($start)).asHours()
-			const after = this.$moment.duration($end.diff(this.$moment.utc('00:00', 'HH: mm'))).asHours()
-			return before + after
-		},
 		workChartUser() {
 			if(!this.workChartList) return null
 			if(!this.data?.user) return null
