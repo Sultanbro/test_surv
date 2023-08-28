@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
@@ -71,6 +72,17 @@ class CabinetController extends Controller
             }
         }
 
+    }
+
+
+    public function getDifferanceEmail()
+    {
+        $users = User::query()->pluck('email')->toArray();
+        $centralUsers = CentralUser::query()->whereNotIn('email',$users)->pluck('email')->toArray();
+
+        return response()->json([
+            "data"=>$centralUsers
+        ]);
     }
 
     /**
