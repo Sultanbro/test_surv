@@ -203,7 +203,6 @@ export default {
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
-				:class="{'mr-3': !user}"
 			>Оклад</label>
 
 			<div class="col-sm-3">
