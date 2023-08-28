@@ -16,9 +16,9 @@
 				</span>
 				<PopupMenu
 					v-show="isPopupYear"
+					v-click-out="togglePopup"
 					:max-height="'30vh'"
 					position="bottomLeft"
-					v-click-out="togglePopup"
 				>
 					<div
 						v-for="opt, i in yearOptions"
@@ -31,9 +31,9 @@
 				</PopupMenu>
 				<PopupMenu
 					v-show="isPopupMonth"
+					v-click-out="togglePopup"
 					:max-height="'30vh'"
 					position="bottomLeft"
-					v-click-out="togglePopup"
 				>
 					<div
 						v-for="opt, i in monthOptions"
@@ -52,9 +52,9 @@
 				>{{ year }} {{ monthName | capitalize }}</span>
 				<PopupMenu
 					v-show="isPopup"
+					v-click-outside="togglePopup"
 					:max-height="'30vh'"
 					position="bottomLeft"
-					v-click-outside="togglePopup"
 				>
 					<div
 						v-for="opt, i in monthYearOptions"
@@ -113,6 +113,13 @@ export default {
 				// el.removeEventListener('click', el.clickOutsideEventStop)
 			},
 		}
+	},
+	filters: {
+		capitalize: function (value) {
+			if (!value) return ''
+			value = value.toString()
+			return value.charAt(0).toUpperCase() + value.slice(1)
+		},
 	},
 	inject: [
 		'getMonth',
@@ -197,13 +204,6 @@ export default {
 			this.isPopupYear = false
 			this.isPopup = false
 		}
-	},
-	filters: {
-		capitalize: function (value) {
-			if (!value) return ''
-			value = value.toString()
-			return value.charAt(0).toUpperCase() + value.slice(1)
-		},
 	}
 }
 </script>

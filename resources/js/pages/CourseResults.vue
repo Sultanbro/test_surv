@@ -2,14 +2,14 @@
 	<div class="course-results mt-4 CourseResults">
 		<div class="d-flex mb-4 gap-5">
 			<JobtronButton
-				@click="type = BY_USER"
 				:fade="type !== BY_USER"
+				@click="type = BY_USER"
 			>
 				По сотрудникам
 			</JobtronButton>
 			<JobtronButton
-				@click="type = BY_GROUP"
 				:fade="type !== BY_GROUP"
+				@click="type = BY_GROUP"
 			>
 				По отделам
 			</JobtronButton>
@@ -165,8 +165,8 @@
 			class="by_group"
 		>
 			<div
-				class="table-responsive table-container"
 				v-if="groups.items.length > 0"
+				class="table-responsive table-container"
 			>
 				<table class="table table-bordered">
 					<thead>
@@ -201,6 +201,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JobtronButton from '@ui/Button'
 import ProgressBar from '@ui/ProgressBar'
 const BY_USER = 1;
@@ -218,10 +220,12 @@ export default {
 	},
 	props: {
 		monthInfo: {
-			required: false
+			type: Object,
+			default: null
 		},
 		currentGroup: {
-			required: false
+			type: Object,
+			default: null
 		}
 	},
 	data() {

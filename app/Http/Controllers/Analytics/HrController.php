@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Analytics;
 
 use App\Models\CentralUser;
+use App\Service\SendMessageTraineesService;
 use App\Service\Tenancy\CabinetService;
 use Closure;
 use DB;
@@ -425,8 +426,9 @@ class HrController extends Controller
      * Пригласить на стажировку во вкладке Аналитика Групп (Рекрутинг) - Стажеры
      * Создает пользователей и меняет сделку в битриксе
      */
-    public function inviteUsers(Request $request)
+    public function inviteUsers(Request $request,SendMessageTraineesService $service)
     {
+        $userIds = [];
         $leads = Lead::whereIn('id', $request->users)->get();
         
         /////////// check group and zoom link existence
@@ -541,6 +543,7 @@ class HrController extends Controller
                 if($user_type == 'remote') {
                     $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
+                $userIds[]=$user->id;
 
                 
                 
@@ -567,8 +570,11 @@ class HrController extends Controller
                 ]);
 
                 $user->segment = $lead->segment;
+                $userIds[]=$user->id;
+
                 $user->save();
             }
+
 
             $lead->save();
 
@@ -659,9 +665,12 @@ class HrController extends Controller
                 }
             }
         }
-
-
-
+        /*==============================================================*/
+        /*******  Уведомление стажёров на whatsApp */
+        /*==============================================================*/
+        if(tenant('id') === 'bp') {
+            $service->handle($userIds);
+        }
         /*==============================================================*/
         /*******  Уведомление руководителю группы */
         /*==============================================================*/

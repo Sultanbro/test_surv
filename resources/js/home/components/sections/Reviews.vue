@@ -70,6 +70,7 @@
 										class="jReviews-item-thumbnail"
 									/>
 								</Slide>
+								<!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -->
 								<hooper-navigation slot="hooper-addons" />
 							</Hooper>
 						</div>
@@ -114,6 +115,7 @@
 										>
 									</div>
 								</Slide>
+								<!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -->
 								<hooper-navigation slot="hooper-addons" />
 							</Hooper>
 						</div>
@@ -145,19 +147,6 @@ export default {
 		Hooper,
 		Slide,
 		HooperNavigation
-	},
-	computed: {
-		lang() {
-			return this.$root.$data.lang
-		},
-		isDesktop() {
-			return this.$viewportSize.width >= 1260
-		},
-		content() {
-			return this.mode === 'photos'
-				? this.photos
-				: this.videos
-		}
 	},
 	data() {
 		return {
@@ -227,6 +216,19 @@ export default {
 					}
 				}
 			}
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isDesktop() {
+			return this.$viewportSize.width >= 1260
+		},
+		content() {
+			return this.mode === 'photos'
+				? this.photos
+				: this.videos
 		}
 	},
 	mounted() {

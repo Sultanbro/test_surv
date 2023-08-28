@@ -1,6 +1,5 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout'
-import {useAsyncPageData} from '@/composables/asyncPageData'
 import {LMap, LTileLayer, LMarker, LIcon} from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -22,21 +21,23 @@ export default {
 			markers: []
 		}
 	},
-	methods: {},
 	mounted() {
-		useAsyncPageData('/maps').then(data => {
+		this.getCoords()
+	},
+	methods: {
+		async getCoords(){
+			const {data} = await this.axios.get('/api/coordinates')
 			const markers = [];
-			for (const key in data.json) {
+			data.data.forEach(coord => {
+				if(!coord.users.length) return
 				markers.push({
-					count: data.json[key].count,
-					latLng: [data.json[key].geo_lat, data.json[key].geo_lon]
+					count: coord.users.length,
+					latLng: [coord.geo_lat, coord.geo_lon]
 				});
-			}
-			this.markers = markers;
-		}).catch(error => {
-			console.error('useAsyncPageData', error)
-		})
-	}
+			})
+			this.markers = markers
+		}
+	},
 }
 </script>
 

@@ -71,13 +71,13 @@
 								>
 								<i
 									class="fa fa-pencil pointer mr-2"
-									@click="showModal(index)"
 									title="Поставить план"
+									@click="showModal(index)"
 								/>
 								<i
 									class="fa fa-trash pointer"
-									@click="deleteRecord(item.id, index)"
 									title="Удалить строку"
+									@click="deleteRecord(item.id, index)"
 								/>
 							</div>
 						</td>
@@ -107,11 +107,11 @@
 							<td
 								v-else
 								:key="day + 'a'"
-								@click="editMode(item)"
 								class="TableDecomposition-td px-0 day-minute text-center"
 								:class="{
 									'weekend' : is_weekday[day],
 								}"
+								@click="editMode(item)"
 							>
 								<div>{{ item[day].plan }}</div>
 							</td>
@@ -136,13 +136,13 @@
 							<td
 								v-else
 								:key="day + 'c'"
-								@click="editMode(item)"
 								class="TableDecomposition-td px-0 day-minute text-center border-r-2"
 								:class="{
 									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
 									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
 									'weekend' : is_weekday[day],
 								}"
+								@click="editMode(item)"
 							>
 								<div>{{ item[day].fact }}</div>
 							</td>
@@ -210,6 +210,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'TableDecomposition',
 	props: {

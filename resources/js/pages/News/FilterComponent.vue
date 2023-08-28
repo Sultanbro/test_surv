@@ -1,5 +1,8 @@
 <template>
-	<div :class="'news-header__filter ' + (showFilters ? 'news-header__filter--active' : '')">
+	<div
+		class="FilterComponent"
+		:class="'news-header__filter ' + (showFilters ? 'news-header__filter--active' : '')"
+	>
 		<div
 			:class="'news-filter ' + (showFilters ? 'news-filter--active' : '')"
 			@click="toggleShowFilters(true)"
@@ -13,10 +16,10 @@
 				>
 				<input
 					v-show="showFilters"
-					type="text"
 					ref="newsFilterInput"
-					placeholder="Поиск"
 					v-model="query"
+					type="text"
+					placeholder="Поиск"
 					class="news-filter__query"
 				>
 			</div>
@@ -76,10 +79,10 @@
 						v-model="value"
 						range
 						:open.sync="daterangePopupOpen"
-						@clear="clearDatePicer"
 						format="DD.MM.YYYY"
 						range-separator=" – "
 						placeholder="Диапазон"
+						@clear="clearDatePicer"
 					>
 						<template #icon-calendar>
 							<img
@@ -104,9 +107,9 @@
 					<DatePicker
 						v-model="value"
 						:open.sync="datePopupOpen"
-						@clear="clearDatePicer"
 						format="DD.MM.YYYY"
 						placeholder="Точная дата"
+						@clear="clearDatePicer"
 					>
 						<template #icon-calendar>
 							<img
@@ -135,25 +138,26 @@
 						>
 							Автор
 						</option>
+						<!-- eslint-disable -->
 						<option
-							:value="user.id"
 							v-for="user in users"
 							:key="user.id"
+							:value="user.id"
 							v-html="user.name"
 						/>
+						<!-- eslint-enable -->
 					</select>
 				</div>
 
 				<div class="news-filter-modal__favourite mb-4">
-					<span
-						v-html="'Избранное'"
-						@click="searchFavourite = !searchFavourite"
-					/>
+					<span @click="searchFavourite = !searchFavourite">
+						Избранное
+					</span>
 					<label class="news-checkbox">
 						<input
 							type="checkbox"
-							@click="searchFavourite = !searchFavourite"
 							:checked="searchFavourite ? 'checked' : ''"
+							@click="searchFavourite = !searchFavourite"
 						>
 						<span class="news-checkmark" />
 					</label>
@@ -174,6 +178,16 @@
 				</JobtronButton>
 			</div>
 		</div>
+
+		<JobtronButton
+			v-if="!showFilters"
+			title="Пометить все новости прочитанными"
+			small
+			class="FilterComponent-readAll"
+			@click="readAll"
+		>
+			<i class="fa fa-check-double" />
+		</JobtronButton>
 	</div>
 </template>
 
@@ -181,6 +195,7 @@
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 import 'vue2-datepicker/locale/ru';
+
 const {CalendarPanel} = DatePicker;
 
 import {
@@ -188,6 +203,7 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 
 import JobtronButton from '@ui/Button'
 
@@ -239,6 +255,14 @@ export default {
 			return this.dictionaries.users
 		}
 	},
+	watch: {
+		// whenever question changes, this function will run
+		dateType() {
+			this.value = [];
+			this.datePickerValue = new Date(NaN);
+			this.innerValue = [new Date(NaN), new Date(NaN)];
+		},
+	},
 	created() {},
 	mounted() {
 		let dateInputs = document.getElementsByClassName('mx-input');
@@ -253,16 +277,9 @@ export default {
 
 		this.fetchDictionaries();
 	},
-	watch: {
-		// whenever question changes, this function will run
-		dateType() {
-			this.value = [];
-			this.datePickerValue = new Date(NaN);
-			this.innerValue = [new Date(NaN), new Date(NaN)];
-		},
-	},
 	methods: {
 		...mapActions(useCompanyStore, ['fetchDictionaries']),
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
 		clearDate() {
 			this.dateType = '';
 		},
@@ -332,8 +349,13 @@ export default {
 					this.users = res.data.data.users;
 				})
 				.catch(res => {
-					console.log(res)
+					console.error(res)
 				});
+		},
+
+		async readAll(){
+			await this.axios.post('/news/mark-articles-as-viewed')
+			this.getUnviewedNewsCount()
 		},
 
 		async filterNews() {
@@ -411,6 +433,11 @@ export default {
 </script>
 
 <style lang="scss">
+.FilterComponent{
+	&-readAll{
+		font-size: 2rem;
+	}
+}
 .news-filter-modal__footer{
 	&-img{
 		filter: invert(100%) sepia(100%) saturate(38%) hue-rotate(254deg) brightness(110%) contrast(110%);

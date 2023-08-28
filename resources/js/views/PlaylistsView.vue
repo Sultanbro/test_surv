@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable camelcase */
+
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
 const Playlists = () => import(/* webpackChunkName: "PlaylistsPage" */ '@/pages/Playlists')

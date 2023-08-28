@@ -9,9 +9,9 @@
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
-							class="notifications__item"
 							v-for="(item, i) in unread"
 							:key="i"
+							class="notifications__item"
 						>
 							<div class="notifications__item-date">
 								{{ $moment(item.created_at).format(dateFormat) }}
@@ -20,6 +20,7 @@
 								{{ item.title }}
 							</div>
 							<div class="notifications__text">
+								<!-- eslint-disable-next-line -->
 								<template v-html="item.message" />
 								<div
 									v-if="item.title === 'Заявка на сверхурочную работу' && $moment(Date.now()).diff(item.created_at, 'hours') < 2"
@@ -73,9 +74,9 @@
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
-							class="notifications__item"
 							v-for="(item, i) in read"
 							:key="i"
+							class="notifications__item"
 						>
 							<div class="notifications__item-date">
 								{{ $moment(item.created_at).format(dateFormat) }}
@@ -83,10 +84,12 @@
 							<div class="notifications__title">
 								{{ item.title }}
 							</div>
+							<!-- eslint-disable -->
 							<div
 								class="notifications__text"
 								v-html="item.message"
 							/>
+							<!-- eslint-enable -->
 							<div class="notifications__item-date absolute">
 								{{ $moment(item.read_at).format(dateFormat) }}
 							</div>

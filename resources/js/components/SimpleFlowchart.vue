@@ -33,13 +33,19 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../position';
 
 export default {
 	name: 'VueFlowchart',
+	components: {
+		FlowchartLink,
+		FlowchartNode,
+	},
 	props: {
 		scene: {
 			type: Object,
@@ -105,10 +111,6 @@ export default {
 			},
 		};
 	},
-	components: {
-		FlowchartLink,
-		FlowchartNode,
-	},
 	computed: {
 		nodeOptions() {
 			return {
@@ -125,7 +127,6 @@ export default {
 				const fromNode = this.findNodeWithID(link.from)
 				const toNode = this.findNodeWithID(link.to)
 				let x, y, cy, cx, ex, ey;
-				console.log('link=',link)
 				if (fromNode.type == 'yesorno' && link.action =='yes') {
 					x = this.scene.centerX + fromNode.x-38;
 					y = this.scene.centerY + fromNode.y;
@@ -183,7 +184,6 @@ export default {
 	mounted() {
 		this.rootDivOffset.top = this.$el ? this.$el.offsetTop : 0;
 		this.rootDivOffset.left = this.$el ? this.$el.offsetLeft : 0;
-		// console.log('22222=', this.rootDivOffset);
 	},
 	methods: {
 		addNodes () {
@@ -312,7 +312,6 @@ export default {
 					this.draggingLink = null;
 				}
 				if (typeof target.className === 'string' && target.className.indexOf('node-delete') > -1) {
-					// console.log('delete2', this.action.dragging);
 					this.nodeDelete(this.action.dragging);
 				}
 			}
@@ -322,7 +321,6 @@ export default {
 		},
 		handleDown(e) {
 			const target = e.target || e.srcElement;
-			// console.log('for scroll', target, e.keyCode, e.which)
 			if ((target === this.$el || target.matches('svg, svg *')) && e.which === 1) {
 				this.action.scrolling = true;
 				[this.mouse.lastX, this.mouse.lastY] = getMousePosition(this.$el, e);

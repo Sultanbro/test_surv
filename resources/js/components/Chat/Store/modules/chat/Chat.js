@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import API from '../../API.vue';
 import Vue from 'vue'
 
@@ -20,7 +22,7 @@ export default {
 		},
 		updateChatLastMessage(state, {chat, message, isSender, userId}) {
 			chat.last_message = message;
-			if (!isSender && !~message.readers.findIndex(reader => reader.id === userId)) {
+			if (!isSender && !~message.readers?.findIndex(reader => reader.id === userId)) {
 				chat.unread_messages_count++;
 			}
 		},
@@ -198,13 +200,13 @@ export default {
 			})
 		},
 		async pinChat({commit}, chat) {
-			await API.pinChat(chat.id);
 			chat.pinned = true;
+			await API.pinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async unpinChat({commit}, chat) {
-			await API.unpinChat(chat.id);
 			chat.pinned = false;
+			await API.unpinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async muteChat({commit}, chatId) {

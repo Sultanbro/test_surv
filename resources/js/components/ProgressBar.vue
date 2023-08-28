@@ -12,8 +12,8 @@
 			@after-appear="enter"
 		>
 			<div
-				class="tracker-bar"
 				id="mytrans"
+				class="tracker-bar"
 			/>
 		</transition>
 	</div>
@@ -23,8 +23,14 @@
 export default {
 	name: 'ProgressBar',
 	props: {
-		percentage: Number,
-		label: String,
+		percentage: {
+			type: Number,
+			default: 0
+		},
+		label: {
+			type: String,
+			default: ''
+		},
 	},
 	watch: {
 		// whenever question changes, this function will run

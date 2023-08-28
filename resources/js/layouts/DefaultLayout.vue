@@ -3,12 +3,12 @@ import Sidebars from '@/pages/Layouts/Sidebars'
 import ChatApp from '@/components/Chat/ChatApp'
 
 export default {
-	props: {
-		hasBg: Boolean
-	},
 	components: {
 		Sidebars,
 		ChatApp,
+	},
+	props: {
+		hasBg: Boolean
 	},
 	data(){
 		return {

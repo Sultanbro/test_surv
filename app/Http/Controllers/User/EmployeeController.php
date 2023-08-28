@@ -57,7 +57,7 @@ class EmployeeController extends Controller
     {
 
         $groups = ProfileGroup::where('active', 1)->get();
-  
+
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
@@ -68,7 +68,7 @@ class EmployeeController extends Controller
                 $users = \DB::table('users')
                 ->where('position_id',$request['job'])
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
-            }            
+            }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -79,8 +79,8 @@ class EmployeeController extends Controller
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
-            
-            
+
+
         } elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
 
             $users = \DB::table('users')
@@ -94,12 +94,12 @@ class EmployeeController extends Controller
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
-            } 
-            
+            }
+
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
-            
+
         } elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = \DB::table('users')
@@ -113,10 +113,10 @@ class EmployeeController extends Controller
             $downloads = Downloads::whereIn('user_id', array_unique($users_1))
                 ->get(['user_id'])
                 ->pluck('user_id')
-                ->toArray(); 
-            
+                ->toArray();
+
             $users_1 = array_diff($users_1 ,array_unique($downloads));
-            
+
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -130,7 +130,7 @@ class EmployeeController extends Controller
                 })
                 ->orWhere('is_trainee', 0)
                 ->whereIn('users.id', array_values($users_1));
-            
+
 
         } elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
 
@@ -148,13 +148,13 @@ class EmployeeController extends Controller
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
             }
-            
+
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-            
-            
+
+
         } else {
 
             $users = \DB::table('users')
@@ -169,7 +169,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
             }
-            
+
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['segment']) $users = $users->where('segment', $request['segment']);
@@ -180,14 +180,14 @@ class EmployeeController extends Controller
 
 
         $users = $users->get([
-            'users.id', 
-            'users.email',  
+            'users.id',
+            'users.email',
             'users.user_type',
             'users.segment as segment',
             'users.last_name',
-            'users.name', 
-            'users.full_time', 
-            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"), 
+            'users.name',
+            'users.full_time',
+            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
             'users.created_at',
             'users.deleted_at',
@@ -210,14 +210,14 @@ class EmployeeController extends Controller
 
             $userGroups = collect($this->getPersonGroup($_user->id))->pluck('id')->toArray();
             $user->groups = $_user ?  $userGroups : [];
-            
+
             if(is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
                 $user->deleted_at = '';
             } else {
                 $user->deleted_at = Carbon::parse($user->deleted_at)->addHours(6)->format('Y-m-d H:i:s');
                 if($user->deleted_at == '30.11.-0001 00:00:00') {
                     $user->deleted_at = '';
-                } 
+                }
             }
 
 
@@ -232,14 +232,14 @@ class EmployeeController extends Controller
 //                $users->forget($key);
 //                continue;
 //            }
-            
+
 
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
-    
+
             if($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
-            }   
-            
+            }
+
 
             if (isset($request['filter']) && $request['filter'] == 'deactivated') {
                 $deleted = GroupUser::where('status', 'fired')
@@ -248,7 +248,7 @@ class EmployeeController extends Controller
                     ->pluck('group_id')
                     ->toArray();
 
-                $user->groups = $deleted; 
+                $user->groups = $deleted;
             } elseif($user->deleted_at) {
                 $deleted = GroupUser::where('status', 'fired')
                     ->where('user_id', $user->id)
@@ -264,18 +264,18 @@ class EmployeeController extends Controller
 
 
         ////////////////////////
-       
+
         $groups = $groups->pluck('name', 'id')->toArray();
 
         if($request->excel) {
             $export = new UserExport($users, $groups);
             $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
             return Excel::download($export, $title);
-        }   
+        }
 
-            
+
         $users = $users->values();
-        
+
 
 
         ////////////////////
@@ -291,12 +291,12 @@ class EmployeeController extends Controller
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
         ];
     }
-    
+
     /**
      * createPerson
      */
     public function createPerson()
-    {   
+    {
         // $user = Auth::user();
         // $rectuiting = ProfileGroup::find(48);
         // if($rectuiting) $users = json_decode($rectuiting->users);
@@ -306,13 +306,13 @@ class EmployeeController extends Controller
 
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
-        
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
 
         return view('admin.users.create', $this->preparePersonInputs());
-        
+
     }
 
     /**
@@ -351,34 +351,28 @@ class EmployeeController extends Controller
             ->toArray();
 
         if (!empty($knowbase_models)){
-
             foreach ($knowbase_models as $k => $knowbase_model){
                 $knowbase_query[] = KnowBase::where('id',$knowbase_model->book_id)->get()->toArray();
             }
 
             foreach ($knowbase_query as $corpbook){
                 $corpbooks[] = array_shift($corpbook);
-
             }
-
         }
-
-
-
 
         $programs = \App\Models\Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
         $timezones = Setting::TIMEZONES;
-        
+
         $arr = compact('positions', 'groups', 'timezones', 'programs', 'workingDays', 'workingTimes', 'corpbooks');
 
         if($id != 0) {
             $user = User::withTrashed()
                 ->where('id', $id)
-                ->with(['zarplata', 'downloads', 'user_description'])
+                ->with(['zarplata', 'downloads', 'user_description', 'coordinate'])
                 ->first();
-            
+
             if($user->weekdays == '' || $user->weekdays == null) {
                 $user->weekdays = '0000000';
                 $user->save();
@@ -391,7 +385,7 @@ class EmployeeController extends Controller
 
             $user->delete_time  = null;
             $head_in_groups = [];
-       
+
             if($user) {
                 if($user->trainee) {
                     $user->applied_at = $user->applied;
@@ -452,7 +446,7 @@ class EmployeeController extends Controller
 
 
                 $groups = $user->inGroups(true);
-            
+
                 foreach($groups as $gr) {
                     array_push($head_in_groups, $gr);
                 }
@@ -460,7 +454,7 @@ class EmployeeController extends Controller
                 $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($delete_plan) $user->delete_time = $delete_plan->delete_time;
 
-                
+
                 if($user->user_description){
                     $user->fire_cause = $user->user_description->fire_cause;
                     $user->recruiter_comment = $user->user_description->recruiter_comment;
@@ -469,10 +463,10 @@ class EmployeeController extends Controller
 
                 $lead = Lead::where('user_id', $user->id)->first();
                 $user->lead = $lead ? $lead : null;
-                
+
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
-                
+
                 if($segment != '') {
                     $user->segment = $segment;
                 }
@@ -486,15 +480,15 @@ class EmployeeController extends Controller
                 }
 
                 $user->in_groups = $this->getPersonGroup($user->id);
-                
+
                 if($user->user_description) {
                     $user->in_books  = '[]';
                 }
-                
+
                 $user->head_in_groups = $head_in_groups;
             }
-            
-            
+
+
             $user->adaptation_talks = AdaptationTalk::getTalks($user->id);
 
             $arr['user'] = $user;
@@ -530,15 +524,15 @@ class EmployeeController extends Controller
         $downloads = Downloads::where('user_id', $id)->first();
 
         $zarplata = !is_null($user->zarplata) && !is_null($user->zarplata->zarplata) ? $user->zarplata->zarplata : 0;
-        
+
 
         /*==============================================================*/
         /********** Проверка новой почты существует ли  */
-        /*==============================================================*/  
+        /*==============================================================*/
         $oldUser = User::withTrashed()->where('email', $request['email'])->first();
-      
+
         if ($oldUser && $request['email'] != $user->email) { // Существует
-            
+
             if ($oldUser->deleted_at != null) {  // Ранее уволен
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
@@ -546,17 +540,17 @@ class EmployeeController extends Controller
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->last_name.'</td></tr>';
                 $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->email .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deleted_at)->setTimezone('Asia/Dacca').'</td></tr>';
-                $text .= '</table>'; 
+                $text .= '</table>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
-            
-            
+
+
                 $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
-          
 
-            
-            
+
+
+
         }
 
         /*==============================================================*/
@@ -618,7 +612,7 @@ class EmployeeController extends Controller
 
         if($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
-        } 
+        }
 
         $user->save();
 
@@ -627,7 +621,7 @@ class EmployeeController extends Controller
          * Adaptation talks
          */
         foreach ($request->adaptation_talks as $key => $talk) {
-            
+
             $at = AdaptationTalk::where('user_id', $user->id)->where('day', $talk['day'])->first();
             if($at) {
                 $at->inter_id = $talk['inter_id'];
@@ -671,22 +665,22 @@ class EmployeeController extends Controller
                 $ud->headphones_amount = 0;
                 $ud->headphones_date = null;
             }
-            
+
             $ud->save();
         }
 
         if(in_array($user->segment, [7,8,9,10,11,12])) {
 
             $ud = UserDescription::where('is_trainee', 0)->where('user_id', $user->id)->first();
-            
+
             if($ud) {
                 $comment = '';
                 if($request->recruiter_comment != '') {
                     $ud->recruiter_comment = $request->recruiter_comment;
                     $ud->save();
                     $comment = $request->recruiter_comment;
-                }   
-                
+                }
+
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
@@ -697,7 +691,7 @@ class EmployeeController extends Controller
 
                 $timestamp = now();
                 $notification_receivers = NotificationTemplate::getReceivers(10);
-        
+
                 foreach($notification_receivers as $user_id) {
                     UserNotification::create([
                         'user_id' => $user_id,
@@ -710,7 +704,7 @@ class EmployeeController extends Controller
                 }
             }
 
-            
+
         }
 
         /*==============================================================*/
@@ -720,13 +714,13 @@ class EmployeeController extends Controller
 
             $last_groups = $user->headInGroups();
             foreach($last_groups as $gr) {
-            
+
                 $gr_users = json_decode($gr->head_id);
                 $gr_users = array_diff($gr_users, [$user->id]);
                 $gr_users = array_values($gr_users);
                 $gr->head_id = json_encode($gr_users);
                 $gr->save();
-                   
+
             }
         } else {
             $user->groups()->where('status', 'active')->update([
@@ -735,8 +729,8 @@ class EmployeeController extends Controller
         }
         /*==============================================================*/
         /********** Добавление дополнительных телефонов  */
-        /*==============================================================*/ 
-        
+        /*==============================================================*/
+
         if ($request->has('contacts') && isset($request->contacts['phone'])) {
             $user->profileContacts()->delete(); // Удаляет что было
             foreach ($request->contacts['phone'] as $phone) {
@@ -753,8 +747,8 @@ class EmployeeController extends Controller
 
         /*==============================================================*/
         /********** Добавление дополнительных карт  */
-        /*==============================================================*/ 
-        
+        /*==============================================================*/
+
         if ($request->has('cards') && count($request->cards) > 0) {
             $cards = Card::where('user_id', $user->id)->delete();
             foreach ($request->cards as $card) {
@@ -765,11 +759,11 @@ class EmployeeController extends Controller
                 'cardholder'=> $card['cardholder'],
                 'phone' => $card['phone'],
                 'number'=> $card['number'],
-               ]); 
+               ]);
             }
         }
 
-        
+
         /*==============================================================*/
         /********** Документы пользователя  */
         /*==============================================================*/
@@ -821,7 +815,7 @@ class EmployeeController extends Controller
             }
 
         }
-        
+
         if ($downloads) {
             if (isset($ud_lich)) $downloads->ud_lich = $ud_lich;
             if (isset($dog_okaz_usl)) $downloads->dog_okaz_usl = $dog_okaz_usl;
@@ -874,7 +868,7 @@ class EmployeeController extends Controller
             ]);
         }
 
-        // Test 
+        // Test
         $_groups = [];
 
         $groups = ProfileGroup::where('active', 1)->get();
@@ -882,21 +876,21 @@ class EmployeeController extends Controller
         foreach($groups as $group) {
             if($group->users == null) continue;
             $group_users = json_decode($group->users);
-            
+
             if(in_array($user->id, $group_users)) {
                 $group->show = false;
-                array_push($_groups, $group->id);  
+                array_push($_groups, $group->id);
             }
         }
 
-        if($request->increment_provided == 'true' && count($_groups) > 0)  { 
+        if($request->increment_provided == 'true' && count($_groups) > 0)  {
 
             $group = ProfileGroup::find($_groups[0]);
             if($group) {
                 $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в отдел */
-                $group->save(); 
+                $group->save();
             }
-            
+
         }
 
         (new CabinetService)->remove(tenant('id'), $user);
@@ -1127,25 +1121,25 @@ class EmployeeController extends Controller
         if(!Auth::user()) return redirect('/');
 
         $user = User::withTrashed()->where('id', $request->id)->first();
-        
+
         if ($user) {
             $user->deleted_at = null;
             $user->restore();
 
             $bitrix = new Bitrix();
-           
+
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
-            
+
 
             (new CabinetService)->add(tenant('id'), $user, false);
-        } 
+        }
 
         View::share('title', 'Сотрудник восстановлен');
         View::share('menu', 'timetrackinguser');
 
-      
+
         return view('admin.users.create', $this->preparePersonInputs($request->id));
     }
 

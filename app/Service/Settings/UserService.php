@@ -108,7 +108,7 @@ class UserService
 
         if ($user)
         {
-            new CustomException('Already exist user', ErrorCode::BAD_REQUEST, []);
+            new CustomException('Пользователь с указанным email или данными уже существует в системе', ErrorCode::BAD_REQUEST, []);
         }
 
         $tariffPlan = TariffPayment::getValidTariffPayments();

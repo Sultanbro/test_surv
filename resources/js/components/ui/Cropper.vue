@@ -64,7 +64,6 @@ export default {
 	methods: {
 		async bindImage(){
 			if(!this.image || !this.croppie) return
-			console.log('bindImage')
 
 			try {
 				const result = await new Promise(resolve => {
@@ -81,8 +80,6 @@ export default {
 			catch (error) {
 				alert(error)
 			}
-
-			console.log('weasfa')
 		},
 		async onSave(){
 			const blob = await this.croppie.result({

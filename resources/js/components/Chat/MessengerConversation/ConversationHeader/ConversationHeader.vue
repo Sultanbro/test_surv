@@ -66,8 +66,8 @@
 						</div>
 						<div
 							v-else
-							class="messenger__chat-name_overlay"
 							ref="messengerChatNameUsers"
+							class="messenger__chat-name_overlay"
 						>
 							<div
 								v-for="member in firstTenUsers"

@@ -11,14 +11,14 @@ export default {
 	},
 	data(){
 		return {
-			auth_user_id: 0,
-			can_edit: false,
+			authUserId: 0,
+			canEdit: false,
 		}
 	},
 	mounted(){
 		useAsyncPageData('/kb').then(data => {
-			this.auth_user_id = +data.auth_user_id
-			this.can_edit = !!data.can_edit
+			this.authUserId = +data.auth_user_id
+			this.canEdit = !!data.can_edit
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
@@ -29,12 +29,12 @@ export default {
 <template>
 	<DefaultLayout class="no-padding">
 		<div
+			v-show="authUserId"
 			class="old__content"
-			v-show="auth_user_id"
 		>
 			<KBPage
-				:auth_user_id="auth_user_id"
-				:can_edit="can_edit"
+				:auth_user_id="authUserId"
+				:can_edit="canEdit"
 			/>
 		</div>
 	</DefaultLayout>

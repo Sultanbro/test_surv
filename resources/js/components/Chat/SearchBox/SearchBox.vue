@@ -9,10 +9,10 @@
 			</div>
 			<input
 				id="messenger_search_input"
+				v-model="searchString"
 				class="messenger_search_input"
 				type="text"
 				placeholder="Поиск"
-				v-model="searchString"
 				@keyup.enter="search"
 			>
 			<div

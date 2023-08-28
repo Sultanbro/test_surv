@@ -29,8 +29,8 @@ class RecruiterStatsJob implements ShouldQueue
     {
         $this->count_last_hour = $count_last_hour;
         $this->user = $user;
-        $this->hour = Carbon::now()->setTimezone('Asia/Almaty')->format('H');
-        $this->date = Carbon::now()->setTimezone('Asia/Almaty')->format('Y-m-d');
+        $this->hour = Carbon::now()->setTimezone('Asia/Atyrau')->format('H');
+        $this->date = date('Y-m-d');
     }
 
     /**

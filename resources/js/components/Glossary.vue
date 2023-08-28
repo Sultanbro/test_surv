@@ -3,13 +3,13 @@
 		<!-- buttons -->
 		<div class="buttons d-flex mb-3">
 			<input
+				v-model="searchText"
 				type="text"
 				class="search form-control form-control-sm"
-				v-model="search_text"
 			>
 			<button
-				class="btn"
 				v-if="mode == 'edit'"
+				class="btn"
 				@click="add"
 			>
 				Добавить
@@ -18,14 +18,14 @@
 
 		<!-- words -->
 		<div
-			class="block"
 			v-for="(word, i) in filteredWords"
 			:key="i"
+			class="block"
 		>
 			<div class="word">
 				<input
-					type="text"
 					v-model="word.word"
+					type="text"
 					:disabled="mode == 'read'"
 					class="form-control"
 				>
@@ -38,8 +38,8 @@
 				/>
 			</div>
 			<div
-				class="action d-flex"
 				v-if="mode == 'edit'"
+				class="action d-flex"
 			>
 				<button
 					class="btn btn-sm"
@@ -61,22 +61,27 @@
 <script>
 export default {
 	name: 'GlossaryComponent',
-	props: ['mode'],
+	props: {
+		mode: {
+			type: String,
+			default: 'read'
+		}
+	},
 	data(){
 		return {
 			words: [],
-			search_text: ''
+			searchText: ''
+		}
+	},
+
+	computed: {
+		filteredWords() {
+			return this.words.filter(el => el.word.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1);
 		}
 	},
 
 	created(){
 		this.fetch()
-	},
-
-	computed: {
-		filteredWords() {
-			return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
-		}
 	},
 
 	methods: {
@@ -100,7 +105,7 @@ export default {
 		},
 
 		add() {
-			this.search_text = '';
+			this.searchText = '';
 			this.words.unshift({
 				id: 0,
 				word: '',

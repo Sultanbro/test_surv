@@ -7,14 +7,14 @@
 			<div class="row mb-3">
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="currentGroup"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="group in groups"
-							:value="group.id"
 							:key="group.id"
+							:value="group.id"
 						>
 							{{ group.name }}
 						</option>
@@ -22,14 +22,14 @@
 				</div>
 				<div class="col-3">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentMonth"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -37,14 +37,14 @@
 				</div>
 				<div class="col-2">
 					<select
-						class="form-control"
 						v-model="dateInfo.currentYear"
+						class="form-control"
 						@change="fetchData()"
 					>
 						<option
 							v-for="year in years"
-							:value="year"
 							:key="year"
+							:value="year"
 						>
 							{{ year }}
 						</option>
@@ -61,20 +61,43 @@
 				<div class="col-2" />
 			</div>
 
+			<div class="row mb-3">
+				<div class="col-12 d-flex gap-4">
+					<b-form-radio
+						v-model="userType"
+						value=""
+					>
+						Действующие
+					</b-form-radio>
+					<b-form-radio
+						v-model="userType"
+						value="deactivated"
+					>
+						Уволенные
+					</b-form-radio>
+					<b-form-radio
+						v-model="userType"
+						value="trainees"
+					>
+						Стажеры
+					</b-form-radio>
+				</div>
+			</div>
+
 			<div v-if="hasPremission">
 				<b-modal
 					v-model="modalVisible"
 					ok-text="Да"
 					cancel-text="Нет"
 					title="Вы уверены?"
-					@ok="setTimeManually"
 					size="md"
+					@ok="setTimeManually"
 				>
 					<template v-for="error in errors">
 						<b-alert
+							:key="error"
 							show
 							variant="danger"
-							:key="error"
 						>
 							{{ error }}
 						</b-alert>
@@ -87,10 +110,10 @@
 				</b-modal>
 				<div class="table-container table-coming">
 					<b-table
+						id="comingTable"
 						responsive
 						:sticky-header="true"
 						class="text-nowrap text-right table-custom-table-coming"
-						id="comingTable"
 						:small="true"
 						:bordered="true"
 						:items="items"
@@ -98,31 +121,31 @@
 						show-empty
 						empty-text="Нет данных"
 					>
-						<template #cell(name)="data">
+						<template #cell(name)="nameData">
 							<div>
-								{{ data.value }}
+								{{ nameData.value }}
 								<b-badge
-									v-if="data.field.key == 'name' && data.value"
+									v-if="nameData.field.key == 'name' && nameData.value"
 									pill
 									variant="success"
 								>
-									{{ data.item.user_type }}
+									{{ nameData.item.user_type }}
 								</b-badge>
 							</div>
 						</template>
 
-						<template #cell()="data">
+						<template #cell()="cellData">
 							<div
-								@click="setCurrentEditingCell(data)"
-								:class="{ fine: data.item.fines[data.field.key.toString()].length > 0}"
+								:class="{fine: cellData.item.fines[cellData.field.key.toString()].length > 0}"
+								@click="setCurrentEditingCell(cellData)"
 							>
 								<input
-									@mouseover="$event.preventDefault()"
 									class="cell-input"
 									type="time"
-									:value="data.value"
+									:value="cellData.value"
 									:readonly="true"
 									ondblclick="this.readOnly='';"
+									@mouseover="$event.preventDefault()"
 									@change="changeTimeInCell"
 									@keyup.enter="openModal"
 								>
@@ -139,6 +162,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
@@ -146,8 +171,14 @@ import { useYearOptions } from '../composables/yearOptions'
 export default {
 	name: 'TableComing',
 	props: {
-		groups: Array,
-		activeuserid: String,
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: String,
+			default: ''
+		},
 	},
 	data() {
 		return {
@@ -176,6 +207,7 @@ export default {
 			currentEditingCell: null,
 			scrollLeft: 0,
 			modalVisible: false,
+			userType: '',
 		};
 	},
 	computed: {
@@ -198,6 +230,9 @@ export default {
 		},
 		groups(){
 			this.init()
+		},
+		userType(){
+			this.fetchData()
 		}
 	},
 	created() {
@@ -250,8 +285,7 @@ export default {
 				[6]
 			); //Колличество выходных
 			this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-			this.dateInfo.workDays =
-                this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
 		},
 		//Установка заголовока таблицы
 		setFields() {
@@ -262,7 +296,7 @@ export default {
 				label: 'Имя',
 				sortable: true,
 				class: 'text-left px-3 t-name',
-			}, ];
+			},];
 
 			let days = this.dateInfo.daysInMonth;
 			for (let i = 1; i <= days; i++) {
@@ -287,6 +321,7 @@ export default {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					year: this.dateInfo.currentYear,
 					group_id: this.currentGroup,
+					filter: this.userType,
 				})
 				.then((response) => {
 					if (response.data.error && response.data.error == 'access') {
@@ -348,46 +383,42 @@ export default {
 		//Добавление загруженных данных в таблицу
 		loadItems() {
 			this.items = this.data;
-
-			// if (item.selectedFines[key]) {
-			//     fine = item.selectedFines[key]
-			// }
 		},
 	},
 };
 </script>
 
 <style lang="scss">
-	.table-custom-table-coming {
-		th, td {
-			padding: 0 15px !important;
-			height: 40px;
-			vertical-align: middle !important;
-		}
+.table-custom-table-coming {
+	th, td {
+		padding: 0 15px !important;
+		height: 40px;
+		vertical-align: middle !important;
+	}
 
-		thead {
-			th, td {
-				&:not(.b-table-sticky-column) {
-					text-align: center;
-				}
+	thead {
+		th, td {
+			&:not(.b-table-sticky-column) {
+				text-align: center;
 			}
 		}
 	}
+}
 
-	.table-coming {
-		.fine {
-			background-color: #f58c94;
-			width: calc(100% + 30px);
-			margin: 0 -15px;
-			height: 40px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
+.table-coming {
+	.fine {
+		background-color: #f58c94;
+		width: calc(100% + 30px);
+		margin: 0 -15px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
+}
 
-	input[type="time"]::-webkit-calendar-picker-indicator {
-		background: none;
-		display: none;
-	}
+input[type="time"]::-webkit-calendar-picker-indicator {
+	background: none;
+	display: none;
+}
 </style>

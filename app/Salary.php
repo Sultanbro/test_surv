@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticColumn;
+use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\User;
@@ -527,6 +529,26 @@ class Salary extends Model
         $date = Carbon::parse($date)->day(1);
 
         $group = ProfileGroup::find($group_id);
+        $groupTimeAddress = false;
+        if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
+
+        $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
+
+        $statValues = [];
+        if ($analyticStat) {
+            $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
+
+            if ($checkValue->count() > 0) {
+                $columnValue = AnalyticColumn::getValuesBetweenDates($analyticStat->group_id, $date->startOfMonth()->format('Y-m-d'), $date->endOfMonth()->format('Y-m-d'));
+            }
+
+            foreach ($checkValue as $value) {
+                foreach ($columnValue as $column) {
+                    if ($column['id'] == $value->column_id) $nameColumn = $column['name'];
+                }
+                $statValues[$nameColumn] = $value->value;
+            }
+        }
 
         $users = User::withTrashed();
 
@@ -670,10 +692,16 @@ class Salary extends Model
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $statTotalHour = null;
-                if (isset($group->time_address) && $group->time_address != 0) {
+                if ($groupTimeAddress) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
-                    if ($userStat) $statTotalHour = floatval($userStat->value);
+                    if ($userStat){
+                        if (array_key_exists($i, $statValues)) {
+                            $statTotalHour = floatval($userStat->value) + floatval($statValues[$i])/60;
+                        } else {
+                            $statTotalHour = floatval($userStat->value);
+                        }
+                    }
                 }
 
                 $d = '' . $i;
@@ -748,10 +776,10 @@ class Salary extends Model
                     } else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
-                        $earning = $hourly_pay * $worktime * $internshipPayRate;
+                        $earning = $hourly_pay * $working_hours * $internshipPayRate;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
-                        $hours[$i] = round($worktime / 2, 1);
+                        $hours[$i] = round($working_hours / 2, 1);
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;

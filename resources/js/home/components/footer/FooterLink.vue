@@ -10,9 +10,18 @@
 <script>
 export default {
 	props: {
-		href: String,
-		lang: String,
-		text: String
+		href: {
+			type: String,
+			default: ''
+		},
+		lang: {
+			type: String,
+			default: ''
+		},
+		text: {
+			type: String,
+			default: ''
+		}
 	}
 }
 </script>

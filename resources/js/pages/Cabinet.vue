@@ -1,6 +1,6 @@
 <template>
 	<div
-		v-if="auth_role"
+		v-if="authRole"
 		class="d-flex"
 	>
 		<!-- left sidebar -->
@@ -13,9 +13,9 @@
 					<li class="position-relative lp-item">
 						<a
 							class="lp-link"
-							@click="page = 'profile'"
 							:class="{ active: page == 'profile' }"
 							tabindex="0"
+							@click="page = 'profile'"
 						>
 							<i class="fa fa-user" />
 							Настройка собственного профиля
@@ -27,9 +27,9 @@
 					>
 						<a
 							class="lp-link"
-							@click="page = 'admin'"
 							:class="{ active: page == 'admin' }"
 							tabindex="0"
+							@click="page = 'admin'"
 						>
 							<i class="fa fa-key" />
 							Административные настройки
@@ -58,23 +58,23 @@
 					<div class="form-group d-flex aic">
 						<label class="mr-3 mb-0 w-200px">Субдомен</label>
 						<input
-							class="form-control mt-1 input-surv"
 							id="view_own_orders"
-							type="text"
 							v-model="domain"
+							class="form-control mt-1 input-surv"
+							type="text"
 							:disabled="true"
 						>
 					</div>
 
 					<!-- Статус: скрыто. Компонент: pages/Cabinet. Дата скрытия: 21.02.2023 15:30 -->
 					<div
-						class="form-group d-flex aic"
 						v-if="false"
+						class="form-group d-flex aic"
 					>
 						<label class="mb-0 mr-3 w-200px">Часовой пояс</label>
 						<input
-							class="form-control mt-1 input-surv"
 							id="view_own_orders"
+							class="form-control mt-1 input-surv"
 							type="text"
 						>
 					</div>
@@ -92,23 +92,23 @@
 							label="email"
 							track-by="email"
 							:taggable="true"
-							@tag="addTag"
 							class="multiselect-surv"
+							@tag="addTag"
 						/>
 					</div>
 
 					<div
+						v-if="authRole.is_admin === 1"
 						class="d-flex aic video-add-content"
-						v-if="auth_role.is_admin === 1"
 					>
 						<label class="w-200px mb-0 mr-3">Вводное видео</label>
 						<div class="d-flex aic w-100">
 							<div class="form-group w-100">
 								<img
+									id="info1"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
 									alt="info icon"
-									id="info1"
 								>
 								<b-popover
 									target="info1"
@@ -120,19 +120,19 @@
 									</p>
 								</b-popover>
 								<input
-									class="form-control videoDays"
 									id="videoUrl"
+									v-model="videoUrl"
+									class="form-control videoDays"
 									type="text"
 									placeholder="Вставьте ссылку на youtube"
-									v-model="videoUrl"
 								>
 							</div>
 							<div class="form-group w-25 ml-4">
 								<img
+									id="info2"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
 									alt="info icon"
-									id="info2"
 								>
 								<b-popover
 									target="info2"
@@ -144,10 +144,10 @@
 									</p>
 								</b-popover>
 								<input
-									class="form-control"
 									id="videoTime"
-									type="number"
 									v-model="videoDays"
+									class="form-control"
+									type="number"
 								>
 							</div>
 						</div>
@@ -163,8 +163,8 @@
 							</button>
 						</div>
 						<div
-							class="col-12 col-md-6"
 							v-if="videoId"
+							class="col-12 col-md-6"
 						>
 							<div class="youtube-content">
 								<iframe
@@ -204,13 +204,13 @@
 
 							<div class="col-sm-8 p-0">
 								<input
+									id="firstName"
+									v-model="user.name"
 									class="form-control input-surv"
 									type="text"
 									name="name"
-									id="firstName"
 									required
 									placeholder="Имя сотрудника"
-									v-model="user.name"
 								>
 							</div>
 						</div>
@@ -220,13 +220,13 @@
 							>Фамилия <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="lastName"
+									v-model="user.last_name"
 									class="form-control input-surv"
 									type="text"
 									name="last_name"
-									id="lastName"
 									required
 									placeholder="Фамилия сотрудника"
-									v-model="user.last_name"
 								>
 							</div>
 						</div>
@@ -236,13 +236,13 @@
 							>Email <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="email"
+									v-model="user.email"
 									class="form-control input-surv"
 									type="text"
 									name="email"
-									id="email"
 									required
 									placeholder="email"
-									v-model="user.email"
 								>
 							</div>
 						</div>
@@ -252,12 +252,12 @@
 							>Новый пароль</label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="new_pwd"
 									v-model="password"
 									minlength="5"
 									class="form-control input-surv"
 									type="password"
 									name="new_pwd"
-									id="new_pwd"
 									placeholder="********"
 								>
 							</div>
@@ -268,16 +268,16 @@
 							>День рождения <span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
 								<input
+									id="birthday"
 									v-model="birthday"
 									class="form-control input-surv"
 									type="date"
 									name="birthday"
-									id="birthday"
 									required
 								>
 							</div>
 						</div>
-						<div class="form-group row">
+						<!-- <div class="form-group row">
 							<label
 								class="col-sm-4 col-form-label font-weight-bold label-surv"
 							>Город<span class="red">*</span></label>
@@ -300,9 +300,21 @@
 										:key="index"
 									>
 										<a @click="selectedCountry(index, result)">
-											Страна: {{ result.country }} Город: {{ result.city }}</a>
+											Страна: {{ result.country }} Город: {{ result.city }}
+										</a>
 									</li>
 								</ul>
+							</div>
+						</div> -->
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>Город<span class="red">*</span></label>
+							<div class="col-sm-8 p-0">
+								<LocalitySelect
+									:value="keywords"
+									@change="selectCity"
+								/>
 							</div>
 						</div>
 					</div>
@@ -310,8 +322,6 @@
 					<!-- profile image -->
 					<div class="col-3">
 						<div class="form-group mb-0 text-center">
-							<!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
-							</canvas>-->
 							<div class="profile-img-wrap hidden-file-wrapper">
 								<img
 									v-if="!crop_image.hide"
@@ -320,17 +330,17 @@
 									class="profile-img"
 								>
 								<div
-									class="my-4 text-left"
 									v-else
+									class="my-4 text-left"
 								>
 									Загрузите свою фотографию
 								</div>
 								<input
+									id="CabinetProfileImage"
+									ref="file"
 									type="file"
 									class="hidden-file-input"
-									id="CabinetProfileImage"
 									aria-describedby="CabinetProfileImage"
-									ref="file"
 									accept="image/*"
 									@change="handleFileUpload()"
 								>
@@ -340,29 +350,6 @@
 								/>
 							</div>
 
-
-
-
-							<!--              <croppa-->
-							<!--                v-model="myCroppa"-->
-							<!--                :width="250"-->
-							<!--                :height="250"-->
-							<!--                :canvas-color="'default'"-->
-							<!--                :placeholder="'Выберите изображение'"-->
-							<!--                :placeholder-font-size="0"-->
-							<!--                :placeholder-color="'default'"-->
-							<!--                :accept="'image/*'"-->
-							<!--                :file-size-limit="0"-->
-							<!--                :quality="2"-->
-							<!--                :zoom-speed="20"-->
-							<!--                :initial-image="crop_image"-->
-							<!--                :disable-drag-to-move="true"-->
-							<!--                :disable-scroll-to-zoom="true"-->
-							<!--                @new-image-drawn="hasImage = true"-->
-							<!--                @image-remove="hasImage = false"-->
-							<!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
-
-							<!--              ></croppa>-->
 							<div class="hidden-file-wrapper">
 								<button class="btn btn-success w-100 mt-2">
 									Выбрать фото
@@ -378,9 +365,9 @@
 						<!-- Cards -->
 						<template v-if="payments_view">
 							<div
-								class="col-12 p-0 row payment-profile"
 								v-for="(payment, index) in payments"
 								:key="index"
+								class="col-12 p-0 row payment-profile"
 							>
 								<div class="col-2">
 									<input
@@ -413,9 +400,9 @@
 								<div class="col-2">
 									<input
 										v-model="payment.number"
+										v-mask="`#### #### #### ####`"
 										class="form-control card-number input-surv"
 										placeholder="Номер карты"
-										v-mask="`#### #### #### ####`"
 									>
 								</div>
 								<div class="col-2 position-relative">
@@ -440,8 +427,8 @@
 						</template>
 
 						<div
-							class="mt-2 p-0"
 							v-if="cardValidatre.error"
+							class="mt-2 p-0"
 						>
 							<div class="alert alert-danger">
 								<span>Заполните все поля</span>
@@ -451,9 +438,9 @@
 						<div class="p-0 row mt-5">
 							<div class="col-3">
 								<button
-									@click="addPayment()"
 									style="color: white"
 									class="btn btn-phone btn-primary"
+									@click="addPayment()"
 								>
 									Добавить карту
 								</button>
@@ -461,10 +448,10 @@
 
 							<div class="col-3">
 								<button
-									@click.prevent="editProfileUser()"
 									style="color: white"
 									class="btn btn-success"
 									type="button"
+									@click.prevent="editProfileUser()"
 								>
 									Сохранить
 								</button>
@@ -482,44 +469,38 @@
 			@ok="save_picture()"
 		>
 			<div id="cabinet-croppie" />
-			<!-- <cropper
-				ref="mycrop"
-				class="cropper"
-				:src="imagePreview"
-				:stencil-props="{
-					aspectRatio: 12/12
-				}"
-				@change="change"
-			/> -->
 		</b-modal>
 	</div>
 </template>
+
 <script>
-// import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
-// import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+/* eslint-disable camelcase */
+
 import Multiselect from 'vue-multiselect'
-// import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
+import LocalitySelect from '@ui/LocalitySelect.vue'
 
 const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
 	name: 'PageCabinet',
 	directives: {mask},
 	components:{
-		// Cropper,
 		Multiselect,
+		LocalitySelect,
 	},
 	props: {
-		auth_role: {},
+		authRole: {
+			type: Object,
+			default: () => ({})
+		},
 	},
 	data() {
 		return {
 			domain: window.location.hostname.split('.')[0],
 			videoUrl: null,
 			videoDays: 7,
-			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
 				image: '',
@@ -527,8 +508,6 @@ export default {
 			},
 			imagePreview: '',
 			file: '',
-			// hasImage: true,
-			// canvas_image: new Image(),
 			showChooseProfileModal: false,
 			test: 'dsa',
 			items: [],
@@ -561,7 +540,9 @@ export default {
 			country_results: [],
 			image: '',
 			payments_view:false,
-			croppie: null
+			croppie: null,
+			geo_lat: 0,
+			geo_lon: 0,
 		};
 	},
 	computed: {
@@ -575,7 +556,7 @@ export default {
 		videoYoutube() {
 			return this.videoId ? `https://www.youtube.com/watch?v=${this.videoId}` : null;
 		},
-		validateYouTubeLink() {
+		isYoutubeLinkValid() {
 			return regex.test(this.videoUrl);
 		},
 	},
@@ -583,7 +564,7 @@ export default {
 		keywords() {
 			this.fetch();
 		},
-		auth_role() {
+		authRole() {
 			this.init()
 		}
 	},
@@ -594,7 +575,7 @@ export default {
 		})
 	},
 	created() {
-		if (this.auth_role) {
+		if (this.authRole) {
 			this.init()
 		}
 	},
@@ -606,7 +587,7 @@ export default {
 		},
 		init() {
 			this.fetchData();
-			this.user = this.auth_role;
+			this.user = this.authRole;
 			this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
@@ -615,26 +596,19 @@ export default {
 
 			if (this.user.cropped_img_url != null && this.user.cropped_img_url !== '') {
 				this.crop_image.image = '/cropped_users_img/' + this.user.cropped_img_url;
-			} else if (this.user.img_url != null && this.user.img_url !== '') {
+			}
+			else if (this.user.img_url != null && this.user.img_url !== '') {
 				this.crop_image.image = '/users_img/' + this.user.img_url;
-			} else {
+			}
+			else {
 				this.crop_image.hide = true;
 			}
 		},
-		drawProfile() {
-			// this.canvas_image.src = this.image;
-			//this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
-		},
-		change({coordinates, canvas}) {
+		drawProfile() {},
+		change({canvas}) {
 			this.crop_image.canvas = canvas;
-			//this.canvas = canvas;
-			//this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
-			//var can = canvas;
-			//this.myCanvas.drawImage(this.canvas_image, coordinates.left,  coordinates.top, coordinates.width, coordinates.height, 0, 0, 250, 250);
-			console.log(coordinates, canvas)
 		},
 		save_picture(){
-			// this.crop_image.canvas.toBlob(function(blob) {
 			this.croppie.result({
 				type: 'blob',
 				format: 'jpeg',
@@ -646,44 +620,33 @@ export default {
 					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
 				});
 			})
-			// });
 
 			this.saveCropped();
 		},
 		chooseProfileImage(){
-			//console.log(this.myCroppa);
-			// this.my_crop_image = this.myCroppa.canvas.toDataURL();
-			/*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
-				this.image = "/users_img/" + response.data;
-			});*/
 			this.showChooseProfileModal = true;
 		},
 		saveCropped() {
-			const _this = this;
-			// this.crop_image.canvas.toBlob(function(blob) {
 			this.croppie.result({
 				type: 'blob',
 				format: 'jpeg',
 				quality: 0.8
 			}).then(blob => {
-				let loader = _this.$loading.show();
-				const formData = new FormData();
-				formData.append('file', blob);
+				let loader = this.$loading.show()
+				const formData = new FormData()
+				formData.append('file', blob)
 				this.axios
 					.post('/profile/save-cropped-image', formData)
-					.then(function (res) {
-						loader.hide();
-						_this.crop_image.image = '/cropped_users_img/' + res.data.filename;
-						_this.crop_image.hide=false;
+					.then(res => {
+						loader.hide()
+						this.crop_image.image = '/cropped_users_img/' + res.data.filename
+						this.crop_image.hide = false
 					})
-					.catch(function (err) {
-						console.log(err, 'error');
+					.catch(err => {
+						loader.hide()
+						console.error(err, 'error')
 					});
 			})
-			//   },
-			//   "image/jpeg",
-			//   0.8
-			// ); // 80% compressed jpeg file
 		},
 		handleFileUpload(){
 			/* global Croppie */
@@ -697,7 +660,7 @@ export default {
 					viewport: {
 						width:200,
 						height:200,
-						type:'square' //circle
+						type:'square'
 					},
 					boundary:{
 						width:300,
@@ -709,7 +672,7 @@ export default {
 				})
 			}.bind(this), false);
 
-			if( this.file ){
+			if(this.file){
 				// jfif может быть проблемой, но игнорить совсем нельзя в в11 хром так сохраняет изображения
 				if ( /\.(jpe?g|png|gif|jfif)$/i.test( this.file.name ) ) {
 					this.showChooseProfileModal = true
@@ -719,6 +682,12 @@ export default {
 					this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
 				}
 			}
+		},
+
+		selectCity(res){
+			this.keywords = 'Страна: ' + res.country + ' Город: ' + res.name
+			this.geo_lat = res.coords[0]
+			this.geo_lon = res.coords[1]
 		},
 
 		selectedCountry(index, arr) {
@@ -745,29 +714,25 @@ export default {
 		},
 
 		removePaymentCart(index, type_id) {
-
 			let confirmDelte = confirm(
 				'Вы действительно хотите безвозвратно удалить ?'
 			);
 
 			if (confirmDelte) {
-
-
 				this.payments.splice(index, 1);
-				this.$toast.success('Успешно Удалено');
 
 				if (type_id != 'dev') {
 					this.axios
 						.post('/profile/remove/card/', {
 							card_id: type_id,
 						})
-						.then(() => {})
+						.then(() => {
+							this.$toast.success('Успешно Удалено');
+						})
 						.catch((error) => {
 							alert(error);
 						});
 				}
-
-
 			}
 		},
 
@@ -775,53 +740,59 @@ export default {
 			this.cardValidatre.type = false;
 			this.cardValidatre.error = false;
 
-
 			if (this.payments.length > 0){
-
 				this.payments.forEach((el) => {
-
-					this.cardValidatre.type = false;
 					this.cardValidatre.type = true;
 
 					if (
-						el['bank'] != null &&
-							el['cardholder'] != null &&
-							el['country'] != null &&
-							el['number'] != null &&
-							el['phone'] != null
+						el['bank'] != null
+						&& el['cardholder'] != null
+						&& el['country'] != null
+						&& el['number'] != null
+						&& el['phone'] != null
 					) {
 						if (
-							el['bank'].length > 2 &&
-								el['cardholder'].length > 2 &&
-								el['country'].length > 2 &&
-								el['number'].length > 2 &&
-								el['phone'].length > 2
+							el['bank'].length > 2
+							&& el['cardholder'].length > 2
+							&& el['country'].length > 2
+							&& el['number'].length > 2
+							&& el['phone'].length > 2
 						) {
 							this.cardValidatre.type = true;
 						}
 					}
 				});
-			}else {
+			}
+			else {
 				this.cardValidatre.type = true;
 			}
 
-
 			if (this.cardValidatre.type) {
+				const request = {
+					cards: this.payments,
+					query: this.user,
+					password: this.password,
+					birthday: this.birthday,
+					working_city: this.working_city,
+					working_country: this.keywords,
+				}
+
+				if(this.geo_lat || this.geo_lon){
+					request.coordinates = {
+						geo_lat: this.geo_lat,
+						geo_lon: this.geo_lon,
+					}
+				}
+
 				this.axios
-					.post('/profile/edit/user/cart/', {
-						cards: this.payments,
-						query: this.user,
-						password: this.password,
-						birthday: this.birthday,
-						working_city: this.working_city,
-						working_country: this.keywords,
-					})
-					.then((response) => {
-						if (response.data.success) {
+					.post('/profile/edit/user/cart/', request)
+					.then(({data}) => {
+						if (data.success) {
 							this.$toast.success('Успешно Сохранено');
 						}
 					});
-			} else {
+			}
+			else {
 				this.cardValidatre.error = true;
 			}
 		},
@@ -844,20 +815,26 @@ export default {
 					this.keywords = data.user.working_country;
 					this.working_city = data.user.working_city;
 
+					if(data.user.coordinate){
+						this.geo_lat = data.user.coordinate.geo_lat
+						this.geo_lon = data.user.coordinate.geo_lon
+					}
+
 					if (data.user_payment) {
 						if (data.user_payment.length > 0) {
 							this.payments = data.user_payment;
 							this.payments_view = true
-						} else {
+						}
+						else {
 							this.payments = [];
 							this.payments_view = false
 						}
-
 					}
 
 					if (this.user.img_url) {
 						this.img = '/users_img/' + data.user.img_url;
-					} else {
+					}
+					else {
 						this.img = '/users_img/noavatar.png';
 					}
 					this.drawProfile();
@@ -868,14 +845,17 @@ export default {
 		},
 		save() {
 			try{
-				if ((this.videoDays || this.videoUrl) && this.auth_role.is_admin === 1) {
-					if(this.videoDays && this.videoUrl){
-						const formData = new FormData();
-						formData.append('mainPageVideo', this.videoUrl);
-						formData.append('mainPageVideoShowDaysAmount', this.videoDays);
-						this.validateYouTubeLink ? this.axios.post('/portal/update', formData) : this.$toast.error('Некорректная ссылка youtube');
-					} else {
-						this.$toast.error('Заполните все поля');
+				if ((this.videoDays || this.videoUrl) && this.authRole.is_admin === 1) {
+					if (this.videoDays && this.videoUrl) {
+						const formData = new FormData()
+						formData.append('mainPageVideo', this.videoUrl)
+						formData.append('mainPageVideoShowDaysAmount', this.videoDays)
+						this.isYoutubeLinkValid
+							? this.axios.post('/portal/update', formData)
+							: this.$toast.error('Некорректная ссылка youtube')
+					}
+					else {
+						this.$toast.error('Заполните все поля')
 					}
 				}
 				this.axios
@@ -883,16 +863,16 @@ export default {
 						admins: this.admins,
 					})
 					.then(() => {
-						this.$toast.success('Сохранено');
+						this.$toast.success('Сохранено')
 					})
 					.catch((error) => {
-						alert(error, '6565');
-					});
-			} catch(err){
-				console.log(err);
-				this.$toast.err('Ошибка сохранения');
+						alert(error)
+					})
 			}
-
+			catch(err) {
+				console.error(err)
+				this.$toast.err('Ошибка сохранения')
+			}
 		},
 
 		fetch() {
@@ -900,7 +880,8 @@ export default {
 				if (this.keywords.length === 0) {
 					this.keywords = '';
 					this.country_results = [];
-				} else {
+				}
+				else {
 					this.axios
 						.post('/profile/country/city/', {
 							keyword: this.keywords,
@@ -910,10 +891,6 @@ export default {
 						});
 				}
 			}
-
-			// axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
-			//     .then(response => this.results = response.data)
-			//     .catch(error => {});
 		}
 	},
 };

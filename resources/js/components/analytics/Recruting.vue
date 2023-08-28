@@ -51,8 +51,8 @@
 						<p>
 							<span>Работают</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Количество сотрудников на данный момент'"
+								class="fa fa-info-circle"
 								title="Работают"
 							/>
 						</p>
@@ -62,8 +62,8 @@
 						<p>
 							<span>Осталось принять</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'"
+								class="fa fa-info-circle"
 								title="Осталось принять"
 							/>
 						</p>
@@ -73,8 +73,8 @@
 						<p>
 							<span>Стажеры</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'"
+								class="fa fa-info-circle"
 								title="Стажеры"
 							/>
 						</p>
@@ -84,8 +84,8 @@
 						<p>
 							<span>Осталось рабочих дней</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Все дни, кроме воскресенья'"
+								class="fa fa-info-circle"
 								title="Осталось рабочих дней"
 							/>
 						</p>
@@ -95,8 +95,8 @@
 						<p>
 							<span>Уволены</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'"
+								class="fa fa-info-circle"
 								title="Уволены"
 							/>
 						</p>
@@ -106,8 +106,8 @@
 						<p>
 							<span>Принято</span>
 							<i
-								class="fa fa-info-circle"
 								v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'"
+								class="fa fa-info-circle"
 								title="Принято"
 							/>
 						</p>
@@ -198,9 +198,9 @@
 					</div>
 					<div class="progress">
 						<div
+							v-b-popover.hover
 							class="indicator main"
 							:style="'width: ' + user.out.percent + '%'"
-							v-b-popover.hover
 							title="Исходящие"
 						>
 							{{ user.out.percent }} %
@@ -211,8 +211,8 @@
 					</div>
 					<div class="progress">
 						<div
-							class="indicator yellow"
 							v-b-popover.hover
+							class="indicator yellow"
 							title="Сконвертировано"
 							:style="'width: ' + user.converted.percent + '%;'"
 						>
@@ -224,8 +224,8 @@
 					</div>
 					<div class="progress">
 						<div
-							class="indicator bluish"
 							v-b-popover.hover
+							class="indicator bluish"
 							title="Принято на работу"
 							:style="'width: ' + user.applied.percent + '%;'"
 						>
@@ -242,6 +242,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import D3Funnel from 'd3-funnel';
 import ProgressBar from '@ui/ProgressBar'
 import JobtronButton from '@ui/Button'
@@ -253,20 +255,11 @@ export default {
 		JobtronButton,
 	},
 	props: {
-		records: Object,
+		records: {
+			type: Object,
+			default: null
+		},
 		isAnalyticsPage: Boolean,
-	},
-	computed: {
-		percentageHired: function () {
-			return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
-		},
-		widthRemain: function () {
-			return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
-		},
-		applied_on: function () {
-			let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
-			return a == 'Infinity' ? 0 : a;
-		}
 	},
 	data: function () {
 		return {
@@ -390,6 +383,18 @@ export default {
 			today: 1,
 			workDays: 26,
 		};
+	},
+	computed: {
+		percentageHired: function () {
+			return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
+		},
+		widthRemain: function () {
+			return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
+		},
+		applied_on: function () {
+			let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
+			return a == 'Infinity' ? 0 : a;
+		}
 	},
 	watch: {
 		// эта функция запускается при любом изменении данных

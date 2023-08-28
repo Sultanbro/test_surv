@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="mb-3"
 		:key="skey"
+		class="mb-3"
 	>
 		<div class="table-container">
 			<table class="table table-bordered table-responsive whitespace-no-wrap custom-table-rentability">
@@ -12,15 +12,15 @@
 
 						<template v-for="(m, key) in months">
 							<th
+								:key="key"
 								colspan="2"
 								class="text-center"
-								:key="key"
 							>
 								{{ m }}
 							</th>
 							<th
-								class="br1 text-center"
 								:key="key + 'a'"
+								class="br1 text-center"
 							>
 								{{ tops[key] }}
 							</th>
@@ -31,8 +31,8 @@
 						<th class="b-table-sticky-column">
 							<div class="d-flex align-items-center">
 								<p
-									@click="sort('name')"
 									class="mb-0 fz-12"
+									@click="sort('name')"
 								>
 									Название <i class="fa fa-sort ml-1" />
 								</p>
@@ -41,8 +41,8 @@
 						<th>
 							<div class="d-flex align-items-center">
 								<p
-									@click="sort('date')"
 									class="mb-0 fz-12"
+									@click="sort('date')"
 								>
 									Дата <i class="fa fa-sort ml-1" />
 								</p>
@@ -50,27 +50,27 @@
 						</th>
 						<template v-for="i in 12">
 							<th
+								:key="i"
 								class="font-bold text-center  bb1"
 								@click="sort('l' + i)"
-								:key="i"
 							>
 								<div class="d-flex align-items-center">
 									выручка <i class="fa fa-sort ml-1" />
 								</div>
 							</th>
 							<th
+								:key="i + 'a'"
 								class="font-bold text-center bb1"
 								@click="sort('c' + i)"
-								:key="i + 'a'"
 							>
 								<div class="d-flex align-items-center">
 									ФОТ <i class="fa fa-sort ml-1" />
 								</div>
 							</th>
 							<th
+								:key="i + 'b'"
 								class="font-bold text-center br1 bb1"
 								@click="sort('r' + i)"
-								:key="i + 'b'"
 							>
 								<div class="d-flex align-items-center">
 									Маржа <i class="fa fa-sort ml-1" />
@@ -94,16 +94,16 @@
 
 						<template v-for="i in 12">
 							<td
+								:key="i"
 								class="text-center"
 								:class="{'p-0': index != 0}"
-								:key="i"
 							>
 								<input
 									v-if="index != 0"
+									v-model="item['l' + i]"
 									class="input"
 									:class="{'edited':item['ed' + i]}"
 									type="number"
-									v-model="item['l' + i]"
 									@change="update(i, index)"
 								>
 								<div v-else>
@@ -111,14 +111,14 @@
 								</div>
 							</td>
 							<td
-								class="text-center"
 								:key="i + 'a'"
+								class="text-center"
 							>
 								{{ numberWithCommas( item['c' + i] ) }}
 							</td>
 							<td
-								class="text-center br1"
 								:key="i + 'b'"
+								class="text-center br1"
 								:class="{
 									'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
 									'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
@@ -140,8 +140,14 @@
 export default {
 	name: 'TableRentability',
 	props: {
-		year: Number,
-		month: Number
+		year: {
+			type: Number,
+			default: 0
+		},
+		month: {
+			type: Number,
+			default: 0
+		}
 	},
 	data() {
 		return {
@@ -223,6 +229,7 @@ export default {
 					year: this.year,
 					month: month,
 					value: item['l' + month],
+					/* eslint-disable-next-line camelcase */
 					group_id: item.group_id,
 				})
 				.then(() => {

@@ -1,5 +1,9 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import axios from 'axios'
+import LocalitySelect from '@ui/LocalitySelect.vue'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
 import UserEditError from '@/components/pages/UserEdit/UserEditError'
@@ -9,6 +13,7 @@ const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9
 export default {
 	name: 'UserEditMain',
 	components: {
+		LocalitySelect,
 		ProfileGroups,
 		UserEditGroups,
 		UserEditError,
@@ -196,6 +201,9 @@ export default {
 			let decimal_portion = absolute_value - Math.floor(absolute_value);
 			let str = 'UTC'  + (timezone >= 0 ? '+' : '-') + String(Math.floor(absolute_value)) + (decimal_portion == 0 ? '' : ':') + (decimal_portion * 60 || '');
 			return str;
+		},
+		onChangeCity(city){
+			this.$emit('changeCity', city)
 		}
 	}
 }
@@ -216,11 +224,11 @@ export default {
 				>Имя <span class="red">*</span></label>
 				<div class="col-sm-8">
 					<input
-						name="name"
+						id="firstName"
 						v-model="userName"
+						name="name"
 						type="text"
 						required
-						id="firstName"
 						class="form-control"
 						placeholder="Имя сотрудника"
 						@input="checkValid($event, 'name')"
@@ -242,11 +250,11 @@ export default {
 				>Фамилия <span class="red">*</span></label>
 				<div class="col-sm-8">
 					<input
-						name="last_name"
+						id="lastName"
 						v-model="userLastName"
+						name="last_name"
 						type="text"
 						required
-						id="lastName"
 						class="form-control"
 						placeholder="Фамилия сотрудника"
 						@input="checkValid($event, 'lastName')"
@@ -268,11 +276,11 @@ export default {
 				>Email <span class="red">*</span></label>
 				<div class="col-sm-8">
 					<input
-						name="email"
+						id="email"
 						v-model="userEmail"
+						name="email"
 						type="email"
 						required
-						id="email"
 						class="form-control"
 						placeholder="Email"
 						@input="checkValid($event, 'email')"
@@ -283,6 +291,7 @@ export default {
 					name="email"
 				/>
 			</div>
+
 			<div
 				v-if="user"
 				class="form-group row"
@@ -293,10 +302,10 @@ export default {
 				>Новый пароль</label>
 				<div class="col-sm-8">
 					<input
+						id="new_pwd"
 						name="new_pwd"
 						value=""
 						type="text"
-						id="new_pwd"
 						class="form-control"
 						placeholder=""
 					>
@@ -314,11 +323,11 @@ export default {
 				>День рождения</label>
 				<div class="col-sm-8">
 					<input
-						name="birthday"
+						id="birthday"
 						v-model="userBirthday"
+						name="birthday"
 						type="date"
 						required
-						id="birthday"
 						class="form-control"
 						@input="checkValid($event, 'birthday')"
 					>
@@ -339,10 +348,10 @@ export default {
 				>Должность <span class="red">*</span></label>
 				<div class="col-sm-8">
 					<select
-						name="position"
 						id="position"
-						class="form-control mb-2"
 						v-model="position"
+						name="position"
+						class="form-control mb-2"
 						@change="checkValid($event, 'position')"
 					>
 						<option
@@ -385,6 +394,7 @@ export default {
 			/>
 			<!-- end of groups and books tab -->
 		</div>
+
 		<div class="col-12 col-xl-6">
 			<div class="form-group row">
 				<label
@@ -392,10 +402,10 @@ export default {
 					class="col-sm-4 col-form-label font-weight-bold"
 				>Тип <span class="red">*</span>
 					<img
+						id="info1"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
-						id="info1"
 					>
 					<b-popover
 						target="info1"
@@ -409,9 +419,9 @@ export default {
 				</label>
 				<div class="col-sm-8">
 					<select
+						id="userType"
 						name="user_type"
 						required
-						id="userType"
 						class="form-control"
 					>
 						<option
@@ -433,16 +443,17 @@ export default {
 					name="user_type"
 				/>
 			</div>
+
 			<div class="form-group row">
 				<label
 					for="programType"
 					class="col-sm-4 col-form-label font-weight-bold"
 				>Начать работу <span class="red">*</span>
 					<img
+						id="info2"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
-						id="info2"
 					>
 					<b-popover
 						target="info2"
@@ -458,9 +469,9 @@ export default {
 				</label>
 				<div class="col-sm-8">
 					<select
+						id="programType"
 						name="program_type"
 						required
-						id="programType"
 						class="form-control"
 					>
 						<option
@@ -483,7 +494,8 @@ export default {
 					name="program_type"
 				/>
 			</div>
-			<div class="form-group row">
+
+			<!-- <div class="form-group row">
 				<label
 					for="workingDays"
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -496,8 +508,8 @@ export default {
 						>
 							<div class="col-sm-12 position-relative">
 								<input
-									name="selectedCityInput"
 									v-model="country"
+									name="selectedCityInput"
 									required
 									id="selectedCityInput"
 									class="form-control"
@@ -508,10 +520,10 @@ export default {
 									autocomplete="off"
 								>
 								<input
-									name="working_city"
 									v-model="working_city"
-									hidden
+									name="working_city"
 									id="working_city"
+									hidden
 								>
 								<div
 									v-if="isSearchResult"
@@ -552,15 +564,29 @@ export default {
 					:errors="errors"
 					name="selectedCityInput"
 				/>
+			</div> -->
+
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Город</label>
+				<div class="col-sm-8">
+					<LocalitySelect
+						v-model="country"
+						@change="onChangeCity"
+					/>
+				</div>
 			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
 				>Рабочий график</label>
 				<div class="col-sm-8">
 					<b-form-select
-						name="work-chart"
 						v-model="workChartId"
+						name="work-chart"
 						@change="$emit('selectWorkChart', workChartId)"
 					>
 						<b-form-select-option
@@ -584,14 +610,33 @@ export default {
 					name="work-chart"
 				/>
 			</div>
+
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label font-weight-bold">
+					Первый рабочий день
+				</label>
+				<div class="col-sm-8 d-flex">
+					<input
+						v-model="first_work_day"
+						name="first_work_day"
+						type="date"
+						class="form-control"
+					>
+				</div>
+				<UserEditError
+					:errors="errors"
+					name="first_work_day"
+				/>
+			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
 				>Часовой пояс</label>
 				<div class="col-sm-8">
 					<b-form-select
-						name="timezone"
 						v-model="userTimezone"
+						name="timezone"
 						@change="$emit('selectWorkChart', workChartId)"
 					>
 						<b-form-select-option
@@ -615,6 +660,7 @@ export default {
 					name="timezone"
 				/>
 			</div>
+
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
@@ -622,11 +668,11 @@ export default {
 				<div class="col-sm-8 d-flex">
 					<div class="custom-control custom-radio">
 						<input
+							id="ftr1"
 							type="radio"
 							name="full_time"
 							class="custom-control-input"
 							value="1"
-							id="ftr1"
 							:checked="user ? user.full_time === 1 : true"
 						>
 						<label
@@ -638,11 +684,11 @@ export default {
 					</div>
 					<div class="custom-control custom-radio ml-4">
 						<input
+							id="ftr0"
 							type="radio"
 							name="full_time"
 							class="custom-control-input"
 							value="0"
-							id="ftr0"
 							:checked="user && user.full_time === 0"
 						>
 						<label
@@ -659,35 +705,17 @@ export default {
 				/>
 			</div>
 
-			<div class="form-group row">
-				<label class="col-sm-4 col-form-label font-weight-bold">
-					Первый рабочий день
-				</label>
-				<div class="col-sm-8 d-flex">
-					<input
-						name="first_work_day"
-						v-model="first_work_day"
-						type="date"
-						class="form-control"
-					>
-				</div>
-				<UserEditError
-					:errors="errors"
-					name="first_work_day"
-				/>
-			</div>
-
 			<!-- -->
 			<input
+				id="workingDays"
 				type="hidden"
 				name="working_days"
-				id="workingDays"
 				:value="user ? user.working_day_id : 1"
 			>
 			<input
+				id="workingTimes"
 				type="hidden"
 				name="working_times"
-				id="workingTimes"
 				:value="user ? user.working_time_id : 1"
 			>
 			<!--			<input-->
@@ -703,9 +731,9 @@ export default {
 			<!--				value="18:00:00"-->
 			<!--			>-->
 			<input
+				id="weekdays-input"
 				type="hidden"
 				name="weekdays"
-				id="weekdays-input"
 				:value="weekdaysModel"
 			>
 			<!-- -->
@@ -717,9 +745,9 @@ export default {
 				>Дополнительно</label>
 				<div class="col-sm-8">
 					<textarea
+						id="description"
 						name="description"
 						rows="3"
-						id="description"
 						class="form-control"
 						:value="user ? user.description : ''"
 					/>

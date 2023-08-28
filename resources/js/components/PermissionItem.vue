@@ -32,10 +32,10 @@
 				:preserve-search="true"
 				:hide-selected="true"
 				placeholder="Выберите"
-				@select="onSelect"
-				@remove="onRemove"
 				label="name"
 				track-by="name"
+				@select="onSelect"
+				@remove="onRemove"
 			/>
 		</b-td>
 		<b-td class="actions">
@@ -58,9 +58,28 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 export default {
-	props: ['item','groups', 'users', 'roles'],
+	props: {
+		item: {
+			type: Object,
+			default: null
+		},
+		groups: {
+			type: Array,
+			default: null
+		},
+		users: {
+			type: Array,
+			default: null
+		},
+		roles: {
+			type: Array,
+			default: null
+		},
+	},
 	data() {
 		return {
 			local_groups: [],

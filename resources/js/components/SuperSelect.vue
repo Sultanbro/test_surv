@@ -1,9 +1,9 @@
 <template>
 	<div
-		class="super-select"
 		ref="select"
-		:class="posClass"
 		v-click-outside="close"
+		class="super-select"
+		:class="posClass"
 	>
 		<div
 			class="selected-items flex-wrap noscrollbar"
@@ -17,9 +17,9 @@
 			>
 				{{ value.name }}
 				<i
+					v-if="!one_choice_made"
 					class="fa fa-times"
 					@click.stop="removeValue(i, value.id)"
-					v-if="!one_choice_made"
 				/>
 			</div>
 			<div
@@ -30,15 +30,15 @@
 			</div>
 		</div>
 		<div
-			class="show"
 			v-if="show"
+			class="show"
 		>
 			<div class="search">
 				<input
+					ref="search"
 					v-model="searchText"
 					type="text"
 					placeholder="Поиск..."
-					ref="search"
 					@keyup="onSearch()"
 				>
 			</div>
@@ -46,8 +46,8 @@
 			<div class="options-window">
 				<div class="types">
 					<div
-						class="type"
 						v-if="disable_type !== 1"
+						class="type"
 						:class="{'active': type == 1}"
 						@click="changeType(1)"
 					>
@@ -57,8 +57,8 @@
 						<i class="fa fa-user" />
 					</div>
 					<div
-						class="type"
 						v-if="disable_type !== 2"
+						class="type"
 						:class="{'active': type == 2}"
 						@click="changeType(2)"
 					>
@@ -68,8 +68,8 @@
 						<i class="fa fa-users" />
 					</div>
 					<div
-						class="type"
 						v-if="disable_type !== 3"
+						class="type"
 						:class="{'active': type == 3}"
 						@click="changeType(3)"
 					>
@@ -80,8 +80,8 @@
 					</div>
 
 					<div
-						class="type mt-5 active all"
 						v-if="select_all_btn && !single"
+						class="type mt-5 active all"
 						@click="selectAll"
 					>
 						<div class="text">
@@ -95,52 +95,52 @@
 				<div class="options">
 					<template v-for="(option, index) in filtered_options">
 						<div
-							class="option shown-profile"
-							:key="index"
 							v-if="option.shownProfile"
+							:key="index"
+							class="option shown-profile"
 						>
 							<i
-								class="fa fa-user"
 								v-if="option.type == 1"
+								class="fa fa-user"
 							/>
 							<i
-								class="fa fa-users"
 								v-if="option.type == 2"
+								class="fa fa-users"
 							/>
 							<i
-								class="fa fa-briefcase"
 								v-if="option.type == 3"
+								class="fa fa-briefcase"
 							/>
 							{{ option.name }}
 							<i
-								class="fa fa-times"
 								v-if="option.selected"
+								class="fa fa-times"
 								@click.stop="removeValueFromList(index)"
 							/>
 						</div>
 						<div
-							class="option"
-							:key="index + 'a'"
-							@click="addValue(index)"
-							:class="{'selected': option.selected}"
 							v-else
+							:key="index + 'a'"
+							class="option"
+							:class="{'selected': option.selected}"
+							@click="addValue(index)"
 						>
 							<i
-								class="fa fa-user"
 								v-if="option.type == 1"
+								class="fa fa-user"
 							/>
 							<i
-								class="fa fa-users"
 								v-if="option.type == 2"
+								class="fa fa-users"
 							/>
 							<i
-								class="fa fa-briefcase"
 								v-if="option.type == 3"
+								class="fa fa-briefcase"
 							/>
 							{{ option.name }}
 							<i
-								class="fa fa-times"
 								v-if="option.selected"
+								class="fa fa-times"
 								@click.stop="removeValueFromList(index)"
 							/>
 						</div>
@@ -152,6 +152,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'SuperSelect',
 	props: {

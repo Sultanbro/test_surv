@@ -1,5 +1,8 @@
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 import {mask} from 'vue-the-mask'
 
 export default {
@@ -10,13 +13,34 @@ export default {
 			type: Object,
 			default: null,
 		},
-		old_zarplata: String,
-		old_kaspi_cardholder: String,
-		old_kaspi: String,
-		old_card_kaspi: String,
-		old_jysan_cardholder: String,
-		old_jysan: String,
-		old_card_jysan: String,
+		old_zarplata: {
+			type: String,
+			default: ''
+		},
+		old_kaspi_cardholder: {
+			type: String,
+			default: ''
+		},
+		old_kaspi: {
+			type: String,
+			default: ''
+		},
+		old_card_kaspi: {
+			type: String,
+			default: ''
+		},
+		old_jysan_cardholder: {
+			type: String,
+			default: ''
+		},
+		old_jysan: {
+			type: String,
+			default: ''
+		},
+		old_card_jysan: {
+			type: String,
+			default: ''
+		},
 		taxes: {
 			type: Array,
 			default: () => ([])
@@ -37,6 +61,11 @@ export default {
 			deleteTaxIdx: null
 		}
 	},
+	computed: {
+		taxNotAssignedFiltered() {
+			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
+		}
+	},
 	watch: {
 		user(obj) {
 			if (obj.cards) {
@@ -54,11 +83,6 @@ export default {
 		},
 		taxes() {
 			this.myTaxes = this.taxes.filter(item => item.isAssigned);
-		}
-	},
-	computed: {
-		taxNotAssignedFiltered() {
-			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
 		}
 	},
 	methods: {
@@ -179,29 +203,28 @@ export default {
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
-				:class="{'mr-3': !user}"
 			>Оклад</label>
 
 			<div class="col-sm-3">
 				<input
+					id="zarplata"
+					v-model.number="zarplata"
 					class="form-control"
 					type="number"
 					name="zarplata"
-					id="zarplata"
 					required
 					placeholder="Оклад"
 					@input="checkNumber"
-					v-model.number="zarplata"
 				>
 			</div>
 
 
 			<div class="col-sm-3">
 				<select
-					name="currency"
 					id="currency"
-					class="form-control form-control-sm"
 					v-model="currency"
+					name="currency"
+					class="form-control form-control-sm"
 				>
 					<option
 						value="null"
@@ -251,10 +274,10 @@ export default {
 
 			<div class="col-sm-3 pl-0">
 				<img
+					id="user-currency"
 					src="/images/dist/profit-info.svg"
 					class="img-info mt-2"
 					alt="info icon"
-					id="user-currency"
 				>
 				<b-popover
 					target="user-currency"
@@ -276,20 +299,20 @@ export default {
 					>KASPI BANK</label>
 					<div class="col-sm-3">
 						<input
+							id="kaspi_cardholder"
 							name="kaspi_cardholder"
 							:value="user.zarplata ? user.zarplata.kaspi_cardholder : old_kaspi_cardholder"
 							type="text"
-							id="kaspi_cardholder"
 							class="form-control"
 							placeholder="Имя на карте"
 						>
 					</div>
 					<div class="col-sm-3">
 						<input
+							id="kaspi"
 							name="kaspi"
 							:value="user.zarplata ? user.zarplata.kaspi : old_kaspi"
 							type="text"
-							id="kaspi"
 							class="form-control"
 							placeholder="+7 (777) 777-77-77"
 						>
@@ -299,10 +322,10 @@ export default {
 						style="padding-left:0"
 					>
 						<input
+							id="card_kaspi"
 							name="card_kaspi"
 							:value="user.zarplata ? user.zarplata.card_kaspi : old_card_kaspi"
 							type="text"
-							id="card_kaspi"
 							class="form-control card-number"
 							placeholder="XXXX XXXX XXXX XXXX"
 							style="font-size: 14px;"
@@ -318,20 +341,20 @@ export default {
 					>JYSAN BANK</label>
 					<div class="col-sm-3">
 						<input
+							id="jysan_cardholder"
 							name="jysan_cardholder"
 							:value="user.zarplata ? user.zarplata.jysan_cardholder : old_jysan_cardholder"
 							type="text"
-							id="jysan_cardholder"
 							class="form-control"
 							placeholder="Имя на карте"
 						>
 					</div>
 					<div class="col-sm-3">
 						<input
+							id="jysan"
 							name="jysan"
 							:value="user.zarplata ? user.zarplata.jysan : old_jysan"
 							type="text"
-							id="jysan"
 							class="form-control"
 							placeholder="+7 (777) 777-77-77"
 						>
@@ -341,10 +364,10 @@ export default {
 						style="padding-left:0"
 					>
 						<input
+							id="card_jysan"
 							name="card_jysan"
 							:value="user.zarplata ? user.zarplata.card_jysan : old_card_jysan"
 							type="text"
-							id="card_jysan"
 							class="form-control card-number"
 							placeholder="XXXX XXXX XXXX XXXX"
 							style="font-size: 14px;"
@@ -360,9 +383,9 @@ export default {
 			<div class="col-sm-3">
 				<div class="custom-control custom-checkbox">
 					<input
+						id="headphones_amount_checkbox"
 						type="checkbox"
 						:checked="headphonesState"
-						id="headphones_amount_checkbox"
 						class="custom-control-input"
 						@change="changeHeadphonesState"
 					>
@@ -383,10 +406,10 @@ export default {
 			</div>
 			<div class="col-sm-3">
 				<input
+					id="headphones_amount"
 					name="headphones_amount"
 					class="form-control"
 					type="number"
-					id="headphones_amount"
 					:value="user.headphones_sum"
 					:disabled="!headphonesState"
 				>
@@ -400,8 +423,8 @@ export default {
 			class="cards"
 		>
 			<div
-				class="no-text"
 				v-if="!cards.length"
+				class="no-text"
 			>
 				Нет ни одной карты
 			</div>
@@ -411,38 +434,38 @@ export default {
 				class="d-flex form-group m0 card-row"
 			>
 				<input
-					:name="`cards[${key}][bank]`"
 					v-model="card.bank"
+					:name="`cards[${key}][bank]`"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Банк/Кошелек/..."
 				>
 				<input
-					:name="`cards[${key}][country]`"
 					v-model="card.country"
+					:name="`cards[${key}][country]`"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Страна"
 				>
 				<input
-					:name="`cards[${key}][cardholder]`"
 					v-model="card.cardholder"
+					:name="`cards[${key}][cardholder]`"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Имя на карте"
 				>
 				<input
-					:name="`cards[${key}][phone]`"
 					v-model="card.phone"
+					:name="`cards[${key}][phone]`"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Телефон"
 				>
 				<input
-					:name="`cards[${key}][number]`"
 					v-model="card.number"
-					type="text"
 					v-mask="`#### #### #### ####`"
+					:name="`cards[${key}][number]`"
+					type="text"
 					class="form-control mr-1 col-sm-3 card-number"
 					placeholder="Номер карты/счета"
 				>
@@ -468,8 +491,8 @@ export default {
 			class="taxes"
 		>
 			<div
-				class="no-text"
 				v-if="!taxes.length"
+				class="no-text"
 			>
 				Нет ни одного налога
 			</div>
@@ -479,8 +502,8 @@ export default {
 				class="d-flex tax-row"
 			>
 				<b-form-group
-					class="custom-switch custom-switch-sm"
 					id="input-group-4"
+					class="custom-switch custom-switch-sm"
 				>
 					<b-form-checkbox
 						v-model="tax.isPercent"
@@ -501,37 +524,37 @@ export default {
 				</b-form-group>
 				<b-form-group class="ml-2">
 					<b-form-input
+						v-if="tax.isPercent"
 						v-model="tax.value"
 						type="number"
 						class="mr-1"
 						placeholder="Процент от оклада"
 						:class="{'is-invalid' : tax.value > 100}"
-						v-if="tax.isPercent"
 						@change="onEditTax(tax)"
 					/>
 					<b-form-input
+						v-else
 						v-model="tax.value"
 						type="number"
 						class="mr-1"
 						placeholder="Сумма"
 						@change="onEditTax(tax)"
-						v-else
 					/>
 				</b-form-group>
 				<b-form-input
+					v-if="tax.isPercent"
 					:value="tax.value ? Math.round(zarplata * tax.value / 100) : 0"
 					type="text"
 					disabled
 					class="ml-2 w-200px"
 					:class="{'is-invalid' : Math.round(zarplata * tax.value / 100) > zarplata}"
-					v-if="tax.isPercent"
 				/>
 				<button
 					v-if="!tax.isNew"
+					:id="idx + '1'"
 					type="button"
 					class="btn btn-warning tax-delete rounded ml-2"
 					@click="unassignTax(tax, idx)"
-					:id="idx + '1'"
 				>
 					<span class="close-icon-style">x</span>
 				</button>

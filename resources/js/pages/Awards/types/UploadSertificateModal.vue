@@ -5,8 +5,8 @@
 				<div class="settings">
 					<BFormGroup class="custom-switch custom-switch-sm">
 						<b-form-checkbox
-							switch
 							v-model="bgOp"
+							switch
 						>
 							Затемнить фон
 						</b-form-checkbox>
@@ -32,8 +32,8 @@
 							label="Ширина блока"
 						>
 							<b-form-checkbox
-								switch
 								v-model="fullName.fullWidth"
+								switch
 							>
 								На всю ширину
 							</b-form-checkbox>
@@ -44,9 +44,9 @@
 						</BFormGroup>
 						<BFormGroup label="Цвет текста">
 							<input
+								v-model="fullName.color"
 								type="color"
 								class="color-picker"
-								v-model="fullName.color"
 							>
 						</BFormGroup>
 						<b-form-group label="Формат текста">
@@ -106,8 +106,8 @@
 							label="Ширина блока"
 						>
 							<b-form-checkbox
-								switch
 								v-model="courseName.fullWidth"
+								switch
 							>
 								На всю ширину
 							</b-form-checkbox>
@@ -118,9 +118,9 @@
 						</BFormGroup>
 						<BFormGroup label="Цвет текста">
 							<input
+								v-model="courseName.color"
 								type="color"
 								class="color-picker"
-								v-model="courseName.color"
 							>
 						</BFormGroup>
 						<b-form-group label="Формат текста">
@@ -173,8 +173,8 @@
 						</BFormGroup>
 						<BFormGroup label="Размер текста">
 							<BFormInput
-								type="number"
 								v-model="date.size"
+								type="number"
 							/>
 						</BFormGroup>
 						<BFormGroup
@@ -182,22 +182,22 @@
 							label="Ширина блока"
 						>
 							<b-form-checkbox
-								switch
 								v-model="date.fullWidth"
+								switch
 							>
 								На всю ширину
 							</b-form-checkbox>
 							<b-form-input
-								type="number"
 								v-model="date.width"
+								type="number"
 								:disabled="date.fullWidth"
 							/>
 						</BFormGroup>
 						<BFormGroup label="Цвет текста">
 							<input
+								v-model="date.color"
 								type="color"
 								class="color-picker"
-								v-model="date.color"
 							>
 						</BFormGroup>
 						<!--                        <b-form-group label="Формат текста">-->
@@ -303,6 +303,9 @@ import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
 export default {
 	name: 'UploadSertificateModal',
+	components: {
+		VuePdfEmbed
+	},
 	props: {
 		img: {
 			type: String,
@@ -313,9 +316,6 @@ export default {
 			default: ''
 		},
 		modalCertificate: Boolean
-	},
-	components: {
-		VuePdfEmbed
 	},
 	data() {
 		return {
@@ -363,75 +363,6 @@ export default {
 			},
 			fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
 		};
-	},
-	mounted() {
-		this.$refs.pdfpdf.style.filter = 'brightness(0.3)';
-
-		this.$refs.fullName.style.transition = '0.5s all ease';
-		this.$refs.fullName.style.backgroundColor = '#fff';
-		this.$refs.fullName.style.color = '#333';
-		this.$refs.fullName.style.padding = '10px 20px';
-		this.$refs.fullName.style.marginLeft = '20px';
-		this.$refs.fullName.style.borderRadius = '10px';
-
-		this.$refs.courseName.style.transition = '0.5s all ease';
-		this.$refs.courseName.style.backgroundColor = '#fff';
-		this.$refs.courseName.style.color = '#333';
-		this.$refs.courseName.style.padding = '10px 20px';
-		this.$refs.courseName.style.marginLeft = '20px';
-		this.$refs.courseName.style.borderRadius = '10px';
-
-		this.$refs.date.style.transition = '0.5s all ease';
-		this.$refs.date.style.backgroundColor = '#fff';
-		this.$refs.date.style.color = '#333';
-		this.$refs.date.style.padding = '10px 20px';
-		this.$refs.date.style.marginLeft = '20px';
-		this.$refs.date.style.borderRadius = '10px';
-
-		setTimeout( () => {
-			this.$refs.pdfpdf.style.filter = 'brightness(1)';
-
-			this.$refs.fullName.style.backgroundColor = 'transparent';
-			this.$refs.fullName.style.color = '#000000';
-			this.$refs.fullName.style.padding = 0;
-			this.$refs.fullName.style.marginLeft = 0;
-			this.$refs.fullName.style.borderRadius = 0;
-
-			this.$refs.courseName.style.backgroundColor = 'transparent';
-			this.$refs.courseName.style.color = '#000000';
-			this.$refs.courseName.style.padding = 0;
-			this.$refs.courseName.style.marginLeft = 0;
-			this.$refs.courseName.style.borderRadius = 0;
-
-			this.$refs.date.style.backgroundColor = 'transparent';
-			this.$refs.date.style.color = '#000000';
-			this.$refs.date.style.padding = 0;
-			this.$refs.date.style.marginLeft = 0;
-			this.$refs.date.style.borderRadius = 0;
-		}, 1000);
-
-		setTimeout( () => {
-			this.$refs.fullName.style.transition = 'none';
-			this.$refs.courseName.style.transition = 'none';
-			this.$refs.date.style.transition = 'none';
-		}, 1500);
-
-		if (this.styles.length > 0) {
-			const getStyles = JSON.parse(this.styles);
-			this.fullName = getStyles.fullName;
-			this.courseName = getStyles.courseName;
-			this.date = getStyles.date;
-			this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
-			this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
-			this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
-		}
-		let fullNameEdit = this.$refs.fullName;
-		let courseNameEdit = this.$refs.courseName;
-		let dateEdit = this.$refs.date;
-		this.initInteract(fullNameEdit);
-		this.initInteract(courseNameEdit);
-		this.initInteract(dateEdit);
-		this.$emit('save-changes', this.fullName, this.courseName, this.date);
 	},
 	computed: {
 		styleFullName() {
@@ -534,6 +465,75 @@ export default {
 			},
 			deep: true
 		}
+	},
+	mounted() {
+		this.$refs.pdfpdf.style.filter = 'brightness(0.3)';
+
+		this.$refs.fullName.style.transition = '0.5s all ease';
+		this.$refs.fullName.style.backgroundColor = '#fff';
+		this.$refs.fullName.style.color = '#333';
+		this.$refs.fullName.style.padding = '10px 20px';
+		this.$refs.fullName.style.marginLeft = '20px';
+		this.$refs.fullName.style.borderRadius = '10px';
+
+		this.$refs.courseName.style.transition = '0.5s all ease';
+		this.$refs.courseName.style.backgroundColor = '#fff';
+		this.$refs.courseName.style.color = '#333';
+		this.$refs.courseName.style.padding = '10px 20px';
+		this.$refs.courseName.style.marginLeft = '20px';
+		this.$refs.courseName.style.borderRadius = '10px';
+
+		this.$refs.date.style.transition = '0.5s all ease';
+		this.$refs.date.style.backgroundColor = '#fff';
+		this.$refs.date.style.color = '#333';
+		this.$refs.date.style.padding = '10px 20px';
+		this.$refs.date.style.marginLeft = '20px';
+		this.$refs.date.style.borderRadius = '10px';
+
+		setTimeout( () => {
+			this.$refs.pdfpdf.style.filter = 'brightness(1)';
+
+			this.$refs.fullName.style.backgroundColor = 'transparent';
+			this.$refs.fullName.style.color = '#000000';
+			this.$refs.fullName.style.padding = 0;
+			this.$refs.fullName.style.marginLeft = 0;
+			this.$refs.fullName.style.borderRadius = 0;
+
+			this.$refs.courseName.style.backgroundColor = 'transparent';
+			this.$refs.courseName.style.color = '#000000';
+			this.$refs.courseName.style.padding = 0;
+			this.$refs.courseName.style.marginLeft = 0;
+			this.$refs.courseName.style.borderRadius = 0;
+
+			this.$refs.date.style.backgroundColor = 'transparent';
+			this.$refs.date.style.color = '#000000';
+			this.$refs.date.style.padding = 0;
+			this.$refs.date.style.marginLeft = 0;
+			this.$refs.date.style.borderRadius = 0;
+		}, 1000);
+
+		setTimeout( () => {
+			this.$refs.fullName.style.transition = 'none';
+			this.$refs.courseName.style.transition = 'none';
+			this.$refs.date.style.transition = 'none';
+		}, 1500);
+
+		if (this.styles.length > 0) {
+			const getStyles = JSON.parse(this.styles);
+			this.fullName = getStyles.fullName;
+			this.courseName = getStyles.courseName;
+			this.date = getStyles.date;
+			this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
+			this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
+			this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
+		}
+		let fullNameEdit = this.$refs.fullName;
+		let courseNameEdit = this.$refs.courseName;
+		let dateEdit = this.$refs.date;
+		this.initInteract(fullNameEdit);
+		this.initInteract(courseNameEdit);
+		this.initInteract(dateEdit);
+		this.$emit('save-changes', this.fullName, this.courseName, this.date);
 	},
 	methods: {
 		saveChanges() {

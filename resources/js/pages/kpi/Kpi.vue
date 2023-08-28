@@ -6,10 +6,10 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
@@ -65,18 +65,18 @@
 					<!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
 					<tr :key="i">
 						<td
-							@click="expand(i)"
 							class="pointer"
+							@click="expand(i)"
 						>
 							<div class="d-flex align-items-center px-2">
 								<span class="mr-2">{{ i + 1 }}</span>
 								<i
-									class="fa fa-minus mt-1"
 									v-if="item.expanded"
+									class="fa fa-minus mt-1"
 								/>
 								<i
-									class="fa fa-plus mt-1"
 									v-else
+									class="fa fa-plus mt-1"
 								/>
 							</div>
 						</td>
@@ -100,16 +100,16 @@
 									class="d-flex aic"
 								>
 									<i
-										class="fa fa-user ml-2"
 										v-if="item.target.type == 1"
+										class="fa fa-user ml-2"
 									/>
 									<i
-										class="fa fa-users ml-2"
 										v-if="item.target.type == 2"
+										class="fa fa-users ml-2"
 									/>
 									<i
-										class="fa fa-briefcase ml-2"
 										v-if="item.target.type == 3"
+										class="fa fa-briefcase ml-2"
 									/>
 									<span class="ml-2 kpi-name-rows">
 										{{ item.target.name }}
@@ -166,9 +166,9 @@
 								:class="field.class"
 							>
 								<input
+									v-model="item[field.key]"
 									type="text"
 									class="form-control"
-									v-model="item[field.key]"
 									@change="validate(item[field.key], field.key)"
 								>
 							</div>
@@ -189,9 +189,9 @@
 
 					<template v-if="item.items !== undefined">
 						<tr
+							:key="i + 'a'"
 							class="collapsable"
 							:class="{'active': item.expanded}"
-							:key="i + 'a'"
 						>
 							<td :colspan="fields.length + 2">
 								<div class="table__wrapper w-100">
@@ -219,8 +219,8 @@
 
 		<!-- pagination -->
 		<JwPagination
-			class="mt-3"
 			:key="paginationKey"
+			class="mt-3"
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -228,8 +228,8 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 
 
@@ -243,9 +243,9 @@
 		>
 			<div class="row">
 				<div
-					class="col-md-4 mb-4"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="col-md-4 mb-4"
 				>
 					<b-form-checkbox
 						v-model="show_fields[field.key]"
@@ -261,6 +261,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import KpiItems from '@/pages/kpi/KpiItems'

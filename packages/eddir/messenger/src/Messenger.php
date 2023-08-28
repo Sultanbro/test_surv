@@ -160,8 +160,8 @@ class Messenger {
                    ->whereNull( 'deleted_at' )
                    ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere( 'last_name', 'like', "%$name%" ))
                    ->limit( $limit )
-                   ->get()->map(function($item) { 
-                    $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;   
+                   ->get()->map(function($item) {
+                    $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;
                     return $item;
                });
     }
@@ -791,12 +791,14 @@ class Messenger {
         $chat->description = $description;
         $chat->owner()->associate( $user );
         $chat->save();
-        $chat->members()->attach( $user->id, [ 'is_admin' => true ] );
 
-        // attach every member to chat
-        foreach ( $members as $member ) {
-            $chat->members()->attach( $member );
-        }
+        $chat->members()->syncWithoutDetaching( collect($members)->pluck('id') );
+        $chat->members()->syncWithoutDetaching( $user->id, [ 'is_admin' => true ] );
+        DB::table('messenger_chat_users')
+            ->where('chat_id', $chat->id)
+            ->where('user_id', $user->id)
+            ->update([ 'is_admin' => true ]);
+
 
         $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_CREATED, [
             'chat' => $chat->toArray(),
@@ -817,13 +819,25 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function addUserToChat( int $chatId, int $userId, User $promote ): MessengerChat {
+    public function addUserToChat( int $chatId, int | array $userId, User $promote ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
-        $chat->members()->attach( $userId );
+        $chat->members()->syncWithoutDetaching( $userId );
 
-        $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
-            'user' => User::find( $userId )->toArray(),
-        ] );
+        if(is_int($userId)){
+            $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
+                'user' => User::find( $userId )->toArray(),
+            ] );
+        }
+        else if(is_array($userId)){
+            foreach($_userId as $user => $userId){
+                $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
+                    'user' => User::find( $user )->toArray(),
+                ] );
+            }
+        }
+        else{
+            dd($userId);
+        }
 
         return $chat;
     }
@@ -864,9 +878,9 @@ class Messenger {
      */
     public function deleteChat( int $chatId, User $user ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_DELETE_CHAT );
         $chat->members()->detach();
 
+        $this->createEvent( $chat, $user, MessengerEvent::TYPE_DELETE_CHAT );
         return $chat;
     }
 
@@ -989,8 +1003,6 @@ class Messenger {
     }
 
     /**
-     * Authentication for pusher
-     *
      * @param string $channel_name
      * @param string $socket_id
      * @param string|null $data

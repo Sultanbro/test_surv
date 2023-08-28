@@ -11,23 +11,23 @@
 		</div>
 		<div class="popup__award">
 			<b-tabs
-				class="overflow-hidden"
 				v-if="itemsUser.length || itemsGroup.length || itemsPosition.length"
+				class="overflow-hidden"
 			>
 				<b-tab
-					title="Индивидуальные"
 					v-if="itemsUser.length"
+					title="Индивидуальные"
 				>
 					<template v-for="(item, idxUser) in itemsUser">
 						<div
-							class="award__title popup__content-title"
 							:key="'title-' + idxUser"
+							class="award__title popup__content-title"
 						>
 							За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
 						</div>
 						<table
-							class="award__table"
 							:key="'table-' + idxUser"
+							class="award__table"
 						>
 							<tr>
 								<td class="blue">
@@ -56,19 +56,19 @@
 					</template>
 				</b-tab>
 				<b-tab
-					title="По отделу"
 					v-if="itemsGroup.length"
+					title="По отделу"
 				>
 					<template v-for="(item, idxGroup) in itemsGroup">
 						<div
-							class="award__title popup__content-title"
 							:key="'title-' + idxGroup"
+							class="award__title popup__content-title"
 						>
 							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
 						</div>
 						<table
-							class="award__table"
 							:key="'table-' + idxGroup"
+							class="award__table"
 						>
 							<tr>
 								<td class="blue">
@@ -97,19 +97,19 @@
 					</template>
 				</b-tab>
 				<b-tab
-					title="По должности"
 					v-if="itemsPosition.length"
+					title="По должности"
 				>
 					<template v-for="(item, idxPosition) in itemsPosition">
 						<div
-							class="award__title popup__content-title"
 							:key="'title-' + idxPosition"
+							class="award__title popup__content-title"
 						>
 							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
 						</div>
 						<table
-							class="award__table"
 							:key="'table-' + idxPosition"
+							class="award__table"
 						>
 							<tr>
 								<td class="blue">
@@ -139,8 +139,8 @@
 				</b-tab>
 			</b-tabs>
 			<p
-				class="font-16 text-muted mt-3"
 				v-else
+				class="font-16 text-muted mt-3"
 			>
 				Обратитесь к своему руководителю, если хотите чтобы вам была назначена квартальная премия
 			</p>
@@ -224,6 +224,7 @@ export default {
 		},
 
 		fetchBefore() {
+			/* eslint-disable camelcase */
 			this.fetchData({
 				data_from: {
 					year: this.currentYear,
@@ -231,6 +232,7 @@ export default {
 				},
 				user_id: this.$laravel.userId
 			})
+			/* eslint-enable camelcase */
 		},
 
 		fetchData(filters = null) {
@@ -257,6 +259,7 @@ export default {
 		},
 
 		defineSourcesAndGroups() {
+			/* eslint-disable camelcase */
 			this.items.forEach(p => {
 				p.items.forEach(el => {
 					el.source = 0;
@@ -271,6 +274,7 @@ export default {
 					}
 				});
 			})
+			/* eslint-enable camelcase */
 		},
 	}
 };

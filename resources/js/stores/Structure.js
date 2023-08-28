@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import { defineStore } from 'pinia'
 import {
 	structureGet,

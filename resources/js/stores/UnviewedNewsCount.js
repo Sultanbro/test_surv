@@ -10,7 +10,7 @@ export const useUnviewedNewsStore = defineStore('unviewedNews', {
 		getUnviewedNewsCount() {
 			axios.get('/news/count-unviewed')
 				.then(res => this.unviewedNewsCount = res.data.count)
-				.catch(err => console.log(err));
+				.catch(err => console.error(err));
 		},
 		startAutoCheck() {
 			if(this.unviewedNewsTimer) return;

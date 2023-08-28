@@ -14,11 +14,11 @@
 				<div v-if="data.index == S_EMPTY7 || data.index == S_EMPTY8 || data.index == S_EMPTY11" />
 				<div v-else>
 					<input
-						type="number"
 						v-if="data.field.key == 'plan' && (data.index != S_APPLIED || data.index != S_FIRED)"
+						type="number"
 						class="form-control cell-input"
-						@change="updateSettings($event,data)"
 						:value="data.value"
+						@change="updateSettings($event,data)"
 					>
 					<div v-else>
 						{{ data.value }}
@@ -30,7 +30,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 // const S_CREATED = 0; // Создано новых лидов за день
 // const S_CALLS_OUT = 1; // ИСХ успешные соединения
 // const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
@@ -51,8 +53,14 @@ const S_APPLIED = 15; // Приняты на работу
 export default {
 	name: 'TableSummaryRecruting',
 	props: {
-		records: Array,
-		month: Object,
+		records: {
+			type: Array,
+			default: () => []
+		},
+		month: {
+			type: Object,
+			default: null
+		},
 	},
 	data: function () {
 		return {

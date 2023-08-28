@@ -62,8 +62,8 @@
 							<div
 								v-if="page == 'top'"
 								:key="gauge.key"
-								@click="edit(group_index, gauge_index)"
 								title="Нажмите, чтобы редактировать"
+								@click="edit(group_index, gauge_index)"
 							>
 								<VGauge
 									:value="Number(gauge.value)"
@@ -80,8 +80,8 @@
 							<div
 								v-else
 								:key="gauge.key + 'a'"
-								@click="edit(group_index, gauge_index)"
 								title="Нажмите, чтобы редактировать"
+								@click="edit(group_index, gauge_index)"
 							>
 								<VGauge
 									:value="Number(gauge.value)"
@@ -107,50 +107,50 @@
 								<div class="d-flex justify-content-between align-items-center">
 									<span class="pr-2 l-label">Min</span>
 									<input
+										v-model="gauge.min_value"
 										type="text"
 										class="form-control form-control-sm w-250 wiwi"
-										v-model="gauge.min_value"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
 									<span class="pr-2 l-label">Max</span>
 									<input
+										v-model="gauge.max_value"
 										type="text"
 										class="form-control form-control-sm w-250 wiwi"
-										v-model="gauge.max_value"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
 									<span class="pr-2 l-label">Сег</span>
 									<input
+										v-model="gauge.sections"
 										type="text"
 										class="form-control form-control-sm w-250 wiwi"
-										v-model="gauge.sections"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
 									<span class="pr-2 l-label">Ед.</span>
 									<input
+										v-model="gauge.unit"
 										type="text"
 										class="form-control form-control-sm wiwi"
-										v-model="gauge.unit"
 									>
 								</div>
 								<template v-if="gauge.fixed == 0">
 									<div class="d-flex justify-content-between align-items-center">
 										<span class="pr-2 l-label">Наз</span>
 										<input
+											v-model="gauge.name"
 											type="text"
 											class="form-control form-control-sm wiwi"
-											v-model="gauge.name"
 										>
 									</div>
 									<div class="d-flex justify-content-between align-items-center">
 										<span class="pr-2 l-label">Окр</span>
 										<input
+											v-model="gauge.round"
 											type="text"
 											class="form-control form-control-sm wiwi"
-											v-model="gauge.round"
 										>
 									</div>
 									<div class="d-flex justify-content-between align-items-center">
@@ -160,8 +160,8 @@
 											class="form-control form-control-sm h-23"
 										>
 											<option
-												:value="-1"
 												:key="-1"
+												:value="-1"
 											>
 												Ячейка из сводной
 											</option>
@@ -197,9 +197,9 @@
 									>
 										<span class="pr-2">Ячейка</span>
 										<input
+											v-model="gauge.cell"
 											type="text"
 											class="form-control form-control-sm wiwi text-uppercase"
-											v-model="gauge.cell"
 										>
 									</div>
 								</template>
@@ -223,9 +223,9 @@
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
 									<input
+										v-model="gauge.angle"
 										type="range"
 										class="form-control form-control-sm w-250 mr-2 wiwi"
-										v-model="gauge.angle"
 										min="-0.2"
 										max="0.2"
 										step="0.01"
@@ -235,14 +235,14 @@
 							</div>
 							<div class="d-flex">
 								<button
-									@click="save(group_index, gauge_index)"
 									class="btn btn-primary rounded mt-1 mr-2"
+									@click="save(group_index, gauge_index)"
 								>
 									Сохранить
 								</button>
 								<button
-									@click="delete_gauge(group_index, gauge_index)"
 									class="btn btn-danger rounded mt-1"
+									@click="delete_gauge(group_index, gauge_index)"
 								>
 									Удалить
 								</button>
@@ -267,9 +267,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="newGauge.name"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="newGauge.name"
 					>
 				</div>
 			</div>
@@ -286,15 +286,15 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="-1"
 							:key="-1"
+							:value="-1"
 						>
 							Ячейка из сводной
 						</option>
 						<option
-							:value="group_activity.id"
 							v-for="(group_activity, key) in group_activities"
 							:key="key"
+							:value="group_activity.id"
 						>
 							{{ group_activity.name }}
 						</option>
@@ -303,8 +303,8 @@
 			</div>
 
 			<div
-				class="row  mt-1"
 				v-if="newGauge.activity_id == -1"
+				class="row  mt-1"
 			>
 				<div class="col-5">
 					<p class="">
@@ -313,16 +313,16 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="newGauge.cell"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="newGauge.cell"
 					>
 				</div>
 			</div>
 
 			<div
-				class="row  mt-1"
 				v-if="newGauge.activity_id != -1"
+				class="row  mt-1"
 			>
 				<div class="col-5">
 					<p class="">
@@ -348,13 +348,32 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import VGauge from 'vgauge'
 export default {
 	name: 'TopGauges',
 	components:{
 		VGauge,
 	},
-	props: ['utility_items', 'editable', 'wrapper_class', 'page'],
+	props: {
+		utility_items: {
+			type: Array,
+			default: null
+		},
+		editable: {
+			type: Boolean,
+		},
+		wrapper_class: {
+			type: String,
+			default: ''
+		},
+		page: {
+			type: Number,
+			default: null
+		}
+	},
 	data() {
 		return {
 			utility: [],

@@ -5,9 +5,9 @@
 		</span>
 		<JobtronButton
 			v-if="submitButton"
-			@click="onSubmit"
 			class="AccessSelectFooter-button"
 			:disabled="submitDisabled"
+			@click="onSubmit"
 		>
 			{{ submitButton }}
 		</JobtronButton>

@@ -11,12 +11,12 @@ export default {
 	},
 	data(){
 		return {
-			user_id: 0,
+			userId: 0,
 		}
 	},
 	mounted(){
 		useAsyncPageData('/my-courses').then(data => {
-			this.user_id = +data.user_id
+			this.userId = +data.user_id
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
@@ -29,8 +29,8 @@ export default {
 		<!-- <script src="/video_learning/playerjs.js" ></script> -->
 		<div class="old__content my-course-content">
 			<MyCourse
-				v-show="user_id"
-				:user_id="user_id"
+				v-show="userId"
+				:user_id="userId"
 			/>
 		</div>
 	</DefaultLayout>

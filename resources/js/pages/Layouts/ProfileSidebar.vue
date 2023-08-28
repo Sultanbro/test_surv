@@ -11,8 +11,8 @@
 		<div class="profile__content">
 			<div class="profile__col">
 				<div
-					class="profile__logo logo-img-wrap"
 					v-if="logo || canChangeLogo"
+					class="profile__logo logo-img-wrap"
 				>
 					<template v-if="canChangeLogo && !logo">
 						<img
@@ -28,11 +28,11 @@
 					>
 					<template v-if="canChangeLogo">
 						<input
+							id="inputGroupFile04"
+							ref="file"
 							type="file"
 							class="hidden-file-input"
-							id="inputGroupFile04"
 							aria-describedby="inputGroupFileAddon04"
-							ref="file"
 							accept="image/*"
 							@change="handleFileUpload()"
 						>
@@ -74,8 +74,8 @@
 				/>
 
 				<b-modal
-					:header-class="{'border-radius':'1rem'}"
 					id="modal-sm"
+					:header-class="{'border-radius':'1rem'}"
 					title="Загрузить логотип"
 					size="lg"
 					hide-footer
@@ -106,9 +106,9 @@
 			</div>
 
 			<div
-				class="profile-video-image"
-				v-b-modal.modal-youtube
 				v-if="videoUrl && isVideoDaysNotGone"
+				v-b-modal.modal-youtube
+				class="profile-video-image"
 			>
 				<img
 					:src="'https://img.youtube.com/vi/' + youtubeVideoId + '/mqdefault.jpg'"
@@ -119,8 +119,8 @@
 
 			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
 			<div
-				class="profile__col"
 				v-if="false"
+				class="profile__col"
 			>
 				<div class="profile__active profile-box">
 					<div class="profile__title _slicked">
@@ -216,13 +216,14 @@
 						{{ corp_book.title }}
 					</h3>
 
+					<!-- eslint-disable-next-line -->
 					<div v-html="corp_book.text" />
 
 					<button
-						@click="testBook"
-						:disabled="!!bookTimer"
 						id="readCorpBook"
+						:disabled="!!bookTimer"
 						class="button-blue m-auto mt-5"
+						@click="testBook"
 					>
 						<span
 							v-if="bookTimer"
@@ -259,13 +260,13 @@
 		</b-modal>
 
 		<b-modal
+			v-if="videoUrl && isVideoDaysNotGone"
 			id="modal-youtube"
 			modal-class="modal-youtube"
 			size="xl"
 			centered
 			hide-header
 			hide-footer
-			v-if="videoUrl && isVideoDaysNotGone"
 		>
 			<iframe
 				:src="'https://www.youtube.com/embed/' + youtubeVideoId"
@@ -416,6 +417,7 @@ export default {
 		},
 	},
 	watch: {
+		/* eslint-disable-next-line camelcase */
 		corp_book(){
 			this.initCorpBook()
 		},

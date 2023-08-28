@@ -32,12 +32,13 @@ class AnalyticStat extends Model
     CONST INITIAL = 'initial'; // text field
     CONST FORMULA = 'formula'; // calculating field
     CONST TIME = 'time'; // hour from timetracking
-    CONST STAT = 'stat'; // value from individual stat 
+    CONST STAT = 'stat'; // value from individual stat
     CONST AVG = 'avg'; // avg from individual stat for 31 days
     CONST SUM = 'sum'; // sum from individual stat for 31 days
     CONST SALARY = 'salary'; // sum of salaries
     CONST REMOTE = 'remote'; // additional remote minutes
     CONST INHOUSE = 'inhouse'; // additional inhouse minutes
+    CONST SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
 
     /**
      * Form pivot table to vue
@@ -52,7 +53,7 @@ class AnalyticStat extends Model
 
         $columns = Column::where('group_id', $group_id)
             ->where('date', $date)
-            ->orderBy('order', 'asc') 
+            ->orderBy('order', 'asc')
             ->get();
 
         $weekdays = self::getWeekdays($date); // coloring weekdays
@@ -82,7 +83,7 @@ class AnalyticStat extends Model
             'group_id' => $group_id,
         ]);
 
-        // returning items 
+        // returning items
         foreach($rows as $r_index => $row) {
 
             $item = [];
@@ -420,7 +421,7 @@ class AnalyticStat extends Model
     /**
      * convert cells
      * from [123:34] to E5
-     * 
+     *
      */
     public static function convert_formula($text, $row_keys, $col_keys)
     {
@@ -613,7 +614,7 @@ class AnalyticStat extends Model
 
 
             if($text == '') $text = '0';
-            
+
             //$math_string ="return (".$text.");";
             $math_string ="return ".$text.";";
 
@@ -624,15 +625,15 @@ class AnalyticStat extends Model
             $math_string = str_replace("%","",$math_string);
             $word = "E14";
 
-        // Test if string contains the word 
+        // Test if string contains the word
 
- 
+
             $res = eval($math_string);
-            
 
-          
+
+
         } catch(\DivisionByZeroError $e) {
-          
+
             $res = 0;
         } catch( \ParseError $p) {
             $res = 0;
@@ -691,7 +692,7 @@ class AnalyticStat extends Model
             ->first();
 
         $val = 0;
-        
+
         if($row && $column) {
             $stat = self::where('column_id', $column->id)
                 ->where('row_id', $row->id)
@@ -701,11 +702,11 @@ class AnalyticStat extends Model
             if($stat && $stat->type == 'formula') {
                 $val = self::calcFormula($stat, $date, 2);
             }
-        }   
-        
+        }
 
-        
-       
+
+
+
         return $val;
     }
 
@@ -898,5 +899,22 @@ class AnalyticStat extends Model
 
         return round($impl - $impl_prev, 2);
 
+    }
+
+    public static function inHouseShowValue($groupId, $date){
+        return self::where("group_id", $groupId)
+            ->where("show_value", self::SHOW_VALUE_INHOUSE)
+            ->where('date', $date->format('Y-m-d'))
+            ->first();
+    }
+
+    public static function getValuesWithRow($analyticStat){
+        return self::where('group_id', $analyticStat->group_id)
+            ->where('date', $analyticStat->date)
+            ->where('row_id', $analyticStat->row_id)
+            ->where('type', self::INHOUSE)
+            ->where('value', '!=', null)
+            ->where('value', '!=', '')
+            ->get();
     }
 }

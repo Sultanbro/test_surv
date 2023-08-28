@@ -19,7 +19,10 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
 /* eslint-disable vue/no-mutating-props */
+
 const MEMBER = 1;
 const HEAD = 2;
 
@@ -27,15 +30,19 @@ export default {
 	name: 'ProfileBaseKnowledge',
 	props: {
 		user_id: {
+			type: Number,
 			default: null
 		},
 		groups: {
+			type: Array,
 			default: null
 		},
 		in_groups: {
-			default: []
+			type: Array,
+			default: () => []
 		},
 		user_role: {
+			type: Number,
 			default: MEMBER
 		},
 	},
@@ -48,7 +55,6 @@ export default {
 	},
 	created() {
 		this.value = this.in_groups;
-		console.log(this.url);
 
 		if(this.user_role === HEAD) {
 			this.url = '/timetracking/edit-person/head_in_groups';
@@ -108,7 +114,7 @@ export default {
 					this.messageoff()
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},

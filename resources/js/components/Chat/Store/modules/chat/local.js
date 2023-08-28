@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 function getKey(chatId){
 	return `JobtronChatMessages-${chatId}`
 }

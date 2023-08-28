@@ -49,12 +49,12 @@ class SalaryTrainees extends Command
 
         $groups = ProfileGroup::where('active', 1)->get();
 
-		$users = [];
-		foreach($groups as $group) {
-            if($group->paid_internship == 0) continue;
-			$users  = array_merge($users, json_decode($group->users));
-			$users = array_unique($users);
-		}
+		// $users = [];
+		// foreach($groups as $group) {
+  //           if($group->paid_internship == 0) continue;
+		// 	$users  = array_merge($users, json_decode($group->users));
+		// 	$users = array_unique($users);
+		// }
 
 		// $workers = User::whereIn('id', $users)->get()->pluck('id')->toArray();
         

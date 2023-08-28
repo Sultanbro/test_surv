@@ -20,25 +20,26 @@
 				v-show="!editorOpen"
 				class="news-create__link news-icon"
 				alt="img"
-				@click="toggleInput(true, true, true)"
 				src="/icon/news/create-post/link.svg"
+				@click="toggleInput(true, true, true)"
 			>
 
 			<input
-				type="text"
+				v-show="editorOpen"
 				id="newsCreateInput"
 				ref="newsCreateInput"
-				placeholder="Заголовок новости"
 				v-model="postTitle"
-				v-show="editorOpen"
+				type="text"
+				placeholder="Заголовок новости"
 				class="news-create__title"
 			>
 
 			<span
-				class="news-create__title-error"
 				v-show="titleError"
-				v-html="'Необходимо заполнить заголовок.'"
-			/>
+				class="news-create__title-error"
+			>
+				Необходимо заполнить заголовок.
+			</span>
 		</div>
 
 		<div
@@ -46,24 +47,25 @@
 			class="news-create__form"
 		>
 			<ckeditor
-				:editor="editor"
 				v-model="editorData"
+				:editor="editor"
 				:config="editorConfig"
 			/>
 
 			<span
-				class="news-create__content-error"
 				v-show="contentError"
-				v-html="'Необходимо заполнить контент новости.'"
-			/>
+				class="news-create__content-error"
+			>
+				Необходимо заполнить контент новости.
+			</span>
 
 			<div class="news-create__access-container">
 				<div
 					v-show="availableToEveryone"
-					@click="toggleAvailableToEveryone(!availableToEveryone)"
 					:class="'access-item ' + 'access-item--active'"
+					@click="toggleAvailableToEveryone(!availableToEveryone)"
 				>
-					<span v-html="'Всем пользователям'" />
+					<span>Всем пользователям</span>
 					<img src="/icon/news/create-post/remove.svg">
 				</div>
 
@@ -77,6 +79,7 @@
 						class="access-item__img"
 						:src="item.image"
 					>
+					<!-- eslint-disable-next-line -->
 					<span v-html="item.name" />
 					<img
 						src="/icon/news/create-post/remove.svg"
@@ -94,10 +97,11 @@
 			</div>
 
 			<span
-				class="news-create__content-error"
 				v-show="availableError"
-				v-html="'Необходимо указать для кого предназначена новость.'"
-			/>
+				class="news-create__content-error"
+			>
+				Необходимо указать для кого предназначена новость.
+			</span>
 		</div>
 
 		<div
@@ -113,7 +117,7 @@
 				class="news-create__submit"
 				@click="!isEdit ? createPost() : updatePost()"
 			>
-				<span v-html="isEdit ? 'Сохранить' : 'Отправить'" />
+				<span>{{ isEdit ? 'Сохранить' : 'Отправить' }}</span>
 			</a>
 		</div>
 
@@ -129,9 +133,9 @@
 
 		<div
 			v-show="showAccessModal"
+			v-scroll-lock="showAccessModal"
 			class="access-modal-bg"
 			@click.self="toggleAccessModal(false)"
-			v-scroll-lock="showAccessModal"
 		>
 			<div class="access-modal">
 				<div class="access-modal__search">
@@ -140,8 +144,8 @@
 						src="/icon/news/filter/search.svg"
 					>
 					<input
-						type="text"
 						v-model="accessSearch"
+						type="text"
 						class="access-modal__search-input"
 						placeholder="Быстрый поиск"
 					>
@@ -181,8 +185,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.users"
-							:key="item.id"
 							v-show="item.name && item.last_name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) || item.last_name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 						>
@@ -201,8 +205,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 									:checked="checked(item, 1) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -214,8 +218,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.profile_groups"
-							:key="item.id"
 							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 2)"
 						>
@@ -227,8 +231,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 2)"
 									:checked="checked(item, 2) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 2)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -240,8 +244,8 @@
 					>
 						<div
 							v-for="item in accessDictionaries.positions"
-							:key="item.id"
 							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							:key="item.id"
 							class="user-item"
 							@click="changeAccessList(item.id, item.name, 3)"
 						>
@@ -253,8 +257,8 @@
 							<label class="news-checkbox">
 								<input
 									type="checkbox"
-									@click="changeAccessList(item.id, item.name, 3)"
 									:checked="checked(item, 3) ? 'checked' : ''"
+									@click="changeAccessList(item.id, item.name, 3)"
 								>
 								<span class="news-checkmark" />
 							</label>
@@ -263,10 +267,9 @@
 				</div>
 
 				<div class="access-modal__footer">
-					<span
-						class="access-modal__selected-count"
-						v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"
-					/>
+					<span class="access-modal__selected-count">
+						{{ enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов']) }}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -281,12 +284,6 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
-
-function SimpleUploadAdapterPlugin(editor) {
-	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-		return new UploadAdapter(loader);
-	};
-}
 
 class UploadAdapter {
 	constructor(loader) {
@@ -351,6 +348,13 @@ class UploadAdapter {
 	}
 }
 
+
+function SimpleUploadAdapterPlugin(editor) {
+	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+		return new UploadAdapter(loader);
+	};
+}
+
 export default {
 	name: 'NewsCreate',
 	components: {
@@ -358,6 +362,7 @@ export default {
 	},
 	props: {
 		me: {
+			type: Object,
 			required: true
 		},
 	},
@@ -607,7 +612,7 @@ export default {
 					this.toggleInput(false, false);
 				})
 				.catch(response => {
-					console.log(response)
+					console.error(response)
 				});
 			this.isEdit = false;
 		},
@@ -676,7 +681,7 @@ export default {
 					this.toggleInput(false, false);
 				})
 				.catch(response => {
-					console.log(response)
+					console.error(response)
 				});
 			this.isEdit = false;
 		},

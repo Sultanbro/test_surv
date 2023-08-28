@@ -31,8 +31,8 @@
 					md="9"
 				>
 					<div
-						class="table-container"
 						v-if="role == null"
+						class="table-container"
 					>
 						<b-table-simple class="table-bordered custom-table-permissions">
 							<b-thead>
@@ -42,8 +42,8 @@
 									<b-th>
 										Отделы
 										<i
-											class="fa fa-info-circle ml-2"
 											v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'"
+											class="fa fa-info-circle ml-2"
 											title="Доступ к отделам"
 										/>
 									</b-th>
@@ -52,14 +52,14 @@
 							</b-thead>
 							<b-tbody>
 								<PermissionItem
-									v-for="(item, i) in filtered_items"
+									v-for="(item, i) in filteredItems"
 									:key="item.id"
-									@deleteItem="deleteItem(i)"
-									@updateItem="updateItem(i)"
 									:item="item"
 									:groups="groups"
 									:users="users"
 									:roles="roles"
+									@deleteItem="deleteItem(i)"
+									@updateItem="updateItem(i)"
 								/>
 							</b-tbody>
 						</b-table-simple>
@@ -80,8 +80,8 @@
 						</div>
 
 						<input
-							type="text"
 							v-model="role.name"
+							type="text"
 							class="role-title form-control mb-3"
 						>
 
@@ -100,8 +100,8 @@
 
 							<template v-for="(page, index) in filteredPages">
 								<div
-									class="item d-flex"
 									:key="index"
+									class="item d-flex"
 								>
 									<div
 										class="name mr-3"
@@ -109,12 +109,12 @@
 									>
 										{{ page.name }}
 										<i
-											class="fa fa-chevron-up"
 											v-if="page.opened && page.children.length > 0"
+											class="fa fa-chevron-up"
 										/>
 										<i
-											class="fa fa-chevron-down"
 											v-if="!page.opened && page.children.length > 0"
+											class="fa fa-chevron-down"
 										/>
 									</div>
 									<div class="check d-flex">
@@ -123,8 +123,8 @@
 											class="mb-0 pointer"
 										>
 											<input
-												class="pointer"
 												v-model="role.perms[page.key + '_view']"
+												class="pointer"
 												type="checkbox"
 												@change="checkParent(index, 'view')"
 											>
@@ -136,8 +136,8 @@
 											class="mb-0 pointer"
 										>
 											<input
-												class="pointer"
 												v-model="role.perms[page.key + '_edit']"
+												class="pointer"
 												type="checkbox"
 												@change="checkParent(index, 'edit')"
 											>
@@ -148,9 +148,9 @@
 								<template v-if="page.children.length > 0">
 									<template v-if="page.opened">
 										<div
-											class="item d-flex child"
 											v-for="children in filteredPageChildren(index)"
 											:key="children.key"
+											class="item d-flex child"
 										>
 											<div class="name mr-3">
 												{{ children.name }}
@@ -161,8 +161,8 @@
 													class="mb-0 pointer"
 												>
 													<input
-														class="pointer"
 														v-model="role.perms[children.key + '_view']"
+														class="pointer"
 														type="checkbox"
 														@change="checkChild(index, 'view')"
 													>
@@ -174,8 +174,8 @@
 													class="mb-0 pointer"
 												>
 													<input
-														class="pointer"
 														v-model="role.perms[children.key + '_edit']"
+														class="pointer"
 														type="checkbox"
 														@change="checkChild(index, 'edit')"
 													>
@@ -207,16 +207,16 @@
 							<div class="contrast role-title">
 								<b>Список ролей</b>
 								<img
+									v-b-popover.hover.bottom="'В Роли указывается что доступно для просмотра и Редактирования'"
 									src="/images/dist/profit-info.svg"
 									class="img-info"
-									v-b-popover.hover.bottom="'В Роли указывается что доступно для просмотра и Редактирования'"
 								>
 							</div>
 							<div class="role-body">
 								<div
-									class="role-item"
 									v-for="(item, i) in roles"
 									:key="i"
+									class="role-item"
 								>
 									<div
 										class="name"
@@ -282,7 +282,7 @@ export default {
 		filteredPages(){
 			return this.isBp ? this.pages : this.pages.filter(p => p.key !== 'faq');
 		},
-		filtered_items(){
+		filteredItems(){
 			if(!this.searchText) return this.items
 			const lowerText = this.searchText.toLowerCase()
 			return this.items.filter(el => {
@@ -340,6 +340,7 @@ export default {
 			this.items.unshift(
 				{
 					id: 0,
+					/* eslint-disable-next-line camelcase */
 					groups_all: false,
 					targets: [],
 					roles: [],
@@ -354,9 +355,9 @@ export default {
 				return false;
 			}
 
-			if(this.filtered_items[i].id == 0) {
+			if(this.filteredItems[i].id == 0) {
 
-				let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+				let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 				if(index != -1) this.items.splice(index, 1);
 				return false;
 			}
@@ -364,10 +365,10 @@ export default {
 			let loader = this.$loading.show();
 			this.axios
 				.post( '/permissions/delete-target', {
-					id: this.filtered_items[i].id
+					id: this.filteredItems[i].id
 				})
 				.then(() => {
-					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 					if(index != -1) this.items.splice(index, 1);
 
 					loader.hide();
@@ -384,11 +385,11 @@ export default {
 			let loader = this.$loading.show();
 			this.axios
 				.post( '/permissions/update-target', {
-					item: this.filtered_items[i],
+					item: this.filteredItems[i],
 				})
 				.then((response) => {
 
-					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					let index = this.items.findIndex(it => it.id == this.filteredItems[i].id);
 					if(index != -1) this.items.id = response.data.id;
 
 					loader.hide();

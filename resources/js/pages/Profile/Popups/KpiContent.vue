@@ -56,9 +56,9 @@
 						<table class="kpi__activities-table">
 							<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
 								<tr
+									:key="w + 'a'"
 									class="collapsable"
 									:class="{'active': wrap_item.expanded || !editable }"
-									:key="w + 'a'"
 								>
 									<td
 										:colspan="editable ? 3 : 7"
@@ -73,8 +73,8 @@
 														class="child-row"
 													>
 														<td
-															@click="user.expanded = !user.expanded"
 															class="pointer px-2"
+															@click="user.expanded = !user.expanded"
 														>
 															<span class="ml-2 bg-transparent">{{ i + 1 }}</span>
 														</td>
@@ -85,8 +85,8 @@
 														<template v-if="user.items !== undefined">
 															<td
 																v-for="kpi_item in user.items"
-																class="px-2"
 																:key="kpi_item"
+																class="px-2"
 															>
 																{{ kpi_item.name }} <b>{{ kpi_item.percent }}%</b>
 															</td>
@@ -95,9 +95,9 @@
 
 													<template v-if="user.items !== undefined">
 														<tr
+															:key="i + 'a'"
 															class="collapsable"
 															:class="{'active': true}"
-															:key="i + 'a'"
 														>
 															<td
 																:colspan="fields.length + 2"
@@ -178,12 +178,10 @@ export default {
 	methods: {
 		countAvg() {
 			this.items.forEach(kpi => {
-
-				let kpi_sum = 0;
-				let kpi_count = 0;
+				let kpiSum = 0;
+				let kpiCount = 0;
 
 				kpi.users.forEach(user => {
-
 					let count = 0;
 					let sum = 0;
 					let avg = 0;
@@ -201,15 +199,14 @@ export default {
 					user.avg = avg;
 
 					// all kpi sum
-					kpi_sum += Number(avg);
-					kpi_count++;
+					kpiSum += Number(avg);
+					kpiCount++;
 				});
 
 				/**
 				 * count avg completed percent of kpi by users
 				 */
-				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-
+				kpi.avg = kpiCount > 0 ? Number(Number(kpiSum / kpiCount * 100).toFixed(2)) : 0;
 			});
 		},
 	}

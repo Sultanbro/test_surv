@@ -8,15 +8,15 @@
 			>
 				<b-form-group v-if="data.length">
 					<multiselect
+						ref="positionMultiselect"
 						v-model="activebtn"
 						:options="data"
-						@select="selectPosition"
 						placeholder="Выберите должность"
 						track-by="position"
 						label="position"
-						ref="positionMultiselect"
+						@select="selectPosition"
 					>
-						<template slot="afterList">
+						<template #afterList>
 							<li class="multiselect-add-li">
 								<span
 									class="multiselect-add-btn"
@@ -27,8 +27,8 @@
 					</multiselect>
 				</b-form-group>
 				<button
-					class="btn btn-success"
 					v-else
+					class="btn btn-success"
 					@click="addNewPosition"
 				>
 					Добавить новую должность
@@ -54,8 +54,8 @@
 						class="add-grade"
 					>
 						<b-form-input
-							type="text"
 							v-model="new_position"
+							type="text"
 						/>
 					</b-form-group>
 				</b-col>
@@ -74,9 +74,9 @@
 						>
 							Руководящая должность
 							<img
+								v-b-popover.hover.right="'Сотрудника с такой должностью можно будет назначить руководителем отдела'"
 								src="/images/dist/profit-info.svg"
 								class="img-info"
-								v-b-popover.hover.right="'Сотрудника с такой должностью можно будет назначить руководителем отдела'"
 							>
 						</b-form-checkbox>
 					</b-form-group>
@@ -89,16 +89,16 @@
 				>
 					<b-form-group label="Сумма индексации">
 						<b-form-input
+							v-if="indexation"
+							v-model="sum"
 							type="text"
 							class="form-control group-select"
-							v-model="sum"
-							v-if="indexation"
 						/>
 						<b-form-input
+							v-else
+							v-model="sum"
 							type="text"
 							class="form-control group-select"
-							v-model="sum"
-							v-else
 							disabled
 						/>
 					</b-form-group>
@@ -116,9 +116,9 @@
 						>
 							Индексация зарплаты
 							<img
+								v-b-popover.hover.right="'Каждые 90 дней оклад сотрудника будет увеличиваться сумму индексации'"
 								src="/images/dist/profit-info.svg"
 								class="img-info"
-								v-b-popover.hover.right="'Каждые 90 дней оклад сотрудника будет увеличиваться сумму индексации'"
 							>
 						</b-form-checkbox>
 					</b-form-group>
@@ -134,9 +134,9 @@
 					>
 						Показывать в профиле
 						<img
+							v-b-popover.hover.right="'Активировав эту функцию, у сотрудников данной должности в профиле будет показан данный блок'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.right="'Активировав эту функцию, у сотрудников данной должности в профиле будет показан данный блок'"
 						>
 					</b-form-checkbox>
 				</div>
@@ -195,15 +195,15 @@
 			</div>
 			<div class="text-right mt-3">
 				<button
-					@click="savePosition"
 					class="btn btn-success mr-2"
+					@click="savePosition"
 				>
 					Сохранить
 				</button>
 				<button
 					v-if="!addNew"
-					@click.stop="deletePosition"
 					class="btn btn-danger mr-2"
+					@click.stop="deletePosition"
 				>
 					<i
 						class="fa fa-trash mr-2"
@@ -215,8 +215,11 @@
 </template>
 
 <script>
+/* eslint-disable camelcase, vue/require-prop-types */
+
 // если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
 // если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
+
 export default {
 	name: 'CompanyProfessions',
 	props: ['positions'],
@@ -283,7 +286,6 @@ export default {
 				name: value.id,
 			}).then(response => {
 				//this.$toast.info('Добавлена');
-				console.log(response.data);
 				const data = response.data?.data
 				if(!data[0]) return console.error(response)
 				this.new_position = data[0].position;
@@ -301,22 +303,8 @@ export default {
 					show: data[0].show,
 				}
 			}).catch(error => {
-				console.log(error.response)
+				console.error(error.response)
 			})
-
-
-			// if (response.data) {
-			//                   this.gname = this.activebtn
-			//                   this.value = response.data.users
-			//                   this.bgs = response.data.book_groups
-			//                   this.timeon = response.data.timeon
-			//                   this.timeoff = response.data.timeoff
-			//                   this.group_id = response.data.group_id
-			//                   this.zoom_link = response.data.zoom_link
-			//                   this.bp_link = response.data.bp_link
-			//               } else {
-			//                   this.value = []
-			//               }
 		},
 		async addPosition() {
 			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {
@@ -385,23 +373,23 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .position-card{
-        border: 1px solid #ddd;
-        .card-header, .card-body{
-            padding: 10px 20px;
-        }
-        textarea.form-control{
-            padding: 5px 20px !important;
-            min-height: 80px!important;
-        }
-    }
-    .position-title-new{
-        color: rgb(0 128 0);
-        display: inline-block;
-        padding: 5px 20px;
-        border-radius: 6px;
-        background-color: rgba(0,128,0,0.2)
-    }
+.position-card{
+		border: 1px solid #ddd;
+		.card-header, .card-body{
+				padding: 10px 20px;
+		}
+		textarea.form-control{
+				padding: 5px 20px !important;
+				min-height: 80px!important;
+		}
+}
+.position-title-new{
+		color: rgb(0 128 0);
+		display: inline-block;
+		padding: 5px 20px;
+		border-radius: 6px;
+		background-color: rgba(0,128,0,0.2)
+}
 .listprof {
 	display: flex;
 	margin-top: 20px;
@@ -521,6 +509,6 @@ span.before {
 .p {
 	font-size: 14px;
 	width: 200px;
-		color: #5a5a5a;
+	color: #5a5a5a;
 }
 </style>

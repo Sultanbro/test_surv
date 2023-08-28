@@ -5,9 +5,9 @@
 			:class="[activeClass]"
 		>
 			<div
+				id="hoverPulse"
 				class="filler"
 				@click="showSalarySidebar = true"
-				id="hoverPulse"
 			>
 				<img
 					src="/images/money1.png"
@@ -96,9 +96,9 @@
 		</div>
 
 		<div
+			v-if="has_quartal_premiums"
 			class="flexy"
 			:class="[activeClass]"
-			v-if="has_quartal_premiums"
 		>
 			<div
 				class="filler"
@@ -163,8 +163,8 @@
 		<sidebar
 			title="Баланс оклада"
 			:open="showSalarySidebar"
-			@close="showSalarySidebar = false"
 			width="40%"
+			@close="showSalarySidebar = false"
 		>
 			<div class="mt-2">
 				<table class="table table-bordered table-sm ue-table">
@@ -207,11 +207,11 @@
 
 
 		<sidebar
+			v-if="showKpiSidebar"
 			title="KPI"
 			:open="showKpiSidebar"
-			@close="showKpiSidebar = false"
-			v-if="showKpiSidebar"
 			width="80%"
+			@close="showKpiSidebar = false"
 		>
 			<!-- table -->
 			<t-stats
@@ -248,8 +248,8 @@
 		<sidebar
 			title="Бонусы"
 			:open="showBonusSidebar"
-			@close="showBonusSidebar = false"
 			width="40%"
+			@close="showBonusSidebar = false"
 		>
 			<div class="mt-2 p-2">
 				<template v-if="data.bonusHistory.length > 0">
@@ -271,6 +271,7 @@
 						>
 							<td>{{ item.date }}</td>
 							<td>{{ item.sum }}</td>
+							<!-- eslint-disable-next-line -->
 							<td v-html="item.comment" />
 						</tr>
 					</table>
@@ -280,6 +281,7 @@
 					<h6 style="color:#13547e;">
 						Зарабатывайте бонусы выполняя дополнительные активности:
 					</h6>
+					<!-- eslint-disable-next-line -->
 					<div v-html="data.potential_bonuses" />
 				</div>
 
@@ -298,8 +300,8 @@
 		<sidebar
 			title="Квартальная премия"
 			:open="showQuartalPremiumSidebar"
-			@close="showQuartalPremiumSidebar = false"
 			width="60%"
+			@close="showQuartalPremiumSidebar = false"
 		>
 			<t-stats-quartal
 				:users="quartal_premiums"
@@ -323,16 +325,29 @@
 </template>
 
 <script>
-/* import AwardSidebar from './AwardSidebar' */
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import AwardBSidebar from './AwardBSidebar'
 
 export default {
 	name: 'UserEarnings',
-	components: { /* AwardSidebar, */ AwardBSidebar },
+	components: {
+		AwardBSidebar,
+	},
 	props: {
-		month: {},
-		data: Object,
-		activeuserid: Number,
+		month: {
+			type: Object,
+			default: null
+		},
+		data: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
 		has_quartal_premiums: Boolean
 	},
 

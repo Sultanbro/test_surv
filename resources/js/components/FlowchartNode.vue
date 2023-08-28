@@ -2,10 +2,10 @@
 	<div
 		class="flowchart-node"
 		:style="nodeStyle"
+		:class="{selected: options.selected === id}"
 		@mousedown="handleMousedown"
 		@mouseover="handleMouseOver"
 		@mouseleave="handleMouseLeave"
-		:class="{selected: options.selected === id}"
 	>
 		<template v-if="type!='start'">
 			<div
@@ -54,34 +54,34 @@
 
 			<div
 				v-else
-				v-text="type"
 				class="node-type"
+				v-text="type"
 			/>
 
 			<div
-				v-text="label"
 				class="node-label"
+				v-text="label"
 			/>
 			<div
 				v-if="type==='Музыка'"
-				v-text="audio_file"
 				class="audio_file"
+				v-text="audio_file"
 			/>
 			<div
 				v-if="type==='Кнопка'"
-				v-text="key_button"
 				class="node-key"
+				v-text="key_button"
 			/>
 			<div
 				v-if="type==='Кнопка'"
-				v-text="action_button"
 				class="node-action"
+				v-text="action_button"
 			/>
 			<div
 				v-if="action_button==='Позвонить оператору' || action_button==='Связать с номером' ||
 					action_button==='Перенести в отдел'"
-				v-text="connect_with"
 				class="node-connection"
+				v-text="connect_with"
 			/>
 		</div>
 
@@ -118,9 +118,10 @@
 	</div>
 </template>
 
-
-
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 export default {
 	name: 'FlowchartNode',
 	props: {
@@ -137,7 +138,7 @@ export default {
 			validator(val) {
 				return typeof val === 'number'
 			}
-		},    
+		},
 		y: {
 			type: Number,
 			default: 0,
@@ -220,16 +221,16 @@ export default {
 			}
 		}
 	},
-	mounted() {
-	},
 	computed: {
 		nodeStyle() {
 			return {
-				top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop + 
+				top: this.options.centerY + this.y * this.options.scale + 'px', // remove: this.options.offsetTop +
 				left: this.options.centerX + this.x * this.options.scale + 'px', // remove: this.options.offsetLeft +
 				transform: `scale(${this.options.scale})`,
 			}
 		}
+	},
+	mounted() {
 	},
 	methods: {
 		handleMousedown(e) {

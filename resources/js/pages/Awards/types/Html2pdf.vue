@@ -8,9 +8,9 @@
 			}"
 		>
 			<section
+				ref="pdfContent"
 				class="content-wrapper"
 				:style="`width: ${pdfContentWidth};`"
-				ref="pdfContent"
 			>
 				<slot name="pdf-content" />
 			</section>
@@ -18,8 +18,8 @@
 
 		<transition name="transition-anim">
 			<section
-				class="pdf-preview"
 				v-if="pdfFile"
+				class="pdf-preview"
 			>
 				<button @click.self="closePreview()">
 					&times;
@@ -61,7 +61,8 @@ export default {
 		},
 
 		paginateElementsByHeight: {
-			type: Number
+			type: Number,
+			default: 0
 		},
 
 		filename: {
@@ -75,6 +76,7 @@ export default {
 		},
 
 		pdfFormat: {
+			type: String,
 			default: 'a4',
 		},
 
@@ -84,11 +86,13 @@ export default {
 		},
 
 		pdfContentWidth: {
+			type: String,
 			default: '800px'
 		},
 
 		htmlToPdfOptions: {
-			type: Object
+			type: Object,
+			default: null
 		},
 
 		manualPagination: {

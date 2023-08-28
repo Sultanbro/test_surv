@@ -1,11 +1,11 @@
 <template>
 	<div
-		class="structure-container"
 		ref="container"
+		class="structure-container"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="[{'is-dragging': isDragging}, {'overflow-hidden': editedCard}]"
 	>
 		<div
 			v-if="$can('structure_edit')"
@@ -43,8 +43,8 @@
 		>
 			<input
 				id="range-input"
-				class="range-input"
 				v-model.number="zoom"
+				class="range-input"
 				min="10"
 				max="200"
 				step="1"
@@ -59,8 +59,8 @@
 			}"
 		>
 			<div
-				class="departments-area"
 				ref="departmentsArea"
+				class="departments-area"
 			>
 				<template v-if="rootCard">
 					<StructureItem
@@ -175,6 +175,7 @@ export default {
 				users: this.dictionaries.users.filter(user => {
 					return !user.deleted_at && user.last_seen
 				}),
+				/* eslint-disable-next-line camelcase */
 				profile_groups: this.dictionaries.profile_groups.filter(group => {
 					return group.active
 				}),
@@ -191,6 +192,7 @@ export default {
 			if(this.cards && this.cards.length){
 				return this.cards
 			}
+			/* eslint-disable camelcase */
 			const ownerCard = {
 				...this.getEmptyCard(),
 				id: null,
@@ -198,11 +200,15 @@ export default {
 				name: 'Генеральный директор',
 				is_vacant: false,
 			}
+			/* eslint-enable camelcase */
+
 			if(this.owner){
+				/* eslint-disable camelcase */
 				ownerCard.manager = {
 					user_id: this.owner.id,
 					position_id: this.owner.position_id
 				}
+				/* eslint-enable camelcase */
 				ownerCard.users = [
 					{
 						id: this.owner.id
@@ -367,10 +373,12 @@ export default {
 			}
 		},
 		async removeDemo(){
+			/* eslint-disable camelcase */
 			await updateSettings({
 				type: 'structure_demo_removed',
 				custom_structure_demo_removed: 1
 			})
+			/* eslint-enable camelcase */
 			this.$toast.success('Демо данные удалены')
 			this.setDemo(false)
 		},

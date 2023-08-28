@@ -1,9 +1,9 @@
 <template>
 	<canvas
 		v-if="points"
+		v-render="points"
 		:width="width"
 		:height="height"
-		v-render="points"
 	/>
 </template>
 

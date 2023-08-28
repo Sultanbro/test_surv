@@ -36,15 +36,15 @@
 					<div class="popupShowSelected">
 						<div v-if="selectedRole.role_1">
 							<p
-								class="list-role"
 								v-for="(item, index) in groups_arr"
 								:key="index"
+								class="list-role"
 							>
 								<a
-									@click="addDivBlock(item.name,item.code,'1')"
 									:class="{ active: item.checked }"
 									class="btn btn-block"
 									style="display: flex"
+									@click="addDivBlock(item.name,item.code,'1')"
 								>
 									<i class="fas fa-arrow-alt-circle-right  style-icons" />
 									<span style="margin-top: 5px; margin-left:15px;">{{ item.name }}</span>
@@ -57,15 +57,15 @@
 						</div>
 						<div v-if="selectedRole.role_2">
 							<p
-								class="list-role"
 								v-for="(item, index) in positions_arr"
 								:key="index"
+								class="list-role"
 							>
 								<a
-									@click="addDivBlock(item.name,item.code,'2')"
 									:class="{ active: item.checked }"
 									class="btn btn-block"
 									style="display: flex"
+									@click="addDivBlock(item.name,item.code,'2')"
 								>
 									<i class="fas fa-arrow-alt-circle-right style-icons" />
 									<span style="margin-top: 5px; margin-left:15px;">{{ item.name }}</span>
@@ -78,15 +78,15 @@
 						</div>
 						<div v-if="selectedRole.role_3">
 							<p
-								class="list-role"
 								v-for="(item, index) in allusers_arr"
 								:key="index"
+								class="list-role"
 							>
 								<a
-									@click="addDivBlock(item.name,item.code,'3')"
 									:class="{ active: item.checked }"
 									class="btn btn-block"
 									style="display: flex"
+									@click="addDivBlock(item.name,item.code,'3')"
 								>
 									<i class="fas fa-arrow-alt-circle-right  style-icons" />
 									<span style="margin-top: 5px; margin-left:15px;">{{ item.last_name }} {{ item.name }}</span>
@@ -112,9 +112,9 @@
 					>Добавить Отделы/Сотрудники</a>
 
 					<div
-						class="addElement"
 						v-for="(item,i) in allValueArray"
 						:key="i"
+						class="addElement"
 					>
 						<a class="elementHoverList">
 							<span> {{ item.text }} </span>
@@ -134,15 +134,11 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 export default {
 	name: 'ModalRole',
-	props: {
-		groups:{},
-		allusers:{},
-		positions:{},
-		editValueThis:{}
-	},
+	props: {},
 	data() {
 		return {
 			flag_type:true,

@@ -18,15 +18,15 @@
 			>
 				<b-form-group class="w-100">
 					<multiselect
+						ref="groupsMultiselect"
 						v-model="activebtn"
 						:options="statuses"
-						@select="selectGroup"
 						placeholder="Выберите отдел из списка"
 						track-by="group"
 						label="group"
-						ref="groupsMultiselect"
+						@select="selectGroup"
 					>
-						<template slot="afterList">
+						<template #afterList>
 							<li class="multiselect-add-li">
 								<span
 									class="multiselect-add-btn"
@@ -38,8 +38,8 @@
 				</b-form-group>
 				<button
 					class="btn btn-info rounded add-s ml-4"
-					@click="showArchiveModal = true"
 					title="Восстановить из архива"
+					@click="showArchiveModal = true"
 				>
 					<i class="fa fa-archive" />
 				</button>
@@ -67,21 +67,21 @@
 					class="mb-4"
 				>
 					<b-form-input
+						v-model="new_status"
 						type="text"
 						class="form-control"
-						v-model="new_status"
 					/>
 				</b-form-group>
 				<div
-					class="dialerlist"
 					v-if="workChart"
+					class="dialerlist"
 				>
 					<div class="fl">
 						График работы
 						<img
+							v-b-popover.hover.right="'Начало и окончание рабочего дня всего отдела, индивидуальное время выставляется в профиле'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.right="'Начало и окончание рабочего дня всего отдела, индивидуальное время выставляется в профиле'"
 						>
 					</div>
 					<div class="fl">
@@ -105,8 +105,8 @@
 				</div>
 
 				<div
-					class="dialerlist"
 					v-if="isBp"
+					class="dialerlist"
 				>
 					<div class="fl">
 						Подтягивать время
@@ -117,8 +117,8 @@
 					</div>
 					<div class="fl">
 						<input
-							type="text"
 							v-model="time_address_text"
+							type="text"
 							class="form-control"
 							style="background: #fff"
 							disabled
@@ -128,16 +128,16 @@
 
 				<!-- Статус: скрыто. Компонент: groups. Дата скрытия: 03.02.2023 12:13 -->
 				<div
-					class="dialerlist"
 					v-if="false"
+					class="dialerlist"
 				>
 					<div class="fl">
 						Кол-во рабочих дней
 						<img
+							id="info1"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
 							alt="info icon"
-							id="info1"
 						>
 						<b-popover
 							target="info1"
@@ -153,8 +153,8 @@
 					</div>
 					<div class="fl">
 						<input
-							type="number"
 							v-model="workdays"
+							type="number"
 							class="form-control"
 							min="1"
 							max="7"
@@ -182,17 +182,17 @@
 					>
 						Оплачиваемая стажировка
 						<img
+							v-b-popover.hover.right="'Стажировочные дни будут оплачиваться в размере 50% от дневного оклада'"
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.right="'Стажировочные дни будут оплачиваться в размере 50% от дневного оклада'"
 						>
 					</b-form-checkbox>
 				</div>
 				<div class="card groups-card mt-4">
 					<div class="card-header">
 						<b-form-checkbox
-							class="mt-3"
 							v-model="show_payment_terms"
+							class="mt-3"
 							:value="1"
 							:unchecked-value="0"
 							switch
@@ -213,21 +213,21 @@
 
 			<div class="col-lg-6 mb-3 sssz">
 				<div
-					class="card groups-card staff-list"
 					v-if="value.length"
+					class="card groups-card staff-list"
 				>
 					<div class="card-header">
 						<b-form-input
-							placeholder="Поиск по сотрудникам"
 							v-model="searchUsers"
+							placeholder="Поиск по сотрудникам"
 						/>
 						<span>Сотрудников: {{ value.length }}</span>
 					</div>
 					<div class="card-body">
 						<div
-							class="employee"
 							v-for="(employee, index) in filteredUsers"
 							:key="employee.id"
+							class="employee"
 						>
 							<span>{{ employee.email }}</span> <i
 								class="fa fa-trash btn btn-icon btn-danger"
@@ -250,15 +250,15 @@
 			</div>
 			<div class="col-lg-12 mb-3">
 				<button
-					@click="saveusers"
 					class="btn btn-success mr-2 rounded"
+					@click="saveusers"
 				>
 					Сохранить
 				</button>
 				<button
-					@click.stop="deleted"
-					class="btn btn-danger mr-2 rounded"
 					v-if="!addNewGroup"
+					class="btn btn-danger mr-2 rounded"
+					@click.stop="deleted"
 				>
 					<i class="fa fa-trash" /> Удалить группу
 				</button>
@@ -269,29 +269,29 @@
 		<b-modal
 			v-model="showEditTimeAddress"
 			title="Подтягивать часы"
-			@ok="saveTimeAddress()"
 			size="lg"
 			class="modalle"
+			@ok="saveTimeAddress()"
 		>
 			<div class="row">
 				<div class="col-5 mt-1">
 					<p class="">
 						Источник часов
 						<i
-							class="fa fa-info-circle"
 							v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
+							class="fa fa-info-circle"
 						/>
 					</p>
 				</div>
 				<div class="col-7">
 					<select
-						class="form-control form-control-sm"
 						v-model="time_address"
+						class="form-control form-control-sm"
 					>
 						<option
-							:value="key"
 							v-for="(time, key) in time_variants"
 							:key="key"
+							:value="key"
 						>
 							{{ time }}
 						</option>
@@ -300,15 +300,15 @@
 			</div>
 
 			<div
-				class="row"
 				v-if="time_address == -1"
+				class="row"
 			>
 				<div class="col-5 mt-1">
 					<div class="fl">
 						ID диалера
 						<i
-							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
+							class="fa fa-info-circle ml-2"
 							title="Диалер в U-Calls"
 						/>
 					</div>
@@ -316,14 +316,14 @@
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
 						<input
-							type="text"
 							v-model="dialer_id"
+							type="text"
 							placeholder="ID"
 							class="form-control scscsc"
 						>
 						<input
-							type="number"
 							v-model="script_id"
+							type="number"
 							placeholder="ID скрипта"
 							class="form-control scscsc"
 						>
@@ -332,15 +332,15 @@
 			</div>
 
 			<div
-				class="row"
 				v-if="time_address == -1"
+				class="row"
 			>
 				<div class="col-5 mt-1">
 					<div class="fl">
 						Сколько минут считать, за полный рабочий день
 						<i
-							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'"
+							class="fa fa-info-circle ml-2"
 							title="Ставить полный рабочий день"
 						/>
 					</div>
@@ -348,14 +348,14 @@
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
 						<input
-							type="text"
 							v-model="talk_minutes"
+							type="text"
 							placeholder="ID"
 							class="form-control scscsc"
 						>
 						<input
-							type="number"
 							v-model="talk_hours"
+							type="number"
 							placeholder="ID скрипта"
 							class="form-control scscsc"
 						>
@@ -369,8 +369,8 @@
 						Исключения
 
 						<i
-							class="fa fa-info-circle"
 							v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
+							class="fa fa-info-circle"
 						/>
 					</p>
 				</div>
@@ -397,8 +397,8 @@
 			v-model="showArchiveModal"
 			size="md"
 			title="Восстановить из архива"
-			@ok="restoreGroup()"
 			class="modalle"
+			@ok="restoreGroup()"
 		>
 			<div>
 				<b-form-group>
@@ -407,9 +407,9 @@
 						class="form-control"
 					>
 						<option
-							:value="archived_group"
 							v-for="(archived_group, key) in archived_groups"
 							:key="key"
+							:value="archived_group"
 						>
 							{{ archived_group.name }}
 						</option>
@@ -421,15 +421,27 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import { getShiftDays } from '@/composables/shifts'
 
 export default {
 	name: 'CompanyGroups',
-	props: [
-		'statuseses',
-		'activeuserid',
-		'archived_groupss',
-	],
+	props: {
+		statuseses: {
+			type: Array,
+			default: () => []
+		},
+		archived_groupss: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+	},
 	data() {
 		return {
 			isBp: window.location.hostname.split('.')[0] === 'bp',
@@ -511,6 +523,11 @@ export default {
 			],
 		};
 	},
+	computed: {
+		filteredUsers() {
+			return this.searchUsers ? this.value.filter(v => v.email.toLowerCase().includes(this.searchUsers.toLowerCase())) : this.value;
+		}
+	},
 	watch: {
 		activeuserid() {
 			this.init()
@@ -522,11 +539,6 @@ export default {
 		});
 		if (this.activeuserid) {
 			this.init()
-		}
-	},
-	computed: {
-		filteredUsers() {
-			return this.searchUsers ? this.value.filter(v => v.email.toLowerCase().includes(this.searchUsers.toLowerCase())) : this.value;
 		}
 	},
 	methods: {
@@ -716,7 +728,7 @@ export default {
 					loader.hide();
 				})
 				.catch((error) => {
-					console.log(error.response);
+					console.error(error.response);
 					this.$toast.info(error.response);
 					loader.hide();
 				});

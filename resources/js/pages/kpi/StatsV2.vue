@@ -19,14 +19,14 @@
 					@apply="fetchData"
 				/>
 				<span
-					class="ml-2"
 					v-if="items"
+					class="ml-2"
 				>
 					Найдено: {{ totalRows }}
 				</span>
 				<span
-					class="ml-2"
 					v-else
+					class="ml-2"
 				>
 					Найдено: 0
 				</span>
@@ -86,17 +86,17 @@
 
 		<StatsTableBonus
 			v-if="s_type_main == 2"
+			:key="bonus_groups"
 			:groups="bonus_groups"
 			:group_names="groups"
 			:month="month"
-			:key="bonus_groups"
 		/>
 
 		<StatsTableQuartal
 			v-if="s_type_main == 3"
+			:key="quartal_users"
 			:users="quartal_users"
 			:groups="quartal_groups"
-			:key="quartal_users"
 			:search-text="searchText"
 		/>
 
@@ -114,25 +114,25 @@
 			>
 				от:
 				<input
+					v-model="item.startValue"
 					type="number"
 					:min="item.prevMax"
 					:max="99"
 					class="form-control input-surv KPIBacklight-input"
-					v-model="item.startValue"
 				>
 				до:
 				<input
+					v-model="item.endValue"
 					type="number"
 					:min="item.prevMax + 1"
 					:max="100"
 					class="form-control input-surv KPIBacklight-input"
-					v-model="item.endValue"
 				>
 				цвет:
 				<input
+					v-model="item.color"
 					type="color"
 					class="form-control input-surv KPIBacklight-input"
-					v-model="item.color"
 				>
 				<i
 					class="fa fa-trash btn btn-danger btn-icon"
@@ -157,6 +157,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapActions, mapState } from 'pinia'
 import SideBar from '@/components/ui/Sidebar'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
@@ -307,18 +309,7 @@ export default {
 			}
 			else if(this.s_type_main == 2){
 				this.axios.get('/statistics/bonuses').then(response => {
-					console.log(response.data);
 					this.bonus_groups = response.data;
-					/*this.bonus_groups = response.data.groups;
-                    this.bonus_groups = this.bonus_groups.map(res=> ({...res, expanded: false}));
-                    for(let i = 0; i < this.bonus_groups.length; i++){
-                        this.bonus_groups[i].users = this.bonus_groups[i].users.map(res=> ({...res, expanded: false, totals: {
-                                quantity: 0,
-                                sum:0,
-                                amount:0
-                            }
-                        }));
-                    }*/
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
@@ -327,8 +318,6 @@ export default {
 			}
 			else if(this.s_type_main == 3){
 				this.axios.get('/statistics/quartal-premiums').then(response => {
-
-					//this.quartal_items = response.data;
 					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
 					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
 					loader.hide();

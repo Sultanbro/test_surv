@@ -55,10 +55,10 @@ export default {
 			</p>
 			<input
 				v-show="isEditor"
+				id="bitrix_id_input"
 				name="bitrix_id"
 				:value="user.bitrix_id"
 				type="text"
-				id="bitrix_id_input"
 				class="form-control form-control-sm"
 				placeholder="ID профиля в битриксе"
 			>

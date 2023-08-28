@@ -8,7 +8,6 @@ function getDataFromScript(dataScript){
 	}
 	catch(err){
 		console.error(err)
-		console.info('dataScript', dataScript, dataScript.innerHTML.replace(/&quot;/g,'"'))
 	}
 }
 
@@ -24,7 +23,10 @@ export function useDataFromResponse(data){
 export function useAsyncPageData(url){
 	return new Promise((resolve, reject) => {
 		const dataScript = document.getElementById('async-page-data')
-		if(dataScript) return resolve(getDataFromScript(dataScript))
+		if(dataScript) {
+			resolve(getDataFromScript(dataScript))
+			return
+		}
 		axios.get(url).then(({ data }) => {
 			const responseData = useDataFromResponse(data)
 			if(responseData) return resolve(responseData)

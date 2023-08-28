@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 /** @module stores/api/partal */
 /// <reference path="./notifications.d.ts" />
 import axios from 'axios'

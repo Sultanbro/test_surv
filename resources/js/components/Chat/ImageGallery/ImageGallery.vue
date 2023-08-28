@@ -60,6 +60,7 @@ export default {
 
 		index: {
 			type: Number,
+			default: 0
 		},
 
 		id: {

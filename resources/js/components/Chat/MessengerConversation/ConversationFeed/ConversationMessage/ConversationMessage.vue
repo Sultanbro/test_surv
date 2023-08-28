@@ -44,10 +44,12 @@
 							{{ message.parent.body }}
 						</div>
 					</div>
+					<!-- eslint-disable -->
 					<div
 						class="messenger__format-container"
 						v-html="messageBody"
 					/>
+					<!-- eslint-enable -->
 					<ConversationMessageGallery
 						v-if="isGallery"
 						:files="message.files"
@@ -89,9 +91,9 @@
 						class="messenger__message-files"
 					>
 						<div
-							class="messenger__message-file"
 							v-for="(file, index) in message.files"
 							:key="index"
+							class="messenger__message-file"
 						>
 							<template v-if="isImage(file)">
 								<div
@@ -99,9 +101,9 @@
 									@click="openImage(file)"
 								>
 									<img
-										@load="$emit('loadImage')"
 										:src="file.thumbnail_path ? file.thumbnail_path : file.file_path"
 										alt="file.name"
+										@load="$emit('loadImage')"
 									>
 								</div>
 							</template>
@@ -146,10 +148,10 @@
 					@reaction-click="reactMessage({message: message, emoji_id: $event})"
 				/>
 				<i
-					class="ConversationMessage-quoteButton fa fa-chevron-right"
-					@click.stop="onClickQuote"
 					v-click-outside="onClickOutsideQuote"
+					class="ConversationMessage-quoteButton fa fa-chevron-right"
 					:style="selectedBox || ''"
+					@click.stop="onClickQuote"
 				/>
 			</div>
 
@@ -189,6 +191,20 @@ export default {
 		ConversationMessageMeta,
 		ConversationMessageGallery,
 		JobtronAvatar,
+	},
+	filters: {
+		moment: function (date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				return moment(date).format('HH:mm');
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера, ' + moment(date).format('HH:mm');
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD.MM, HH:mm');
+		},
 	},
 	inject: [
 		'ChatApp'
@@ -354,20 +370,6 @@ export default {
 			}
 
 			this.selectedBox = null
-		},
-	},
-	filters: {
-		moment: function (date) {
-			// if today show only hour and minutes
-			if (moment(date).isSame(moment(), 'day')) {
-				return moment(date).format('HH:mm');
-			}
-			// if yesterday show only hour and minutes and yesterday
-			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-				return 'Вчера, ' + moment(date).format('HH:mm');
-			}
-			// if older than yesterday show hour, minutes, day and month
-			return moment(date).format('DD.MM, HH:mm');
 		},
 	},
 }

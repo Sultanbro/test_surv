@@ -6,16 +6,16 @@
 				<div class="d-flex aic mr-2">
 					<span>Показывать:</span>
 					<input
+						v-model="pageSize"
 						type="number"
 						min="1"
 						max="100"
-						v-model="pageSize"
 						class="form-control ml-2 input-sm"
 					>
 				</div>
 				<input
-					class="searcher mr-2 form-control"
 					v-model="searchText"
+					class="searcher mr-2 form-control"
 					type="text"
 					placeholder="Поиск по совпадениям..."
 					@keyup="onSearch"
@@ -77,8 +77,8 @@
 							<template v-else-if="field.key == 'source' && item.source != undefined">
 								<div class="d-flex text-left">
 									<div
-										class="mr-4"
 										v-if="sources[item.source] !== undefined"
+										class="mr-4"
 									>
 										{{ sources[item.source] }}
 									</div>
@@ -119,8 +119,8 @@
 
 		<!-- pagination -->
 		<JwPagination
-			class=""
 			:key="paginationKey"
+			class=""
 			:items="items"
 			:labels="{
 				first: '<<',
@@ -128,8 +128,8 @@
 				previous: '<',
 				next: '>'
 			}"
-			@changePage="onChangePage"
 			:page-size="+pageSize"
+			@changePage="onChangePage"
 		/>
 
 
@@ -137,15 +137,15 @@
 		<b-modal
 			v-model="modalAdjustVisibleFields"
 			title="Настройка списка"
-			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 			ok-text="Закрыть"
 			size="lg"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
 		>
 			<div class="row">
 				<div
-					class="col-md-4 mb-2"
 					v-for="(field, f) in all_fields"
 					:key="f"
+					class="col-md-4 mb-2"
 				>
 					<b-form-checkbox
 						v-model="show_fields[field.key]"
@@ -161,6 +161,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import JwPagination from 'jw-vue-pagination'
 import {fields/* , newItem */} from './indicators.js';
 import {sources, methods, views} from './helpers.js';
@@ -171,30 +173,6 @@ export default {
 		JwPagination,
 	},
 	props: {},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.activities_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
-
-				if(val > 100) {
-					val = 100;
-					return;
-				}
-
-				this.paginationKey++;
-			}
-		}
-	},
 	data() {
 		return {
 			active: 1,
@@ -222,6 +200,30 @@ export default {
 				'created_by',
 				'updated_by',
 			]
+		}
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.activities_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
+
+				if(val > 100) {
+					val = 100;
+					return;
+				}
+
+				this.paginationKey++;
+			}
 		}
 	},
 

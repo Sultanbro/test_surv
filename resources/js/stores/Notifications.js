@@ -10,8 +10,8 @@ export const useNotificationsStore = defineStore('notifications', {
 	state: () => ({
 		isLoading: false,
 		// state here
-		read: null,
-		unread: null,
+		read: [],
+		unread: [],
 		unreadQuantity: 0
 	}),
 	actions: {
@@ -35,6 +35,7 @@ export const useNotificationsStore = defineStore('notifications', {
 		async setNotificationsRead(id){
 			try{
 				const { message } = await setNotificationsRead({
+					/* eslint-disable-next-line camelcase */
 					user_notification_id: id,
 				})
 				if(message !== 'Success') return message

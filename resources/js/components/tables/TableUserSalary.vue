@@ -1,16 +1,16 @@
 <template>
 	<div class="mt-3">
 		<div
-			class="mb-0"
 			:key="myTable"
+			class="mb-0"
 		>
 			<b-table
 				v-if="dataLoaded"
+				id="tabelTable"
 				responsive
 				striped
 				:sticky-header="true"
 				class="text-nowrap text-right my-table mb-0"
-				id="tabelTable"
 				:small="true"
 				:bordered="true"
 				:items="items"
@@ -20,47 +20,47 @@
 			>
 				<template #head(avanses)>
 					<i
-						class="fa fa-info-circle"
 						v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
+						class="fa fa-info-circle"
 					/>
 				</template>
 				<template #head(fines)>
 					<i
-						class="fa fa-info-circle"
 						v-b-popover.hover.right.html="'Депримирование отмечено красным'"
+						class="fa fa-info-circle"
 					/>
 				</template>
-				<template #cell(avanses)="data">
-					<div v-if="data.index == 1">
-						{{ data.value.value }}
+				<template #cell(avanses)="avansesData">
+					<div v-if="avansesData.index == 1">
+						{{ avansesData.value.value }}
 					</div>
 				</template>
-				<template #cell(fines)="data">
-					<div v-if="data.index == 1">
-						{{ data.value.value }}
+				<template #cell(fines)="finesData">
+					<div v-if="finesData.index == 1">
+						{{ finesData.value.value }}
 					</div>
 				</template>
-				<template #cell()="data">
+				<template #cell()="cellData">
 					<div
 						:class="{
-							'day-fine':data.value.hasFine,
-							'day-training':data.value.training,
-							'day-avans': data.value.hasAvans,
-							'day-bonus':data.value.hasBonus,
+							'day-fine':cellData.value.hasFine,
+							'day-training':cellData.value.training,
+							'day-avans': cellData.value.hasAvans,
+							'day-bonus':cellData.value.hasBonus,
 						}"
-						@click="openDay(data.value)"
+						@click="openDay(cellData.value)"
 					>
-						{{ data.value.value }}
+						{{ cellData.value.value }}
 					</div>
 				</template>
 			</b-table>
 		</div>
 		<sidebar
+			v-if="openSidebar"
 			:title="sidebarTitle"
 			:open="openSidebar"
-			@close="openSidebar=false"
-			v-if="openSidebar"
 			width="350px"
+			@close="openSidebar=false"
 		>
 			<h6 class="mt-3">
 				Начислено
@@ -177,24 +177,23 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 
 export default {
 	name: 'TableUserSalary',
 	props: {
 		activeuserid: {
 			type: Number,
+			default: 0
 		},
-		date: {},
-		month: {}
-	},
-
-	watch: {
+		date: {
+			type: Number,
+			default: 0
+		},
 		month: {
-			handler: function (val) {
-				this.dateInfo.currentMonth = val
-				this.fetchData()
-			},
-		},
+			type: String,
+			default: ''
+		}
 	},
 
 	data() {
@@ -223,6 +222,15 @@ export default {
 			dataLoaded: false,
 			myTable: 1
 		}
+	},
+
+	watch: {
+		month: {
+			handler: function (val) {
+				this.dateInfo.currentMonth = val
+				this.fetchData()
+			},
+		},
 	},
 
 	created() {

@@ -18,8 +18,8 @@
 				>
 					<span>
 						<i
-							class="fa fa-pen pulse-anim"
 							id="info-position"
+							class="fa fa-pen pulse-anim"
 						/>
 						<b-popover
 							target="info-position"
@@ -30,6 +30,7 @@
 				</router-link>
 			</div>
 			<div class="ProfileInfo-group ProfileInfo-border py-2">
+				<!-- eslint-disable vue/no-v-html -->
 				<span v-html="data.groups" />
 				<router-link
 					v-if="isAdmin && moreThanDays"
@@ -37,8 +38,8 @@
 				>
 					<span>
 						<i
-							class="fa fa-pen pulse-anim"
 							id="info-groups"
+							class="fa fa-pen pulse-anim"
 						/>
 						<b-popover
 							target="info-groups"
@@ -52,8 +53,8 @@
 				ОКЛАД: {{ data.salary }} {{ currency }}
 			</div>
 			<div
-				class="ProfileInfo-worktime"
 				v-if="workChartUser"
+				class="ProfileInfo-worktime"
 			>
 				<p class="ProfileInfo-border wsnw">
 					{{ workChartUser.name }}
@@ -62,7 +63,7 @@
 					{{ workChartUser.start_time }} - {{ workChartUser.end_time }}
 				</p>
 				<p class="ProfileInfo-border wsnw">
-					{{ hour }} часов
+					{{ data.workingTime }}
 				</p>
 			</div>
 		</template>
@@ -88,15 +89,6 @@ export default {
 	computed: {
 		...mapState(useWorkChartStore, ['workChartList']),
 		...mapState(useWorkChartStore, {isWorkChartLoading: 'isLoading'}),
-		hour() {
-			const $start = this.$moment.utc(this.workChartUser.start_time, 'HH: mm')
-			const $end = this.$moment.utc(this.workChartUser.end_time, 'HH: mm')
-
-			if($end > $start) return this.$moment.duration($end.diff($start)).asHours()
-			const before = this.$moment.duration(this.$moment.utc('24:00', 'HH: mm').diff($start)).asHours()
-			const after = this.$moment.duration($end.diff(this.$moment.utc('00:00', 'HH: mm'))).asHours()
-			return before + after
-		},
 		workChartUser() {
 			if(!this.workChartList) return null
 			if(!this.data?.user) return null

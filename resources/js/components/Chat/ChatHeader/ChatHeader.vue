@@ -5,8 +5,8 @@
 		</div>
 		<div
 			class="messenger_header-button"
-			@click="toggleNewChatDialog"
 			title="Создание нового чата"
+			@click="toggleNewChatDialog"
 		>
 			<ChatIconPlus
 				class="pointer"

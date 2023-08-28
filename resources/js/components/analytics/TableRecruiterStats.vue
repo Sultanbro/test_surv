@@ -3,6 +3,8 @@
 		<div class="d-flex pt-4 gap-5">
 			<div class="TableRecruiterStats-table">
 				<JobtronTable
+					:key="componentKey"
+					ref="table"
 					responsive
 					striped
 					class="text-nowrap mb-3"
@@ -11,8 +13,6 @@
 					:items="sorted"
 					:fields="fields"
 					primary-key="a"
-					:key="componentKey"
-					ref="table"
 				>
 					<template #header(name)="{field}">
 						<div
@@ -33,8 +33,8 @@
 					<template #header="{field}">
 						<div
 							class="pointer relative"
-							@click.stop="openContext"
 							:data-key="field.key"
+							@click.stop="openContext"
 						>
 							{{ field.label }}
 							<PopupMenu
@@ -69,20 +69,21 @@
 							</PopupMenu>
 						</div>
 					</template>
-					<template #cell="data">
-						<div v-html="getCellHtml(data.value)" />
+					<template #cell="cellData">
+						<!-- eslint-disable-next-line -->
+						<div v-html="getCellHtml(cellData.value)" />
 					</template>
-					<template #cell(totals)="data">
-						<div>{{ totals[data.item.user_id] ? totals[data.item.user_id].join('/') : '' }}</div>
+					<template #cell(totals)="totalsData">
+						<div>{{ totals[totalsData.item.user_id] ? totals[totalsData.item.user_id].join('/') : '' }}</div>
 					</template>
-					<template #cell(name)="data">
+					<template #cell(name)="nameData">
 						<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
-							<div>{{ data.value }}</div>
+							<div>{{ nameData.value }}</div>
 							<select
-								v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
+								v-if="nameData.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(nameData.item.user_id)"
+								v-model="nameData.item.profile"
 								class="form-control form-control-sm special-select"
-								v-model="data.item.profile"
-								@change="changeProfile(data.index)"
+								@change="changeProfile(nameData.index)"
 							>
 								<option
 									v-for="prof, index in profiles"
@@ -95,6 +96,7 @@
 						</div>
 					</template>
 					<template #cell(agrees)="{value}">
+						<!-- eslint-disable-next-line -->
 						<div v-html="value" />
 					</template>
 				</JobtronTable>
@@ -104,14 +106,14 @@
 			<div class="f-200">
 				<JobtronButton
 					v-if="editable"
-					@click="showModal = !showModal"
 					class="mb-5"
+					@click="showModal = !showModal"
 				>
 					Кол-во лидов
 				</JobtronButton>
 				<select
-					class="form-control form-control-sm mb-5"
 					v-model="currentDay"
+					class="form-control form-control-sm mb-5"
 				>
 					<option
 						v-for="day in days"
@@ -155,6 +157,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import JobtronButton from '@ui/Button'
 import JobtronTable from '@ui/Table'
 import PopupMenu from '@ui/PopupMenu'

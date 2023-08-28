@@ -1,15 +1,15 @@
 <template>
 	<div class="popup__content awards-profile mt-5">
 		<div
-			class="spinner-container"
 			v-if="loading"
+			class="spinner-container"
 		>
 			<div class="throbber-loader" />
 		</div>
 		<b-tabs
+			v-if="nominations.length > 0 || certificates.length > 0 || accrual.length > 0"
 			ref="tabis"
 			v-model="tabIndex"
-			v-if="nominations.length > 0 || certificates.length > 0 || accrual.length > 0"
 		>
 			<div class="prev-next">
 				<span
@@ -23,11 +23,11 @@
 			</div>
 			<template v-if="nominations.length > 0">
 				<b-tab
-					no-body
-					@click="activeteTab(award.description)"
-					:title="award.name"
 					v-for="award in nominations"
 					:key="award.id"
+					no-body
+					:title="award.name"
+					@click="activeteTab(award.description)"
 				>
 					<b-tabs class="inside-tabs">
 						<b-tab
@@ -38,33 +38,33 @@
 							<div class="certificates__title">
 								Сертификатов:
 								<span
-									class="current"
 									v-if="award.hasOwnProperty('my')"
+									class="current"
 								>{{ award.my.length }}</span>
 								<span v-else>0</span>
 							</div>
 
 							<BRow v-if="award.hasOwnProperty('my')">
 								<BCol
+									v-for="item in award.my"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.my"
-									:key="item.id"
 								>
 									<div
 										class="certificates__item"
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
-											:source="item.tempPath"
 											v-else
+											:source="item.tempPath"
 										/>
 									</div>
 								</BCol>
@@ -78,33 +78,33 @@
 							<div class="certificates__title">
 								Сертификатов:
 								<span
-									class="current"
 									v-if="award.hasOwnProperty('available')"
+									class="current"
 								>{{ nominationPublic(award.available).length }}</span>
 								<span v-else>0</span>
 							</div>
 
 							<BRow v-if="award.hasOwnProperty('available')">
 								<BCol
+									v-for="item in nominationPublic(award.available)"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in nominationPublic(award.available)"
-									:key="item.id"
 								>
 									<div
 										class="certificates__item"
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
-											:source="item.tempPath"
 											v-else
+											:source="item.tempPath"
 										/>
 									</div>
 								</BCol>
@@ -116,25 +116,25 @@
 						>
 							<BRow v-if="award.hasOwnProperty('other')">
 								<BCol
+									v-for="item in award.other"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.other"
-									:key="item.id"
 								>
 									<div
 										class="certificates__item"
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
-											:source="item.tempPath"
 											v-else
+											:source="item.tempPath"
 										/>
 									</div>
 								</BCol>
@@ -152,11 +152,11 @@
 
 			<template v-if="certificates.length > 0">
 				<b-tab
+					v-for="award in certificates"
+					:key="award.id"
 					no-body
 					:title="award.name"
 					@click="activeteTab(award.description)"
-					v-for="award in certificates"
-					:key="award.id"
 				>
 					<b-tabs class="inside-tabs">
 						<b-tab
@@ -167,46 +167,46 @@
 							<div class="certificates__title">
 								Сертификатов:
 								<span
-									class="current"
 									v-if="award.hasOwnProperty('my')"
+									class="current"
 								>{{ award.my.length }}</span>
 								<span v-else>0</span>
 								из
 								<span
-									class="all"
 									v-if="award.hasOwnProperty('my')"
+									class="all"
 								>{{ award.available.length + award.my.length }}</span>
 								<span
-									class="all"
 									v-else-if="award.hasOwnProperty('available')"
+									class="all"
 								>{{ award.available.length }}</span>
 								<span
-									class="all"
 									v-else
+									class="all"
 								>0</span>
 							</div>
 
 							<BRow v-if="award.hasOwnProperty('my')">
 								<BCol
+									v-for="item in award.my"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.my"
-									:key="item.id"
 								>
 									<div
 										class="certificates__item"
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
-											:source="item.tempPath"
 											v-else
+											:source="item.tempPath"
 										/>
 									</div>
 								</BCol>
@@ -220,34 +220,34 @@
 							<div class="certificates__title">
 								Сертификатов:
 								<span
-									class="current"
 									v-if="award.hasOwnProperty('available')"
+									class="current"
 								>{{ award.available.length }}</span>
 								<span v-else>0</span>
 								из
 								<span
-									class="all"
 									v-if="award.hasOwnProperty('my')"
+									class="all"
 								>{{ award.available.length + award.my.length }}</span>
 								<span
-									class="all"
 									v-else-if="award.hasOwnProperty('available')"
+									class="all"
 								>{{ award.available.length }}</span>
 								<span
-									class="all"
 									v-else
+									class="all"
 								>0</span>
 							</div>
 
 
 							<BRow v-if="award.hasOwnProperty('available')">
 								<BCol
+									v-for="item in award.available"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.available"
-									:key="item.id"
 								>
 									<div
 										class="certificate-available"
@@ -255,13 +255,13 @@
 									>
 										<div class="certificates__item">
 											<img
+												v-if="item.format !== 'pdf'"
 												:src="item.tempPath"
 												alt="certificate image"
-												v-if="item.format !== 'pdf'"
 											>
 											<vue-pdf-embed
-												:source="item.tempPath"
 												v-else
+												:source="item.tempPath"
 											/>
 										</div>
 										<div class="available-name">
@@ -277,25 +277,25 @@
 						>
 							<BRow v-if="award.hasOwnProperty('other')">
 								<BCol
+									v-for="item in award.other"
+									:key="item.id"
 									cols="12"
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.other"
-									:key="item.id"
 								>
 									<div
 										class="certificates__item"
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
+											v-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
-											v-if="item.format !== 'pdf'"
 										>
 										<vue-pdf-embed
-											:source="item.tempPath"
 											v-else
+											:source="item.tempPath"
 										/>
 									</div>
 								</BCol>
@@ -313,20 +313,20 @@
 
 			<template v-if="accrual.length > 0">
 				<b-tab
+					v-for="(award, index) in accrual"
+					:key="index"
 					class="accrual-tab"
-					@click="activeteTab(award.description)"
 					no-body
 					:title="award.name"
 					active
-					v-for="(award, index) in accrual"
-					:key="index"
+					@click="activeteTab(award.description)"
 				>
 					<BRow>
 						<BCol
-							cols="12"
-							md="4"
 							v-for="(item, inx) in award.top"
 							:key="item.id"
+							cols="12"
+							md="4"
 						>
 							<div
 								class="nominations__item"
@@ -340,14 +340,14 @@
 									:class="'gift-' + (inx + 1)"
 								>
 									<img
+										v-if="item.path.length > 10"
 										:src="item.path"
 										alt="profile avatar"
-										v-if="item.path.length > 10"
 									>
 									<img
+										v-else
 										src="images/avatar.png"
 										alt="profile avatar"
-										v-else
 									>
 								</div>
 								<div class="nominations__item-name">
@@ -386,21 +386,21 @@
 		</div>
 		<b-modal
 			v-if="itemModal"
+			v-model="modal"
 			modal-class="awards-profile-modal-preview"
 			centered
 			size="lg"
-			v-model="modal"
 			:title="itemModal.awardName"
 		>
 			<img
+				v-if="itemModal.format !== 'pdf'"
 				:src="itemModal.tempPath"
 				class="img-fluid"
 				alt="certificate image"
-				v-if="itemModal.format !== 'pdf'"
 			>
 			<vue-pdf-embed
-				:source="itemModal.tempPath"
 				v-else
+				:source="itemModal.tempPath"
 			/>
 			<template #modal-footer>
 				<BButton
@@ -410,8 +410,8 @@
 					Закрыть
 				</BButton>
 				<BButton
-					variant="success"
 					v-if="itemModal.isMy"
+					variant="success"
 					@click="downloadImage(itemModal)"
 				>
 					Скачать
@@ -431,6 +431,11 @@ export default {
 	components: {
 		VuePdfEmbed,
 	},
+	filters: {
+		splitNumber: function (val) {
+			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+		}
+	},
 	props: {},
 	data: function () {
 		return {
@@ -444,11 +449,6 @@ export default {
 			certificates: [],
 			accrual: [],
 		};
-	},
-	filters: {
-		splitNumber: function (val) {
-			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-		}
 	},
 	watch: {
 		tabIndex(val) {
@@ -465,7 +465,7 @@ export default {
 				}
 			})
 			.catch(error => {
-				console.log(error);
+				console.error(error);
 			});
 
 		await this.axios
@@ -474,7 +474,7 @@ export default {
 				this.certificates = data.data.data;
 			})
 			.catch(error => {
-				console.log(error);
+				console.error(error);
 			});
 		await this.axios
 			.get('/awards/type?key=accrual')
@@ -482,7 +482,7 @@ export default {
 				this.accrual = data.data.data;
 			})
 			.catch(error => {
-				console.log(error);
+				console.error(error);
 			});
 
 		// установить награды как виденные
@@ -511,9 +511,7 @@ export default {
 			this.$emit('get-desc', text)
 		},
 		downloadImage(data) {
-			console.log(data);
 			var xhr = new XMLHttpRequest();
-			console.log(data);
 			xhr.open('GET', data.tempPath, true);
 
 			xhr.responseType = 'arraybuffer';
@@ -537,7 +535,6 @@ export default {
 				a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
 				document.body.appendChild(a);
 				a.click();
-				console.log(a);
 				document.body.removeChild(a);
 			};
 

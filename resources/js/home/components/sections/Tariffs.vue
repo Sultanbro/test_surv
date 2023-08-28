@@ -136,6 +136,9 @@ export default {
 			return this.$viewportSize.width >= 1260
 		}
 	},
+	async mounted() {
+		await this.USD()
+	},
 	methods: {
 		async USD() {
 			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
@@ -149,9 +152,6 @@ export default {
 		getSelectedValute(selectedValute) {
 			this.selectedValute = selectedValute
 		}
-	},
-	async mounted() {
-		await this.USD()
 	}
 }
 </script>

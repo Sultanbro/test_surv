@@ -1,14 +1,14 @@
 <template>
 	<div
+		ref="structureItem"
 		class="StructureItem structure-item"
 		:class="[{'grouped' : card.is_group}, 'lvl' + level]"
 		:style="{'--half-width' : halfWidth}"
-		ref="structureItem"
 	>
 		<!-- Карточка -->
 		<div
-			class="structure-card"
 			:id="'id-' + card.id"
+			class="structure-card"
 			:style="{ backgroundColor: card.color }"
 			:class="{'no-result' : !(children && children.length)}"
 		>
@@ -148,8 +148,8 @@
 		<!-- Потомки -->
 		<template v-if="children && children.length">
 			<div
-				class="structure-group"
 				ref="group"
+				class="structure-group"
 				:style="{
 					'--start-line' : startLine,
 					'--end-line' : endLine,
@@ -211,6 +211,7 @@ export default {
 			type: Object,
 			default: () => ({
 				users: [],
+				/* eslint-disable-next-line camelcase */
 				profile_groups: [],
 				positions: [],
 			})
@@ -270,6 +271,7 @@ export default {
 			if(this.card.is_vacant) return {
 				id: 0,
 				name: 'Вакантная',
+				/* eslint-disable-next-line camelcase */
 				last_name: 'позиция',
 				avatar: '/user.png',
 			}

@@ -396,6 +396,9 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/salaries/edit-premium', [Salary\PremiumController::class, 'edit']);
     Route::post('/timetracking/salaries/approve-salary', [Salary\SalaryController::class, 'approveSalary']);
     Route::post('/timetracking/salaries/bonuses', [Salary\SalaryController::class, 'bonuses']);
+    Route::post('/timetracking/salaries/advances', [Salary\SalaryController::class, 'advances'])->name('advances');
+    Route::post('/timetracking/salaries/fines', [Salary\SalaryController::class, 'fines'])->name('fines');
+    Route::post('/timetracking/salaries/taxes', [Salary\SalaryController::class, 'taxes'])->name('taxes');
     Route::post('/profile/salary/get', [Salary\ProfileSalaryController::class, 'get']);
     Route::post('/timetracking/quarter/store', [Salary\QuartalBonusController::class, 'storePersonQuartal']); /// добавление квартала
     Route::post('/timetracking/quarter/delete', [Salary\QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
@@ -597,6 +600,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');
+        Route::post('/mark-articles-as-viewed', [Article\ArticleController::class,'makeViewedArticles'])->name('make-article-viewed');
+
 
         Route::prefix('{article_id}')->name('actions.')->group(function () {
             Route::post('like', [Article\ArticleActionController::class, 'like'])->name('like');
@@ -756,10 +761,9 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class,'all'])->name('get-all');
             Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
             Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
-
-
         });
 
+        Route::get('coordinates',[App\Http\Controllers\Coordinate\getCoordinateController::class,'get'])->name('get-coordinate');
 
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
             Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);

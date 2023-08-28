@@ -3,8 +3,8 @@
 		id="award-sidebar"
 		title="Награды"
 		:open="open"
-		@close="$emit('update:open', false)"
 		width="60%"
+		@close="$emit('update:open', false)"
 	>
 		<div id="body">
 			<BTabs
@@ -67,7 +67,10 @@ export default {
 	},
 	props: {
 		open: Boolean,
-		awards: Array,
+		awards: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
@@ -92,17 +95,20 @@ export default {
 			nominationsSelected: false,
 		};
 	},
+	mounted() {
+		if (this.awards.length) {
+			this.awardsClickHandler(0);
+		}
+	},
 	methods: {
 		// EVENT HANDLERS
 
 		async getSertificateById(id) {
 			this.axios
 				.get(`${baseUrl}/` + id)
-				.then((response) => {
-					console.log(response);
-				})
+				.then(() => {})
 				.catch((error) => {
-					console.log(error);
+					console.error(error);
 					this.errored = true;
 				})
 				.finally(() => (this.loading = false));
@@ -179,13 +185,6 @@ export default {
 		clearAwardCards() {
 			this.updateAwardCards({ all: [], my: [], notMy: [] });
 		},
-	},
-	mounted() {
-		const res = this.getSertificateById(this.id);
-		console.log(res);
-		if (this.awards.length) {
-			this.awardsClickHandler(0);
-		}
 	},
 };
 </script>

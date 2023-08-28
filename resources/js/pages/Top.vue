@@ -3,14 +3,14 @@
 		<div class="row">
 			<div class="col-3">
 				<select
-					class="form-control"
 					v-model="monthInfo.currentMonth"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="month in $moment.months()"
-						:value="month"
 						:key="month"
+						:value="month"
 					>
 						{{ month }}
 					</option>
@@ -18,14 +18,14 @@
 			</div>
 			<div class="col-2">
 				<select
-					class="form-control"
 					v-model="currentYear"
+					class="form-control"
 					@change="fetchData"
 				>
 					<option
 						v-for="year in years"
-						:value="year"
 						:key="year"
+						:value="year"
 					>
 						{{ year }}
 					</option>
@@ -44,14 +44,14 @@
 
 		<!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
 		<b-tabs
+			v-model="activeTab"
 			type="card"
 			class="mt-4"
-			v-model="activeTab"
 		>
 			<!-- Полезность -->
 			<b-tab
-				title="Полезность"
 				key="1"
+				title="Полезность"
 				card
 			>
 				<div
@@ -59,10 +59,10 @@
 					style="margin-bottom: 350px"
 				>
 					<TopGauges
+						:key="ukey"
 						:utility_items="activeUtility"
 						:editable="true"
 						wrapper_class=" br-1"
-						:key="ukey"
 						page="top"
 					/>
 				</div>
@@ -70,14 +70,14 @@
 
 			<!-- Рентабельность операторов -->
 			<b-tab
-				title="Рентабельность операторов"
 				key="2"
-				@click="showIcons()"
+				title="Рентабельность операторов"
 				card
+				@click="showIcons()"
 			>
 				<div
-					class="d-flex flex-wrap mb-5"
 					:key="ukey"
+					class="d-flex flex-wrap mb-5"
 				>
 					<template v-for="(gauge, g_index) in rentability">
 						<div
@@ -118,16 +118,16 @@
 									<div class="d-flex justify-content-between align-items-center">
 										<span class="pr-2 l-label">Max</span>
 										<input
+											v-model="gauge.max_value"
 											type="text"
 											class="form-control form-control-sm w-250 wiwi"
-											v-model="gauge.max_value"
 										>
 									</div>
 								</div>
 								<div class="d-flex">
 									<button
-										@click="saveRentGauge(g_index)"
 										class="btn btn-primary rounded mt-1 mr-2"
+										@click="saveRentGauge(g_index)"
 									>
 										Сохранить
 									</button>
@@ -139,8 +139,8 @@
 					<div class="ml-a pt-4">
 						<JobtronButton
 							v-if="archiveUtility.length"
-							@click="isArchiveOpen = true"
 							title="Открыть архив"
+							@click="isArchiveOpen = true"
 						>
 							Архив
 						</JobtronButton>
@@ -156,8 +156,8 @@
 
 			<!-- Выручка -->
 			<b-tab
-				title="Выручка"
 				key="3"
+				title="Выручка"
 				card
 			>
 				<div class="table-responsive table-container mt-4">
@@ -179,21 +179,21 @@
 								>
 									<template v-if="['+/-'].includes(field)">
 										<i
-											class="fa fa-info-circle"
 											v-b-popover.hover.right.html="'100% - ( План * Кол-во календарных дней )/ (Итого * Кол-во отработанных дней)'"
+											class="fa fa-info-circle"
 											title="Опережение плана"
 										/>
 									</template>
 									<template v-if="['%'].includes(field)">
 										<i
-											class="fa fa-info-circle"
 											v-b-popover.hover.right.html="'( Итого / План ) * 100'"
+											class="fa fa-info-circle"
 											title="Выполнение плана"
 										/>
 									</template>
 									{{ field }}  <i
-										class="fa fa-plus-square"
 										v-if="field == 'Отдел'"
+										class="fa fa-plus-square"
 										@click="addRow()"
 									/>
 								</th>
@@ -218,9 +218,9 @@
 										<template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
 											<div v-if="record['group_id'] < 0">
 												<input
+													v-model="record[field]"
 													type="number"
 													class="input"
-													v-model="record[field]"
 													@change="updateProceed(record, field, 'day')"
 												>
 											</div>
@@ -240,16 +240,16 @@
 												</a>
 												<div v-else>
 													<input
+														v-model="record[field]"
 														type="text"
 														class="input-2"
-														v-model="record[field]"
 														@change="updateProceed(record, field, 'name')"
 													>
 												</div>
 												<i
 													v-if="record.deleted_at"
-													class="fa fa-info-circle"
 													v-b-popover.hover.right.html="'Аналитика архвирована ' + $moment(record.deleted_at, 'YYYY-MM-DD').format('DD.MM.YYYY')"
+													class="fa fa-info-circle"
 												/>
 											</template>
 											<template v-else>
@@ -267,25 +267,25 @@
 			</b-tab>
 
 			<b-tab
-				title=""
 				key="6"
+				title=""
 				card
 			/>
 			<b-tab
-				title=""
 				key="7"
+				title=""
 				card
 			/>
 			<b-tab
-				title=""
 				key="8"
+				title=""
 				card
 			/>
 
 			<!-- Прогноз -->
 			<b-tab
-				title="Прогноз"
 				key="4"
+				title="Прогноз"
 				card
 			>
 				<b-row class="m-0">
@@ -301,8 +301,8 @@
 										Отдел
 
 										<i
-											class="fa fa-info-circle"
 											v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
+											class="fa fa-info-circle"
 											title="Отдел"
 										/>
 									</th>
@@ -310,8 +310,8 @@
 										План
 
 										<i
-											class="fa fa-info-circle"
 											v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
+											class="fa fa-info-circle"
 											title="План"
 										/>
 									</th>
@@ -319,8 +319,8 @@
 										Факт
 
 										<i
-											class="fa fa-info-circle"
 											v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
+											class="fa fa-info-circle"
 											title="Факт"
 										/>
 									</th>
@@ -338,8 +338,8 @@
 										</td>
 										<td class="text-center t-name table-title align-middle">
 											<input
-												type="number"
 												v-model="group.plan"
+												type="number"
 												@change="saveGroupPlan(index)"
 											>
 										</td>
@@ -359,8 +359,8 @@
 
 			<!-- NPS -->
 			<b-tab
-				title="NPS"
 				key="5"
+				title="NPS"
 				card
 			>
 				<NPS
@@ -399,6 +399,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
@@ -428,7 +430,16 @@ export default {
 		JobtronButton,
 		SideBar,
 	},
-	props: ['data', 'activeuserid'],
+	props: {
+		data: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: null
+		},
+	},
 	data() {
 		const now = new Date()
 		return {
@@ -483,11 +494,6 @@ export default {
 			isArchiveOpen: false,
 		}
 	},
-	watch: {
-		data(){
-			this.init()
-		}
-	},
 	computed: {
 		...mapState(usePortalStore, ['portal']),
 		years(){
@@ -508,6 +514,11 @@ export default {
 				return this.proceedsSwitch
 			}
 			return this.utilitySwitch
+		}
+	},
+	watch: {
+		data(){
+			this.init()
 		}
 	},
 	created() {

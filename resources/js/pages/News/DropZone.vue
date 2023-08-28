@@ -1,8 +1,8 @@
 <template>
 	<div class="news-create__dropzone">
 		<vue-dropzone
-			ref="myVueDropzone"
 			id="dropzone"
+			ref="myVueDropzone"
 			:options="dropzoneOptions"
 			:use-custom-slot="true"
 			:include-styling="false"
@@ -63,7 +63,7 @@ export default {
 					})
 				})
 				.catch(res => {
-					console.log(res);
+					console.error(res);
 				})
 		},
 
@@ -94,7 +94,6 @@ export default {
 
 		thumbnail: function (file, dataUrl) {
 			let j, len, ref, thumbnailElement, removeElement;
-			console.log(file);
 			if (file.previewElement) {
 				file.previewElement.classList.remove('dz-file-preview');
 				ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]');

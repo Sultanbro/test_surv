@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<div
-			:class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
 			v-observe-visibility="{
 				callback: viewsChanged,
 				once: true,
 			}"
+			:class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
 		>
 			<div class="news-item__header">
 				<div class="news-item__info">
@@ -32,8 +32,9 @@
 								<span
 									:class="'news-item__access-text ' + (userAccessListShow ? 'news-item__access-text--active' : '')"
 									@click="toggleUsersAccessList"
-									v-html="currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ')"
-								/>
+								>
+									{{ currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ') }}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -43,9 +44,9 @@
 					<div class="news-menu">
 						<img
 							class="news-item__header-action hover-pointer news-icon"
-							@click="toggleShowPopup()"
 							src="/icon/news/post-actions/menu.svg"
 							alt="img"
+							@click="toggleShowPopup()"
 						>
 						<div
 							v-show="showPopup"
@@ -65,10 +66,9 @@
 										alt="img"
 										src="/icon/news/news-popup/favorite.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное'"
-									/>
+									<span class="news-menu-popup__text">
+										{{ currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное' }}
+									</span>
 								</div>
 								<div
 									class="news-menu-popup__item"
@@ -79,10 +79,9 @@
 										alt="img"
 										src="/icon/news/news-popup/copy-link.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Скопировать ссылку'"
-									/>
+									<span class="news-menu-popup__text">
+										Скопировать ссылку
+									</span>
 								</div>
 								<div
 									v-if="$can('news_edit')"
@@ -95,10 +94,9 @@
 										alt="img"
 										src="/icon/news/news-popup/edit.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Редактировать'"
-									/>
+									<span class="news-menu-popup__text">
+										Редактировать
+									</span>
 								</div>
 								<div
 									v-if="$can('news_edit')"
@@ -111,33 +109,34 @@
 										alt="img"
 										src="/icon/news/news-popup/delete.svg"
 									>
-									<span
-										class="news-menu-popup__text"
-										v-html="'Удалить'"
-									/>
+									<span class="news-menu-popup__text">
+										Удалить
+									</span>
 								</div>
 							</div>
 						</div>
 					</div>
 					<img
-						@click="pinPost(currentPost.id)"
 						:class="'news-item__header-action hover-pointer ' + (currentPost.is_pinned == false ? 'news-icon' : '')"
 						:src="currentPost.is_pinned == true ? '/icon/news/post-actions/pinned.svg' : '/icon/news/post-actions/pin.svg'"
+						@click="pinPost(currentPost.id)"
 					>
 				</div>
 			</div>
 			<div class="news-item__title">
 				{{ currentPost.title }}
 			</div>
+			<!-- eslint-disable -->
 			<div
 				v-show="showFullContent"
-				class="news-item__content"
 				ref="newsItemContent"
+				class="news-item__content"
 				v-html="content"
 			/>
+			<!-- eslint-enable -->
 			<div
-				class="gallery-modal"
 				v-if="showModalImages"
+				class="gallery-modal"
 				@click="showModalImages = !showModalImages"
 			>
 				<div
@@ -169,22 +168,23 @@
 				v-show="currentPost.is_pinned"
 				class="news-item__show-full"
 				@click="toggleShowFullContent"
-				v-html="showFullContent ? 'Скрыть подробности' : 'Показать полностью'"
-			/>
+			>
+				{{ showFullContent ? 'Скрыть подробности' : 'Показать полностью' }}
+			</span>
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">
 					<div class="news-item__footer-action">
 						<img
-							class="hover-pointer"
 							v-if="currentPost.is_liked == true"
-							@click="likePost(currentPost.id)"
+							class="hover-pointer"
 							src="/icon/news/post-actions/like-active.svg"
+							@click="likePost(currentPost.id)"
 						>
 						<img
 							v-else
 							class="news-icon hover-pointer"
-							@click="likePost(currentPost.id)"
 							src="/icon/news/post-actions/like.svg"
+							@click="likePost(currentPost.id)"
 						>
 						<span class="news-item__footer-count">{{ currentPost.likes_count }}</span>
 					</div>
@@ -198,7 +198,7 @@
 					</div>
 
 					<div
-						v-show="this.currentPost.files.length != 0"
+						v-show="currentPost.files.length != 0"
 						class="news-item__footer-action"
 						@click="toggleShowFiles"
 					>
@@ -206,10 +206,9 @@
 							class="news-icon hover-pointer"
 							src="/icon/news/some-icons/file.svg"
 						>
-						<span
-							class="news-item__footer-count"
-							v-html="currentPost.files.length"
-						/>
+						<span class="news-item__footer-count">
+							{{ currentPost.files.length }}
+						</span>
 					</div>
 					<!--                    <div class="news-item__footer-action">-->
 					<!--                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/menu.svg">-->
@@ -222,10 +221,10 @@
 			</div>
 			<CommentsComponent
 				v-show="showComments"
-				@changeCommentsCount="changeCommentsCount"
-				:me="me"
-				@send="getData"
 				ref="comments"
+				:me="me"
+				@changeCommentsCount="changeCommentsCount"
+				@send="getData"
 			/>
 		</div>
 
@@ -238,14 +237,14 @@
 				:key="index"
 				class="news-file-preview__item"
 				alt=""
-				@click="downloadFile(file)"
 				:src="getFilePreview(file)"
+				@click="downloadFile(file)"
 			>
 		</div>
 
 		<div
-			ref="NewsCommentInput"
 			v-show="showComments"
+			ref="NewsCommentInput"
 			class="news-comment-store"
 		>
 			<img
@@ -254,29 +253,31 @@
 			>
 			<div class="news-comment-store__form">
 				<input
-					type="text"
 					v-model="commentText"
+					type="text"
 					placeholder="Добавить комментарий"
 					@keyup.enter="sendComment(currentPost.id)"
 				>
 				<img
 					class="hover-pointer"
-					@click="sendComment(currentPost.id)"
 					src="/icon/news/comments/send.svg"
+					@click="sendComment(currentPost.id)"
 				>
 			</div>
 		</div>
 
 		<div
-			class="news-bg"
 			v-show="showPopup"
+			class="news-bg"
 			@click.self="toggleShowPopup"
 		/>
 	</div>
 </template>
 
 <script>
+/* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
@@ -289,9 +290,11 @@ export default {
 	},
 	props: {
 		post: {
+			type: Object,
 			required: true
 		},
 		me: {
+			type: Object,
 			required: true
 		}
 	},
@@ -482,15 +485,14 @@ export default {
 					this.currentPost.views_count = res.data.data.views_count;
 				})
 				.catch(res => {
-					console.log(res)
+					console.error(res)
 				})
 			this.getUnviewedNewsCount();
 		},
 
 		async favouritePost(id) {
 			await this.axios.post('news/' + id + '/favourite')
-				.then(res => {
-					console.log(res);
+				.then(() => {
 					this.toggleShowPopup();
 					this.$emit('update-news-list');
 				})
@@ -504,7 +506,7 @@ export default {
 					this.showFullContent = false;
 				})
 				.catch(response => {
-					console.log(response);
+					console.error(response);
 				});
 		},
 
@@ -525,7 +527,7 @@ export default {
 					this.getPostComments(postId);
 				})
 				.catch(response => {
-					console.log(response);
+					console.error(response);
 				});
 		},
 
@@ -552,7 +554,7 @@ export default {
 					this.$emit('update-news-list');
 				})
 				.catch(response => {
-					console.log(response);
+					console.error(response);
 				});
 		}
 	}

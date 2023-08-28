@@ -49,7 +49,12 @@
 <script>
 export default {
 	name: 'LeftSidebarMenu',
-	props: ['items']
+	props: {
+		items: {
+			type: Array,
+			default: () => {}
+		}
+	}
 }
 </script>
 

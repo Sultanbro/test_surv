@@ -101,19 +101,19 @@
 								v-if="field.key != 'plan'"
 								:key="f_index"
 								class="t-cell font-bold"
-								@click="focus(i_index, f_index)"
 								:class="item[field.key].class"
+								@click="focus(i_index, f_index)"
 							>
 								<template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"
-											@click="focusName(i_index, f_index, 1)"
 											:class="{
 												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 1,
 												'context': item[field.key].context,
 												'disabled': item[field.key].editable == 0
 											}"
+											@click="focusName(i_index, f_index, 1)"
 											@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
 										>
 											<div class="disabled" />
@@ -158,12 +158,12 @@
 										</div>
 										<div
 											class="inner-div halfy"
-											@click="focusName(i_index, f_index, 2)"
 											:class="{
 												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 2,
 												'context': item['plan'].context,
 												'disabled': item['plan'].editable == 0
 											}"
+											@click="focusName(i_index, f_index, 2)"
 											@contextmenu.prevent.stop="openContextMenu(item['plan'], i_index, f_index)"
 										>
 											<div class="disabled" />
@@ -616,6 +616,9 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import {
 	IconDelete,
 	ChatIconPlus,
@@ -628,7 +631,35 @@ export default {
 		IconDelete,
 		ChatIconPlus,
 	},
-	props: ['monthInfo', 'activeuserid', 'isAdmin', 'table', 'group_id', 'fields', 'activities'],
+	props: {
+		monthInfo: {
+			type: Object,
+			default: null
+		},
+		table: {
+			type: Object,
+			default: null
+		},
+		activeuserid: {
+			type: Number,
+			default: null
+		},
+		group_id: {
+			type: Number,
+			default: null
+		},
+		fields: {
+			type: Array,
+			default: null
+		},
+		activities: {
+			type: Array,
+			default: null
+		},
+		isAdmin: {
+			type: Boolean
+		},
+	},
 	data() {
 		return {
 			active: '1',

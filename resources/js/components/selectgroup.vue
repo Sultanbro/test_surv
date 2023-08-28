@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<select
-			class="form-control"
 			v-model="selecttrees"
+			class="form-control"
 			@change="log(), select(selecttrees)"
 		>
 			<option
@@ -12,17 +12,17 @@
 				Перенести в корень
 			</option>
 			<option
+				v-if="selecttree != null"
 				:value="selecttree"
 				selected
-				v-if="selecttree != null"
 			>
 				В текущий
 			</option>
 			<template v-for="tre in tree">
 				<option
+					v-if="tre.parent_cat_id == selecttree"
 					:key="tre.id"
 					:value="tre.id"
-					v-if="tre.parent_cat_id == selecttree"
 				>
 					- {{ tre.name }}
 				</option>
@@ -31,9 +31,9 @@
 
 		<selectgroup
 			v-if="arr != null && selecttree != selecttrees"
-			@select="select"
 			:tree="tree"
 			:selecttree="selecttrees"
+			@select="select"
 		/>
 	</div>
 </template>
@@ -41,7 +41,20 @@
 <script>
 export default {
 	name: 'SelectGroup',
-	props: ['tree','selecttree','perenos'],
+	props: {
+		tree: {
+			type: Array,
+			default: null,
+		},
+		selecttree: {
+			type: Number,
+			default: null,
+		},
+		perenos: {
+			type: Number,
+			default: null,
+		},
+	},
 	data() {
 		return {
 			selecttrees:null,

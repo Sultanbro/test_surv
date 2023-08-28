@@ -15,9 +15,9 @@
 
 				<div class="listprof">
 					<div
-						class="profitem btn btn-primary"
 						v-for="(position,index) in positions"
 						:key="position.id"
+						class="profitem btn btn-primary"
 						:class="{ 'activiti' : activebtn.position == position.position }"
 						@click="positionselect(position, index)"
 					>
@@ -50,8 +50,8 @@
 					</div>
 
 					<button
-						@click="saveGroups"
 						class="btn btn-success"
+						@click="saveGroups"
 					>
 						Сохранить
 					</button>
@@ -62,6 +62,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'GroupsToPositions',
 	data() {
@@ -126,7 +128,7 @@ export default {
 					this.messageoff()
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},

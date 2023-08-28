@@ -9,8 +9,8 @@
 				<div v-if="is_admin && tenant === 'bp'">
 					<!-- Ozon -->
 					<a
-						@click="showExcelImport = !showExcelImport"
 						class="btn btn-success rounded mr-2 text-white"
+						@click="showExcelImport = !showExcelImport"
 					>
 						<i class="fa fa-upload" />
 						Импорт</a>
@@ -54,8 +54,8 @@
 								/>
 							</div>
 							<div
-								class="wd"
 								v-else
+								class="wd"
 							/>
 						</th>
 
@@ -139,8 +139,8 @@
 									<input
 										v-model="item[day]"
 										type="number"
-										@change="updateSettings($event, item, index, day)"
 										class="form-control cell-input"
+										@change="updateSettings($event, item, index, day)"
 									>
 								</div>
 							</td>
@@ -148,9 +148,9 @@
 								v-else
 								:key="day + 'a'"
 								:title="day + ': сборы'"
-								@click="editMode(item)"
 								:class="'table-' + item._cellVariants[day]"
 								class="TableActivityCollection-data lb px-0 day-minute text-center Fri"
+								@click="editMode(item)"
 							>
 								<div>{{ item[day] }}</div>
 							</td>
@@ -179,20 +179,23 @@
 			v-if="showExcelImport"
 			title="Импорт EXCEL"
 			:open="showExcelImport"
-			@close="showExcelImport=false"
 			width="75%"
+			@close="showExcelImport=false"
 		>
 			<ActivityExcelImport
 				:group_id="42"
 				table="minutes"
-				@close="showExcelImport=false"
 				:activity_id="activity.id"
+				@close="showExcelImport=false"
 			/>
 		</Sidebar>
 	</div>
 </template>
 
 <script>
+/* eslint-disable camelcase */
+/* eslint-disable vue/prop-name-casing */
+
 import Sidebar from '@/components/ui/Sidebar'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
 import JobtronCup from '@ui/Cup'
@@ -205,10 +208,17 @@ export default {
 		ActivityExcelImport,
 	},
 	props: {
-		month: Object,
-		activity: Object,
+		month: {
+			type: Object,
+			default: null
+		},
+		activity: {
+			type: Object,
+			default: null
+		},
 		is_admin: Boolean,
 		price: {
+			type: Number,
 			default: 50,
 		}
 	},
@@ -264,8 +274,8 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.records = this.activity.records;
-			this.accountsNumber = this.activity.records.length
+			this.records = this.activity.records || [];
+			this.accountsNumber = (this.activity.records || []).length
 			if(this.is_admin) this.setFirstRowAsTotals()
 			this.calculateRecordsValues()
 			if(this.is_admin) this.calculateTotalsRow()

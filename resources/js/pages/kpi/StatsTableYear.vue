@@ -141,6 +141,12 @@ const now = new Date()
 export default {
 	name: 'StatsTableYear',
 	components: {},
+	filters: {
+		nonFixedFloat(value){
+			if(typeof value === 'undefined') return ''
+			return parseInt(value) === value ? value : value.toFixed(2)
+		}
+	},
 	props:{
 		year:{
 			type: Number,
@@ -248,12 +254,6 @@ export default {
 			this.$forceUpdate()
 		},
 	},
-	filters: {
-		nonFixedFloat(value){
-			if(typeof value === 'undefined') return ''
-			return parseInt(value) === value ? value : value.toFixed(2)
-		}
-	}
 }
 </script>
 

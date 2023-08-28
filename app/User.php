@@ -16,9 +16,11 @@ use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
+use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
+use App\Models\UserCoordinate;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use App\Traits\CurrencyTrait;
@@ -109,7 +111,8 @@ class User extends Authenticatable implements Authorizable
         'phone_2',
         'phone_3',
         'phone_4',
-        'work_chart_id'
+        'work_chart_id',
+        'coordinate_id'
     ];
 
     protected $casts = [
@@ -202,7 +205,7 @@ class User extends Authenticatable implements Authorizable
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'user_tax')
-            ->withPivot(['created_at'])
+            ->withPivot(['created_at', 'value'])
             ->withTimestamps();
     }
 
@@ -666,6 +669,9 @@ class User extends Authenticatable implements Authorizable
 
             (new UserService)->fireUser($user->id, $fireDate);
 
+            //delete from structure cards
+            $user->structureCards()->detach();
+
             $user->deleted_at = Carbon::now();
 
             if($request->day && $request->month) $user->deleted_at = $fireDate;
@@ -766,6 +772,14 @@ class User extends Authenticatable implements Authorizable
     {
         $user = User::whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
         return $user;
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function structureCards():BelongsToMany
+    {
+        return $this->belongsToMany(StructureCard::class, 'structure_card_users');
     }
 
     public static function generateRandomString($length = 8)
@@ -1149,11 +1163,11 @@ class User extends Authenticatable implements Authorizable
      */
     public function internshipPayRate()
     {
-        $groups = ProfileGroup::userIn($this->id);
+        $groups = GroupUser::getUsers($this->id);
         $rate = 0;
-        foreach ($groups as $key => $group_id) {
-            $group = ProfileGroup::find($group_id);
-            if($group && $group->paid_internship == 1) {
+        foreach ($groups as $key => $group) {
+            $profileGroup = ProfileGroup::find($group->group_id);
+            if($profileGroup && $profileGroup->paid_internship == 1) {
                 $rate = 0.5;
                 break;
             }
@@ -1503,17 +1517,15 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return int
      */
-    public function countWorkHours(): int
+    public function countWorkHours(): float
     {
         $schedule = $this->schedule(true);
         $workChart = $this->workChart;
         if ($workChart && $workChart->rest_time != null){
             $lunchTime = $workChart->rest_time;
-            $hour = intval($lunchTime / 60);
-            $minute = $lunchTime % 60;
-            $totalHour = floatval($hour.".".$minute);
+            $hour = floatval($lunchTime / 60);
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-            $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+            $working_hours = round($userWorkHours / 3600, 1) - $hour;
         }else{
             $lunchTime = 1;
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
@@ -1610,5 +1622,13 @@ class User extends Authenticatable implements Authorizable
             throw new Exception(message: 'Проверьте график работы', code: 400);
         }
         return $workDays;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function coordinate():BelongsTo
+    {
+        return $this->belongsTo(UserCoordinate::class, 'coordinate_id');
     }
 }

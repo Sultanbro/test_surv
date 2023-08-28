@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable camelcase */
+
 import axios from 'axios';
 
 const REST_URI = '/messenger/api/v2/';
@@ -145,7 +147,7 @@ export default {
 		}).then(response => {
 			successCallback(response.data);
 		}).catch(error => {
-			console.log('Error sending message', error);
+			console.error('Error sending message', error);
 			errorCallback(error.response.data);
 		});
 	},

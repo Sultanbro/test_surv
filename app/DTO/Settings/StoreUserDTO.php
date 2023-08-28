@@ -57,6 +57,7 @@ class StoreUserDTO
      * @param array|null $taxes
      * @param int|null $bitrixId
      * @param float|null $timezone
+     * @param array|null $coordinates
      */
     public function __construct(
         public ?int $userId,
@@ -107,6 +108,7 @@ class StoreUserDTO
         public ?array $taxes,
         public ?int $bitrixId,
         public ?float $timezone,
+        public ?array $coordinates,
     )
     {}
 
@@ -161,6 +163,7 @@ class StoreUserDTO
             'taxes'             => $this->taxes,
             'bitrix_id'         => $this->bitrixId,
             'timezone'          => $this->timezone,
+            'coordinates'          => $this->coordinates,
         ];
     }
 }
