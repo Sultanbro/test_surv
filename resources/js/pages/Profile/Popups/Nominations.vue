@@ -384,6 +384,7 @@
 				У Вас пока нет ни одной награды
 			</h4>
 		</div>
+
 		<b-modal
 			v-if="itemModal"
 			v-model="modal"
@@ -391,6 +392,7 @@
 			centered
 			size="lg"
 			:title="itemModal.awardName"
+			@show="onModalShow"
 		>
 			<img
 				v-if="itemModal.format !== 'pdf'"
@@ -549,6 +551,15 @@ export default {
 			}
 			this.itemModal.isMy = isMy;
 			this.modal = !this.modal;
+		},
+		onModalShow(){
+			// костыль для модалки номинаций
+			this.$nextTick(() => {
+				const modal = document.querySelector('.awards-profile-modal-preview')
+				if(!modal) return this.onModalShow()
+				const outer = modal.parentNode
+				outer.style.zIndex = 1040000;
+			})
 		},
 	}
 };
