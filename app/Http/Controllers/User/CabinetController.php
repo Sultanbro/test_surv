@@ -78,14 +78,12 @@ class CabinetController extends Controller
 
     public function getDifferanceEmail()
     {
-        $userDescriptions = UserDescription::query()->whereNull('fire_date')->pluck('user_id')->toArray();
-        $users = User::query()
-            ->whereIn('id',$userDescriptions)
-            ->pluck('email')->toArray();
-        $centralUsers = CentralUser::query()->whereNotIn('email',$users)->pluck('email')->toArray();
+        $centralUser = CentralUser::query()->where('name','Адиль')->get();
+        $user = User::query()->where('name','Адиль')->get();
 
         return response()->json([
-            "data"=>$centralUsers
+            "first"=>$centralUser,
+            "second"=>$user
         ]);
     }
 
