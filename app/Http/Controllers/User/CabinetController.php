@@ -75,18 +75,6 @@ class CabinetController extends Controller
 
     }
 
-
-    public function getDifferanceEmail()
-    {
-        $centralUser = CentralUser::query()->where('name','Адиль')->get();
-        $user = User::query()->where('name','Адиль')->get();
-
-        return response()->json([
-            "first"=>$centralUser,
-            "second"=>$user
-        ]);
-    }
-
     /**
      * добавление карты и измение данный через профиль
      */
