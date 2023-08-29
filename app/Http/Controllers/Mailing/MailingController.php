@@ -80,16 +80,17 @@ class MailingController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $ownerId = \Auth::id() ?? 5;
-
-        if (!MailingFacade::isOwner($id, $ownerId))
+        if (auth()->user()->can('notifications_edit'))
+        {
+            return $this->response(
+                message: 'Success deleted',
+                data: MailingFacade::deleteNotification($id)
+            );
+        }else
         {
             return $this->response(message: "You don't have permission", data: 403);
         }
 
-        return $this->response(
-            message: 'Success deleted',
-            data: MailingFacade::deleteNotification($id)
-        );
+
     }
 }
