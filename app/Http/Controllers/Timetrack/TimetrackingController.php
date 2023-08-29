@@ -20,6 +20,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
+use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\TestBonus;
 use App\Models\User\NotificationTemplate;
@@ -883,7 +884,10 @@ class TimetrackingController extends Controller
             return response()->json($valid->errors()->first(), 400);
         }
 
-        $days = Timetracking::where('user_id', intval($request->user_id))
+        $userId = $request->user_id;
+        $date = Carbon::createFromDate($request->year, $request->month, $request->day);
+
+        $days = Timetracking::where('user_id', intval($userId))
             ->whereYear('enter', intval($request->year))
             ->whereMonth('enter', intval($request->month))
             ->whereDay('enter', $request->day)
@@ -909,7 +913,7 @@ class TimetrackingController extends Controller
             Timetracking::whereIn('id', $items)->delete();
         }
 
-        $employee = User::withTrashed()->find($request->user_id);
+        $employee = User::withTrashed()->find($userId);
         if (count($days) > 0) {
             if($day->exit == null) {
                 $day->exit = $exit;
@@ -930,6 +934,17 @@ class TimetrackingController extends Controller
                 'date' => Carbon::parse($timeStart)->format('Y-m-d'),
                 'description' => isset($request->comment) ? $description . '. Причина:' . $request->comment : $description
             ]);
+        }
+
+        if ($history){
+            $group = GroupUser::getGroupId($userId);
+            if ((new UserService)->getTrainees($group->group_id, $date)){
+                $dayType = DayType::getDayTypeWithDay($userId, $date->format("Y-m-d"));
+                if ($dayType){
+                    $dayType->type = DayType::DAY_TYPES['TRAINEE'];
+                    $dayType->save();
+                }
+            }
         }
 
         $result = [
