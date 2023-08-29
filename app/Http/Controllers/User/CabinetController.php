@@ -90,11 +90,11 @@ class CabinetController extends Controller
     /**
      * добавление карты и измение данный через профиль
      */
-    public function editUserProfile(Request $request)
+    public function editUserProfile(Request $request, UserSyncService $service)
     {
         $user = User::find( auth()->id() );
 
-        (new UserSyncService)->update($user->email, [
+        $updateUser = $service->update($user->email, [
             'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
             'working_country' => $request->working_country,
             'working_city' => $request->working_city,
@@ -119,7 +119,13 @@ class CabinetController extends Controller
             }
         }
 
-        return response(['success'=>'1']);
+        if($updateUser == false)
+        {
+            return response(['message' => 'Вы не можете изменит данные!']);
+        }else
+        {
+            return response(['success'=>'1']);
+        }
     }
 
     public function setCoordinate(array $coordinatesArray)

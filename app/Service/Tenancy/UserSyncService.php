@@ -24,7 +24,7 @@ final class UserSyncService
         $owner = CentralUser::with('tenants')->where('email', $email)->first();
         
         if(!$owner) {
-            return null;
+            return false;
         }
  
         foreach ($owner->tenants as $tenant) {
@@ -32,12 +32,18 @@ final class UserSyncService
             
             tenancy()->initialize($tenant);
 
-            $user = User::withTrashed()->where('email', $email)->first();
+            $users = User::withTrashed()->where('email', $email)->first();
             
-            $user->update( $data );
+            $users->update( $data );
         }
-        
+        $user = User::withTrashed()
+            ->where('email',$email)
+            ->first()
+            ->update($data);
+
         $owner->update( $this->normalizeForOwner($data) );
+
+        return $user;
     }
 
     public function normalize(array $data) : array

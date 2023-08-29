@@ -85,8 +85,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/profile/save-cropped-image', [User\CabinetController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
     Route::post('/profile/access', [Admin\AccessController::class, 'switchAccess']);
 
-    Route::post('get/differance-email',[User\CabinetController::class,'getDifferanceEmail'])->name('get.differance');
-
     ///Настройка профайл
     Route::post('/profile/upload/image/profile/', [User\EmployeeController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
     Route::any('/profile/upload/edit/', [User\EmployeeController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
