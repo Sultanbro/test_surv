@@ -53,5 +53,11 @@ class DayType extends Model
         'C4:18' => self::DAY_TYPES['TRAINEE'],
         'C4:21' => self::DAY_TYPES['ABCENSE'],
     ];
+
+    public static function getDayTypeWithDay($userId, $date){
+        return self::where('user_id', $userId)
+            ->whereDate('date', $date)
+            ->first();
+    }
     
 }
