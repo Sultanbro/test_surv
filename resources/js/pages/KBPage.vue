@@ -557,6 +557,10 @@ export default {
 		},
 
 		back() {
+			if(!this.can_edit) {
+				this.mode = 'read';
+				this.clearSearch();
+			}
 			this.activeBook = null;
 			window.history.replaceState({ id: '100' }, 'База знаний', '/kb');
 		},
