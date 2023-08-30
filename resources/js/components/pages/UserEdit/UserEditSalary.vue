@@ -143,7 +143,10 @@ export default {
 		},
 		selectTaxNotAssigned(val) {
 			this.assignTaxes.push(val.id);
-			this.myTaxes.push(val);
+			this.myTaxes.push({
+				...val,
+				value: 0,
+			});
 			const index = this.taxes.findIndex(t => t.id === val.id);
 			this.taxes[index].isAssigned = true;
 			this.$emit('taxes_fill', {
