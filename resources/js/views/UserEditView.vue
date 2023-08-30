@@ -418,6 +418,7 @@ export default {
 				});
 				const userId = this.user ? this.user.id : response.data.data.id;
 				if (this.taxesFillData) {
+					// новый налог
 					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
 						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
 							const formDataNewTaxes = new FormData();
@@ -434,6 +435,16 @@ export default {
 						}
 					}
 
+					// добавление сущесвующих
+					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
+						const formDataAssignTaxes = new FormData();
+						formDataAssignTaxes.append('user_id', userId);
+						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id);
+						formDataAssignTaxes.append('is_assigned', 1);
+						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+					}
+
+					// редактирование сущуствующих
 					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
 						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
 							const formDataEditTaxes = new FormData();
@@ -445,14 +456,6 @@ export default {
 							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
 							await this.axios.post('/tax', formDataEditTaxes);
 						}
-					}
-
-					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
-						const formDataAssignTaxes = new FormData();
-						formDataAssignTaxes.append('user_id', userId);
-						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i]);
-						formDataAssignTaxes.append('is_assigned', 1);
-						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
 					}
 				}
 

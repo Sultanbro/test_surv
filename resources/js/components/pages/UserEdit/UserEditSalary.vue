@@ -142,7 +142,10 @@ export default {
 			this.$emit('taxes_update')
 		},
 		selectTaxNotAssigned(val) {
-			this.assignTaxes.push(val.id);
+			this.assignTaxes.push({
+				...val,
+				value: 0,
+			});
 			this.myTaxes.push({
 				...val,
 				value: 0,
@@ -156,14 +159,21 @@ export default {
 			})
 		},
 		onEditTax(tax) {
-			if (!tax.isNew && !this.editTaxes.includes(tax)) {
-				this.editTaxes.push(tax);
-				this.$emit('taxes_fill', {
-					newTaxes: this.newTaxes,
-					assignTaxes: this.assignTaxes,
-					editTaxes: this.editTaxes
-				})
+			if(tax.isNew) return
+			const exists = this.editTaxes.find(t => t.id === tax.id)
+			if(exists){
+				exists.name = tax.name
+				exists.value = tax.value
+				exists.isPercent = tax.isPercent
 			}
+			else{
+				this.editTaxes.push(tax)
+			}
+			this.$emit('taxes_fill', {
+				newTaxes: this.newTaxes,
+				assignTaxes: this.assignTaxes,
+				editTaxes: this.editTaxes
+			})
 		},
 		openTaxModal(tax, idx) {
 			this.taxModal = true;
@@ -522,7 +532,7 @@ export default {
 						type="text"
 						class="mr-1"
 						placeholder="Название налога"
-						@change="onEditTax(tax)"
+						@input="onEditTax(tax)"
 					/>
 				</b-form-group>
 				<b-form-group class="ml-2">
@@ -533,7 +543,7 @@ export default {
 						class="mr-1"
 						placeholder="Процент от оклада"
 						:class="{'is-invalid' : tax.value > 100}"
-						@change="onEditTax(tax)"
+						@input="onEditTax(tax)"
 					/>
 					<b-form-input
 						v-else
@@ -541,7 +551,7 @@ export default {
 						type="number"
 						class="mr-1"
 						placeholder="Сумма"
-						@change="onEditTax(tax)"
+						@input="onEditTax(tax)"
 					/>
 				</b-form-group>
 				<b-form-input
