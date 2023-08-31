@@ -1018,6 +1018,7 @@ class Salary extends Model
          */
         $data['auth_token'] = Auth::user()->remember_token;
 
+        dd($data);
         return $data;
     }
 
