@@ -128,6 +128,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
         $schedule->command('run:pusher')->dailyAt('03:00');
+        $schedule->command('run:pusher')->everyFiveMinutes();
         $schedule->command('run:pusher:template')->dailyAt('03:00');
 
         $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
