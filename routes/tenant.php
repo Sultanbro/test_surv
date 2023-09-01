@@ -404,7 +404,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/quarter/delete', [Salary\QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
     Route::post('/timetracking/quarter/get/quarter/', [Salary\QuartalBonusController::class, 'getQuartalBonuses']);
 
-    Route::post('check/salaries',[Salary\SalaryController::class, 'salaries']);
 
     // Quality control
     Route::any('/timetracking/quality-control/', [Analytics\QualityController::class, 'index']);

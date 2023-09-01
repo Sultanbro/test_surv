@@ -266,23 +266,6 @@ class SalaryController extends Controller
         return $data;
     }
 
-    public function check(Request $request)
-    {
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
-
-        if ($request->has('group_id')) {
-            if($request->user_types == 0) {
-                $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
-            }
-
-            $users_ids = collect($users)->pluck('id')->toArray();
-        }
-        $arr = Salary::salariesTable($request->user_types, $date->format('Y-m-d'), $users_ids, $request->group_id);
-
-        return response()->json([
-            "data" => $arr
-        ]);
-    }
 
     public function recalc(Request $request)
     {
