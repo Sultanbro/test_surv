@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Console\Commands\ListenQueue;
 use App\Jobs\SendNotificationJob;
 use App\User;
 
