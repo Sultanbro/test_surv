@@ -487,4 +487,19 @@ class ProfileGroup extends Model
     public function activitiesSetting(){
         return $this->belongsTo(AnalyticsActivitiesSetting::class,  'activities_setting_id', 'id');
     }
+
+    public function scopeWhereHasAnalytics($query)
+    {
+        return $query->whereIn('has_analytics', [self::HAS_ANALYTICS, self::NOT_ANALYTICS]);
+    }
+
+    public function scopeIsActive($query)
+    {
+        return $query->where('active', self::IS_ACTIVE);
+    }
+
+    public function scopeIsArchived($query)
+    {
+        return $query->where('has_analytics', self::ARCHIVED);
+    }
 }
