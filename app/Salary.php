@@ -917,6 +917,8 @@ class Salary extends Model
                 }
             }
 
+
+
             /**
              * add to user new fields
              */
@@ -986,6 +988,10 @@ class Salary extends Model
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
 
+            if($user->full_time == false)
+            {
+                $user->kpi = $user->kpi/2;
+            }
             /**
              * If user has edited Bonus for month take it
              */
