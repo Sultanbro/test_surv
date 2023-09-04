@@ -688,4 +688,13 @@ class TopValue extends Model
 
         return $table;
     }
+
+    public function scopeGetByGroupAndDate(
+        $query,
+        int $groupId,
+        string $date
+    )
+    {
+        return $query->where('group_id', $groupId)->where('date', $date);
+    }
 }

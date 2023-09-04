@@ -6,6 +6,7 @@ use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\Http\Requests\V2\Analytics\GetAnalyticsRequest;
 use App\ProfileGroup;
 use App\Support\Core\CustomException;
+use App\Traits\AnalyticTrait;
 use App\User;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -16,6 +17,8 @@ use Throwable;
 
 class CheckAnalyticPermission
 {
+    use AnalyticTrait;
+
     /**
      * Handle an incoming request.
      *
@@ -39,18 +42,5 @@ class CheckAnalyticPermission
         }
 
         return $next($request);
-    }
-
-    /**
-     * @param Request $request
-     * @return GetAnalyticDto
-     */
-    public function requestToDto(
-        Request $request
-    ): GetAnalyticDto
-    {
-        $data = $request->all();
-
-        return GetAnalyticDto::fromArray($data);
     }
 }

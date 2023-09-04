@@ -4,7 +4,7 @@
 use App\Http\Controllers\V2\Analytics\V2AnalyticController;
 
 Route::group([
-    'middleware'    => 'analytics_permission',
+    'middleware'    => ['analytics_permission', 'analytics_cache'],
     'as'            => 'v2.analytics'
 ], function () {
     /**

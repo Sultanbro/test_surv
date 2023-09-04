@@ -6,6 +6,7 @@ use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
 use App\Http\Middleware\Portal\IsOwner;
 use App\Http\Middleware\UpdateLastSeenTime;
+use App\Http\Middleware\V2\Analytics\CacheAnalyticsData;
 use App\Http\Middleware\V2\Analytics\CheckAnalyticPermission;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -90,6 +91,7 @@ class Kernel extends HttpKernel
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
         'owner' => IsOwner::class,
-        'analytics_permission' => CheckAnalyticPermission::class
+        'analytics_permission'  => CheckAnalyticPermission::class,
+        'analytics_cache'       => CacheAnalyticsData::class
     ];
 }
