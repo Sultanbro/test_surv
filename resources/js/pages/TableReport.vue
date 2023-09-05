@@ -1405,8 +1405,8 @@ export default {
 					if (dayHours[tt.date].updated === 1 || dayHours[tt.date].updated === 2 || dayHours[tt.date].updated === 3) {
 						if (tt.updated !== 0) {
 							dayHours[tt.date].hour = Number(tt.minutes / 60)
-							tt_hours = Number(tt.minutes / 60);
 						}
+						tt_hours = Number(tt.minutes / 60);
 					}
 					else {
 						if (tt.minutes > 0) {
