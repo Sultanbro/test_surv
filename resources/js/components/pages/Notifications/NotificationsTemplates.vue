@@ -29,12 +29,14 @@
 								class="form-control NotificationsTemplates-badges"
 								@click="onClickRecipments"
 							>
-								<b-badge
-									v-for="recipient, index in value.recipients"
-									:key="index"
-								>
-									{{ recipient.name }}
-								</b-badge>
+								<template v-for="recipient, index in value.recipients">
+									<b-badge
+										v-if="recipient.name"
+										:key="index"
+									>
+										{{ recipient.name }}
+									</b-badge>
+								</template>
 								&nbsp;
 							</div>
 							<JobtronOverlay
