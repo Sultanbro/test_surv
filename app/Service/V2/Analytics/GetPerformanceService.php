@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Schema;
 */
 final class GetPerformanceService
 {
+    /**
+     * Получаем полезности.
+     *
+     * @param GetAnalyticDto $dto
+     * @return array
+     */
     public function handle(GetAnalyticDto $dto): array
     {
         $utilityDto = UtilityDto::fromArray([
@@ -23,6 +29,12 @@ final class GetPerformanceService
             'month'     => $dto->month
         ]);
 
-        $utility = TopValueFacade::utility($utilityDto);
+        $utility     = TopValueFacade::utility($utilityDto);
+        $rentability = TopValueFacade::rentability($utilityDto);
+
+        return [
+            'utility'       => $utility,
+            'rentability'   => $rentability
+        ];
     }
 }

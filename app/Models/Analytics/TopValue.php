@@ -39,10 +39,12 @@ class TopValue extends Model
         'reversed', //
     ];
 
-    public function getOptions()
+    public function getOptions(
+        $options = null
+    )
     {
 
-        $arr = json_decode($this->options, true);
+        $arr = json_decode($options ?? $this->options, true);
 
         $result = [
             'angle' => -0.01,

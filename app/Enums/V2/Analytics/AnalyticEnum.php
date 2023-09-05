@@ -28,4 +28,9 @@ enum AnalyticEnum
      * Ключ для получение с кэша статистику.
      */
     const ANALYTIC_STAT = 'stats';
+
+    /**
+     * Ключ для получения активностей.
+     */
+    const ANALYTIC_ACTIVITIES = 'activities';
 }
