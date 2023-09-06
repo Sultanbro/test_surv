@@ -97,6 +97,23 @@
 						/>
 					</div>
 
+					<div class="form-group d-flex aic">
+						<label class="mb-0 mr-3 w-200px">Кто может писать в&nbsp;общий чат</label>
+						<Multiselect
+							v-model="generalChatUsers"
+							:options="users"
+							:multiple="true"
+							:close-on-select="false"
+							:clear-on-select="true"
+							:preserve-search="true"
+							placeholder="Выберите"
+							label="email"
+							track-by="id"
+							:taggable="true"
+							class="multiselect-surv"
+						/>
+					</div>
+
 					<div
 						v-if="authRole.is_admin === 1"
 						class="d-flex aic video-add-content"
@@ -152,6 +169,7 @@
 							</div>
 						</div>
 					</div>
+
 					<hr>
 					<div class="row">
 						<div class="col-12 col-md-6">
@@ -475,12 +493,13 @@
 
 <script>
 /* eslint-disable camelcase */
-
 import Multiselect from 'vue-multiselect'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import LocalitySelect from '@ui/LocalitySelect.vue'
+
+import API from '@/components/Chat/Store/API.vue'
 
 const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
@@ -516,6 +535,8 @@ export default {
 			user: [],
 			user_card: [],
 			admins: [],
+			generalChatUsers: [],
+			generalChatUsersOld: [],
 			activeCourse: null,
 			page: 'profile',
 			img: '',
@@ -559,6 +580,16 @@ export default {
 		isYoutubeLinkValid() {
 			return regex.test(this.videoUrl);
 		},
+		generalChatUserToAdd(){
+			return this.generalChatUsers.filter(user => {
+				return !this.generalChatUsersOld.find(oldUser => oldUser.id === user.id)
+			})
+		},
+		generalChatUserToRemove(){
+			return this.generalChatUsersOld.filter(oldUser => {
+				return !this.generalChatUsers.find(user => user.id === oldUser.id)
+			})
+		},
 	},
 	watch: {
 		keywords() {
@@ -586,6 +617,7 @@ export default {
 			return urlObj.searchParams.get('v')
 		},
 		init() {
+			this.fetchGeneralChat();
 			this.fetchData();
 			this.user = this.authRole;
 			this.format_date(this.user.birthday);
@@ -843,7 +875,17 @@ export default {
 					alert(error);
 				});
 		},
+		fetchGeneralChat(){
+			API.getChatInfo(0, ({users}) => {
+				this.generalChatUsers = JSON.parse(JSON.stringify(users)).map(user => {
+					user.email = `${user.name} ${user.last_name}`
+					return user
+				})
+				this.generalChatUsersOld = JSON.parse(JSON.stringify(users))
+			})
+		},
 		save() {
+			this.saveGeneralChat()
 			try{
 				if ((this.videoDays || this.videoUrl) && this.authRole.is_admin === 1) {
 					if (this.videoDays && this.videoUrl) {
@@ -874,7 +916,14 @@ export default {
 				this.$toast.err('Ошибка сохранения')
 			}
 		},
-
+		async saveGeneralChat(){
+			for(const user of this.generalChatUserToAdd){
+				await API.addUserToChat(0, user.id)
+			}
+			for(const user of this.generalChatUserToRemove){
+				await API.removeUserFromChat(0, user.id)
+			}
+		},
 		fetch() {
 			if (this.keywords != null && this.keywords != undefined) {
 				if (this.keywords.length === 0) {
