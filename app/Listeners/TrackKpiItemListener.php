@@ -40,7 +40,7 @@ class TrackKpiItemListener
                 'kpi_id'        => $kpiItem->kpi_id,
                 'activity_id'   => $kpiItem->activity_id,
                 'plan'          => $kpiItem->plan,
-                'daily_plan'    => $kpiItem->daily_plan,
+                'daily_plan'    => $kpiItem->activity->daily_plan,
                 'share'         => $kpiItem->share,
                 'cell'          => $kpiItem->cell,
                 'method'        => $kpiItem->method,
