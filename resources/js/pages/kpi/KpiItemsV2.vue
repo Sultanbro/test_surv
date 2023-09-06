@@ -317,8 +317,8 @@ export default {
 			default: () => []
 		},
 		activities: {
-			type: Object,
-			default: () => ({})
+			type: Array,
+			default: () => []
 		},
 		groups: {
 			type: Object,
@@ -353,7 +353,7 @@ export default {
 			default: false
 		},
 		date: {
-			type: Object,
+			type: String,
 			default: null
 		},
 	},
@@ -399,7 +399,7 @@ export default {
 	},
 
 	created() {
-		this.defineSourcesAndGroups('with_sources_and_group_id');
+		this.defineSourcesAndGroups();
 
 		this.recalc();
 		this.getSum();
@@ -407,7 +407,10 @@ export default {
 			this.items.forEach(el => el.expanded = true);
 		}
 	},
-	mounted(){},
+	mounted(){
+		this.recalc();
+		this.getSum();
+	},
 
 	methods: {
 		toggle() {
