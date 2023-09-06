@@ -67,7 +67,7 @@
 									{{ recipientsNames[notification.date.frequency] }}
 								</template>
 								<template v-else>
-									{{ notification.recipients.filter(recipient => !!recipient.name).map(recipient => recipient.name).join(', ') }}
+									{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
 								</template>
 							</TextClip>
 						</b-td>

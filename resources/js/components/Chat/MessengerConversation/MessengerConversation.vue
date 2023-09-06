@@ -2,9 +2,7 @@
 	<div class="messenger__col-messages">
 		<ConversationHeader />
 		<ConversationFeed />
-		<ConversationFooter
-			v-if="chat && (chat.id || userInChat || isPortalAdmin)"
-		/>
+		<ConversationFooter />
 		<ConversationSearch
 			v-if="isDesktop"
 			v-show="isChatSearchMode"
@@ -34,18 +32,10 @@ export default {
 		ConversationSearchMobile,
 	},
 	computed: {
-		...mapGetters(['isChatSearchMode', 'chat', 'user']),
+		...mapGetters(['isChatSearchMode']),
 		isDesktop() {
 			return this.$viewportSize.width > 670
 		},
-		userInChat(){
-			if(!this.chat) return false
-			return ~this.chat.users.findIndex(user => user.id === this.user.id)
-		},
-		isPortalAdmin(){
-			/* global Laravel */
-			return Laravel.is_admin
-		}
 	},
 }
 </script>

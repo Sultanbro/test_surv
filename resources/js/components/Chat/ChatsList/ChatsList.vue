@@ -54,7 +54,7 @@
 					Удалить чат
 				</div>
 				<div
-					v-else-if="contextMenuChat.id"
+					v-else
 					class="ContextMenu-item wsnw ChatIcon-parent"
 					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
 				>

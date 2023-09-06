@@ -529,13 +529,7 @@ class ChatsController extends Controller {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
 
-        if($chatId == 0){
-            $chat = MessengerFacade::getGeneralChat();
-        }
-        else{
-            $chat = MessengerChat::findOrFail($chatId);
-        }
-
+        $chat = MessengerChat::findOrFail($chatId);
 
         /**
          * Mute taken chat.
@@ -556,13 +550,7 @@ class ChatsController extends Controller {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
 
-        if($chatId == 0){
-            $chat = MessengerFacade::getGeneralChat();
-        }
-        else{
-            $chat = MessengerChat::findOrFail($chatId);
-        }
-
+        $chat = MessengerChat::findOrFail($chatId);
 
         /**
          * Unmute taken chat.

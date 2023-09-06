@@ -10,10 +10,6 @@ export default {
 	},
 	mutations: {
 		setChats(state, chats) {
-			if(JSON.parse(localStorage.getItem('JobtronGeneralChatPinned') || 'false')){
-				const generalChat = chats.find(chat => chat.id === 0)
-				generalChat.pinned = true
-			}
 			state.chats = chats;
 		},
 		addChat(state, chat) {
@@ -205,22 +201,12 @@ export default {
 		},
 		async pinChat({commit}, chat) {
 			chat.pinned = true;
-			if(chat.id === 0){
-				localStorage.setItem('JobtronGeneralChatPinned', 'true')
-			}
-			else{
-				await API.pinChat(chat.id);
-			}
+			await API.pinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async unpinChat({commit}, chat) {
 			chat.pinned = false;
-			if(chat.id === 0){
-				localStorage.setItem('JobtronGeneralChatPinned', 'false')
-			}
-			else{
-				await API.unpinChat(chat.id);
-			}
+			await API.unpinChat(chat.id);
 			commit('updateChat', chat);
 		},
 		async muteChat({commit}, chatId) {
