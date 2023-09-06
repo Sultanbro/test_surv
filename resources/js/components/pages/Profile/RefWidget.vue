@@ -58,7 +58,7 @@
 <script>
 import { copy2clipboard } from '@/composables/copy2clipboard'
 const fakeData = {
-	status: 'Novice', // Promoter/Activist/Ambassador
+	status: 'Promouter', // Promoter/Activist/Ambassador
 	reflink: location.origin + '/reflink?r=qwerty123456',
 	total: 100,
 	month: 50,
