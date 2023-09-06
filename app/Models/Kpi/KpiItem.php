@@ -20,7 +20,6 @@ class KpiItem extends Model
         'activity_id',
         'kpi_id',
         'plan',
-        'daily_plan',
         'share',
         'method',
         'unit',
