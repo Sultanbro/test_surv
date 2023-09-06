@@ -160,6 +160,15 @@ function calcCompleted(el) {
 	}
 
 	if(el.method == 1) {
+		if(el.histories_latest?.payload?.daily_plan){
+			plan = el.histories_latest.payload.daily_plan * el.workdays
+		}
+		else{
+			plan = el.daily_plan * el.workdays
+		}
+		if(!el.full_time) {
+			plan = plan / 2
+		}
 		res = (fact / plan * 100).toFixed(2);
 	}
 
