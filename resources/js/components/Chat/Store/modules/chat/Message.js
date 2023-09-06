@@ -76,7 +76,10 @@ export default {
 				}
 				else {
 					messages = Object.keys(messages).map(key => messages[key]).reverse();
-					dispatch('markMessagesAsRead', messages);
+					dispatch('markMessagesAsRead', {
+						messages,
+						chat: getters.chat,
+					});
 
 					if (reset) {
 						commit('setMessages', messages);
@@ -158,7 +161,10 @@ export default {
 
 			if (isCurrentChat && !isSender) {
 				commit('addMessage', message);
-				if (getters.isOpen && getters.isFocus) dispatch('markMessagesAsRead', [message]);
+				if (getters.isOpen && getters.isFocus) dispatch('markMessagesAsRead', {
+					messages: [message],
+					chat: getters.chat,
+				});
 			}
 			// add chat if not exists
 			if (chat) {
@@ -252,13 +258,13 @@ export default {
 				commit('addMessage', message);
 			}
 		},
-		async markMessagesAsRead({commit, getters}, messages) {
+		async markMessagesAsRead({commit, getters}, {messages, chat}) {
 			// exclude messages from user
 			messages = messages.filter(message => message.sender_id !== getters.user.id);
 			// exclude messages contains reader.id (current user)
 			messages = messages.filter(message => !message.readers || !message.readers.find(reader => reader.id === getters.user.id));
 			if (messages.length > 0) {
-				await API.setMessagesAsRead(messages.map(message => message.id), (response) => {
+				await API.setMessagesAsRead(messages.map(message => message.id), chat.id, (response) => {
 					commit('markChatAsSeen', response.left);
 				});
 			}

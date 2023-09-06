@@ -38,12 +38,14 @@
 				>
 			</div>
 			<div class="NotificationsEditForm-control NotificationsEditForm-badges form-control">
-				<b-badge
-					v-for="recipient, index in value.recipients"
-					:key="index"
-				>
-					{{ recipient.name }}
-				</b-badge>
+				<template v-for="recipient, index in value.recipients">
+					<b-badge
+						v-if="recipient.name"
+						:key="index"
+					>
+						{{ recipient.name }}
+					</b-badge>
+				</template>
 				&nbsp;
 			</div>
 		</div>
