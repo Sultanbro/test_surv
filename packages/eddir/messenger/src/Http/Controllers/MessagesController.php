@@ -195,33 +195,22 @@ class MessagesController {
      * @throws NotFoundExceptionInterface
      */
     public function setMessagesAsRead(): JsonResponse {
-        $chatId = request()->get( 'chatId' );
         $messageIds = request()->get( 'messages' );
         // select messages by ids where user is a member of chat of each message
-        $messages = MessengerMessage::whereIn( 'id', $messageIds );
-        if($chatId != 0){
-            $messages = $messages->whereHas( 'chat', function ( $query ) {
-                $query->whereHas( 'members', function ( $query ) {
-                    $query->where( 'user_id', Auth::user()->id );
-                } );
-            } );
-        }
-        $messages = $messages->get();
-
+        $messages = MessengerMessage::whereIn( 'id', $messageIds )
+                                    ->whereHas( 'chat', function ( $query ) {
+                                        $query->whereHas( 'members', function ( $query ) {
+                                            $query->where( 'user_id', Auth::user()->id );
+                                        } );
+                                    } )
+                                    ->get();
         if ( $messages->count() > 0 ) {
             // set messages as read
             MessengerFacade::setMessagesAsRead( $messages, Auth::user() );
 
-            if($chatId == 0){
-                $chat = MessengerFacade::getGeneralChat();
-            }
-            else{
-                $chat = $messages->first()->chat;
-            }
-
             // return get chats last messages
             return response()->json( [
-                'left' => $chat->getUnreadMessagesCount( Auth::user() ),
+                'left' => $messages->first()->chat->getUnreadMessagesCount( Auth::user() ),
             ] );
         }
 

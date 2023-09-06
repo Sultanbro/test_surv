@@ -48,10 +48,7 @@ export default {
 		},
 		async toggleMessenger({dispatch, commit, getters}) {
 			if(!getters.isOpen && getters.chat && getters.messages){
-				dispatch('markMessagesAsRead', {
-					messages: getters.messages,
-					chat: getters.chat,
-				})
+				dispatch('markMessagesAsRead', getters.messages)
 			}
 			commit('toggleMessenger');
 		},
@@ -99,10 +96,7 @@ export default {
 		messengerFocus({commit, dispatch, getters}){
 			commit('messengerFocus')
 			if(getters.isOpen && getters.chat && getters.messages){
-				dispatch('markMessagesAsRead', {
-					messages: getters.messages,
-					chat: getters.chat,
-				})
+				dispatch('markMessagesAsRead', getters.messages)
 			}
 		},
 	},

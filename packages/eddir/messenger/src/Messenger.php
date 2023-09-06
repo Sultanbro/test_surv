@@ -22,20 +22,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
 
 class Messenger {
     public Pusher $pusher;
-    public $generalChat = [
-        'owner_id' => 0,
-        'title' => 'Общий чат',
-        'description' => '',
-        'image' => '',
-        'private' => 0,
-    ];
 
     /**
      * Get max file's upload size in MB.
@@ -58,12 +50,6 @@ class Messenger {
             config( 'messenger.pusher.app_id' ),
             config( 'messenger.pusher.options' ),
         );
-    }
-
-    public function getGeneralChat(): MessengerChat{
-        $generalChat = new MessengerChat($this->generalChat);
-        $generalChat->id = 0;
-        return $generalChat;
     }
 
     // API v2
@@ -89,10 +75,6 @@ class Messenger {
                     $chats->add($chat);
                 }
             });
-
-        // Общий чат
-
-        $chats->prepend($this->getChatAttributesForUser($this->getGeneralChat(), $user), 0);
 
         return $chats;
     }
@@ -192,9 +174,6 @@ class Messenger {
      * @return Builder|Model
      */
     public function getChat( int $chatId ): Builder|Model {
-        if($chatId == 0){
-            return $this->getGeneralChat();
-        }
         return MessengerChat::query()
                             ->where( 'id', $chatId )
                             ->first();
@@ -210,17 +189,13 @@ class Messenger {
     {
         $user = Auth::user();
 
-        if($chat->id == 0) Schema::disableForeignKeyConstraints();
-
         if ($chat->mute->contains($user->id))
         {
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
             return response()->json(['message' => 'You are already muted this chat'],400);
         }
 
         $chat->mute()->attach($user->id);
 
-        if($chat->id == 0) Schema::enableForeignKeyConstraints();
         return true;
     }
 
@@ -234,17 +209,13 @@ class Messenger {
     {
         $user = Auth::user();
 
-        if($chat->id == 0) Schema::disableForeignKeyConstraints();
-
         if (!$chat->mute->contains($user->id))
         {
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
             return response()->json(['message' => 'Before unmute chat you should mute!'],400);
         }
 
         $chat->mute()->detach($user->id);
 
-        if($chat->id == 0) Schema::enableForeignKeyConstraints();
         return true;
     }
 
@@ -401,13 +372,7 @@ class Messenger {
 
         // check if the highest message is really the last message
         $last_message = $messages->last();
-        if($last_message->chat_id == 0){
-            $chat = $this->getGeneralChat();
-        }
-        else{
-            $chat = $last_message->chat;
-        }
-        if ( $last_message->id == $chat->getLastMessage()->id ) {
+        if ( $last_message->id == $last_message->chat->getLastMessage()->id ) {
             // send pusher event
             $this->createEvent( $last_message->chat, $user, MessengerEvent::TYPE_READ, [
                 'message_id' => $last_message->id,
@@ -493,7 +458,6 @@ class Messenger {
      * @return bool
      */
     public function isMember( int $chatId, int $userId ): bool {
-        if($chatId == 0) return true;
         return MessengerChat::query()
                             ->where( 'id', $chatId )
                             ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
@@ -614,18 +578,6 @@ class Messenger {
      * @throws PusherException
      */
     public function sendMessage( int $chatId, int $userId, string $body, $files = [], $parentId = null ): MessengerMessage {
-        if($chatId != 0) {
-            // for every user in chat send message to pusher
-            $chat = MessengerChat::find( $chatId );
-
-            // check if user is member of chat
-            if ( ! $chat->hasMember( User::find( $userId ) ) ) {
-                throw new Exception( 'User is not member of chat ' . $chatId );
-            }
-        }
-
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
-
         $message            = new MessengerMessage();
         $message->chat_id   = $chatId;
         $message->sender_id = $userId;
@@ -633,7 +585,13 @@ class Messenger {
         $message->body      = $body;
         $message->save();
 
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
+        // for every user in chat send message to pusher
+        $chat = MessengerChat::find( $chatId );
+
+        // check if user is member of chat
+        if ( ! $chat->hasMember( User::find( $userId ) ) ) {
+            throw new Exception( 'User is not member of chat ' . $chatId );
+        }
 
         if ( count( $files ) > 0 ) {
             foreach ( $files as $file ) {
@@ -646,17 +604,13 @@ class Messenger {
         $message->parent;
         $message->sender;
 
-        if($chatId == 0) {
-            $users = MessengerUserOnline::all();
-        }
-        else{
-            $users = MessengerUserOnline::getOnlineMembers( $chatId );
-        }
+        $users = MessengerUserOnline::getOnlineMembers( $chatId );
         $users->each( function ( $user ) use ( $message ) {
             $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $message->toArray(),
             ] );
         } );
+
         return $message;
     }
 
@@ -787,7 +741,6 @@ class Messenger {
      * @return bool
      */
     public function pinChat( int $chatId, User $promote ): bool {
-        if($chatId == 0) return true;
         // update chat_users table
         DB::table( 'messenger_chat_users' )
           ->where( 'chat_id', $chatId )
@@ -808,7 +761,6 @@ class Messenger {
      * @return bool
      */
     public function unpinChat( int $chatId, User $promote ): bool {
-        if($chatId == 0) return true;
         // update chat_users table
         DB::table( 'messenger_chat_users' )
           ->where( 'chat_id', $chatId )
@@ -868,18 +820,8 @@ class Messenger {
      * @throws PusherException
      */
     public function addUserToChat( int $chatId, int | array $userId, User $promote ): MessengerChat {
-        if($chatId == 0){
-            $chat = $this->getGeneralChat();
-        }
-        else{
-            $chat = MessengerChat::find( $chatId );
-        }
-
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
+        $chat = MessengerChat::find( $chatId );
         $chat->members()->syncWithoutDetaching( $userId );
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
-
-        if($chatId == 0) return $chat;
 
         if(is_int($userId)){
             $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
@@ -913,18 +855,8 @@ class Messenger {
      * @throws PusherException
      */
     public function removeUserFromChat( int $chatId, int $userId, User $promote ): MessengerChat {
-        if($chatId == 0){
-            $chat = $this->getGeneralChat();
-        }
-        else{
-            $chat = MessengerChat::find( $chatId );
-        }
-
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
+        $chat = MessengerChat::find( $chatId );
         $chat->members()->detach( $userId );
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
-
-        if($chatId == 0) return $chat;
 
         $this->createEvent( $chat, $promote, MessengerEvent::TYPE_LEAVE, [
             'user_id' => $userId,
@@ -1019,12 +951,7 @@ class Messenger {
      */
     public function createEvent( MessengerChat $chat, User $user, string $type, array $payload = null ): MessengerEvent {
         $message = new MessengerMessage();
-        if($chat->id == 0){
-            $message->chat_id = 0;
-        }
-        else{
-            $message->chat()->associate( $chat );
-        }
+        $message->chat()->associate( $chat );
         $message->sender()->associate( $user );
         $message->body = 'Event';
 
@@ -1035,11 +962,9 @@ class Messenger {
 
 
         if ( in_array( $type, MessengerEvent::$save_events ) ) {
-            if($chat->id == 0) Schema::disableForeignKeyConstraints();
             $message->save();
             $event->message()->associate( $message );
             $event->save();
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
             /** @noinspection PhpExpressionResultUnusedInspection */
             $message->event;
             $messageData = $message->toArray();
@@ -1050,13 +975,8 @@ class Messenger {
         }
         $messageData['chat']['users'] = $chat->users->toArray();
 
-        if($chat->id == 0) {
-            $users = MessengerUserOnline::all();
-        }
-        else{
-            $users = MessengerUserOnline::getOnlineMembers( $chat->id );
-        }
 
+        $users = MessengerUserOnline::getOnlineMembers( $chat->id );
         $users->each( function ( $user ) use ( $messageData ) {
             $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $messageData,

@@ -235,7 +235,7 @@
 							Удалить чат
 						</div>
 						<div
-							v-else-if="chat.id"
+							v-else
 							class="PopupMenu-item wsnw ChatIcon-parent"
 							@click="isPopup = false; leftChat(chat)"
 						>
@@ -328,7 +328,7 @@ export default {
 		isAdmin() {
 			if(!this.chat?.users) return false
 			const user = this.chat.users.find(user => user.id === this.user.id)
-			return user?.pivot?.is_admin
+			return user.pivot?.is_admin
 		},
 		firstTenUsers(){
 			if(!this.isDesktop) return this.members.slice(0, 3)
