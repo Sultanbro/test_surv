@@ -96,13 +96,12 @@
 									'weekend' : is_weekday[day],
 								}"
 							>
-								<div>
-									<input
-										v-model="item[day].plan"
-										type="number"
-										@change="updateSettings($event, item, index, day)"
-									>
-								</div>
+								<input
+									v-model="item[day].plan"
+									type="number"
+									class="TableDecomposition-inputNumber"
+									@change="updateSettings($event, item, index, day)"
+								>
 							</td>
 							<td
 								v-else
@@ -125,13 +124,12 @@
 									'weekend' : is_weekday[day],
 								}"
 							>
-								<div>
-									<input
-										v-model="item[day].fact"
-										type="number"
-										@change="updateSettings($event, item, index, day)"
-									>
-								</div>
+								<input
+									v-model="item[day].fact"
+									type="number"
+									class="TableDecomposition-inputNumber"
+									@change="updateSettings($event, item, index, day)"
+								>
 							</td>
 							<td
 								v-else
@@ -493,6 +491,19 @@ export default {
 	&-inputName{
 		&::placeholder{
 			font-style: italic;
+		}
+	}
+	&-inputNumber{
+		display: block;
+		width: calc(100% + 20px);
+		margin: 0 -10px;
+		background: transparent;
+		-moz-appearance: textfield;
+		text-align: center;
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
 		}
 	}
 	// &-table{}
