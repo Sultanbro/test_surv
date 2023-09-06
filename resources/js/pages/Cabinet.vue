@@ -107,8 +107,8 @@
 							:clear-on-select="true"
 							:preserve-search="true"
 							placeholder="Выберите"
-							label="title"
-							track-by="email"
+							label="email"
+							track-by="id"
 							:taggable="true"
 							class="multiselect-surv"
 						/>
@@ -878,7 +878,7 @@ export default {
 		fetchGeneralChat(){
 			API.getChatInfo(0, ({users}) => {
 				this.generalChatUsers = JSON.parse(JSON.stringify(users)).map(user => {
-					user.title = `${user.name} ${user.last_name}`
+					user.email = `${user.name} ${user.last_name}`
 					return user
 				})
 				this.generalChatUsersOld = JSON.parse(JSON.stringify(users))
