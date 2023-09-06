@@ -92,7 +92,7 @@ class Messenger {
 
         // Общий чат
 
-        $chats->prepend($this->getChatAttributesForUser($this->getGeneralChat(), $user), 0);
+        $chats->prepend($this->getChatAttributesForUser($this->getGeneralChat(), $user));
 
         return $chats;
     }
