@@ -537,7 +537,8 @@ export default {
 		getPlan(item){
 			const method = item.histories_latest?.payload?.method || item.method
 			if(method !== 1) return item.histories_latest?.payload?.plan || item.plan
-			const dailyPlan = Number(item.histories_latest?.payload?.daily_plan || item.activity?.daily_plan || 0)
+			const dailyPlan = Number(item.histories_latest?.payload?.daily_plan || item.activity?.daily_plan || item.daily_plan || 0)
+			if(!dailyPlan) return item.histories_latest?.payload?.plan || item.plan
 			const plan = dailyPlan * item.workdays
 			return item.full_time ? plan : parseInt(plan / 2)
 		}
