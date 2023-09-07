@@ -210,7 +210,7 @@
 							{{ methods[item.method] }}
 						</td>
 						<td class="text-center">
-							<b>{{ getPlan(item) }} {{ item.histories_latest ? item.histories_latest.payload.unit : item.unit }}</b>
+							<b>{{ item.histories_latest ? item.histories_latest.payload.plan : item.plan }} {{ item.histories_latest ? item.histories_latest.payload.unit : item.unit }}</b>
 						</td>
 						<td class="text-center">
 							{{ item.histories_latest ? item.histories_latest.payload.share : item.share }}
@@ -317,8 +317,8 @@ export default {
 			default: () => []
 		},
 		activities: {
-			type: Array,
-			default: () => []
+			type: Object,
+			default: () => ({})
 		},
 		groups: {
 			type: Object,
@@ -353,7 +353,7 @@ export default {
 			default: false
 		},
 		date: {
-			type: String,
+			type: Object,
 			default: null
 		},
 	},
@@ -367,7 +367,8 @@ export default {
 			show_description: false
 		}
 	},
-	computed: {},
+	computed: {
+	},
 	watch: {
 		items: {
 			handler: function() {
@@ -399,17 +400,19 @@ export default {
 	},
 
 	created() {
-		this.defineSourcesAndGroups();
+		this.fillSelectOptions()
+
+		this.defineSourcesAndGroups('with_sources_and_group_id');
 
 		this.recalc();
 		this.getSum();
 		if(!this.editable) {
 			this.items.forEach(el => el.expanded = true);
 		}
+
 	},
 	mounted(){
-		this.recalc();
-		this.getSum();
+
 	},
 
 	methods: {
@@ -433,8 +436,7 @@ export default {
 				//     el.plan = el.daily_plan * numberize(el.workdays);
 				// }
 				el.percent = calcCompleted(el);
-				el.sum = calcSum(
-					el,
+				el.sum = calcSum(el,
 					{
 						lower_limit: this.lower_limit,
 						upper_limit: this.upper_limit,
@@ -466,6 +468,9 @@ export default {
 			return this.activities.find(el => el.id == id)
 		},
 
+		fillSelectOptions() {
+		},
+
 		groupBy(xs, key) {
 			return xs.reduce(function(rv, x) {
 				(rv[x[key]] = rv[x[key]] || []).push(x);
@@ -491,8 +496,7 @@ export default {
 		grouped_activities(source, group_id) {
 			if(source == 1) {
 				return this.activities.filter(el => el.source == source && el.group_id == group_id);
-			}
-			else {
+			} else {
 				group_id = 0
 				return this.activities.filter(el => el.source == source);
 			}
@@ -533,14 +537,6 @@ export default {
 				sum += item.sum;
 			});
 			this.$emit('getSum', sum);
-		},
-		getPlan(item){
-			const method = item.histories_latest?.payload?.method || item.method
-			if(method !== 1) return item.histories_latest?.payload?.plan || item.plan
-			const dailyPlan = Number(item.histories_latest?.payload?.daily_plan || item.activity?.daily_plan || item.daily_plan || 0)
-			if(!dailyPlan) return item.histories_latest?.payload?.plan || item.plan
-			const plan = dailyPlan * item.workdays
-			return item.full_time ? plan : parseInt(plan / 2)
 		}
 	}
 }
