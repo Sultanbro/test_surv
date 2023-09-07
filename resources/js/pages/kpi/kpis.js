@@ -164,7 +164,7 @@ function calcCompleted(el) {
 			plan = el.histories_latest.payload.daily_plan * el.workdays
 		}
 		else{
-			plan = Number(el.activity?.daily_plan || 0) * el.workdays
+			plan = Number(el.activity.daily_plan) * el.workdays
 		}
 		if(!el.full_time) {
 			plan = plan / 2

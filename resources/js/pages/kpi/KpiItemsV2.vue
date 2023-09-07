@@ -432,6 +432,7 @@ export default {
 				// ) {
 				//     el.plan = el.daily_plan * numberize(el.workdays);
 				// }
+				console.warn('recalc', JSON.parse(JSON.stringify(el)), calcCompleted(el));
 				el.percent = calcCompleted(el);
 				el.sum = calcSum(
 					el,
@@ -537,7 +538,7 @@ export default {
 		getPlan(item){
 			const method = item.histories_latest?.payload?.method || item.method
 			if(method !== 1) return item.histories_latest?.payload?.plan || item.plan
-			const dailyPlan = Number(item.histories_latest?.payload?.daily_plan || item.activity?.daily_plan || 1)
+			const dailyPlan = Number(item.histories_latest?.payload?.daily_plan || item.activity.daily_plan)
 			const plan = dailyPlan * item.workdays
 			return item.full_time ? plan : parseInt(plan / 2)
 		}
