@@ -432,7 +432,6 @@ export default {
 				// ) {
 				//     el.plan = el.daily_plan * numberize(el.workdays);
 				// }
-				console.warn('recalc', JSON.parse(JSON.stringify(el)), calcCompleted(el));
 				el.percent = calcCompleted(el);
 				el.sum = calcSum(
 					el,
