@@ -160,14 +160,16 @@ function calcCompleted(el) {
 	}
 
 	if(el.method == 1) {
-		if(el.histories_latest?.payload?.daily_plan){
-			plan = el.histories_latest.payload.daily_plan * el.workdays
-		}
-		else{
-			plan = Number(el.activity?.daily_plan || 0) * el.workdays
-		}
-		if(!el.full_time) {
-			plan = plan / 2
+		if(el.histories_latest?.payload?.daily_plan || el.daily_plan){
+			if(el.histories_latest?.payload?.daily_plan){
+				plan = el.histories_latest.payload.daily_plan * el.workdays
+			}
+			else{
+				plan = Number(el.activity?.daily_plan || 0) * el.workdays
+			}
+			if(!el.full_time) {
+				plan = plan / 2
+			}
 		}
 		res = (fact / plan * 100).toFixed(2);
 	}
