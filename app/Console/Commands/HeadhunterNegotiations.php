@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
-use Illuminate\Support\Str;
 
 class HeadhunterNegotiations extends Command
 {
@@ -311,7 +310,7 @@ class HeadhunterNegotiations extends Command
                 }
                 
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
-                    'Оператор', 'удаленно', 'удалённо'
+                    'Оператор',
                 ])) continue;
 
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
@@ -343,11 +342,17 @@ class HeadhunterNegotiations extends Command
 
     private function vacancyNameHasNotWords(String $name, array $words) : bool
     {
-        foreach ($words as $word) {
-            if (Str::contains(Str::lower($name), Str::lower($word))) {
-                return false;
-            }
+        $nameWords = explode(' ', $name);
+
+        $arr = [];
+        foreach($nameWords as $key => $word) {
+            $arr[] = strtolower($word);
         }
-        return true;
+
+        $has = false;
+        foreach($arr as $key => $word) {
+            if(in_array($word, $words)) $has = true;
+        }
+        return !$has;
     }
-}
+}               
