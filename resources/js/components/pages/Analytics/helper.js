@@ -5,12 +5,10 @@ import {
 
 export const tableFields = [
 	{
-		key: 'switch',
-		label: ''
-	},
-	{
 		key: 'title',
-		label: 'Реферер'
+		label: 'Реферер',
+		tdClass: 'text-left RefStats-title',
+		thClass: 'text-left RefStats-title',
 	},
 	{
 		key: 'status',
@@ -38,7 +36,7 @@ export const tableFields = [
 	},
 	{
 		key: 'total',
-		label: 'Абсолютно $'
+		label: 'Абсолютно ₸'
 	},
 	{
 		key: 'month',
@@ -57,7 +55,9 @@ export const tableFields = [
 export const subTableFields = [
 	{
 		key: 'title',
-		label: 'Реферал'
+		label: 'Реферал',
+		tdClass: 'text-left RefStats-title',
+		thClass: 'text-left RefStats-title',
 	},
 	{
 		key: 'status',
@@ -68,7 +68,8 @@ export const subTableFields = [
 for(let i = 0; i < 15; ++i){
 	subTableFields.push({
 		key: i + 1,
-		label: `${i + 1}`
+		label: `${i + 1}`,
+		thClass: 'RefStats-referalValue',
 	})
 }
 subTableFields.push({

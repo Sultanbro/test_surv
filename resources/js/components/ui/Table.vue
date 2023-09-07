@@ -167,7 +167,7 @@ export default {
 		position: relative;
     z-index: 2;
 		&:last-child{
-			.JobtronTable-th,
+			// .JobtronTable-th,
 			.JobtronTable-td{
 				border-bottom: 1px solid #E7EAEA;
 			}
@@ -187,7 +187,7 @@ export default {
 	}
 
 	&-th{
-		background-color: #F8F9FD;
+		background-color: #f8f9fd;
 		font-weight: 700;
 	}
 	&-td{
