@@ -9,11 +9,15 @@ use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\TopValue;
 use App\ProfileGroup;
+use App\Support\Core\CustomException;
 use App\Traits\AnalyticTrait;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Symfony\Component\HttpFoundation\Response;
 
 class CacheAnalyticsData
 {
@@ -29,15 +33,15 @@ class CacheAnalyticsData
      */
     public function handle(Request $request, Closure $next)
     {
-        $date = now()->firstOfMonth()->format('Y-m-d');
+        $dto    = $this->requestToDto($request);
+        $date   = DateHelper::firstOfMonth($dto->year, $dto->month);
 
         /**
          * Записываем все группы.
          */
         if (!AnalyticCacheStorage::has(AnalyticEnum::GROUP_KEY))
         {
-            $groups = ProfileGroup::query()->get()->toArray();
-            AnalyticCacheStorage::put(AnalyticEnum::GROUP_KEY, $groups);
+            AnalyticCacheStorage::put(AnalyticEnum::GROUP_KEY, ProfileGroup::all());
         }
 
         /**
@@ -45,8 +49,7 @@ class CacheAnalyticsData
          */
         if (!AnalyticCacheStorage::has(AnalyticEnum::ANALYTIC_ACTIVITIES))
         {
-            $activities = Activity::all()->toArray();
-            AnalyticCacheStorage::put(AnalyticEnum::ANALYTIC_ACTIVITIES, $activities);
+            AnalyticCacheStorage::put(AnalyticEnum::ANALYTIC_ACTIVITIES, Activity::all());
         }
 
         /**
@@ -54,8 +57,8 @@ class CacheAnalyticsData
          */
         if (!AnalyticCacheStorage::has(AnalyticEnum::ANALYTIC_COLUMN))
         {
-            $columns = AnalyticColumn::query()->where('date', $date)->get()->toArray();
-            AnalyticCacheStorage::put(AnalyticEnum::ANALYTIC_COLUMN, $columns);
+            $columns = AnalyticColumn::query()->where('date', $date)->get();
+            AnalyticCacheStorage::put(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_COLUMN), $columns);
         }
 
         /**
@@ -63,8 +66,8 @@ class CacheAnalyticsData
          */
         if (!AnalyticCacheStorage::has(AnalyticEnum::ANALYTIC_ROW))
         {
-            $rows = AnalyticRow::query()->where('date', $date)->get()->toArray();
-            AnalyticCacheStorage::put(AnalyticEnum::ANALYTIC_ROW, $rows);
+            $rows = AnalyticRow::query()->where('date', $date)->get();
+            AnalyticCacheStorage::put(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_ROW), $rows);
         }
 
         /**
@@ -72,8 +75,17 @@ class CacheAnalyticsData
          */
         if (!AnalyticCacheStorage::has(AnalyticEnum::ANALYTIC_STAT))
         {
-            $stats = AnalyticStat::query()->where('date', $date)->get()->toArray();
-            AnalyticCacheStorage::put(AnalyticEnum::ANALYTIC_STAT, $stats);
+            $stats = AnalyticStat::query()->where('date', $date)->get();
+            AnalyticCacheStorage::put(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_STAT), $stats);
+        }
+
+        /**
+         * Записываем в кэш декомпозицию.
+         */
+        if (!AnalyticCacheStorage::has(AnalyticEnum::ANALYTIC_DECOMPOSITIONS))
+        {
+            $decompositions = DecompositionValue::query()->where('date', $date)->get();
+            AnalyticCacheStorage::put(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_DECOMPOSITIONS), $decompositions);
         }
 
         return $next($request);

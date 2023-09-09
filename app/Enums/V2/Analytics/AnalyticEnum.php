@@ -33,4 +33,9 @@ enum AnalyticEnum
      * Ключ для получения активностей.
      */
     const ANALYTIC_ACTIVITIES = 'activities';
+
+    /**
+     * Ключ для получения декомпозиций.
+     */
+    const ANALYTIC_DECOMPOSITIONS = 'decompositions';
 }

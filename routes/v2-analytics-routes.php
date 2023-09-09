@@ -18,5 +18,8 @@ Route::group([
      */
     Route::get('/analytics', [V2AnalyticController::class, 'getAnalytics'])->name('analytics');
     Route::get('/performances', [V2AnalyticController::class, 'getPerformances'])->name('performances');
+    Route::get('/decompositions', [V2AnalyticController::class, 'getDecompositions'])->name('decompositions');
+
+
 
 });

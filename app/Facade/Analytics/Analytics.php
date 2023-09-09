@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Facade\TopValue;
+namespace App\Facade\Analytics;
 
 use App\CacheStorage\AnalyticCacheStorage;
+use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\DTO\Analytics\V2\UtilityDto;
 use App\Enums\V2\Analytics\AnalyticEnum;
 use App\Helpers\DateHelper;
@@ -15,9 +16,22 @@ use App\Traits\AnalyticTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-final class TopValue
+final class Analytics
 {
     use AnalyticTrait;
+
+    /**
+     * @param GetAnalyticDto $dto
+     * @return array
+     */
+    public function decompositionTable(
+        GetAnalyticDto $dto
+    ): array
+    {
+        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
+
+        return $this->decompositions($date)->toArray();
+    }
 
     /**
      * @param UtilityDto $dto
@@ -58,7 +72,7 @@ final class TopValue
                 'group_id'  => $group->id,
                 'name'      => $group->name,
                 'gauges'    => $tops,
-                'group_activities'  => collect(AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_ACTIVITIES))->where('group_id', $group->id),
+                'group_activities'  => AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_ACTIVITIES)->where('group_id', $group->id),
                 'archive_utility'   => $group->archive_utility,
             ];
         }
@@ -116,11 +130,11 @@ final class TopValue
     {
         $val = 0;
 
-        $column = $this->getGroupPlanColumns($group_id, $date) ?? [];
-        $row    = $this->getGroupImplRows($group_id, $date) ?? [];
+        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
+        $row    = $this->getGroupImplRows($group_id, $date)->first() ?? [];
 
         if($row && $column) {
-            $stat = $this->statistics()->where('column_id', $column->id)
+            $stat = AnalyticStat::where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->where('date', $date)
                 ->first();
@@ -141,10 +155,11 @@ final class TopValue
      */
     private function getGroupPlanColumns($group_id, $date): Collection|null
     {
-        return $this->columns()->where('group_id', $group_id)
+        return $this->columns($date)->where('group_id', $group_id)
             ->where('date', $date)
-            ->where('name', 'plan')
-            ->first();
+            ->where('name', 'plan');
+
+
     }
 
     /**
@@ -154,9 +169,8 @@ final class TopValue
      */
     private function getGroupImplRows($group_id, $date): Collection|null
     {
-        return $this->rows()->where('group_id', $group_id)
+        return $this->rows($date)->where('group_id', $group_id)
             ->where('date', $date)
-            ->where('name', 'Impl')
-            ->first();
+            ->where('name', 'Impl');
     }
 }

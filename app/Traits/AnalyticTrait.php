@@ -36,15 +36,30 @@ trait AnalyticTrait
     }
 
     /**
+     * ProfileGroup.
+     *
+     * Группы.
+     *
+     * @return Collection
+     */
+    public function activities(): Collection
+    {
+        return collect(AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_ACTIVITIES));
+    }
+
+    /**
      * AnalyticColumn.
      *
      * Колонки.
      *
+     * @param string $date
      * @return Collection
      */
-    public function columns(): Collection
+    public function columns(
+        string $date
+    ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_COLUMN));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_COLUMN)));
     }
 
     /**
@@ -52,11 +67,14 @@ trait AnalyticTrait
      *
      * Строки.
      *
+     * @param string $date
      * @return Collection
      */
-    public function rows(): Collection
+    public function rows(
+        string $date
+    ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_COLUMN));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_ROW)));
     }
 
     /**
@@ -64,10 +82,24 @@ trait AnalyticTrait
      *
      * Статистика.
      *
+     * @param string $date
      * @return Collection
      */
-    public function statistics(): Collection
+    public function statistics(
+        string $date
+    ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_COLUMN));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_STAT)));
+    }
+
+    /**
+     * @param string $date
+     * @return Collection
+     */
+    public function decompositions(
+        string $date
+    ): Collection
+    {
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_DECOMPOSITIONS)));
     }
 }

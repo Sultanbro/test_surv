@@ -3,40 +3,41 @@ declare(strict_types=1);
 
 namespace App\CacheStorage;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 final class AnalyticCacheStorage
 {
-    private static string $tag = 'Analytic-Page';
+    private static string $tag = 'AnalyticPage';
     private static int $ttl = 300;
 
     /**
      * Записывает данные в кэш по ключу.
      *
      * @param string $key
-     * @param array $data
+     * @param Collection $data
      * @return bool
      */
     public static function put(
         string $key,
-        array $data
+        Collection $data
     ): bool
     {
-        return Cache::tags(self::$tag)->put($key, json_encode($data), self::$ttl);
+        return Cache::tags(self::$tag)->put($key, $data, self::$ttl);
     }
 
     /**
      * Получает данные по ключу.
      *
      * @param string $key
-     * @return array
+     * @return Collection
      */
     public static function get(
         string $key
-    ): array
+    ): Collection
     {
-        return json_decode(Cache::tags(self::$tag)
-            ->get($key));
+        return Cache::tags(self::$tag)
+            ->get($key);
     }
 
     /**
@@ -73,5 +74,18 @@ final class AnalyticCacheStorage
     ): bool
     {
         return Cache::tags(self::$tag)->forget($key);
+    }
+
+    /**
+     * @param string $date
+     * @param string $key
+     * @return string
+     */
+    public static function key(
+        string $date,
+        string $key
+    ): string
+    {
+        return $key . '-' . $date;
     }
 }

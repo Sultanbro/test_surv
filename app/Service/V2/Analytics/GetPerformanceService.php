@@ -5,7 +5,7 @@ namespace App\Service\V2\Analytics;
 
 use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\DTO\Analytics\V2\UtilityDto;
-use App\Facade\TopValue\TopValueFacade;
+use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
@@ -29,8 +29,8 @@ final class GetPerformanceService
             'month'     => $dto->month
         ]);
 
-        $utility     = TopValueFacade::utility($utilityDto);
-        $rentability = TopValueFacade::rentability($utilityDto);
+        $utility     = AnalyticsFacade::utility($utilityDto);
+        $rentability = AnalyticsFacade::rentability($utilityDto);
 
         return [
             'utility'       => $utility,
