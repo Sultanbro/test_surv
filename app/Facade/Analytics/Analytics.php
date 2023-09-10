@@ -99,7 +99,7 @@ final class Analytics
         $options['staticLabels']['labels'] = $this->labels($group);
 
         return [
-            'name'          => 'Рентабельность',
+            'name'          => $group->name ?? 'Рентабельность',
             'value'         => (float)$this->getRentabilityValue($group->id, $date),
             'group_id'      => $group->id,
             'place'         => 1,
@@ -119,6 +119,22 @@ final class Analytics
             'options'       => $options,
             'diff'          =>  $this->rentabilityDiff($group->id, $date)
         ];
+    }
+
+    /**
+     * @param int $groupId
+     * @param array $views
+     * @return Collection
+     */
+    public function activitiesViews(
+        int $groupId,
+        array $views
+    ): Collection
+    {
+        return $this->activities()
+            ->where('group_id', $groupId)
+            ->whereIn('view', $views)
+            ->sortByDesc('order');
     }
 
     /**
@@ -254,10 +270,10 @@ final class Analytics
     }
 
     /**
-     * @param \Closure|null $group
+     * @param ProfileGroup|null $group
      * @return array[]
      */
-    public function getStaticZones(?\Closure $group): array
+    private function getStaticZones(?ProfileGroup $group): array
     {
         return [
             ['strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49], // Red
@@ -268,10 +284,10 @@ final class Analytics
     }
 
     /**
-     * @param \Closure|null $group
+     * @param ProfileGroup|null $group
      * @return array
      */
-    public function labels(?\Closure $group): array
+    private function labels(?ProfileGroup $group): array
     {
         return [0, 50, 100, $group->rentability_max];
     }

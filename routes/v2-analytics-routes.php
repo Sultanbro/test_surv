@@ -31,6 +31,9 @@ Route::group([
     Route::get('/decompositions', [V2AnalyticController::class, 'getDecompositions'])->name('decompositions')
         ->middleware(['decomposition_cached']);
 
-
-
+    /**
+     * Показатели.
+     */
+    Route::get('/activities', [V2AnalyticController::class, 'getActivities'])->name('activities')
+        ->middleware(['groups_activities_cached']);
 });

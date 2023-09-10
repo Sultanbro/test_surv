@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V2\Analytics\GetAnalyticsRequest;
 use App\Http\Requests\V2\Analytics\GetFiredInfoRequest;
 use App\ProfileGroup;
+use App\Service\V2\Analytics\GetActivitiesService;
 use App\Service\V2\Analytics\GetDecompositionsService;
 use App\Service\V2\Analytics\GetFiredInfoService;
 use App\Service\V2\Analytics\GetGroupsService;
@@ -84,5 +85,21 @@ class V2AnalyticController extends Controller
     public function getAnalytics(): JsonResponse
     {
         //
+    }
+
+    /**
+     * @param GetAnalyticsRequest $request
+     * @param GetActivitiesService $service
+     * @return JsonResponse
+     */
+    public function getActivities(GetAnalyticsRequest $request, GetActivitiesService $service): JsonResponse
+    {
+        $dto = $request->toDto();
+
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->handle($dto),
+            status: Response::HTTP_OK
+        );
     }
 }
