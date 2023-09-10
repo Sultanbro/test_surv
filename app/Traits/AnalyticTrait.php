@@ -53,13 +53,15 @@ trait AnalyticTrait
      * Колонки.
      *
      * @param string $date
+     * @param ?int $groupId
      * @return Collection
      */
     public function columns(
-        string $date
+        string $date,
+        int $groupId = null
     ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_COLUMN)));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_COLUMN, $groupId)));
     }
 
     /**
@@ -68,13 +70,15 @@ trait AnalyticTrait
      * Строки.
      *
      * @param string $date
+     * @param int|null $groupId
      * @return Collection
      */
     public function rows(
-        string $date
+        string $date,
+        int $groupId = null
     ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_ROW)));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_ROW, $groupId)));
     }
 
     /**
@@ -83,23 +87,27 @@ trait AnalyticTrait
      * Статистика.
      *
      * @param string $date
+     * @param int|null $groupId
      * @return Collection
      */
     public function statistics(
-        string $date
+        string $date,
+        int $groupId = null
     ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_STAT)));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_STAT, $groupId)));
     }
 
     /**
      * @param string $date
+     * @param int|null $groupId
      * @return Collection
      */
     public function decompositions(
-        string $date
+        string $date,
+        int $groupId = null
     ): Collection
     {
-        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_DECOMPOSITIONS)));
+        return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_DECOMPOSITIONS, $groupId)));
     }
 }

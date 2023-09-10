@@ -79,13 +79,15 @@ final class AnalyticCacheStorage
     /**
      * @param string $date
      * @param string $key
+     * @param ?string $groupId
      * @return string
      */
     public static function key(
         string $date,
-        string $key
+        string $key,
+        string $groupId = null
     ): string
     {
-        return $key . '-' . $date;
+        return isset($groupId) ? $key . '-' . $groupId . '-' . $date : $key . '-' . $date;
     }
 }

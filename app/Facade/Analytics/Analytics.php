@@ -18,6 +18,9 @@ use Illuminate\Support\Collection;
 
 final class Analytics
 {
+    const VALUE_PLAN = 'plan';
+    const VALUE_IMPL = 'Impl';
+
     use AnalyticTrait;
 
     /**
@@ -30,7 +33,10 @@ final class Analytics
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
-        return $this->decompositions($date)->toArray();
+        return [
+            'group_id'  => $dto->groupId,
+            'records'   => $this->decompositions($date)->toArray()
+        ];
     }
 
     /**
@@ -72,7 +78,7 @@ final class Analytics
                 'group_id'  => $group->id,
                 'name'      => $group->name,
                 'gauges'    => $tops,
-                'group_activities'  => AnalyticCacheStorage::get(AnalyticEnum::ANALYTIC_ACTIVITIES)->where('group_id', $group->id),
+                'group_activities'  => $this->activities()->where('group_id', $group->id),
                 'archive_utility'   => $group->archive_utility,
             ];
         }
@@ -88,15 +94,9 @@ final class Analytics
         $group      = $this->groups()->whereIn('id', $dto->groupIds)->first();
         $topValue   = new ValueModel;
         $options    = $topValue->getOptions('[]');
+        $options['staticZones'] = $this->getStaticZones($group);
 
-        $options['staticZones'] = [
-            [ 'strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49 ], // Red
-            [ 'strokeStyle' => "#fd7e14", 'min' => 50, 'max' => 74 ], // Orange
-            [ 'strokeStyle' => "#FFDD00", 'min' => 75, 'max' => 99 ], // Yellow
-            [ 'strokeStyle' => "#30B32D", 'min' => 100, 'max' => $group->rentability_max ], // Green
-        ];
-
-        $options['staticLabels']['labels'] = [0,50,100, $group->rentability_max];
+        $options['staticLabels']['labels'] = $this->labels($group);
 
         return [
             'name'          => 'Рентабельность',
@@ -117,10 +117,91 @@ final class Analytics
             'value_type'    => 'sum',
             'sections'      => $options['staticLabels']['labels'],
             'options'       => $options,
-            'diff'          =>  AnalyticStat::getRentabilityDiff($group->id, $date)
+            'diff'          =>  $this->rentabilityDiff($group->id, $date)
         ];
     }
 
+    /**
+     * @param int $groupId
+     * @param string $date
+     * @return float|int
+     */
+    private function rentabilityDiff(
+        int $groupId,
+        string $date
+    ): float|int
+    {
+        $currentMonthImpl   = $this->rentabilityByDay($groupId, $date);
+        $prevMonthImpl      = $this->rentabilityByDay($groupId, $date);
+
+        return round($currentMonthImpl - $prevMonthImpl, 2);
+    }
+
+    /**
+     * @param int $groupId
+     * @param string $date
+     * @return float|int
+     */
+    private function rentabilityByDay(
+        int $groupId,
+        string $date
+    ): float|int
+    {
+        $impl = 0;
+        $days = $this->getDaysPerMonth($date);
+        $stat = $this->implStat($groupId, $date) ?? null;
+
+        return $stat ? AnalyticStat::calcFormula($stat, $date, 2, $days) : $impl;
+    }
+
+    /**
+     * @param int $groupId
+     * @param string $date
+     * @return Collection|null
+     */
+    private function implStat(
+        int $groupId,
+        string $date
+    ): Collection|null
+    {
+        $implStat = null;
+
+        $column  = $this->columns($date, $groupId)
+            ->where('date', $date)
+            ->where('name', self::VALUE_PLAN)->first() ?? null;
+
+        $row     = $this->rows($date, $groupId)
+            ->where('date', $date)
+            ->where('name', self::VALUE_IMPL)->first() ?? null;
+
+        if ($row && $column)
+        {
+            $implStat = $this->statistics($date, $groupId)
+                ->where('column_id', $column->id)
+                ->where('row_id', $row->id)->first();
+        }
+
+        return $implStat;
+    }
+    
+    /**
+     * @param string $date
+     * @return array
+     */
+    private function getDaysPerMonth(
+        string $date
+    ): array
+    {
+        $date = Carbon::createFromDate($date)->daysInMonth;
+        $days = [];
+
+        for ($day = 1; $day <= $date; $day++)
+        {
+            $days[] = $day;
+        }
+
+        return $days;
+    }
     /**
      * @param $group_id
      * @param $date
@@ -134,7 +215,7 @@ final class Analytics
         $row    = $this->getGroupImplRows($group_id, $date)->first() ?? [];
 
         if($row && $column) {
-            $stat = AnalyticStat::where('column_id', $column->id)
+            $stat = $this->statistics($date, $group_id)->where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->where('date', $date)
                 ->first();
@@ -155,11 +236,9 @@ final class Analytics
      */
     private function getGroupPlanColumns($group_id, $date): Collection|null
     {
-        return $this->columns($date)->where('group_id', $group_id)
+        return $this->columns($date, $group_id)
             ->where('date', $date)
             ->where('name', 'plan');
-
-
     }
 
     /**
@@ -169,8 +248,31 @@ final class Analytics
      */
     private function getGroupImplRows($group_id, $date): Collection|null
     {
-        return $this->rows($date)->where('group_id', $group_id)
+        return $this->rows($date, $group_id)
             ->where('date', $date)
             ->where('name', 'Impl');
+    }
+
+    /**
+     * @param \Closure|null $group
+     * @return array[]
+     */
+    public function getStaticZones(?\Closure $group): array
+    {
+        return [
+            ['strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49], // Red
+            ['strokeStyle' => "#fd7e14", 'min' => 50, 'max' => 74], // Orange
+            ['strokeStyle' => "#FFDD00", 'min' => 75, 'max' => 99], // Yellow
+            ['strokeStyle' => "#30B32D", 'min' => 100, 'max' => $group->rentability_max], // Green
+        ];
+    }
+
+    /**
+     * @param \Closure|null $group
+     * @return array
+     */
+    public function labels(?\Closure $group): array
+    {
+        return [0, 50, 100, $group->rentability_max];
     }
 }
