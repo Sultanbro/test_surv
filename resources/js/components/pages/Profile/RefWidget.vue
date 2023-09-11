@@ -2,6 +2,9 @@
 	<div class="RefWidget">
 		<div class="RefWidget-title">
 			Реферальная программа «Business&nbsp;Family»
+			<b-badge variant="warning">
+				Demo
+			</b-badge>
 		</div>
 
 		<div class="RefWidget-border">
@@ -40,7 +43,7 @@
 		<div class="RefWidget-border">
 			<a
 				v-if="leads"
-				href="#refstats"
+				href="#RefStat"
 			>
 				статистика
 			</a>
@@ -63,7 +66,7 @@ const fakeData = {
 	total: 100,
 	month: 50,
 	monthRef: 10,
-	leads: 0,
+	leads: 1,
 }
 export default {
 	name: 'RefWidget',

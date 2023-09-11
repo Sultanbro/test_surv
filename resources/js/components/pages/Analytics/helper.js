@@ -1,6 +1,7 @@
 import {
 	getRandomPerson,
 	getRandomInt,
+	getRandomArrayItem,
 } from '@/composables/random'
 
 export const tableFields = [
@@ -47,7 +48,7 @@ export const tableFields = [
 		label: 'От рефералов'
 	},
 	{
-		key: 'monthPayd',
+		key: 'monthPaid',
 		label: 'Выплачено'
 	},
 ]
@@ -56,8 +57,8 @@ export const subTableFields = [
 	{
 		key: 'title',
 		label: 'Реферал',
-		tdClass: 'text-left RefStats-title',
-		thClass: 'text-left RefStats-title',
+		tdClass: 'text-left RefStatsReferals-title',
+		thClass: 'text-left RefStatsReferals-title',
 	},
 	{
 		key: 'status',
@@ -69,7 +70,7 @@ for(let i = 0; i < 15; ++i){
 	subTableFields.push({
 		key: i + 1,
 		label: `${i + 1}`,
-		thClass: 'RefStats-referalValue',
+		thClass: 'RefStatsReferals-referalValue',
 	})
 }
 subTableFields.push({
@@ -119,6 +120,11 @@ export const referalStatus = [
 	'Уволен',
 ]
 
+export const comments = [
+	'',
+	'test comment'
+]
+
 const maxDepth = 3
 
 export function getFakeReferal(depth = 0){
@@ -127,19 +133,55 @@ export function getFakeReferal(depth = 0){
 		id: ++fakeId,
 		...person,
 		title: `${person.name} ${person.lastName}`,
-		status: referalStatus[getRandomInt(0, referalStatus.length)],
-		attest: Math.random() < 0.5 ? 5000 : 0,
-		firstWeek: Math.random() < 0.5 ? 10000 : 0,
-		secondWeek: Math.random() < 0.5 ? 5000 : 0,
-		thirdWeek: Math.random() < 0.5 ? 5000 : 0,
-		fourthWeek: Math.random() < 0.5 ? 5000 : 0,
-		sixthWeek: Math.random() < 0.5 ? 5000 : 0,
-		eighthWeek: Math.random() < 0.5 ? 5000 : 0,
-		twelfthWeek: Math.random() < 0.5 ? 5000 : 0,
+		status: getRandomArrayItem(referalStatus),
+		attest: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		firstWeek: {
+			value: Math.random() < 0.5 ? 10000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		secondWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		thirdWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		fourthWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		sixthWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		eighthWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
+		twelfthWeek: {
+			value: Math.random() < 0.5 ? 5000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		},
 		users: [],
 	}
 	for(let i = 0; i < 15; ++i){
-		referal[i+1] = Math.random() < 0.5 ? 1000 : 0
+		referal[i+1] = {
+			value: Math.random() < 0.5 ? 1000 : 0,
+			paid: Math.random() < 0.5,
+			comment: getRandomArrayItem(comments),
+		}
 	}
 	if(depth < maxDepth){
 		for(let i = 0, l = getRandomInt(0, 3); i < l; ++i){
@@ -155,7 +197,7 @@ export function getFakeReferer(){
 		id: ++fakeId,
 		...person,
 		title: `${person.name} ${person.lastName}`,
-		status: status[getRandomInt(0, status.length)],
+		status: getRandomArrayItem(status),
 		leads: getRandomInt(0, 20),
 		deals: getRandomInt(0, 20),
 		leadsToDealPercent: getRandomInt(0, 100),
@@ -164,7 +206,7 @@ export function getFakeReferer(){
 		total: getRandomInt(0, 100) * 1000,
 		month: getRandomInt(0, 30) * 1000,
 		monthRef: getRandomInt(0, 20) * 1000,
-		monthPayd: getRandomInt(0, 20) * 1000,
+		monthPaid: getRandomInt(0, 20) * 1000,
 		users: [],
 	}
 	for(let i = 0, l = getRandomInt(1, 5); i < l; ++i){

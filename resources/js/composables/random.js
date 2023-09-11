@@ -10,6 +10,10 @@ export function getRandomIntInclusive(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
 }
 
+export function getRandomArrayItem(array) {
+	return array[getRandomInt(0, array.length)]
+}
+
 export const namesM = [
 	'Агап',
 	'Адам',
@@ -205,15 +209,15 @@ export const lastNamesF = [
 
 export function getRandomMale(){
 	return {
-		name: namesM[getRandomInt(0, namesM.length)],
-		lastName: lastNamesM[getRandomInt(0, lastNamesM.length)],
+		name: getRandomArrayItem(namesM),
+		lastName: getRandomArrayItem(lastNamesM),
 	}
 }
 
 export function getRandomFemale(){
 	return {
-		name: namesF[getRandomInt(0, namesF.length)],
-		lastName: lastNamesF[getRandomInt(0, lastNamesF.length)],
+		name: getRandomArrayItem(namesF),
+		lastName: getRandomArrayItem(lastNamesF),
 	}
 }
 

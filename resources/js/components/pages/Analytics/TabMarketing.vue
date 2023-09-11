@@ -86,9 +86,15 @@
 				</div>
 			</b-tab>
 			<b-tab
+				v-if="isBP"
 				key="101"
-				title="Реферальная программа"
 			>
+				<template #title>
+					Реферальная программа
+					<b-badge variant="warning">
+						Demo
+					</b-badge>
+				</template>
 				<RefStats class="mt-4" />
 			</b-tab>
 		</b-tabs>
@@ -130,7 +136,8 @@ export default {
 	},
 	data(){
 		return {
-			currentDay: new Date().getDate()
+			currentDay: new Date().getDate(),
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0])
 		}
 	},
 	computed: {

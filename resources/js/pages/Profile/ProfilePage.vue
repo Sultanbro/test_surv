@@ -44,6 +44,12 @@
 			@init="intro['indicators'] = true"
 		/>
 
+		<RefStat
+			ref="referals"
+			:class="{ _active: anim.referals }"
+			@init="intro['referals'] = true"
+		/>
+
 		<Popup
 			v-if="popBalance"
 			title="Баланс оклада"
@@ -113,6 +119,7 @@ import Courses from '@/pages/Profile/Courses.vue'
 import Profit from '@/pages/Profile/Profit.vue'
 import TraineeEstimation from '@/pages/Profile/TraineeEstimation.vue'
 import CompareIndicators from '@/pages/Profile/CompareIndicators.vue'
+import RefStat from '@/pages/Profile/RefStat.vue'
 import Popup from '@/pages/Layouts/Popup.vue'
 import Balance from '@/pages/Profile/Popups/Balance.vue'
 import Kpi from '@/pages/Profile/Popups/Kpi.vue'
@@ -138,6 +145,7 @@ export default {
 		Profit,
 		TraineeEstimation,
 		CompareIndicators,
+		RefStat,
 		Popup,
 		Balance,
 		Kpi,
@@ -160,6 +168,7 @@ export default {
 				profit: false,
 				estimation: false,
 				indicators: false,
+				referals: false,
 			},
 			anim: {
 				intro: false,
@@ -167,7 +176,8 @@ export default {
 				courses: false,
 				profit: false,
 				estimation: false,
-				indicators: false
+				indicators: false,
+				referals: false,
 			},
 			intersectionObserver: null
 		};
@@ -237,6 +247,7 @@ export default {
 					this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.intersectionObserver.observe(this.$refs.indicators.$el)
+					this.intersectionObserver.observe(this.$refs.referals.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {

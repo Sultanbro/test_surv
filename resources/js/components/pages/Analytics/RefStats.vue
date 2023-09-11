@@ -1,5 +1,33 @@
 <template>
 	<div class="RefStats">
+		<div class="d-flex gap-4 ais mb-4">
+			<RefStatsIndex
+				:value="separateNumber(userPrice)"
+				label="Цена принятого сотрудника"
+				unit="₸"
+			/>
+			<RefStatsIndex
+				:value="separateNumber(cvResultDealPercent)"
+				label="CV лид ➝ сделка"
+				unit="%"
+			/>
+			<RefStatsIndex
+				:value="separateNumber(cvDealUserPercent)"
+				label="CV сделка ➝ сотрудник"
+				unit="%"
+			/>
+			<RefStatsIndex
+				:value="separateNumber(totalMonth)"
+				label="Заработано"
+				unit="₸"
+			/>
+			<RefStatsIndex
+				:value="separateNumber(totalPaid)"
+				label="Выплачено"
+				unit="₸"
+			/>
+		</div>
+
 		<JobtronTable
 			:fields="[
 				{key: 'switch', label: ''},
@@ -32,140 +60,111 @@
 			<template #cell(dealToUserPercent)="{value}">
 				{{ value }}%
 			</template>
+			<template #cell(monthPaid)="{item, value}">
+				<div
+					class="RefStats-money"
+					:class="{
+						'RefStats-money_paid': value >= (item.month + item.monthRef)
+					}"
+				>
+					{{ value }}
+				</div>
+			</template>
 			<template #afterRow="firstLayerData">
 				<div
-					v-if="firstLayerData.value.users.length"
+					v-if="firstLayerData.value.users.length && uncollapsed.includes(firstLayerData.value.id)"
 					class="RefStats-subtable"
 				>
-					<JobtronTable
-						:fields="[
-							{key: 'switch', label: ''},
-							...subTableFields
-						]"
-						:items="sortedSubs[firstLayerData.value.id]"
-						:tr-after-class-fn="rowAfterClass"
-						class="RefStats-firstLayer"
-					>
-						<template #header="{field}">
-							<div
-								class="RefStats-header pointer"
-								@click="setSubSort(field.key)"
-							>
-								{{ field.label }}
-							</div>
-						</template>
-						<template #cell(switch)="{item}">
-							<div
-								v-if="item.users.length"
-								class="RefStats-switch pointer"
-								@click="toggleAfter(item.id)"
-							>
-								{{ uncollapsed.includes(item.id) ? '-' : '+' }}
-							</div>
-						</template>
-						<template #afterRow="secondLayerData">
-							<div
-								v-if="secondLayerData.value.users.length"
-								class="RefStats-subtable"
-							>
-								<JobtronTable
-									:fields="[
-										{key: 'switch', label: ''},
-										...subTableFields
-									]"
-									:items="sortedSubs[secondLayerData.value.id]"
-									:tr-after-class-fn="rowAfterClass"
-									class="RefStats-secondLayer"
-								>
-									<template #header="{field}">
-										<div
-											class="RefStats-header pointer"
-											@click="setSubSort(field.key)"
-										>
-											{{ field.label }}
-										</div>
-									</template>
-									<template #cell(switch)="{item}">
-										<div
-											v-if="item.users.length"
-											class="RefStats-switch pointer"
-											@click="toggleAfter(item.id)"
-										>
-											{{ uncollapsed.includes(item.id) ? '-' : '+' }}
-										</div>
-									</template>
-									<template #afterRow="thirdLayerData">
-										<div
-											v-if="thirdLayerData.value.users.length"
-											class="RefStats-subtable"
-										>
-											<JobtronTable
-												:fields="subTableFields"
-												:items="sortedSubs[thirdLayerData.value.id]"
-												:tr-after-class-fn="rowAfterClass"
-												class="RefStats-thirdLayer"
-											>
-												<template #header="{field}">
-													<div
-														class="RefStats-header pointer"
-														@click="setSubSort(field.key)"
-													>
-														{{ field.label }}
-													</div>
-												</template>
-											</JobtronTable>
-										</div>
-									</template>
-								</JobtronTable>
-							</div>
-						</template>
-					</JobtronTable>
+					<RefStatsReferals
+						:user-id="firstLayerData.value.id"
+						:sorted-subs="sortedSubs"
+						@payment-click="showPaymentDialog"
+						@sub-sort="setSubSort"
+					/>
 				</div>
 			</template>
 		</JobtronTable>
+
+		<b-modal
+			v-model="paymentDialog.open"
+			:title="paymentDialog.title"
+			@ok="paymentSave"
+		>
+			<div class="d-flex aic gap-4 mb-4">
+				<JobtronSwitch
+					v-model="paymentDialog.paid"
+				/>
+				Оплачено
+			</div>
+			<div class="d-flex flex-column gap-4 mb-4">
+				<b-form-textarea
+					v-model="paymentDialog.comment"
+					placeholder="комментарий..."
+					rows="3"
+					max-rows="6"
+				/>
+			</div>
+		</b-modal>
 	</div>
 </template>
 
 <script>
 import JobtronTable from '@ui/Table.vue'
+import JobtronSwitch from '@ui/Switch.vue'
+import RefStatsIndex from './RefStatsIndex.vue'
+import RefStatsReferals from './RefStatsReferals.vue'
 import {
 	tableFields,
-	subTableFields,
 	getFakeReferer,
 } from './helper'
+import {
+	separateNumber,
+} from '@/composables/format'
+import {
+	getRandomInt,
+} from '@/composables/random'
 
-// const fakeData = {
-// 	userPrice: 100,
-// 	cvResultDealPercent: 85,
-// 	cvDealUserPercent: 69,
-// 	totalMonth: 1000,
-// 	totalPayd: 800,
-// }
+const fakeData = {
+	userPrice: getRandomInt(1, 5) * 1000,
+	cvResultDealPercent: getRandomInt(25, 85),
+	cvDealUserPercent: getRandomInt(25, 85),
+}
 
 export default {
 	name: 'RefStats',
 	components: {
 		JobtronTable,
+		JobtronSwitch,
+		RefStatsIndex,
+		RefStatsReferals,
 	},
 	data(){
 		return {
+			userPrice: 0,
+			cvResultDealPercent: 0,
+			cvDealUserPercent: 0,
+
 			users: [],
 			tableFields,
-			subTableFields,
 			uncollapsed: [],
+
 			sortCol: 'accepted',
 			sortOrder: 'desc',
 			sortSubCol: 'title',
 			sortSubOrder: 'desc',
 			sortFn: {
-				str: (a, b) => a[this.sortCol].localeCompare(b[this.sortCol]),
-				int: (a, b) => (parseInt(a[this.sortCol]) || 0) - (parseInt(b[this.sortCol]) || 0),
-				float: (a, b) => (parseFloat(a[this.sortCol]) || 0) - (parseFloat(b[this.sortCol]) || 0),
+				str: (a, b) => a.localeCompare(b),
+				int: (a, b) => (parseInt(a) || 0) - (parseInt(b) || 0),
+				float: (a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0),
 			},
-			sortSubFn: {
-				str: (a, b) => a[this.sortSubCol].localeCompare(b[this.sortSubCol]),
-				int: (a, b) => (parseInt(a[this.sortSubCol]) || 0) - (parseInt(b[this.sortSubCol]) || 0),
-				float: (a, b) => (parseFloat(a[this.sortSubCol]) || 0) - (parseFloat(b[this.sortSubCol]) || 0),
+
+			paymentDialog: {
+				open: false,
+				title: '',
+				id: 0,
+				key: '',
+				paid: false,
+				comment: '',
 			},
 		}
 	},
@@ -173,12 +172,12 @@ export default {
 		sorted(){
 			return this.users.slice().sort((a, b) => {
 				if(['title', 'status'].includes(this.sortCol)){
-					return this.sortOrder === 'asc' ? this.sortFn.str(a, b) : this.sortFn.str(b, a)
+					return this.sortOrder === 'asc' ? this.sortFn.str(a[this.sortCol], b[this.sortCol]) : this.sortFn.str(b[this.sortCol], a[this.sortCol])
 				}
 				if(['leads', 'deals', 'accepted', 'total', 'month', 'monthRef', 'monthPayd'].includes(this.sortCol)){
-					return this.sortOrder === 'asc' ? this.sortFn.int(a, b) : this.sortFn.int(b, a)
+					return this.sortOrder === 'asc' ? this.sortFn.int(a[this.sortCol], b[this.sortCol]) : this.sortFn.int(b[this.sortCol], a[this.sortCol])
 				}
-				return this.sortOrder === 'asc' ? this.sortFn.float(a, b) : this.sortFn.float(b, a)
+				return this.sortOrder === 'asc' ? this.sortFn.float(a[this.sortCol], b[this.sortCol]) : this.sortFn.float(b[this.sortCol], a[this.sortCol])
 			})
 		},
 		sortedSubs(){
@@ -186,36 +185,62 @@ export default {
 			this.users.forEach(user => {
 				sorted[user.id] = user.users.slice().sort((a, b) => {
 					if(['title', 'status'].includes(this.sortSubCol)){
-						return this.sortSubOrder === 'asc' ? this.sortSubFn.str(a, b) : this.sortSubFn.str(b, a)
+						return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
 					}
-					return this.sortSubOrder === 'asc' ? this.sortSubFn.int(a, b) : this.sortSubFn.int(b, a)
+					return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
 				})
 				user.users.forEach(user2 => {
 					sorted[user2.id] = user2.users.slice().sort((a, b) => {
 						if(['title', 'status'].includes(this.sortSubCol)){
-							return this.sortSubOrder === 'asc' ? this.sortSubFn.str(a, b) : this.sortSubFn.str(b, a)
+							return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
 						}
-						return this.sortSubOrder === 'asc' ? this.sortSubFn.int(a, b) : this.sortSubFn.int(b, a)
+						return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
 					})
 					user2.users.forEach(user3 => {
 						sorted[user3.id] = user3.users.slice().sort((a, b) => {
 							if(['title', 'status'].includes(this.sortSubCol)){
-								return this.sortSubOrder === 'asc' ? this.sortSubFn.str(a, b) : this.sortSubFn.str(b, a)
+								return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
 							}
-							return this.sortSubOrder === 'asc' ? this.sortSubFn.int(a, b) : this.sortSubFn.int(b, a)
+							return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
 						})
 					})
 				})
 			})
 			return sorted
-		}
+		},
+		allReferals(){
+			const referals = {}
+			this.users.forEach(user => {
+				user.users.forEach(ref1 => {
+					referals[ref1.id] = ref1
+					ref1.users.forEach(ref2 => {
+						referals[ref2.id] = ref2
+						ref2.users.forEach(ref3 => {
+							referals[ref3.id] = ref3
+						})
+					})
+				})
+			})
+			return referals
+		},
+		totalMonth(){
+			return this.users.reduce((result, user) => result + user.month + user.monthRef, 0)
+		},
+		totalPaid(){
+			return this.users.reduce((result, user) => result + user.monthPaid, 0)
+		},
 	},
 	mounted(){
 		this.fetchData()
 	},
 	methods: {
+		separateNumber,
 		async fetchData(){
 			const loader = this.$loading.show()
+			this.userPrice = fakeData.userPrice
+			this.cvResultDealPercent = fakeData.cvResultDealPercent
+			this.cvDealUserPercent = fakeData.cvDealUserPercent
+
 			this.users = [
 				getFakeReferer(),
 				getFakeReferer(),
@@ -260,27 +285,43 @@ export default {
 			this.sortSubOrder = key === 'title' ? 'asc' : 'desc'
 			this.sortSubCol = key
 		},
+		showPaymentDialog({item, field}){
+			if(!this.$can('referal_edit')) return
+			this.paymentDialog.title = `Редактирование оплаты ${item.title} ${field.key}`
+			this.paymentDialog.id = item.id
+			this.paymentDialog.key = field.key
+			this.paymentDialog.paid = item[field.key].paid
+			this.paymentDialog.comment = item[field.key].comment
+			this.paymentDialog.open = true
+		},
+		paymentSave(){
+			this.paymentDialog.open = false
+			this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = this.paymentDialog.paid
+			this.allReferals[this.paymentDialog.id][this.paymentDialog.key].comment = this.paymentDialog.comment
+			this.$toast.success('Сохранено')
+		},
 	},
 }
 </script>
 
 <style lang="scss">
 .RefStats{
+	$cellpadding: 8px 10px;
+	$bgmargin: -8px -10px;
+
 	overflow-x: auto;
 	font-size: 14px;
+	position: relative;
+
 	&-table{
 		width: auto;
-	}
-	&-referalValue{
-		width: 48px;
-		min-width: 48px;
 	}
 	&-header{
 		user-select: none;
 	}
 	.JobtronTable-th,
 	.JobtronTable-td{
-		padding: 8px 10px;
+		padding: $cellpadding;
 		font-size: 12px;
 		line-height: 1.1;
 		opacity: 0.9;
@@ -308,10 +349,40 @@ export default {
 		}
 	}
 	&-subtable{
-		margin: -8px -10px;
+		margin: $bgmargin;
 		padding-left: 15px;
 	}
-	&-firstLayer{
+
+	&-title{
+		width: 200px;
+		min-width: 200px;
+		max-width: 250px;
+
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	&-money{
+		padding: $cellpadding;
+		margin: $bgmargin;
+		background-color: #fdd;
+		&_paid{
+			background-color: #dfd;
+		}
+	}
+	&-switch{
+		padding: $cellpadding;
+		margin: $bgmargin;
+	}
+
+	.RefStatsReferals{
+		&-subtable{
+			margin: $bgmargin;
+			padding-left: 15px;
+		}
+	}
+	.RefStatsReferals-firstLayer{
 		> .JobtronTable-head,
 		> .JobtronTable-body{
 			> tr:not(.JobtronTable-afterRow){
@@ -328,7 +399,7 @@ export default {
 			}
 		}
 	}
-	&-secondLayer{
+	.RefStatsReferals-secondLayer{
 		> .JobtronTable-head,
 		> .JobtronTable-body{
 			> tr:not(.JobtronTable-afterRow){
@@ -346,7 +417,7 @@ export default {
 		}
 
 	}
-	&-thirdLayer{
+	.RefStatsReferals-thirdLayer{
 		> .JobtronTable-head,
 		> .JobtronTable-body{
 			> tr:not(.JobtronTable-afterRow){
@@ -363,15 +434,17 @@ export default {
 			}
 		}
 	}
-	&-title{
-		width: 200px;
-		min-width: 200px;
-		max-width: 250px;
-
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
+	.RefStatsReferals-money{
+		padding: $cellpadding;
+		margin: $bgmargin;
+		background-color: #fdd;
+		&_paid{
+			background-color: #dfd;
+		}
+	}
+	.RefStatsReferals-switch{
+		padding: $cellpadding;
+		margin: $bgmargin;
 	}
 }
 </style>
