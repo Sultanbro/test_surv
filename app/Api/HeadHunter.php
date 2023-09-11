@@ -413,7 +413,7 @@ class HeadHunter {
     
     public function getResume($id) {
         $response = $this->get('/resumes/'.$id);
-        return $response;
+        return $this->toArray($response);
     }
     
     /**
