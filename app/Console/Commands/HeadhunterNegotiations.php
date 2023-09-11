@@ -149,6 +149,7 @@ class HeadhunterNegotiations extends Command
                     'error' => $e,
                     'resume' => $n->resume_id,
                 ]);
+                $this->line('Ошибка hh.ru: '.$e);
                 continue;
             }
             
