@@ -142,34 +142,42 @@ class HeadhunterNegotiations extends Command
 
             $this->line('resume: '. $n->resume_id);
 
+            try {
                 $resume = $this->hh->getResume($n->resume_id);
-                if ($resume->getStatusCode() == 429)
+            } catch (\Exception $e) {
+            if ($e->getCode()==404) {
+                History::system('Ошибка hh.ru: резюме', [
+                    'error' => 'Резюме не существует или недоступно для текущего пользователя',
+                    'resume' => $n->resume_id,
+                ]);
+                $this->line('error:Резюме не существует или недоступно для текущего пользователя');
+                Negotiation::whereDate('time', '>=', $this->date)
+                    ->where('has_updated', 1)
+                    ->where('lead_id', 0)
+                    ->where('phone', '')
+                    ->where('phone', '!=', 'null')
+                    ->where('resume_id', $n->resume_id)
+                    ->where('from',HeadHunter::FROM_STATUS)
+                    ->first()
+                    ->delete();
+                continue;
+            }elseif($e->getCode() == 429){
+                History::system('Ошибка hh.ru: резюме', [
+                    'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                    'resume' => $n->resume_id,
+                ]);
+                $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                break;
+            }else
                 {
                     History::system('Ошибка hh.ru: резюме', [
-                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                        'error' => 'Требуется авторизация пользователя',
                         'resume' => $n->resume_id,
                     ]);
-                    $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                    $this->line('error:Требуется авторизация пользователя');
                     break;
-                }elseif ($resume->getStatusCode()==404) {
-                    History::system('Ошибка hh.ru: резюме', [
-                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
-                        'resume' => $n->resume_id,
-                    ]);
-                    $this->line('error:Резюме не существует или недоступно для текущего пользователя');
-                    Negotiation::whereDate('time', '>=', $this->date)
-                        ->where('has_updated', 1)
-                        ->where('lead_id', 0)
-                        ->where('phone', '')
-                        ->where('phone', '!=', 'null')
-                        ->where('resume_id', $n->resume_id)
-                        ->where('from',HeadHunter::FROM_STATUS)
-                        ->first()
-                        ->delete();
-                    continue;
-                }elseif($resume->getStatusCode() == 200){
-                    $resume = $this->hh->toArray($resume);
                 }
+            }
 
 
             $phone = $this->hh->getPhone($resume->contact);
