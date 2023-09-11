@@ -149,7 +149,7 @@ class HeadhunterNegotiations extends Command
                     'error' => $e,
                     'resume' => $n->resume_id,
                 ]);
-                break;
+                continue;
             }
             
             $phone = $this->hh->getPhone($resume->contact);
