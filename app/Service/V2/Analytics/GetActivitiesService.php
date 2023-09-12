@@ -42,7 +42,6 @@ final class GetActivitiesService
             $workdays       = $this->workdays($activity->weekdays, $dto->year, $dto->month);
             $plan           = (new ActivityRepository)->getDailyPlan($activity, $dto->year, $dto->month) ?? null;
             $activity->plan = $plan->plan ?? $activity->daily_plan;
-
             if ($activity->type == self::COLLECTION)
             {
                 $collection         = $this->collection($activity, $date, $dto->groupId);
@@ -52,13 +51,13 @@ final class GetActivitiesService
 
             if ($activity->type == self::DEFAULT)
             {
-                $activity->records = self::form_table($activity->id, $date, $dto->groupId);
+                $activity->records = AnalyticsFacade::userStatisticFormTable($activity, $date, $dto->groupId);
             }
 
             return $activity;
         });
 
-        dd($activities);
+        return $activities;
     }
 
     /**
@@ -77,7 +76,7 @@ final class GetActivitiesService
 
         return [
             'price'     => $bonus?->sum ?? 0,
-            'records'   => UserStat::form_table($activity->id, $date, $groupId)
+            'records'   => AnalyticsFacade::userStatisticFormTable($activity, $date, $groupId)
         ];
     }
 

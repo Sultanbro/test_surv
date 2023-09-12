@@ -7,14 +7,21 @@ use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\DTO\Analytics\V2\UtilityDto;
 use App\Enums\V2\Analytics\AnalyticEnum;
 use App\Helpers\DateHelper;
+use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
 use App\Models\Analytics\TopValue as ValueModel;
+use App\Service\Department\UserService;
 use App\Traits\AnalyticTrait;
+use App\User;
+use App\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use PHPUnit\TextUI\XmlConfiguration\Group;
 
 final class Analytics
 {
@@ -22,6 +29,43 @@ final class Analytics
     const VALUE_IMPL = 'Impl';
 
     use AnalyticTrait;
+
+    public function userStatisticFormTable(
+        Activity $activity,
+        string $date,
+        int $groupId = null
+    )
+    {
+        $group      = $this->groups()->where('id', $groupId)->first();
+        $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
+        $dateTo     = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
+
+        return $employees
+            ->withWhereHas('statistics', fn($statistic) => $statistic->select([
+                DB::raw('DAY(date) as day'),
+                'user_id',
+                'value',
+            ]))
+            ->get()
+            ->map(function ($employee) use ($date, $activity) {
+                $workDay        = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
+                $appliedFrom    = $employee->workdays_from_applied($date, $workDay);
+                $workDays       = WorkChartModel::workdaysPerMonth($employee);
+
+
+                $employee->fullname =  $employee->full_name;
+                $employee->fired     = $employee->deleted_at != null ? 1 : 0;
+                $employee->applied_from  = $appliedFrom;
+                $employee->is_trainee    = 1;
+                $employee->plan          = $activity->daily_plan * $workDays;
+
+
+                return $employee;
+            });
+;
+    }
 
     /**
      * @param GetAnalyticDto $dto
