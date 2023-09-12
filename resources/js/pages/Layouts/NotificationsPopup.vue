@@ -21,7 +21,7 @@
 							</div>
 							<div class="notifications__text">
 								<!-- eslint-disable-next-line -->
-								<template v-html="item.message" />
+								<div v-html="item.message" />
 								<div
 									v-if="item.title === 'Заявка на сверхурочную работу' && $moment(Date.now()).diff(item.created_at, 'hours') < 2"
 									class="Notification-actions"
