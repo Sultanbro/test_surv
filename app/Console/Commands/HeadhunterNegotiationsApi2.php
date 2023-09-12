@@ -144,11 +144,38 @@ class HeadhunterNegotiationsApi2 extends Command
             try {
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
-                History::system('Ошибка hh2.ru: резюме', [
-                    'error' => $e,
-                    'resume' => $n->resume_id,
-                ]);
-                break;
+                if ($e->getCode()==404) {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Резюме не существует или недоступно для текущего пользователя');
+                    Negotiation::whereDate('time', '>=', $this->date)
+                        ->where('has_updated', 1)
+                        ->where('lead_id', 0)
+                        ->where('phone', '')
+                        ->where('phone', '!=', 'null')
+                        ->where('resume_id', $n->resume_id)
+                        ->where('from',HeadHunterApi2::FROM_STATUS)
+                        ->first()
+                        ->delete();
+                    continue;
+                }elseif($e->getCode() == 429){
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                    break;
+                }else
+                {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Требуется авторизация пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Требуется авторизация пользователя');
+                    break;
+                }
             }
             
             $phone = $this->hh->getPhone($resume->contact);
