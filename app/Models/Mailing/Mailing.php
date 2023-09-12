@@ -128,6 +128,15 @@ class Mailing
                 $positionUsers = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at')->get();
                 $recipients = $positionUsers->merge($recipients);
             }
+
+            if ($schedule->notificationable_type == MailingEnum::ALL)
+            {
+                $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                /* ->where('is_trainee', 0) */;
+                $recipients = $users->merge($recipients);
+            }
         }
 
         return $recipients->unique();
@@ -191,6 +200,7 @@ class Mailing
             1 => MailingEnum::USER,
             2 => MailingEnum::GROUP,
             3 => MailingEnum::POSITION,
+            4 => MailingEnum::ALL,
             default => $type,
         };
     }

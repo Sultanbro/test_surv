@@ -266,7 +266,12 @@ export default {
 				id: this.value.id,
 				name,
 				title: this.value.title,
-				recipients: Array.isArray(this.value.targets) ? this.value.recipients : undefined,
+				recipients: Array.isArray(this.value.targets) ? this.value.recipients.map(rec => {
+					if(!rec.type){
+						rec.type = 4
+					}
+					return rec
+				}) : undefined,
 				date: {
 					days: this.days,
 					frequency: this.when === 'period' ? this.frequency : this.when
