@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\CacheStorage\AnalyticCacheStorage;
 use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\Enums\V2\Analytics\AnalyticEnum;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -21,6 +22,23 @@ trait AnalyticTrait
         $data = $request->all();
 
         return GetAnalyticDto::fromArray($data);
+    }
+
+    /**
+     * @param int $groupId
+     * @param string $date
+     * @return mixed
+     */
+    public function employees(
+        int $groupId,
+        string $date
+    )
+    {
+        $group      = $this->groups()->where('id', $groupId)->first();
+        $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
+        $dateTo     = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        return $group->actualAndFiredEmployees($dateFrom, $dateTo);
     }
 
     /**

@@ -9,7 +9,9 @@ use App\Helpers\DateHelper;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
 use App\Models\Kpi\Bonus;
+use App\QualityRecordWeeklyStat;
 use App\Repositories\ActivityRepository;
+use App\Traits\AnalyticTrait;
 use Carbon\Carbon;
 
 /**
@@ -17,6 +19,8 @@ use Carbon\Carbon;
 */
 final class GetActivitiesService
 {
+    use AnalyticTrait;
+
     /**
      * Тип показателя коллекций.
      */
@@ -34,7 +38,7 @@ final class GetActivitiesService
     
     public function handle(GetAnalyticDto $dto)
     {
-        $activities = AnalyticsFacade::activitiesViews(
+        return AnalyticsFacade::activitiesViews(
             $dto->groupId,
             [Activity::VIEW_DEFAULT, Activity::VIEW_COLLECTION, Activity::VIEW_QUALITY]
         )->map(function ($activity) use ($dto){
@@ -42,6 +46,10 @@ final class GetActivitiesService
             $workdays       = $this->workdays($activity->weekdays, $dto->year, $dto->month);
             $plan           = (new ActivityRepository)->getDailyPlan($activity, $dto->year, $dto->month) ?? null;
             $activity->plan = $plan->plan ?? $activity->daily_plan;
+
+            /**
+             * Types of activities.
+             */
             if ($activity->type == self::COLLECTION)
             {
                 $collection         = $this->collection($activity, $date, $dto->groupId);
@@ -54,12 +62,35 @@ final class GetActivitiesService
                 $activity->records = AnalyticsFacade::userStatisticFormTable($activity, $date, $dto->groupId);
             }
 
+            if ($activity->type == self::QUALITY)
+            {
+                $quality = $this->quality($dto);
+                $activity->records  = $quality['records'];
+                $activity->weeks    = $quality['weeks'];
+            }
+            
             return $activity;
         });
-
-        return $activities;
     }
 
+    /**
+     * @param GetAnalyticDto $dto
+     * @return array
+     */
+    private function quality(
+        GetAnalyticDto $dto
+    ): array
+    {
+        $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
+        $employees  = $this->employees($dto->groupId, $date)->withWhereHas('weekQualities',
+            fn($quality) => $quality->where('month', $dto->month)->where('year', $dto->year)->select('day', 'total', 'user_id'))->get();
+
+        return [
+            'records'   => $employees,
+            'weeks'     => QualityRecordWeeklyStat::weeksArray($dto->month, $dto->year)
+        ];
+    }
+    
     /**
      * @param Activity $activity
      * @param string $date

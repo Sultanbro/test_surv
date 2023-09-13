@@ -14,6 +14,7 @@ use App\Models\Analytics\AnalyticStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
 use App\Models\Analytics\TopValue as ValueModel;
+use App\QualityRecordWeeklyStat;
 use App\Service\Department\UserService;
 use App\Traits\AnalyticTrait;
 use App\User;
@@ -29,12 +30,18 @@ final class Analytics
     const VALUE_IMPL = 'Impl';
 
     use AnalyticTrait;
-
+    
+    /**
+     * @param Activity $activity
+     * @param string $date
+     * @param int|null $groupId
+     * @return Collection
+     */
     public function userStatisticFormTable(
         Activity $activity,
         string $date,
         int $groupId = null
-    )
+    ): Collection
     {
         $group      = $this->groups()->where('id', $groupId)->first();
         $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
