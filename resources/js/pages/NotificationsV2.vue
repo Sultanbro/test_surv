@@ -236,11 +236,13 @@ const getNamesMethods = {
 	'App\\User': 'getUserName',
 	'App\\ProfileGroup': 'getGroupName',
 	'App\\Position': 'getPositionName',
+	'All': 'getAllName',
 }
 const typeToNumber = {
 	'App\\User': 1,
 	'App\\ProfileGroup': 2,
 	'App\\Position': 3,
+	'All': 4,
 }
 
 export default {
@@ -386,6 +388,9 @@ export default {
 			const position = this.positions.find(position => position.id === recipient.notificationable_id)
 			if(position) return position.position
 			return ''
+		},
+		getAllName(){
+			return 'Все'
 		},
 		async remove(notification){
 			if(!confirm('Удалить уведомление?')) return

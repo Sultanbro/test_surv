@@ -154,7 +154,6 @@
 		>
 			<AccessSelect
 				:value="value.recipients"
-				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
 				:submit-button="'Применить'"
@@ -230,7 +229,10 @@ export default {
 			this.isRecipientsOpen = true
 		},
 		onSubmitAccess(value){
-			this.value.recipients = value
+			this.value.recipients = value.map(rec => {
+				if(!rec.type) rec.type = 4
+				return rec
+			})
 			this.isRecipientsOpen = false
 		}
 	}
