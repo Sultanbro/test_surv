@@ -263,6 +263,8 @@ import UploadFile from './types/UploadFile.vue';
 import ChoiceTop from './types/ChoiceTop.vue';
 import UploadSertificate from './types/UploadSertificate.vue';
 // import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+import {typeNames} from './helper'
+
 
 export default {
 	name: 'EditAwardSidebar',
@@ -289,6 +291,7 @@ export default {
 			category_id: null,
 			selectedType: false,
 			uploadFiles: [],
+			previewFiles: [],
 			fileCertificate: null,
 			targetable_id: null,
 			targetable_type: null,
@@ -308,253 +311,176 @@ export default {
 			this.isShow = true;
 		}, 20);
 		if (Object.keys(this.item).length > 0) {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show()
 			this.hasFileCertificate = true;
-			await this.axios
-				.get('/award-categories/get/awards/' + this.item.id)
-				.then(response => {
-					this.awards = response.data.data;
-				})
-				.catch(error => {
-					console.error(error);
-				});
-			this.readonly = true;
-			this.category_id = this.item.id;
-			this.type = this.item.type;
-			this.name = this.item.name;
-			this.description = this.item.description;
-			if(this.item.hide === 1){
-				this.hide = false;
+			try {
+				const {data} = await this.axios.get('/award-categories/get/awards/' + this.item.id)
+				this.awards = data.data;
 			}
-			if(this.item.hide === 0){
-				this.hide = true;
-			}
-			if (this.type === 2){
-				this.styles = this.awards[0].styles;
+			catch (error) {
+				console.error(error)
 			}
 
-			if (this.type === 3) {
-				this.targetable_type = this.awards[0].targetable_type;
-				this.targetable_id = this.awards[0].targetable_id;
-			}
+			this.readonly = true
+			this.category_id = this.item.id
+			this.type = this.item.type
+			this.name = this.item.name
+			this.description = this.item.description
+			this.hide = this.item.hide === 0
+			this.dropDownText = typeNames[this.type]
 
+			switch(this.type){
+			case 2:
+				this.styles = this.awards[0].styles
+				break
 
-			if (this.item.type === 1) {
-				this.dropDownText = 'Загрузка картинки';
+			case 3:
+				this.targetable_type = this.awards[0].targetable_type
+				this.targetable_id = this.awards[0].targetable_id
+				break
 			}
-			if (this.item.type === 2) {
-				this.dropDownText = 'Конструктор сертификата';
-			}
-			if (this.item.type === 3) {
-				this.dropDownText = 'Данные начислений';
-			}
-			loader.hide();
+			loader.hide()
 		}
 	},
 	methods: {
 		choicedTop(data){
-			this.targetable_id = data.id;
-			this.targetable_type = data.type;
+			this.targetable_id = data.id
+			this.targetable_type = data.type
 		},
 		hasChangeConstructor(arg){
-			this.constructorChange = arg;
+			this.constructorChange = arg
 		},
 		addCourse(id) {
-			this.course_ids.push(id);
+			this.course_ids.push(id)
 		},
 		addCourseAll(arr){
 			for(let i = 0; i < arr.length; i++){
-				this.course_ids.push(arr[i].id);
+				this.course_ids.push(arr[i].id)
 			}
 		},
 		removeCourse(id) {
-			this.course_ids = this.course_ids.filter(n => n !== id);
+			this.course_ids = this.course_ids.filter(n => n !== id)
 		},
 		removeCourseAll(){
-			this.course_ids = [];
+			this.course_ids = []
 		},
 		async saveCategory() {
-			let hidePhp = null;
-			if (this.hide) {
-				hidePhp = 0;
-			} else {
-				hidePhp = 1;
-			}
+			const isAdd = Object.keys(this.item).length === 0
+			const formDataCategories = new FormData()
+			formDataCategories.append('name', this.name)
+			formDataCategories.append('description', this.description)
+			formDataCategories.append('hide', this.hide ? 0 : 1)
+			formDataCategories.append('type', this.type)
+			if(!isAdd) formDataCategories.append('_method', 'put')
 
-			const formDataCategories = new FormData();
-			formDataCategories.append('name', this.name);
-			formDataCategories.append('description', this.description);
-			formDataCategories.append('hide', hidePhp);
-			if (Object.keys(this.item).length === 0) {
-				formDataCategories.append('type', this.type);
-				await this.axios
-					.post('/award-categories/store', formDataCategories, {
-						headers: {
-							'Content-Type': 'multipart/form-data',
-							'X-Requested-With': 'XMLHttpRequest',
-							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-						},
-					})
-					.then(response => {
-						this.category_id = response.data.data.id;
-					})
-					.catch(error => {
-						console.error(error);
-					})
-			} else {
-				if (this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide) {
-					formDataCategories.append('_method', 'put');
-					await this.axios
-						.post('/award-categories/update/' + this.category_id, formDataCategories, {
-							headers: {
-								'Content-Type': 'multipart/form-data',
-								'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-							},
-						})
-						.then(() => {
-						})
-						.catch(error => {
-							console.error(error);
-						})
-				}
+			const headers = {
+				'Content-Type': 'multipart/form-data',
+				'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+			}
+			if(isAdd) headers['X-Requested-With'] = 'XMLHttpRequest'
+
+			try {
+				const {data} = await this.axios.post(isAdd ? '/award-categories/store' : '/award-categories/update/' + this.category_id, formDataCategories, {
+					headers,
+				})
+				if(isAdd) this.category_id = data.data.id
+			}
+			catch (error) {
+				console.error(error)
 			}
 		},
 		async saveAwards() {
 			const formData = new FormData();
-			formData.append('award_category_id', this.category_id);
-			if (this.type === 1 && this.uploadFiles.length > 0) {
-				for (let i = 0; i < this.uploadFiles.length; i++) {
-					formData.append('file[]', this.uploadFiles[i]);
+			formData.append('award_category_id', this.category_id)
+
+			switch(this.type){
+			case 1:
+				if(this.uploadFiles.length){
+					for (let i = 0; i < this.uploadFiles.length; i++) {
+						formData.append('file[]', this.uploadFiles[i])
+					}
 				}
-			}
-			if (this.type === 2) {
+				break
+
+			case 2:
 				for (let j = 0; j < this.course_ids.length; j++) {
-					formData.append('course_ids[]', this.course_ids[j]);
+					formData.append('course_ids[]', this.course_ids[j])
 				}
-				formData.append('styles', this.styles);
+				formData.append('styles', this.styles)
 				if (this.fileCertificate) {
-					formData.append('file', this.fileCertificate);
+					formData.append('file', this.fileCertificate)
 				}
-			}
-			if (this.type === 3) {
-				formData.append('targetable_type', this.targetable_type);
-				formData.append('targetable_id', this.targetable_id);
+				break
+
+			case 3:
+				formData.append('targetable_type', this.targetable_type)
+				formData.append('targetable_id', this.targetable_id)
+				break
 			}
 
-			if (Object.keys(this.item).length > 0 && this.type !== 1) {
-				formData.append('_method', 'put');
-				await this.axios
-					.post('/awards/update/' + this.awards[0].id, formData, {
-						headers: {
-							'Content-Type': 'multipart/form-data'
-						},
-					})
-					.then(response => {
-						this.$emit('update:open', false);
-						this.$emit('save-award', response.data.data);
-						this.$refs.newSertificateForm.reset();
-					})
-					.catch(function (error) {
-						console.error(error);
-					});
-			} else if (Object.keys(this.item).length === 0 || this.type === 1) {
-				await this.axios
-					.post('/awards/store', formData, {
-						headers: {
-							'Content-Type': 'multipart/form-data'
-						},
-					})
-					.then(response => {
-						this.$emit('update:open', false);
-						this.$emit('save-award', response.data.data);
-						this.$refs.newSertificateForm.reset();
-					})
-					.catch(function (error) {
-						console.error(error);
-					});
+			const isUpdate = Object.keys(this.item).length && this.type !== 1
+			if (isUpdate) formData.append('_method', 'put')
+
+			try {
+				const {data} = await this.axios.post(isUpdate ? '/awards/update/' + this.awards[0].id : '/awards/store', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					},
+				})
+				this.$emit('update:open', false)
+				this.$emit('save-award', data.data)
+				this.$refs.newSertificateForm.reset()
+			}
+			catch (error) {
+				console.error(error)
 			}
 		},
 		async onSubmit() {
-			if (!this.selectedType && Object.keys(this.item).length === 0) {
-				this.$toast.error('Выберите тип награды', {
-					timeout: 5000
-				});
-			} else {
-				if (this.type) {
-					if (this.name.length > 2) {
-						let loader = this.$loading.show();
-						this.invalidName = true;
-
-						if (this.type === 1) {
-							await this.saveCategory();
-							await this.saveAwards();
-						}
-
-						if (this.type === 2) {
-							if(this.hasFileCertificate){
-								if (this.constructorChange) {
-									if(this.course_ids.length > 0){
-										await this.saveCategory();
-										await this.saveAwards();
-									} else {
-										this.$toast.error('Выберите один или несколько курсов', {
-											timeout: 5000
-										});
-									}
-								} else {
-									this.$toast.error('Сперва отредактируйте выбранный шаблон', {
-										timeout: 5000
-									});
-								}
-							} else {
-								this.$toast.error('Загрузите шаблон', {
-									timeout: 5000
-								});
-							}
-						}
-
-						if (this.type === 3) {
-							if(this.targetable_type && this.targetable_id){
-								await this.saveCategory();
-								await this.saveAwards();
-							} else{
-								this.$toast.error('Выберите должность или отдел', {
-									timeout: 5000
-								});
-							}
-						}
-
-
-						loader.hide();
-					} else {
-						this.invalidName = false;
-					}
-				}
+			const toastConfig = {
+				timeout: 5000
+			}
+			if (!this.selectedType && Object.keys(this.item).length === 0) return this.$toast.error('Выберите тип награды', toastConfig)
+			if(!this.type) return
+			if(this.name.length < 3){
+				this.invalidName = false
+				return
 			}
 
+			switch(this.type){
+			case 2:
+				if(!this.hasFileCertificate) return this.$toast.error('Загрузите шаблон', toastConfig)
+				if(!this.constructorChange) return this.$toast.error('Сперва отредактируйте выбранный шаблон', toastConfig)
+				if(!this.course_ids.length) return this.$toast.error('Выберите один или несколько курсов', toastConfig)
+				break
+
+			case 3:
+				if(!(this.targetable_type && this.targetable_id)) return this.$toast.error('Выберите должность или отдел', toastConfig)
+				break
+			}
+
+			const loader = this.$loading.show()
+			this.invalidName = true
+
+			await this.saveCategory()
+			await this.saveAwards()
+
+			loader.hide()
 		},
 		setFileType(type) {
-			this.type = type;
-			this.selectedType = true;
-			if (type === 1) {
-				this.dropDownText = 'Загрузка картинки';
-			}
-			if (type === 2) {
-				this.dropDownText = 'Конструктор сертификата';
-			}
-			if (type === 3) {
-				this.dropDownText = 'Данные начислений';
-			}
+			this.type = type
+			this.selectedType = true
+			this.dropDownText = typeNames[type]
 		},
 		formFile(files) {
-			this.uploadFiles = files;
+			this.uploadFiles = files
+			this.previewFiles = []
 		},
 		formFileCertificate(file, bool) {
-			this.fileCertificate = file;
-			this.hasFileCertificate = bool;
+			this.fileCertificate = file
+			this.hasFileCertificate = bool
 		},
 		styleChange(styles) {
-			this.styles = JSON.stringify(styles);
+			this.styles = JSON.stringify(styles)
 		}
 	}
 };

@@ -115,13 +115,12 @@ import UploadSertificateModal from '../types/UploadSertificateModal.vue';
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import Multiselect from 'vue-multiselect';
 
-const base64Encode = (data) =>
-	new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(data);
-		reader.onload = () => resolve(reader.result);
-		reader.onerror = (error) => reject(error);
-	});
+const base64Encode = data => new Promise((resolve, reject) => {
+	const reader = new FileReader();
+	reader.readAsDataURL(data);
+	reader.onload = () => resolve(reader.result);
+	reader.onerror = error => reject(error);
+});
 
 export default {
 	name: 'UploadSertificate',
@@ -151,91 +150,84 @@ export default {
 			styles: '',
 			textAll: 'Выбрать все',
 			variant: 'success'
-		};
+		}
 	},
 	watch: {
 		image(newValue) {
-			this.imageSrc = null;
-			this.$emit('has-change-constructor', false);
-			if (newValue) {
-				base64Encode(newValue)
-					.then((val) => {
-						this.imageSrc = val;
-						this.$emit('image-download', this.image, true);
-					})
-					.catch(() => {
-						this.imageSrc = null;
-					});
-			}
+			this.imageSrc = null
+			this.$emit('has-change-constructor', false)
+			if (!newValue) return
+			base64Encode(newValue).then(val => {
+				this.imageSrc = val
+				this.$emit('image-download', this.image, true)
+			}).catch(() => {
+				this.imageSrc = null
+			})
 		},
 	},
 	mounted() {
-		if (this.awards.length > 0) {
-			this.imageSrc = this.awards[0].tempPath;
-			this.styles = this.awards[0].styles;
-			this.$emit('has-change-constructor', true);
+		if (this.awards.length) {
+			this.imageSrc = this.awards[0].tempPath
+			this.styles = this.awards[0].styles
+			this.$emit('has-change-constructor', true)
 		}
-		this.getCourses();
+		this.getCourses()
 	},
 	methods: {
 		openModalCertificate() {
-			this.modalCertificate = !this.modalCertificate;
+			this.modalCertificate = !this.modalCertificate
 			this.$emit('has-change-constructor', true)
 		},
 		selectAll() {
-			this.value = [];
-			this.$emit('remove-course-all');
-			this.value = this.options;
-			this.$emit('add-course-all', this.value);
+			this.value = []
+			this.$emit('remove-course-all')
+			this.value = this.options
+			this.$emit('add-course-all', this.value)
 		},
 		clearAll() {
-			this.value = [];
-			this.$emit('remove-course-all');
+			this.value = []
+			this.$emit('remove-course-all')
 		},
 		onSelect(val) {
-			this.$emit('add-course', val.id);
+			this.$emit('add-course', val.id)
 		},
 		onRemove(val) {
-			this.$emit('remove-course', val.id);
+			this.$emit('remove-course', val.id)
 		},
 		async getCourses() {
-			let loader = this.$loading.show();
-			await this.axios
-				.get('/admin/courses/get')
-				.then(response => {
-					const data = response.data.courses;
-					for (let i = 0; i < data.length; i++) {
-						this.options.push(data[i]);
-						if (this.awards.length > 0) {
-							if (data[i].award_id === this.awards[0].id) {
-								this.value.push(data[i]);
-							}
-						}
+			const loader = this.$loading.show()
+			try {
+				const {data} = await this.axios.get('/admin/courses/get')
+				const courses = data.courses
+				for (let i = 0; i < courses.length; i++) {
+					this.options.push(courses[i])
+					if (this.awards.length && courses[i].award_id === this.awards[0].id) {
+						this.value.push(courses[i])
 					}
-					this.$emit('add-course-all', this.value);
-					loader.hide();
-				})
-				.catch(error => {
-					console.error(error);
-					loader.hide();
-				})
+				}
+				this.$emit('add-course-all', this.value);
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
 		},
 		saveStyles(fullName, courseName, date) {
-			const styles = {};
-			styles.fullName = fullName;
-			styles.courseName = courseName;
-			styles.date = date;
-			this.styles = JSON.stringify(styles);
-			this.$emit('styles-change', styles);
+			const styles = {}
+			styles.fullName = fullName
+			styles.courseName = courseName
+			styles.date = date
+			this.styles = JSON.stringify(styles)
+			this.$emit('styles-change', styles)
 		},
 		clearImage() {
-			this.image = null;
-			this.imageSrc = null;
-			this.$emit('image-download', null, false);
+			this.image = null
+			this.imageSrc = null
+			this.$emit('image-download', null, false)
 			this.$emit('has-change-constructor', false)
 		},
 	},
-};
+}
 </script>
 
 <style lang="scss">
