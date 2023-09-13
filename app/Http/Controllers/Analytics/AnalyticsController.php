@@ -129,9 +129,7 @@ class AnalyticsController extends Controller
         $fired_number = $analyticService->getFiredUsersPerMonth($group, $date->addMonth());
 
         return [
-            'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
             'table' => AnalyticStat::form($group_id, $date->format('Y-m-d')),
-            'columns' => AnalyticStat::columns($group_id, $date->format('Y-m-d')),
             'call_bases' => $call_bases,
         ];
     }
