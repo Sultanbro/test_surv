@@ -64,9 +64,9 @@ class HrController extends Controller
     public function checkBitrix(Request $request)
     {
        return Artisan::call('recruiter:stats', [
-            'date' => '2023-09-14',
-           'user' => 6264,
-           'hour'=>11,
+            'date' => $request->date,
+           'user' => $request->user_id,
+           'hour'=>$request->hour,
         ]);
     }
 
