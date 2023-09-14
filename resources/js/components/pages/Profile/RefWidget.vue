@@ -25,12 +25,14 @@
 		</div>
 
 		<div class="RefWidget-border">
-			<router-link :to="'/ref-promo'">
-				«Как заработать миллион»
+			<router-link :to="'/profile/promotional-material'">
+				Рекламный материал
 			</router-link>
 		</div>
 
-		Заработанно:
+		<div class="RefWidget-subtitle">
+			Заработанно:
+		</div>
 		<div class="RefWidget-border">
 			за все время: {{ total }} ₸
 		</div>
@@ -139,6 +141,11 @@ export default {
 		color: #62788b;
 
 		border-radius: 1rem;
+	}
+	&-subtitle{
+		text-align: center;
+		font-size: 14px;
+		margin-bottom: 0.5rem;
 	}
 }
 .header__profile._active{
