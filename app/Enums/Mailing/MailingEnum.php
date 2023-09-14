@@ -16,6 +16,7 @@ enum MailingEnum
     const GROUP     = 'App\ProfileGroup';
     const USER      = 'App\User';
     const POSITION  = 'App\Position';
+    const ALL  = 'All';
 
     const IN_APP = 'in-app';
     const WHATSAPP = 'whatsapp';
@@ -34,6 +35,7 @@ enum MailingEnum
     const TYPES = [
         'App\ProfileGroup'  => 'group',
         'App\User'          => 'individual',
-        'App\Position'      => 'position'
+        'App\Position'      => 'position',
+        'All'               => 'all'
     ];
 }

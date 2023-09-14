@@ -27,7 +27,7 @@ class StorePositionRequest extends FormRequest
     {
         return [
             'position' => ['required', 'string'],
-            'is_head' => ['nullable|boolean']
+            'is_head' => ['boolean']
         ];
     }
 

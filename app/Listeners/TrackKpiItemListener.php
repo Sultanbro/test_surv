@@ -28,7 +28,7 @@ class TrackKpiItemListener
      */
     public function handle(TrackKpiItemEvent $event)
     {
-        $kpiItem = KpiItem::query()->withTrashed()->findOrFail($event->kpiItemId);
+        $kpiItem = KpiItem::query()->withTrashed()->with('activity')->findOrFail($event->kpiItemId);
 
 
         History::query()->create([
@@ -40,6 +40,7 @@ class TrackKpiItemListener
                 'kpi_id'        => $kpiItem->kpi_id,
                 'activity_id'   => $kpiItem->activity_id,
                 'plan'          => $kpiItem->plan,
+                'daily_plan'    => $kpiItem->activity ? $kpiItem->activity->daily_plan : null,
                 'share'         => $kpiItem->share,
                 'cell'          => $kpiItem->cell,
                 'method'        => $kpiItem->method,

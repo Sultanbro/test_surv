@@ -144,6 +144,7 @@ class RecruiterStats extends Command
 
             dump($start_hour);
             dump($end_hour);
+            dump($user_id);
            
             
             $hourly_dials = $this->bitrix->getCallsAlt($this->bitrix_user, [1,2] ,'ASC',  [200, 486, 603, '603-S'], 0, $start_hour . '+06:00', $end_hour .'+06:00'); // Наборы
@@ -263,7 +264,7 @@ class RecruiterStats extends Command
             $rs->delete();
         }
 
-        if($total == 0 && (int)$total_minutes == 0 && $converted == 0 && $leads == 0 && $dials == 0) {
+        if($total == 0 && (int)$total_minutes == 0 && $leads == 0 && $dials == 0) {
             
         } else {
             $last_rs = RecruiterStat::where('user_id', $admin_user->id)->orderBy('date', 'desc')->first();
@@ -291,7 +292,12 @@ class RecruiterStats extends Command
 
       
         $this->line('------' . $admin_user->last_name . ' ' . $admin_user->name . ' ' . $admin_user->email);
-    }   
+        dump($dials);
+        dump($total);
+        dump($total_minutes);
+        dump($converted);
+        dump($leads);
+    }
 
     /**
      * save minutes to UserStat

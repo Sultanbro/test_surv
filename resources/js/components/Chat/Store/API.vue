@@ -110,9 +110,10 @@ export default {
    * @param {Function} callback
    * @return {Promise}
    */
-	setMessagesAsRead(messages, callback = () => {}) {
+	setMessagesAsRead(messages, chatId, callback = () => {}) {
 		return axios.post(REST_URI + 'messages/read', {
-			messages: messages,
+			messages,
+			chatId,
 		}).then(response => {
 			callback(response.data);
 		});

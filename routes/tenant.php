@@ -471,6 +471,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
+
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
     Route::post('/timetracking/analytics/recruting/change-profile', [Analytics\HrController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
