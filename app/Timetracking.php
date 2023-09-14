@@ -31,7 +31,7 @@ class Timetracking extends Model
         'program_id',
 
         /**
-         * updated 
+         * updated
          * 0 не редактировано
          * 1 редактировано
          * 2 аналитика изменила время. План выполнился и поставились фиксированные часы
@@ -98,9 +98,9 @@ class Timetracking extends Model
     }
 
     public function addTime(Carbon $value, $tz = 'UTC')
-    {   
+    {
         $arr = $this->times;
-        
+
         if(!$arr) {
             $arr = [];
             $arr[] = $this->enter->setTimezone($tz)->format('H:i');
@@ -109,7 +109,7 @@ class Timetracking extends Model
                 $arr[] = $this->exit->setTimezone($tz)->format('H:i');
             }
         }
-        
+
         $arr[] = $value->setTimezone($tz)->format('H:i');
 
         return $this->setTimes($arr);
@@ -122,7 +122,7 @@ class Timetracking extends Model
 
     public function isWorkEndTimeSetToNextDay(Carbon $worktimeEnd) : bool
     {
-        return $worktimeEnd->hour < 9 
+        return $worktimeEnd->hour < 9
             && Carbon::now($worktimeEnd->timezone)
                 ->hour >= 9;
     }
@@ -135,21 +135,21 @@ class Timetracking extends Model
 
         if($hours->count() == 0) {
             return number_format(0, 2, '.', '');
-        } 
+        }
 
         $sum = 0;
 
         foreach ($hours as $hour) {
 
             $totalHours = $hour->total_hours / 60;
-    
+
             if($hour->updated != 1 && $totalHours > 9) {
                 $totalHours = 9;
             }
 
             $sum += $totalHours;
         }
-        
+
         return number_format((float)$sum, 2, '.', '');
     }
 
@@ -226,23 +226,23 @@ class Timetracking extends Model
 
             ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays', 'timezone'])
             ->paginate($perPage);
-    
+
         return $users;
     }
 
     public static function totalHours($date, $group_id)
     {
         $users = \App\ProfileGroup::employees($group_id);
-        
+
         $users = User::withTrashed()->whereIn('id', $users)->where('position_id', 32)->get(['id'])->toArray();
         $total_hours =  self::select(
                 DB::raw('SUM(total_hours) as total_hours')
-            ) 
+            )
             ->whereIn('user_id', $users)
             ->whereDate('enter', $date)
             ->first()
             ->total_hours;
-           
+
         return $total_hours / 60;
     }
 
@@ -283,7 +283,12 @@ class Timetracking extends Model
         $firstDayOfWeek = now()->startOfWeek();
         $lastDayOfWeek = now()->endOfWeek();
         return self::where('user_id', $userId)
-            ->whereBetween('created_at', [$firstDayOfWeek, $lastDayOfWeek])
-            ->count();
+        ->whereBetween('enter', [$firstDayOfWeek, $lastDayOfWeek])
+        ->get()
+        ->map(function($item){
+            return Carbon::parse($item['enter'])->toDateString();
+        })
+        ->unique()
+        ->count();
     }
 }
