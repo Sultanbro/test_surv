@@ -144,6 +144,7 @@ class RecruiterStats extends Command
 
             dump($start_hour);
             dump($end_hour);
+            dump($user_id);
            
             
             $hourly_dials = $this->bitrix->getCallsAlt($this->bitrix_user, [1,2] ,'ASC',  [200, 486, 603, '603-S'], 0, $start_hour . '+06:00', $end_hour .'+06:00'); // Наборы
@@ -311,6 +312,7 @@ class RecruiterStats extends Command
             ->where('date', $this->date)
             ->first();
 
+        dump($recStat);
         $stat = UserStat::where([
             'date'        => $this->date,
             'user_id'     => $user_id,
