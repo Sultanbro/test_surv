@@ -312,7 +312,6 @@ class RecruiterStats extends Command
             ->where('date', $this->date)
             ->first();
 
-        dump($recStat);
         $stat = UserStat::where([
             'date'        => $this->date,
             'user_id'     => $user_id,
