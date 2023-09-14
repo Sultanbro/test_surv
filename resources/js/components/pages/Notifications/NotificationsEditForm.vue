@@ -55,20 +55,28 @@
 			<div class="NotificationsEditForm-label">
 				Текст уведомления
 				<img
-					v-b-popover.hover="'Текст уведомления'"
+					v-b-popover.hover="'Текст уведомления, 244 символа максимум'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
 				>
 			</div>
+
 			<b-form-textarea
 				v-model="value.title"
 				class="NotificationsEditForm-control"
+				:class="{
+					'NotificationsEditForm-error': value.title.length > 244
+				}"
 				placeholder="Текст уведомления"
 				rows="3"
 				max-rows="6"
 				required
 			/>
+
+			<div class="NotificationsEditForm-charCount">
+				{{ value.title.length }}
+			</div>
 		</label>
 
 		<!-- Куда отправлять -->
@@ -146,7 +154,6 @@
 		>
 			<AccessSelect
 				:value="value.recipients"
-				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
 				:submit-button="'Применить'"
@@ -222,7 +229,10 @@ export default {
 			this.isRecipientsOpen = true
 		},
 		onSubmitAccess(value){
-			this.value.recipients = value
+			this.value.recipients = value.map(rec => {
+				if(!rec.type) rec.type = 4
+				return rec
+			})
 			this.isRecipientsOpen = false
 		}
 	}
@@ -237,6 +247,8 @@ export default {
 		gap: 10px;
 
 		margin-bottom: 20px;
+
+		position: relative;
 	}
 
 	&-label{
@@ -254,6 +266,26 @@ export default {
 
 	&-control{
 		flex: 1;
+	}
+	& .form-control.NotificationsEditForm-error{
+		border-color: #f00;
+		color: #f00;
+		&:focus{
+			border-color: #f00;
+			color: #f00;
+		}
+	}
+	&-charCount{
+		padding: 1px 3px;
+		border-top: 1px solid #e8e8e8;
+		border-left: 1px solid #e8e8e8;
+		border-radius: 6px;
+
+		position: absolute;
+		right: 0;
+		bottom: 0;
+
+		font-size: 11px;
 	}
 
 	&-badges{

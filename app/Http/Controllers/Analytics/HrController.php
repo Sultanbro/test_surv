@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Analytics;
 
+use App\Api\BitrixOld;
 use App\Models\CentralUser;
 use App\Service\SendMessageTraineesService;
 use App\Service\Tenancy\CabinetService;
+use App\Timetracking;
 use Closure;
 use DB;
+use Illuminate\Support\Facades\Artisan;
 use View;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,6 +34,7 @@ use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\TraineeReport;
 use App\Models\GroupUser;
+use function JmesPath\search;
 
 class HrController extends Controller
 {
@@ -56,6 +60,8 @@ class HrController extends Controller
             'getDismissBot', 'getDismissReasons'
         );
     }
+
+
 
     /**
      * Страница аналитика группы

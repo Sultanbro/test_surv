@@ -236,11 +236,13 @@ const getNamesMethods = {
 	'App\\User': 'getUserName',
 	'App\\ProfileGroup': 'getGroupName',
 	'App\\Position': 'getPositionName',
+	'All': 'getAllName',
 }
 const typeToNumber = {
 	'App\\User': 1,
 	'App\\ProfileGroup': 2,
 	'App\\Position': 3,
+	'All': 4,
 }
 
 export default {
@@ -387,6 +389,9 @@ export default {
 			if(position) return position.position
 			return ''
 		},
+		getAllName(){
+			return 'Все'
+		},
 		async remove(notification){
 			if(!confirm('Удалить уведомление?')) return
 			const {data} = await deleteNotification(notification.id)
@@ -439,9 +444,6 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
-			this.template = ''
-			this.selectedTemplate = null
-			this.selectedNotification = null
 		},
 		validate(notification){
 			const errors = []
@@ -456,6 +458,9 @@ export default {
 			const {message} = await createNotification(notification)
 			if(message === 'Success created'){
 				this.$toast.success('Уведомление успешно создано')
+				this.template = ''
+				this.selectedTemplate = null
+				this.selectedNotification = null
 			}
 			else{
 				this.$toast.error(message)
@@ -466,6 +471,9 @@ export default {
 			const {message} = await updateNotification(notification)
 			if(message === 'Success'){
 				this.$toast.success('Уведомление успешно сохранено')
+				this.template = ''
+				this.selectedTemplate = null
+				this.selectedNotification = null
 				const index = this.notifications.findIndex(n => n.id === notification.id)
 				if(!~index) return
 				this.$set(this.notifications, index, notification)

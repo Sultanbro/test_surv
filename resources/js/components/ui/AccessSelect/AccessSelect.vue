@@ -85,7 +85,7 @@
 			:submit-button="submitButton"
 			:submit-disabled="submitDisabled"
 			class="AccessSelect-footer"
-			@submit="$emit('submit', accessList)"
+			@submit="onSubmit"
 		/>
 		<slot
 			name="after"
@@ -243,6 +243,10 @@ export default {
 
 			this.$emit('input', this.accessList)
 		},
+		onSubmit(){
+			if(this.selectedTab === 'Все') return this.$emit('submit', ALL)
+			this.$emit('submit', this.accessList)
+		}
 	},
 }
 </script>
