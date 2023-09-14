@@ -291,7 +291,11 @@ class RecruiterStats extends Command
 
       
         $this->line('------' . $admin_user->last_name . ' ' . $admin_user->name . ' ' . $admin_user->email);
-    }   
+        dump($dials);
+        dump($total);
+        dump($total_minutes);
+        dump($converted);
+    }
 
     /**
      * save minutes to UserStat
