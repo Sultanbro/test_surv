@@ -263,7 +263,7 @@ class RecruiterStats extends Command
             $rs->delete();
         }
 
-        if($total == 0 && (int)$total_minutes == 0 && $converted == 0 && $leads == 0 && $dials == 0) {
+        if($total == 0 && (int)$total_minutes == 0 && $leads == 0 && $dials == 0) {
             
         } else {
             $last_rs = RecruiterStat::where('user_id', $admin_user->id)->orderBy('date', 'desc')->first();
@@ -295,6 +295,7 @@ class RecruiterStats extends Command
         dump($total);
         dump($total_minutes);
         dump($converted);
+        dump($leads);
     }
 
     /**
