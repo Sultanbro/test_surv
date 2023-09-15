@@ -273,101 +273,87 @@ class HeadhunterNegotiationsApi2 extends Command
         }
     }
 
-    private function updateNegotiationsOnVacancy($vacancy) : void
+    private function updateNegotiationsOnVacancy($vacancy): void
     {
-
         $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
 
-        $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
+        $this->line('updateNegotiationsOnVacancy: ' . count($negotiations));
+
+        $negotiationsData = [];
 
         foreach ($negotiations as $key => $hh_neg) {
-            $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
-            
             $time = $hh_neg->created_at;
             $time[10] = ' ';
             $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
 
             $resume_id = $hh_neg->resume ? $hh_neg->resume->id : '';
             $name = 'Соискатель';
-            if($hh_neg->resume) {
+            if ($hh_neg->resume) {
                 $name = $hh_neg->resume->first_name ? $hh_neg->resume->first_name : '';
                 $name .= $hh_neg->resume->last_name ? ' ' . $hh_neg->resume->last_name : '';
             }
 
-            if($neg) {
-                $neg->has_updated = $hh_neg->has_updates;
-                $neg->time = $time;
-                $neg->resume_id = $resume_id;
-                $neg->name = $name;
-                $neg->from = HeadHunterApi2::FROM_STATUS;
-                $neg->save();
-            } else {
-                Negotiation::create([
-                    'vacancy_id' => $vacancy->vacancy_id,
-                    'negotiation_id' => $hh_neg->id,
-                    'lead_id' => 0,
-                    'has_updated' => $hh_neg->has_updates,
-                    'time' => $time,
-                    'phone' => '',
-                    'name' => $name,
-                    'resume_id' => $resume_id,
-                    'from' => HeadHunterApi2::FROM_STATUS,
-                ]);
-            }
+            $negotiationData = [
+                'vacancy_id' => $vacancy->vacancy_id,
+                'negotiation_id' => $hh_neg->id,
+                'lead_id' => 0,
+                'has_updated' => $hh_neg->has_updates,
+                'time' => $time,
+                'phone' => '',
+                'name' => $name,
+                'resume_id' => $resume_id,
+                'from' => HeadHunterApi2::FROM_STATUS,
+            ];
+
+            $negotiationsData[] = $negotiationData;
+        }
+
+        if (!empty($negotiationsData)) {
+            Negotiation::insert($negotiationsData);
         }
     }
 
-    public function updateVacancies() : void
+    public function updateVacancies(): void
     {
+        $vacanciesData = [];
+
         $vacancies = $this->hh->getVacancies();
 
-        $this->line('updateVacancies: '. count($vacancies));
-       
-        foreach($vacancies as $vacancy) {
-           
-            $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
-            
+        $this->line('updateVacancies: ' . count($vacancies));
+
+        foreach ($vacancies as $vacancy) {
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
-           
-            
-            if($hh_vacancy) {
-
+            if ($hh_vacancy) {
                 try {
                     $manager_id = 23107020;
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     // save logs
                 }
 
-                if($this->vacancyNameHasNotWords($hh_vacancy->name, [
+                if ($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'Бухгалтер'
-                ])) continue;                                               // создаются все вакансии, кроме-тех, которые содержат эти слова
+                ])) {
+                    continue;
+                }
 
-                $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
-                
+                $this->line('vacancy: #' . $vacancy->id . ' - ' . $hh_vacancy->name);
+
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
 
-                if(!$vac) {
-                    Vacancy::create([
-                        'vacancy_id' => $hh_vacancy->id,
-                        'title' => $hh_vacancy->name,
-                        'manager_id' => $manager_id,
-                        'city' => $city,
-                        'status' => $status,
-                        'from' => HeadHunterApi2::FROM_STATUS,
-                    ]);
-                } else {
-                    $vac->title = $hh_vacancy->name;
-                    $vac->manager_id = $manager_id;
-                    $vac->status = $status;
-                    $vac->city = $city;
-                    $vac->from = HeadHunterApi2::FROM_STATUS;
-                    $vac->save();
-                }
-            }   
-            
+                $vacanciesData[] = [
+                    'vacancy_id' => $hh_vacancy->id,
+                    'title' => $hh_vacancy->name,
+                    'manager_id' => $manager_id,
+                    'city' => $city,
+                    'status' => $status,
+                    'from' => HeadHunterApi2::FROM_STATUS,
+                ];
+            }
         }
+
+        Vacancy::upsert($vacanciesData, ['vacancy_id'], ['title', 'manager_id', 'city', 'status', 'from']);
     }
 
     private function vacancyNameHasNotWords(String $name, array $words) : bool
