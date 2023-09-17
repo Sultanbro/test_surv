@@ -309,12 +309,12 @@ class HeadhunterNegotiationsApi2 extends Command
                     ->delete();
 
 
-                $neg->has_updated = $hh_neg->has_updates;
-                $neg->time = $time;
-                $neg->resume_id = $resume_id;
-                $neg->name = $name;
-                $neg->from = HeadHunterApi2::FROM_STATUS;
-                $neg->save();
+//                $neg->has_updated = $hh_neg->has_updates;
+//                $neg->time = $time;
+//                $neg->resume_id = $resume_id;
+//                $neg->name = $name;
+//                $neg->from = HeadHunterApi2::FROM_STATUS;
+//                $neg->save();
             } else {
                 Negotiation::create([
                     'vacancy_id' => $vacancy->vacancy_id,
