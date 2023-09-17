@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class HeadhunterNegotiationsApi2 extends Command
@@ -283,6 +284,7 @@ class HeadhunterNegotiationsApi2 extends Command
         foreach ($negotiations as $key => $hh_neg) {
             $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
 
+
             $time = $hh_neg->created_at;
             $time[10] = ' ';
             $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
@@ -295,6 +297,18 @@ class HeadhunterNegotiationsApi2 extends Command
             }
 
             if($neg) {
+
+                $negotiationIdToDelete = $neg->negotiation_id;
+                DB::table('headhunter_negotiations')
+                    ->where('negotiation_id', $negotiationIdToDelete)
+                    ->whereNotIn('id', function ($query) use ($negotiationIdToDelete) {
+                        $query->select(DB::raw('MAX(id)'))
+                            ->from('headhunter_negotiations')
+                            ->where('negotiation_id', $negotiationIdToDelete);
+                    })
+                    ->delete();
+
+
                 $neg->has_updated = $hh_neg->has_updates;
                 $neg->time = $time;
                 $neg->resume_id = $resume_id;
