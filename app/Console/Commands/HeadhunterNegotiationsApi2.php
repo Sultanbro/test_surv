@@ -297,24 +297,12 @@ class HeadhunterNegotiationsApi2 extends Command
             }
 
             if($neg) {
-
-                $negotiationIdToDelete = $neg->negotiation_id;
-                DB::table('headhunter_negotiations')
-                    ->where('negotiation_id', $negotiationIdToDelete)
-                    ->whereNotIn('id', function ($query) use ($negotiationIdToDelete) {
-                        $query->select(DB::raw('MAX(id)'))
-                            ->from('headhunter_negotiations')
-                            ->where('negotiation_id', $negotiationIdToDelete);
-                    })
-                    ->delete();
-
-
-//                $neg->has_updated = $hh_neg->has_updates;
-//                $neg->time = $time;
-//                $neg->resume_id = $resume_id;
-//                $neg->name = $name;
-//                $neg->from = HeadHunterApi2::FROM_STATUS;
-//                $neg->save();
+                $neg->has_updated = $hh_neg->has_updates;
+                $neg->time = $time;
+                $neg->resume_id = $resume_id;
+                $neg->name = $name;
+                $neg->from = HeadHunterApi2::FROM_STATUS;
+                $neg->save();
             } else {
                 Negotiation::create([
                     'vacancy_id' => $vacancy->vacancy_id,
