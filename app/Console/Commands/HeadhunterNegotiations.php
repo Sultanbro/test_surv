@@ -43,9 +43,9 @@ class HeadhunterNegotiations extends Command
         $this->date = Carbon::now()->subDays(7)->format('Y-m-d');
     }
 
-    protected  $hh;
+    protected $hh;
 
-    protected  $date;
+    protected $date;
 
     protected Bitrix $bitrix;
 
@@ -145,30 +145,30 @@ class HeadhunterNegotiations extends Command
             try {
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
-            if ($e->getCode()==404) {
-                History::system('Ошибка hh.ru: резюме', [
-                    'error' => 'Резюме не существует или недоступно для текущего пользователя',
-                    'resume' => $n->resume_id,
-                ]);
-                $this->line('error:Резюме не существует или недоступно для текущего пользователя');
-                Negotiation::whereDate('time', '>=', $this->date)
-                    ->where('has_updated', 1)
-                    ->where('lead_id', 0)
-                    ->where('phone', '')
-                    ->where('phone', '!=', 'null')
-                    ->where('resume_id', $n->resume_id)
-                    ->where('from',HeadHunter::FROM_STATUS)
-                    ->first()
-                    ->delete();
-                continue;
-            }elseif($e->getCode() == 429){
-                History::system('Ошибка hh.ru: резюме', [
-                    'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
-                    'resume' => $n->resume_id,
-                ]);
-                $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
-                break;
-            }else
+                if ($e->getCode()==404) {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Резюме не существует или недоступно для текущего пользователя');
+                    Negotiation::whereDate('time', '>=', $this->date)
+                        ->where('has_updated', 1)
+                        ->where('lead_id', 0)
+                        ->where('phone', '')
+                        ->where('phone', '!=', 'null')
+                        ->where('resume_id', $n->resume_id)
+                        ->where('from',HeadHunter::FROM_STATUS)
+                        ->first()
+                        ->delete();
+                    continue;
+                }elseif($e->getCode() == 429){
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                    break;
+                }else
                 {
                     History::system('Ошибка hh.ru: резюме', [
                         'error' => 'Требуется авторизация пользователя',
@@ -178,6 +178,7 @@ class HeadhunterNegotiations extends Command
                     break;
                 }
             }
+
 
             $phone = $this->hh->getPhone($resume->contact);
             $neg = Negotiation::where('id', '!=', $n->id)->where('phone', $phone)->where('time', '>', Carbon::now()->subDays(3))->first();
@@ -260,42 +261,48 @@ class HeadhunterNegotiations extends Command
         }
     }
 
-    public function updateNegotiations(): void
+    public function updateNegotiations() : void
     {
-        $vacancyIds = Vacancy::where('status', Vacancy::OPEN)
+        $vacancies = Vacancy::where('status', Vacancy::OPEN)
             ->whereIn('manager_id', HeadHunter::MANAGERS)
-            ->pluck('vacancy_id')
-            ->toArray();
+            ->get();
 
-        if (!empty($vacancyIds)) {
-            $this->updateNegotiationsForVacancyIds($vacancyIds);
+        foreach($vacancies as $vacancy) {
+            $this->updateNegotiationsOnVacancy($vacancy);
         }
     }
 
-    private function updateNegotiationsForVacancyIds(array $vacancyIds): void
+    private function updateNegotiationsOnVacancy($vacancy) : void
     {
-        $negotiationsData = [];
 
-        foreach ($vacancyIds as $vacancyId) {
-            $negotiations = $this->hh->getNegotiations($vacancyId, $this->date);
+        $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
 
-            $this->line('updateNegotiationsOnVacancy: ' . count($negotiations));
+        $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
 
-            foreach ($negotiations as $key => $hh_neg) {
-                $time = $hh_neg->created_at;
-                $time[10] = ' ';
-                $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
+        foreach ($negotiations as $key => $hh_neg) {
+            $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
 
-                $resume_id = $hh_neg->resume ? $hh_neg->resume->id : '';
-                $name = 'Соискатель';
+            $time = $hh_neg->created_at;
+            $time[10] = ' ';
+            $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
 
-                if ($hh_neg->resume) {
-                    $name = $hh_neg->resume->first_name ? $hh_neg->resume->first_name : '';
-                    $name .= $hh_neg->resume->last_name ? ' ' . $hh_neg->resume->last_name : '';
-                }
+            $resume_id = $hh_neg->resume ? $hh_neg->resume->id : '';
+            $name = 'Соискатель';
+            if($hh_neg->resume) {
+                $name = $hh_neg->resume->first_name ? $hh_neg->resume->first_name : '';
+                $name .= $hh_neg->resume->last_name ? ' ' . $hh_neg->resume->last_name : '';
+            }
 
-                $negotiationsData[] = [
-                    'vacancy_id' => $vacancyId,
+            if($neg) {
+                $neg->has_updated = $hh_neg->has_updates;
+                $neg->time = $time;
+                $neg->resume_id = $resume_id;
+                $neg->name = $name;
+                $neg->from = HeadHunter::FROM_STATUS;
+                $neg->save();
+            } else {
+                Negotiation::create([
+                    'vacancy_id' => $vacancy->vacancy_id,
                     'negotiation_id' => $hh_neg->id,
                     'lead_id' => 0,
                     'has_updated' => $hh_neg->has_updates,
@@ -304,12 +311,8 @@ class HeadhunterNegotiations extends Command
                     'name' => $name,
                     'resume_id' => $resume_id,
                     'from' => HeadHunter::FROM_STATUS,
-                ];
+                ]);
             }
-        }
-
-        if (!empty($negotiationsData)) {
-            Negotiation::insert($negotiationsData);
         }
     }
 
@@ -324,6 +327,8 @@ class HeadhunterNegotiations extends Command
             $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
 
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
+
+
 
             if($hh_vacancy) {
 
