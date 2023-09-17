@@ -275,41 +275,45 @@ class HeadhunterNegotiationsApi2 extends Command
 
     private function updateNegotiationsOnVacancy($vacancy): void
     {
+
         $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
 
-        $this->line('updateNegotiationsOnVacancy: ' . count($negotiations));
-
-        $negotiationsData = [];
+        $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
 
         foreach ($negotiations as $key => $hh_neg) {
+            $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
+
             $time = $hh_neg->created_at;
             $time[10] = ' ';
             $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
 
             $resume_id = $hh_neg->resume ? $hh_neg->resume->id : '';
             $name = 'Соискатель';
-            if ($hh_neg->resume) {
+            if($hh_neg->resume) {
                 $name = $hh_neg->resume->first_name ? $hh_neg->resume->first_name : '';
                 $name .= $hh_neg->resume->last_name ? ' ' . $hh_neg->resume->last_name : '';
             }
 
-            $negotiationData = [
-                'vacancy_id' => $vacancy->vacancy_id,
-                'negotiation_id' => $hh_neg->id,
-                'lead_id' => 0,
-                'has_updated' => $hh_neg->has_updates,
-                'time' => $time,
-                'phone' => '',
-                'name' => $name,
-                'resume_id' => $resume_id,
-                'from' => HeadHunterApi2::FROM_STATUS,
-            ];
-
-            $negotiationsData[] = $negotiationData;
-        }
-
-        if (!empty($negotiationsData)) {
-            Negotiation::insert($negotiationsData);
+            if($neg) {
+                $neg->has_updated = $hh_neg->has_updates;
+                $neg->time = $time;
+                $neg->resume_id = $resume_id;
+                $neg->name = $name;
+                $neg->from = HeadHunterApi2::FROM_STATUS;
+                $neg->save();
+            } else {
+                Negotiation::create([
+                    'vacancy_id' => $vacancy->vacancy_id,
+                    'negotiation_id' => $hh_neg->id,
+                    'lead_id' => 0,
+                    'has_updated' => $hh_neg->has_updates,
+                    'time' => $time,
+                    'phone' => '',
+                    'name' => $name,
+                    'resume_id' => $resume_id,
+                    'from' => HeadHunterApi2::FROM_STATUS,
+                ]);
+            }
         }
     }
 
