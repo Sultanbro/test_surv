@@ -40,6 +40,7 @@ class Admin {
             if($group->editors_id == null or $group->editors_id == 'null') {
                 continue;
             }
+            if(json_decode($group->editors_id) == null) { continue; }
 
             if(in_array( auth()->id(), json_decode($group->editors_id) )) {
                 array_push($groups, $group->id);
