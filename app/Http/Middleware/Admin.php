@@ -37,7 +37,7 @@ class Admin {
 
         foreach ($_groups as $group) {
 
-            if($group->editors_id == null) {
+            if($group->editors_id == null and $group->editors_id == 'null') {
                 continue;
             }
 
