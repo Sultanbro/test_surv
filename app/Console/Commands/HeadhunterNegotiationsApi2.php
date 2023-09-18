@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Api\HeadHunter;
 use App\Api\HeadHunterApi2;
 use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
@@ -304,17 +305,28 @@ class HeadhunterNegotiationsApi2 extends Command
                 $neg->from = HeadHunterApi2::FROM_STATUS;
                 $neg->save();
             } else {
-                Negotiation::create([
-                    'vacancy_id' => $vacancy->vacancy_id,
-                    'negotiation_id' => $hh_neg->id,
-                    'lead_id' => 0,
-                    'has_updated' => $hh_neg->has_updates,
-                    'time' => $time,
-                    'phone' => '',
-                    'name' => $name,
-                    'resume_id' => $resume_id,
-                    'from' => HeadHunterApi2::FROM_STATUS,
-                ]);
+                $check_resume = Negotiation::query()
+                    ->where('created_at', '>', Carbon::now()->subDays(15))
+                    ->where('resume_id',$resume_id)
+                    ->where('from',HeadHunterApi2::FROM_STATUS)
+                    ->first();
+                if ($check_resume)
+                {
+                    continue;
+                }else
+                {
+                    Negotiation::create([
+                        'vacancy_id' => $vacancy->vacancy_id,
+                        'negotiation_id' => $hh_neg->id,
+                        'lead_id' => 0,
+                        'has_updated' => $hh_neg->has_updates,
+                        'time' => $time,
+                        'phone' => '',
+                        'name' => $name,
+                        'resume_id' => $resume_id,
+                        'from' => HeadHunterApi2::FROM_STATUS,
+                    ]);
+                }
             }
         }
     }

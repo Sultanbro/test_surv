@@ -301,6 +301,16 @@ class HeadhunterNegotiations extends Command
                 $neg->from = HeadHunter::FROM_STATUS;
                 $neg->save();
             } else {
+                $check_resume = Negotiation::query()
+                    ->where('created_at', '>', Carbon::now()->subDays(15))
+                    ->where('resume_id',$resume_id)
+                    ->where('from',HeadHunter::FROM_STATUS)
+                    ->first();
+                if ($check_resume)
+                {
+                    continue;
+                }else
+                {
                 Negotiation::create([
                     'vacancy_id' => $vacancy->vacancy_id,
                     'negotiation_id' => $hh_neg->id,
@@ -312,6 +322,7 @@ class HeadhunterNegotiations extends Command
                     'resume_id' => $resume_id,
                     'from' => HeadHunter::FROM_STATUS,
                 ]);
+                }
             }
         }
     }
