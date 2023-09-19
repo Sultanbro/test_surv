@@ -8,43 +8,15 @@
 				<!-- Unread notifications -->
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
-						<div
+						<NotificationsItem
 							v-for="(item, i) in unread"
 							:key="i"
-							class="notifications__item"
-						>
-							<div class="notifications__item-date">
-								{{ $moment(item.created_at).format(dateFormat) }}
-							</div>
-							<div class="notifications__title">
-								{{ item.title }}
-							</div>
-							<div class="notifications__text">
-								<!-- eslint-disable-next-line -->
-								<div v-html="item.message" />
-								<div
-									v-if="item.title === 'Заявка на сверхурочную работу' && $moment(Date.now()).diff(item.created_at, 'hours') < 2"
-									class="Notification-actions"
-								>
-									<JobtronButton
-										small
-										@click="acceptOvertime(i)"
-									>
-										Принять
-									</JobtronButton>
-									<JobtronButton
-										small
-										@click="rejectOvertime(i)"
-									>
-										Отклонить
-									</JobtronButton>
-								</div>
-							</div>
-							<div
-								class="notifications__read"
-								@click="setRead(i)"
-							/>
-						</div>
+							:active="true"
+							:notification="item"
+							@read="setRead(i)"
+							@acceptOvertime="acceptOvertime(i)"
+							@rejectOvertime="rejectOvertime(i)"
+						/>
 
 						<div
 							v-if="unread.length == 0"
@@ -73,27 +45,12 @@
 				<!-- Read notifications -->
 				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
-						<div
+						<NotificationsItem
 							v-for="(item, i) in read"
 							:key="i"
-							class="notifications__item"
-						>
-							<div class="notifications__item-date">
-								{{ $moment(item.created_at).format(dateFormat) }}
-							</div>
-							<div class="notifications__title">
-								{{ item.title }}
-							</div>
-							<!-- eslint-disable -->
-							<div
-								class="notifications__text"
-								v-html="item.message"
-							/>
-							<!-- eslint-enable -->
-							<div class="notifications__item-date absolute">
-								{{ $moment(item.read_at).format(dateFormat) }}
-							</div>
-						</div>
+							:active="false"
+							:notification="item"
+						/>
 
 						<div
 							v-if="read.length == 0"
@@ -112,7 +69,7 @@
 import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
 import ProfileTabs from '@ui/ProfileTabs'
-import JobtronButton from '@ui/Button'
+import NotificationsItem from './NotificationsItem.vue'
 import {
 	acceptOvertime,
 	rejectOvertime,
@@ -122,12 +79,11 @@ export default {
 	name: 'NotificationsPopup',
 	components: {
 		ProfileTabs,
-		JobtronButton,
+		NotificationsItem,
 	},
 	props: {},
-	data: function () {
+	data() {
 		return {
-			dateFormat: 'DD.MM.YYYY',
 			loading: false,
 		};
 	},
@@ -215,8 +171,62 @@ export default {
 			background-color: #0051ff;
 		}
 	}
-	&-actions{
+	// &-actions{}
+}
 
+.notifications__wrapper{
+	width: 100%;
+	max-width: 100%;
+	// height: 64rem;
+	padding-right: 1rem;
+
+	overflow-y:auto;
+	overflow-x:hidden;
+	scrollbar-color: #ECF0F9 #AEBEE0;
+	scrollbar-width: thin;
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		width: 8px; /* высота для горизонтального скролла */
+		border-radius: 1rem;
+		background-color: #ECF0F9;
 	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: #AEBEE0;
+		border-radius: 1rem;
+	}
+}
+
+
+.notifications__button{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: 100%;
+	max-width: 26.5rem;
+	min-height: 5rem;
+
+	color:#fff;
+	font-size:1.4rem;
+	font-weight: 600;
+
+	background: #AEBEE0;
+}
+
+
+.notifications_img {
+  width: 100%
+}
+
+
+@media(max-width:779px){
+	.nominations__wrapper{
+    justify-content: space-around;
+  }
+  .nominations__left{
+    max-width: 25rem;
+  }
 }
 </style>
