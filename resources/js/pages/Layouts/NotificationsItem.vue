@@ -13,7 +13,7 @@
 		</div>
 		<div class="NotificationsItem-text">
 			<!-- eslint-disable-next-line -->
-			<div v-html="notification.message" />
+			<div v-html="linkedMessage" />
 			<div
 				v-if="active && isOvertime"
 				class="Notification-actions"
@@ -48,6 +48,8 @@
 
 <script>
 import JobtronButton from '@ui/Button'
+const urlRegex = /(https?:\/\/[^\s]+)/g
+
 export default {
 	name: 'NotificationsItem',
 	components: {
@@ -68,6 +70,17 @@ export default {
 	computed: {
 		isOvertime(){
 			return this.notification.title === 'Заявка на сверхурочную работу' && this.$moment(Date.now()).diff(this.notification.created_at, 'hours') < 2
+		},
+		linkedMessage(){
+			const div = document.createElement('div')
+			div.innerHTML = this.notification.message
+			const matces = div.innerText.match(urlRegex)
+			if(!matces) return this.notification.message
+			let text = this.notification.message
+			matces.forEach(match => {
+				text = text.replace(match, `<a href="${match}" target="_blank">${match}</a>`)
+			})
+			return text
 		}
 	}
 }
