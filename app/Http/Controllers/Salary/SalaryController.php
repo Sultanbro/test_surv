@@ -68,8 +68,9 @@ class SalaryController extends Controller
         if(auth()->user()->is_admin != 1) {
             $_groups = [];
             foreach ($groups as $key => $group) {
-
-                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $editors_id = json_decode($group->editors_id);
+                if($editors_id == null) continue;
+                if(!in_array(auth()->id(), $editors_id)) continue;
 
                 $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
                 if($approval) {
@@ -155,8 +156,9 @@ class SalaryController extends Controller
             // if($request->user_types == 2)
         }
 
-        $group_editors = is_array(json_decode($group->editors_id))
-            ? json_decode($group->editors_id)
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id)
+            ? $editors_id
             : [];
 
         // Доступ к группе
@@ -235,7 +237,7 @@ class SalaryController extends Controller
         foreach ($groups as $key => $group) {
 
             $editors_id = json_decode($group->editors_id);
-            if ($group->editors_id == null) $editors_id = [];
+            if ($editors_id == null) $editors_id = [];
 
             if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), $editors_id)) continue;
 
@@ -403,7 +405,8 @@ class SalaryController extends Controller
         $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
         $fired_users = collect($fired_users)->pluck('id')->toArray();
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id) ? $editors_id : [];
 
         // Доступ к группе
         if(auth()->user()->is_admin != 1) {

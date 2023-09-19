@@ -56,7 +56,8 @@ class QualityController extends Controller
             'error' => 'access',
         ];
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id) ? $editors_id : [];
 
         if (auth()->user()->is_admin != 1 && !in_array($currentUser->id, $group_editors)) {
             return [
