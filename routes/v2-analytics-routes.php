@@ -17,7 +17,8 @@ Route::group([
     /**
      * Analytics pages.
      */
-    Route::get('/analytics', [V2AnalyticController::class, 'getAnalytics'])->name('analytics')->middleware(['analytics_cached']);
+    Route::get('/analytics', [V2AnalyticController::class, 'getAnalytics'])->name('analytics')
+        ->middleware(['analytics_cached', 'groups_activities_cached']);
 
     /**
      * Полезность и рентабельность.

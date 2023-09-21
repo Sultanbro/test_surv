@@ -78,10 +78,10 @@ class AnalyticStat extends Model
             ->where('date', $date)
             ->get();
 
-        $day_salaries = Salary::getSalaryForDays([
-            'date'     => $date,
-            'group_id' => $group_id,
-        ]);
+//        $day_salaries = Salary::getSalaryForDays([
+//            'date'     => $date,
+//            'group_id' => $group_id,
+//        ]);
 
         // returning items
         foreach($rows as $r_index => $row) {
@@ -197,7 +197,7 @@ class AnalyticStat extends Model
                     }
 
                     if($stat->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        $gsalary = array_key_exists($column->name, $day_salaries) ? $day_salaries[$column->name] : 0;
+                        $gsalary =  0;
 
                         $val = floor($gsalary);
                         $stat->show_value = $val;

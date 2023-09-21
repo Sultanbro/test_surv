@@ -6,16 +6,23 @@ use App\CacheStorage\AnalyticCacheStorage;
 use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\DTO\Analytics\V2\UtilityDto;
 use App\Enums\V2\Analytics\AnalyticEnum;
+use App\Enums\V2\Analytics\StatEnum;
+use App\GroupSalary;
 use App\Helpers\DateHelper;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticColumn as Column;
+use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
 use App\Models\Analytics\TopValue as ValueModel;
 use App\QualityRecordWeeklyStat;
+use App\Salary;
 use App\Service\Department\UserService;
+use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\User;
 use App\WorkingDay;
@@ -30,7 +37,52 @@ final class Analytics
     const VALUE_IMPL = 'Impl';
 
     use AnalyticTrait;
-    
+
+    public function analytics(GetAnalyticDto $dto): array
+    {
+        $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
+
+        $rows       = $this->rows($date, $dto->groupId);
+        $columns    = $this->columns($date, $dto->groupId);
+        $stats      = $this->statistics($date, $dto->groupId);
+        $activities = $this->activities()->where('group_id', $dto->groupId);
+        $weekdays       = AnalyticStat::getWeekdays($date);
+        $tableValues    = $this->analyticTableValue($rows, $columns);
+        $table = [];
+
+        return $table;
+    }
+
+    /**
+     * @param $date
+     * @param $row_id
+     * @param $group_id
+     * @param $days
+     * @return float|int
+     */
+    public function daysSum($date, $row_id, $group_id, $days = []): float|int
+    {
+        $days = empty($days) ? range(1, 31) : $days;
+
+        $columns = $this->columns($date, $group_id)->where('group_id', $group_id)
+            ->where('date', $date)
+            ->whereIn('name', $days);
+
+        $total = 0;
+
+        $all_stats = $this->statistics($date, $group_id)->where('row_id', $row_id)
+            ->where('date', $date);
+
+        foreach ($columns as $column) {
+            $stat = $all_stats->where('column_id', $column->id)->first();
+
+            if ($stat && is_numeric($stat->show_value)) {
+                $total += (float)$stat->show_value;
+            }
+        }
+
+        return $total;
+    }
     /**
      * @param Activity $activity
      * @param string $date
@@ -186,6 +238,35 @@ final class Analytics
             ->where('group_id', $groupId)
             ->whereIn('view', $views)
             ->sortByDesc('order');
+    }
+
+    /**
+     * @param Collection $rowsData
+     * @param Collection $columnsData
+     * @return array[]
+     */
+    private function analyticTableValue(
+        Collection $rowsData,
+        Collection $columnsData
+    ): array
+    {
+        $rows       = [];
+        $columns    = [];
+
+        foreach ($rowsData as $index => $row)
+        {
+            $rows[$row->id] = $index + 1;
+        }
+
+        foreach($columnsData as $index => $column)
+        {
+            $columns[$column->id] = $index != 0 ? AnalyticStat::getLetter($index - 1) : 'A';
+        }
+
+        return [
+            'rows'      => $rows,
+            'columns'   => $columns
+        ];
     }
 
     /**

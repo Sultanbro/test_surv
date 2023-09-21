@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static rentability(\App\DTO\Analytics\V2\UtilityDto $utilityDto)
  * @method static decompositionTable(\App\DTO\Analytics\V2\GetAnalyticDto $dto)
  * @method static activitiesViews(int $groupId, array $array)
+ * @method static analytics(\App\DTO\Analytics\V2\GetAnalyticDto $dto)
  */
 class AnalyticsFacade extends Facade
 {
