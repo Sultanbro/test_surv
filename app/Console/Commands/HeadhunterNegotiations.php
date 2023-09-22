@@ -257,7 +257,7 @@ class HeadhunterNegotiations extends Command
             return $lead_id['result'];
         } catch(\Exception $e) {
             // save logs
-            return 'НЕ СОЗДАЛСЯ:'.$lead_id['result'];
+            return 'НЕ СОЗДАЛСЯ:';
         }
     }
 
