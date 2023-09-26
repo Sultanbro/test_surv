@@ -97,6 +97,7 @@ final class Analytics
     {
         $group      = $this->groups()->where('id', $groupId)->first();
         $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
+        $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo     = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
@@ -106,7 +107,8 @@ final class Analytics
                 DB::raw('DAY(date) as day'),
                 'user_id',
                 'value',
-            ]))
+                'date'
+            ])->where('activity_id', $activity->id)->where('date', '>=', $firstOfMonth)->where('date', '<=', $dateFrom))
             ->get()
             ->map(function ($employee) use ($date, $activity) {
                 $workDay        = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
