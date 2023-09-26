@@ -81,6 +81,7 @@ class HeadhunterNegotiations extends Command
         foreach($negotiations as $n) {
             $phone = Phone::normalize($n->phone);
 
+            $this->line("negotiation_id:".$n->id);
             $leads = Lead::where('phone', $phone)
                 ->where('created_at', '>', Carbon::now()->subDays(7))
                 ->whereNotIn('status', ['LOSE'])
