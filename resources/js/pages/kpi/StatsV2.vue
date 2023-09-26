@@ -272,9 +272,11 @@ export default {
 
 		fetchData(filters, page = 1, limit = 10) {
 			let loader = this.$loading.show();
-			this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+			this.s_type_main = filters.data_from ? Number(filters.data_from.s_type) : 1;
 			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
 			this.filters = filters
+
+			if(![1,2,3].includes(this.s_type_main)) this.s_type_main = 1
 
 			if(this.s_type_main == 1){
 				this.axios.post('/statistics/kpi/groups-and-users', {
