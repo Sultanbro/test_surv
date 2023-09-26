@@ -270,67 +270,67 @@ export default {
 			this.page_items = page_items;
 		},
 
-		// fetchData(filters, page = 1, limit = 10) {
-		// 	let loader = this.$loading.show();
-		// 	this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
-		// 	this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
-		// 	this.filters = filters
-		//
-		// 	if(this.s_type_main == 1){
-		// 		this.axios.post('/statistics/kpi/groups-and-users', {
-		// 			filters: {
-		// 				...filters,
-		// 				query: this.searchText,
-		// 			}
-		// 		}, {
-		// 			params: {
-		// 				page,
-		// 				limit
-		// 			}
-		// 		}).then(({data}) => {
-		// 			// items
-		// 			this.items = data.paginator.data;
-		// 			this.totalRows = data.paginator.total
-		// 			// this.activities = data.activities;
-		// 			this.groups = data.groups;
-		//
-		// 			// paginate
-		// 			this.page_items = this.items.slice(0, this.pageSize);
-		//
-		// 			this.date = filters.data_from != undefined
-		// 				? new Date(filters.data_from.year, filters.data_from.month, 1).toISOString().substring(0, 10)
-		// 				: new Date().toISOString().substring(0, 10);
-		//
-		// 			loader.hide()
-		// 		}).catch(error => {
-		// 			loader.hide()
-		// 			alert(error)
-		// 		});
-		// 	}
-		// 	else if(this.s_type_main == 2){
-		// 		this.axios.get('/statistics/bonuses').then(response => {
-		// 			this.bonus_groups = response.data;
-		// 			loader.hide();
-		// 		}).catch(error => {
-		// 			loader.hide();
-		// 			alert(error);
-		// 		});
-		// 	}
-		// 	else if(this.s_type_main == 3){
-		// 		this.axios.get('/statistics/quartal-premiums').then(response => {
-		// 			this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
-		// 			this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
-		// 			loader.hide();
-		// 		}).catch(error => {
-		// 			loader.hide();
-		// 			alert(error);
-		// 		});
-		// 	}
-		// 	else{
-		// 		loader.hide();
-		// 		alert('error!');
-		// 	}
-		// },
+		fetchData(filters, page = 1, limit = 10) {
+			let loader = this.$loading.show();
+			this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
+			this.filters = filters
+
+			if(this.s_type_main == 1){
+				this.axios.post('/statistics/kpi/groups-and-users', {
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
+				}, {
+					params: {
+						page,
+						limit
+					}
+				}).then(({data}) => {
+					// items
+					this.items = data.paginator.data;
+					this.totalRows = data.paginator.total
+					// this.activities = data.activities;
+					this.groups = data.groups;
+
+					// paginate
+					this.page_items = this.items.slice(0, this.pageSize);
+
+					this.date = filters.data_from != undefined
+						? new Date(filters.data_from.year, filters.data_from.month, 1).toISOString().substring(0, 10)
+						: new Date().toISOString().substring(0, 10);
+
+					loader.hide()
+				}).catch(error => {
+					loader.hide()
+					alert(error)
+				});
+			}
+			else if(this.s_type_main == 2){
+				this.axios.get('/statistics/bonuses').then(response => {
+					this.bonus_groups = response.data;
+					loader.hide();
+				}).catch(error => {
+					loader.hide();
+					alert(error);
+				});
+			}
+			else if(this.s_type_main == 3){
+				this.axios.get('/statistics/quartal-premiums').then(response => {
+					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
+					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+					loader.hide();
+				}).catch(error => {
+					loader.hide();
+					alert(error);
+				});
+			}
+			else{
+				loader.hide();
+				alert('error!');
+			}
+		},
 		onSearchQuery(){
 			if(this.timeout) clearTimeout(this.timeout)
 			this.timeout = setTimeout(() => {
