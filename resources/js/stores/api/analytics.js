@@ -196,7 +196,7 @@ export async function fetchDecompositionsV2(request){
 	if(!data.data?.records) throw new Error('AnalyticsV2: no decompositions')
 	const records = Array.isArray(data.data.records) ? data.data.records : Object.values(data.data.records)
 	return records.reduce((result, rec) => {
-		if(!Array.isArray(rec.values)) result.push(rec.values)
+		if(!Array.isArray(rec.values) && rec.group_id == data.data.group_id ) result.push(rec.values)
 		return result
 	}, [])
 }
