@@ -109,9 +109,9 @@ class QualityController extends Controller
                 $count = 0;
 
                 foreach($value as $val){
-                    if(isset($item['weeks'][$val])) {
+                    if(isset($item['weeks'][$val]) && $item['weeks'][$val]) {
                         $avg += $item['weeks'][$val];
-                        if($item['weeks'][$val] >= 0) $count++;
+                        $count++;
                     }
                 }
 
@@ -296,6 +296,7 @@ class QualityController extends Controller
             'check_users' => $check_users['check_users'] ?? null,
             'individual_type' => $check_users['individual_type'] ?? null,
             'individual_current' => $check_users['individual_current'] ?? null,
+            'weeks' => $weeks,
         ]);
     }
 
