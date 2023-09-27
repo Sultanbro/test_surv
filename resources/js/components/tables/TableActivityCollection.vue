@@ -161,7 +161,7 @@
 								:title="day + ': тенге'"
 								class="TableActivityCollection-data rb"
 							>
-								{{ Number(item[day]) * price }}
+								{{ Number.isInteger(Number(item[day]) * price) ? Number(item[day]) * price : Math.round(Number(item[day]) * price) }}
 							</td>
 							<td
 								v-else
@@ -335,7 +335,7 @@ export default {
 				}
 			})
 
-			if(this.is_admin) this.itemsArray[0]['plan'] = row0_avg
+			if(this.is_admin) this.itemsArray[0]['plan'] = parseInt(row0_avg)
 		},
 		setAvgCell() {
 			this.itemsArray[0]['avg'] = (this.avgOfAverage / this.totalCountDays).toFixed(2);
@@ -356,7 +356,7 @@ export default {
 				}
 			}
 
-			if(this.is_admin) this.itemsArray[0]['plan'] = parseFloat(total) * this.price
+			if(this.is_admin) this.itemsArray[0]['plan'] = Math.round(parseFloat(total) * this.price)
 		},
 
 		setCellVariants() {
@@ -487,9 +487,10 @@ export default {
 						}
 					}
 
+					const plan = sumForOne * this.price;
 					cellValues['plan_unit'] = this.activity.plan_unit;
-					cellValues['plan'] = sumForOne * this.price;
-					cellValues['count'] = sumForOne;
+					cellValues['plan'] = Number.isInteger(plan) ? plan : plan.toFixed(2);
+					cellValues['count'] = Number.isInteger(sumForOne) ? sumForOne : sumForOne.toFixed(2);
 				}
 
 				this.itemsArray.push({

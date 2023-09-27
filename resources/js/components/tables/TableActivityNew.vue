@@ -212,7 +212,7 @@
 								<div>{{ item.avg }}</div>
 							</td>
 							<td class="px-2 stat da">
-								<div :title="activity.daily_plan + ' * ' + item.applied_from">
+								<div :title="activity.daily_plan + ' * ' + item.appliedFrom">
 									{{ item.month }}
 								</div>
 							</td>
@@ -960,12 +960,12 @@ export default {
 
 							if (isNaN(this.percentage[key])) this.percentage[key] = 0;
 
-							this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
+							this.sum[key] = this.sum[key] + (Number(account[key]) || 0); // vertical sum
 
 							if(Number(account[key]) > 0) {
 								this.percentage[key] = this.percentage[key] + 1;
 
-								sumForOne += Number(account[key]); // horizontal sum
+								sumForOne += Number(account[key]) || 0; // horizontal sum
 								countWorkedDays++;
 								this.totalCountDays++;
 							}
@@ -977,7 +977,7 @@ export default {
 					let daily_plan = Number(this.activity.daily_plan);
 
 					if(this.activity.plan_unit == 'minutes') {
-						if(account.full_time == 0)  daily_plan = Number(daily_plan / 2);
+						if(!account.fullTime)  daily_plan = Number(daily_plan / 2);
 
 						cellValues['plan'] = sumForOne;
 
@@ -990,8 +990,8 @@ export default {
 							avg_of_column += Number(finishAverage);
 						}
 
-						let wd = Number(this.activity.workdays);
-						cellValues['month'] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(wd) * daily_plan;
+						let wd = Number(this.activity.workdays) || 0;
+						cellValues['month'] = account.appliedFrom ? Number(account.appliedFrom) * daily_plan : Number(wd) * daily_plan;
 
 						cellValues['percent'] = this.toFloat(
 							Number(sumForOne) / (Number(cellValues['month']) / 100)
@@ -1042,7 +1042,11 @@ export default {
 					}
 				}
 
-				if((this.user_types == 1 && account.fired == 1 && account.is_trainee == false) || (this.user_types == 0 && account.fired == 0 && account.is_trainee == false) || (this.user_types == 2 && account.is_trainee)) {
+				if(
+					(this.user_types == 1 && account.fired == 1 && !account.isTrainee)
+					|| (this.user_types == 0 && account.fired == 0 && !account.isTrainee)
+					|| (this.user_types == 2 && account.isTrainee)
+				) {
 					this.itemsArray.push({
 						name: account.name,
 						lastname: account.lastname,
@@ -1052,8 +1056,8 @@ export default {
 						group: account.group,
 						fired: account.fired,
 						show_cup: 0,
-						applied_from: account.applied_from,
-						full_time: account.full_time,
+						appliedFrom: account.appliedFrom,
+						fullTime: account.fullTime,
 						email: account.email,
 						...cellValues,
 					});
