@@ -581,6 +581,8 @@ export default {
 				|| this.group_id == 88
 				|| (this.group_id == 71 && this.activity.id == 149)
 				|| (this.group_id == 71 && this.activity.id == 151)
+				|| (this.group_id == 136 && this.activity.id == 293)
+				|| (this.group_id == 136 && this.activity.id == 295)
 		},
 		accessDictionaries(){
 			return {
