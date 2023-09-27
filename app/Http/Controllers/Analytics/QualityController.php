@@ -109,7 +109,7 @@ class QualityController extends Controller
                 $count = 0;
 
                 foreach($value as $val){
-                    if(isset($item['weeks'][$val]) && $item['weeks'][$val]) {
+                    if(isset($item['weeks'][$val]) && $item['weeks'][$val] > 0) {
                         $avg += $item['weeks'][$val];
                         $count++;
                     }
