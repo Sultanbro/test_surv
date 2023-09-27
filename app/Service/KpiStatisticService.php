@@ -1515,6 +1515,8 @@ class KpiStatisticService
     private function calculatePercent(array $item):array
     {
         $item['percent'] = 0;
+        $item['plan'] = floatval($item['plan']);
+        $item['fact'] = floatval($item['fact']);
         if ($item['method'] == 1){
             $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
         }elseif ($item['method'] == 2){
