@@ -83,6 +83,7 @@ final class Analytics
 
         return $total;
     }
+
     /**
      * @param Activity $activity
      * @param string $date
@@ -312,7 +313,7 @@ final class Analytics
     private function implStat(
         int $groupId,
         string $date
-    ): Collection|null
+    ): Collection|AnalyticStat|null
     {
         $implStat = null;
 
@@ -333,7 +334,7 @@ final class Analytics
 
         return $implStat;
     }
-    
+
     /**
      * @param string $date
      * @return array
