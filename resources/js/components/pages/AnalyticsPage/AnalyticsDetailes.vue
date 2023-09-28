@@ -97,7 +97,6 @@
 							:key="activityItem.id"
 							:month-info="monthInfo"
 							:items="activityItem.records"
-							:weeks="weeks"
 							:editable="activityItem.editable == 1 ? true : false"
 							class="AnalyticsDetailes-monthTable"
 						/>
@@ -316,10 +315,6 @@ export default {
 	},
 	props: {
 		activities: {
-			type: Array,
-			default: () => []
-		},
-		weeks: {
 			type: Array,
 			default: () => []
 		},
