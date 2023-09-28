@@ -96,7 +96,7 @@ class QualityRecordWeeklyStat extends Model
     /**
      * Create weeks array with days 
      */
-    private static function weeksArray($month, $year) {
+    public static function weeksArray($month, $year) {
         $weeks = [];
         $week_number = 1;
         $week = [];
