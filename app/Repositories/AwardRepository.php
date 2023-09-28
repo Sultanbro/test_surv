@@ -100,13 +100,16 @@ class AwardRepository extends CoreRepository
      * Вознаграждаем сотрудника в профиле.
      * @param $award
      * @param $userId
-     * @param string $path
+     * @param $file
+     * @param $preview
      * @return mixed
      */
-    public function attachUser($award, $userId, $path = '', $format = '')
+    public function attachUser($award, $userId, $file, $preview): mixed
     {
-
-        return $award->users()->attach($userId, ['path' => $path, 'format' => $format]);
+        return $award->users()->attach($userId, [
+            'path' => $file['relative'], 'format' => $file['format'],
+            'preview_path' => $preview['relative'], 'preview_format' => $preview['format']
+        ]);
     }
 
     /**
@@ -114,12 +117,16 @@ class AwardRepository extends CoreRepository
      * @param $award
      * @param $courseId
      * @param $userId
-     * @param string $path
+     * @param $file
+     * @param $preview
      * @return mixed
      */
-    public function attachUserCourse($award, $courseId, $userId, string $path = '', $format = '')
+    public function attachUserCourse($award, $courseId, $userId, $file, $preview): mixed
     {
-        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path, 'format' => $format]);
+        return $award->courses()->attach($courseId, [
+            'user_id' => $userId, $file['relative'], 'format' => $file['format'],
+            'preview_path' => $preview['relative'], 'preview_format' => $preview['format']
+        ]);
     }
 
     /**

@@ -41,7 +41,7 @@ class CertificateAwardService implements AwardInterface
                     'courseUsers' => function ($query) use($user) {
                         $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
                             ->where('users.id', $user->id);
-                        }, 
+                        },
                     'category',
                 ])
                 ->get();
@@ -96,10 +96,14 @@ class CertificateAwardService implements AwardInterface
             }
 
             $file = $this->saveAwardFile($request);
+            $preview = $this->saveAwardPreview($request);
+
             $success = Award::query()->create([
                 'award_category_id' => $request->input('award_category_id'),
                 'path' => $file['relative'],
                 'format' => $file['format'],
+                'preview_path' => $preview['relative'],
+                'preview_format' => $preview['format'],
                 'styles' => $request->input('styles'),
             ]);
 
@@ -132,6 +136,12 @@ class CertificateAwardService implements AwardInterface
                 $file = $this->saveAwardFile($request);
                 $parameters['format'] = $file['format'];
                 $parameters['path'] = $file['relative'];
+            }
+
+            if ($request->has('preview')) {
+                $preview = $this->saveAwardPreview($request);
+                $parameters['preview_format'] = $preview['format'];
+                $parameters['preview_path'] = $preview['relative'];
             }
 
             if ($request->has('course_ids')){
@@ -169,6 +179,32 @@ class CertificateAwardService implements AwardInterface
         return [
             'relative' => $filename,
             'format' => $file->getClientOriginalExtension(),
+            'temp' => FileHelper::getUrl($this->path, $filename)
+        ];
+    }
+
+    /**
+     * @param $request
+     * @return array
+     * @throws BusinessLogicException
+     */
+    private function saveAwardPreview($request): array
+    {
+        if (!$request->hasFile('preview')) {
+            return [
+                'relative' => '',
+                'format' =>  '',
+                'temp' => ''
+            ];
+        }
+
+        $preview = $request->file('preview');
+        if (!$filename = FileHelper::save($preview, $this->path)) {
+            throw new BusinessLogicException(__('exception.save_error'));
+        }
+        return [
+            'relative' => $filename,
+            'format' => $preview->getClientOriginalExtension(),
             'temp' => FileHelper::getUrl($this->path, $filename)
         ];
     }

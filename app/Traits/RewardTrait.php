@@ -23,7 +23,7 @@ trait RewardTrait
      * @return mixed
      * @throws Exception
      */
-    public function rewardUser(RewardDTO $dto,AwardRepository $awardRepository)
+    public function rewardUser(RewardDTO $dto,AwardRepository $awardRepository): mixed
     {
         try {
             $award = $awardRepository->getById($dto->awardId);
@@ -32,13 +32,22 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
+            $preview = $this->saveAwardPreview($dto);
+
             if (!$file['relative']){
                 $file = [
                     'relative'=> $award->path,
                     'format'=> $award->format,
                 ];
             }
-            $added   = $awardRepository->attachUser($award, $dto->userId, $file['relative'], $file['format']);
+
+            if (!$preview['relative']){
+                $preview = [
+                    'relative'=> $award->preview_path,
+                    'format'=> $award->preview_format,
+                ];
+            }
+            $added = $awardRepository->attachUser($award, $dto->userId, $file, $preview);
 
             return response()->success($added);
         }catch (Throwable $exception) {
@@ -52,7 +61,7 @@ trait RewardTrait
      * @return mixed
      * @throws Exception
      */
-    public function rewardUserWitCourse(RewardDTO $dto,AwardRepository $awardRepository)
+    public function rewardUserWitCourse(RewardDTO $dto, AwardRepository $awardRepository)
     {
         try {
             $award = $awardRepository->getById($dto->awardId);
@@ -62,7 +71,8 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
-            $added   = $awardRepository->attachUserCourse($award, $dto->courseId, $dto->userId, $file['relative'], $file['format']);
+            $preview = $this->saveAwardPreview($dto);
+            $added = $awardRepository->attachUserCourse($award, $dto->courseId, $dto->userId, $file, $preview);
 
             return response()->success($added);
         }catch (Throwable $exception) {
@@ -136,6 +146,31 @@ trait RewardTrait
         return [
             'relative' => $filename,
             'format' => $dto->file->getClientOriginalExtension(),
+            'temp' => FileHelper::getUrl($path, $filename)
+        ];
+    }
+
+    /**
+     * @param $dto
+     * @return array|string[]
+     * @throws BusinessLogicException
+     */
+    private function saveAwardPreview($dto): array
+    {
+        if (!$dto->preview){
+            return [
+                'relative'  => '',
+                'format'=> '',
+                'temp'      => ''
+            ];
+        }
+        $path = 'awards/';
+        if (!$filename = FileHelper::save($dto->preview, $path)) {
+            throw new BusinessLogicException(__('exception.save_error'));
+        }
+        return [
+            'relative' => $filename,
+            'format' => $dto->preview->getClientOriginalExtension(),
             'temp' => FileHelper::getUrl($path, $filename)
         ];
     }
