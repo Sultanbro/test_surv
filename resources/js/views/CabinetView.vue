@@ -1,6 +1,7 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
+import { loadMapsApi } from '@/composables/ymapsLoader'
 const Cabinet = () => import(/* webpackChunkName: "CabinetPage" */ '@/pages/Cabinet')
 
 export default {
@@ -20,7 +21,9 @@ export default {
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
-	}
+
+		loadMapsApi()
+	},
 }
 </script>
 
