@@ -583,7 +583,7 @@ export default {
 				this.fetchDecompositions(request),
 				this.fetchPerformances(request),
 				this.fetchFiredInfo(request),
-				this.fetchAnalytics(request),
+				// this.fetchAnalytics(request),
 			])
 
 			try {
