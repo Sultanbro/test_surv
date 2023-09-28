@@ -1631,17 +1631,4 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->belongsTo(UserCoordinate::class, 'coordinate_id');
     }
-
-    /**
-     * @return bool
-     */
-    public function isAdmin(): bool
-    {
-        return $this->is_admin == 1;
-    }
-
-    public function weekQualities(): HasMany
-    {
-        return $this->hasMany(QualityRecordWeeklyStat::class);
-    }
 }

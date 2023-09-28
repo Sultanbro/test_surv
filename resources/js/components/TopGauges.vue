@@ -370,8 +370,8 @@ export default {
 			default: ''
 		},
 		page: {
-			type: String,
-			default: ''
+			type: Number,
+			default: null
 		}
 	},
 	data() {
