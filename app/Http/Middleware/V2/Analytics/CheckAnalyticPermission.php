@@ -36,11 +36,9 @@ class CheckAnalyticPermission
         if (!$user->isAdmin()) {
             $editors = json_decode($group->editors_id) ?? [];
 
-            if(!in_array($user->id, $editors)){
-                new CustomException(!in_array($user->id, $editors), Response::HTTP_FORBIDDEN, [
-                    'message' => 'У вас нет прав доступа для просмотра Аналитики. Обратитесь к администратору.'
-                ]);
-            }
+            new CustomException(!in_array($user->id, $editors), Response::HTTP_FORBIDDEN, [
+                'message' => 'У вас нет прав доступа для просмотра Аналитики. Обратитесь к администратору.'
+            ]);
         }
 
         return $next($request);
