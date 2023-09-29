@@ -14,7 +14,6 @@ return [
     */
 
 
-
     'name' => env('APP_NAME', 'jobtron.org'),
 
 
@@ -93,7 +92,6 @@ return [
     */
 
 
-
     'timezone' => 'UTC',
 
 
@@ -159,7 +157,7 @@ return [
     'debug_blacklist' => [
         '_COOKIE' => array_keys($_COOKIE),
         '_SERVER' => array_keys($_SERVER),
-        '_ENV' => array_keys($_ENV),        
+        '_ENV' => array_keys($_ENV),
     ],
     /*
     |--------------------------------------------------------------------------
@@ -220,9 +218,11 @@ return [
         App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
         App\Providers\ObserverServiceProvider::class,
-        \App\Providers\MailingNotificationProvider::class
-       // Spatie\Permission\PermissionServiceProvider::class,
-
+        \App\Providers\MailingNotificationProvider::class,
+        // Spatie\Permission\PermissionServiceProvider::class,
+        /** @author vahagn99ghukasyan@gmail.com */
+        App\Providers\CustomServicesProvider::class,
+        App\Providers\ModelInterfaceServicesProvider::class,
     ],
 
     /*
@@ -237,7 +237,7 @@ return [
     */
 
     'aliases' => [
-        
+
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
@@ -274,7 +274,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'MessengerFacade' => Eddir\Messenger\Facades\MessengerFacade::class,
-        
+
 
     ],
 
