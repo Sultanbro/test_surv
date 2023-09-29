@@ -23,7 +23,7 @@ class NotificationTemplatePusher extends Command
      *
      * @var string
      */
-    protected $signature = 'run:pusher:template';
+    protected $signature = 'run:pusher:template {force?}';
 
     /**
      * The console command description.
