@@ -104,7 +104,7 @@ class NotificationTemplatePusher extends Command
             $message .= $link;
         }
 
-        if ($daysRemaining == 2)
+        if ($daysRemaining == 2 || $this->argument('force') == 'true')
         {
             foreach ($mailings as $mailing)
             {
