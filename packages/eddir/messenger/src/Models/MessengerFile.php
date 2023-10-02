@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
-class MessengerFile extends Model {
+class MessengerFile extends Model
+{
     use HasFactory;
 
     protected $fillable = [
@@ -16,19 +17,22 @@ class MessengerFile extends Model {
         'thumbnail_path',
     ];
 
-    public function message(): BelongsTo {
-        return $this->belongsTo( MessengerMessage::class, 'message_id' );
+    public function message(): BelongsTo
+    {
+        return $this->belongsTo(MessengerMessage::class, 'message_id');
     }
 
-    public function getFilePathAttribute( $value ): ?string {
-        return $value ? Storage::disk('s3')->temporaryUrl(
-            $value, now()->addMinutes(360)
+    public function getFilePathAttribute($value): ?string
+    {
+        return $value ? Storage::disk('s3')->get(
+            $value
         ) : null;
     }
 
-    public function getThumbnailPathAttribute( $value ): ?string {
-        return $value ? Storage::disk('s3')->temporaryUrl(
-            $value, now()->addMinutes(360)
+    public function getThumbnailPathAttribute($value): ?string
+    {
+        return $value ? Storage::disk('s3')->get(
+            $value
         ) : null;
     }
 }

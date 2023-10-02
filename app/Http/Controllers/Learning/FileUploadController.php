@@ -61,8 +61,8 @@ class FileUploadController extends Controller
          
 
             return [
-                'path' => $disk->temporaryUrl(
-                    $file_path . '/' . $fileName, now()->addMinutes(360)
+                'path' => $disk->get(
+                    $file_path . '/' . $fileName
                 ),
                 'filename' => $originalFileName,
                 'model' => $model,
