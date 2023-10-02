@@ -184,7 +184,7 @@
 					class="my-0 p-0"
 				/>
 				<a
-					v-if="[5,18].includes(currentUser) && isBP"
+					v-if="currentUser === 18 && isBP"
 					href="javasctipt:void(0)"
 					class="btn btn-success btn-sm ml-2 rounded d-block"
 					@click.prevent="exportData()"
