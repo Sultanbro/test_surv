@@ -52,12 +52,12 @@ class UpbookController extends Controller
 
             foreach ($cat->books as $key => $book) {
                 if ($book->domain == 'storage.oblako.kz') {
-                    $book->link = $disk->url(
+                    $book->link = $disk->get(
                         $book->link
                     );
                 }
                 if ($book->img != null && $book->img != '') {
-                    $book->img = $disk->url(
+                    $book->img = $disk->get(
                         $book->img, now()->addMinutes(360)
                     );
                 }
@@ -144,7 +144,7 @@ class UpbookController extends Controller
 
 
                 if ($book->link != '' && $book->link != null) {
-                    $book->link = $disk->url(
+                    $book->link = $disk->get(
                         $book->link, now()->addMinutes(360)
                     );
                 }
@@ -152,7 +152,7 @@ class UpbookController extends Controller
             }
 
             if ($book->img != '' && $book->img != null) {
-                $book->img = $disk->url(
+                $book->img = $disk->get(
                     $book->img, now()->addMinutes(360)
                 );
             }
@@ -214,7 +214,7 @@ class UpbookController extends Controller
 
         return [
             'relative' => $xpath,
-            'temp' => $disk->url(
+            'temp' => $disk->get(
                 $xpath, now()->addMinutes(360)
             )
         ];
