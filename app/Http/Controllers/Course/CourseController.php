@@ -120,6 +120,7 @@ class CourseController extends Controller
 
         return [
             'relative' => $xpath,
+
             'temp' => $disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
             )

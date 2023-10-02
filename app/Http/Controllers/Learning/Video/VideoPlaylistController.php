@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Learning\Video;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\TestQuestion;
 use App\Models\CourseItemModel;
+use App\Models\TestQuestion;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoPlaylist as Playlist;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class VideoPlaylistController extends Controller
@@ -64,7 +64,7 @@ class VideoPlaylistController extends Controller
                 if ($playlist->img != '' && $playlist->img != null) {
                     $playlist->img = $disk->temporaryUrl(
                         $playlist->img, now()->addMinutes(360)
-                    );
+
                 }
             }
         }
@@ -112,8 +112,7 @@ class VideoPlaylistController extends Controller
 
         if ($pl->img != '' && $pl->img != null) {
             $pl->img = $disk->temporaryUrl(
-                $pl->img, now()->addMinutes(360)
-            );
+
         }
 
         $video_ids = $pl->getOrder();
@@ -152,7 +151,6 @@ class VideoPlaylistController extends Controller
             $url = $video->links;
         } else {
             $disk = \Storage::disk('s3');
-
             $url = $disk->temporaryUrl(
                 $video->links, now()->addMinutes(360)
             );
@@ -359,6 +357,7 @@ class VideoPlaylistController extends Controller
             'relative' => $xpath,
             'temp' => $disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
+
             )
         ];
     }

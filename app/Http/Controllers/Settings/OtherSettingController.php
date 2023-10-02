@@ -77,6 +77,7 @@ class OtherSettingController extends Controller
                 if ($request->type == 'company' && $setting->value) {
                     $settings['logo'] = $disk->temporaryUrl(
                         $setting->value, now()->addMinutes(360)
+
                     );
                 }
 
