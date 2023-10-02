@@ -61,7 +61,7 @@ class FileUploadController extends Controller
          
 
             return [
-                'path' => $disk->get(
+                'path' => $disk->url(
                     $file_path . '/' . $fileName
                 ),
                 'filename' => $originalFileName,
