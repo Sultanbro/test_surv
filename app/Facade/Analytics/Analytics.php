@@ -161,7 +161,7 @@ final class Analytics
     ): array
     {
         $groupIds   = $dto->groupIds ?? ProfileGroup::profileGroupsWithArchived($dto->year, $dto->month, false, false, ProfileGroup::SWITCH_UTILITY);
-        $groups     = $this->groups()->whereIn('id', $groupIds);
+        $groups     = ProfileGroup::query()->whereIn('id', $groupIds)->get();
         $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
         $gauges     = [];
         foreach ($groups as $group)
@@ -191,7 +191,7 @@ final class Analytics
                 'group_id'  => $group->id,
                 'name'      => $group->name,
                 'gauges'    => $tops,
-                'group_activities'  => $this->activities()->where('group_id', $group->id),
+                'group_activities'  => Activity::query()->where('group_id', $group->id)->get(),
                 'archive_utility'   => $group->archive_utility,
             ];
         }
