@@ -187,7 +187,7 @@
 					v-if="[5,18].includes(currentUser) && isBP"
 					href="javasctipt:void(0)"
 					class="btn btn-success btn-sm ml-2 rounded d-block"
-					@click="exportData()"
+					@click.prevent="exportData()"
 				>
 					<i class="far fa-file-excel" /> Экспорт
 				</a>
