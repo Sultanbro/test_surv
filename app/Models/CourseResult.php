@@ -470,10 +470,9 @@ class CourseResult extends Model
                 $disk = \Storage::disk('s3');
                 
                 try {
-                    if($course->img != null && $disk->exists($course->img)) {
-                        $course->img = $disk->url(
-                            $course->img, now()->addMinutes(360)
-                        );
+                    if ($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
+
                     }
                 } catch (\Throwable $e) {
                     // League \ Flysystem \ UnableToCheckDirectoryExistence
@@ -557,10 +556,8 @@ class CourseResult extends Model
                 ->get()->each(function ($course) use ($disk){
                     $course->text = $course->text != '' || $course->text != null ? trim($course->text) : 'Нет описания';
 
-                    if($course->img != null && $disk->exists($course->img)) {
-                        $course->img = $disk->url(
-                            $course->img, now()->addMinutes(360)
-                        );
+                    if ($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
                     }
                 });
         }

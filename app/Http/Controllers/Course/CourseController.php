@@ -120,7 +120,8 @@ class CourseController extends Controller
 
         return [
             'relative' => $xpath,
-            'temp' => $disk->url(
+
+            'temp' => $disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
             )
         ];
@@ -259,7 +260,7 @@ class CourseController extends Controller
         try {
             if ($course->img != '' && $course->img != null) {
                 if ($disk->exists($course->img)) {
-                    $course->img = $disk->url(
+                    $course->img = $disk->temporaryUrl(
                         $course->img, now()->addMinutes(360)
                     );
                 }
