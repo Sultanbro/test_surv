@@ -57,13 +57,13 @@ class Referrer extends Model implements ReferrerInterface
     {
         return $this->hasMany(
             __CLASS__
-            , 'referrer_id'
+            , 'parent_referrer_id'
             , 'id'
         );
     }
 
     public function hasParentReferrer(): bool
     {
-        return !!$this->referrer_id;
+        return !!$this->parent_referrer_id;
     }
 }

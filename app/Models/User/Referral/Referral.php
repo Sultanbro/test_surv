@@ -22,7 +22,7 @@ class Referral extends Model implements ReferralInterface
     public function referrer(): BelongsTo
     {
         return $this->belongsTo(
-            Referral::class
+            Referrer::class
             , 'referrer_id'
             , 'id'
         );

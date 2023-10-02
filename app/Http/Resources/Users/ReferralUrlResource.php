@@ -2,18 +2,24 @@
 
 namespace App\Http\Resources\Users;
 
+use App\Service\Referral\ReferralDto;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property ReferralDto $resource
+ */
 class ReferralUrlResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param Request $request
+     * @return array|Arrayable
      */
-    public function toArray($request)
+    public function toArray($request): array|Arrayable
     {
-        return parent::toArray($request);
+        return $this->resource->toArray();
     }
 }

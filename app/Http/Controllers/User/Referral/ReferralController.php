@@ -19,8 +19,10 @@ class ReferralController extends Controller
     {
     }
 
-    public function generate(User $user): ReferralUrlResource
+    public function generate(): ReferralUrlResource
     {
+        /** @var User $user */
+        $user = auth()->user();
         return ReferralUrlResource::make($this->generator->generate($user));
     }
 

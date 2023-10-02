@@ -4,22 +4,22 @@ declare(strict_types=1);
 namespace App\Service\Referral;
 
 use App\User;
-use Str;
+use Illuminate\Support\Str;
 
 class ReferralGenerator implements ReferralGeneratorInterface
 {
-    public function generate(User $user): string
+    public function generate(User $user): ReferralDto
     {
         /** @var ReferrerInterface $referrer */
         $referrer = $user->asReferrer()->firstOrCreate();
 
         /** @var ReferralInterface $referral */
         $referral = $referrer->referral()->firstOrCreate([
-            'referer_id' => $referrer->id
+            'referrer_id' => $referrer->id
         ], [
             'token' => Str::uuid()->toString()
         ]);
 
-        return $referral->url();
+        return ReferralDto::from($referral);
     }
 }

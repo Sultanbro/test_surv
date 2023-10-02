@@ -7,16 +7,10 @@ class ReferralDetermination implements ReferralDeterminationInterface
 {
     private ReferrerInterface $referrer;
 
-    public function __construct(
-        private readonly ReferralCalculatorInterface $calculator
-    )
-    {
-    }
-
-    public function determinate(ReferralInterface $referral): void
+    public function determinate(ReferralInterface $referral): ReferrerInterface
     {
         $this->whoIsReferrer($referral);
-        $this->calculator->calculate($this->referrer);
+        return $this->referrer;
     }
 
     private function whoIsReferrer(ReferralInterface $referral): void

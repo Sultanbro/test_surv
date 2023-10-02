@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasColumn('users', 'currency')) {
-            Schema::table('users', function (Blueprint $table) {
+        if (!Schema::connection('mysql')->hasColumn('users', 'currency')) {
+            Schema::connection('mysql')->table('users', function (Blueprint $table) {
                 $table->string('currency', 3)->default('kzt');
             });
         }
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::connection('mysql')->table('users', function (Blueprint $table) {
             //
         });
     }

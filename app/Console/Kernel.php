@@ -10,12 +10,15 @@ use App\Console\Commands\Employee\CheckLate;
 use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
+use App\Console\Commands\RestartQueue;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
-use App\Console\Commands\RestartQueue;
+use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Jobs\Bitrix\RecruiterStatsJob;
+use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 class Kernel extends ConsoleKernel
 {
@@ -37,7 +40,8 @@ class Kernel extends ConsoleKernel
         CheckLate::class,
         Pusher::class,
         NotificationTemplatePusher::class,
-        SetExitTimetracking::class
+        SetExitTimetracking::class,
+        TenantMigrateFreshCommand::class,
     ];
 
     /**
@@ -136,18 +140,19 @@ class Kernel extends ConsoleKernel
      * Register the commands for the application.
      *
      * @return void
+     * @throws TenantCouldNotBeIdentifiedById
      */
     protected function commands()
     {
-        if(config('tenancy.default_tenant')) {
-            if($tenant = \App\Models\Tenant::where('id', config('tenancy.default_tenant'))->first()) {
-
-                $this->load(__DIR__.'/Commands');
-
-                tenancy()->initialize( $tenant);
-            };
+        if (table_exists('tenants')) {
+            if (config('tenancy.default_tenant')) {
+                $tenant = Tenant::query()->where('id', config('tenancy.default_tenant'))->first();
+                if ($tenant) {
+                    $this->load(__DIR__ . '/Commands');
+                    tenancy()->initialize($tenant);
+                };
+            }
         }
-
         require base_path('routes/console.php');
     }
 }

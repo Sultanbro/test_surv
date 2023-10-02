@@ -7,5 +7,5 @@ use App\User;
 
 interface ReferralGeneratorInterface
 {
-    public function generate(User $user): string;
+    public function generate(User $user): ReferralDto;
 }

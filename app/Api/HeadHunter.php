@@ -82,7 +82,7 @@ class HeadHunter {
 		]); 
 
         $this->getActualToken();
-    }
+}
 
     /**
      * Получить токен, если срок истек обновляет

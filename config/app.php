@@ -211,10 +211,10 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TenancyServiceProvider::class, // <-- here
         App\Providers\TelescopeServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
-        App\Providers\TenancyServiceProvider::class, // <-- here
         App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
         App\Providers\ObserverServiceProvider::class,
@@ -274,8 +274,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'MessengerFacade' => Eddir\Messenger\Facades\MessengerFacade::class,
-
-
     ],
 
 ];

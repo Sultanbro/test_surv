@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateDomainsTable extends Migration
 {
+    protected $connection = 'mysql';
+
     /**
      * Run the migrations.
      *
@@ -15,14 +17,16 @@ class CreateDomainsTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('domains', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('domain', 255)->unique();
-            $table->string('tenant_id');
+        if (table_exists('tenants', $this->getConnection())) {
+            Schema::create('domains', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('domain', 255)->unique();
+                $table->string('tenant_id');
 
-            $table->timestamps();
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
-        });
+                $table->timestamps();
+                $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
+            });
+        }
     }
 
     /**

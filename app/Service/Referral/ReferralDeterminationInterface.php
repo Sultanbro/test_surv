@@ -5,5 +5,5 @@ namespace App\Service\Referral;
 
 interface ReferralDeterminationInterface
 {
-    public function determinate(ReferralInterface $referral): void;
+    public function determinate(ReferralInterface $referral): ReferrerInterface;
 }

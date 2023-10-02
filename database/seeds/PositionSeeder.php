@@ -15,7 +15,7 @@ class PositionSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('position')->insert([[
+        DB::connection('tenant')->table('position')->insert([[
             'id' => 1,
             'book_groups' => null,
             'position' => 'Владелец',
