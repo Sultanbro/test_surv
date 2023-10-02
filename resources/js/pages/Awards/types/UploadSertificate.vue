@@ -147,6 +147,7 @@ export default {
 			options: [],
 			image: null,
 			imageSrc: null,
+			imagePreview: null,
 			styles: '',
 			textAll: 'Выбрать все',
 			variant: 'success'
@@ -159,7 +160,10 @@ export default {
 			if (!newValue) return
 			base64Encode(newValue).then(val => {
 				this.imageSrc = val
-				this.$emit('image-download', this.image, true)
+				this.$emit('image-download', {
+					iamge: this.image,
+					preview: this.imagePreview,
+				}, true)
 			}).catch(() => {
 				this.imageSrc = null
 			})

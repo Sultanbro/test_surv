@@ -293,6 +293,7 @@ export default {
 			uploadFiles: [],
 			previewFiles: [],
 			fileCertificate: null,
+			previewCertificate: null,
 			targetable_id: null,
 			targetable_type: null,
 			name: '',
@@ -398,6 +399,7 @@ export default {
 				if(this.uploadFiles.length){
 					for (let i = 0; i < this.uploadFiles.length; i++) {
 						formData.append('file[]', this.uploadFiles[i])
+						formData.append('preview[]', this.previewFiles[i])
 					}
 				}
 				break
@@ -409,6 +411,7 @@ export default {
 				formData.append('styles', this.styles)
 				if (this.fileCertificate) {
 					formData.append('file', this.fileCertificate)
+					formData.append('preview', this.previewCertificate)
 				}
 				break
 
@@ -472,11 +475,12 @@ export default {
 			this.dropDownText = typeNames[type]
 		},
 		formFile(files) {
-			this.uploadFiles = files
-			this.previewFiles = []
+			this.uploadFiles = files.images
+			this.previewFiles = files.previews
 		},
 		formFileCertificate(file, bool) {
-			this.fileCertificate = file
+			this.fileCertificate = file.images
+			this.previewCertificate = file.previews
 			this.hasFileCertificate = bool
 		},
 		styleChange(styles) {
