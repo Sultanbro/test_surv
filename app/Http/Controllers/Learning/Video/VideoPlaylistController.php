@@ -62,7 +62,7 @@ class VideoPlaylistController extends Controller
         foreach ($categories as $key => $cat) {
             foreach ($cat->playlists as $playlist) {
                 if ($playlist->img != '' && $playlist->img != null) {
-                    $playlist->img = $disk->get(
+                    $playlist->img = $disk->url(
                         $playlist->img
                     );
                 }
@@ -111,7 +111,7 @@ class VideoPlaylistController extends Controller
         $disk = \Storage::disk('s3');
 
         if ($pl->img != '' && $pl->img != null) {
-            $pl->img = $disk->get(
+            $pl->img = $disk->url(
                 $pl->img, now()->addMinutes(360)
             );
         }
@@ -153,7 +153,7 @@ class VideoPlaylistController extends Controller
         } else {
             $disk = \Storage::disk('s3');
 
-            $url = $disk->get(
+            $url = $disk->url(
                 $video->links, now()->addMinutes(360)
             );
         }
@@ -357,7 +357,7 @@ class VideoPlaylistController extends Controller
 
         return [
             'relative' => $xpath,
-            'temp' => $disk->get(
+            'temp' => $disk->url(
                 $xpath, now()->addMinutes(360)
             )
         ];
