@@ -15,6 +15,7 @@ use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
@@ -27,6 +28,8 @@ use App\Traits\AnalyticTrait;
 use App\User;
 use App\WorkingDay;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\TextUI\XmlConfiguration\Group;
@@ -137,10 +140,15 @@ final class Analytics
     ): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
+        $decompositions = DecompositionValue::query()->where([
+            'group_id'  => $dto->groupId,
+            'date'      => $date,
+        ])->get();
+
 
         return [
             'group_id'  => $dto->groupId,
-            'records'   => $this->decompositions($date)->toArray()
+            'records'   => $decompositions
         ];
     }
 
@@ -196,7 +204,8 @@ final class Analytics
     ): array
     {
         $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $group      = $this->groups()->whereIn('id', $dto->groupIds)->first();
+        $group      = ProfileGroup::whereIn('id', $dto->groupIds)->first();
+
         $topValue   = new ValueModel;
         $options    = $topValue->getOptions('[]');
         $options['staticZones'] = $this->getStaticZones($group);
@@ -307,26 +316,26 @@ final class Analytics
     /**
      * @param int $groupId
      * @param string $date
-     * @return Collection|null
+     * @return Model|null
      */
     private function implStat(
         int $groupId,
         string $date
-    ): Collection|null
+    ): Model|null
     {
         $implStat = null;
 
-        $column  = $this->columns($date, $groupId)
+        $column  = AnalyticColumn::query()
             ->where('date', $date)
             ->where('name', self::VALUE_PLAN)->first() ?? null;
 
-        $row     = $this->rows($date, $groupId)
+        $row     = AnalyticRow::query()
             ->where('date', $date)
             ->where('name', self::VALUE_IMPL)->first() ?? null;
 
         if ($row && $column)
         {
-            $implStat = $this->statistics($date, $groupId)
+            $implStat = AnalyticStat::query()
                 ->where('column_id', $column->id)
                 ->where('row_id', $row->id)->first();
         }
@@ -365,7 +374,7 @@ final class Analytics
         $row    = $this->getGroupImplRows($group_id, $date)->first() ?? [];
 
         if($row && $column) {
-            $stat = $this->statistics($date, $group_id)->where('column_id', $column->id)
+            $stat = AnalyticStat::query()->where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->where('date', $date)
                 ->first();
@@ -382,11 +391,11 @@ final class Analytics
     /**
      * @param $group_id
      * @param $date
-     * @return Collection|null
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    private function getGroupPlanColumns($group_id, $date): Collection|null
+    private function getGroupPlanColumns($group_id, $date): \Illuminate\Database\Eloquent\Builder
     {
-        return $this->columns($date, $group_id)
+        return AnalyticColumn::query()
             ->where('date', $date)
             ->where('name', 'plan');
     }
@@ -394,11 +403,11 @@ final class Analytics
     /**
      * @param $group_id
      * @param $date
-     * @return Collection|null
+     * @return \Illuminate\Database\Eloquent\Builder|null
      */
-    private function getGroupImplRows($group_id, $date): Collection|null
+    private function getGroupImplRows($group_id, $date): \Illuminate\Database\Eloquent\Builder|null
     {
-        return $this->rows($date, $group_id)
+        return AnalyticRow::query()
             ->where('date', $date)
             ->where('name', 'Impl');
     }
