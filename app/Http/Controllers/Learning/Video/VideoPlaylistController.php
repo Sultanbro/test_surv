@@ -63,7 +63,7 @@ class VideoPlaylistController extends Controller
             foreach ($cat->playlists as $playlist) {
                 if ($playlist->img != '' && $playlist->img != null) {
                     $playlist->img = $disk->temporaryUrl(
-                        $playlist->img, now()->addMinutes(360)
+                        $playlist->img, now()->addMinutes(360));
 
                 }
             }
@@ -112,7 +112,7 @@ class VideoPlaylistController extends Controller
 
         if ($pl->img != '' && $pl->img != null) {
             $pl->img = $disk->temporaryUrl(
-
+                $pl->img, now()->addMinutes(360));
         }
 
         $video_ids = $pl->getOrder();
