@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Learning\Video;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\CourseItemModel;
 use App\Models\TestQuestion;
+use App\Models\CourseItemModel;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoPlaylist as Playlist;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class VideoPlaylistController extends Controller
@@ -23,48 +23,44 @@ class VideoPlaylistController extends Controller
         //$this->middleware('superuser');
     }
 
-    public function index()
-    {
+    public function index() {
         View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
         return view('admin.playlists.index');
     }
 
-    public function saveIndex(Request $request)
-    {
+    public function saveIndex(Request $request){
         View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
-        return view('admin.playlists.index', [
+        return view('admin.playlists.index',[
             'category' => $request->category,
             'playlist' => $request->playlist
         ]);
     }
 
 
-    public function saveIndexVideo(Request $request)
-    {
+    public function saveIndexVideo(Request $request){
         View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
-        return view('admin.playlists.index', [
+        return view('admin.playlists.index',[
             'category' => $request->category,
             'playlist' => $request->playlist,
             'video' => $request->video
         ]);
     }
 
-    public function get()
-    {
+    public function get() {
 
         $categories = Category::with('playlists')->get();
 
         $disk = \Storage::disk('s3');
 
         foreach ($categories as $key => $cat) {
-            foreach ($cat->playlists as $playlist) {
-                if ($playlist->img != '' && $playlist->img != null) {
+            foreach ($cat->playlists as  $playlist) {
+                if($playlist->img != '' && $playlist->img != null) {
                     $playlist->img = $disk->temporaryUrl(
-                        $playlist->img, now()->addMinutes(360));
-
+                        $playlist->img, now()->addMinutes(360)
+                    );
                 }
             }
         }
@@ -75,16 +71,14 @@ class VideoPlaylistController extends Controller
         ];
     }
 
-    public function deleteQuestion(Request $request)
-    {
+    public function deleteQuestion(Request $request){
         $question = TestQuestion::find($request->id);
         $question->delete();
     }
 
-    public function getPlaylist(Request $request)
-    {
+    public function getPlaylist(Request $request) {
 
-        $pl = Playlist::with('groups')->find($request->id);
+        $pl =  Playlist::with('groups')->find($request->id);
 
         $user_id = auth()->id();
 
@@ -94,7 +88,7 @@ class VideoPlaylistController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        if ($no_group_videos->count() > 0) {
+        if($no_group_videos->count() > 0) {
             $pl->groups->prepend([
                 'title' => 'Без группы',
                 'id' => 0,
@@ -110,9 +104,10 @@ class VideoPlaylistController extends Controller
         // cloud
         $disk = \Storage::disk('s3');
 
-        if ($pl->img != '' && $pl->img != null) {
+        if($pl->img != '' && $pl->img != null) {
             $pl->img = $disk->temporaryUrl(
-                $pl->img, now()->addMinutes(360));
+                $pl->img, now()->addMinutes(360)
+            );
         }
 
         $video_ids = $pl->getOrder();
@@ -124,6 +119,7 @@ class VideoPlaylistController extends Controller
             ->get();
 
 
+
         return [
             'playlist' => $pl,
             'categories' => [],//Category::all(),
@@ -132,13 +128,12 @@ class VideoPlaylistController extends Controller
         ];
     }
 
-    public function getVideo(Request $request)
-    {
+    public function getVideo(Request $request) {
 
         $course_item_id = $request->course_item_id; //
         $user_id = auth()->id();
 
-        $video = Video::with('questions')
+        $video =  Video::with('questions')
             ->with('questions.result', function ($query) use ($course_item_id, $user_id) {
                 $query->where('course_item_model_id', $course_item_id)
                     ->where('user_id', $user_id);
@@ -147,10 +142,11 @@ class VideoPlaylistController extends Controller
 
         $url = '';
 
-        if ($video->domain != 'storage.oblako.kz') {
+        if($video->domain != 'storage.oblako.kz') {
             $url = $video->links;
         } else {
             $disk = \Storage::disk('s3');
+
             $url = $disk->temporaryUrl(
                 $video->links, now()->addMinutes(360)
             );
@@ -169,13 +165,12 @@ class VideoPlaylistController extends Controller
         ];
     }
 
-    public function add_video(Request $request)
-    {
+    public function add_video(Request $request) {
         $video = Video::find($request->video_id);
 
         $was_in_playlist = false;
-        if ($video) {
-            if ($video->playlist_id == $request->id) $was_in_playlist = true;
+        if($video) {
+            if($video->playlist_id == $request->id) $was_in_playlist = true;
             $video->playlist_id = $request->id;
             $video->save();
         }
@@ -186,10 +181,9 @@ class VideoPlaylistController extends Controller
         ];
     }
 
-    public function add(Request $request)
-    {
+    public function add(Request $request) {
         $pl = Playlist::create([
-            'title' => $request->title,
+            'title' =>$request->title,
             'category_id' => $request->cat_id,
             'text' => ' ',
         ]);
@@ -197,12 +191,11 @@ class VideoPlaylistController extends Controller
         return $pl;
     }
 
-    public function save_video(Request $request)
-    {
+    public function save_video(Request $request) {
 
         $video = Video::with('questions')->find($request->video['id']);
 
-        if ($video) {
+        if($video) {
             $video->playlist_id = $request->id;
             $video->title = $request['video']['title'];
             $video->group_id = $request['group_id'];
@@ -215,37 +208,34 @@ class VideoPlaylistController extends Controller
 
     }
 
-    public function save_video_fast(Request $request)
-    {
+    public function save_video_fast(Request $request) {
 
         $video = Video::find($request->id);
 
-        if ($video) {
+        if($video) {
             $video->title = $request->title;
             $video->save();
         }
     }
 
 
-    public function remove_video(Request $request)
-    {
+    public function remove_video(Request $request) {
         $video = Video::find($request->id);
         $video->playlist_id = 0;
         $video->save();
     }
 
-    public function delete_video(Request $request)
-    {
+    public function delete_video(Request $request) {
         $video = Video::find($request->id);
 
-        if ($video) {
+        if($video) {
 
             $video->playlist_id = 0;
 
             $disk = \Storage::disk('s3');
 
             try {
-                if ($disk->exists($video->links)) {
+                if($disk->exists($video->links)){
                     $disk->delete($video->links);
                 }
             } catch (\Throwable $e) {
@@ -258,9 +248,9 @@ class VideoPlaylistController extends Controller
     }
 
 
-    public function save(Request $request)
-    {
+    public function save(Request $request) {
         $item = json_decode($request->playlist, true);
+
 
 
         $playlist = Playlist::find($item['id']);
@@ -270,11 +260,12 @@ class VideoPlaylistController extends Controller
 
         $disk = \Storage::disk('s3');
 
-        if ($request->file('file')) {
+        if($request->file('file')) {
+
 
 
             try {
-                if ($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+                if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
                     $disk->delete($playlist->img);
                 }
             } catch (\Throwable $e) {
@@ -304,10 +295,10 @@ class VideoPlaylistController extends Controller
 
         $disk = \Storage::disk('s3');
 
-        if ($request->file('file')) {
+        if($request->file('file')) {
 
             try {
-                if ($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+                if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
                     $disk->delete($playlist->img);
                 }
             } catch (\Throwable $e) {
@@ -341,7 +332,7 @@ class VideoPlaylistController extends Controller
      * 'relative' => String
      * 'temp' => String
      */
-    private function uploadFile(string $path, $file)
+    private function uploadFile(String $path, $file)
     {
         $disk = \Storage::disk('s3');
 
@@ -357,19 +348,16 @@ class VideoPlaylistController extends Controller
             'relative' => $xpath,
             'temp' => $disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
-
             )
         ];
     }
 
-    public function create()
-    {
+    public function create() {
         $categories = Category::all();
         return view('admin.playlists.create', compact('categories'));
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         $playlist = Playlist::find($id);
 
         return view('admin.playlists.edit')->with([
@@ -377,33 +365,28 @@ class VideoPlaylistController extends Controller
         ]);
     }
 
-    public function show($id)
-    {
+    public function show($id) {
         return redirect(self::PAGE);
     }
 
-    public function update(Request $request)
-    {
+    public function update(Request $request) {
         $playlist = Playlist::find($request->id);
-        if ($playlist) $playlist->update($request->input());
+        if($playlist) $playlist->update($request->input());
         return redirect(self::PAGE);
     }
 
-    public function destroy($id)
-    {
+    public function destroy($id) {
         $playlist = Playlist::find($id);
-        if ($playlist) $playlist->delete();
+        if($playlist) $playlist->delete();
         return redirect(self::PAGE);
     }
 
-    public function delete(Request $request)
-    {
+    public function delete(Request $request) {
         $playlist = Playlist::find($request->id);
-        if ($playlist) $playlist->delete();
+        if($playlist) $playlist->delete();
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         Playlist::create($request->input());
         return redirect(self::PAGE);
     }
@@ -437,15 +420,14 @@ class VideoPlaylistController extends Controller
 
         // count pass grade
         $pass_grade = $request->pass_grade;
-        if ($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
+        if($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
 
         Video::where('id', $request->id)->update(['pass_grade' => $pass_grade]);
 
         return $ids;
     }
 
-    public function saveOrder(Request $request)
-    {
+    public function saveOrder(Request $request) {
         $item = Video::find($request->id);
         if ($item) {
             $item->order = $request->order;
@@ -461,7 +443,7 @@ class VideoPlaylistController extends Controller
 
         $order = 0;
         foreach ($videos as $video) {
-            if ($order == $request->order) {
+            if($order == $request->order) {
                 $order++;
             }
             $video->order = $order;
@@ -472,9 +454,8 @@ class VideoPlaylistController extends Controller
 
     }
 
-    public function getPlaylistsToMove(Request $request)
-    {
-        $cats = Category::orderBy('title')->get(['id', 'title']);
+    public function getPlaylistsToMove(Request $request) {
+        $cats = Category::orderBy('title')->get(['id','title']);
 
         $all = collect([]);
         foreach ($cats as $key => $cat) {
@@ -484,7 +465,7 @@ class VideoPlaylistController extends Controller
                 ->get(['title', 'id']);
 
 
-            foreach ($playlists as $pl) {
+            foreach($playlists as $pl) {
                 $pl->title = $cat->title . '  ->  ' . $pl->title;
                 $pl->groupses = $this->extractGroups($pl->groups);
 
@@ -508,17 +489,16 @@ class VideoPlaylistController extends Controller
                 'title' => $prefix . ' ' . $group->title
             ];
 
-            $arr = array_merge($arr, $this->extractGroups($group->children, $prefix . ' ' . $group->title . '  ->  '));
+            $arr = array_merge($arr, $this->extractGroups($group->children, $prefix . ' ' . $group->title  . '  ->  '));
         }
 
         return $arr;
     }
 
-    public function moveToPlaylist(Request $request)
-    {
+    public function moveToPlaylist(Request $request) {
         $video = Video::find($request->video_id);
 
-        if ($video) {
+        if($video) {
             $video->playlist_id = $request->playlist_id;
             $video->group_id = $request->has('group_id') ? $request->group_id : 0;
             $video->save();

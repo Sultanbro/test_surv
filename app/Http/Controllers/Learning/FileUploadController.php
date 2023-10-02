@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Http\Controllers\Learning;
 
-use App\Http\Controllers\Controller;
-use App\Models\Books\Book;
-use App\Models\Videos\Video;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use App\Models\Videos\Video;
+use App\Models\Books\Book;
+use App\Http\Controllers\Controller;
 
 class FileUploadController extends Controller
 {
@@ -18,13 +17,11 @@ class FileUploadController extends Controller
     /**
      * @return Application|Factory|View
      */
-    public function index()
-    {
+    public function index() {
         return view('upload-file.index');
     }
 
-    public function uploadLargeFiles(Request $request)
-    {
+    public function uploadLargeFiles(Request $request) {
 
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
 
@@ -48,11 +45,12 @@ class FileUploadController extends Controller
             $disk = \Storage::disk('s3');
 
             $file_path = 'files';
-            if ($request->type == 'video') $file_path = 'videos/' . $request->id;
-            if ($request->type == 'book') $file_path = 'books';
+            if($request->type == 'video') $file_path = 'videos/' . $request->id;
+            if($request->type == 'book') $file_path = 'books';
 
             $path = $disk->putFileAs($file_path, $file, $fileName);
             $path = $disk->url($path);
+
 
 
             $model = $this->saveModel($request->type, $request->id, $file_path, $fileName, $originalFileName);
@@ -61,10 +59,10 @@ class FileUploadController extends Controller
             unlink($file->getPathname());
 
 
+
             return [
                 'path' => $disk->temporaryUrl(
                     $file_path . '/' . $fileName, now()->addMinutes(360)
-
                 ),
                 'filename' => $originalFileName,
                 'model' => $model,
@@ -84,11 +82,11 @@ class FileUploadController extends Controller
     {
 
 
-        if ($type == 'video') { // Загружена video
+        if($type == 'video') { // Загружена video
 
             $model = Video::create([
                 'title' => basename($originalFileName),
-                'links' => '/' . $path . '/' . $filename,
+                'links' =>  '/' . $path .  '/'. $filename,
                 'domain' => 'storage.oblako.kz',
                 'duration' => 0,
                 'views' => 0,
@@ -99,7 +97,7 @@ class FileUploadController extends Controller
 
         }
 
-        if ($type == 'book') {
+        if($type == 'book') {
             // // get first page of book
             // $pdf = new \Spatie\PdfToImage\Pdf(storage_path(). '/app/public/uploads/' .$filename);
             // $pdf->saveImage(public_path().'/images/bookcovers/' . $newFilename);
@@ -107,7 +105,7 @@ class FileUploadController extends Controller
 
             $model = Book::create([
                 'title' => basename($originalFileName),
-                'link' => '/' . $path . '/' . $filename,
+                'link' =>  '/' . $path . '/' . $filename,
                 'author' => 'Название автора',
                 'img' => '',
                 'description' => '',
