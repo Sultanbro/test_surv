@@ -399,7 +399,7 @@ export default {
 				if(this.uploadFiles.length){
 					for (let i = 0; i < this.uploadFiles.length; i++) {
 						formData.append('file[]', this.uploadFiles[i])
-						formData.append('preview[]', this.previewFiles[i])
+						formData.append('preview[]', this.previewFiles[i].path, 'file.jpg')
 					}
 				}
 				break
@@ -411,7 +411,7 @@ export default {
 				formData.append('styles', this.styles)
 				if (this.fileCertificate) {
 					formData.append('file', this.fileCertificate)
-					formData.append('preview', this.previewCertificate)
+					formData.append('preview', this.previewCertificate.path, 'file.jpg')
 				}
 				break
 

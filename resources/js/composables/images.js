@@ -1,8 +1,8 @@
-const ext = {
-	'jpeg': 'jpg',
-	'png': 'png',
-	'pdf': 'pdf',
-}
+// const ext = {
+// 	'jpeg': 'jpg',
+// 	'png': 'png',
+// 	'pdf': 'pdf',
+// }
 
 export function resizeImage(image, width, type = 'image/jpeg', isBlob = false){
 	return new Promise(resolve => {
@@ -23,7 +23,8 @@ export function resizeImage(image, width, type = 'image/jpeg', isBlob = false){
 				ctx.drawImage(img, 0, 0, width, height)
 				if(isBlob){
 					canvas.toBlob(blob => {
-						resolve(new File([blob], 'file.' + ext[type.split('/')[1]], { type }))
+						// resolve(new File([blob], 'file.' + ext[type.split('/')[1]], { type }))
+						resolve(blob)
 					}, type, 0.92)
 				}
 				else{
@@ -53,7 +54,8 @@ export function resizeImageSrc(src, width, type = 'image/jpeg', isBlob = false){
 			ctx.drawImage(img, 0, 0, width, height)
 			if(isBlob){
 				canvas.toBlob(blob => {
-					resolve(new File([blob], 'file.' + ext[type.split('/')[1]], { type }))
+					// resolve(new File([blob], 'file.' + ext[type.split('/')[1]], { type }))
+					resolve(blob)
 				}, type, 0.92)
 			}
 			else{
