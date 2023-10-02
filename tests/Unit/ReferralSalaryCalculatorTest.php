@@ -45,7 +45,6 @@ class ReferralSalaryCalculatorTest extends TenantTestCase
         $referrer3 = $referrer2->referees()->create([
             'user_id' => $user->getKey()
         ]);
-        dd($referrer1->referees);
         $result = $calculator->calculate($referrer3);
         $this->assertIsArray($result);
         $this->assertArrayHasKey(
