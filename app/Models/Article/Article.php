@@ -89,30 +89,30 @@ class Article extends Model
     }
 
     public function getContentAttribute()
-    {   
+    {
         $content = $this->attributes['content'];
 
-        preg_match_all('/<img[^>]+>/i', $content, $result); 
+        preg_match_all('/<img[^>]+>/i', $content, $result);
 
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $doc->loadHTML('<?xml encoding="utf-8" ?>' .$content);
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $content);
         $imageTags = $doc->getElementsByTagName('img');
 
-        foreach($imageTags as $tag) {
+        foreach ($imageTags as $tag) {
             $url = $tag->getAttribute('src');
             $host = parse_url($url, PHP_URL_HOST);
             $path = parse_url($url, PHP_URL_PATH);
 
-            if($host !== 'storage.oblako.kz') continue;
-            if($path == '') continue;
-            
-            $path = str_replace('/tenant'.tenant('id'), '', $path);
+            if ($host !== 'storage.oblako.kz') continue;
+            if ($path == '') continue;
 
-            $tempUrl = \Storage::disk('s3')->temporaryUrl(
-                $path, now()->addMinutes(360)
+            $path = str_replace('/tenant' . tenant('id'), '', $path);
+
+            $tempUrl = \Storage::disk('s3')->get(
+                $path
             );
-            
+
             $tag->setAttribute('src', $tempUrl);
 
             //$content = str_replace(utf8_decode($url), $tempUrl, $content);
@@ -137,7 +137,7 @@ class Article extends Model
         return Article::query()
             ->leftJoin(
                 'article_views_users as views',
-                function($join) use ($userId) {
+                function ($join) use ($userId) {
                     $join->on('articles.id', '=', 'views.article_id');
                     $join->on('views.user_id', '=', DB::raw($userId));
                 },
@@ -151,14 +151,14 @@ class Article extends Model
      * @param int $userId
      * @return Builder[]|Collection
      */
-    public static function getUnviewedArticle(int $userId):Collection|array
+    public static function getUnviewedArticle(int $userId): Collection|array
     {
         $user = User::getAuthUser($userId);
 
         return Article::query()
             ->leftJoin(
                 'article_views_users as views',
-                function($join) use ($userId) {
+                function ($join) use ($userId) {
                     $join->on('articles.id', '=', 'views.article_id');
                     $join->on('views.user_id', '=', DB::raw($userId));
                 },

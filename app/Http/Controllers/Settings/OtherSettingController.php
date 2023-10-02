@@ -10,22 +10,24 @@ use Illuminate\Http\Request;
 class OtherSettingController extends Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         //$this->middleware('auth');
     }
 
     protected function password_generate($chars)
     {
-      $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
-      return substr(str_shuffle($data), 0, $chars);
+        $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+        return substr(str_shuffle($data), 0, $chars);
     }
 
-    public function reset(Request $request) {
+    public function reset(Request $request)
+    {
 
         $accountUser = User::userByEmail($request->email);
         info($accountUser);
-        if(!$accountUser) {
-            return response()->json( ['success'=>false] );
+        if (!$accountUser) {
+            return response()->json(['success' => false]);
         }
 
 
@@ -43,7 +45,7 @@ class OtherSettingController extends Controller
         \Mail::to($request->email)->send($mail);
 
 
-        return response()->json(['success'=>true]);
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -69,21 +71,21 @@ class OtherSettingController extends Controller
         foreach ($keys as $key => $value) {
             $setting = Setting::where('name', $key)->first();
 
-            if ($setting){
+            if ($setting) {
                 $settings[$key] = $setting->value == 1;
 
-                if ($request->type == 'company' && $setting->value){
-                    $settings['logo'] = $disk->temporaryUrl(
-                        $setting->value, now()->addMinutes(360)
+                if ($request->type == 'company' && $setting->value) {
+                    $settings['logo'] = $disk->get(
+                        $setting->value
                     );
                 }
 
-                if(substr($key, 0, 7) == 'custom_'){
+                if (substr($key, 0, 7) == 'custom_') {
                     $settings[$key] = $setting->value;
                 }
             }
 
-            if(!$setting) {
+            if (!$setting) {
                 Setting::create([
                     'name' => $key,
                     'value' => false,
@@ -109,7 +111,7 @@ class OtherSettingController extends Controller
         foreach ($keys as $key => $value) {
             $settings[$key] = $request[$key];
 
-            if ($request->hasFile('file')){
+            if ($request->hasFile('file')) {
                 $links = $this->upload_image($request->file('file'), $key);
                 $request[$key] = $links['relative'];
                 $settings[$key] = $links['temp'];
@@ -129,25 +131,25 @@ class OtherSettingController extends Controller
     {
         $arr = [];
 
-        if($type == 'book') $arr = [
+        if ($type == 'book') $arr = [
             'allow_save_book_without_test' => 'Разрешить сохранять книгу без тестовых вопросов',
         ];
 
-        if($type == 'video') $arr = [
+        if ($type == 'video') $arr = [
             'allow_save_video_without_test' => 'Разрешить сохранять видео без тестовых вопросов',
         ];
 
-        if($type == 'kb') $arr = [
+        if ($type == 'kb') $arr = [
             'send_notification_after_edit' => 'Отправлять уведомления сотрудникам об изменениях в базе знаний',
             'show_page_from_kb_everyday' => 'Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"',
-            'allow_save_kb_without_test'=> 'Разрешить вносить изменения без тестовых вопросов в разделах базы знаний',
+            'allow_save_kb_without_test' => 'Разрешить вносить изменения без тестовых вопросов в разделах базы знаний',
         ];
-        if($type == 'company') $arr = [
+        if ($type == 'company') $arr = [
             'logo' => 'Логотип компании',
         ];
 
-        if(empty($arr)) $arr = [
-            'custom_'.$type => '',
+        if (empty($arr)) $arr = [
+            'custom_' . $type => '',
         ];
 
         return $arr;
@@ -164,8 +166,8 @@ class OtherSettingController extends Controller
         $disk = \Storage::disk('s3');
 
         try {
-            if($setting['logo'] != '' && $setting['logo'] != null && $setting['logo'] != 0) {
-                if($disk->exists($setting['logo'])) {
+            if ($setting['logo'] != '' && $setting['logo'] != null && $setting['logo'] != 0) {
+                if ($disk->exists($setting['logo'])) {
                     $disk->delete($setting['logo']);
                 }
             }
@@ -180,13 +182,11 @@ class OtherSettingController extends Controller
 
         return [
             'relative' => $path,
-            'temp' => $disk->temporaryUrl(
+            'temp' => $disk->get(
                 $path, now()->addMinutes(360)
             )
         ];
     }
-
-
 
 
 }
