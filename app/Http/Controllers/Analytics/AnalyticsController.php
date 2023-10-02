@@ -47,20 +47,21 @@ class AnalyticsController extends Controller
         $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
 
         $_groups = [];
-    
+
         if(auth()->user() && auth()->user()->is_admin == 1) $groups->whereIn('id', auth()->user()->groups);
-            
+
         $groups = $groups->where('active', 1)->get();
-    
+
         if(auth()->user()->is_admin != 1) {
             foreach ($groups as $key => $group) {
                 $editors_id = $group->editors_id == null ? [] : json_decode($group->editors_id);
+                if($editors_id == null) continue;
                 if(!in_array(auth()->id(), $editors_id))  continue;
                 $_groups[] = $group;
             }
             $groups = $_groups;
         }
-       
+
         View::share('menu', 'timetrackinganalytics');
         return view('admin.analytics-page', compact('groups'));
     }
@@ -81,7 +82,8 @@ class AnalyticsController extends Controller
         }
 
         if($currentUser->is_admin != 1) {
-            $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+            $editors_id = json_decode($group->editors_id);
+            $group_editors = is_array($editors_id) ? $editors_id : [];
             if (!in_array($currentUser->id, $group_editors)) {
                 return [
                     'error' => 'access',
@@ -95,7 +97,7 @@ class AnalyticsController extends Controller
             $_groups = [];
             foreach ($groups as $key => $group) {
                 $editors_id = json_decode($group->editors_id);
-                if ($group->editors_id == null) $editors_id = [];
+                if ($editors_id == null) $editors_id = [];
                 if(!in_array(auth()->id(), $editors_id))  continue;
                 $_groups[] = $group;
             }
@@ -145,8 +147,8 @@ class AnalyticsController extends Controller
             ->whereNotIn('name', ['name','sum','avg', 'plan'])
             ->get();
 
-        
-        
+
+
         foreach ($columns as $key => $column) {
             $date = Carbon::createFromDate($request->year,$request->month, $column->name)->format('Y-m-d');
 
@@ -157,15 +159,15 @@ class AnalyticsController extends Controller
 
             if($stat) {
                 $total_for_day = UserStat::total_for_day($request->activity_id, $date);
-                
+
                 $total_for_day = floor($total_for_day * 10) / 10;
-                
+
                 $stat->value = $total_for_day;
                 $stat->show_value = $total_for_day;
                 $stat->type = 'stat';
                 $stat->class = $request->class;
                 $stat->activity_id = $request->activity_id;
-                $stat->save(); 
+                $stat->save();
             }
         }
     }
@@ -181,7 +183,7 @@ class AnalyticsController extends Controller
                         ->where('group_id', $request->group_id)
                         ->whereNotIn('name', ['name','sum','avg', 'plan'])
                         ->get();
-        
+
         foreach ($columns as $key => $column) {
             $date = Carbon::createFromDate($request->year, $request->month, $column->name)->format('Y-m-d');
 
@@ -199,8 +201,8 @@ class AnalyticsController extends Controller
                 $stat->show_value = $total_for_day;
                 $stat->type       = 'time';
                 $stat->class      = $request->class;
-                $stat->save(); 
-            } 
+                $stat->save();
+            }
         }
     }
 
@@ -220,12 +222,12 @@ class AnalyticsController extends Controller
         $total_for_day = 0;
         if($stat) {
             $total_for_day = AnalyticStat::daysSum($date, $request->row_id, $request->group_id);
-           
+
             $stat->value      = $total_for_day;
             $stat->show_value = $total_for_day;
             $stat->type       = 'sum';
             $stat->class      = $request->class;
-            $stat->save(); 
+            $stat->save();
         }
 
         return $total_for_day;
@@ -247,12 +249,12 @@ class AnalyticsController extends Controller
         $total_for_day = 0;
         if($stat) {
             $total_for_day = AnalyticStat::daysAvg($date, $request->row_id, $request->group_id);
-           
+
             $stat->value      = $total_for_day;
             $stat->show_value = $total_for_day;
             $stat->type       = 'avg';
             $stat->class      = $request->class;
-            $stat->save(); 
+            $stat->save();
         }
 
         return $total_for_day;
@@ -265,7 +267,7 @@ class AnalyticsController extends Controller
     {
         $date = $request->date;
         $group_id = $request->group_id;
-        
+
         return AnalyticStat::new_row($group_id, $request->after_row_id, $date);
     }
 
@@ -336,7 +338,7 @@ class AnalyticsController extends Controller
 
             $stat->type  = $request->type;
             $stat->class = $request->class;
-            $stat->save(); 
+            $stat->save();
         }
     }
 
@@ -356,7 +358,7 @@ class AnalyticsController extends Controller
                 ->pluck('id')
                 ->toArray();
         }
-        
+
         $tts = Timetracking::whereIn('user_id', $user_ids)
             ->whereDate('enter', $date)
             ->orderBy('enter', 'desc')
@@ -374,11 +376,11 @@ class AnalyticsController extends Controller
                 $old_value = is_numeric($old_value) ? (int) $old_value : 0;
                 $new_value = $tt->total_hours + $value - $old_value;
                 if($new_value < 0) $new_value = 0;
-                $tt->total_hours = $new_value; 
+                $tt->total_hours = $new_value;
 
                 $tt->updated =  1;
                 $tt->save();
-                
+
                 array_push($marked_users, $tt->user_id);
 
                 if($value == 0) {
@@ -416,7 +418,7 @@ class AnalyticsController extends Controller
 
         Activity::createQuality($request->group_id);
     }
-    
+
     /**
      * Create new activity for group in Analytics page
      */
@@ -424,12 +426,12 @@ class AnalyticsController extends Controller
     {
 
         $act = Activity::create([
-            'name'       => $request->activity['name'], 
+            'name'       => $request->activity['name'],
             'group_id'   => $request->group_id,
-            'daily_plan' => $request->activity['daily_plan'], 
-            'plan_unit'  => $request->activity['plan_unit'], 
-            'unit'       => $request->activity['unit'], 
-            'weekdays'   => $request->activity['weekdays'], 
+            'daily_plan' => $request->activity['daily_plan'],
+            'plan_unit'  => $request->activity['plan_unit'],
+            'unit'       => $request->activity['unit'],
+            'weekdays'   => $request->activity['weekdays'],
             'ud_ves'     => 0,
             'source'     => Activity::SOURCE_GROUP
         ]);
@@ -454,9 +456,9 @@ class AnalyticsController extends Controller
             );
             $act->update([
                 'name'       => $request->activity['name'],
-                'plan_unit'  => $request->activity['plan_unit'], 
-                'unit'       => $request->activity['unit'], 
-                'weekdays'   => $request->activity['weekdays'], 
+                'plan_unit'  => $request->activity['plan_unit'],
+                'unit'       => $request->activity['unit'],
+                'weekdays'   => $request->activity['weekdays'],
             ]);
         }
     }
@@ -495,7 +497,7 @@ class AnalyticsController extends Controller
         if(tenant('id') != 'bp') {
             return null;
         }
-        
+
         if($dto->groupId == 31 && $dto->activityId == 20) { // DM and 20 колво действий
             DM::updateTimesNew($dto->employeeId, $date);
         }
@@ -504,7 +506,7 @@ class AnalyticsController extends Controller
             DM::updateTimesByWorkHours($dto->employeeId, $date, $dto->day, (float)$dto->value);
         }
     }
-    
+
     /**
      * Change order of activities in group
      */
@@ -513,7 +515,7 @@ class AnalyticsController extends Controller
         $order = count($request->activities);
         foreach ($request->activities as $activity) {
             $act = Activity::find($activity['id']);
-            $act->order = $order--;  
+            $act->order = $order--;
             $act->save();
         }
     }
@@ -541,9 +543,9 @@ class AnalyticsController extends Controller
             $stat->save();
         }
     }
-    
+
     /**
-     * Add comparing row  
+     * Add comparing row
      */
     public function add_depend(Request $request)
     {
@@ -610,7 +612,7 @@ class AnalyticsController extends Controller
                 'class'      => 'text-center',
                 'editable'   => 1,
             ];
-                            
+
             if($stat) {
                 $stat->update($fields);
             } else {
@@ -642,7 +644,7 @@ class AnalyticsController extends Controller
                     ->where('row_id', $formula_row->id)
                     ->where('column_id', $column->id)
                     ->first();
-                        
+
             $fields = [
                 'group_id'   => $formula_row->group_id,
                 'date'       => $date,
@@ -672,7 +674,7 @@ class AnalyticsController extends Controller
 
         $formula_row = AnalyticRow::find($request->row_id);
         $rows = AnalyticRow::where('group_id', $formula_row->group_id)->get();
-        
+
         $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
         $columns = AnalyticColumn::query()
@@ -686,12 +688,12 @@ class AnalyticsController extends Controller
                     ->where('row_id', $formula_row->id)
                     ->where('column_id', $column->id)
                     ->first();
-            
+
             $formula = $request->formula;
-            foreach ($rows as $key => $row) { 
+            foreach ($rows as $key => $row) {
                 $formula = str_replace("{". $row->id ."}", "[". $column->id .":". $row->id ."]", $formula);
             }
-            
+
             // replace text
             $pattern = '/[a-zA-Z]+[0-9]+/i';
             $formula = preg_replace($pattern, 1, $formula);
@@ -725,16 +727,17 @@ class AnalyticsController extends Controller
      */
     public function exportActivityExcel(Request $request)
     {
-        
+
         $group = ProfileGroup::find($request->group_id);
-        
+
         $request->month = (int) $request->month;
         $currentUser = auth()->user();
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        // Доступ к группе 
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id) ? $editors_id : [];
+        // Доступ к группе
 
- 
+
         if (!auth()->user()->can('analytics_view') && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
@@ -763,12 +766,12 @@ class AnalyticsController extends Controller
         $data = UserStat::activities($request->group_id, $date->format('Y-m-d'));
 
         /******==================================== */
-        
+
         $sheets = [];
 
         $minute_headings = Activity::getHeadings($date, Activity::UNIT_MINUTES);
         $percent_headings = Activity::getHeadings($date, Activity::UNIT_PERCENTS);
-      
+
         foreach($data as $sheet_content){
             $sheets[] = [
                     'title' => $sheet_content['name'],
@@ -776,7 +779,7 @@ class AnalyticsController extends Controller
                     'sheet' => Activity::getSheet($sheet_content['records'], $date, Activity::UNIT_MINUTES)
             ];
         }
-       
+
 
         /******==================================== */
 
@@ -788,7 +791,7 @@ class AnalyticsController extends Controller
         if($date->daysInMonth == 31) $last_cell = 'AK3';
 
         return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
-        
+
     }
 
     /**

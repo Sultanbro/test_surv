@@ -32,9 +32,9 @@ final class GetFiredInfoDto
         Assert::keyExists($data, 'month');
 
         return new self(
-            $data['group_id'],
-            $data['year'],
-            $data['month']
+            (int)$data['group_id'],
+            (int)$data['year'],
+            (int)$data['month']
         );
     }
 }

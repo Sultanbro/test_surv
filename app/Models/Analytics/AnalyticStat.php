@@ -78,10 +78,10 @@ class AnalyticStat extends Model
             ->where('date', $date)
             ->get();
 
-//        $day_salaries = Salary::getSalaryForDays([
-//            'date'     => $date,
-//            'group_id' => $group_id,
-//        ]);
+        //        $day_salaries = Salary::getSalaryForDays([
+        //            'date'     => $date,
+        //            'group_id' => $group_id,
+        //        ]);
 
         // returning items
         foreach($rows as $r_index => $row) {

@@ -29,12 +29,14 @@
 								class="form-control NotificationsTemplates-badges"
 								@click="onClickRecipments"
 							>
-								<b-badge
-									v-for="recipient, index in value.recipients"
-									:key="index"
-								>
-									{{ recipient.name }}
-								</b-badge>
+								<template v-for="recipient, index in value.recipients">
+									<b-badge
+										v-if="recipient.name"
+										:key="index"
+									>
+										{{ recipient.name }}
+									</b-badge>
+								</template>
 								&nbsp;
 							</div>
 							<JobtronOverlay
@@ -60,8 +62,19 @@
 					<b-col>
 						<div class="mb-2">
 							Сообщение
+							<img
+								v-b-popover.hover="'Максимум 244 символа'"
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								alt="info icon"
+							>
 						</div>
-						<div class="form-control">
+						<div
+							class="form-control relative"
+							:class="{
+								'NotificationsTemplates-error': value.title.length > 244
+							}"
+						>
 							<JobtronTextarea
 								v-model="value.title"
 								class="NotificationsTemplates-textarea"
@@ -71,6 +84,9 @@
 							</div>
 							<div class="NotificationsTemplates-tip">
 								{{ value.titleTip }}
+							</div>
+							<div class="NotificationsEditForm-charCount">
+								{{ value.title.length }}
 							</div>
 						</div>
 					</b-col>
@@ -250,7 +266,12 @@ export default {
 				id: this.value.id,
 				name,
 				title: this.value.title,
-				recipients: Array.isArray(this.value.targets) ? this.value.recipients : undefined,
+				recipients: Array.isArray(this.value.targets) ? this.value.recipients.map(rec => {
+					if(!rec.type){
+						rec.type = 4
+					}
+					return rec
+				}) : undefined,
 				date: {
 					days: this.days,
 					frequency: this.when === 'period' ? this.frequency : this.when
@@ -291,6 +312,26 @@ export default {
 	&-tip{
 		font-style: italic;
 		color: #F8254B;
+	}
+	& .NotificationsTemplates-error.form-control{
+		border-color: #f00;
+		color: #f00;
+		&:focus{
+			border-color: #f00;
+			color: #f00;
+		}
+	}
+	&-charCount{
+		padding: 1px 3px;
+		border-top: 1px solid #e8e8e8;
+		border-left: 1px solid #e8e8e8;
+		border-radius: 6px;
+
+		position: absolute;
+		right: 0;
+		bottom: 0;
+
+		font-size: 11px;
 	}
 
 	.multiselect-surv .multiselect__tags{

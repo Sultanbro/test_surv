@@ -51,45 +51,68 @@
 					<b-tr
 						v-for="notification, key in filteredNotifications"
 						:key="key"
-						@click="openEditSidebar(notification)"
 					>
-						<b-td>
+						<b-td @click="openEditSidebar(notification)">
 							{{ key + 1 }}
 						</b-td>
-						<b-td class="NotificationsV2-text">
+						<b-td
+							class="NotificationsV2-text"
+							@click="openEditSidebar(notification)"
+						>
 							<TextClip>
 								{{ notification.title }}
 							</TextClip>
 						</b-td>
-						<b-td class="NotificationsV2-text text-center">
+						<b-td
+							class="NotificationsV2-text text-center"
+							@click="openEditSidebar(notification)"
+						>
 							<TextClip>
 								<template v-if="recipientsNames[notification.date.frequency]">
 									{{ recipientsNames[notification.date.frequency] }}
 								</template>
 								<template v-else>
-									{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
+									{{ notification.recipients.filter(recipient => !!recipient.name).map(recipient => recipient.name).join(', ') }}
 								</template>
 							</TextClip>
 						</b-td>
-						<b-td class="NotificationsV2-text text-center">
+						<b-td
+							class="NotificationsV2-text text-center"
+							@click="openEditSidebar(notification)"
+						>
 							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).short).join(', ') }}
 						</b-td>
-						<b-td class="text-center">
+						<b-td
+							class="text-center"
+							@click="openEditSidebar(notification)"
+						>
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
 						</b-td>
-						<b-td class="text-center wsnw">
+						<b-td
+							class="text-center wsnw"
+							@click="openEditSidebar(notification)"
+						>
 							{{ $moment(notification.created_at).format('DD.MM.YYYY') }}
 						</b-td>
-						<b-td class="text-center wsnw">
+						<b-td
+							class="text-center wsnw"
+							@click="openEditSidebar(notification)"
+						>
 							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
 						<b-td class="text-center">
-							<b-button
-								class="btn btn-danger btn-icon"
-								@click.stop="remove(notification)"
-							>
-								<i class="fa fa-trash" />
-							</b-button>
+							<div class="d-flex gap-3">
+								<JobtronSwitch
+									:value="!!notification.status"
+									@input="onChangeStatus(notification)"
+								/>
+								<b-button
+									class="btn btn-danger btn-icon"
+									@click.stop="remove(notification)"
+								>
+									<i class="fa fa-trash" />
+								</b-button>
+							</div>
 						</b-td>
 					</b-tr>
 				</b-tbody>
@@ -203,6 +226,7 @@ import {
 } from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
+import JobtronSwitch from '@ui/Switch'
 import TextClip from '@ui/TextClip'
 import {
 	ChatIconPlus,
@@ -212,11 +236,13 @@ const getNamesMethods = {
 	'App\\User': 'getUserName',
 	'App\\ProfileGroup': 'getGroupName',
 	'App\\Position': 'getPositionName',
+	'All': 'getAllName',
 }
 const typeToNumber = {
 	'App\\User': 1,
 	'App\\ProfileGroup': 2,
 	'App\\Position': 3,
+	'All': 4,
 }
 
 export default {
@@ -226,6 +252,7 @@ export default {
 		NotificationsEditForm,
 		NotificationsTemplates,
 		JobtronButton,
+		JobtronSwitch,
 		ChatIconPlus,
 		TextClip,
 	},
@@ -362,6 +389,9 @@ export default {
 			if(position) return position.position
 			return ''
 		},
+		getAllName(){
+			return 'Все'
+		},
 		async remove(notification){
 			if(!confirm('Удалить уведомление?')) return
 			const {data} = await deleteNotification(notification.id)
@@ -414,9 +444,6 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
-			this.template = ''
-			this.selectedTemplate = null
-			this.selectedNotification = null
 		},
 		validate(notification){
 			const errors = []
@@ -431,6 +458,9 @@ export default {
 			const {message} = await createNotification(notification)
 			if(message === 'Success created'){
 				this.$toast.success('Уведомление успешно создано')
+				this.template = ''
+				this.selectedTemplate = null
+				this.selectedNotification = null
 			}
 			else{
 				this.$toast.error(message)
@@ -440,7 +470,10 @@ export default {
 		async updateNotification(notification){
 			const {message} = await updateNotification(notification)
 			if(message === 'Success'){
-				this.$toast.success('Уведомление успешно создано')
+				this.$toast.success('Уведомление успешно сохранено')
+				this.template = ''
+				this.selectedTemplate = null
+				this.selectedNotification = null
 				const index = this.notifications.findIndex(n => n.id === notification.id)
 				if(!~index) return
 				this.$set(this.notifications, index, notification)
@@ -485,7 +518,20 @@ export default {
 		onCloseTemplate(){
 			this.template = ''
 			this.selectedTemplate = null
-		}
+		},
+		async onChangeStatus(notification){
+			notification.status = notification.status ? 0 : 1
+			const {message} = await updateNotification(notification)
+			if(message === 'Success'){
+				this.$toast.success(`Уведомление ${notification.status ? 'активировано' : 'деактивировано'}`)
+				const index = this.notifications.findIndex(n => n.id === notification.id)
+				if(!~index) return
+				this.$set(this.notifications, index, notification)
+			}
+			else{
+				this.$toast.error(message)
+			}
+		},
 	}
 }
 </script>

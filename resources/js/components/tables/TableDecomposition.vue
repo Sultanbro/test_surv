@@ -57,6 +57,7 @@
 						:key="index"
 						class="TableDecomposition-tr"
 					>
+						<!-- name -->
 						<td
 							class="TableDecomposition-td b-table-sticky-column text-left px-2 t-name"
 							:title="item.id"
@@ -81,9 +82,13 @@
 								/>
 							</div>
 						</td>
+
+						<!-- total_plan -->
 						<td class="TableDecomposition-td">
 							{{ Number(item.total_plan).toFixed(0) }}
 						</td>
+
+						<!-- total_fact -->
 						<td class="TableDecomposition-td border-r-2">
 							{{ Number(item.total_fact).toFixed(0) }}
 						</td>
@@ -96,13 +101,12 @@
 									'weekend' : is_weekday[day],
 								}"
 							>
-								<div>
-									<input
-										v-model="item[day].plan"
-										type="number"
-										@change="updateSettings($event, item, index, day)"
-									>
-								</div>
+								<input
+									v-model="item[day].plan"
+									type="number"
+									class="TableDecomposition-inputNumber"
+									@change="updateSettings($event, item, index, day)"
+								>
 							</td>
 							<td
 								v-else
@@ -125,13 +129,12 @@
 									'weekend' : is_weekday[day],
 								}"
 							>
-								<div>
-									<input
-										v-model="item[day].fact"
-										type="number"
-										@change="updateSettings($event, item, index, day)"
-									>
-								</div>
+								<input
+									v-model="item[day].fact"
+									type="number"
+									class="TableDecomposition-inputNumber"
+									@change="updateSettings($event, item, index, day)"
+								>
 							</td>
 							<td
 								v-else
@@ -219,14 +222,17 @@ export default {
 			type: Object,
 			default: () => ({})
 		},
-		data: {
-			type: Object,
-			default: () => ({})
+		decompositions: {
+			type: Array,
+			default: () => []
 		},
+		groupId: {
+			type: Number,
+			required: true,
+		}
 	},
 	data() {
 		return {
-			items: [],
 			fields: [],
 			itemsArray: [],
 			records: [],
@@ -236,8 +242,37 @@ export default {
 				from: 1,
 				to: null,
 				index: null,
-			}
+			},
 		};
+	},
+	computed: {
+		items(){
+			return this.records.map(item => {
+				const cellValues = []
+				let totalPlan = 0
+				let totalFact = 0
+
+				for (let i = 1; i <= this.month.daysInMonth; i++) {
+					cellValues[i] = item[i] || {
+						plan: '',
+						fact: '',
+					}
+					if(!item[i]) continue
+
+					if(item[i].plan) totalPlan += Number(item[i].plan)
+					if(item[i].fact) totalFact += Number(item[i].fact)
+				}
+
+				return {
+					id: item.id,
+					name: item.name,
+					editable: false,
+					total_plan: totalPlan,
+					total_fact: totalFact,
+					...cellValues,
+				}
+			})
+		}
 	},
 	watch: {
 		data: function() {
@@ -269,13 +304,8 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.records = this.data.records;
-			this.accountsNumber = this.data.records.length
+			this.records = this.decompositions;
 
-			this.calculateRecordsValues()
-			//this.calcTotals()
-
-			this.items = this.itemsArray;
 			loader.hide();
 		},
 
@@ -300,10 +330,9 @@ export default {
 
 		updateSettings(e, data, index) {
 			data.editable = false
-			this.updateTable(this.items);
 
 			let post_data = {
-				group_id: this.data.group_id,
+				group_id: this.groupId,
 				id: data.id,
 				name: data.name,
 				index: index,
@@ -314,10 +343,9 @@ export default {
 		},
 
 		reqSave(post_data) {
-			let url = '/timetracking/analytics/decomposition/save';
-			let loader = this.$loading.show();
-			let self = this.items;
-			let year = new Date().getFullYear();
+			const url = '/timetracking/analytics/decomposition/save';
+			const loader = this.$loading.show();
+			const year = new Date().getFullYear();
 
 			post_data.date = this.$moment(
 				`${this.month.currentMonth} ${year}`,
@@ -326,7 +354,7 @@ export default {
 
 			this.axios.post(url, post_data).then((response) => {
 				if(post_data.id === undefined) {
-					self[post_data.index].id = response.data.id
+					this.items[post_data.index].id = response.data.id
 				}
 			}).catch(error => {
 				alert(error)
@@ -352,7 +380,7 @@ export default {
 
 				// POST
 				this.reqSave({
-					group_id: this.data.group_id,
+					group_id: this.groupId,
 					id: this.items[this.planner.index].id,
 					name: this.items[this.planner.index].name,
 					values: this.items[this.planner.index],
@@ -403,77 +431,6 @@ export default {
 			this.items.splice(index, 1);
 		},
 
-		calculateRecordsValues() {
-			this.sum = {};
-			this.itemsArray = [];
-
-			this.records.forEach(item => {
-
-				let cellValues = [],
-					totalPlan = 0,
-					totalFact = 0;
-
-				for (let i = 1; i <= this.month.daysInMonth; i++) {
-					cellValues[i] = item[i];
-
-					if(item[i] === undefined) {
-						cellValues[i] = {
-							'plan': '',
-							'fact': ''
-						};
-						continue;
-					}
-					if(item[i].plan !== undefined) {
-						totalPlan += Number(item[i].plan)
-					}
-
-					if(item[i].fact !== undefined) {
-						totalFact += Number(item[i].fact)
-					}
-				}
-
-				this.itemsArray.push({
-					name: item.name,
-					id: item.id,
-					editable: false,
-					total_plan: totalPlan,
-					total_fact: totalFact,
-					group_id: this.data.group_id,
-					...cellValues,
-				});
-			});
-		},
-
-		updateTable(items) {
-			let loader = this.$loading.show();
-
-			this.records = items;
-			this.calculateRecordsValues();
-
-			this.totalColumn()
-			this.items = this.itemsArray;
-
-			loader.hide();
-		},
-
-		addCellVariantsArrayToRecords(){
-			this.itemsArray.forEach((element, key) => {
-				this.itemsArray[key]['_cellVariants'] = [];
-			});
-		},
-
-		totalColumn() {
-			// let row0_avg = 0;
-			// this.itemsArray.forEach((account, index) => {
-			//     if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
-			//         row0_avg += parseFloat(account['plan']);
-			//         console.log(account['plan'])
-			//     }
-			// })
-
-			// this.itemsArray[0]['plan'] = row0_avg
-		},
-
 		editMode(item) {
 			this.items.forEach(account => {
 				account.editable = false
@@ -493,6 +450,19 @@ export default {
 	&-inputName{
 		&::placeholder{
 			font-style: italic;
+		}
+	}
+	&-inputNumber{
+		display: block;
+		width: calc(100% + 20px);
+		margin: 0 -10px;
+		background: transparent;
+		-moz-appearance: textfield;
+		text-align: center;
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
 		}
 	}
 	// &-table{}

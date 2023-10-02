@@ -917,6 +917,8 @@ class Salary extends Model
                 }
             }
 
+
+
             /**
              * add to user new fields
              */

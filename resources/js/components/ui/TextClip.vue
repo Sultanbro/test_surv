@@ -29,6 +29,7 @@ export default {
 		}
 	}
 	&-short{
+		max-height: 3em;
 		max-height: 3lh;
 		overflow: hidden;
 		text-overflow: ellipsis;

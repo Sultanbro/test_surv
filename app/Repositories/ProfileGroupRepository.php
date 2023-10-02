@@ -72,10 +72,12 @@ final class ProfileGroupRepository extends CoreRepository
     public function checkEditor($userId): object
     {
         return $this->getActive()->reject(function ($group) use ($userId) {
-             if(!in_array($userId, json_decode($group->editors_id)))
-             {
-                 return $group;
-             };
+            $editors_id = json_decode($group->editors_id);
+            if($editors_id == null) return $group;
+            if(!in_array($userId, json_decode($editors_id)))
+            {
+                return $group;
+            };
         });
     }
 

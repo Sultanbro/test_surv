@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Api\HeadHunter;
 use App\Api\HeadHunterApi2;
 use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class HeadhunterNegotiationsApi2 extends Command
@@ -144,11 +146,38 @@ class HeadhunterNegotiationsApi2 extends Command
             try {
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
-                History::system('Ошибка hh2.ru: резюме', [
-                    'error' => $e,
-                    'resume' => $n->resume_id,
-                ]);
-                break;
+                if ($e->getCode()==404) {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Резюме не существует или недоступно для текущего пользователя');
+                    Negotiation::whereDate('time', '>=', $this->date)
+                        ->where('has_updated', 1)
+                        ->where('lead_id', 0)
+                        ->where('phone', '')
+                        ->where('phone', '!=', 'null')
+                        ->where('resume_id', $n->resume_id)
+                        ->where('from',HeadHunterApi2::FROM_STATUS)
+                        ->first()
+                        ->delete();
+                    continue;
+                }elseif($e->getCode() == 429){
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                    break;
+                }else
+                {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Требуется авторизация пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Требуется авторизация пользователя');
+                    break;
+                }
             }
             
             $phone = $this->hh->getPhone($resume->contact);
@@ -246,7 +275,7 @@ class HeadhunterNegotiationsApi2 extends Command
         }
     }
 
-    private function updateNegotiationsOnVacancy($vacancy) : void
+    private function updateNegotiationsOnVacancy($vacancy): void
     {
 
         $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
@@ -255,7 +284,8 @@ class HeadhunterNegotiationsApi2 extends Command
 
         foreach ($negotiations as $key => $hh_neg) {
             $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
-            
+
+
             $time = $hh_neg->created_at;
             $time[10] = ' ';
             $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
@@ -275,72 +305,73 @@ class HeadhunterNegotiationsApi2 extends Command
                 $neg->from = HeadHunterApi2::FROM_STATUS;
                 $neg->save();
             } else {
-                Negotiation::create([
-                    'vacancy_id' => $vacancy->vacancy_id,
-                    'negotiation_id' => $hh_neg->id,
-                    'lead_id' => 0,
-                    'has_updated' => $hh_neg->has_updates,
-                    'time' => $time,
-                    'phone' => '',
-                    'name' => $name,
-                    'resume_id' => $resume_id,
-                    'from' => HeadHunterApi2::FROM_STATUS,
-                ]);
+                $check_resume = Negotiation::query()
+                    ->where('created_at', '>', Carbon::now()->subDays(15))
+                    ->where('resume_id',$resume_id)
+                    ->where('from',HeadHunterApi2::FROM_STATUS)
+                    ->first();
+                if ($check_resume)
+                {
+                    continue;
+                }else
+                {
+                    Negotiation::create([
+                        'vacancy_id' => $vacancy->vacancy_id,
+                        'negotiation_id' => $hh_neg->id,
+                        'lead_id' => 0,
+                        'has_updated' => $hh_neg->has_updates,
+                        'time' => $time,
+                        'phone' => '',
+                        'name' => $name,
+                        'resume_id' => $resume_id,
+                        'from' => HeadHunterApi2::FROM_STATUS,
+                    ]);
+                }
             }
         }
     }
 
-    public function updateVacancies() : void
+    public function updateVacancies(): void
     {
+        $vacanciesData = [];
+
         $vacancies = $this->hh->getVacancies();
 
-        $this->line('updateVacancies: '. count($vacancies));
-       
-        foreach($vacancies as $vacancy) {
-           
-            $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
-            
+        $this->line('updateVacancies: ' . count($vacancies));
+
+        foreach ($vacancies as $vacancy) {
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
-           
-            
-            if($hh_vacancy) {
-
+            if ($hh_vacancy) {
                 try {
                     $manager_id = 23107020;
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     // save logs
                 }
 
-                if($this->vacancyNameHasNotWords($hh_vacancy->name, [
+                if ($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'Бухгалтер'
-                ])) continue;                                               // создаются все вакансии, кроме-тех, которые содержат эти слова
+                ])) {
+                    continue;
+                }
 
-                $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
-                
+                $this->line('vacancy: #' . $vacancy->id . ' - ' . $hh_vacancy->name);
+
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
 
-                if(!$vac) {
-                    Vacancy::create([
-                        'vacancy_id' => $hh_vacancy->id,
-                        'title' => $hh_vacancy->name,
-                        'manager_id' => $manager_id,
-                        'city' => $city,
-                        'status' => $status,
-                        'from' => HeadHunterApi2::FROM_STATUS,
-                    ]);
-                } else {
-                    $vac->title = $hh_vacancy->name;
-                    $vac->manager_id = $manager_id;
-                    $vac->status = $status;
-                    $vac->city = $city;
-                    $vac->from = HeadHunterApi2::FROM_STATUS;
-                    $vac->save();
-                }
-            }   
-            
+                $vacanciesData[] = [
+                    'vacancy_id' => $hh_vacancy->id,
+                    'title' => $hh_vacancy->name,
+                    'manager_id' => $manager_id,
+                    'city' => $city,
+                    'status' => $status,
+                    'from' => HeadHunterApi2::FROM_STATUS,
+                ];
+            }
         }
+
+        Vacancy::upsert($vacanciesData, ['vacancy_id'], ['title', 'manager_id', 'city', 'status', 'from']);
     }
 
     private function vacancyNameHasNotWords(String $name, array $words) : bool

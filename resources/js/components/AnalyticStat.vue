@@ -637,7 +637,7 @@ export default {
 			default: null
 		},
 		table: {
-			type: Object,
+			type: Array,
 			default: null
 		},
 		activeuserid: {

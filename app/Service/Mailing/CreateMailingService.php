@@ -28,7 +28,7 @@ class CreateMailingService
         $days = $dto->date['frequency'] === MailingEnum::MONTHLY ? MailingFacade::daysOfMonth($dto->date['days']) : $dto->date['days'];
 
         DB::transaction(function () use ($dto, $days){
-            $notification =MailingFacade::createNotification(
+            $notification = MailingFacade::createNotification(
                 $dto->name,
                 $dto->title,
                 $dto->typeOfMailing,

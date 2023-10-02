@@ -3,7 +3,7 @@
 		<input
 			type="checkbox"
 			class="JobtronSwitch-input"
-			:checked="value"
+			:checked="localValue"
 			@input="$emit('input', $event.target.checked)"
 		>
 		<span class="JobtronSwitch-switch" />
@@ -19,6 +19,16 @@ export default {
 			type: Boolean
 		}
 	},
+	data(){
+		return {
+			localValue: this.value
+		}
+	},
+	watch: {
+		value(){
+			this.localValue = this.value
+		}
+	}
 }
 </script>
 
@@ -34,6 +44,8 @@ export default {
 
 		background: #8BABD8;
 		border-radius: 20px;
+		cursor: pointer;
+
 		&:before{
 			content: '';
 			width: 20px;
@@ -50,8 +62,9 @@ export default {
 		}
 	}
 
-
 	&-input{
+		width: 100%;
+		height: 100%;
 		position: absolute;
 		z-index: 5;
 		top: 0;
@@ -59,6 +72,7 @@ export default {
 		right: 0;
 		bottom: 0;
 		opacity: 0;
+		cursor: pointer;
 		&:checked{
 			~ .JobtronSwitch{
 				&-switch{

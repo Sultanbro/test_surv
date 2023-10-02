@@ -724,7 +724,7 @@ class TimetrackingController extends Controller
             $_groups = [];
             foreach ($groups as $key => $group) {
                 $editors_id = $group->editors_id ? json_decode($group->editors_id) : [];
-
+                if($editors_id == null) continue;
                 if(!in_array(auth()->id(), $editors_id)) continue;
                 $_groups[] = $group;
             }

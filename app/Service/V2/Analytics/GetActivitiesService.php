@@ -35,7 +35,7 @@ final class GetActivitiesService
      * Тип показателя качество.
      */
     const QUALITY = 'quality';
-    
+
     public function handle(GetAnalyticDto $dto)
     {
         return AnalyticsFacade::activitiesViews(
@@ -46,6 +46,7 @@ final class GetActivitiesService
             $workdays       = $this->workdays($activity->weekdays, $dto->year, $dto->month);
             $plan           = (new ActivityRepository)->getDailyPlan($activity, $dto->year, $dto->month) ?? null;
             $activity->plan = $plan->plan ?? $activity->daily_plan;
+            $activity->workdays = $workdays;
 
             /**
              * Types of activities.
@@ -68,7 +69,7 @@ final class GetActivitiesService
                 $activity->records  = $quality['records'];
                 $activity->weeks    = $quality['weeks'];
             }
-            
+
             return $activity;
         });
     }
@@ -90,7 +91,7 @@ final class GetActivitiesService
             'weeks'     => QualityRecordWeeklyStat::weeksArray($dto->month, $dto->year)
         ];
     }
-    
+
     /**
      * @param Activity $activity
      * @param string $date

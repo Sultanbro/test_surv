@@ -57,7 +57,7 @@ class HeadhunterNegotiations extends Command
     public function handle()
     {
         $stage = $this->argument('stage');
-        
+
         $this->line("Start from " . $this->date);
 
         if($stage == 0) $this->updateVacancies();
@@ -81,6 +81,7 @@ class HeadhunterNegotiations extends Command
         foreach($negotiations as $n) {
             $phone = Phone::normalize($n->phone);
 
+            $this->line("negotiation_id:".$n->id);
             $leads = Lead::where('phone', $phone)
                 ->where('created_at', '>', Carbon::now()->subDays(7))
                 ->whereNotIn('status', ['LOSE'])
@@ -95,7 +96,7 @@ class HeadhunterNegotiations extends Command
 
                     History::system('Дубликат hh.ru', [
                         'lead_id' => $leads->first()->lead_id,
-                        'phone' => $n->phone, 
+                        'phone' => $n->phone,
                         'negotiation_id' => $n->negotiation_id,
                     ]);
                 }
@@ -118,7 +119,7 @@ class HeadhunterNegotiations extends Command
             } catch(\Exception $e) {
                 History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
                     'lead_id' => $leads->first()->lead_id ?? $leadId,
-                    'phone' => $n->phone, 
+                    'phone' => $n->phone,
                     'negotiation_id' => $n->negotiation_id,
                 ]);
             }
@@ -145,13 +146,41 @@ class HeadhunterNegotiations extends Command
             try {
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
-                History::system('Ошибка hh.ru: резюме', [
-                    'error' => $e,
-                    'resume' => $n->resume_id,
-                ]);
-                break;
+                if ($e->getCode()==404) {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Резюме не существует или недоступно для текущего пользователя');
+                    Negotiation::whereDate('time', '>=', $this->date)
+                        ->where('has_updated', 1)
+                        ->where('lead_id', 0)
+                        ->where('phone', '')
+                        ->where('phone', '!=', 'null')
+                        ->where('resume_id', $n->resume_id)
+                        ->where('from',HeadHunter::FROM_STATUS)
+                        ->first()
+                        ->delete();
+                    continue;
+                }elseif($e->getCode() == 429){
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
+                    break;
+                }else
+                {
+                    History::system('Ошибка hh.ru: резюме', [
+                        'error' => 'Требуется авторизация пользователя',
+                        'resume' => $n->resume_id,
+                    ]);
+                    $this->line('error:Требуется авторизация пользователя');
+                    break;
+                }
             }
-            
+
+
             $phone = $this->hh->getPhone($resume->contact);
             $neg = Negotiation::where('id', '!=', $n->id)->where('phone', $phone)->where('time', '>', Carbon::now()->subDays(3))->first();
 
@@ -182,26 +211,26 @@ class HeadhunterNegotiations extends Command
         try {
 
             $vac = Vacancy::where('vacancy_id', $negotiation->vacancy_id)->first();
-            
+
             $title = "Удаленный " . $negotiation->name . ' : hh.ru';
             if($vac && $vac->city == 'Шымкент') {
                 $title = "inhouse " . $negotiation->name . ' : hh.ru';
             }
-            
+
             $lead_id = $this->bitrix->createLead([
-                "TITLE" => $title, 
-                "NAME" => $negotiation->name,  
+                "TITLE" => $title,
+                "NAME" => $negotiation->name,
                 'UF_CRM_1498210379' => HeadHunter::SEGMENT, // сегмент
                 "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
                 "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
-                "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
+                "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
                 "UF_CRM_1658397129" => $vac ? $vac->city : '', // город
                 "UF_CRM_1679562806674" => 'https://hh.ru/resume/'. $negotiation->resume_id,
             ]);
-            
+
             // bitrix_leads
             $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
             if($lead) {
@@ -222,14 +251,14 @@ class HeadhunterNegotiations extends Command
                     'hash' => $hash
                 ]);
             }
-            
+
             $negotiation->lead_id = $lead_id['result'];
             $negotiation->save();
 
-            return $lead_id['result']; 
+            return $lead_id['result'];
         } catch(\Exception $e) {
             // save logs
-            return 'НЕ СОЗДАЛСЯ'; 
+            return 'НЕ СОЗДАЛСЯ:';
         }
     }
 
@@ -253,7 +282,7 @@ class HeadhunterNegotiations extends Command
 
         foreach ($negotiations as $key => $hh_neg) {
             $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
-            
+
             $time = $hh_neg->created_at;
             $time[10] = ' ';
             $time = Carbon::parse($time)->setTimezone('Asia/Almaty');
@@ -273,6 +302,16 @@ class HeadhunterNegotiations extends Command
                 $neg->from = HeadHunter::FROM_STATUS;
                 $neg->save();
             } else {
+                $check_resume = Negotiation::query()
+                    ->where('created_at', '>', Carbon::now()->subDays(15))
+                    ->where('resume_id',$resume_id)
+                    ->where('from',HeadHunter::FROM_STATUS)
+                    ->first();
+                if ($check_resume)
+                {
+                    continue;
+                }else
+                {
                 Negotiation::create([
                     'vacancy_id' => $vacancy->vacancy_id,
                     'negotiation_id' => $hh_neg->id,
@@ -284,6 +323,7 @@ class HeadhunterNegotiations extends Command
                     'resume_id' => $resume_id,
                     'from' => HeadHunter::FROM_STATUS,
                 ]);
+                }
             }
         }
     }
@@ -293,15 +333,15 @@ class HeadhunterNegotiations extends Command
         $vacancies = $this->hh->getVacancies();
 
         $this->line('updateVacancies: '. count($vacancies));
-       
+
         foreach($vacancies as $vacancy) {
-           
+
             $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
-            
+
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
-           
-            
+
+
             if($hh_vacancy) {
 
                 try {
@@ -309,13 +349,13 @@ class HeadhunterNegotiations extends Command
                 } catch(\Exception $e) {
                     // save logs
                 }
-                
+
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'Оператор', 'удаленно', 'удалённо'
                 ])) continue;
 
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
-                
+
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
 
@@ -336,8 +376,8 @@ class HeadhunterNegotiations extends Command
                     $vac->from = HeadHunter::FROM_STATUS;
                     $vac->save();
                 }
-            }   
-            
+            }
+
         }
     }
 
