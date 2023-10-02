@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Learning\Video;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\CourseItemModel;
 use App\Models\TestQuestion;
+use App\Models\CourseItemModel;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoPlaylist as Playlist;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class VideoPlaylistController extends Controller
@@ -62,7 +62,7 @@ class VideoPlaylistController extends Controller
         foreach ($categories as $key => $cat) {
             foreach ($cat->playlists as $playlist) {
                 if ($playlist->img != '' && $playlist->img != null) {
-                    $playlist->img = $disk->url(
+                    $playlist->img = $disk->get(
                         $playlist->img
                     );
                 }
@@ -111,7 +111,7 @@ class VideoPlaylistController extends Controller
         $disk = \Storage::disk('s3');
 
         if ($pl->img != '' && $pl->img != null) {
-            $pl->img = $disk->url(
+            $pl->img = $disk->get(
                 $pl->img, now()->addMinutes(360)
             );
         }
@@ -153,7 +153,7 @@ class VideoPlaylistController extends Controller
         } else {
             $disk = \Storage::disk('s3');
 
-            $url = $disk->url(
+            $url = $disk->get(
                 $video->links, now()->addMinutes(360)
             );
         }
@@ -357,8 +357,8 @@ class VideoPlaylistController extends Controller
 
         return [
             'relative' => $xpath,
-            'temp' => $disk->url(
-                $xpath
+            'temp' => $disk->get(
+                $xpath, now()->addMinutes(360)
             )
         ];
     }

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Service\Department\UserService;
-use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
-use App\User;
 use App\ProfileGroup;
+use App\Service\Department\UserService;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class CourseResult extends Model
 {
@@ -21,21 +21,21 @@ class CourseResult extends Model
     protected $fillable = [
         'user_id',
         'course_id',
-        'status', 
+        'status',
         'progress', // 0 - 100
         'points',  // how many user get
-        'started_at', 
-        'ended_at', 
+        'started_at',
+        'ended_at',
         'weekly_progress' // recent 7 days progress
     ];
 
     // status
-    CONST INITIAL = 0;
-    CONST COMPLETED = 1;
-    CONST ACTIVE = 2;
-    CONST CANCELED = 3;
+    const INITIAL = 0;
+    const COMPLETED = 1;
+    const ACTIVE = 2;
+    const CANCELED = 3;
 
-    CONST STATUSES = [
+    const STATUSES = [
         0 => 'Запланирован',
         1 => 'Завершил',
         2 => 'Начал',
@@ -51,7 +51,8 @@ class CourseResult extends Model
     {
         return $this->belongsTo('App\Models\Course', 'course_id', 'id');
     }
-   /**
+
+    /**
      * relation to user_id
      */
     public function user()
@@ -78,21 +79,22 @@ class CourseResult extends Model
                 ])
                 ->find($user_id);
 
-            if(!$user) continue;
+            if (!$user) continue;
 
             $users[] = self::getUserItem($user, $date);
         }
 
         return [
             'items' => $users,
-            'fields' => self::getUserFields()    
+            'fields' => self::getUserFields()
         ];
     }
 
     /**
-     * user record fields 
+     * user record fields
      */
-    private static function getUserFields() {
+    private static function getUserFields()
+    {
         $arr = [];
         $arr[] = [
             'key' => 'name',
@@ -129,37 +131,36 @@ class CourseResult extends Model
             'name' => 'Дата завершения',
             'class' => 'text'
         ];
-        
+
         return $arr;
     }
-    
+
     /**
      * Get user record with courseResults
      */
-    private static function getUserItem($user, $date) : array
+    private static function getUserItem($user, $date): array
     {
         $arr = [];
 
         $uc = self::getUserCourses($user);
         $arr['courses'] = $uc['courses'];
 
-        $arr['name'] = $user->last_name . ' ' . $user->name . ' (' . $user->course_results->count() .')';
+        $arr['name'] = $user->last_name . ' ' . $user->name . ' (' . $user->course_results->count() . ')';
         $arr['user_id'] = $user->id;
 
 
+        $arr['status'] = self::STATUSES[$uc['totals']['status']];
 
-        $arr['status'] = self::STATUSES[$uc['totals']['status']];  
 
-
-        $arr['progress'] = $uc['totals']['progress'] . '%' ;
-        $arr['progress_on_week'] = $uc['totals']['progress_on_week'] . '%' ;
-        $arr['progress_number'] = $uc['totals']['progress'];  
+        $arr['progress'] = $uc['totals']['progress'] . '%';
+        $arr['progress_on_week'] = $uc['totals']['progress_on_week'] . '%';
+        $arr['progress_number'] = $uc['totals']['progress'];
         $arr['points'] = $uc['totals']['points'];
         $arr['max_points'] = $uc['totals']['max_points'];
         $arr['expanded'] = false;
         $arr['started_at'] = $uc['totals']['started_at'];
         $arr['ended_at'] = $uc['totals']['ended_at'];
-        
+
         return $arr;
     }
 
@@ -167,7 +168,7 @@ class CourseResult extends Model
      * get course results of User
      * collapsing list
      */
-    private static function getUserCourses($user) : array
+    private static function getUserCourses($user): array
     {
         $arrx = [];
         /**
@@ -191,26 +192,26 @@ class CourseResult extends Model
         // get user courses
         $course_ids = self::getCourseIds($user->id);
         /**
-         *  order 
+         *  order
          */
-        foreach($user->course_results as $result) {
+        foreach ($user->course_results as $result) {
             $result->order = $result->course != null ? $result->course->order : 999;
         }
 
         foreach ($course_ids as $key => $course_id) {
-            if(!$user->course_results->where('course_id', $course_id)->first()) {
+            if (!$user->course_results->where('course_id', $course_id)->first()) {
                 $cr = self::create([
                     'user_id' => $user->id,
                     'course_id' => $course_id,
                     'status' => self::INITIAL,
                     'progress' => 0, // 0 - 100
-                    'points'=> 0, 
-                    'started_at' => null, 
-                    'ended_at' => null, 
+                    'points' => 0,
+                    'started_at' => null,
+                    'ended_at' => null,
                 ]);
                 $cr->order = $key;
                 $user->course_results->push($cr);
-            } 
+            }
         }
 
         $user->course_results = $user->course_results->sortBy('order');
@@ -218,8 +219,8 @@ class CourseResult extends Model
         /**
          * total status
          */
-        if($user->course_results->whereIn('status', [1,2])->first()) {
-            if($user->course_results->where('status', 2)->first()) {
+        if ($user->course_results->whereIn('status', [1, 2])->first()) {
+            if ($user->course_results->where('status', 2)->first()) {
                 $status = self::ACTIVE;
             } else {
                 $status = self::COMPLETED;
@@ -227,14 +228,14 @@ class CourseResult extends Model
         } else {
             $status = self::INITIAL;
         }
-     
+
         /**
          * user courses
          */
-        foreach($user->course_results as $result) {
-            
+        foreach ($user->course_results as $result) {
+
             $course = self::$courses->where('id', $result->course_id)->first();
-            if($course) {
+            if ($course) {
                 $arr = [];
                 $arr['course_id'] = $result->course_id;
                 $arr['name'] = $course->name;
@@ -253,14 +254,14 @@ class CourseResult extends Model
                 /**
                  * weekly progress
                  */
-                
+
                 $stages_completed = $result->countWeeklyProgress();
-                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 
+                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0
                     ? round($stages_completed / $result->course->stages * 100, 1)
                     : 0;
-                if($weekly_progress > 100) $weekly_progress = 100;
+                if ($weekly_progress > 100) $weekly_progress = 100;
                 $arr['progress_on_week'] = $weekly_progress . '%';
-               
+
                 $progress_weekly += $weekly_progress;
 
                 /**
@@ -272,7 +273,7 @@ class CourseResult extends Model
 
                 $points += $result->points;
                 $max_points += $local_max_points;
-         
+
                 $share_of_scored_points = $local_max_points > 0 ? round($result->points / $local_max_points * 100, 1) . '%' : '0%';
                 $arr['points'] = $result->points . ' / ' . $local_max_points . ' / ' . $share_of_scored_points;
 
@@ -280,7 +281,7 @@ class CourseResult extends Model
                  * dates
                  */
                 $arr['started_at'] = $result->started_at ? Carbon::parse($result->started_at)->format('d.m.Y') : '';
-                $arr['ended_at'] =  $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
+                $arr['ended_at'] = $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
 
                 if (isset($course->items) && $course->items->count() > 1) {
                     $arr['items'] = $course->items;
@@ -291,10 +292,10 @@ class CourseResult extends Model
         }
 
         $total_progress = $progress_count > 0 ? round($progress / $progress_count) : 0;
-        if($total_progress > 100) $total_progress = 100;
-        
+        if ($total_progress > 100) $total_progress = 100;
+
         $total_progress_weekly = $progress_count > 0 ? round($progress_weekly / $progress_count) : 0;
-        if($total_progress_weekly > 100) $total_progress_weekly = 100;
+        if ($total_progress_weekly > 100) $total_progress_weekly = 100;
 
         return [
             'courses' => $arrx,
@@ -313,28 +314,28 @@ class CourseResult extends Model
     /**
      * Count amount of stages user completed recent 7 days
      */
-    private function countWeeklyProgress() : int
-    { 
+    private function countWeeklyProgress(): int
+    {
         $stages = 0;
 
-        if($this->weekly_progress == null) return 0;
-        
+        if ($this->weekly_progress == null) return 0;
+
         $date = Carbon::now()->addDay();
-        for($i = 1; $i <= 7; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             $day = $date->subDays(1)->format('Y-m-d');
-            if(array_key_exists($day, $this->weekly_progress)) {
-                $stages += (int) $this->weekly_progress[$day];
+            if (array_key_exists($day, $this->weekly_progress)) {
+                $stages += (int)$this->weekly_progress[$day];
             }
-        } 
-       
+        }
+
         return $stages;
     }
 
     /**
      * get groups with progresses in courses
      */
-    public static function getGroups($date = null) : array
-    { 
+    public static function getGroups($date = null): array
+    {
         $_groups = ProfileGroup::where('active', 1)->get();
 
         self::$courses = Course::get();
@@ -348,14 +349,14 @@ class CourseResult extends Model
 
         return [
             'items' => $groups,
-            'fields' => self::getGroupFields()    
+            'fields' => self::getGroupFields()
         ];
     }
 
     /**
      * get group progress record
      */
-    private static function getGroupItem($users, $group) : array
+    private static function getGroupItem($users, $group): array
     {
         $points = 0;
         $progress = 0;
@@ -375,7 +376,7 @@ class CourseResult extends Model
     /**
      * group record fields
      */
-    private static function getGroupFields() : array
+    private static function getGroupFields(): array
     {
         $arr = [];
         $arr[] = [
@@ -393,22 +394,22 @@ class CourseResult extends Model
             'name' => 'Прогресс',
             'class' => 'text'
         ];
-        
+
         return $arr;
     }
 
 
     /**
      * Get active course of user
-     * 
-     * $id for compare is the active course 
-     * 
+     *
+     * $id for compare is the active course
+     *
      * @return Course
      */
     public static function activeCourse($id = 0)
     {
         $user_id = auth()->id();
-        
+
         /**
          * find course
          */
@@ -416,20 +417,20 @@ class CourseResult extends Model
         $active_course = null;
 
         $courseIds = self::notFinishedCourses($user_id);
-        
+
         /**
          * exists not finished course
          */
-        if(count($courseIds) > 0) {
+        if (count($courseIds) > 0) {
 
             $course = Course::whereIn('id', $courseIds)
-                ->orderBy('order')    
+                ->orderBy('order')
                 ->first();
 
             $course_id = $course ? $course->id : 0;
             $active_course_id = $course_id;
 
-            if($id != 0) $course_id = $id;
+            if ($id != 0) $course_id = $id;
 
             /**
              * active course
@@ -439,21 +440,21 @@ class CourseResult extends Model
                 ->where('course_id', $course_id)
                 ->orderBy('status', 'desc')
                 ->first();
-            
-            if($active_course) {
-                if($active_course->status == self::COMPLETED) {
+
+            if ($active_course) {
+                if ($active_course->status == self::COMPLETED) {
                     $active_course = null;
                 }
             } else {
-        
+
                 $active_course = self::create([
                     'user_id' => $user_id,
                     'course_id' => $course_id,
                     'status' => self::ACTIVE,
                     'progress' => 0, // 0 - 100
-                    'points'=> 0, 
-                    'started_at' => now(), 
-                    'ended_at' => null, 
+                    'points' => 0,
+                    'started_at' => now(),
+                    'ended_at' => null,
                 ]);
             }
         }
@@ -463,15 +464,15 @@ class CourseResult extends Model
         /**
          * get poster from S3 Cloud
          */
-        if($active_course) {
+        if ($active_course) {
             $course = Course::with('items')->find($active_course->course_id);
 
-            if($course && $course->img != '' && $course->img != null) {
+            if ($course && $course->img != '' && $course->img != null) {
                 $disk = \Storage::disk('s3');
-                
+
                 try {
-                    if($course->img != null && $disk->exists($course->img)) {
-                        $course->img = $disk->url(
+                    if ($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->get(
                             $course->img, now()->addMinutes(360)
                         );
                     }
@@ -484,23 +485,23 @@ class CourseResult extends Model
         /**
          * active or not
          */
-        if($course) {
+        if ($course) {
             $course->is_active = $course->id == $active_course_id || $id == 0;
-        } 
+        }
 
         return $course;
     }
 
     /**
      * Get courses user was assigned
-     * 
-    *  order => course_id
-    *  [   
-    *     1 => 2,
-    *     2 => 3
-    *  ]
-    */
-    private static function getCourseIds($user_id) : array
+     *
+     *  order => course_id
+     *  [
+     *     1 => 2,
+     *     2 => 3
+     *  ]
+     */
+    private static function getCourseIds($user_id): array
     {
         // prepare
         $user = User::withTrashed()->find($user_id);
@@ -509,19 +510,19 @@ class CourseResult extends Model
         $groups = $user->inGroups()->pluck('id')->toArray();
 
         // find course
-        $courses = CourseModel::where(function($query) use ($user_id) {
-                $query->where('item_model', 'App\\User')
-                    ->where('item_id', $user_id);
-            })
-            ->orWhere(function($query) use ($groups) {
+        $courses = CourseModel::where(function ($query) use ($user_id) {
+            $query->where('item_model', 'App\\User')
+                ->where('item_id', $user_id);
+        })
+            ->orWhere(function ($query) use ($groups) {
                 $query->where('item_model', 'App\\ProfileGroup')
                     ->whereIn('item_id', $groups);
             })
-            ->orWhere(function($query) use ($position_id) {
+            ->orWhere(function ($query) use ($position_id) {
                 $query->where('item_model', 'App\\Position')
                     ->where('item_id', $position_id);
             })
-            ->orWhere(function($query) {
+            ->orWhere(function ($query) {
                 $query->where('item_model', 0)
                     ->where('item_id', 0);
             })
@@ -539,27 +540,27 @@ class CourseResult extends Model
     /**
      * active courses of User
      */
-    public static function activeCourses($user_id = null) : array
+    public static function activeCourses($user_id = null): array
     {
         $user_id = $user_id ?? auth()->id();
 
         $courseIds = self::notFinishedCourses($user_id);
-        
+
         /**
          * Has active courses
          */
         $active_courses = [];
         $disk = \Storage::disk('s3');
 
-        if(count($courseIds) > 0) {
+        if (count($courseIds) > 0) {
             $active_courses = Course::whereIn('id', $courseIds)
                 ->orderBy('order', 'asc')
-                ->get()->each(function ($course) use ($disk){
+                ->get()->each(function ($course) use ($disk) {
                     $course->text = $course->text != '' || $course->text != null ? trim($course->text) : 'Нет описания';
 
-                    if($course->img != null && $disk->exists($course->img)) {
-                        $course->img = $disk->url(
-                            $course->img, now()->addMinutes(360)
+                    if ($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->get(
+                            $course->img
                         );
                     }
                 });
@@ -573,13 +574,13 @@ class CourseResult extends Model
      * @param int $user_id
      * @return array
      */
-    private static function notFinishedCourses($user_id) : array
+    private static function notFinishedCourses($user_id): array
     {
         /**
          * get all user courses
          */
         $courses = self::getCourseIds($user_id);
-        
+
         /**
          * user completed courses
          */
@@ -588,7 +589,7 @@ class CourseResult extends Model
             ->get()
             ->pluck('course_id')
             ->toArray();
-     
+
         $results = array_unique($results);
 
         /**
