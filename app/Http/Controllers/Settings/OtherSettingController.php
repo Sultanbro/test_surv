@@ -75,8 +75,8 @@ class OtherSettingController extends Controller
                 $settings[$key] = $setting->value == 1;
 
                 if ($request->type == 'company' && $setting->value) {
-                    $settings['logo'] = $disk->get(
-                        $setting->value
+                    $settings['logo'] = $disk->temporaryUrl(
+                        $setting->value, now()->addMinutes(360)
                     );
                 }
 
@@ -182,7 +182,7 @@ class OtherSettingController extends Controller
 
         return [
             'relative' => $path,
-            'temp' => $disk->get(
+            'temp' => $disk->temporaryUrl(
                 $path, now()->addMinutes(360)
             )
         ];
