@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Learning\Video;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\TestQuestion;
 use App\Models\CourseItemModel;
+use App\Models\TestQuestion;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoPlaylist as Playlist;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class VideoPlaylistController extends Controller
@@ -358,7 +358,7 @@ class VideoPlaylistController extends Controller
         return [
             'relative' => $xpath,
             'temp' => $disk->url(
-                $xpath, now()->addMinutes(360)
+                $xpath
             )
         ];
     }
