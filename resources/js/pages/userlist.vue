@@ -174,6 +174,14 @@
 		</div>
 
 		<div class="my-2 d-flex align-items-center justify-content-end">
+			<a
+				v-if="currentUser === 18 && isBP"
+				href="javasctipt:void(0)"
+				class="btn btn-success btn-sm mr-a rounded d-block"
+				@click.prevent="exportData()"
+			>
+				<i class="far fa-file-excel" /> Экспорт
+			</a>
 			<div>
 				<b-pagination
 					v-model="currentPage"
@@ -183,14 +191,6 @@
 					size="sm"
 					class="my-0 p-0"
 				/>
-				<a
-					v-if="currentUser === 18 && isBP"
-					href="javasctipt:void(0)"
-					class="btn btn-success btn-sm ml-2 rounded d-block"
-					@click.prevent="exportData()"
-				>
-					<i class="far fa-file-excel" /> Экспорт
-				</a>
 			</div>
 		</div>
 
