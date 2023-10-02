@@ -183,7 +183,14 @@
 					size="sm"
 					class="my-0 p-0"
 				/>
-				<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
+				<a
+					v-if="[5,18].includes(currentUser) && isBP"
+					href="javasctipt:void(0)"
+					class="btn btn-success btn-sm ml-2 rounded d-block"
+					@click="exportData()"
+				>
+					<i class="far fa-file-excel" /> Экспорт
+				</a>
 			</div>
 		</div>
 
@@ -728,7 +735,10 @@ export default {
 		},
 		totalRows(){
 			return this.filtered.length || 0
-		}
+		},
+		isBP(){
+			return ['test', 'bp'].includes(location.hostname.split('.')[0])
+		},
 	},
 	watch: {
 		showFields: {
@@ -838,7 +848,6 @@ export default {
 		},
 
 		exportData() {
-
 			var link = '/timetracking/get-persons';
 			link += '?filter=' + this.tableFilter;
 
