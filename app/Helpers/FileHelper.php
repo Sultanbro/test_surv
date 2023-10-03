@@ -12,7 +12,7 @@ class FileHelper
 
     public static function save(UploadedFile $file, string $path): ?string
     {
-        $storage =  Storage::disk('s3');
+        $storage = Storage::disk('s3');
 
         try {
             $result = null;
@@ -32,7 +32,7 @@ class FileHelper
 
     public static function delete(string $filename, string $path): bool
     {
-        $storage =  Storage::disk('s3');
+        $storage = Storage::disk('s3');
 
         try {
             $path = self::checkDirectory($path);
@@ -48,7 +48,7 @@ class FileHelper
 
     private static function checkDirectory(string $path): string
     {
-        $storage =  Storage::disk('s3');
+        $storage = Storage::disk('s3');
 
 
         if (!$storage->directoryExists($path)) {
@@ -60,7 +60,7 @@ class FileHelper
 
     public static function checkFile(string $path): string
     {
-        $storage =  Storage::disk('s3');
+        $storage = Storage::disk('s3');
 
         return $storage->exists($path);
     }
@@ -74,9 +74,7 @@ class FileHelper
     public static function getUrl(string $folder, string $filename): string
     {
         return Storage::disk('s3')
-            ->temporaryUrl(
-                ($folder !== '' ? ($folder . '/') : '') . $filename,
-                now()->addMinutes(360));
+            ->get(($folder !== '' ? ($folder . '/') : '') . $filename);
     }
 
     /**
@@ -86,68 +84,61 @@ class FileHelper
      */
     public static function storeDocumentsFile(
         array $files,
-        int $userId
+        int   $userId
     ): void
     {
         $downloads = [
-            'user_id'       => $userId,
-            'ud_lich'       => null,
-            'dog_okaz_usl'  => null,
+            'user_id' => $userId,
+            'ud_lich' => null,
+            'dog_okaz_usl' => null,
             'sohr_kom_tainy' => null,
-            'dog_o_nekonk'  => null,
-            'trud_dog'      => null,
-            'archive'       => null,
+            'dog_o_nekonk' => null,
+            'trud_dog' => null,
+            'archive' => null,
         ];
 
-        if ($files['dog_okaz_usl'])
-        {
+        if ($files['dog_okaz_usl']) {
             $file = $files['dog_okaz_usl'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/dog_okaz_usl';
             $downloads['dog_okaz_usl'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        if ($files['sohr_kom_tainy'])
-        {
+        if ($files['sohr_kom_tainy']) {
             $file = $files['sohr_kom_tainy'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/sohr_kom_tainy';
             $downloads['sohr_kom_tainy'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        if ($files['dog_o_nekonk'])
-        {
+        if ($files['dog_o_nekonk']) {
             $file = $files['dog_o_nekonk'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/dog_o_nekonk';
             $downloads['dog_o_nekonk'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-       if ($files['trud_dog'])
-        {
+        if ($files['trud_dog']) {
             $file = $files['trud_dog'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/trud_dog';
             $downloads['trud_dog'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        if ($files['ud_lich'])
-        {
+        if ($files['ud_lich']) {
             $file = $files['ud_lich'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/ud_lich';
             $downloads['ud_lich'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        if ($files['photo'])
-        {
+        if ($files['photo']) {
             $file = $files['photo'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/photo';
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        if ($files['archive'])
-        {
+        if ($files['archive']) {
             $file = $files['archive'];
             $name = $userId . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = '/archive';

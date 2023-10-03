@@ -11,6 +11,7 @@ import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
 import UserEditMisc from '@/components/pages/UserEdit/UserEditMisc'
 import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
 import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageData'
+import { loadMapsApi } from '@/composables/ymapsLoader'
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
 import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
 import 'vue-croppie'
@@ -196,6 +197,9 @@ export default {
 				}
 			}
 		},
+	},
+	created(){
+		loadMapsApi()
 	},
 	mounted(){
 		this.updatePageData();

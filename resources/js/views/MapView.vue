@@ -1,41 +1,49 @@
 <script>
+/* global ymaps */
+
 import DefaultLayout from '@/layouts/DefaultLayout'
-import {LMap, LTileLayer, LMarker, LIcon} from 'vue2-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { loadMapsApi } from '@/composables/ymapsLoader'
 
 export default {
 	name: 'MapView',
 	components: {
 		DefaultLayout,
-		LMap,
-		LTileLayer,
-		LMarker,
-		LIcon
 	},
 	data() {
 		return {
-			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-			attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-			zoom: 6,
-			center: [50.416,69.258],
-			markers: []
+			map: null,
+			zoom: 5,
+			center: [50.416, 69.258],
 		}
 	},
+	created(){
+		loadMapsApi()
+	},
 	mounted() {
-		this.getCoords()
+		this.init()
 	},
 	methods: {
+		init(){
+			if(!window.ymaps) return setTimeout(this.init, 16)
+			ymaps.ready(this.initMap)
+		},
+		initMap(){
+			this.map = new ymaps.Map('MapView-map', {
+				center: this.center,
+				zoom: this.zoom,
+				controls: [],
+			})
+			this.getCoords()
+		},
 		async getCoords(){
 			const {data} = await this.axios.get('/api/coordinates')
-			const markers = [];
+
 			data.data.forEach(coord => {
 				if(!coord.users.length) return
-				markers.push({
-					count: coord.users.length,
-					latLng: [coord.geo_lat, coord.geo_lon]
-				});
+				this.map.geoObjects.add(new ymaps.Placemark([coord.geo_lat, coord.geo_lon], {
+					iconContent: coord.users.length,
+				}))
 			})
-			this.markers = markers
 		}
 	},
 }
@@ -44,30 +52,19 @@ export default {
 <template>
 	<DefaultLayout class="no-padding">
 		<div class="old__content">
-			<l-map
-				style="height: 100vh"
-				:zoom="zoom"
-				:center="center"
-			>
-				<l-tile-layer
-					:url="url"
-					:attribution="attribution"
-				/>
-				<l-marker
-					v-for="(marker, index) in markers"
-					:key="index"
-					:lat-lng="marker.latLng"
-				>
-					<l-icon>
-						<span>{{ marker.count }}</span>
-					</l-icon>
-				</l-marker>
-			</l-map>
+			<div id="MapView-map" />
 		</div>
 	</DefaultLayout>
 </template>
 
 <style lang="scss">
+	#MapView-map{
+		height: 100vh;
+		[class$="copyrights-promo"],
+		[class$="gototech"]{
+			display: none !important;
+		}
+	}
 	.leaflet-marker-icon {
 		span{
 			border-radius: 50%;

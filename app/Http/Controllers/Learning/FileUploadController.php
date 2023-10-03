@@ -22,10 +22,10 @@ class FileUploadController extends Controller
     }
 
     public function uploadLargeFiles(Request $request) {
-       
+
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
 
-     
+
         if (!$receiver->isUploaded()) {
             // file not uploaded
         }
@@ -51,14 +51,14 @@ class FileUploadController extends Controller
             $path = $disk->putFileAs($file_path, $file, $fileName);
             $path = $disk->url($path);
 
-          
+
 
             $model = $this->saveModel($request->type, $request->id, $file_path, $fileName, $originalFileName);
-                
+
             // delete chunked file
             unlink($file->getPathname());
 
-         
+
 
             return [
                 'path' => $disk->temporaryUrl(
@@ -80,8 +80,8 @@ class FileUploadController extends Controller
 
     private function saveModel($type, $id, $path, $filename, $originalFileName)
     {
-       
-        
+
+
         if($type == 'video') { // Загружена video
 
             $model = Video::create([
@@ -94,7 +94,7 @@ class FileUploadController extends Controller
                 'group_id' => 0,
                 'order' => 0
             ]);
-           
+
         }
 
         if($type == 'book') {

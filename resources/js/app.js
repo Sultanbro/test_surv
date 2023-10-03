@@ -244,7 +244,12 @@ if(process.env.NODE_ENV === 'production') {
 	(() => import(/* webpackChunkName: "Firebase" */ './firebase.js'))()
 }
 
-
+if(Laravel.is_admin){
+	window.admin = {}
+	window.addAdminTool = (name, fn) => {
+		window.admin[name] = fn
+	}
+}
 
 import App from '@/App.vue'
 
