@@ -31,9 +31,9 @@ class SendNotificationJob implements ShouldQueue
      * @return void
      * @throws HttpClientException
      */
-    public function handle(array $userIds):void
+    public function handle():void
     {
-        $users = User::query()->where('phone','!=','')->whereIn('id',$userIds)->get();
+        $users = User::query()->where('phone','!=','')->whereIn('id',$this->userIds)->get();
         foreach($users as $key=>$user) {
             $message = 'Уважаемый(ая) ' . $user->name . ' ' . $user->last_name . '
 Добро пожаловать в нашу большую семью Контакт-Центра "Business Partner" 😀
