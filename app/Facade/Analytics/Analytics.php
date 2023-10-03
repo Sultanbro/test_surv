@@ -98,7 +98,7 @@ final class Analytics
         int $groupId = null
     ): Collection
     {
-        $group      = $this->groups()->where('id', $groupId)->first();
+        $group      = ProfileGroup::query()->where('id', $groupId)->first();
         $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo     = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
@@ -245,10 +245,10 @@ final class Analytics
         array $views
     ): Collection
     {
-        return $this->activities()
+        return Activity::query()
             ->where('group_id', $groupId)
             ->whereIn('view', $views)
-            ->sortByDesc('order');
+            ->orderByDesc('order')->get();
     }
 
     /**
