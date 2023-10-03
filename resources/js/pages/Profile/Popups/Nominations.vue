@@ -58,7 +58,12 @@
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
-											v-if="item.format !== 'pdf'"
+											v-if="item.previewPath"
+											:src="item.previewPath"
+											alt="certificate image"
+										>
+										<img
+											v-else-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
 										>
@@ -98,7 +103,12 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.format !== 'pdf'"
+											v-if="item.previewPath"
+											:src="item.previewPath"
+											alt="certificate image"
+										>
+										<img
+											v-else-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
 										>
@@ -128,7 +138,12 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.format !== 'pdf'"
+											v-if="item.previewPath"
+											:src="item.previewPath"
+											alt="certificate image"
+										>
+										<img
+											v-else-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
 										>
@@ -200,7 +215,12 @@
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
-											v-if="item.format !== 'pdf'"
+											v-if="item.previewPath"
+											:src="item.previewPath"
+											alt="certificate image"
+										>
+										<img
+											v-else-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
 										>
@@ -255,7 +275,12 @@
 									>
 										<div class="certificates__item">
 											<img
-												v-if="item.format !== 'pdf'"
+												v-if="item.previewPath"
+												:src="item.previewPath"
+												alt="certificate image"
+											>
+											<img
+												v-else-if="item.format !== 'pdf'"
 												:src="item.tempPath"
 												alt="certificate image"
 											>
@@ -289,7 +314,12 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.format !== 'pdf'"
+											v-if="item.previewPath"
+											:src="item.previewPath"
+											alt="certificate image"
+										>
+										<img
+											v-else-if="item.format !== 'pdf'"
 											:src="item.tempPath"
 											alt="certificate image"
 										>
