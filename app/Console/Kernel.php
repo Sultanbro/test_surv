@@ -119,8 +119,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run check:timetrackers')->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
         $schedule->command('tenants:run fine:check')->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье
         $schedule->command('tenants:run fine:check')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
-        $schedule->command('tenants:run analytics:pivots')->monthly(); // создать сводные таблицы отделов в аналитике
-        $schedule->command('tenants:run analytics:parts')->monthly(); // создать декомпозицию и спидометры в аналитике
+        $schedule->command('tenants:run analytics:pivots')->withoutOverlapping()->monthly(); // создать сводные таблицы отделов в аналитике
+        $schedule->command('tenants:run analytics:parts')->withoutOverlapping()->monthly(); // создать декомпозицию и спидометры в аналитике
         //$schedule->command('tenants:run checklist:update')->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
         //$schedule->command('tenants:run trainee:count_days')->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
 
