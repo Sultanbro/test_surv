@@ -203,7 +203,7 @@ class NominationAwardService implements AwardInterface
                 'name' => $user->name,
                 'last_name' => $user->last_name,
                 'user_id' => $user->id,
-                'previewPath' => FileHelper::getUrl($this->preview_path, $user->pivot->preview_path),
+                'previewPath' => FileHelper::getUrl($this->path, $user->pivot->preview_path),
                 'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
             ];
         }
@@ -238,7 +238,7 @@ class NominationAwardService implements AwardInterface
                     'name' => $user->name,
                     'last_name' => $user->last_name,
                     'user_id' => $user->id,
-                    'previewPath' => FileHelper::getUrl($this->preview_path, $user->pivot->preview_path),
+                    'previewPath' => FileHelper::getUrl($this->path, $user->pivot->preview_path),
                     'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
                 ];
             }
