@@ -14,7 +14,7 @@ class SendMessageTraineesService
      */
     public function handle(array $userIds):bool
     {
-            SendNotificationJob::dispatch($userIds)->delay(now()->addMinutes(5));
+            SendNotificationJob::dispatch($userIds)->delay(now()->addDays(2));
 
             return true;
     }
