@@ -105,7 +105,7 @@ class AwardCategoryController extends Controller
     {
         try {
             $awards = $awardCategory->awards()->where('type', Award::TYPE_PUBLIC)->get();
-            return response()->json($awards);
+            return response()->success($awards);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
