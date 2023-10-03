@@ -55,7 +55,7 @@
 			<div class="NotificationsEditForm-label">
 				Текст уведомления
 				<img
-					v-b-popover.hover="'Текст уведомления, 244 символа максимум'"
+					v-b-popover.hover="'Текст уведомления, 1000 символа максимум'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
@@ -65,7 +65,7 @@
 			<div
 				class="form-control relative"
 				:class="{
-					'NotificationsEditForm-error': value.title.length > 244
+					'NotificationsEditForm-error': value.title.length > 1000
 				}"
 			>
 				<JobtronTextarea
