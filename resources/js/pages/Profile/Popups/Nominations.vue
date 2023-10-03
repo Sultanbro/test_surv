@@ -427,7 +427,7 @@
 <script>
 import { mapActions } from 'pinia'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
 	name: 'PopupNominations',
 	components: {
@@ -435,7 +435,7 @@ export default {
 	},
 	filters: {
 		splitNumber: function (val) {
-			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 		}
 	},
 	props: {},
@@ -450,107 +450,97 @@ export default {
 			nominations: [],
 			certificates: [],
 			accrual: [],
-		};
+			format2type: {
+				png: 'image/png',
+				jpg: 'image/jpeg',
+				pdf: 'application/pdf',
+			}
+		}
 	},
 	watch: {
 		tabIndex(val) {
-			let buttons = this.$refs.tabis.$refs.buttons;
-			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
+			const buttons = this.$refs.tabis.$refs.buttons
+			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'})
 		}
 	},
 	async mounted() {
-		await this.axios
-			.get('/awards/type?key=nomination')
-			.then(({data}) => {
-				if (data.data.data) {
-					this.nominations = data.data.data;
-				}
-			})
-			.catch(error => {
-				console.error(error);
-			});
+		try {
+			const {data} = await this.axios.get('/awards/type?key=nomination')
+			if (data.data.data) this.nominations = data.data.data
+		}
+		catch (error) {
+			console.error(error)
+		}
 
-		await this.axios
-			.get('/awards/type?key=certificate')
-			.then(({data}) => {
-				this.certificates = data.data.data;
-			})
-			.catch(error => {
-				console.error(error);
-			});
-		await this.axios
-			.get('/awards/type?key=accrual')
-			.then(({data}) => {
-				this.accrual = data.data.data;
-			})
-			.catch(error => {
-				console.error(error);
-			});
+		try {
+			const {data} = await this.axios.get('/awards/type?key=certificate')
+			this.certificates = data.data.data
+		}
+		catch (error) {
+			console.error(error)
+		}
+
+		try {
+			const {data} = await this.axios.get('/awards/type?key=accrual')
+			this.accrual = data.data.data
+		}
+		catch (error) {
+			console.error(error)
+		}
 
 		// установить награды как виденные
 		this.setReadedAwards()
 
-		this.loading = false;
-		if (this.nominations.length > 0) {
-			let text = this.nominations[0].description;
-			this.$emit('get-desc', text);
-		} else if (this.certificates.length > 0) {
-			let text = this.certificates[0].description;
-			this.$emit('get-desc', text);
-		} else if (this.accrual.length > 0) {
-			let text = this.accrual[0].description;
-			this.$emit('get-desc', text);
-		} else{
-			this.$emit('get-desc', 'Нет наград');
+		this.loading = false
+		if (this.nominations.length) {
+			this.$emit('get-desc', this.nominations[0].description)
+		}
+		else if (this.certificates.length) {
+			this.$emit('get-desc', this.certificates[0].description)
+		}
+		else if (this.accrual.length) {
+			this.$emit('get-desc', this.accrual[0].description)
+		}
+		else{
+			this.$emit('get-desc', 'Нет наград')
 		}
 	},
 	methods: {
 		...mapActions(useProfileSalaryStore, ['setReadedAwards']),
 		nominationPublic(array){
-			return array.filter(a => a.type === 'public');
+			return array.filter(a => a.type === 'public')
 		},
 		activeteTab(text){
 			this.$emit('get-desc', text)
 		},
 		downloadImage(data) {
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', data.tempPath, true);
+			const xhr = new XMLHttpRequest()
+			xhr.open('GET', data.tempPath, true)
 
-			xhr.responseType = 'arraybuffer';
+			xhr.responseType = 'arraybuffer'
 
 			xhr.onload = function () {
-				var arrayBufferView = new Uint8Array(this.response);
-				let options = {};
-				if (data.format === 'png') {
-					options.type = 'image/png'
+				const arrayBufferView = new Uint8Array(this.response)
+				const options = {
+					type: this.format2type[data.format]
 				}
-				if (data.format === 'jpg') {
-					options.type = 'image/jpeg'
-				}
-				if (data.format === 'pdf') {
-					options.type = 'application/pdf'
-				}
-				var blob = new Blob([arrayBufferView], options);
-				var imageUrl = window.URL.createObjectURL(blob);
-				var a = document.createElement('a');
-				a.href = imageUrl;
-				a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-			};
+				const blob = new Blob([arrayBufferView], options)
+				const imageUrl = window.URL.createObjectURL(blob)
+				const a = document.createElement('a')
+				a.href = imageUrl
+				a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`
+				document.body.appendChild(a)
+				a.click()
+				document.body.removeChild(a)
+			}
 
-			xhr.send();
+			xhr.send()
 		},
 		modalShow(item, name, isMy) {
-			this.itemModal = item;
-			if(item.hasOwnProperty('course_name')){
-				this.itemModal.awardName = item.course_name;
-			} else {
-				this.itemModal.awardName = name;
-			}
-			this.itemModal.isMy = isMy;
-			this.modal = !this.modal;
+			this.itemModal = item
+			this.itemModal.awardName = item.hasOwnProperty('course_name') ? item.course_name : name
+			this.itemModal.isMy = isMy
+			this.modal = !this.modal
 		},
 		onModalShow(){
 			// костыль для модалки номинаций
@@ -558,11 +548,11 @@ export default {
 				const modal = document.querySelector('.awards-profile-modal-preview')
 				if(!modal) return this.onModalShow()
 				const outer = modal.parentNode
-				outer.style.zIndex = 1040000;
+				outer.style.zIndex = 1040000
 			})
 		},
 	}
-};
+}
 </script>
 
 

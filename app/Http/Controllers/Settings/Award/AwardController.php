@@ -109,6 +109,8 @@ class AwardController extends Controller
 
 
     /**
+     * @param RewardRequest $request
+     * @param AwardRepository $repository
      * @throws Exception
      */
     public function reward(RewardRequest $request, AwardRepository $repository)
@@ -190,7 +192,7 @@ class AwardController extends Controller
 
 
     /**
-     * 
+     *
      */
     public function read()
     {

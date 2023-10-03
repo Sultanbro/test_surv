@@ -1,22 +1,19 @@
 <template>
 	<div id="awards-page">
-		<BButton
-			variant="success"
-			class="mb-2"
-			@click="addAwardButtonClickHandler"
-		>
-			Создать награду
-		</BButton>
-		<img
-			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
-			src="/images/dist/profit-info.svg"
-			class="img-info"
-		>
-
-		<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
-		<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
-		<!--            <RegenerateCertificates/>-->
-		<!--        </b-modal>-->
+		<template v-if="canEdit">
+			<BButton
+				variant="success"
+				class="mb-2"
+				@click="addAwardButtonClickHandler"
+			>
+				Создать награду
+			</BButton>
+			<img
+				v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
+				src="/images/dist/profit-info.svg"
+				class="img-info"
+			>
+		</template>
 
 		<div
 			v-if="tableItems && tableItems.length > 0"
@@ -38,7 +35,7 @@
 						<BTh>Тип</BTh>
 						<BTh>Дата создания</BTh>
 						<BTh>Постановщик</BTh>
-						<BTh />
+						<BTh v-if="canEdit" />
 					</BTr>
 				</BThead>
 				<BTbody>
@@ -63,18 +60,15 @@
 								{{ tableItem.description }}
 							</div>
 						</BTd>
-						<BTd v-if="tableItem.type === 1">
-							Картинка
-						</BTd>
-						<BTd v-if="tableItem.type === 2">
-							Конструктор
-						</BTd>
-						<BTd v-if="tableItem.type === 3">
-							Данные начислений
+						<BTd>
+							{{ typeNamesList[tableItem.type] }}
 						</BTd>
 						<BTd>{{ tableItem.created_at | splitDate(tableItem.created_at) }}</BTd>
 						<BTd>{{ tableItem.creator.name }} {{ tableItem.creator.last_name }}</BTd>
-						<BTd @click.stop>
+						<BTd
+							v-if="canEdit"
+							@click.stop
+						>
 							<b-button
 								class="btn btn-danger btn-icon"
 								@click="modalShow(tableItem)"
@@ -127,7 +121,9 @@
 
 <script>
 import EditAwardSidebar from './EditAwardSidebar.vue';
+import {typeNamesList} from './helper'
 // import RegenerateCertificates from "./types/RegenerateCertificates";
+
 export default {
 	name: 'SidebarAwards',
 	components: {
@@ -135,7 +131,7 @@ export default {
 	},
 	filters: {
 		splitDate: function(val){
-			return val.split('T')[0];
+			return val.split('T')[0]
 		}
 	},
 	data() {
@@ -146,138 +142,136 @@ export default {
 			showEditAwardSidebar: false,
 			item: null,
 			tableItems: [],
-		};
+			typeNamesList,
+			canEdit: this.$can('awards_edit'),
+		}
 	},
 	mounted() {
-		this.getAwards();
+		this.getAwards()
 	},
 	methods: {
 		modalShow(item) {
-			this.itemRemove = item;
-			this.modal = !this.modal;
+			this.itemRemove = item
+			this.modal = !this.modal
 		},
 		async getAwards() {
-			let loader = this.$loading.show();
-			this.tableItems = [];
-			await this.axios
-				.get('/award-categories/get')
-				.then(response => {
-					this.tableItems = response.data.data;
-					loader.hide();
-				})
-				.catch(function (error) {
-					console.error(error);
-					loader.hide();
-				});
+			const loader = this.$loading.show()
+			this.tableItems = []
+			try {
+				const {data} = await this.axios.get('/award-categories/get')
+				this.tableItems = data.data
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
 		},
 		rowClickedHandler(data) {
-			this.showEditAwardSidebar = true;
-			this.item = data;
+			if(!this.canEdit) return
+			this.showEditAwardSidebar = true
+			this.item = data
 		},
 		addAwardButtonClickHandler() {
-			this.showEditAwardSidebar = true;
-			this.item = {};
+			if(!this.canEdit) return
+			this.showEditAwardSidebar = true
+			this.item = {}
 		},
 		saveAward() {
-			this.getAwards();
+			this.getAwards()
 		},
 		updateTable() {
-			this.getAwards();
+			this.getAwards()
 		},
 		async remove(item) {
-			this.modal = !this.modal;
-			let loader = this.$loading.show();
-			await this.axios
-				.delete('/award-categories/delete/' + item.id)
-				.then(() => {
-					this.getAwards();
-					loader.hide();
-				})
-				.catch(function (error) {
-					console.error(error);
-					loader.hide();
-				});
+			this.modal = !this.modal
+			const loader = this.$loading.show()
+			try {
+				await this.axios.delete('/award-categories/delete/' + item.id)
+				this.getAwards()
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
 		},
 	}
 };
 </script>
 
 <style lang="scss">
-    #awards-page {
-			.img-info{
-				vertical-align: middle;
+#awards-page {
+	.img-info{
+		vertical-align: middle;
+	}
+	.no-awards-title{
+		font-size: 20px;
+		font-weight: 500;
+		color: #999;
+		text-transform: uppercase;
+	}
+}
+#awards-table {
+	thead{
+		white-space: nowrap;
+	}
+	.td-desc{
+		max-width: calc(100vw - 1000px);
+		position: relative;
+		.full-text{
+			position: absolute;
+			top: 20px;
+			left: 10px;
+			max-width: 400px;
+			visibility: hidden;
+			opacity: 0;
+			padding: 10px 20px;
+			background-color: #fff;
+			font-size: 14px;
+			border: 1px solid #999;
+			line-height: 1.3;
+			text-align: left;
+			border-radius: 10px;
+			box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+			transition: 0.2s all ease;
+		}
+		&:hover{
+			.full-text{
+				visibility: visible;
+				opacity: 1;
+				top: 40px;
+				z-index: 11;
 			}
-        #edit-award-sidebar{
-            .ui-sidebar__body{
-                transform: translateX(100%);
-            }
-            &.show{
-                .ui-sidebar__body{
-                    transform: translateX(0);
-                }
-            }
-        }
-        .no-awards-title{
-            font-size: 20px;
-            font-weight: 500;
-            color: #999;
-            text-transform: uppercase;
-        }
-        #awards-table {
-            thead{
-                white-space: nowrap;
-            }
-            tbody {
-                .td-desc{
-                    max-width: calc(100vw - 1000px);
-                    position: relative;
-                    .full-text{
-                        position: absolute;
-                        top: 20px;
-                        left: 10px;
-                        max-width: 400px;
-                        visibility: hidden;
-                        opacity: 0;
-                        padding: 10px 20px;
-                        background-color: #fff;
-                        font-size: 14px;
-                        border: 1px solid #999;
-                        line-height: 1.3;
-                        text-align: left;
-                        border-radius: 10px;
-                        box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
-                        transition: 0.2s all ease;
-                    }
-                    &:hover{
-                        .full-text{
-                            visibility: visible;
-                            opacity: 1;
-                            top: 40px;
-                            z-index: 11;
-                        }
-                    }
-                }
-                .desc{
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    padding: 5px 10px;
-                    text-align: left;
-                }
-                .clickable{
-                    cursor: pointer;
-                    height: 35px;
-                    padding: 0 15px;
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: 0.15s all ease;
-                    &:hover{
-                        background-color: rgba(0,0,0,0.1);
-                    }
-                }
-            }
-        }
-    }
+		}
+	}
+	.desc{
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		padding: 5px 10px;
+		text-align: left;
+	}
+	.clickable{
+		cursor: pointer;
+		height: 35px;
+		padding: 0 15px;
+		border-radius: 50px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: 0.15s all ease;
+		&:hover{
+			background-color: rgba(0,0,0,0.1);
+		}
+	}
+}
+#edit-award-sidebar{
+	.ui-sidebar__body{
+		transform: translateX(100%);
+	}
+	&.show{
+		.ui-sidebar__body{
+			transform: translateX(0);
+		}
+	}
+}
 </style>

@@ -233,11 +233,12 @@ Vue.directive('click-outside', {
 
 Vue.prototype.$can = function (permission/* , authorId = false */) {
 	if (Laravel.is_admin) {
-		return true;
+		return true
 	}
 	if (Laravel.permissions.indexOf(permission) !== -1) {
-		return true;
+		return true
 	}
+	return false
 }
 
 if(process.env.NODE_ENV === 'production') {

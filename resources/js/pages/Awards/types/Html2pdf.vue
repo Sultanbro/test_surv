@@ -164,11 +164,11 @@ export default {
 			this.progress = 25
 
 			/*
-                    When this props is true,
-                    the props paginate-elements-by-height will not be used.
-                    Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
-                    to know where to page break, which is automatically done by html2pdf.js
-                */
+				When this props is true,
+				the props paginate-elements-by-height will not be used.
+				Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
+				to know where to page break, which is automatically done by html2pdf.js
+			*/
 			if (this.manualPagination) {
 				this.progress = 70
 				this.$emit('hasPaginated')
@@ -182,18 +182,19 @@ export default {
 				let childrenHeight = 0
 
 				/*
-                        Loop through Elements and add there height with childrenHeight variable.
-                        Once the childrenHeight is >= this.paginateElementsByHeight, create a div with
-                        a class named 'html2pdf__page-break' and insert the element before the element
-                        that will be in the next page
-                    */
+					Loop through Elements and add there height with childrenHeight variable.
+					Once the childrenHeight is >= this.paginateElementsByHeight, create a div with
+					a class named 'html2pdf__page-break' and insert the element before the element
+					that will be in the next page
+				*/
 				for (const childElement of ArrOfContentChildren) {
 					// Get The First Class of the element
 					const elementFirstClass = childElement.classList[0]
 					const isPageBreakClass = elementFirstClass === 'html2pdf__page-break'
 					if (isPageBreakClass) {
 						childrenHeight = 0
-					} else {
+					}
+					else {
 						// Get Element Height
 						const elementHeight = childElement.clientHeight
 
@@ -206,7 +207,8 @@ export default {
 
 						if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
 							childrenHeight += elementHeightWithMargin
-						} else {
+						}
+						else {
 							const section = document.createElement('div')
 							section.classList.add('html2pdf__page-break')
 							parentElement.insertBefore(section, childElement)
@@ -220,11 +222,12 @@ export default {
 				this.progress = 70
 
 				/*
-                        Set to true so that if would generate again we wouldn't need
-                        to parse the HTML to paginate the elements
-                    */
+					Set to true so that if would generate again we wouldn't need
+					to parse the HTML to paginate the elements
+				*/
 				this.hasAlreadyParsed = true
-			} else {
+			}
+			else {
 				this.progress = 70
 			}
 
@@ -241,15 +244,11 @@ export default {
 
 			const html2PdfSetup = html2pdf().set(options).from(pdfContent)
 			let pdfBlobUrl = null
-			pdfBlobUrl = await html2PdfSetup.output('bloburl');
+			pdfBlobUrl = await html2PdfSetup.output('bloburl')
 
-			if (this.previewModal) {
-				this.pdfFile = pdfBlobUrl;
-			}
+			if (this.previewModal) this.pdfFile = pdfBlobUrl
 
-			if (this.enableDownload) {
-				pdfBlobUrl = await html2PdfSetup.save().output('bloburl')
-			}
+			if (this.enableDownload) pdfBlobUrl = await html2PdfSetup.save().output('bloburl')
 
 			if (pdfBlobUrl) {
 				const res = await fetch(pdfBlobUrl)
@@ -261,9 +260,7 @@ export default {
 		},
 
 		setOptions () {
-			if (this.htmlToPdfOptions !== undefined && this.htmlToPdfOptions !== null) {
-				return this.htmlToPdfOptions
-			}
+			if (this.htmlToPdfOptions !== undefined && this.htmlToPdfOptions !== null) return this.htmlToPdfOptions
 
 			return {
 				margin: 0,
@@ -298,73 +295,75 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .vue-html2pdf {
-        .layout-container {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            left: -100vw;
-            top: 0;
-            z-index: -9999;
-            background: rgba(95, 95, 95, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            overflow: auto;
+.vue-html2pdf {
+	.layout-container {
+		position: fixed;
+		width: 100vw;
+		height: 100vh;
+		left: -100vw;
+		top: 0;
+		z-index: -9999;
+		background: rgba(95, 95, 95, 0.8);
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		overflow: auto;
 
-            &.show-layout {
-                left: 0vw;
-                z-index: 9999;
-            }
+		&.show-layout {
+			left: 0vw;
+			z-index: 9999;
+		}
 
-            &.unset-all {
-                all: unset;
-                width: auto;
-                height: auto;
-            }
-        }
+		&.unset-all {
+			all: unset;
+			width: auto;
+			height: auto;
+		}
+	}
 
-        .pdf-preview {
-            position: fixed;
-            width: 65%;
-            min-width: 600px;
-            height: 80vh;
-            top: 100px;
-            z-index: 9999999;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px #00000048;
+	.pdf-preview {
+		position: fixed;
+		width: 65%;
+		min-width: 600px;
+		height: 80vh;
+		top: 100px;
+		z-index: 9999999;
+		left: 50%;
+		transform: translateX(-50%);
+		border-radius: 5px;
+		box-shadow: 0px 0px 10px #00000048;
 
-            button {
-                position: absolute;
-                top: -20px;
-                left: -15px;
-                width: 35px;
-                height: 35px;
-                background: #555;
-                border: 0;
-                box-shadow: 0px 0px 10px #00000048;
-                border-radius: 50%;
-                color: #fff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 20px;
-                cursor: pointer;
-            }
+		button {
+			position: absolute;
+			top: -20px;
+			left: -15px;
+			width: 35px;
+			height: 35px;
+			background: #555;
+			border: 0;
+			box-shadow: 0px 0px 10px #00000048;
+			border-radius: 50%;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			cursor: pointer;
+		}
 
-            iframe {
-                border: 0;
-            }
-        }
+		iframe {
+			border: 0;
+		}
+	}
 
-        .transition-anim-enter-active, .transition-anim-leave-active {
-            transition: opacity 0.3s ease-in;
-        }
+	.transition-anim-enter-active,
+	.transition-anim-leave-active {
+		transition: opacity 0.3s ease-in;
+	}
 
-        .transition-anim-enter, .transition-anim-leave-to{
-            opacity: 0;
-        }
-    }
+	.transition-anim-enter,
+	.transition-anim-leave-to{
+		opacity: 0;
+	}
+}
 </style>

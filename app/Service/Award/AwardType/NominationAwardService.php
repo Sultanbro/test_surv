@@ -76,6 +76,7 @@ class NominationAwardService implements AwardInterface
 
     /**
      * @param StoreAwardRequest $request
+     * @return mixed
      * @throws Exception
      */
     public function store(StoreAwardRequest $request)
@@ -83,15 +84,23 @@ class NominationAwardService implements AwardInterface
         $awards = [];
         try {
             $files = $this->saveAwardFiles($request);
-            foreach ($files as $file) {
+            $previews = $this->saveAwardPreviews($request);
+
+            if (count($files) != count($previews)) {
+                throw new Exception("Files and previews count not equal!");
+            }
+
+            for ($i = 0; $i < count($files); $i++) {
                 $awards[] = Award::query()->create([
                     'award_category_id' => $request->input('award_category_id'),
-                    'path' => $file['relative'],
-                    'format' => $file['format'],
+                    'path' => $files[$i]['relative'],
+                    'format' => $files[$i]['format'],
+                    'preview_path' => $previews[$i]['relative'],
+                    'preview_format' => $previews[$i]['format'],
                     'type' => $request->input('type') ?? Award::TYPE_PUBLIC
                 ]);
-
             }
+
             return \response()->success($awards);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
@@ -139,6 +148,32 @@ class NominationAwardService implements AwardInterface
         }
 
         return $files;
+    }
+
+    /**
+     * @param $request
+     * @return array
+     * @throws BusinessLogicException
+     */
+    private function saveAwardPreviews($request): array
+    {
+        if (!$request->hasFile('preview')) {
+            return [];
+        }
+        $previews = [];
+
+        foreach ($request->file('preview') as $preview) {
+            if (!$filename = FileHelper::save($preview, $this->path)) {
+                throw new BusinessLogicException(__('exception.save_error'));
+            }
+            $previews[] = [
+                'relative' => $filename,
+                'format' => $preview->getClientOriginalExtension(),
+                'temp' => FileHelper::getUrl($this->path, $filename)
+            ];
+        }
+
+        return $previews;
     }
 
     private function mapAwardsData(array $data): array
