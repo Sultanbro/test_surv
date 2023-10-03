@@ -39,10 +39,12 @@ class TopValue extends Model
         'reversed', //
     ];
 
-    public function getOptions()
+    public function getOptions(
+        $options = null
+    )
     {
 
-        $arr = json_decode($this->options, true);
+        $arr = json_decode($options ?? $this->options, true);
 
         $result = [
             'angle' => -0.01,
@@ -687,5 +689,14 @@ class TopValue extends Model
         }
 
         return $table;
+    }
+
+    public function scopeGetByGroupAndDate(
+        $query,
+        int $groupId,
+        string $date
+    )
+    {
+        return $query->where('group_id', $groupId)->where('date', $date);
     }
 }

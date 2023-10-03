@@ -96,6 +96,11 @@ class ProfileGroup extends Model
     const SWITCH_ON = 1;
     const SWITCH_OFF = 0;
 
+    const IS_EMPLOYEE = 'active';
+    const IS_FIRED = 'fired';
+
+    const IS_TRANSFER = 'drop';
+
     /**
      * @param int $id
      * @return Model
@@ -378,16 +383,16 @@ class ProfileGroup extends Model
 
     /**
      * @param int $groupId
-     * @param ?Carbon|string $date
+     * @param ?string|Carbon $date
      * @param ?int $deleteType
      * @param ?array<int> $positionIds
      * @return array<int>
      */
     public static function employees(
-        int $groupId,
-        $date = null,
-        $deleteType = 0,
-        $positionIds = [],
+        int           $groupId,
+        Carbon|string $date = null,
+        ?int          $deleteType = 0,
+        ?array        $positionIds = [],
     ) {
         if($date) {
             $date = Carbon::parse($date)->subMonth();
@@ -486,5 +491,46 @@ class ProfileGroup extends Model
 
     public function activitiesSetting(){
         return $this->belongsTo(AnalyticsActivitiesSetting::class,  'activities_setting_id', 'id');
+    }
+
+    public function scopeWhereHasAnalytics($query)
+    {
+        return $query->whereIn('has_analytics', [self::HAS_ANALYTICS, self::NOT_ANALYTICS]);
+    }
+
+    public function scopeIsActive($query)
+    {
+        return $query->where('active', self::IS_ACTIVE);
+    }
+
+    public function scopeIsArchived($query)
+    {
+        return $query->where('has_analytics', self::ARCHIVED);
+    }
+
+    /**
+     * @param string $dateFrom
+     * @param string $dateTo
+     * @return BelongsToMany
+     */
+    public function actualAndFiredEmployees(
+        string $dateFrom,
+        string $dateTo
+    ): BelongsToMany
+    {
+        return $this->users()
+            ->select('id', 'name', 'last_name', 'full_time', 'email')
+            ->withTrashed()
+            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+            ->whereDate('from','<=', $dateFrom)
+            ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                fn ($query) => $query->whereDate('to', '>=', $dateTo))
+            )
+            ->when($dateFrom, function ($query) use ($dateFrom){
+                $query->where(function(\Illuminate\Database\Eloquent\Builder $query) use($dateFrom){
+                    $query->where('users.deleted_at', '>', $dateFrom)
+                        ->orWhereNull('users.deleted_at');
+                });
+            });
     }
 }
