@@ -74,7 +74,7 @@ class FileHelper
     public static function getUrl(string $folder, string $filename): string
     {
         return Storage::disk('s3')
-            ->get(($folder !== '' ? ($folder . '/') : '') . $filename);
+            ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
     }
 
     /**
