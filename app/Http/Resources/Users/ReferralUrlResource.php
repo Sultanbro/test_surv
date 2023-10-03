@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Users;
 
-use App\Service\Referral\ReferralDto;
+use App\Service\Referral\Core\ReferralDto;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

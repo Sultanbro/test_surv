@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Referral;
+namespace App\Service\Referral\Core;
 
-interface ReferralSalaryCalculatorInterface
+interface ReferrerSalaryCalculatorInterface
 {
     public function calculate(ReferrerInterface $referrer): array;
 }

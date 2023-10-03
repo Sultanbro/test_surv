@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Referral;
+namespace App\Service\Referral\Core;
 
 enum ReferrerLevel: int
 {

@@ -2,7 +2,7 @@
 
 namespace App\Models\User\Referral;
 
-use App\Service\Referral\ReferrerInterface;
+use App\Service\Referral\Core\ReferrerInterface;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

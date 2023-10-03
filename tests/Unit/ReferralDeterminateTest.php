@@ -2,10 +2,9 @@
 
 namespace Tests\Unit;
 
-use App\Service\Referral\ReferralSalaryCalculatorInterface;
-use App\Service\Referral\ReferralDetermination;
-use App\Service\Referral\ReferralInterface;
-use App\Service\Referral\ReferrerInterface;
+use App\Service\Referral\Core\ReferralDetermination;
+use App\Service\Referral\Core\ReferralInterface;
+use App\Service\Referral\Core\ReferrerInterface;
 use App\User;
 use Tests\TenantTestCase;
 

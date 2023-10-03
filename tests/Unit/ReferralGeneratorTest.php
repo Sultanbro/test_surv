@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Service\Referral\ReferralDto;
-use App\Service\Referral\ReferralGenerator;
+use App\Service\Referral\Core\ReferralDto;
+use App\Service\Referral\Core\ReferralGenerator;
 use App\User;
 use Tests\TenantTestCase;
 

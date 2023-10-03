@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Referral;
+namespace App\Service\Referral\Core;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

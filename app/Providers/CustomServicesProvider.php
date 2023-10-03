@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Service\Referral\ReferralSalaryCalculator;
-use App\Service\Referral\ReferralSalaryCalculatorInterface;
-use App\Service\Referral\ReferralDetermination;
-use App\Service\Referral\ReferralDeterminationInterface;
-use App\Service\Referral\ReferralGenerator;
-use App\Service\Referral\ReferralGeneratorInterface;
+use App\Service\Referral\Core\ReferralDetermination;
+use App\Service\Referral\Core\ReferralDeterminationInterface;
+use App\Service\Referral\Core\ReferralGenerator;
+use App\Service\Referral\Core\ReferralGeneratorInterface;
+use App\Service\Referral\Core\ReferrerSalaryCalculator;
+use App\Service\Referral\Core\ReferrerSalaryCalculatorInterface;
 use Illuminate\Support\ServiceProvider;
 
 class CustomServicesProvider extends ServiceProvider
@@ -16,6 +16,6 @@ class CustomServicesProvider extends ServiceProvider
     {
         $this->app->bind(ReferralGeneratorInterface::class, ReferralGenerator::class);
         $this->app->bind(ReferralDeterminationInterface::class, ReferralDetermination::class);
-        $this->app->bind(ReferralSalaryCalculatorInterface::class, ReferralSalaryCalculator::class);
+        $this->app->bind(ReferrerSalaryCalculatorInterface::class, ReferrerSalaryCalculator::class);
     }
 }

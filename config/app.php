@@ -221,6 +221,7 @@ return [
         \App\Providers\MailingNotificationProvider::class,
         // Spatie\Permission\PermissionServiceProvider::class,
         /** @author vahagn99ghukasyan@gmail.com */
+        App\Providers\FacadeServiceProvider::class,
         App\Providers\CustomServicesProvider::class,
         App\Providers\ModelInterfaceServicesProvider::class,
     ],
@@ -274,6 +275,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'MessengerFacade' => Eddir\Messenger\Facades\MessengerFacade::class,
+        'Referring' => App\Facade\Referring::class,
     ],
 
 ];

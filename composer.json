@@ -37,8 +37,9 @@
     "yoomoney/yookassa-sdk-php": "^2.7"
   },
   "require-dev": {
-    "filp/whoops": "~2.0",
+    "drfraker/snipe-migrations": "^1.4",
     "fakerphp/faker": "^1.9.1",
+    "filp/whoops": "~2.0",
     "mockery/mockery": "~1.0",
     "phpunit/phpunit": "^9.0",
     "symfony/thanks": "^1.0"
