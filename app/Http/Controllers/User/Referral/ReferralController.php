@@ -20,7 +20,8 @@ class ReferralController extends Controller
 
     public function determinate(Referral $referral): Response
     {
-        Referring::determinateReferral($referral)->;
+        $referrer = Referring::determinateReferral($referral);
+        Referring::calculate($referrer);
         return response()->noContent();
     }
 }
