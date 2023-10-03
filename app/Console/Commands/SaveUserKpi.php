@@ -152,9 +152,12 @@ class SaveUserKpi extends Command
 
                 $itemActivityWeekdays = (int) ($item['activity']['weekdays'] ?? 5);
 
-                $workdays = $itemActivityWeekdays == 0
-                    ? $this->workdays[5]
-                    : $this->workdays[$itemActivityWeekdays];
+//                $workdays = $itemActivityWeekdays == 0
+//                    ? $this->workdays[5]
+//                    : $this->workdays[$itemActivityWeekdays];
+                $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
+
+                $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
 
                 $completed_percent = $this->calculator->getCompletePercent([
                     'fact' => $item['fact'],
@@ -201,7 +204,7 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data) : void
     {
         // save 
-        $sk = SavedKpi::where('user_id', $data['user_id'])
+        $sk = SavedKpi::query()->where('user_id', $data['user_id'])
             ->where('date', $data['date'])
             ->first();
 
