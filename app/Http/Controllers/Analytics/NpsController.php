@@ -11,9 +11,12 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\ProfileGroup;
 use App\EstimateGrade;
+use App\Position;
 
 class NpsController extends Controller
 {
+    const USER_HEAD = 0;
+    const USER_SPEC = 1;
 
     public function __construct()
     {
@@ -103,86 +106,112 @@ class NpsController extends Controller
      */
     public function estimate_your_trainer(Request $request)
     {
-
         if ($request->isMethod('get')) {
-            $user = Auth::user();
-            $groups = $user->inGroups();
-
-            if(count($groups) == 0) {
-                return redirect('/');
-            }
-
-            return view('specific.estimate_your_trainer')->with([
-                'rooks' => $this->getRooks($groups, 45), // руководители,
-                'stars' => $this->getRooks($groups, 55), // старшие специалисты
-            ]);
+            return $this->estimate_your_trainer_get($request);
         }
 
-
-
         if ($request->isMethod('post')) {
-            $user = Auth::user();
+            return $this->estimate_your_trainer_post($request);
+        }
+    }
 
-            $prev_month = Carbon::now()->subDays(28)->day(1)->format('Y-m-d');
+    public function estimate_your_trainer_get(Request $request){
+        $user = Auth::user();
+        $groups = $user->inGroups();
 
-            foreach($request->rooks as $rook) {
-                if($rook['grade'] != 0) {
-                    // Rukovoditel
-                    $est = EstimateGrade::where('date', $prev_month)
-                        ->where('user_id', $user->id)
-                        ->where('about_id', $rook['id'])
-                        ->first();
-
-                    if($est) {
-                        $est->grade = $rook['grade'];
-                        $est->text = $rook['plus'];
-                        $est->minus = $rook['minus'];
-                        $est->save();
-                    } else {
-                        EstimateGrade::create([
-                            'group_id' => 0,
-                            'user_id' => $user->id,
-                            'about_id' => $rook['id'],
-                            'grade' => $rook['grade'],
-                            'text' => $rook['plus'],
-                            'minus' => $rook['minus'],
-                            'date' => $prev_month,
-                        ]);
-                    }
-                }
-            }
-
-            foreach($request->stars as $rook) {
-                if($rook['grade'] != 0) {
-                    // Rukovoditel
-                    $est = EstimateGrade::where('date', $prev_month)
-                        ->where('user_id', $user->id)
-                        ->where('about_id', $rook['id'])
-                        ->first();
-
-                    if($est) {
-                        $est->grade = $rook['grade'];
-                        $est->text = $rook['plus'];
-                        $est->minus = $rook['minus'];
-                        $est->save();
-                    } else {
-                        EstimateGrade::create([
-                            'group_id' => 0,
-                            'user_id' => $user->id,
-                            'about_id' => $rook['id'],
-                            'grade' => $rook['grade'],
-                            'text' => $rook['plus'],
-                            'minus' => $rook['minus'],
-                            'date' => $prev_month,
-                        ]);
-                    }
-                }
-            }
-
+        if(count($groups) == 0) {
             return redirect('/');
         }
 
+        return view('specific.estimate_your_trainer')->with([
+            'rooks' => $this->getRooksV2($groups, self::USER_HEAD), // руководители,
+            'stars' => $this->getRooksV2($groups, self::USER_SPEC), // старшие специалисты
+        ]);
+    }
 
+    public function estimate_your_trainer_post(Request $request){
+        $user = Auth::user();
+        $prev_month = Carbon::now()->subDays(28)->day(1)->format('Y-m-d');
+
+        $this->saveGrades($request->rooks, $user, $prev_month);
+        $this->saveGrades($request->stars, $user, $prev_month);
+        return redirect('/');
+    }
+
+    public function saveGrades($grades, $user, $date){
+        foreach($grades as $grade) {
+            if($grade['grade'] != 0) {
+                $est = EstimateGrade::where('date', $date)
+                    ->where('user_id', $user->id)
+                    ->where('about_id', $grade['id'])
+                    ->first();
+
+                if($est) {
+                    $est->grade = $grade['grade'];
+                    $est->text = $grade['plus'];
+                    $est->minus = $grade['minus'];
+                    $est->save();
+                } else {
+                    EstimateGrade::create([
+                        'group_id' => 0,
+                        'user_id' => $user->id,
+                        'about_id' => $grade['id'],
+                        'grade' => $grade['grade'],
+                        'text' => $grade['plus'],
+                        'minus' => $grade['minus'],
+                        'date' => $date,
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Получить руководителей или старших спецов
+     */
+    private function getRooksV2($groups, $userType){
+        $field = $userType == self::USER_SPEC ? 'is_spec' : 'is_head';
+
+        $user_ids = [];
+        $users = [];
+
+        $positions = Position::select(['id'])
+            ->where($field, 1)
+            ->get()
+            ->pluck('id');
+
+
+
+        foreach($groups as $group) {
+            $group_users = ProfileGroup::employees($group->id);
+            $_users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0)
+                ->whereIn('users.id', $group_users)
+                ->whereIn('position_id', $positions)
+                ->get(['users.id', 'users.name', 'users.last_name']);
+
+            foreach($_users as $user) {
+                if(!in_array($user->id, $user_ids)) {
+                    array_push($user_ids, $user->id);
+                    array_push($users, [
+                        'id' => $user->id,
+                        'name' => $user->last_name . ' '. $user->name,
+                        'type' => $userType,
+                    ]);
+                }
+            }
+        }
+
+        if(count($users) == 0) {
+            array_push($users, [
+                'id' => 0,
+                'name' => 'Без имени',
+                'type' => $userType,
+            ]);
+        }
+        return $users;
     }
 
     /**

@@ -18,7 +18,7 @@ final class PositionController extends Controller
     {
 
     }
-    
+
     /**
      * @Post{
      *  "position": "name"
@@ -96,7 +96,8 @@ final class PositionController extends Controller
             $dto->indexation,
             $dto->sum,
             $dto->description,
-            $dto->is_head
+            $dto->is_head,
+            $dto->is_spec,
         );
 
         return response()->success($response);
