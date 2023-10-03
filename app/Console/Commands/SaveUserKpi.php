@@ -3,14 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Events\KpiChangedEvent;
-use App\Kpi;
 use App\SavedKpi;
-use App\User;
+use App\Service\CalculateKpiService;
+use App\Service\KpiStatisticService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\Service\KpiStatisticService;
-use App\Service\CalculateKpiService;
 use Illuminate\Http\Request;
 
 class SaveUserKpi extends Command
@@ -81,26 +78,26 @@ class SaveUserKpi extends Command
 
         // count workdays in month
         $this->workdays = [];
-        $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [6,0]);
+        $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [6, 0]);
         $this->workdays[6] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
 
         /**
          * working users not trainees
          */
-        $users =  \DB::table('users')
+        $users = \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where(function($query) use ($date){
+            ->where(function ($query) use ($date) {
                 $query->whereDate('deleted_at', '>=', $date)
                     ->orWhereNull('deleted_at');
             })
             ->where('is_trainee', 0);
 
 
-        if($this->argument('user_id')) {
+        if ($this->argument('user_id')) {
             $users->where('users.id', $this->argument('user_id'));
         }
 
-        $users = $users->select(['users.id','users.last_name', 'users.name'])
+        $users = $users->select(['users.id', 'users.last_name', 'users.name'])
             ->get(['users.id']);
 
         $this->comment($users->count());
@@ -112,16 +109,16 @@ class SaveUserKpi extends Command
 
         foreach ($users as $key => $user) {
 
-            $this->line($key . ' '. $user->id);
+            $this->line($key . ' ' . $user->id);
 
             // fetch kpis of user
             $repo = $this->repo->fetchKpis(new Request([
                 'filters' => [
                     'data_from' => [
                         'month' => Carbon::parse($date)->month,
-                        'year'  => Carbon::parse($date)->year,
+                        'year' => Carbon::parse($date)->year,
                     ],
-                    'user_id'   => $user->id
+                    'user_id' => $user->id
                 ]
             ]));
 
@@ -129,8 +126,8 @@ class SaveUserKpi extends Command
             // save
             $this->updateSavedKpi([
                 'user_id' => $user->id,
-                'date'    => $date,
-                'total'   => $this->calc($repo['items']),
+                'date' => $date,
+                'total' => $this->calc($repo['items']),
             ]);
 
         }
@@ -140,17 +137,17 @@ class SaveUserKpi extends Command
     /**
      * calc kpis of user
      */
-    private function calc($kpis) : float
+    private function calc($kpis): float
     {
         $earned = 0;
 
         foreach ($kpis as $key => $kpi) {
-            if(!isset($kpi['users'][0])) continue;
+            if (!isset($kpi['users'][0])) continue;
 //            dd($kpi['users'][0]['items']);
 //             dd($kpi['users'][0]['items'][2]);
             foreach ($kpi['users'][0]['items'] as $item) {
 
-                $itemActivityWeekdays = (int) ($item['activity']['weekdays'] ?? 5);
+                $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
 
 //                $workdays = $itemActivityWeekdays == 0
 //                    ? $this->workdays[5]
@@ -169,19 +166,19 @@ class SaveUserKpi extends Command
                     'workdays' => $workdays,
                 ], $item['method']);
 
-                if(
+                if (
                     //!$item['allow_overfulfillment']
                     $completed_percent > 100) {
                     $completed_percent = 100;
                 }
 
                 $earned += $this->calculator->earned(
-                    $kpi['lower_limit'],
-                    $kpi['upper_limit'],
-                    $completed_percent,
-                    $item['share'],
-                    $item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
-                    $item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
+                    (int)$kpi['lower_limit'],
+                    (int)$kpi['upper_limit'],
+                    (float)$completed_percent,
+                    (int)$item['share'],
+                    (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
+                    (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
 
 
@@ -201,7 +198,7 @@ class SaveUserKpi extends Command
     /**
      * save kpi
      */
-    private function updateSavedKpi(array $data) : void
+    private function updateSavedKpi(array $data): void
     {
         // save 
         $sk = SavedKpi::query()->where('user_id', $data['user_id'])
@@ -209,7 +206,7 @@ class SaveUserKpi extends Command
             ->first();
 
         $date = null;
-        if($sk) {
+        if ($sk) {
             $sk->total = $data['total'];
             $sk->save();
             $date = $sk->date;
@@ -218,7 +215,7 @@ class SaveUserKpi extends Command
             $date = $data['date'];
         }
 
-        if($date){
+        if ($date) {
             $date = Carbon::createFromFormat('Y-m-d', $data['date']);
             event(new KpiChangedEvent($date));
         }
