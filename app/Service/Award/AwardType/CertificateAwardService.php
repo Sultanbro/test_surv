@@ -262,7 +262,7 @@ class CertificateAwardService implements AwardInterface
                     'last_name' => $user->last_name,
                     'user_id' => $user->id,
                     'course_id' => $user->pivot->course_id,
-                    'previewPath' => FileHelper::getUrl($this->preview_path, $user->pivot->preview_path),
+                    'previewPath' => FileHelper::getUrl($this->path, $user->pivot->preview_path),
                     'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
                 ];
             }
@@ -286,7 +286,7 @@ class CertificateAwardService implements AwardInterface
                 'format' => $award->format,
                 'course_id' => $item->id,
                 'course_name' => $item->name,
-                'previewPath' => FileHelper::getUrl($this->preview_path, $award->pivot->preview_path),
+                'previewPath' => FileHelper::getUrl($this->path, $award->pivot->preview_path),
                 'tempPath' => FileHelper::getUrl($this->path, $award->path),
             ];
 
@@ -311,7 +311,7 @@ class CertificateAwardService implements AwardInterface
                     'last_name' => $user->last_name,
                     'user_id' => $user->id,
                     'course_id' => $user->pivot->course_id,
-                    'previewPath' => FileHelper::getUrl($this->preview_path, $user->pivot->preview_path),
+                    'previewPath' => FileHelper::getUrl($this->path, $user->pivot->preview_path),
                     'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
                 ];
             }
