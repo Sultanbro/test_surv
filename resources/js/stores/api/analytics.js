@@ -65,7 +65,7 @@ export async function getAnalyticsActivityHiddenUsers(groupId){
 const AnV2Path = '/v2/analytics-page'
 
 function weeksOfMonth(year, month){
-	const daysInMonth = moment(`${year}-${month > 9 ? '0' : '' + month}`, 'YYYY-MM').daysInMonth()
+	const daysInMonth = moment(`${year}-${(month > 9 ? '0' : '') + month}`, 'YYYY-MM').daysInMonth()
 	const date = new Date(year, month - 1, 1)
 	const result = []
 	for(let day = 1, week = []; day <= daysInMonth; ++day){
