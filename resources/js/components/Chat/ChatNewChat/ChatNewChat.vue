@@ -15,14 +15,9 @@
 		<input
 			v-model="title"
 			type="text"
-			class="ChatNewChat-input"
+			class="ChatNewChat-input mb-3"
 			placeholder="Название чата"
 		>
-
-		<JobtronSearch
-			v-model="search"
-			class="mb-3"
-		/>
 
 		<div class="ChatNewChat-content">
 			<AccessSelect
@@ -30,9 +25,8 @@
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				submit-button="Создать группу"
 				:submit-disabled="requestProcess"
-				:search-position="''"
+				:search-position="'beforeTabs'"
 				:access-dictionaries="accessDictionaries"
-				:search="search"
 				class="ChatNewChat-select"
 				@submit="submitGroup"
 			/>
@@ -42,7 +36,6 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex'
-import JobtronSearch from '@ui/Search'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'
 import {
 	ChatIconSearchClose,
@@ -51,7 +44,6 @@ import {
 export default {
 	name: 'ChatNewChat',
 	components: {
-		JobtronSearch,
 		AccessSelect,
 		ChatIconSearchClose,
 	},
