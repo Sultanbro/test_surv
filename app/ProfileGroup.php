@@ -528,16 +528,16 @@ class ProfileGroup extends Model
         return $this->users()->whereIn('id', $users_ids)
             ->select('id', 'name', 'last_name', 'full_time', 'email')
             ->withTrashed()
-            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0));
-//            ->whereDate('from','<=', $dateFrom)
-//            ->where(fn ($query) => $query->whereNull('to')->orWhere(
-//                fn ($query) => $query->whereDate('to', '>=', $dateTo))
-//            )
-//            ->when($dateFrom, function ($query) use ($dateFrom){
-//                $query->where(function(\Illuminate\Database\Eloquent\Builder $query) use($dateFrom){
-//                    $query->where('users.deleted_at', '>', $dateFrom)
-//                        ->orWhereNull('users.deleted_at');
-//                });
-//            });
+            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+            ->whereDate('from','<=', $dateFrom)
+            ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                fn ($query) => $query->whereDate('to', '>=', $dateTo))
+            )
+            ->when($dateFrom, function ($query) use ($dateFrom){
+                $query->where(function(\Illuminate\Database\Eloquent\Builder $query) use($dateFrom){
+                    $query->where('users.deleted_at', '>', $dateFrom)
+                        ->orWhereNull('users.deleted_at');
+                });
+            });
     }
 }
