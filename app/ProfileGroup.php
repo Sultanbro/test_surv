@@ -9,6 +9,7 @@ use App\Models\AnalyticsActivitiesSetting;
 use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
+use App\Service\Department\UserService;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
@@ -518,7 +519,13 @@ class ProfileGroup extends Model
         string $dateTo
     ): BelongsToMany
     {
-        return $this->users()
+        $service = new UserService();
+
+        $firedEmployees = $service->getFiredEmployeeIds($this->id, $dateFrom);
+        $employees = $service->getEmployeeIds($this->id, $dateFrom);
+        $users_ids = array_unique(array_merge($firedEmployees, $employees));
+
+        return $this->users()->whereIn('id', $users_ids)
             ->select('id', 'name', 'last_name', 'full_time', 'email')
             ->withTrashed()
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
