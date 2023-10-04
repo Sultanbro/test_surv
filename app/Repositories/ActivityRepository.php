@@ -37,8 +37,8 @@ class ActivityRepository extends CoreRepository implements ActivityInterface
     )
     {
         return $activity->plans()->where([
-            ['year', $year],
-            ['month', $month]
+            'year' => $year,
+            'month' => $month
         ])->first();
     }
 }
