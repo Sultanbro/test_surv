@@ -26,7 +26,10 @@
 		</div>
 		<small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
 
-		<b-row v-if="hasImage">
+		<b-row
+			v-if="hasImage"
+			ref="previews"
+		>
 			<b-col
 				v-for="(image, index) in imageSrc"
 				:key="index"
@@ -51,7 +54,10 @@
 						v-else
 						@click="modalOpen(image)"
 					>
-						<vue-pdf-embed :source="image.path" />
+						<vue-pdf-embed
+							:source="image.path"
+							@rendered="createPreviews"
+						/>
 					</div>
 				</div>
 			</b-col>
@@ -107,6 +113,7 @@
 				</b-col>
 			</b-row>
 		</template>
+
 		<BModal
 			v-if="selectedModal"
 			v-model="modal"
@@ -115,13 +122,13 @@
 		>
 			<BImg
 				v-if="selectedModal.format !== 'pdf'"
-				:src="selectedModal.tempPath"
+				:src="selectedModal.tempPath || selectedModal.path"
 				fluid
 				block
 			/>
 			<vue-pdf-embed
 				v-else
-				:source="selectedModal.tempPath"
+				:source="selectedModal.tempPath || selectedModal.path"
 			/>
 			<template #modal-footer>
 				<b-button
@@ -136,19 +143,21 @@
 </template>
 
 <script>
-const base64Encode = (data) =>
-	new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(data);
-		reader.onload = () => resolve(reader.result);
-		reader.onerror = (error) => reject(error);
-	});
+const base64Encode = data => new Promise((resolve, reject) => {
+	const reader = new FileReader();
+	reader.readAsDataURL(data);
+	reader.onload = () => resolve(reader.result);
+	reader.onerror = error => reject(error);
+})
 
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+import { resizeImageSrc } from '@/composables/images'
 
 export default {
 	name: 'UploadFile',
-	components: {VuePdfEmbed},
+	components: {
+		VuePdfEmbed,
+	},
 	props: {
 		awardsObj: {
 			type: Array,
@@ -159,6 +168,7 @@ export default {
 		return {
 			images: null,
 			imageSrc: [],
+			imagePreview: [],
 			selectedModal: null,
 			modal: false,
 			awards: []
@@ -166,149 +176,187 @@ export default {
 	},
 	computed: {
 		hasImage() {
-			if (this.images) {
-				return !!this.images;
-			}
-			return false
+			return !!this.images
 		},
 	},
 	watch: {
 		images(newValue) {
-			if (newValue) {
-				this.imageSrc = [];
-				newValue.forEach(item => {
-					base64Encode(item)
-						.then((base64) => {
-							this.imageSrc.push({
-								path: base64,
-								format: item.type.split('/')[1]
-							});
-						})
-						.catch(() => {
-							this.imageSrc = [];
-						});
-				});
-				this.$emit('image-download', this.images);
-			}
+			if (newValue) this.addFiles(newValue)
 		},
 	},
 	mounted() {
-		this.awards = this.awardsObj;
+		this.awards = this.awardsObj
 	},
 	methods: {
+		async addFiles(files){
+			files.forEach(item => {
+				const format = item.type.split('/')[1]
+				base64Encode(item).then(base64 => {
+					this.imageSrc.push({
+						path: base64,
+						format,
+					})
+					if(format !== 'pdf') setTimeout(this.createPreviews, 64)
+				}).catch(() => {
+					this.imageSrc = []
+				})
+			})
+		},
+		async createPreviews(){
+			const loader = this.$loading.show()
+			const promises = []
+			const _ = undefined
+			// resizeImage
+			this.$refs.previews?.childNodes.forEach((col, index) => {
+				const img = col.querySelector('img')
+				if(img){
+					promises.push(new Promise((resolve, reject) => {
+						resizeImageSrc(img.src, 400, _, true).then(path => {
+							this.imagePreview[index] = {
+								path,
+								format: 'jpg',
+							}
+							resolve()
+						}).catch(reject)
+					}))
+					return
+				}
+
+				const canvas = col.querySelector('canvas')
+				if(canvas){
+					promises.push(new Promise((resolve, reject) => {
+						resizeImageSrc(canvas.toDataURL('image/jpeg', 0.92), 400, _, true).then(path => {
+							this.imagePreview[index] = {
+								path,
+								format: 'jpg',
+							}
+							resolve()
+						}).catch(reject)
+					}))
+					return
+				}
+			})
+
+			await Promise.all(promises)
+			this.$emit('image-download', {
+				images: this.images,
+				previews: this.imagePreview
+			})
+			loader.hide()
+		},
 		formatNames(files) {
 			return files.length === 1 ? files[0].name : `Выбрано файлов - ${files.length}`
 		},
 		modalOpen(image) {
-			this.selectedModal = image;
-			this.modal = !this.modal;
+			this.selectedModal = image
+			this.modal = !this.modal
 		},
-		async clearImage() {
-			this.images = null;
-			this.imageSrc = [];
-			this.$emit('image-download', this.images);
+		clearImage() {
+			this.images = null
+			this.imageSrc = []
+			this.$emit('image-download', {
+				images: null,
+				previews: []
+			})
 		},
-		removeImage(id) {
-			let loader = this.$loading.show();
-			this.axios
-				.delete('/awards/delete/' + id)
-				.then(() => {
-					this.$toast.success('Удалено');
-					this.awards = this.awards.filter(n => n.id !== id);
-					loader.hide();
-				})
-				.catch(error => {
-					console.error(error);
-					loader.hide();
-				})
+		async removeImage(id) {
+			const loader = this.$loading.show()
+			try {
+				await this.axios.delete('/awards/delete/' + id)
+				this.$toast.success('Удалено')
+				this.awards = this.awards.filter(n => n.id !== id)
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
 		},
 	},
 };
 </script>
 
 <style lang="scss">
-    .award-type-1 {
-        .uploaded-title {
-            font-size: 20px;
-            color: green;
-        }
+.award-type-1 {
+	.uploaded-title {
+		font-size: 20px;
+		color: green;
+	}
 
-        .image-preview {
-            height: 100px;
-            overflow: hidden;
-            border: 2px solid #ddd;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.15s all ease;
+	.image-preview {
+		height: 100px;
+		overflow: hidden;
+		border: 2px solid #ddd;
+		box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: 0.15s all ease;
 
-            &:hover {
-                transform: scale(1.05);
-            }
+		&:hover {
+			transform: scale(1.05);
+		}
 
-            img {
-                width: 100%;
-                height: 100px;
-                object-fit: cover;
-            }
+		img {
+			width: 100%;
+			height: 100px;
+			object-fit: cover;
+		}
 
-            canvas {
-                width: 100% !important;
-                height: 100px!important;
-            }
+		canvas {
+			width: 100% !important;
+			height: 100px!important;
+		}
+	}
+	.image-preview-container {
+		position: relative;
+		width: 100%;
+		height: 100px;
 
-            .image-preview-container {
-                position: relative;
-                width: 100%;
-                height: 100px;
+		i {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			z-index: 22;
+			color: #dc3545;
+			width: 35px;
+			height: 35px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background-color: rgba(220,53,69,0.2);
+			border-radius: 6px;
+			transition: 0.2s all ease;
+			&:hover{
+				color: #fff;
+				background-color: rgba(220,53,69,1);
+			}
+		}
+	}
 
-                i {
-                    position: absolute;
-                    top: 5px;
-                    right: 5px;
-                    z-index: 22;
-                    color: #dc3545;
-                    width: 35px;
-                    height: 35px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    background-color: rgba(220,53,69,0.2);
-                    border-radius: 6px;
-                    transition: 0.2s all ease;
-                    &:hover{
-                        color: #fff;
-                        background-color: rgba(220,53,69,1);
-                    }
-                }
-            }
-        }
+	.clear-btn {
+		height: 50px;
+	}
 
-        .clear-btn {
-            height: 50px;
-        }
+	.form-file {
+		height: 50px;
 
-        .form-file {
-            height: 50px;
+		.custom-file-input {
+			height: 50px;
+		}
 
-            .custom-file-input {
-                height: 50px;
-            }
+		.custom-file-label {
+			height: 40px;
+			padding: 0 20px;
+			display: inline-flex;
+			align-items: center;
 
-            .custom-file-label {
-                height: 40px;
-                padding: 0 20px;
-                display: inline-flex;
-                align-items: center;
-
-                &:after {
-                    display: inline-flex;
-                    align-items: center;
-                    padding: 0 20px;
-                }
-            }
-        }
-    }
+			&:after {
+				display: inline-flex;
+				align-items: center;
+				padding: 0 20px;
+			}
+		}
+	}
+}
 </style>

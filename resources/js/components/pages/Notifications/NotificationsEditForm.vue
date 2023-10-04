@@ -55,24 +55,24 @@
 			<div class="NotificationsEditForm-label">
 				Текст уведомления
 				<img
-					v-b-popover.hover="'Текст уведомления, 244 символа максимум'"
+					v-b-popover.hover="'Текст уведомления, 1000 символа максимум'"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
 				>
 			</div>
 
-			<b-form-textarea
-				v-model="value.title"
-				class="NotificationsEditForm-control"
+			<div
+				class="form-control relative"
 				:class="{
-					'NotificationsEditForm-error': value.title.length > 244
+					'NotificationsEditForm-error': value.title.length > 1000
 				}"
-				placeholder="Текст уведомления"
-				rows="3"
-				max-rows="6"
-				required
-			/>
+			>
+				<JobtronTextarea
+					v-model="value.title"
+					class="NotificationsEditForm-textarea"
+				/>
+			</div>
 
 			<div class="NotificationsEditForm-charCount">
 				{{ value.title.length }}
@@ -169,6 +169,7 @@
 
 import { mapGetters } from 'vuex'
 import JobtronOverlay from '@ui/Overlay'
+import JobtronTextarea from '@ui/Textarea'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'
 import Multiselect from 'vue-multiselect'
 import DaysCheck from '@ui/Checkers/DaysCheck'
@@ -183,6 +184,7 @@ export default {
 	name: 'NotificationsEditForm',
 	components: {
 		JobtronOverlay,
+		JobtronTextarea,
 		AccessSelect,
 		Multiselect,
 		DaysCheck,
@@ -303,6 +305,14 @@ export default {
 		line-height: 1.3;
 
 		background-color: #F7FAFC;
+	}
+	& .NotificationsEditForm-error.form-control{
+		border-color: #f00;
+		color: #f00;
+		&:focus{
+			border-color: #f00;
+			color: #f00;
+		}
 	}
 
 	&-accessSelect{

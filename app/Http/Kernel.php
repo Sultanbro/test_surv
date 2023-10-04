@@ -5,6 +5,12 @@ namespace App\Http;
 use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
 use App\Http\Middleware\Portal\IsOwner;
+use App\Http\Middleware\UpdateLastSeenTime;
+use App\Http\Middleware\V2\Analytics\AnalyticsCached;
+use App\Http\Middleware\V2\Analytics\CacheAnalyticsData;
+use App\Http\Middleware\V2\Analytics\CheckAnalyticPermission;
+use App\Http\Middleware\V2\Analytics\DecompositionCached;
+use App\Http\Middleware\V2\Analytics\GroupsAndActivitiesCached;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -84,6 +90,10 @@ class Kernel extends HttpKernel
         'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
-        'owner' => IsOwner::class
+        'owner' => IsOwner::class,
+        'analytics_permission'  => CheckAnalyticPermission::class,
+        'decomposition_cached'  => DecompositionCached::class,
+        'analytics_cached'      => AnalyticsCached::class,
+        'groups_activities_cached' => GroupsAndActivitiesCached::class
     ];
 }

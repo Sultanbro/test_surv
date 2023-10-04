@@ -20,6 +20,8 @@ class Award extends Model
     protected $fillable = [
         'format',
         'path',
+        'preview_format',
+        'preview_path',
         'styles',
         'award_category_id',
         'targetable_type',

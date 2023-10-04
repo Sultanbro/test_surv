@@ -34,8 +34,16 @@ final class PositionService
     {
         try {
             return Position::query()->updateOrCreate(
-                ['position' => $data['position'],'is_head' => $data['is_head'] ? $data['is_head'] : false],
-                ['position' => $data['position'],'is_head' => $data['is_head'] ? $data['is_head'] : false]
+                [
+                    'position' => $data['position'],
+                    'is_head' => $data['is_head'] ? $data['is_head'] : false,
+                    'is_spec' => $data['is_spec'] ? $data['is_spec'] : false,
+                ],
+                [
+                    'position' => $data['position'],
+                    'is_head' => $data['is_head'] ? $data['is_head'] : false,
+                    'is_spec' => $data['is_spec'] ? $data['is_spec'] : false,
+                ]
             );
         }catch (\Throwable $exception)
         {
@@ -99,11 +107,12 @@ final class PositionService
         ?int $indexation,
         ?int $sum,
         ?array $description,
-        ?bool $is_head
+        ?bool $is_head,
+        ?bool $is_spec,
     )
     {
         try {
-             return $this->positionRepository->updatePositionWithDescription($id, $newName, $indexation, $sum, $description,$is_head);
+             return $this->positionRepository->updatePositionWithDescription($id, $newName, $indexation, $sum, $description, $is_head, $is_spec);
         } catch (Throwable $exception)
         {
             throw new Exception($exception->getMessage());

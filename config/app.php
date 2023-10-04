@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\RegisterFacadeProvider;
+
 return [
 
     /*
@@ -220,6 +222,10 @@ return [
         App\Providers\ObserverServiceProvider::class,
         \App\Providers\MailingNotificationProvider::class,
         // Spatie\Permission\PermissionServiceProvider::class,
+        RegisterFacadeProvider::class,
+
+        \App\Providers\MailingNotificationProvider::class,
+        // Spatie\Permission\PermissionServiceProvider::class,
         /** @author vahagn99ghukasyan@gmail.com */
         App\Providers\FacadeServiceProvider::class,
         App\Providers\CustomServicesProvider::class,
@@ -238,7 +244,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,

@@ -19,6 +19,7 @@ use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
 use App\Http\Controllers\Deal as Deal;
+use App\Http\Controllers\V2\Analytics\V2AnalyticController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web','tenant'])->group(function () {
@@ -486,6 +487,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
+
+
     Route::get('/timetracking/analytics/activity/exportxx', [Analytics\AnalyticsController::class, 'exportActivityExcel']);
     Route::post('/timetracking/analytics/add-row', [Analytics\AnalyticsController::class, 'addRow']);
     Route::post('/timetracking/analytics/delete-row', [Analytics\AnalyticsController::class, 'deleteRow']);
@@ -520,6 +523,10 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/analytics/add-remote-inhouse', [Analytics\AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/analytics/add-salary', [Analytics\AnalyticsController::class, 'addSalary']);
     Route::any('/timetracking/user-statistics-by-month', [Analytics\AnalyticsController::class, 'getUserStatisticsByMonth']);
+
+    Route::prefix('v2/analytics-page')
+        ->group(base_path('routes/v2-analytics-routes.php'))
+        ->middleware(['tenant']);
 
     // Редактирование бонусов
     Route::group(['prefix' => 'bonus', 'as' => 'bonus.'], function() {
@@ -733,6 +740,7 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         Route::any('/intellect/save_quiz_after_fire',  [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
         Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
+        Route::any('/headhunter/create_lead',          [\App\Api\HeadHunter::class,'createLead'])->name('create-lead');
         // Bitrix -> Admin
         Route::any('/bitrix/new-lead',     [Services\IntellectController::class, 'newLead']);
         Route::any('/bitrix/edit-lead',    [Services\IntellectController::class, 'editLead']);

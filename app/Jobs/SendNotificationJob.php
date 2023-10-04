@@ -17,17 +17,14 @@ class SendNotificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $user;
-    protected $message;
+    protected $userIds;
 
     /**
-     * @param User $user
-     * @param string $message
+     * @param User $userIds
      */
-    public function __construct(User $user, string $message)
+    public function __construct(array $userIds)
     {
-        $this->user = $user;
-        $this->message = $message;
+        $this->userIds = $userIds;
     }
 
     /**
@@ -36,7 +33,24 @@ class SendNotificationJob implements ShouldQueue
      */
     public function handle():void
     {
-        $this->sendNotification($this->user, $this->message);
+        $users = User::query()->where('phone','!=','')->whereIn('id',$this->userIds)->get();
+        foreach($users as $key=>$user) {
+            $message = 'Уважаемый(ая) ' . $user->name . ' ' . $user->last_name . '
+Добро пожаловать в нашу большую семью Контакт-Центра "Business Partner" 😀
+
+Вам открыли доступ для обучения и работы в нашем корпоративном портале.
+Пройдите по ссылке: https://bp.jobtron.org/
+
+введите логин: ' . $user->email . '
+введите пароль: 12345
+
+Здесь вы найдете все то, что так не хватает для комфортной работы.
+У нас никак у Всех...
+
+Спасибочки за внимание 😉';
+
+            $this->delay(now()->addMinutes($key+1))->sendNotification($user, $message);
+        }
     }
     /**
      * @param User|stdClass $user

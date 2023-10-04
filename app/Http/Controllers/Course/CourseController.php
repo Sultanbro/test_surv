@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Course;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
+use App\Http\Controllers\Controller;
+use App\KnowBase;
+use App\Models\Books\Book;
 use App\Models\Course;
 use App\Models\CourseItem;
 use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
-use App\Models\Books\Book;
-use App\KnowBase;
-use App\ProfileGroup;
 use App\Position;
+use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 
 class CourseController extends Controller
-{   
+{
     public function __construct()
     {
         $this->middleware('auth');
@@ -27,48 +27,49 @@ class CourseController extends Controller
      * courses page
      */
     public function index()
-    {   
+    {
         View::share('menu', 'courses');
         View::share('link', 'faq');
 
-        if(!auth()->user()->can('courses_view')) {
+        if (!auth()->user()->can('courses_view')) {
             return redirect('/');
         }
-        
+
         return view('surv.courses');
     }
 
     /**
      * upload cover img of course
      */
-    public function uploadImage(Request $request) {
+    public function uploadImage(Request $request)
+    {
         $course = Course::find($request->course_id);
-        if($course) {
+        if ($course) {
 
             $disk = \Storage::disk('s3');
 
             try {
-                if($course->img != '' && $course->img != null) {
-                    if($disk->exists($course->img)) {
+                if ($course->img != '' && $course->img != null) {
+                    if ($disk->exists($course->img)) {
                         $disk->delete($course->img);
                     }
                 }
             } catch (\Throwable $e) {
                 // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
-            
-            $links = $this->uploadFile('/courses', $request->file('file')); 
+
+            $links = $this->uploadFile('/courses', $request->file('file'));
             $img_link = $links['temp'];
             $course->img = $links['relative'];
 
             $course->save();
-            
+
             return [
                 'img' => $img_link
             ];
         }
     }
-    
+
     /**
      * Change all courses order
      */
@@ -87,25 +88,25 @@ class CourseController extends Controller
 
         $order = 0;
         foreach ($courses as $course) {
-            if($order == $request->order) {
+            if ($order == $request->order) {
                 $order++;
-            } 
+            }
             $course->order = $order;
             $course->save();
             $order++;
         }
 
     }
-    
+
     /**
      * Upload file to S3 and return relative and temp link
      * @param String $path
      * @param mixed $file
-     * 
+     *
      * 'relative' => String
      * 'temp' => String
      */
-    private function uploadFile(String $path, $file) : array
+    private function uploadFile(string $path, $file): array
     {
         $disk = \Storage::disk('s3');
 
@@ -116,22 +117,23 @@ class CourseController extends Controller
         $disk->putFileAs($path, $file, $fileName);
 
         $xpath = $path . '/' . $fileName;
-        
+
         return [
             'relative' => $xpath,
+
             'temp' => $disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
             )
         ];
     }
-        
+
     /**
      * get all courses
      */
     public function get(Request $request)
-    {   
+    {
 
-        if(!auth()->user()->can('courses_view')) {
+        if (!auth()->user()->can('courses_view')) {
             return redirect('/');
         }
 
@@ -145,11 +147,11 @@ class CourseController extends Controller
     /**
      * Save Course
      */
-    public function save(Request $request) : void
-    {   
+    public function save(Request $request): void
+    {
         $course = Course::find($request->course['id']);
 
-        if($course) {
+        if ($course) {
             $course->name = $request->course['name'];
             $course->text = $request->course['text'];
             $course->save();
@@ -157,15 +159,15 @@ class CourseController extends Controller
 
         // elements of course
         $elements = [];
-        $stages = 0; 
-        $bonuses = 0; 
+        $stages = 0;
+        $bonuses = 0;
 
-        foreach($request->course['elements'] as $index => $item) {
-            if($item == null) continue;
+        foreach ($request->course['elements'] as $index => $item) {
+            if ($item == null) continue;
 
-            if($item['type'] == 1) $model = 'App\\Models\\Books\\Book';
-            if($item['type'] == 2) $model = 'App\\Models\\Videos\\VideoPlaylist';
-            if($item['type'] == 3) $model = 'App\\KnowBase';
+            if ($item['type'] == 1) $model = 'App\\Models\\Books\\Book';
+            if ($item['type'] == 2) $model = 'App\\Models\\Videos\\VideoPlaylist';
+            if ($item['type'] == 3) $model = 'App\\KnowBase';
 
 
             array_push($elements, [
@@ -186,12 +188,12 @@ class CourseController extends Controller
                 'title' => $item['name'],
             ];
 
-            if($ci) {
+            if ($ci) {
                 $ci->update($arr);
             } else {
                 $ci = CourseItem::create($arr);
             }
-        
+
             $stages += $ci->countItems();
             $bonuses += $ci->countBonuses();
         }
@@ -199,12 +201,12 @@ class CourseController extends Controller
         $elements = collect($elements);
 
         $ids = [];
-        foreach($request->course['items'] as $index => $item) {
-            if($elements->where('item_id', $item['item_id'])->where('item_model', $item['item_model'])->first() == null) {
+        foreach ($request->course['items'] as $index => $item) {
+            if ($elements->where('item_id', $item['item_id'])->where('item_model', $item['item_model'])->first() == null) {
                 array_push($ids, $item['id']);
             }
         }
-        
+
         // delete
         CourseItem::whereIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
@@ -212,7 +214,7 @@ class CourseController extends Controller
         CourseModel::where('course_id', $course->id)->delete();
 
         // if there one badge with 'ALL' name
-        if(count($request->course['targets']) == 1 && $request->course['targets'][0]['type'] == 0) {
+        if (count($request->course['targets']) == 1 && $request->course['targets'][0]['type'] == 0) {
             CourseModel::create([
                 'course_id' => $course->id,
                 'item_id' => 0,
@@ -220,19 +222,19 @@ class CourseController extends Controller
             ]);
         } else {
             // no badge
-            foreach($request->course['targets'] as $index => $target) {
-      
-                if($target['type'] == 1) $model = 'App\\User';
-                if($target['type'] == 2) $model = 'App\\ProfileGroup';
-                if($target['type'] == 3) $model = 'App\\Position';
-    
+            foreach ($request->course['targets'] as $index => $target) {
+
+                if ($target['type'] == 1) $model = 'App\\User';
+                if ($target['type'] == 2) $model = 'App\\ProfileGroup';
+                if ($target['type'] == 3) $model = 'App\\Position';
+
                 CourseModel::create([
                     'course_id' => $course->id,
                     'item_id' => $target['id'],
                     'item_model' => $model,
                 ]);
             }
-        }   
+        }
 
 
         // save course 
@@ -244,20 +246,20 @@ class CourseController extends Controller
 
     /**
      * get Course
-     * 
+     *
      * @return Course
      */
     public function getItem(Request $request)
-    {   
+    {
 
         $course = Course::with('items', 'models')->find($request->id);
-        
+
         // img poster
         $disk = \Storage::disk('s3');
-        
+
         try {
-            if($course->img != '' && $course->img != null) {
-                if($disk->exists($course->img)) {
+            if ($course->img != '' && $course->img != null) {
+                if ($disk->exists($course->img)) {
                     $course->img = $disk->temporaryUrl(
                         $course->img, now()->addMinutes(360)
                     );
@@ -271,9 +273,8 @@ class CourseController extends Controller
         $targets = [];
 
 
-
         // если указано Все проходят этот курс
-        if(
+        if (
             $course->models
                 ->where('item_id', 0)
                 ->where('item_model', 0)
@@ -287,10 +288,10 @@ class CourseController extends Controller
         } else {
 
             foreach ($course->models as $key => $target) {
-                if($target->item_model == 'App\\ProfileGroup') {
+                if ($target->item_model == 'App\\ProfileGroup') {
                     $model = ProfileGroup::find($target->item_id);
-    
-                    if($model) {
+
+                    if ($model) {
                         $targets[] = [
                             "name" => $model->name,
                             "id" => $model->id,
@@ -298,11 +299,11 @@ class CourseController extends Controller
                         ];
                     }
                 }
-    
-                if($target->item_model == 'App\\User') {
+
+                if ($target->item_model == 'App\\User') {
                     $model = User::withTrashed()->find($target->item_id);
-    
-                    if($model) {
+
+                    if ($model) {
                         $targets[] = [
                             "name" => $model->last_name . ' ' . $model->name,
                             "id" => $model->id,
@@ -310,37 +311,36 @@ class CourseController extends Controller
                         ];
                     }
                 }
-    
-                if($target->item_model == 'App\\Position') {
+
+                if ($target->item_model == 'App\\Position') {
                     $model = Position::find($target->item_id);
-    
-                    if($model) {
+
+                    if ($model) {
                         $targets[] = [
                             "name" => $model->position,
                             "id" => $model->id,
                             "type" => 3,
                         ];
                     }
-                    
+
                 }
             }
 
         }
-        
-     
+
 
         $course->targets = $targets;
-        
+
         // get course items
 
         $items = [];
 
-   
+
         foreach ($course->items as $key => $target) {
-            if($target->item_model == 'App\\Models\\Books\\Book') {
+            if ($target->item_model == 'App\\Models\\Books\\Book') {
                 $model = Book::withTrashed()->find($target->item_id);
 
-                if($model) {
+                if ($model) {
                     $items[] = [
                         "name" => $model->title . ' - ' . $model->author,
                         "id" => $model->id,
@@ -350,10 +350,10 @@ class CourseController extends Controller
                 }
             }
 
-            if($target->item_model == 'App\\Models\\Videos\\VideoPlaylist') {
+            if ($target->item_model == 'App\\Models\\Videos\\VideoPlaylist') {
                 $model = VideoPlaylist::withTrashed()->find($target->item_id);
 
-                if($model) {
+                if ($model) {
                     $items[] = [
                         "name" => $model->title,
                         "id" => $model->id,
@@ -363,10 +363,10 @@ class CourseController extends Controller
                 }
             }
 
-            if($target->item_model == 'App\\KnowBase') {
+            if ($target->item_model == 'App\\KnowBase') {
                 $model = KnowBase::withTrashed()->whereNull('parent_id')->find($target->item_id);
 
-                if($model) {
+                if ($model) {
                     $items[] = [
                         "name" => $model->title,
                         "id" => $model->id,
@@ -374,16 +374,16 @@ class CourseController extends Controller
                         "deleted" => $model->deleted_at != null ? true : false
                     ];
                 }
-                
+
             }
         }
-        
+
         $course->elements = $items;
-        
+
         $author = User::withTrashed()->find($course->user_id);
-        $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
-       
-        $course->created =  Carbon::parse($course->created_at)->format('d.m.Y');
+        $course->author = $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
+
+        $course->created = Carbon::parse($course->created_at)->format('d.m.Y');
 
         return [
             'course' => $course,
@@ -400,17 +400,18 @@ class CourseController extends Controller
             'user_id' => auth()->id()
         ]);
     }
-    
+
     /**
      * delete Course
      */
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $course = Course::find($request->id);
 
-        if($course) {
+        if ($course) {
             $course->delete();
         }
-    }   
+    }
 
-  
+
 }

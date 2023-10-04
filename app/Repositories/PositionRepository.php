@@ -97,13 +97,15 @@ class PositionRepository extends CoreRepository
         ?int $sum,
         ?array $description,
         ?bool $is_head,
+        ?bool $is_spec,
     )
     {
          $positionUpdated = $this->model()->findOrFail($id)->update([
              'position' => $newName,
              'indexation' => $indexation,
              'sum' => $sum,
-             'is_head' => $is_head
+             'is_head' => $is_head,
+             'is_spec' => $is_spec,
          ]);
 
          if ($positionUpdated && isset($description))

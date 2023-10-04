@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import saveCertificateReg from './saveCertificateReg';
+import saveCertificateReg from './saveCertificateReg'
 
 export default {
 	name: 'RegenerateCertificates',
@@ -192,269 +192,259 @@ export default {
 	},
 	computed: {
 		timeWait() {
-			return Math.ceil((this.list.length - this.indexGen) * 5 / 60);
+			return Math.ceil((this.list.length - this.indexGen) * 5 / 60)
 		},
 		secondWait() {
-			return (this.list.length - this.indexGen) * 5;
+			return (this.list.length - this.indexGen) * 5
 		}
 	},
 	mounted() {
-		this.axios
-			.get('/admin/courses/get')
-			.then(response => {
-				this.courses = response.data.courses;
-			}).catch(e => {
-				console.error(e)
-			});
+		this.axios.get('/admin/courses/get').then(({data}) => {
+			this.courses = data.courses
+		}).catch(e => {
+			console.error(e)
+		})
 	},
 	methods: {
 		requestFiles() {
 			this.loading = true;
-			this.axios
-				.get('/awards/courses?course_ids[]=' + this.course)
-				.then(() => {
-					this.course = null;
-					this.list = null;
-					this.files = [];
-					this.start = false;
-					this.indexGen = 0;
-					this.logs = [];
-					this.loading = false;
-					this.showFilesGen = false;
-					this.endGenerate = false;
-					this.$toast.success('Вы успешно очистили все данные, которые так долго генерировали  =) =) ;-). Потому что  я забыл, на какое апи нужно отправлять запрос', {
-						timeout: 8000
-					});
-					this.loading = false;
-				}).catch(e => {
-					console.error(e);
-					this.loading = false;
-
-				});
+			this.axios.get('/awards/courses?course_ids[]=' + this.course).then(() => {
+				this.course = null
+				this.list = null
+				this.files = []
+				this.start = false
+				this.indexGen = 0
+				this.logs = []
+				this.loading = false
+				this.showFilesGen = false
+				this.endGenerate = false
+				this.$toast.success('Вы успешно очистили все данные, которые так долго генерировали  =) =) ;-). Потому что  я забыл, на какое апи нужно отправлять запрос', {
+					timeout: 8000
+				})
+				this.loading = false
+			}).catch(e => {
+				console.error(e)
+				this.loading = false
+			})
 		},
 		startClick() {
-			this.start = true;
-			this.showFilesGen = true;
+			this.start = true
+			this.showFilesGen = true
 		},
 		selectCourse() {
-			this.loading = true;
-			this.files = [];
-			this.indexGen = 0;
-			this.start = false;
-			this.showFilesGen = false;
-			this.endGenerate = false;
-			this.logs = [];
-			this.axios
-				.get('/awards/courses?course_ids[]=' + this.course)
-				.then(response => {
-					this.list = response.data.data;
-					this.loading = false;
-				}).catch(e => {
-					console.error(e);
-					this.loading = false;
-
-				});
+			this.loading = true
+			this.files = []
+			this.indexGen = 0
+			this.start = false
+			this.showFilesGen = false
+			this.endGenerate = false
+			this.logs = []
+			this.axios.get('/awards/courses?course_ids[]=' + this.course).then(({data}) => {
+				this.list = data.data
+				this.loading = false
+			}).catch(e => {
+				console.error(e)
+				this.loading = false
+			})
 		},
 		generated(file, log) {
-			if (file) {
-				this.files.push(file);
-			}
-			this.logs.push(log);
-			this.indexGen = this.indexGen + 1;
+			if (file) this.files.push(file)
+			this.logs.push(log)
+			++this.indexGen
 			if (this.list.length <= this.indexGen) {
-				this.start = false;
-				this.endGenerate = true;
+				this.start = false
+				this.endGenerate = true
 			}
-			this.$refs.logs.scrollTo(0, this.$refs.logs.scrollHeight);
+			this.$refs.logs.scrollTo(0, this.$refs.logs.scrollHeight)
 		}
 	}
 }
 </script>
 
 <style lang="scss">
-    .regenerate {
-        .time-wait{
-            font-size: 12px;
-        }
-        .info-block{
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-top: 1px solid #ddd;
-            background-color: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
-            font-weight: 600;
-            line-height: 1.5;
-            text-align: center;
-        }
-        .custom-modal-footer{
-            margin-top: 10px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .finish-text {
-            color: #0bbd0b;
-            margin-right: 10px;
-            margin-left: 40px;
-            &.danger{
-                color: #ff5a5a;
-            }
-        }
+.regenerate {
+	.time-wait{
+		font-size: 12px;
+	}
+	.info-block{
+		padding: 20px;
+		border-radius: 10px;
+		margin: 20px 0;
+		border-top: 1px solid #ddd;
+		background-color: rgba(220, 53, 69, 0.2);
+		color: #dc3545;
+		font-weight: 600;
+		line-height: 1.5;
+		text-align: center;
+	}
+	.custom-modal-footer{
+		margin-top: 10px;
+		display: flex;
+		justify-content: flex-end;
+	}
+	.finish-text {
+		color: #0bbd0b;
+		margin-right: 10px;
+		margin-left: 40px;
+		&.danger{
+			color: #ff5a5a;
+		}
+	}
 
-        .green-span-text{
-            color: #0bbd0b;
-        }
+	.green-span-text{
+		color: #0bbd0b;
+	}
 
-        .total-result {
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            .text-files-count{
-                color: #fff;
-                &.finished {
-                    color: #0bbd0b;
-                }
-                &.abort{
-                    color: #ff5a5a !important;
-                }
-            }
-        }
+	.total-result {
+		margin: 20px 0;
+		border: 1px solid #ddd;
+		background-color: #333;
+		color: #fff;
+		padding: 10px 20px;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		.text-files-count{
+			color: #fff;
+			&.finished {
+				color: #0bbd0b;
+			}
+			&.abort{
+				color: #ff5a5a !important;
+			}
+		}
+	}
 
-        .custom-select {
-            height: 40px;
-        }
+	.custom-select {
+		height: 40px;
+	}
 
-        .logs {
-            height: calc(100vh - 500px);
-            border: 1px solid #ddd;
-            overflow: auto;
-            background-color: #333;
-            padding: 20px;
+	.logs {
+		height: calc(100vh - 500px);
+		border: 1px solid #ddd;
+		overflow: auto;
+		background-color: #333;
+		padding: 20px;
 
-            .log-item {
-                display: flex;
-                align-items: flex-start;
-                font-size: 14px;
-                margin-bottom: 10px;
-                border-bottom: 1px solid #666;
-                padding-bottom: 10px;
+		.log-item {
+			display: flex;
+			align-items: flex-start;
+			font-size: 14px;
+			margin-bottom: 10px;
+			border-bottom: 1px solid #666;
+			padding-bottom: 10px;
 
-                .index {
-                    color: #0bbd0b;
-                    margin-right: 10px;
-                    text-align: right;
-                    width: 30px;
-                }
+			.index {
+				color: #0bbd0b;
+				margin-right: 10px;
+				text-align: right;
+				width: 30px;
+			}
 
-                .msg {
-                    width: 100%;
-                    display: block;
-                    color: orange;
-                    margin-bottom: 5px;
-                }
+			.msg {
+				width: 100%;
+				display: block;
+				color: orange;
+				margin-bottom: 5px;
+			}
 
-                .file-name {
-                    width: 100%;
-                    display: block;
-                    color: #21adff;
+			.file-name {
+				width: 100%;
+				display: block;
+				color: #21adff;
 
-                    &.danger {
-                        color: #ff5a5a;
-                    }
-                }
-            }
-        }
+				&.danger {
+					color: #ff5a5a;
+				}
+			}
+		}
+	}
 
-        @keyframes dot-keyframes {
-            0% {
-                opacity: .4;
-                transform: scale(1, 1);
-            }
+	@keyframes dot-keyframes {
+		0% {
+			opacity: .4;
+			transform: scale(1, 1);
+		}
 
-            50% {
-                opacity: 1;
-                transform: scale(1.2, 1.2);
-            }
+		50% {
+			opacity: 1;
+			transform: scale(1.2, 1.2);
+		}
 
-            100% {
-                opacity: .4;
-                transform: scale(1, 1);
-            }
-        }
+		100% {
+			opacity: .4;
+			transform: scale(1, 1);
+		}
+	}
 
-        .loading-dots {
-            width: 100%;
+	.loading-dots {
+		width: 100%;
 
-            &--dot {
-                animation: dot-keyframes 1.5s infinite ease-in-out;
-                background-color: #fff;
-                border-radius: 10px;
-                display: inline-block;
-                height: 5px;
-                width: 5px;
+		&--dot {
+			animation: dot-keyframes 1.5s infinite ease-in-out;
+			background-color: #fff;
+			border-radius: 10px;
+			display: inline-block;
+			height: 5px;
+			width: 5px;
 
-                &:nth-child(2) {
-                    animation-delay: .5s;
-                }
+			&:nth-child(2) {
+				animation-delay: .5s;
+			}
 
-                &:nth-child(3) {
-                    animation-delay: 1s;
-                }
-            }
-        }
+			&:nth-child(3) {
+				animation-delay: 1s;
+			}
+		}
+	}
 
-        .spinner-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+	.spinner-container {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.8);
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-        .throbber-loader {
-            animation: throbber-loader 2000ms 300ms infinite ease-out;
-            background: #dde2e7;
-            display: inline-block;
-            position: relative;
-            text-indent: -9999px;
-            width: 0.9em;
-            height: 1.5em;
-            margin: 0 1.6em;
-            z-index: 22;
-        }
+	.throbber-loader {
+		animation: throbber-loader 2000ms 300ms infinite ease-out;
+		background: #dde2e7;
+		display: inline-block;
+		position: relative;
+		text-indent: -9999px;
+		width: 0.9em;
+		height: 1.5em;
+		margin: 0 1.6em;
+		z-index: 22;
+	}
 
-        .throbber-loader:before, .throbber-loader:after {
-            background: #dde2e7;
-            content: '\x200B';
-            display: inline-block;
-            width: 0.9em;
-            height: 1.5em;
-            position: absolute;
-            top: 0;
-        }
+	.throbber-loader:before, .throbber-loader:after {
+		background: #dde2e7;
+		content: '\x200B';
+		display: inline-block;
+		width: 0.9em;
+		height: 1.5em;
+		position: absolute;
+		top: 0;
+	}
 
-        .throbber-loader:before {
-            -moz-animation: throbber-loader 2000ms 150ms infinite ease-out;
-            -webkit-animation: throbber-loader 2000ms 150ms infinite ease-out;
-            animation: throbber-loader 2000ms 150ms infinite ease-out;
-            left: -1.6em;
-        }
+	.throbber-loader:before {
+		-moz-animation: throbber-loader 2000ms 150ms infinite ease-out;
+		-webkit-animation: throbber-loader 2000ms 150ms infinite ease-out;
+		animation: throbber-loader 2000ms 150ms infinite ease-out;
+		left: -1.6em;
+	}
 
-        .throbber-loader:after {
-            -moz-animation: throbber-loader 2000ms 450ms infinite ease-out;
-            -webkit-animation: throbber-loader 2000ms 450ms infinite ease-out;
-            animation: throbber-loader 2000ms 450ms infinite ease-out;
-            right: -1.6em;
-        }
-    }
+	.throbber-loader:after {
+		-moz-animation: throbber-loader 2000ms 450ms infinite ease-out;
+		-webkit-animation: throbber-loader 2000ms 450ms infinite ease-out;
+		animation: throbber-loader 2000ms 450ms infinite ease-out;
+		right: -1.6em;
+	}
+}
 </style>

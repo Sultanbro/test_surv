@@ -33,6 +33,7 @@ class StoreAwardRequest extends FormRequest
             'targetable_type'   => 'string',
             'targetable_id'     => 'integer',
             'file.*'            => 'file|mimes:jpg,png,pdf|max:7168',
+            'preview.*'         => 'file|mimes:jpg,png,pdf|max:7168',
             'type'              => 'string'
         ];
     }

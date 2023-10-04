@@ -19,7 +19,7 @@ class UpbookController extends Controller
     }
 
     public function index()
-    {   
+    {
         View::share('menu', 'upbook');
         View::share('link', 'upbook');
 
@@ -27,10 +27,10 @@ class UpbookController extends Controller
     }
 
     public function admin_get(Request $request)
-    {   
+    {
         $cats = BookGroup::with('books')->get();
 
-     
+
         $nocat_books = Book::where('group_id', 0)->get();
 
         if($nocat_books->count() > 0) {
@@ -41,11 +41,11 @@ class UpbookController extends Controller
 
             $cats->push($cat);
         }
-        
+
         // get links
 
         $disk = \Storage::disk('s3');
-        
+
         foreach ($cats as $xkey => $cat) {
 
             if(!$cat->books) continue;
@@ -61,11 +61,11 @@ class UpbookController extends Controller
                         $book->img, now()->addMinutes(360)
                     );
                 }
-                
+
             }
 
         }
-        
+
 
         return [
             'categories' => $cats->toArray()
@@ -82,29 +82,29 @@ class UpbookController extends Controller
     }
 
     public function deleteCategory(Request $request)
-    {   
+    {
         $bg = BookGroup::find($request->id);
         if($bg) {
             $bg->delete();
         }
     }
 
-    
+
 
     /**
      * Get book and it's tests
-     * 
+     *
      * @param Request $request
-     * 
-     * @return array 
-     * 
+     *
+     * @return array
+     *
      * return [
      *    'tests' => array,
      *    'activeBook' => Book::class,
-     * ]; 
+     * ];
      */
     public function getSegments(Request $request)
-    {   
+    {
         $user_id = auth()->id();
         $book = Book::where('id',$request->id)
             ->with('segments')
@@ -113,7 +113,7 @@ class UpbookController extends Controller
 
         if($book) {
 
-            
+
             // @TODO
             // get test results
 
@@ -140,22 +140,22 @@ class UpbookController extends Controller
 
             // get link storage
             $disk = \Storage::disk('s3');
-            
+
             if($book->domain == 'storage.oblako.kz') {
-            
-                
+
+
                 if($book->link != '' && $book->link != null) {
                     $book->link = $disk->temporaryUrl(
                         $book->link, now()->addMinutes(360)
                     );
-                }   
-                
+                }
+
             }
 
             if($book->img != '' && $book->img != null) {
                 $book->img = $disk->temporaryUrl(
                     $book->img, now()->addMinutes(360)
-                ); 
+                );
             }
         }
 
@@ -165,7 +165,7 @@ class UpbookController extends Controller
             'activeBook' => $book,
         ];
     }
-    
+
     public function save(Request $request)
     {
         $b = Book::find($request->id);
@@ -174,7 +174,7 @@ class UpbookController extends Controller
         if($b) {
 
             if($request->file('file')) {
-                $links = $this->uploadFile('/bookcovers', $request->file('file')); 
+                $links = $this->uploadFile('/bookcovers', $request->file('file'));
                 $blink = $links['temp'];
                 $b->img = $links['relative'];
             }
@@ -182,22 +182,22 @@ class UpbookController extends Controller
             $b->title = $request->title;
             $b->author = $request->author;
             $b->description = $request->description;
-           
+
             $b->group_id = $request->group_id;
             $b->save();
-        
+
         }
 
         return $blink;
     }
-    
+
     /**
      * Upload file to S3 and return relative link
      * @param String $path
      * @param mixed $file
-     * 
-     * @return array 
-     * 
+     *
+     * @return array
+     *
      * 'relative' => String
      * 'temp' => String
      */
@@ -212,7 +212,7 @@ class UpbookController extends Controller
         $disk->putFileAs($path, $file, $fileName);
 
         $xpath = $path . '/' . $fileName;
-        
+
         return [
             'relative' => $xpath,
             'temp' => $disk->temporaryUrl(
@@ -220,18 +220,18 @@ class UpbookController extends Controller
             )
         ];
     }
-    
+
     /**
      * Delete book
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return [type]
      */
     public function delete(Request $request) {
         $book = Book::find($request->id);
 
-       
+
         if($book) {
             $disk = \Storage::disk('s3');
 
@@ -251,18 +251,18 @@ class UpbookController extends Controller
                 // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
 
-            
-           
+
+
             $book->delete();
         }
-    }   
+    }
 
-    
+
     /**
      * Update book and save tests
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return String
      */
     public function update(Request $request)
@@ -278,7 +278,7 @@ class UpbookController extends Controller
 
                 if($b->img != '' && $b->img != null) {
                     $disk = \Storage::disk('s3');
-                    
+
                     try {
                         if($disk->exists($b->img)) {
                             $disk->delete($b->img);
@@ -286,10 +286,10 @@ class UpbookController extends Controller
                     } catch (\Throwable $e) {
                         // League \ Flysystem \ UnableToCheckDirectoryExistence
                     }
-        
+
                 }
 
-                $links = $this->uploadFile('/bookcovers', $request->file('file')); 
+                $links = $this->uploadFile('/bookcovers', $request->file('file'));
                 $img_link = $links['temp'];
                 $b->img = $links['relative'];
             }
@@ -303,12 +303,12 @@ class UpbookController extends Controller
 
         return $img_link;
 
-        
+
     }
-    
+
     public function saveSegment(Request $request)
     {
-        $bs = BookSegment::where('id', $request->item['id'])->first();   
+        $bs = BookSegment::where('id', $request->item['id'])->first();
         if(!$bs) {
             $bs = BookSegment::create([
                 'title' => 'test',
@@ -339,10 +339,10 @@ class UpbookController extends Controller
             if($q['id'] != 0) {
                 $testq = TestQuestion::find($q['id']);
                 if($testq) $testq->update($params);
-                $ids[] = $q['id']; 
+                $ids[] = $q['id'];
             } else {
                 $q = TestQuestion::create($params);
-                $ids[] = $q->id; 
+                $ids[] = $q->id;
             }
         }
 
@@ -350,7 +350,7 @@ class UpbookController extends Controller
             'id' =>  $bs->id,
             'ids' =>  $ids
         ];
-                
+
     }
 
     public function saveCat(Request $request) {
@@ -366,5 +366,5 @@ class UpbookController extends Controller
     {
         BookSegment::where('id', $request->id)->delete();
     }
-    
+
 }

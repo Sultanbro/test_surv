@@ -23,7 +23,7 @@ class NotificationTemplatePusher extends Command
      *
      * @var string
      */
-    protected $signature = 'run:pusher:template';
+    protected $signature = 'run:pusher:template {force?}';
 
     /**
      * The console command description.
@@ -98,11 +98,13 @@ class NotificationTemplatePusher extends Command
             ->orderBy('last_name', 'asc')
             ->get();
 
-        $link       = 'Ссылка на опрос <br>';
         $message    = $notification->title;
-        $message   .= $link;
+        if(tenant('id') == 'bp'){
+            $link = '<br> <a href="/estimate_your_trainer" class="btn btn-primary btn-sm rounded mt-1" target="_blank">Оценить</a>';
+            $message .= $link;
+        }
 
-        if ($daysRemaining == 2)
+        if ($daysRemaining == 2 || $this->argument('force') == 'true')
         {
             foreach ($mailings as $mailing)
             {

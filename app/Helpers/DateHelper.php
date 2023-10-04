@@ -30,4 +30,30 @@ class DateHelper
 
         return  $birthday->translatedFormat('d F');
     }
+
+    /**
+     * @param int|string $year
+     * @param int|string $month
+     * @return string
+     */
+    public static function firstOfMonth(
+        int|string $year,
+        int|string $month
+    ): string
+    {
+        return Carbon::createFromDate($year, $month)->firstOfMonth()->format('Y-m-d');
+    }
+
+    /**
+     * @param int|string $year
+     * @param int|string $month
+     * @return string
+     */
+    public static function lastOfMonth(
+        int|string $year,
+        int|string $month
+    ): string
+    {
+        return Carbon::createFromDate($year, $month)->lastOfMonth()->format('Y-m-d');
+    }
 }
