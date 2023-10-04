@@ -106,7 +106,7 @@ final class Analytics
         $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
 
         return $employees
-            ->withWhereHas('statistics', fn($statistic) => $statistic->select([
+            ->with('statistics', fn($statistic) => $statistic->select([
                 DB::raw('DAY(date) as day'),
                 'user_id',
                 'value',
