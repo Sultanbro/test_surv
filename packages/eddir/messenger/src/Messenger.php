@@ -31,7 +31,7 @@ class Messenger {
     public Pusher $pusher;
     public $generalChat = [
         'owner_id' => 0,
-        'title' => 'Общий чат',
+        'title' => 'Чат компании',
         'description' => '',
         'image' => '',
         'private' => 0,
