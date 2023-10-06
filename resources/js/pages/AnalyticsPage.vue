@@ -561,7 +561,6 @@ export default {
 		},
 
 		async fetchData() {
-			// const loader = this.$loading.show()
 			this.ready = {
 				activities: false,
 				decompositions: false,
@@ -585,56 +584,20 @@ export default {
 				this.fetchFiredInfo(request),
 				this.fetchAnalytics(request),
 			])
+			this.setMonth()
+			this.setYear()
 
-			try {
-				// const data = await API.fetchAnalytics(request)
-				// if (data.error && data.error == 'access') {
-				// 	this.hasPremission = false
-				// 	loader.hide()
-				// 	return
-				// }
-				// this.hasPremission = true
+			this.dataLoaded = true
+			this.noan = false
+			this.firstEnter = false
+			this.hasPremission = true
+			const urlParamss = new URLSearchParams(window.location.search)
+			const active = urlParamss.get('active')
+			this.active = active ? active : '1'
 
-				// this.setMonth()
-				// this.setYear()
-
-				// this.firstEnter = false
-
-				// const urlParamss = new URLSearchParams(window.location.search)
-				// const active = urlParamss.get('active')
-				// this.active = active ? active : '1'
-
-				// if(data.error !== undefined) {
-				// 	this.dataLoaded = false
-				// 	this.noan = true
-				// 	this.archived_groups = data.archived_groups
-				// 	this.ggroups = data.groups
-				// }
-				// else {
-				// 	this.dataLoaded = true
-				// 	this.data = data
-				// 	this.noan = false
-
-				// 	this.call_bases = data.call_bases
-				// 	this.archived_groups = data.archived_groups
-				// 	this.ggroups = data.groups
-				// }
-
-				this.dataLoaded = true
-				this.firstEnter = false
-				this.hasPremission = true
-				const urlParamss = new URLSearchParams(window.location.search)
-				const active = urlParamss.get('active')
-				this.active = active ? active : '1'
-
-				this.askey++
-				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
-				this.monthInfo.workDays = this.getBusinessDateCount(this.monthInfo.month, this.monthInfo.currentYear, this.currentGroup.workdays)
-			}
-			catch (error) {
-				alert(error)
-			}
-			// loader.hide()
+			this.askey++
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
+			this.monthInfo.workDays = this.getBusinessDateCount(this.monthInfo.month, this.monthInfo.currentYear, this.currentGroup.workdays)
 		},
 
 		getBusinessDateCount(month, year, workdays) {

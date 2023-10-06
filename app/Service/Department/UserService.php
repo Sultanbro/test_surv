@@ -123,6 +123,18 @@ class UserService
     }
 
     /**
+     * Получить id всех пользователей группы.
+     *
+     * @param $groupId
+     * @param $date
+     * @return array
+     */
+    public function getFiredEmployeeIds($groupId, $date): array
+    {
+        return collect($this->getFiredEmployees($groupId, $date))->pluck('id')->toArray();
+    }
+
+    /**
      * Все стажеры из отдела.
      * @param int $groupId
      * @param string $date
