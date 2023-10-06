@@ -63,7 +63,7 @@ export default {
 		right: 0;
 		bottom: 100%;
 	}
-	&_topRight{
+	&_topLeft{
 		left: 0;
 		bottom: 100%;
 	}

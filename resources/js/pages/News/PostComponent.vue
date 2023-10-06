@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="PostComponent">
 		<div
 			v-observe-visibility="{
 				callback: viewsChanged,
@@ -210,15 +210,42 @@
 							{{ currentPost.files.length }}
 						</span>
 					</div>
-					<!--                    <div class="news-item__footer-action">-->
-					<!--                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/menu.svg">-->
-					<!--                    </div>-->
 				</div>
-				<div class="news-item__views">
+				<div
+					class="news-item__views"
+					@click.stop="toggleViews"
+					@mouseover="mouseEnterViews"
+					@mouseleave="mouseLeaveViews"
+				>
 					<img src="/icon/news/some-icons/view.svg">
 					<span class="news-item__footer-count">{{ currentPost.views_count }}</span>
+					<PopupMenu
+						v-click-outside="closeViews"
+						:class="{
+							PostComponent_hidden: !isViewsPopup
+						}"
+						position="topRight"
+						max-height="250px"
+					>
+						<div class="px-2">
+							Просмотры
+						</div>
+						<hr>
+						<div
+							v-for="view, index in currentPost.viewers || []"
+							:key="index"
+							class="d-flex aic"
+						>
+							<JobtronAvatar
+								size="24"
+								:image="view.user.avatar"
+							/>
+							{{ view.user.name }}
+						</div>
+					</PopupMenu>
 				</div>
 			</div>
+
 			<CommentsComponent
 				v-show="showComments"
 				ref="comments"
@@ -279,14 +306,30 @@
 /* eslint-disable vue/no-mutating-props */
 
 import CommentsComponent from '@/pages/News/CommentsComponent'
+import PopupMenu from '@ui/PopupMenu'
+import JobtronAvatar from '@ui/Avatar'
+
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
 import { pluralForm } from '@/composables/pluralForm.js'
 
+const imageTypes = {
+	png: 'image/png',
+	bmp: 'image/bmp',
+	gif: 'image/gif',
+	jpg: 'image/jpeg',
+	jpeg: 'image/jpeg',
+	tif: 'image/tiff',
+	tiff: 'image/tiff',
+	webp: 'image/webp',
+}
+
 export default {
 	name: 'PostComponent',
 	components: {
-		CommentsComponent
+		CommentsComponent,
+		PopupMenu,
+		JobtronAvatar,
 	},
 	props: {
 		post: {
@@ -313,7 +356,10 @@ export default {
 			parentId: null,
 			images: [],
 			galleryIndex: null,
-			showModalImages: false
+			showModalImages: false,
+
+			isViewsPopup: false,
+			viewsPopupTimeout: null,
 		}
 	},
 	computed: {
@@ -336,113 +382,74 @@ export default {
 		},
 	},
 	mounted() {
-		this.showFullContent = this.currentPost.is_pinned == false;
-		const imagesPost = this.$refs.newsItemContent.querySelectorAll('img');
-		imagesPost.forEach(i => this.images.push(i.src));
+		this.showFullContent = this.currentPost.is_pinned == false
+		const imagesPost = this.$refs.newsItemContent.querySelectorAll('img')
+		imagesPost.forEach(i => this.images.push(i.src))
 		for(let i = 0; i < imagesPost.length; i++){
 			imagesPost[i].addEventListener('click', () => {
-				this.galleryIndex = i;
-				this.showModalImages = true;
+				this.galleryIndex = i
+				this.showModalImages = true
 			})
 		}
 	},
 	methods: {
 		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
 		getFileTypeByExtension(extension) {
-			switch (extension) {
-			case 'png': {
-				return 'image/png';
-			}
-			case 'bmp': {
-				return 'image/bmp';
-			}
-			case 'gif': {
-				return 'image/git';
-			}
-			case 'jpg': {
-				return 'image/jpeg';
-			}
-			case 'jpeg': {
-				return 'image/jpeg';
-			}
-			case 'tif': {
-				return 'image/tiff';
-			}
-			case 'tiff': {
-				return 'image/tiff';
-			}
-			case 'webp': {
-				return 'image/webp';
-			}
-			default: {
-				return 'file';
-			}
-			}
+			return imageTypes[extension] || 'file'
 		},
 
 		async downloadFile(file) {
-			await this.axios.get(file.url, {responseType: 'blob'})
-				.then(response => {
-					const blob = new Blob([response.data], {type: this.getFileTypeByExtension(file.extension)});
-					const link = document.createElement('a');
-					link.href = URL.createObjectURL(blob);
-					link.download = file.original_name;
-					link.click();
-					URL.revokeObjectURL(link.href);
-				})
-				.catch(console.error)
+			try {
+				const {data} = await this.axios.get(file.url, {responseType: 'blob'})
+				const blob = new Blob([data], {type: this.getFileTypeByExtension(file.extension)})
+				const link = document.createElement('a')
+				link.href = URL.createObjectURL(blob)
+				link.download = file.original_name
+				link.click()
+				URL.revokeObjectURL(link.href)
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 
 		toggleShowFullContent() {
-			this.showFullContent = !this.showFullContent;
+			this.showFullContent = !this.showFullContent
 		},
 
 		toggleUsersAccessList() {
 			if (this.currentPost.available_for != null) {
-				this.userAccessListShow = !this.userAccessListShow;
+				this.userAccessListShow = !this.userAccessListShow
 			}
 		},
 
 		toggleShowPopup() {
-			this.showPopup = !this.showPopup;
+			this.showPopup = !this.showPopup
 		},
 
 		toggleShowFiles() {
-			this.showFiles = !this.showFiles;
+			this.showFiles = !this.showFiles
 		},
 
 		toggleShowComments() {
 			if (!this.showComments) {
 				this.getPostComments(this.currentPost.id)
-			} else {
-				this.showComments = false;
+			}
+			else {
+				this.showComments = false
 			}
 		},
 
 		copyPostLink() {
-			this.toggleShowPopup();
-			navigator.clipboard.writeText(location.protocol + '//' + location.host + location.pathname + '?post_id=' + this.currentPost.id);
+			this.toggleShowPopup()
+			navigator.clipboard.writeText(location.protocol + '//' + location.host + location.pathname + '?post_id=' + this.currentPost.id)
 		},
 
 		getFilePreview(file) {
-			if (file.extension == 'png' ||
-                file.extension == 'jpg' ||
-                file.extension == 'gif' ||
-                file.extension == 'tif' ||
-                file.extension == 'tiff' ||
-                file.extension == 'webp' ||
-                file.extension == 'jpeg') {
-
-				return file.url;
-			} else if (file.extension == 'doc' || file.extension == 'docx') {
-
-				return '/images/some-files/word.png';
-			} else if (file.extension == '7z' || file.extension == 'zip' || file.extension == 'rar') {
-
-				return '/images/some-files/rar.png';
-			} else {
-				return '/images/some-files/img.png';
-			}
+			if (Object.keys(imageTypes).includes(file.extension)) return file.url
+			if (file.extension == 'doc' || file.extension == 'docx') return '/images/some-files/word.png'
+			if (file.extension == '7z' || file.extension == 'zip' || file.extension == 'rar') return '/images/some-files/rar.png'
+			return '/images/some-files/img.png'
 		},
 
 		getPostComments(postId) {
@@ -450,93 +457,94 @@ export default {
 		},
 
 		getData(data) {
-			const el = this.$refs.NewsCommentInput;
+			const el = this.$refs.NewsCommentInput
 			if (el) {
-				el.scrollIntoView({block: 'center', behavior: 'smooth'});
-				el.focus();
+				el.scrollIntoView({block: 'center', behavior: 'smooth'})
+				el.focus()
 			}
-			this.parentId = data.parentId;
-			this.commentText = data.userName + ', ';
+			this.parentId = data.parentId
+			this.commentText = data.userName + ', '
 		},
 
 		changeCommentsCount(data) {
-			this.showComments = true;
-			this.currentPost.comments_count = data.comments_count;
+			this.showComments = true
+			this.currentPost.comments_count = data.comments_count
 		},
 
 		async likePost(id) {
-			await this.axios.post('/news/' + id + '/like')
-				.then(() => {
-					if (this.currentPost.is_liked) {
-						this.currentPost.likes_count--;
-					} else {
-						this.currentPost.likes_count++;
-					}
-
-					this.currentPost.is_liked = !this.currentPost.is_liked;
-				})
-				.catch(() => {
-				});
+			try {
+				await this.axios.post('/news/' + id + '/like')
+				if (this.currentPost.is_liked) {
+					this.currentPost.likes_count--
+				}
+				else {
+					this.currentPost.likes_count++
+				}
+				this.currentPost.is_liked = !this.currentPost.is_liked
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 
 		async viewsChanged() {
-			await this.axios.post('news/' + this.currentPost.id + '/views')
-				.then(res => {
-					this.currentPost.views_count = res.data.data.views_count;
-				})
-				.catch(res => {
-					console.error(res)
-				})
-			this.getUnviewedNewsCount();
+			try {
+				const {data} = await this.axios.post('news/' + this.currentPost.id + '/views')
+				this.currentPost.views_count = data.data.views_count;
+			}
+			catch (error) {
+				console.error(error)
+			}
+			this.getUnviewedNewsCount()
 		},
 
 		async favouritePost(id) {
-			await this.axios.post('news/' + id + '/favourite')
-				.then(() => {
-					this.toggleShowPopup();
-					this.$emit('update-news-list');
-				})
-				.catch()
+			try {
+				await this.axios.post('news/' + id + '/favourite')
+				this.toggleShowPopup()
+				this.$emit('update-news-list')
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 
 		async pinPost(id) {
-			await this.axios.post('/news/' + id + '/pin')
-				.then(response => {
-					this.post.is_pinned = response.data.data.is_pinned;
-					this.showFullContent = false;
-				})
-				.catch(response => {
-					console.error(response);
-				});
+			try {
+				const data = await this.axios.post('/news/' + id + '/pin')
+				this.post.is_pinned = data.data.is_pinned
+				this.showFullContent = false
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 
 		async sendComment(postId) {
-			if (this.commentText == '') {
-				return
+			if (this.commentText == '') return
+
+			const formData = new FormData;
+			formData.set('content', this.commentText)
+			this.commentText = ''
+			formData.append('parent_id', this.parentId == null ? '' : this.parentId)
+			this.parentId = null
+
+			try {
+				await this.axios.post('/news/' + postId + '/comments', formData)
+				this.currentPost.comments_count = this.currentPost.comments_count + 1
+				this.getPostComments(postId)
 			}
-
-			let formData = new FormData;
-			formData.set('content', this.commentText);
-			this.commentText = '';
-			formData.append('parent_id', this.parentId == null ? '' : this.parentId);
-			this.parentId = null;
-
-			await this.axios.post('/news/' + postId + '/comments', formData)
-				.then(() => {
-					this.currentPost.comments_count = this.currentPost.comments_count + 1;
-					this.getPostComments(postId);
-				})
-				.catch(response => {
-					console.error(response);
-				});
+			catch (error) {
+				console.error(error)
+			}
 		},
 
 		editPost() {
-			this.toggleShowPopup();
+			this.toggleShowPopup()
 			window.scrollTo({
 				top: 0,
 				behavior: 'smooth',
-			});
+			})
 
 			this.$emit('editPost', {
 				id: this.currentPost.id,
@@ -544,59 +552,91 @@ export default {
 				title: this.currentPost.title,
 				content: this.currentPost.content,
 				files: this.currentPost.files,
-			});
+			})
 		},
 
 		async deletePost(postId) {
-			await this.axios.delete('/news/' + postId)
-				.then(() => {
-					this.toggleShowPopup();
-					this.$emit('update-news-list');
-				})
-				.catch(response => {
-					console.error(response);
-				});
-		}
+			try {
+				await this.axios.delete('/news/' + postId)
+				this.toggleShowPopup()
+				this.$emit('update-news-list')
+			}
+			catch (error) {
+				console.error(error)
+			}
+		},
+
+		openViews(){
+			this.isViewsPopup = true
+		},
+		closeViews(){
+			this.isViewsPopup = false
+		},
+		toggleViews(){
+			this.isViewsPopup = !this.isViewsPopup
+		},
+		mouseEnterViews(){
+			this.viewsPopupTimeout = setTimeout(this.openViews, 1000)
+		},
+		mouseLeaveViews(){
+			clearTimeout(this.viewsPopupTimeout)
+		},
 	}
 }
 </script>
 
 <style lang="scss">
-	.gallery-modal{
-		position: fixed;
-		z-index: 9999;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0,0,0,0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		.gallery-modal-content{
-			max-width: 95%;
-			max-height: calc(100vh - 100px);
-			img{
-				width: 100%;
-				height: calc(100vh - 150px);
-			}
-		}
-		.carousel-control-next, .carousel-control-prev{
-			position: fixed !important;
-			z-index: 10;
-			bottom: unset;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 50px;
-			height: 50px;
-			border-radius: 50%;
-			background-color: #333;
-		}
-		.carousel-control-next{
-			right: 50px;
-		}
-		.carousel-control-prev{
-			left: 50px;
+.gallery-modal{
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.gallery-modal-content{
+		max-width: 95%;
+		max-height: calc(100vh - 100px);
+		img{
+			width: 100%;
+			height: calc(100vh - 150px);
 		}
 	}
+	.carousel-control-next, .carousel-control-prev{
+		position: fixed !important;
+		z-index: 10;
+		bottom: unset;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: #333;
+	}
+	.carousel-control-next{
+		right: 50px;
+	}
+	.carousel-control-prev{
+		left: 50px;
+	}
+}
+.news-item__views{
+	position: relative;
+}
+
+.PostComponent{
+	.PopupMenu{
+		margin-bottom: 10px;
+		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.15), 0px 15px 60px -40px rgba(45, 50, 90, 0.25);
+		transition: all 0.3s;
+	}
+	&_hidden{
+		margin-right: -20px;
+		opacity: 0;
+		visibility: hidden;
+	}
+}
 </style>
