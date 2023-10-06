@@ -4,9 +4,7 @@ namespace App\Console\Commands;
 
 use App\Repositories\UserRepository;
 use App\Salary;
-use App\User;
 use App\Zarplata;
-use Dflydev\DotAccessData\Data;
 use Illuminate\Console\Command;
 
 class DailySalaryUpdate extends Command
@@ -26,7 +24,7 @@ class DailySalaryUpdate extends Command
     protected $description = 'Count daily salary amount'; // Считает сколько была сумма зарплаты на день. К примеру 70000, после сдачи экзамена стало 80000
 
     /**
-     * Variables that used 
+     * Variables that used
      *
      * @var mixed
      */
@@ -48,7 +46,7 @@ class DailySalaryUpdate extends Command
 
         $this->repository = new UserRepository();
     }
-    
+
     /**
      * Execute the console command.
      *
@@ -58,22 +56,25 @@ class DailySalaryUpdate extends Command
     {
 
         $date = $this->argument('date') ?? date('Y-m-d');
-        $users = $this->repository->getUsersWithDescription($date)->with(['salaries' => fn($query) => $query->where('date', $date)])->get();
+        $users = $this->repository
+            ->getUsersWithDescription($date)
+            ->with(['salaries' => fn($query) => $query->where('date', $date)])
+            ->get();
         $userIds = $users->pluck('id')->toArray();
         $salaries = Salary::where('date', $date)
             ->whereIn('user_id', $userIds)
             ->get();
 
-        foreach($userIds as $key => $user_id) {
+        foreach ($userIds as $key => $user_id) {
             $salary = $salaries->where('user_id', $user_id)->first();
             $zarplata = Zarplata::where('user_id', $user_id)->first();
 
             $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
-            if($salary) {
+            if ($salary) {
                 $this->line($key . '+ Начисление не изменено');
                 continue;
-            } 
+            }
 
             $this->line($key . '- Начисление обновлено');
 

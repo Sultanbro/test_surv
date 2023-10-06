@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static ReferralDto generateReferral(User $user)
- * @method static ReferrerInterface determinateReferral(ReferralInterface $referral)
+ * @method static ReferrerInterface request(ReferralInterface $referral)
  * @method static array calculate(ReferrerInterface $referrer)
  * @use ReferralService
  */
 class Referring extends Facade
 {
+    protected static $cached = true;
+
     /**
      * Get the registered name of the component.
      *
@@ -26,5 +28,4 @@ class Referring extends Facade
     {
         return 'referral';
     }
-
 }

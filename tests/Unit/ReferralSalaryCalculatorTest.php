@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Models\User\Referral\Referrer;
+use App\Models\Referral\Referrer;
 use App\Service\Referral\Core\ReferrerSalaryCalculator;
 use Tests\TenantTestCase;
 

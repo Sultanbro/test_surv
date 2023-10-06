@@ -12,9 +12,9 @@ class ReferralDto extends BaseDTO
      * @param int|null $referrer_id
      */
     public function __construct(
-        public null|int                 $id
-        , public null|string            $url
-        , public null|int $referrer_id
+        public null|int      $id
+        , public null|string $url
+        , public null|int    $referrer_id
     )
     {
     }
@@ -28,10 +28,19 @@ class ReferralDto extends BaseDTO
         );
     }
 
+    public static function fromModel(ReferralInterface $referral): static
+    {
+        return new static(
+             $referral->id
+            , $referral->url()
+            , $referral->referrer_id
+        );
+    }
+
     public function toArray(): array
     {
         return [
-              'id' => $this->id
+            'id' => $this->id
             , 'url' => $this->url
             , 'referrer_id' => $this->referrer_id
         ];

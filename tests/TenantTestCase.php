@@ -42,7 +42,6 @@ class TenantTestCase extends BaseTestCase
         DB::commit();
         $this->tenant = Tenant::query()->create();
         DB::beginTransaction();
-
         tenancy()->initialize($this->tenant);
     }
 }

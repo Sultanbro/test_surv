@@ -27,7 +27,6 @@ class Fields
     {
         $array = array();
 
-        /** @var Field $field */
         foreach ($this->fields as $field)
         {
             $array[$field->key] = $field->value;

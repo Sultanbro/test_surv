@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\User\Referral;
+namespace Database\Factories\Referral;
 
-use App\Models\User\Referral\Referral;
-use App\Models\User\Referral\Referrer;
+use App\Models\Referral\Referral;
+use App\Models\Referral\Referrer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
