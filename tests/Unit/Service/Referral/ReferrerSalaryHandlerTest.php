@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Service\Referral;
 
 use App\Models\Referral\Referrer;
 use App\Service\Referral\ReferrerSalaryHandler;
@@ -11,7 +11,6 @@ class ReferrerSalaryHandlerTest extends TenantTestCase
 
     public function test_can_transfer_salaries_by_transaction(): void
     {
-        // Create a user instance
         $referrer1 = Referrer::factory()->create();
         $referrer2 = Referrer::factory()->create([
             'parent_referrer_id' => $referrer1->id

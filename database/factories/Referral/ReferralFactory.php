@@ -21,7 +21,7 @@ class ReferralFactory extends Factory
     {
         $referrer = Referrer::factory()->create();
         return [
-              'referral_id' => $referrer->getKey()
+              'referrer_id' => $referrer->getKey()
             , 'token' => Str::uuid()
         ];
     }
