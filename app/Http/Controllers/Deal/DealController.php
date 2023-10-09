@@ -21,7 +21,6 @@ class DealController extends Controller
         $deal = $bitrix->getDeal($deal_id);
 
         UpdateDealJob::dispatch($deal)->delay(now()->addSeconds(2));
-
         return ;
     }
 }

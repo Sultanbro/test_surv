@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\User\Referral;
+namespace App\Models\Referral;
 
 use App\Service\Referral\Core\ReferralInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

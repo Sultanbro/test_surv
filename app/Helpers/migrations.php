@@ -2,6 +2,24 @@
 
 use Illuminate\Support\Facades\Schema;
 
+if (!function_exists('database_exists')) {
+    /**
+     * @param string|null $connection
+     * @return bool
+     */
+    function database_exists(string|null $connection = null): bool
+    {
+        $connection = $connection ?? config('database.default');
+        try {
+            DB::connection($connection)
+                ->getPdo();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+}
+
 if (!function_exists('table_exists')) {
     /**
      * @param string $table
