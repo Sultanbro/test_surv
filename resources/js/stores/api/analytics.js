@@ -86,6 +86,18 @@ function isDefined(val){
 	return typeof val !== 'undefined'
 }
 
+function getEmptyDecompositionValues(year, month){
+	const result = {}
+	const daysInMonth = moment(`${year}-${(month > 9 ? '0' : '') + month}`, 'YYYY-MM').daysInMonth()
+	for(let day = 1; day <= daysInMonth; ++day){
+		result[day] = {
+			plan: null,
+			fact: null,
+		}
+	}
+	return result
+}
+
 const ActivityRecordsTable = {
 	default(rec){
 		const result = {
@@ -196,6 +208,9 @@ export async function fetchDecompositionsV2(request){
 	if(!data.data?.records) throw new Error('AnalyticsV2: no decompositions')
 	const records = Array.isArray(data.data.records) ? data.data.records : Object.values(data.data.records)
 	return records.reduce((result, rec) => {
+		if(!rec.values || Array.isArray(rec.values)){
+			rec.values = getEmptyDecompositionValues(request.year, request.month)
+		}
 		if(rec.group_id == data.data.group_id) result.push({
 			id: rec.id,
 			name: rec.name,
