@@ -181,6 +181,10 @@ export default {
 			if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
 				return this.$moment(this.user.deleted_at).format(DATE_DMY)
 			return ''
+		},
+		history(){
+			if(!this.user) return null
+			return this.user.history
 		}
 	},
 	watch: {
@@ -750,8 +754,8 @@ export default {
 						>
 
 						<template v-if="user">
-							<div class="row">
-								<div class="col-12 col-md-6">
+							<div class="row mt-4">
+								<div class="col-12 col-md-6 py-4">
 									<div class="card-profile-edit">
 										<div class="d-flex">
 											<label
@@ -781,17 +785,20 @@ export default {
 										</div>
 									</div>
 								</div>
-								<div class="col-12 col-md-6">
-									<div class="card-profile-edit overflow-hidden p-0">
-										<UserEditAdditional
-											:user="user"
-											:user-created="userCreated"
-											:user-applied="userApplied"
-											:user-applied-days="userAppliedDays"
-											:is-trainee="isTrainee"
-											:user-deleted="userDeleted"
-											:user-deleted-at="userDeletedAt"
-										/>
+								<div class="col-12 col-md-6 py-4">
+									<div class="UserEditView-scrollCard">
+										<div class="card-profile-edit p-0">
+											<UserEditAdditional
+												:user="user"
+												:user-created="userCreated"
+												:user-applied="userApplied"
+												:user-applied-days="userAppliedDays"
+												:is-trainee="isTrainee"
+												:user-deleted="userDeleted"
+												:user-deleted-at="userDeletedAt"
+												:history="history"
+											/>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -950,6 +957,7 @@ export default {
 				</form>
 			</div>
 		</div>
+
 		<template v-if="user">
 			<b-modal
 				id="modal-deactivate"
@@ -1120,6 +1128,7 @@ export default {
 					</div>
 				</div>
 			</b-modal>
+
 			<b-modal
 				id="modal-activate"
 				v-model="isRestoreConfirm"
@@ -2380,4 +2389,43 @@ input[type="radio"] {
 }
 
 
+</style>
+
+<style lang="scss">
+.card-profile-edit{
+	padding: 20px;
+	// margin: 20px 0;
+	border: 1px solid #ddd;
+
+	border-radius: 10px;
+	background-color: #fff;
+
+	.add-info-title{
+		margin: 5px 20px;
+
+		font-size: 16px;
+		font-weight: 500;
+		color: #999;
+	}
+	.table{
+		margin: 0;
+		border: none;
+
+		th,td{
+			padding: 5px 20px;
+			border-left: 1px solid #ddd;
+
+			&:first-child{
+				border-left: none;
+			}
+		}
+	}
+}
+
+.UserEditView{
+	&-scrollCard{
+		height: 200px;
+		max-height: 200px;
+	}
+}
 </style>

@@ -29,6 +29,10 @@ export default {
 			type: String,
 			default: ''
 		},
+		history: {
+			type: Array,
+			default: null
+		}
 	}
 }
 </script>
@@ -36,31 +40,22 @@ export default {
 <template>
 	<div
 		id="add_info"
-		class="none-block"
+		class="UserEditAdditional none-block"
 	>
-		<h5 class="add-info-title">
-			Дополнительная информация
-		</h5>
-		<table class="table">
-			<tbody>
-				<tr>
-					<td>
-						<span>Дата регистрации</span>
-					</td>
-					<td>
-						<span>{{ userCreated }}</span>
-					</td>
-				</tr>
-				<template v-if="user">
-					<tr>
-						<td>
-							<span>Дата принятия на работу</span>
-						</td>
-						<td>
-							<span>{{ !userApplied && !isTrainee ? userCreated : userApplied }}</span>
-						</td>
-					</tr>
-					<tr>
+		<div class="UserEditAdditional-scroll">
+			<h5 class="UserEditAdditional-title add-info-title">
+				Дополнительная информация
+			</h5>
+			<table
+				v-if="history"
+				class="UserEditAdditional-history"
+			>
+				<colgroup>
+					<col class="UserEditAdditional-labels">
+					<col class="UserEditAdditional-values">
+				</colgroup>
+				<tbody>
+					<tr v-if="user && userAppliedDays">
 						<td>
 							<span>Успел стать частью команды ~</span>
 						</td>
@@ -68,46 +63,147 @@ export default {
 							<span>{{ userAppliedDays }} дней</span>
 						</td>
 					</tr>
-					<tr v-if="userDeleted">
+					<tr
+						v-for="hist, index in history"
+						:key="index"
+					>
 						<td>
-							<span>Дата отработки</span>
+							{{ hist.label }}
 						</td>
 						<td>
-							<span>{{ userDeleted }}</span>
+							{{ hist.date }}
+							<i>{{ hist.cause || '' }}</i>
 						</td>
 					</tr>
-					<template v-if="userDeletedAt">
+				</tbody>
+			</table>
+
+
+			<table
+				v-else
+				class="table"
+			>
+				<colgroup>
+					<col class="UserEditAdditional-labels">
+					<col class="UserEditAdditional-values">
+				</colgroup>
+				<tbody>
+					<tr>
+						<td>
+							<span>Дата регистрации</span>
+						</td>
+						<td>
+							<span>{{ userCreated }}</span>
+						</td>
+					</tr>
+					<template v-if="user">
 						<tr>
 							<td>
-								<span>Дата увольнения</span>
+								<span>Дата принятия на работу</span>
 							</td>
 							<td>
-								<span>{{ userDeletedAt }}</span>
+								<span>{{ !userApplied && !isTrainee ? userCreated : userApplied }}</span>
 							</td>
 						</tr>
-						<tr v-if="user.downloads && user.downloads.resignation">
+						<tr>
 							<td>
-								<span>Заявление об увольнении</span>
+								<span>Успел стать частью команды ~</span>
 							</td>
 							<td>
-								<a
-									:href="`/static/profiles/${user.id}/resignation/${user.downloads.resignation}`"
-									download
-									class="d-block"
-								>Скачать</a>
+								<span>{{ userAppliedDays }} дней</span>
 							</td>
 						</tr>
-						<tr v-if="user.fire_cause">
+						<tr v-if="userDeleted">
 							<td>
-								<span>Причина увольнения</span>
+								<span>Дата отработки</span>
 							</td>
 							<td>
-								<span>{{ user.fire_cause }}</span>
+								<span>{{ userDeleted }}</span>
 							</td>
 						</tr>
+						<template v-if="userDeletedAt">
+							<tr>
+								<td>
+									<span>Дата увольнения</span>
+								</td>
+								<td>
+									<span>{{ userDeletedAt }}</span>
+								</td>
+							</tr>
+							<tr v-if="user.downloads && user.downloads.resignation">
+								<td>
+									<span>Заявление об увольнении</span>
+								</td>
+								<td>
+									<a
+										:href="`/static/profiles/${user.id}/resignation/${user.downloads.resignation}`"
+										download
+										class="d-block"
+									>Скачать</a>
+								</td>
+							</tr>
+							<tr v-if="user.fire_cause">
+								<td>
+									<span>Причина увольнения</span>
+								</td>
+								<td>
+									<span>{{ user.fire_cause }}</span>
+								</td>
+							</tr>
+						</template>
 					</template>
-				</template>
-			</tbody>
-		</table>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </template>
+
+<style lang="scss">
+.UserEditAdditional{
+	position: relative;
+
+	&-title{
+		margin: 0 !important;
+		padding: 5px 20px !important;
+		border-bottom: 1px solid #dee2e6;
+
+		position: sticky;
+		top: 0;
+
+		background-color: #fff;
+		border-radius: 10px 10px 0 0;
+	}
+	&-scroll{
+		max-height: 199px;
+		overflow-y: auto;
+	}
+	&-history{
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		border: none;
+
+		vertical-align: top;
+		font-size: 1.4rem;
+
+		td{
+			padding: 5px 20px;
+			border: 1px solid #dee2e6;
+			&:first-child{
+				border-left: none !important;
+			}
+			&:last-child{
+				border-right: none !important;
+			}
+		}
+
+		tr{
+			&:first-child{
+				td{
+					border-top: none;
+				}
+			}
+		}
+	}
+}
+</style>

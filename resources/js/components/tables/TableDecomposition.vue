@@ -266,7 +266,7 @@ export default {
 				return {
 					id: item.id,
 					name: item.name,
-					editable: false,
+					editable: item.editable || false,
 					total_plan: totalPlan,
 					total_fact: totalFact,
 					...cellValues,
@@ -304,7 +304,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.records = this.decompositions;
+			this.records = JSON.parse(JSON.stringify(this.decompositions))
 
 			loader.hide();
 		},
@@ -432,14 +432,15 @@ export default {
 		},
 
 		editMode(item) {
-			this.items.forEach(account => {
-				account.editable = false
+			this.records.forEach(record => {
+				record.editable = false
 			})
-			item.editable = true
+			const record = this.records.find(rec => rec.id === item.id)
+			if(record) this.$set(record, 'editable', true)
 		},
 
 		toFloat(number) {
-			return Number(number).toFixed(2);
+			return Number(number).toFixed(2)
 		},
 	},
 };
