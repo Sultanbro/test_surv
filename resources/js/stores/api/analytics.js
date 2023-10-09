@@ -202,6 +202,7 @@ export async function fetchDecompositionsV2(request){
 			// eslint-disable-next-line
 			group_id: rec.group_id,
 			date: rec.date,
+			editable: false,
 			...rec.values,
 		})
 		return result
