@@ -5,6 +5,7 @@
 		@mousedown.stop
 		@contextmenu.prevent
 	>
+		<slot name="before" />
 		<div
 			v-if="maxHeight"
 			class="PopupMenu-scroll"
@@ -15,6 +16,7 @@
 		<template v-else>
 			<slot />
 		</template>
+		<slot name="after" />
 	</div>
 </template>
 
