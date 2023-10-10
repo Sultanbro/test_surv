@@ -9,7 +9,6 @@
 					placeholder="Поиск термина"
 				>
 			</div>
-			<div class="GlossaryComponent-cover" />
 			<div
 				v-if="mode === 'edit'"
 				class="GlossaryComponent-add mb-3"
@@ -128,16 +127,7 @@ export default {
 
 <style lang="scss">
 .GlossaryComponent{
-	&-search{
-		padding: 15px;
-		margin: -15px;
-
-		position: sticky;
-		top: 15px;
-
-		background-color: #fff;
-		box-shadow: 0px 0.5px 0.5px 1.5px rgba(0,0,0,0.25);
-	}
+	&-search{}
 	&-cover{
 		width: 100%;
 		height: 3px;
