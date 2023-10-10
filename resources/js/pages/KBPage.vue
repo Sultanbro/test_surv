@@ -224,9 +224,13 @@
 
 				<!-- Глоссарий -->
 				<div class="content mt-3">
-					<Glossary
+					<GlossaryComponent
 						v-if="show_glossary"
 						:mode="mode"
+						:terms="glossary"
+						@addTerm="addTerm"
+						@saveTerm="saveTerm"
+						@deleteTerm="deleteTerm"
 					/>
 				</div>
 			</div>
@@ -245,13 +249,11 @@
 				:mode="mode"
 				:enable_url_manipulation="true"
 				:auth_user_id="auth_user_id"
+				:glossary="glossary"
 				@back="back"
 				@toggleMode="toggleMode"
 			/>
 		</div>
-
-
-
 
 		<!-- Новый раздел -->
 		<b-modal
@@ -369,16 +371,52 @@
 /* eslint-disable vue/prop-name-casing */
 
 import Draggable from 'vuedraggable'
-import Glossary from '../components/Glossary.vue'
+import GlossaryComponent from '../components/Glossary.vue'
 const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
 import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
+
+import {
+	fetchSettings,
+	updateSettings,
+	fetchKBBooks,
+	fetchKBBook,
+	deleteKBBook,
+	restoreKBBook,
+	searchKBBook,
+	fetchKBAccess,
+	createKBBook,
+	fetchKBArchived,
+	updateKBBook,
+	updateKBOrder,
+	fetchGlossary,
+	saveGlossaryTerm,
+	deleteGlossaryTerm,
+} from '@/stores/api.js'
+
+const API = {
+	fetchSettings,
+	updateSettings,
+	fetchKBBooks,
+	fetchKBBook,
+	deleteKBBook,
+	restoreKBBook,
+	searchKBBook,
+	fetchKBAccess,
+	createKBBook,
+	fetchKBArchived,
+	updateKBBook,
+	updateKBOrder,
+	fetchGlossary,
+	saveGlossaryTerm,
+	deleteGlossaryTerm,
+}
 
 export default {
 	name: 'KBPage',
 	components: {
 		Draggable,
-		Glossary,
+		GlossaryComponent,
 		Booklist,
 		SimpleSidebar,
 		SuperSelect,
@@ -403,7 +441,6 @@ export default {
 			section: 0,
 			activeBook: null,
 			showCreate: false,
-			show_glossary: false,
 			send_notification_after_edit: false,
 			show_page_from_kb_everyday: false,
 			allow_save_kb_without_test: false,
@@ -420,7 +457,11 @@ export default {
 			search: {
 				input: '',
 				items: []
-			}
+			},
+
+			show_glossary: false,
+			newGlossaryId: 0,
+			glossary: [],
 		};
 	},
 	watch: {
@@ -430,16 +471,12 @@ export default {
 	},
 
 	created() {
-		if(this.auth_user_id){
-			this.init()
-		}
+		if(this.auth_user_id) this.init()
 	},
 
 	methods: {
 		searchCheck() {
-			if (this.search.input.length === 0) {
-				this.clearSearch();
-			}
+			if (this.search.input.length === 0) this.clearSearch()
 		},
 		clearSearch() {
 			this.search = {
@@ -448,267 +485,303 @@ export default {
 			}
 		},
 		init(){
-			this.fetchData();
+			this.fetchData()
+			this.fetchGlossary()
+
+			const urlParams = new URLSearchParams(window.location.search)
+			// const search = urlParams.get('search')
+			// if(search){
+			// 	this.search.input = search
+			// }
 
 			// бывор группы
-			const urlParams = new URLSearchParams(window.location.search);
-			let section = urlParams.get('s');
-			if(section) {
-				this.selectSection({id: section})
+			const section = urlParams.get('s')
+			if(section) this.selectSection({id: section})
+		},
+		async fetchData() {
+			try {
+				this.books = await API.fetchKBBooks()
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить список разделов')
 			}
 		},
-		fetchData() {
-			this.axios
-				.get('/kb/get', {})
-				.then((response) => {
-					this.books = response.data.books;
-				})
-				.catch((error) => {
-					alert(error);
-				});
+
+		async get_settings() {
+			try {
+				const {settings} = await API.fetchSettings('kb')
+				this.send_notification_after_edit = settings.send_notification_after_edit
+				this.show_page_from_kb_everyday = settings.show_page_from_kb_everyday
+				this.allow_save_kb_without_test = settings.allow_save_kb_without_test
+				this.showBookSettings = true
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить настройки')
+			}
 		},
 
-		get_settings() {
-
-			this.axios
-				.post('/settings/get', {
-					type: 'kb'
-				})
-				.then((response) => {
-					this.send_notification_after_edit = response.data.settings.send_notification_after_edit;
-					this.show_page_from_kb_everyday = response.data.settings.show_page_from_kb_everyday;
-					this.allow_save_kb_without_test = response.data.settings.allow_save_kb_without_test;
-					this.showBookSettings = true;
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
-
-		save_settings() {
-			this.axios
-				.post('/settings/save', {
+		async save_settings() {
+			try {
+				await API.updateSettings({
 					type: 'kb',
 					send_notification_after_edit: this.send_notification_after_edit,
 					show_page_from_kb_everyday: this.show_page_from_kb_everyday,
 					allow_save_kb_without_test: this.allow_save_kb_without_test,
 				})
-				.then(() => {
-					this.showBookSettings = false;
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
-
-		selectSection(book, page_id = 0) {
-			this.axios
-				.post('kb/tree', {
-					id: book.id,
-				})
-				.then((response) => {
-					if(response.data.error) {
-						this.$toast.info('Раздел не найден');
-					}
-					this.trees = response.data.trees;
-					this.activeBook = response.data.book;
-					this.show_page_id = page_id;
-					this.showSearch = false;
-					this.search.input = '';
-					this.search.items = [];
-					// change URL
-					const urlParams = new URLSearchParams(window.location.search);
-					let b = urlParams.get('b');
-					let uri = '/kb?s=' + book.id;
-					if(b) uri+= '&b=' + b;
-					window.history.replaceState({}, 'База знаний', uri);
-
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
-
-		deleteSection(i) {
-			if (confirm('Вы уверены что хотите архивировать раздел?')) {
-				this.axios
-					.post('/kb/page/delete-section', {
-						id: this.books[i].id
-					})
-					.then(() => {
-						this.books.splice(i, 1);
-						this.$toast.success('Удалено');
-					});
+				this.showBookSettings = false
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось сохранить настройки')
 			}
 		},
 
-		restoreSection(i) {
-			if (confirm('Вы уверены что хотите восстановить раздел?')) {
-				this.axios
-					.post('/kb/page/restore-section', {
-						id: this.archived_books[i].id
-					})
-					.then(() => {
-						this.books.push(this.archived_books[i]);
-						this.archived_books.splice(i, 1);
-						this.$toast.success('Восстановлен');
-					});
+		async selectSection(book, page_id = 0) {
+			try {
+				const data = await API.fetchKBBook(book.id)
+
+				if(data.error) return this.$toast.info('Раздел не найден')
+
+				this.trees = data.trees
+				this.activeBook = data.book
+				this.show_page_id = page_id
+				this.showSearch = false
+				this.search.input = ''
+				this.search.items = []
+
+				// change URL
+				const urlParams = new URLSearchParams(window.location.search)
+				const b = urlParams.get('b')
+				let uri = '/kb?s=' + book.id
+				if(b) uri += '&b=' + b
+				window.history.replaceState({}, 'База знаний', uri)
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить раздел')
+			}
+		},
+
+		async deleteSection(i) {
+			if (!confirm('Вы уверены что хотите архивировать раздел?')) return
+			try {
+				await API.deleteKBBook(this.books[i].id)
+				this.books.splice(i, 1)
+				this.$toast.success('Раздел удален')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось удалить раздел')
+			}
+		},
+
+		async restoreSection(i) {
+			if (!confirm('Вы уверены что хотите восстановить раздел?')) return
+			try {
+				await API.restoreKBBook(this.archived_books[i].id)
+				this.books.push(this.archived_books[i])
+				this.archived_books.splice(i, 1)
+				this.$toast.success('Раздел восстановлен')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось восстановить раздел')
 			}
 		},
 
 		back() {
 			if(!this.can_edit) {
-				this.mode = 'read';
-				this.clearSearch();
+				this.mode = 'read'
+				this.clearSearch()
 			}
-			this.activeBook = null;
-			window.history.replaceState({ id: '100' }, 'База знаний', '/kb');
+			this.activeBook = null
+			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
 		},
 
-		searchInput() {
-			if(this.search.input.length <= 2) return null;
-
-			this.axios
-				.post('kb/search', {
-					text: this.search.input,
-				})
-				.then((response) => {
-
-					this.search.items = response.data.items;
-					this.emphasizeTexts();
-
-				})
-				.catch((error) => {
-					alert(error);
-				});
+		async searchInput() {
+			if(this.search.input.length <= 2) return null
+			try {
+				const data = await API.searchKBBook(this.search.input)
+				this.search.items = data.items
+				this.emphasizeTexts()
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Поиск не удался')
+			}
 		},
 
 		emphasizeTexts() {
 			this.search.items.forEach(item => {
-				item.text = item.text.replace(new RegExp(this.search.input,'gi'), '<b>' + this.search.input +  '</b>');
-			});
+				item.text = item.text.replace(new RegExp(this.search.input,'gi'), '<b>' + this.search.input +  '</b>')
+			})
 		},
 
-		editAccess(book) {
-			this.showEdit = true;
+		async editAccess(book) {
+			this.showEdit = true
+			this.update_book = book
 
-			this.update_book = book;
-			this.axios
-				.post('/kb/page/get-access', {
-					id: book.id,
-				})
-				.then((response) => {
-					this.who_can_edit = response.data.who_can_edit;
-					this.who_can_read = response.data.who_can_read;
-					this.superselectKey++;
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
-
-		addSection() {
-			if (this.section_name.length <= 2) {
-				alert('Слишком короткое название!');
-				return '';
+			try {
+				const {who_can_edit, who_can_read} = await API.fetchKBAccess(book.id)
+				this.who_can_edit = who_can_edit
+				this.who_can_read = who_can_read
+				this.superselectKey++
 			}
-
-			let loader = this.$loading.show();
-
-			this.axios
-				.post('/kb/page/add-section', {
-					name: this.section_name,
-				})
-				.then((response) => {
-					this.showCreate = false;
-					this.section_name = '';
-
-					this.books.push(response.data);
-
-					this.$toast.success('Раздел успешно создан!');
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					alert(error);
-				});
-		},
-
-		getArchivedBooks() {
-			let loader = this.$loading.show();
-
-			this.axios
-				.get('/kb/get-archived')
-				.then((response) => {
-
-					this.archived_books = response.data.books
-					this.showArchive = true
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					alert(error);
-				});
-		},
-
-		updateSection() {
-			if (this.update_book.title.length <= 2) {
-				alert('Слишком короткое название!');
-				return '';
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить доступы')
 			}
+		},
 
-			let loader = this.$loading.show();
+		async addSection() {
+			if (this.section_name.length <= 2) return this.$toast.error('Слишком короткое название!')
 
-			this.axios
-				.post('/kb/page/update-section', {
+			const loader = this.$loading.show()
+
+			try {
+				const book = await API.createKBBook(this.section_name)
+				this.showCreate = false
+				this.section_name = ''
+
+				this.books.push(book)
+
+				this.$toast.success('Раздел успешно создан!')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не создать раздел')
+			}
+			loader.hide()
+		},
+
+		async getArchivedBooks() {
+			const loader = this.$loading.show()
+
+			try {
+				const books = await API.fetchKBArchived()
+				this.archived_books = books
+				this.showArchive = true
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить архивные разделы')
+			}
+			loader.hide()
+		},
+
+		async updateSection() {
+			if (this.update_book.title.length <= 2) return this.$toast.error('Слишком короткое название!')
+
+			const loader = this.$loading.show()
+
+			try {
+				await API.updateKBBook({
 					title: this.update_book.title,
 					who_can_read: this.who_can_read,
 					who_can_edit: this.who_can_edit,
 					id: this.update_book.id,
 				})
-				.then(() => {
-					this.showEdit = false;
-					let index = this.books.findIndex(b => b.id == this.update_book.id);
 
-					if(index != -1) {
-						this.books[index].title = this.update_book.title;
-					}
+				this.showEdit = false
+				const index = this.books.findIndex(b => b.id == this.update_book.id)
 
-					this.update_book = null;
-					this.who_can_read = [];
-					this.who_can_edit = [];
+				if(index != -1) this.books[index].title = this.update_book.title
 
-					this.$toast.success('Изменения сохранены!');
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					alert(error);
-				});
+				this.update_book = null
+				this.who_can_read = []
+				this.who_can_edit = []
+
+				this.$toast.success('Изменения сохранены!')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось созранить изменения')
+			}
+
+			loader.hide()
 		},
 
-		saveOrder(event) {
-			this.axios.post('/kb/page/save-order', {
-				id: event.item.id,
-				order: event.newIndex, // oldIndex
-				parent_id: null
-			})
-				.then(() => {
-					this.$toast.success('Очередь сохранена');
+		async saveOrder(event) {
+			try {
+				await API.updateKBOrder({
+					id: event.item.id,
+					order: event.newIndex,
+					parent_id: null
 				})
+				this.$toast.success('Очередь сохранена')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось сохранить порядок')
+			}
 		},
 
 
 		toggleMode() {
-			this.mode = (this.mode == 'read') ? 'edit' : 'read';
-			this.clearSearch();
+			this.mode = (this.mode == 'read') ? 'edit' : 'read'
+			this.clearSearch()
 		},
 
 		startChangeOrder() {},
 
 		openGlossary() {
-			this.show_glossary = true;
-		}
+			this.show_glossary = true
+		},
+		async fetchGlossary(){
+			try {
+				this.glossary = await API.fetchGlossary()
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.success('Не удалось загрузить глоссарий')
+			}
+		},
+		addTerm(){
+			this.glossary.unshift({
+				id: --this.newGlossaryId,
+				word: '',
+				definition: '',
+			})
+		},
+		async saveTerm(saveTerm){
+			try {
+				const id = await API.saveGlossaryTerm({
+					...saveTerm,
+					id: saveTerm.id < 0 ? 0 : saveTerm.id,
+				})
+
+				const term = this.glossary.find(term => term.id === saveTerm.id)
+				if(term) term.id = id
+				this.$toast.success('Термин сохранен')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.success('Не удалось сохранить термин')
+			}
+		},
+		async deleteTerm(deleteTerm){
+			if (!confirm('Вы уверены что хотите удалить термин?')) return
+			const index = this.glossary.findIndex(term => term.id === deleteTerm.id)
+			if(~index) this.glossary.splice(index, 1)
+			if(deleteTerm.id > 0) await API.deleteGlossaryTerm(deleteTerm.id)
+			this.$toast.success('Термин удален')
+		},
 	},
 };
 </script>
