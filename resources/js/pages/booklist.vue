@@ -1,5 +1,5 @@
 <template>
-	<div class="d-flex">
+	<div class="Booklist d-flex">
 		<aside
 			id="left-panel"
 			class="lp"
@@ -549,6 +549,39 @@ import NestedCourse from '@/components/nested_course'
 import Editor from '@tinymce/tinymce-vue'
 import Questions from '@/pages/Questions'
 import ProgressBar from '@/components/ProgressBar'
+import Mark from 'mark.js/dist/mark.es6.js'
+
+const quotes = ['«»', '“”', '""', '()']
+const enders = '.,!?:;'.split('')
+const markOptions = {
+	element: 'span',
+	className: 'Booklist-mark',
+	exclude: ['.Booklist-definition'],
+	accuracy: 'exactly',
+}
+function createDefinition(text){
+	const span = document.createElement('span')
+	span.innerText = text
+	span.classList.add('Booklist-definition')
+	return span
+}
+function getSynonims(term){
+	const result = []
+	enders.forEach(char => {
+		result.push(term + char)
+	})
+	quotes.forEach(pair => {
+		result.push(pair[0] + term)
+		result.push(term + pair[1])
+		result.push(pair[0] + term + pair[1])
+		enders.forEach(char => {
+			result.push(pair[0] + term + char)
+			result.push(term + pair[1] + char)
+			result.push(pair[0] + term + pair[1] + char)
+		})
+	})
+	return result
+}
 
 export default {
 	name: 'PageBooklist',
@@ -608,6 +641,10 @@ export default {
 			type: Number,
 			default: 0
 		},
+		glossary: {
+			type: Array,
+			default: () => []
+		}
 	},
 	data() {
 		return {
@@ -645,7 +682,41 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['user'])
+		...mapGetters(['user']),
+	},
+
+	watch: {
+		activesbook: {
+			handler(){
+				if(!this.glossary) return
+				this.$nextTick(() => {
+					const instance = new Mark(document.querySelector('.Booklist .bp-text'))
+					instance.unmark({
+						element: 'span',
+						className: 'Booklist-mark',
+						done: () => {
+							this.glossary.forEach(term => {
+								instance.mark(term.word, {
+									...markOptions,
+									each: el => {
+										this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+									}
+								})
+								getSynonims(term.word).forEach(word => {
+									instance.mark(word, {
+										...markOptions,
+										each: el => {
+											this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+										}
+									})
+								})
+							})
+						}
+					})
+				})
+			},
+			deep: true
+		}
 	},
 
 	created() {
@@ -1163,11 +1234,54 @@ export default {
 };
 
 </script>
-<style>
+<style lang="scss">
 .content {
-    max-height: unset;
-    overflow: unset;
+	max-height: unset;
+	overflow: unset;
+}
+.Booklist{
+	&-mark{
+		display: inline-flex;
+
+		position: relative;
+		font-weight: inherit;
+		font-size: inherit;
+		font-family: inherit;
+		cursor: help;
+		&:after{
+			content: '*';
+			color: #00F;
+		}
+		&:hover{
+			.Booklist{
+				&-definition{
+					transform: translate(-50%, 0);
+					visibility: visible;
+					opacity: 1;
+				}
+			}
+		}
+	}
+	&-definition{
+		flex: 0 1 content;
+		width: max-content;
+		max-width: 400px;
+		padding: 5px 10px;
+		border: 1px solid #000;
+
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+
+		font-size: 14px;
+		font-weight: 400;
+		color: #333;
+
+		background-color: #fff;
+		transform: translate(-50%, -50%);
+		visibility: hidden;
+		opacity: 0;
+		transition: all 0.2s;
+	}
 }
 </style>
-
-
