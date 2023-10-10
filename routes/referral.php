@@ -1,7 +1,7 @@
 <?php
 
 
-use App\Http\Controllers\User\Referral\ReferralController;
+use App\Http\Controllers\Referral\ReferralController;
 
 Route::group([
         'prefix' => 'referrals'
@@ -9,5 +9,5 @@ Route::group([
     ]
     , function () {
         Route::get('/generate', [ReferralController::class, 'generate'])->name('referral');
-        Route::post('/determinate/{referral}', [ReferralController::class, 'determinate'])->name('referer');
+        Route::post('/determinate/{referral}', [ReferralController::class, 'request'])->name('referer');
     });

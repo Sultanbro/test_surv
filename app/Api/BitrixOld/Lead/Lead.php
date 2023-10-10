@@ -24,6 +24,9 @@ class Lead
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     final public function publish(): mixed
     {
         $result = $this->bitrix->createLead(

@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Service\Referral;
 
-use App\Models\User\Referral\Referrer;
+use App\Models\Referral\Referrer;
 use App\Service\Referral\Core\ReferrerSalaryCalculator;
 use Tests\TenantTestCase;
 

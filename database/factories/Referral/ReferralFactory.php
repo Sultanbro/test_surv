@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\User\Referral;
+namespace Database\Factories\Referral;
 
-use App\Models\User\Referral\Referral;
-use App\Models\User\Referral\Referrer;
+use App\Models\Referral\Referral;
+use App\Models\Referral\Referrer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -21,7 +21,7 @@ class ReferralFactory extends Factory
     {
         $referrer = Referrer::factory()->create();
         return [
-              'referral_id' => $referrer->getKey()
+              'referrer_id' => $referrer->getKey()
             , 'token' => Str::uuid()
         ];
     }

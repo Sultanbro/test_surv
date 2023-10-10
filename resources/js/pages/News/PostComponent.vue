@@ -227,20 +227,23 @@
 						position="topRight"
 						max-height="250px"
 					>
-						<div class="px-2">
-							Просмотры
-						</div>
-						<hr>
+						<template #before>
+							<div class="px-3">
+								Просмотры
+							</div>
+							<hr>
+						</template>
 						<div
 							v-for="view, index in currentPost.viewers || []"
 							:key="index"
-							class="d-flex aic"
+							class="PostComponent-viewer"
 						>
 							<JobtronAvatar
 								size="24"
-								:image="view.user.avatar"
+								:image="view.avatar"
+								:title="view.name"
 							/>
-							{{ view.user.name }}
+							{{ view.name }}
 						</div>
 					</PopupMenu>
 				</div>
@@ -637,6 +640,20 @@ export default {
 		margin-right: -20px;
 		opacity: 0;
 		visibility: hidden;
+	}
+	&-viewer{
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+
+		padding: 3px 10px;
+
+		white-space: nowrap;
+
+		.JobtronAvatar{
+			flex: 0 0 24px;
+		}
 	}
 }
 </style>

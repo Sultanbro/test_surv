@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Service\Referral;
 
 use App\Service\Referral\Core\ReferralDto;
 use App\Service\Referral\Core\ReferralGenerator;
