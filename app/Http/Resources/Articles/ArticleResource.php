@@ -40,6 +40,7 @@ class ArticleResource extends JsonResource
             'is_liked' => $this->repository->likeExists($this->resource, Auth::id()),
             'is_favourite' => $this->repository->isFavourite($this->resource, Auth::user()),
             'is_pinned' => $this->repository->isPinned($this->resource, Auth::user()),
+            'viewers' => UserResource::collection($this->resource->views)->toArray($request),
             'views_count' => $this->repository->viewsCount($this->resource),
             'files' => FileResource::collection($this->resource->files)->toArray($request),
         ];
