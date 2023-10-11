@@ -4,19 +4,15 @@ use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('database_exists')) {
     /**
-     * @param string|null $connection
+     * @param string $database
      * @return bool
      */
-    function database_exists(string|null $connection = null): bool
+    function database_exists(string $database): bool
     {
-        $connection = $connection ?? config('database.default');
-        try {
-            DB::connection($connection)
-                ->getPdo();
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
+        $query = "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = ?";
+        $result = DB::select($query, [$database]);
+
+        return count($result) > 0;
     }
 }
 

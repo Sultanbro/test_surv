@@ -4,5 +4,5 @@ namespace App\Service\Referral\Core;
 
 interface ReferrerSalaryHandlerInterface
 {
-    public function apply(ReferrerInterface $referrer): void;
+    public function handle(ReferrerInterface $referrer): void;
 }

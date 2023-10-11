@@ -2,22 +2,31 @@
 
 namespace Tests;
 
-use App\Models\Tenant;
+use Database\Seeders\AdaptedTenantDatabaseForTesting;
 use Drfraker\SnipeMigrations\SnipeMigrations;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\DB;
-use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
-class TenantTestCase extends BaseTestCase
+abstract class TenantTestCase extends BaseTestCase
 {
     use CreatesApplication, SnipeMigrations;
 
-    private Tenant|Model $tenant;
+    protected string $defaultConnection = '';
 
     /**
-     * @throws TenantCouldNotBeIdentifiedById
+     * @throws Throwable
+     */
+
+    public function initializeTenancy($class = AdaptedTenantDatabaseForTesting::class): void
+    {
+        $this->seed($class);
+        $this->defaultConnection = config('database.default');
+        config([
+            'database.default' => 'tenant'
+        ]);
+    }
+
+    /**
      * @throws Throwable
      */
     public function setUp(): void
@@ -29,20 +38,10 @@ class TenantTestCase extends BaseTestCase
     protected function tearDown(): void
     {
         tenancy()->end();
-        $this->tenant->delete();
+        config([
+            'database.default' => $this->defaultConnection
+        ]);
         parent::tearDown();
-    }
-
-    /**
-     * @throws TenantCouldNotBeIdentifiedById
-     * @throws Throwable
-     */
-    public function initializeTenancy(): void
-    {
-        DB::commit();
-        $this->tenant = Tenant::query()->create();
-        DB::beginTransaction();
-        tenancy()->initialize($this->tenant);
     }
 }
 

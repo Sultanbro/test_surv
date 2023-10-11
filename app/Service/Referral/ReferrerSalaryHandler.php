@@ -18,7 +18,7 @@ class ReferrerSalaryHandler implements ReferrerSalaryHandlerInterface
     {
     }
 
-    public function apply(ReferrerInterface $referrer): void
+    public function handle(ReferrerInterface $referrer): void
     {
         $calculated = $this->calculator->calculate($referrer);
         foreach ($calculated as $item) {
