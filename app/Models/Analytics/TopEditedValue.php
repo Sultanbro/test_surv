@@ -7,6 +7,11 @@ use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
 
+/**
+ *@property int group_id
+ *@property string date
+ *@property string value
+*/
 class TopEditedValue extends Model
 {
     /**
