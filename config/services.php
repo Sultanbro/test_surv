@@ -52,5 +52,4 @@ return [
         'contract_link' => 'https://bpartners.kz/bcontract?hash=',
         'time_link' => 'https://bpartners.kz/btime?hash=',
     ],
-
 ];

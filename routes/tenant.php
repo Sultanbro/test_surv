@@ -405,7 +405,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/quarter/delete', [Salary\QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
     Route::post('/timetracking/quarter/get/quarter/', [Salary\QuartalBonusController::class, 'getQuartalBonuses']);
 
-
     // Quality control
     Route::any('/timetracking/quality-control/', [Analytics\QualityController::class, 'index']);
     Route::any('/timetracking/quality-control/export', [Analytics\QualityController::class, 'exportExcel']);
@@ -471,7 +470,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
-
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
     Route::post('/timetracking/analytics/recruting/change-profile', [Analytics\HrController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
@@ -487,7 +485,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
-
 
     Route::get('/timetracking/analytics/activity/exportxx', [Analytics\AnalyticsController::class, 'exportActivityExcel']);
     Route::post('/timetracking/analytics/add-row', [Analytics\AnalyticsController::class, 'addRow']);
