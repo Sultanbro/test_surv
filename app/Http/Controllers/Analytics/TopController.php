@@ -109,18 +109,17 @@ class TopController extends Controller
         $calendar_days = Carbon::parse($date)->daysInMonth; // календарные дни
 
         $days = $this->daysInMonth($date);
-
         // get weeks array
         $weeks = [];
 
         $start_week = 1;
-        if ($days[0]->dayOfWeek == 1) $start_week = 0;
+        if($days[0]->dayOfWeek == 1) $start_week = 0;
 
-        foreach ($days as $day) {
-            if ($day->dayOfWeek == '1') {
+        foreach($days as $key => $date) {
+            if($date->dayOfWeek == '1') {
                 $start_week++;
             }
-            $weeks[$start_week][] = $day;
+            $weeks[$start_week][] = $date;
         }
 
         $week_proceeds = [
@@ -133,25 +132,18 @@ class TopController extends Controller
         $total_row['План'] = 0;
         $total_row['Итого'] = 0;
 
-        foreach ($weeks as $key => $week) {
-            $total_row['w' . $key] = 0;
+        foreach($weeks as $key => $week) {
+            $total_row['w'.$key] = 0;
         }
 
-        foreach ($days as $day) {
-            $total_row[$day->format('d.m')] = 0;
+        foreach($days as $date) {
+            $total_row[$date->format('d.m')] = 0;
         }
 
-        $this->groups = ProfileGroup::profileGroupsWithArchived(
-              year: $date->year
-            , month: $date->month
-            , archivedThisMonth: true
-            , switchColumn: ProfileGroup::SWITCH_PROCEEDS
-        );
+        $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
 
-        foreach ($this->groups as $group_id) {
-            /** @var ProfileGroup $group */
-            $group = ProfileGroup::query()
-                ->find($group_id);
+        foreach($this->groups as $group_id) {
+            $group = ProfileGroup::find($group_id);
             $row = [];
 
             $firstDayMonth = Carbon::create($date->year, $date->month)->firstOfMonth()->format('Y-m-d');
@@ -160,10 +152,10 @@ class TopController extends Controller
                 $row["deleted_at"] = $firstDayNextMonth;
             }
 
-            if ($group) {
+            if($group) {
 
                 $row['Отдел'] = $group->name;
-                $row['group_id'] = $group->getKey();
+                $row['group_id'] = $group->id;
 
                 $sum = 0;
                 $filled_days = 0;
@@ -171,21 +163,24 @@ class TopController extends Controller
                 $prs = AnalyticStat::getProceeds($group_id, $date);
                 $plan = AnalyticStat::getProceedsPlan($group_id, $date);
 
+                $row['%'] = 2;
                 $row['План'] = $plan;
+                $row['+/-'] = 2;
                 $total_row['План'] += $plan;
 
 
-                foreach ($weeks as $key => $week) {
+
+                foreach($weeks as $key => $week) {
                     $xsum = 0;
-                    foreach ($week as $date) {
+                    foreach($week as $date) {
                         $row[$date->format('d.m')] = (int)$prs[$date->day];
-                        if ((int)$prs[$date->day] > 0) $filled_days++;
+                        if((int)$prs[$date->day] > 0) $filled_days++;
                         $sum += $prs[$date->day];
                         $total_row[$date->format('d.m')] += $prs[$date->day];
                         $xsum += $prs[$date->day];
                     }
-                    $row['w' . ($key)] = round($xsum);
-                    $total_row['w' . $key] += round($xsum);
+                    $row['w'. ($key)] = round($xsum);
+                    $total_row['w'. $key] += round($xsum);
                 }
 
 
@@ -198,16 +193,17 @@ class TopController extends Controller
                 $row['%'] = '';
                 $total_row['%'] = '';
 
-                if ($filled_days > 0 && $plan > 0) {
+                if($filled_days > 0 && $plan > 0) {
                     $row['+/-'] = (int)$sum / ($plan / $calendar_days * $filled_days) * 100;
-                    $row['+/-'] = (round($row['+/-'], 1) - 100) . '%';
+                    $row['+/-'] = (round($row['+/-'],1) - 100) . '%';
 
                     $row['%'] = ((int)$sum * 100) / $plan;
-                    $row['%'] = round($row['%'], 1) . '%';
+                    $row['%'] = round($row['%'],1) . '%';
                 }
 
 
-                $week_proceeds['records'][] = $row;
+
+                array_push($week_proceeds['records'], $row);
             }
 
         }
@@ -215,9 +211,8 @@ class TopController extends Controller
         $total_row['План'] = (int)$total_row['План'];
         $total_row['Итого'] = (int)$total_row['Итого'];
 
-        /** @var Collection<CustomProceed> $cps */
-        $cps = CustomProceed::query()
-            ->whereYear('date', $days[0]->year)
+
+        $cps = CustomProceed::whereYear('date', $days[0]->year)
             ->whereMonth('date', $days[0]->month)
             ->get()
             ->groupBy('order');
@@ -229,9 +224,9 @@ class TopController extends Controller
             $editable_row['План'] = 0;
             $editable_row['Итого'] = 0;
 
-            foreach ($weeks as $key => $week) {
+            foreach($weeks as $key => $week) {
                 $sum = 0;
-                foreach ($week as $date) {
+                foreach($week as $date) {
                     $d = $cpo->where('date', $date->format('Y-m-d'))->first();
 
                     $val = $d ? (int)$d->value : 0;
@@ -241,22 +236,22 @@ class TopController extends Controller
                     $total_row[$date->format('d.m')] += $val;
                 }
 
-                $editable_row['group_id'] = 0 - $order;
-                $editable_row['w' . ($key)] = $sum;
+                $editable_row['group_id'] =  0 - $order;
+                $editable_row['w'. ($key)] = $sum;
 
             }
 
-            $week_proceeds['records'][] = $editable_row;
+            array_push($week_proceeds['records'], $editable_row);
 
 
             $total_row['Итого'] += $editable_row['Итого'];
         }
 
-        foreach ($days as $date) {
-            $total_row[$date->format('d.m')] = (int)number_format($total_row[$date->format('d.m')]);
+        foreach($days as $date) {
+            $total_row[$date->format('d.m')] = (int)number_format($total_row[$date->format('d.m')], 0);
         }
 
-        $week_proceeds['records'][] = $total_row;
+        array_push($week_proceeds['records'], $total_row);
 
         return $week_proceeds;
     }
