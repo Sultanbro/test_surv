@@ -31,7 +31,7 @@ class ReferralDto extends BaseDTO
     public static function fromModel(ReferralInterface $referral): static
     {
         return new static(
-             $referral->id
+              $referral->id
             , $referral->url()
             , $referral->referrer_id
         );

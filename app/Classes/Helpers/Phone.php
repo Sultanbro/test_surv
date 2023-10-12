@@ -35,7 +35,6 @@ class Phone
         if(substr($phone, 0, 3) == '996' && strlen($phone) == 12)  $country_code = 'KG';
         if(substr($phone, 0, 3) == '375' && strlen($phone) == 12)  $country_code = 'BY';
         if(substr($phone, 0, 3) == '380' && strlen($phone) == 12)  $country_code = 'UA';
-
         return $country_code;
     }
 

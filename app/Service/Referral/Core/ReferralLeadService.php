@@ -2,36 +2,41 @@
 
 namespace App\Service\Referral\Core;
 
-use App\Api\Bitrix\LeadApi;
+use App\Api\Bitrix\LeadApiInterface;
 use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Fields;
+use App\Models\Bitrix\Lead;
 
 class ReferralLeadService implements ReferralLeadServiceInterface
 {
-    private ReferralInterface $referral;
-    private array $data;
-
     public function __construct(
-        private readonly LeadApi $leadApi
+        private readonly LeadApiInterface $leadApi
     )
     {
     }
 
-    public function create(ReferralInterface $referral, array $request): void
+    public function create(ReferralInterface $referral, ReferralRequestDto $request): void
     {
-        $this->referral = $referral;
-        $this->data = $request;
-        $this->leadApi->create($this->fields());
+        $data = new LeadTemplate($referral, $request);
+        $fields = $this->fields($data->get());
+        $bitrixLead = $this->leadApi->create($fields);
+
+        Lead::query()->create([
+            'lead_id' => $bitrixLead['result'],
+            'name' => $data->get('name'),
+            'phone' => $request->phone,
+            'status' => 'NEW',
+            'segment' => Lead::getSegmentAlt($data->get('segment')),
+            'hash' => $data->get('hash')
+        ]);
     }
 
-    private function fields(): Fields
+    private function fields(array $data): Fields
     {
         $fields = new Fields();
-        foreach ($this->data as $key => $value) {
-            $field = new Field($key, $value);
-            $fields->addFields($field);
+        foreach ($data as $key => $value) {
+            $fields->addFields(new Field($key, $value));
         }
-        $fields->addFields(new Field('реферальная ссылка', $this->referral->url()));
         return $fields;
     }
 }

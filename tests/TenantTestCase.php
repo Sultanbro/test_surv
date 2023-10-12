@@ -5,13 +5,14 @@ namespace Tests;
 use Database\Seeders\AdaptedTenantDatabaseForTesting;
 use Drfraker\SnipeMigrations\SnipeMigrations;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 abstract class TenantTestCase extends BaseTestCase
 {
     use CreatesApplication, SnipeMigrations;
 
-    protected string $defaultConnection = '';
+    protected string $defaultConnection = 'testing';
 
     /**
      * @throws Throwable
@@ -21,6 +22,7 @@ abstract class TenantTestCase extends BaseTestCase
     {
         $this->seed($class);
         $this->defaultConnection = config('database.default');
+        DB::beginTransaction();
         config([
             'database.default' => 'tenant'
         ]);
@@ -35,8 +37,12 @@ abstract class TenantTestCase extends BaseTestCase
         $this->initializeTenancy();
     }
 
+    /**
+     * @throws Throwable
+     */
     protected function tearDown(): void
     {
+        DB::rollBack();
         tenancy()->end();
         config([
             'database.default' => $this->defaultConnection

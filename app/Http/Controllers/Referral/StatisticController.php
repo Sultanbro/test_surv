@@ -9,12 +9,10 @@ use App\Http\Resources\Users\ReferralUrlResource;
 use App\Jobs\Referral\ProcessCreateBitrixLead;
 use App\Models\Referral\Referral;
 use App\User;
-use Illuminate\Bus\Dispatcher;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Bus;
 use Throwable;
 
-class ReferralController extends Controller
+class StatisticController extends Controller
 {
     public function generate(): ReferralUrlResource
     {

@@ -19,10 +19,7 @@ return new class extends Migration {
                 ->on('users')
                 ->cascadeOnDelete();
             $table->foreignId('parent_referrer_id')
-                ->nullable()
-                ->references('id')
-                ->on('referrers')
-                ->cascadeOnDelete();
+                ->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

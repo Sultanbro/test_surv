@@ -17,10 +17,10 @@ class AdaptedTenantDatabaseForTesting extends Seeder
     public function run(): void
     {
         if (!database_exists('tenanttest')) {
-            $tenant = Tenant::query()->create([
+            Tenant::query()->create([
                 'id' => 'test'
             ]);
-            tenancy()->initialize($tenant);
         }
+        tenancy()->initialize('test');
     }
 }

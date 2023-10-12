@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Api\Bitrix\LeadApi;
+use App\Api\Bitrix\LeadApiInterface;
 use App\Service\Referral\Core\ReferralDetermination;
 use App\Service\Referral\Core\ReferralDeterminationInterface;
 use App\Service\Referral\Core\ReferralGenerator;
@@ -26,5 +28,6 @@ class CustomServicesProvider extends ServiceProvider
         $this->app->bind(ReferralLeadServiceInterface::class, ReferralLeadService::class);
         $this->app->bind(ReferrerSalaryTransactionInterface::class, ReferrerSalaryTransaction::class);
         $this->app->bind(ReferrerSalaryHandlerInterface::class, ReferrerSalaryHandler::class);
+        $this->app->bind(LeadApiInterface::class, LeadApi::class);
     }
 }

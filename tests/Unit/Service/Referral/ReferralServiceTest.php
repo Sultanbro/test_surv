@@ -6,6 +6,7 @@ use App\Models\Referral\Referral;
 use App\Service\Referral\Core\ReferralDeterminationInterface;
 use App\Service\Referral\Core\ReferralDto;
 use App\Service\Referral\Core\ReferralGeneratorInterface;
+use App\Service\Referral\Core\ReferrerSalaryHandlerInterface;
 use App\Service\Referral\ReferralService;
 use Mockery;
 use Tests\TenantTestCase;
@@ -14,11 +15,13 @@ class ReferralServiceTest extends TenantTestCase
 {
     protected ReferralGeneratorInterface $generatorMock;
     protected ReferralDeterminationInterface $determinationMock;
+    protected ReferrerSalaryHandlerInterface $salaryHandlerMock;
 
     public function setUp(): void
     {    // Create mock instances of the interfaces
         $this->generatorMock = Mockery::mock(ReferralGeneratorInterface::class);
         $this->determinationMock = Mockery::mock(ReferralDeterminationInterface::class);
+        $this->salaryHandlerMock = Mockery::mock(ReferrerSalaryHandlerInterface::class);
         parent::setUp();
 
     }
@@ -37,7 +40,7 @@ class ReferralServiceTest extends TenantTestCase
             ->andReturn($referralDto);
 
         // Create an instance of ReferralService with the mocked dependencies
-        $service = new ReferralService($this->generatorMock, $this->determinationMock);
+        $service = new ReferralService($this->generatorMock, $this->determinationMock, $this->salaryHandlerMock);
 
         // Call the generateReferral method
         $result = $service->generateReferral($user);
@@ -58,7 +61,7 @@ class ReferralServiceTest extends TenantTestCase
             ->andReturn($referrer);
 
         // Create an instance of ReferralService with the mocked dependencies
-        $service = new ReferralService($this->generatorMock, $this->determinationMock);
+        $service = new ReferralService($this->generatorMock, $this->determinationMock, $this->salaryHandlerMock);
 
         // Call the generateReferral method
         $result = $service->request($referral);

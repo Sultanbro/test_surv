@@ -44,11 +44,11 @@ return new class extends Migration
         foreach ($centralUserIds as $centralUserId) {
             if (in_array($centralUserId, $tenantPivotUserIds )) continue;
 
-            array_push($newTenantPivots, [
+            $newTenantPivots[] = [
                 'tenant_id' => $tenantId,
                 'user_id' => $centralUserId,
                 'owner' => 0,
-            ]);
+            ];
         }
 
         DB::connection('mysql')

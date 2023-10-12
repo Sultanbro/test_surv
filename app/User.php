@@ -45,6 +45,45 @@ use InvalidArgumentException;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
+ * @property string $name
+ * @property string $last_name
+ * @property string $email
+ * @property string $phone
+ * @property string $password
+ * @property string $remember_token
+ * @property int $position_id
+ * @property int $program_id
+ * @property string $full_time
+ * @property string $user_type
+ * @property string $city
+ * @property string $address
+ * @property string $description
+ * @property string $currency
+ * @property string $timezone
+ * @property string $segment
+ * @property int $working_day_id
+ * @property int $working_time_id
+ * @property string $working_country
+ * @property string $working_city
+ * @property string $work_start
+ * @property string $work_end
+ * @property string $birthday
+ * @property string $read_corp_book_at
+ * @property string $has_noti
+ * @property string $notified_at
+ * @property string $role_id
+ * @property string $is_admin
+ * @property string $groups_all
+ * @property string $applied_at
+ * @property string $weekdays
+ * @property string $img_url
+ * @property string $headphones_sum
+ * @property string $phone_1
+ * @property string $phone_2
+ * @property string $phone_3
+ * @property string $phone_4
+ * @property int $work_chart_id
+ * @property int $coordinate_id
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable

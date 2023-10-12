@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static ReferralDto generateReferral(User $user)
  * @method static ReferrerInterface request(ReferralInterface $referral)
  * @method static array calculate(ReferrerInterface $referrer)
+ * @method static void handle(ReferrerInterface $referrer)
  * @use ReferralService
  */
 class Referring extends Facade

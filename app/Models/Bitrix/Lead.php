@@ -135,8 +135,8 @@ class Lead extends Model
  
     public static function getSegmentAlt($str) {
         if($str == NULL) return 0;
-        $segment = Segment::where('on_lead', $str)->first();
-        return $segment ? $segment->id : 99;
+        $segment = Segment::query()->where('on_lead', $str)->first();
+        return $segment ? $segment->getKey() : 99;
     }
     
     /**
