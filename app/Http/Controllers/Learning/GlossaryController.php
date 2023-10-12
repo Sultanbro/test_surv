@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Learning;
 
 use App\Http\Controllers\Controller;
 use App\Models\GlossaryModel;
+use App\Position;
+use App\ProfileGroup;
+use App\User;
 use Illuminate\Http\Request;
 use App\Models\GlossaryWord as Word;
 
@@ -75,8 +78,45 @@ class GlossaryController extends Controller
         }
     }
 
-    private function saveGlossaryAccesses($items)
+    public function getAccess(Request $request) : array
     {
+        $can = [];
 
+        $items = GlossaryModel::where([
+            'access' => GlossaryModel::EDIT_ACCESS
+        ])->get();
+
+        foreach ($items as $key => $item) {
+
+            $arr = [];
+            $arr['id'] = $item['model_id'];
+
+            if($item->model_type == 'App\\User') {
+                $arr['type'] = 1;
+                $user = User::withTrashed()->find($item->model_id);
+                if(!$user) continue;
+                $arr['name'] = $user->last_name . ' ' . $user->name;
+            }
+
+            if($item->model_type == 'App\\ProfileGroup') {
+                $arr['type'] = 2;
+                $group = ProfileGroup::find($item->model_id);
+                if(!$group) continue;
+                $arr['name'] = $group->name;
+            }
+
+            if($item->model_type == 'App\\Position') {
+                $arr['type'] = 3;
+                $pos = Position::find($item->model_id);
+                if(!$pos) continue;
+                $arr['name'] = $pos->position;
+            }
+
+            $can[] = $arr;
+        }
+
+        return [
+            'who_can_edit' => $can,
+        ];
     }
 }
