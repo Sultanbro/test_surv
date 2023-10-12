@@ -117,6 +117,10 @@ export default {
 			type: Array,
 			default: () => ['Сотрудники', 'Отделы', 'Должности', 'Все']
 		},
+		preselectTab: {
+			type: String,
+			default: ''
+		},
 		value: {
 			type: [Array, String],
 			default: () => [],
@@ -157,7 +161,7 @@ export default {
 	},
 	data(){
 		return {
-			selectedTab: 'Сотрудники',
+			selectedTab: this.tabs.length ? this.tabs[0] : 'Сотрудники',
 			accessList: JSON.parse(JSON.stringify(this.value)),
 			accessSearch: '',
 			types,

@@ -1,11 +1,31 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
-	<b-tr>
+	<b-tr
+		v-if="actualTargets.length"
+		class="PermissionItem"
+	>
 		<b-td class="person">
-			<superselect
+			<!-- <superselect
 				:values="item.targets"
 				class="w-full single"
+			/> -->
+			<AccessSelectFormControl
+				:items="actualTargets"
+				@click="isTargetSelect = true"
 			/>
+			<JobtronOverlay
+				v-if="isTargetSelect"
+				@close="isTargetSelect = false"
+			>
+				<AccessSelect
+					v-model="localTargets"
+					:tabs="['Сотрудники', 'Отделы', 'Должности']"
+					:access-dictionaries="accessDictionaries"
+					search-position="beforeTabs"
+					submit-button=""
+					absolute
+				/>
+			</JobtronOverlay>
 		</b-td>
 
 		<b-td class="role">
@@ -60,8 +80,24 @@
 <script>
 /* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+import JobtronOverlay from '@ui/Overlay.vue'
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import AccessSelectFormControl from '@ui/AccessSelect/AccessSelectFormControl.vue'
+
+const types = [
+	'all',
+	'users',
+	'profile_groups',
+	'positions',
+]
 
 export default {
+	name: 'PermissionItem',
+	components: {
+		JobtronOverlay,
+		AccessSelect,
+		AccessSelectFormControl,
+	},
 	props: {
 		item: {
 			type: Object,
@@ -79,11 +115,28 @@ export default {
 			type: Array,
 			default: null
 		},
+		accessDictionaries: {
+			type: Object,
+			default: () => ({
+				users: [],
+				profile_groups: [],
+				positions: [],
+			})
+		}
 	},
 	data() {
 		return {
 			local_groups: [],
 			local_roles: [],
+			localTargets: [],
+			isTargetSelect: false,
+		}
+	},
+	computed: {
+		actualTargets(){
+			return this.localTargets.slice().filter(target => {
+				return ~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id)
+			})
 		}
 	},
 	watch: {
@@ -93,10 +146,17 @@ export default {
 				this.$emit('updated');
 			}
 		},
+		localTargets: {
+			deep: true,
+			handler () {
+				this.item.targets = this.localTargets
+			}
+		}
 	},
 	created() {
 		this.local_groups = this.groups;
 		this.local_roles = this.roles;
+		this.localTargets = this.item.targets
 		if(this.item.groups_all) {
 			this.local_groups = [];
 			this.item.groups.splice(0,this.item.groups.length + 1)
@@ -134,3 +194,7 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.PermissionItem{}
+</style>

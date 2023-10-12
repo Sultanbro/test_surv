@@ -29,6 +29,7 @@
         "@babel/preset-stage-3": "^7.0.0",
         "@ghnacker/subpackage": "^1.1.4",
         "@popperjs/core": "^2.10.2",
+        "@typescript-eslint/eslint-plugin": "^6.7.5",
         "axios": "~0.21.1",
         "blueimp-gallery": "^2.33.0",
         "bootstrap": "^5.1.3",

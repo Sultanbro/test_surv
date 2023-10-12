@@ -151,6 +151,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);
     Route::post('/glossary/save', [Learning\GlossaryController::class, 'save']);
+    Route::post('/glossary/update-access', [Learning\GlossaryController::class, 'updateAccess']);
+    Route::post('/glossary/get-access', [Learning\GlossaryController::class, 'getAccess']);
     Route::post('/glossary/delete', [Learning\GlossaryController::class, 'delete']);
 
     Route::get('/learning/books', [Learning\LearningController::class, 'books']);
