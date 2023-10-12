@@ -1080,7 +1080,7 @@ class KpiStatisticService
 
         // User::class
         if ($type == 1) {
-            $_user_ids = User::withTrashed()->select('id')->where('position_id',$kpi->targetable_id)->get()->toArray();
+            $_user_ids = [$kpi->targetable_id];
         }
 
         // ProfileGroup::class
@@ -1091,7 +1091,7 @@ class KpiStatisticService
         }
 
         // Position::class
-        if ($type == 3) $_user_ids = [];
+        if ($type == 3) $_user_ids = User::withTrashed()->select('id')->where('position_id',$kpi->targetable_id)->get()->toArray();
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
