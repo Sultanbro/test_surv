@@ -88,4 +88,6 @@ export declare function fetchKBAccess(id: number): Promise<{
 export declare function fetchGlossary(): Promise<Array<GlossaryTerm>>
 export declare function saveGlossaryTerm(word: GlossaryTerm): Promise<number>
 export declare function deleteGlossaryTerm(id: number): Promise<number>
+export declare function fetchGlossaryAccess(): Promise<Array<AccessItem>>
+export declare function updateGlossaryAccess(targets: Array<AccessItem>): Promise<null>
 
