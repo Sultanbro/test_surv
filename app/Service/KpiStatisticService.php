@@ -1080,7 +1080,7 @@ class KpiStatisticService
 
         // User::class
         if ($type == 1) {
-            $_user_ids = [$kpi->targetable_id];
+            $_user_ids = $kpi->read_by;
         }
 
         // ProfileGroup::class
