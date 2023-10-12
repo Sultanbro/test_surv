@@ -1080,7 +1080,7 @@ class KpiStatisticService
 
         // User::class
         if ($type == 1) {
-            $_user_ids = $kpi->read_by;
+            $_user_ids = User::withTrashed()->select('id')->where('position_id',$kpi->targetable_id)->get()->toArray();
         }
 
         // ProfileGroup::class
