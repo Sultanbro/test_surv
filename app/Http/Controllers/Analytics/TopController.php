@@ -40,7 +40,7 @@ class TopController extends Controller
     /**
      * Страница аналитика группы
      */
-    public function index(): View|Factory|Redirector|Application|RedirectResponse
+    public function index()
     {
         View::share('menu', 'timetrackingtop');
         /** @var User $user */
