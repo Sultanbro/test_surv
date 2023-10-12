@@ -59,5 +59,36 @@ module.exports = {
 	globals: {
 		require: 'readonly',
 		jQuery: 'readonly'
-	}
+	},
+	overrides: [
+		{
+			files: ['**/*.ts'],
+			plugins: [
+				'@typescript-eslint',
+			],
+			extends: [
+				'eslint:recommended',
+				'plugin:@typescript-eslint/eslint-recommended',
+				'plugin:@typescript-eslint/recommended'
+			],
+			parser: '@typescript-eslint/parser',
+			rules: {
+				'indent': ['error', 'tab'],
+				'quotes': ['error', 'single'],
+				'no-prototype-builtins': 'warn',
+				'no-console': ['error', {allow: ['warn', 'error']}],
+				'no-duplicate-imports': 'error',
+				'no-promise-executor-return': 'error',
+				'no-self-compare': 'error',
+				'no-template-curly-in-string': 'error',
+				'no-unmodified-loop-condition': 'error',
+				'no-use-before-define': 'error',
+				'require-atomic-updates': 'error',
+				'block-scoped-var': 'error',
+				'camelcase': 'error',
+
+				'@typescript-eslint/no-explicit-any': 0,
+			}
+		}
+	]
 }

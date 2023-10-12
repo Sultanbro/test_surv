@@ -77,58 +77,59 @@ export default {
 	mounted() {
 		this.isRedactor = this.$can('news_edit')
 
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		const postId = urlParams.get('post_id');
+		const queryString = window.location.search
+		const urlParams = new URLSearchParams(queryString)
+		const postId = urlParams.get('post_id')
 		if (postId != null) {
-			let params = {
+			const params = {
 				params: '?post_id=' + postId,
-			};
-			this.getPosts(params);
-		} else {
-			this.getPosts();
+			}
+			this.getPosts(params)
+		}
+		else {
+			this.getPosts()
 		}
 
-		this.getMe();
+		this.getMe()
 
 		this.$root.$on('toggle-white-bg', (value) => {
-			this.showBg = value;
-		});
+			this.showBg = value
+		})
 	},
 
 	methods: {
 		hideWhiteBg() {
-			this.showBg = false;
-			if(this.showBg === false){
-				window.onscroll = function() {};
-			}
-			this.$refs.filterComponent.toggleShowFilters(false);
-			// this.$eventBus = undefined
-			// this.$eventBus.$emit('hide-emoji-keyboard');
-			// this.$eventBus.$emit('hide-gift-popup');
-			// this.$eventBus.$emit('hide-access-popup');
+			this.showBg = false
+			window.onscroll = function(){}
+			this.$refs.filterComponent.toggleShowFilters(false)
 		},
 
 		showWhiteBg() {
-			this.showBg = true;
+			this.showBg = true
 		},
 
 		async getMe() {
-			await this.axios.get('/me')
-				.then(response => {
-					this.me = response.data.data;
-				})
-				.catch();
+			try {
+				const {data} = await this.axios.get('/me')
+				this.me = data.data
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+			}
 		},
-		async getPosts(data = null) {
-			await this.axios.get('/news/get' + (data == null ? '' : data.params))
-				.then(response => {
-					this.nextPageURL = response.data.data.pagination.next_page_url;
-					this.posts = response.data.data.articles;
-					this.pinnedPosts = response.data.data.pinned_articles;
-					this.$forceUpdate();
-				})
-				.catch();
+		async getPosts(payload) {
+			try {
+				const {data} = await this.axios.get('/news/get' + (payload ? payload.params : ''))
+				this.nextPageURL = data.data.pagination.next_page_url
+				this.posts = data.data.articles
+				this.pinnedPosts = data.data.pinned_articles
+				this.$forceUpdate()
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+			}
 		},
 
 		updatePost(data) {
@@ -136,17 +137,17 @@ export default {
 		},
 
 		async getNextPage() {
-			this.showPaginator = false;
-
-			await this.axios.get(this.nextPageURL)
-				.then(response => {
-					this.nextPageURL = response.data.data.pagination.next_page_url;
-					this.posts = this.posts.concat(response.data.data.articles);
-					this.showPaginator = true;
-				})
-				.catch(() => {
-					this.showPaginator = true;
-				});
+			this.showPaginator = false
+			try {
+				const {data} = await this.axios.get(this.nextPageURL)
+				this.nextPageURL = data.data.pagination.next_page_url
+				this.posts = this.posts.concat(data.data.articles)
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+			}
+			this.showPaginator = true
 		}
 	}
 }

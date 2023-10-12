@@ -10,7 +10,7 @@
 				>
 			</div>
 			<div
-				v-if="mode === 'edit'"
+				v-if="mode === 'edit' && canEdit"
 				class="GlossaryComponent-add mb-3"
 			>
 				<JobtronButton
@@ -31,7 +31,7 @@
 				>
 					<div class="GlossaryComponent-word">
 						<input
-							v-if="mode === 'edit'"
+							v-if="mode === 'edit' && canEdit"
 							v-model="term.word"
 							type="text"
 							class="form-control"
@@ -48,7 +48,7 @@
 					</div>
 					<div class="GlossaryComponent-definition">
 						<div
-							v-if="mode === 'edit'"
+							v-if="mode === 'edit' && canEdit"
 							class="form-control"
 						>
 							<JobtronTextarea
@@ -60,7 +60,7 @@
 						</p>
 					</div>
 					<div
-						v-if="mode === 'edit'"
+						v-if="mode === 'edit' && canEdit"
 						class="GlossaryComponent-actions"
 					>
 						<button
@@ -83,6 +83,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import JobtronButton from '@ui/Button.vue';
 import JobtronTextarea from '@ui/Textarea.vue';
 
@@ -102,6 +104,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		access: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data(){
 		return {
@@ -109,6 +115,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters(['user', 'profileGroups']),
 		filteredTerms() {
 			if(!this.searchText) return this.terms
 			const lowerSearch = this.searchText.toLowerCase()
@@ -116,6 +123,21 @@ export default {
 				term.word.toLowerCase().indexOf(lowerSearch) > -1)
 				|| (term.definition.toLowerCase().indexOf(lowerSearch) > -1)
 			)
+		},
+		currentUserGroups(){
+			return this.profileGroups.slice().filter(group => ~group.users?.findIndex(user => user.id === this.user.id))
+		},
+		canEdit(){
+			return ~this.access.findIndex(access => {
+				switch(access.type){
+				case 1:
+					return access.id === this.user?.id
+				case 2:
+					return ~this.currentUserGroups.findIndex(group => group.id === access.id)
+				case 3:
+					return access.id === this.user?.position_id
+				}
+			})
 		}
 	},
 
@@ -127,7 +149,7 @@ export default {
 
 <style lang="scss">
 .GlossaryComponent{
-	&-search{}
+	// &-search{}
 	&-cover{
 		width: 100%;
 		height: 3px;
@@ -139,7 +161,7 @@ export default {
 		align-items: center;
 		justify-content: center;
 	}
-	&-items{}
+	// &-items{}
 	&-item{
 		display: flex;
 		align-items: start;

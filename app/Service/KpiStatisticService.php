@@ -1091,8 +1091,9 @@ class KpiStatisticService
         }
 
         // Position::class
-        if ($type == 3) $_user_ids = [];
-
+        if ($type == 3) {
+            $_user_ids = User::withTrashed()->where('position_id', $kpi->targetable_id)->pluck('id')->toArray();
+        }
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
