@@ -29,10 +29,22 @@
 
 				<div
 					v-if="activeBook === null"
-					class="btn btn-grey mb-3"
-					@click="openGlossary"
+					class="d-flex aic gap-1"
 				>
-					<span>Глоссарий</span>
+					<div
+						class="btn btn-grey btn-block mb-3"
+						@click="openGlossary"
+					>
+						<span>Глоссарий</span>
+					</div>
+
+					<div
+						v-if="isOwner"
+						class="btn btn-grey mb-3 px-3"
+						@click="isGlossaryAccessDialog = true"
+					>
+						<i class="icon-nd-settings" />
+					</div>
 				</div>
 
 				<div
@@ -228,6 +240,7 @@
 						v-if="show_glossary"
 						:mode="mode"
 						:terms="glossary"
+						:access="glossaryEditAccess"
 						@addTerm="addTerm"
 						@saveTerm="saveTerm"
 						@deleteTerm="deleteTerm"
@@ -341,11 +354,6 @@
 					<p class="mb-2">
 						Кто может видеть
 					</p>
-					<!-- <SuperSelect
-						:values="who_can_read"
-						class="w-full mb-4"
-						:select_all_btn="true"
-					/> -->
 					<AccessSelectFormControl
 						:items="whoCanReadActual"
 						class="mb-2"
@@ -370,11 +378,6 @@
 					<p class="mb-2">
 						Кто может редактировать
 					</p>
-					<!-- <SuperSelect
-						:values="who_can_edit"
-						class="w-full mb-4"
-						:select_all_btn="true"
-					/> -->
 					<AccessSelectFormControl
 						:items="whoCanEditActual"
 						class="mb-4"
@@ -388,6 +391,31 @@
 					<span>Сохранить</span>
 				</button>
 			</div>
+		</b-modal>
+
+		<b-modal
+			v-model="isGlossaryAccessDialog"
+			title="Редактирование глоссания"
+			size="md"
+			dialog-class="modallxe"
+			hide-footer
+		>
+			<div>
+				<p class="mb-2">
+					Кто может редактировать
+				</p>
+				<AccessSelectFormControl
+					:items="glossaryEditAccessActual"
+					class="mb-4"
+					@click="isGlossaryAccess = true"
+				/>
+			</div>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="updateGlossaryAccess"
+			>
+				<span>Сохранить</span>
+			</button>
 		</b-modal>
 
 		<JobtronOverlay
@@ -449,6 +477,21 @@
 				single
 			/>
 		</JobtronOverlay>
+
+		<JobtronOverlay
+			v-if="isGlossaryAccess"
+			:z="99999"
+			@close="isGlossaryAccess = false"
+		>
+			<AccessSelect
+				v-model="glossaryEditAccess"
+				:tabs="['Сотрудники', 'Отделы', 'Должности']"
+				:access-dictionaries="accessDictionaries"
+				search-position="beforeTabs"
+				submit-button=""
+				absolute
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -457,6 +500,8 @@
 /* eslint-disable vue/prop-name-casing */
 
 import { mapGetters, mapActions } from 'vuex'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 
 import Draggable from 'vuedraggable'
 import GlossaryComponent from '../components/Glossary.vue'
@@ -470,37 +515,14 @@ import AccessSelectFormControl from '@ui/AccessSelect/AccessSelectFormControl.vu
 import {
 	fetchSettings,
 	updateSettings,
-	fetchKBBooks,
-	fetchKBBook,
-	deleteKBBook,
-	restoreKBBook,
-	searchKBBook,
-	fetchKBAccess,
-	createKBBook,
-	fetchKBArchived,
-	updateKBBook,
-	updateKBOrder,
-	fetchGlossary,
-	saveGlossaryTerm,
-	deleteGlossaryTerm,
 } from '@/stores/api.js'
+
+import * as KBAPI from '@/stores/api/kb.js'
 
 const API = {
 	fetchSettings,
 	updateSettings,
-	fetchKBBooks,
-	fetchKBBook,
-	deleteKBBook,
-	restoreKBBook,
-	searchKBBook,
-	fetchKBAccess,
-	createKBBook,
-	fetchKBArchived,
-	updateKBBook,
-	updateKBOrder,
-	fetchGlossary,
-	saveGlossaryTerm,
-	deleteGlossaryTerm,
+	...KBAPI
 }
 
 const types = [
@@ -563,6 +585,9 @@ export default {
 			show_glossary: false,
 			newGlossaryId: 0,
 			glossary: [],
+			isGlossaryAccess: false,
+			isGlossaryAccessDialog: false,
+			glossaryEditAccess: [],
 
 			isReadSelect: false,
 			who_can_read: [],
@@ -581,6 +606,7 @@ export default {
 			'users',
 			'accessDictionaries',
 		]),
+		...mapState(usePortalStore, ['isOwner']),
 		whoCanReadActual(){
 			return this.who_can_read.slice().filter(target => {
 				if(types[target.type] === 'all') return true
@@ -593,6 +619,12 @@ export default {
 				return ~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id)
 			})
 		},
+		glossaryEditAccessActual(){
+			return this.glossaryEditAccess.slice().filter(target => {
+				if(types[target.type] === 'all') return true
+				return ~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id)
+			})
+		}
 	},
 	watch: {
 		auth_user_id(){
@@ -619,6 +651,7 @@ export default {
 		init(){
 			this.fetchData()
 			this.fetchGlossary()
+			this.fetchGlossaryAccess()
 
 			const urlParams = new URLSearchParams(window.location.search)
 			// const search = urlParams.get('search')
@@ -846,7 +879,7 @@ export default {
 				this.whoCanReadGroup = []
 				this.whoCanReadGroup = []
 
-				this.$toast.success('Изменения сохранены!')
+				this.$toast.success('Изменения сохранены')
 			}
 			catch (error) {
 				console.error(error)
@@ -924,6 +957,27 @@ export default {
 			if(~index) this.glossary.splice(index, 1)
 			if(deleteTerm.id > 0) await API.deleteGlossaryTerm(deleteTerm.id)
 			this.$toast.success('Термин удален')
+		},
+		async fetchGlossaryAccess(){
+			try {
+				this.glossaryEditAccess = await API.fetchGlossaryAccess()
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+			}
+		},
+		async updateGlossaryAccess(){
+			try {
+				await API.updateGlossaryAccess(this.glossaryEditAccess)
+				this.isGlossaryAccessDialog = false
+				this.$toast.success('Изменения сохранены')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось созранить изменения')
+			}
 		},
 	},
 };

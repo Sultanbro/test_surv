@@ -63,3 +63,16 @@ export async function deleteGlossaryTerm(id){
 	const {data} = await axios.post('/glossary/delete', {id})
 	return data
 }
+
+export async function fetchGlossaryAccess(){
+	const {data} = await axios.post('/glossary/get-access')
+	return data.who_can_edit
+}
+
+export async function updateGlossaryAccess(targets){
+	const {data} = await axios.post('/glossary/update-access', {
+		// eslint-disable-next-line camelcase
+		who_can_edit: targets
+	})
+	return data
+}

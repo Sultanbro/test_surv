@@ -1,3 +1,4 @@
+/* global Laravel */
 /* eslint-disable camelcase */
 
 import { defineStore } from 'pinia'
@@ -7,6 +8,8 @@ import {
 } from '@/stores/api'
 
 function initialState(){
+	const tenant = location.hostname.split('.')[0]
+	const tenants = Laravel.tenants
 	return {
 		portal: {
 			id: 0,
@@ -20,6 +23,10 @@ function initialState(){
 			kpi_backlight: null
 		},
 		kpiBacklight: null,
+		tenant,
+		tenants,
+		isOwner: tenants && tenants.includes(tenant),
+		isMain: ['bp', 'test'].includes(tenant),
 	}
 }
 
