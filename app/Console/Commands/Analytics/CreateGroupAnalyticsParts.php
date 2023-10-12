@@ -2,15 +2,12 @@
 
 namespace App\Console\Commands\Analytics;
 
-use App\Models\Analytics\AnalyticColumn;
-use App\Models\Analytics\AnalyticRow;
-use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\TopValue;
 use App\ProfileGroup;
-use App\User;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class CreateGroupAnalyticsParts extends Command
 {
@@ -31,7 +28,7 @@ class CreateGroupAnalyticsParts extends Command
     /**
      * Create a new command instance.
      *
-     * @return void 
+     * @return void
      */
     public function __construct()
     {
@@ -43,27 +40,33 @@ class CreateGroupAnalyticsParts extends Command
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $this->line('start creating pivot tables:');
-     
-        if(Carbon::now()->day != 1) return false;
-       
-        $newDate  = date('Y-m-d');
-        $prevDate = Carbon::now()->subMonth()->format('Y-m-d');
+        if (Carbon::now()->day !== 1) {
+            $this->warn("Cant create pivot tables because today isn't beginning of month");
+            return;
+        }
 
-        $groups   = ProfileGroup::query()
-                    ->where('active', 1)
-                    ->where('has_analytics', 1)
-                    ->get();
+        $this->line('start creating pivot tables:');
+
+        $currentDate = Carbon::now()
+            ->format('Y-m-d');
+        $previousDate = Carbon::now()
+            ->subMonth()
+            ->format('Y-m-d');
+
+        $groups = ProfileGroup::query()
+            ->where('active', 1)
+            ->where('has_analytics', 1)
+            ->get();
 
         foreach ($groups as $group) {
 
             $this->line('group ' . $group->id . ' ' . $group->name);
-            
-            $this->createTopValues($group->id, $prevDate, $newDate);
-            $this->createDecomposition($group->id, $prevDate, $newDate);
-            
+
+            $this->createTopValues($group->id, $previousDate, $currentDate);
+            $this->createDecomposition($group->id, $previousDate, $currentDate);
+
         }
 
         $this->line('end');
@@ -71,63 +74,74 @@ class CreateGroupAnalyticsParts extends Command
 
     /**
      * Create createTopValues
-     * 
+     *
      * @param int $group_id
-     * @param String $prevDate
-     * @param String $newDate
+     * @param String $previousDate
+     * @param String $currentDate
      * @return void
      */
-    private function createTopValues(int $group_id, String $prevDate, String $newDate) : void
+    private function createTopValues(int $group_id, string $previousDate, string $currentDate): void
     {
-        $tops = TopValue::where([
-            'group_id' => $group_id,
-            'date'     => $prevDate,
-        ])->get();
+        /** @var Collection<TopValue> $tops */
+        $tops = TopValue::query()
+            ->where([
+                'group_id' => $group_id,
+                'date' => $previousDate,
+            ])
+            ->get();
 
-        foreach($tops as $top) {
-            TopValue::create([
-                'name'        => $top->name,
-                'group_id'    => $top->group_id,
-                'date'        => $newDate,
-                'value'       => 0,
-                'unit'        => $top->unit,
-                'options'     => $top->options,
-                'min_value'   => $top->min_value,
-                'max_value'   => $top->max_value,
-                'cell'        => $top->cell,
-                'activity_id' => $top->activity_id,
-                'round'       => $top->round,
-                'is_main'     => $top->is_main,
-                'fixed'       => $top->fixed,
-                'value_type'  => $top->value_type,
-                'reversed'    => $top->reversed,
-            ]);
-        }  
+        foreach ($tops as $top) {
+//            $cloned = $top->replicate(); why dont use this
+//            $cloned->date = $currentDate;
+//            $cloned->value = 0;
+//            $cloned->save();
+
+            TopValue::query()
+                ->create([
+                    'name' => $top->name,
+                    'group_id' => $top->group_id,
+                    'date' => $currentDate,
+                    'value' => 0,
+                    'unit' => $top->unit,
+                    'options' => $top->options,
+                    'min_value' => $top->min_value,
+                    'max_value' => $top->max_value,
+                    'cell' => $top->cell,
+                    'activity_id' => $top->activity_id,
+                    'round' => $top->round,
+                    'is_main' => $top->is_main,
+                    'fixed' => $top->fixed,
+                    'value_type' => $top->value_type,
+                    'reversed' => $top->reversed,
+                ]);
+        }
     }
 
     /**
      * Create createDecomposition
-     * 
+     *
      * @param int $group_id
-     * @param String $prevDate
-     * @param String $newDate
+     * @param String $previousDate
+     * @param String $currentDate
      * @return void
      */
-    private function createDecomposition(int $group_id, String $prevDate, String $newDate) : void
+    private function createDecomposition(int $group_id, string $previousDate, string $currentDate): void
     {
-        $decs = DecompositionValue::where([
-            'group_id' => $group_id,
-            'date'     => $prevDate,
-        ])->get();
+        $decompositions = DecompositionValue::query()
+            ->where([
+                'group_id' => $group_id,
+                'date' => $previousDate,
+            ])
+            ->get();
 
-        foreach($decs as $dec) {
-            DecompositionValue::create([
-                'date'     => $newDate,
-                'group_id' => $dec->group_id,
-                'name'     => $dec->name,
-                'values'   => []
-            ]);
+        foreach ($decompositions as $dec) {
+            DecompositionValue::query()
+                ->create([
+                    'date' => $currentDate,
+                    'group_id' => $dec->group_id,
+                    'name' => $dec->name,
+                    'values' => []
+                ]);
         }
     }
-
 }

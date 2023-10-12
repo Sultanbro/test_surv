@@ -2,15 +2,13 @@
 
 namespace App\Models\Analytics;
 
-use Illuminate\Database\Eloquent\Model;
+use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
-use App\Models\Analytics\UserStat;
-use Carbon\Carbon;
-use App\Salary;
-use App\GroupSalary;
 use App\Timetracking;
-use App\Models\Analytics\Activity;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class AnalyticStat extends Model
 {
@@ -568,7 +566,7 @@ class AnalyticStat extends Model
         return $arr;
     }
 
-    public static function calcFormula($stat, $date, $round = 1, $only_days = [])
+    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [])
     {
         $text = $stat->value;
 
@@ -584,7 +582,8 @@ class AnalyticStat extends Model
             $row_id = $exp[1];
 
 
-            $cell = AnalyticStat::where('column_id', $column_id)
+            $cell = AnalyticStat::query()
+                ->where('column_id', $column_id)
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
@@ -611,8 +610,6 @@ class AnalyticStat extends Model
                 //dd($exp);
                 //$text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
             }
-
-
         }
 
         try {
@@ -854,9 +851,9 @@ class AnalyticStat extends Model
 
 
     /**
-     * получить рентаблеьность на конкретный день в месяце
+     * получить рентабельность на конкретный день в месяце
      */
-    public static function getRentabilityOnDay($group_id, $date)
+    public static function getRentabilityOnDay(int $group_id, string $date): float|int
     {
         $impl = 0;
         $only_days = [];
@@ -876,51 +873,56 @@ class AnalyticStat extends Model
         return $impl;
     }
 
-    public static function getImplStat($group_id, $date)
+    public static function getImplStat(int $group_id, string $date): null|AnalyticStat|Model
     {
-        $column = Column::where('group_id', $group_id)
+        $column = Column::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'plan')
             ->first();
 
-        $row = Row::where('group_id', $group_id)
+        $row = Row::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'Impl')
             ->first();
 
-        return $column && $row ? self::where('column_id', $column->id)
-            ->where('row_id', $row->id)
+        return $column && $row ? self::query()
+            ->where('column_id', $column->getKey())
+            ->where('row_id', $row->getKey())
             ->where('date', $date)
             ->first() : null;
     }
 
-    public static function getRentabilityDiff($group_id, $date)
+    public static function getRentabilityDiff(int $group_id, Carbon $date): float
     {
         $impl = self::getRentabilityOnDay($group_id, $date);
 
-        $prev_date = Carbon::parse($date)->subMonths(1)->format('Y-m-d');
+        $prev_date = Carbon::parse($date)->subMonth()->format('Y-m-d');
         $impl_prev = self::getRentabilityOnDay($group_id, $prev_date);
 
         return round($impl - $impl_prev, 2);
-
     }
 
-    public static function inHouseShowValue($groupId, $date)
+    public static function inHouseShowValue(int $groupId, Carbon $date): static|null
     {
-        return self::where("group_id", $groupId)
+        /** @var AnalyticStat */
+        return self::query()
+            ->where("group_id", $groupId)
             ->where("show_value", self::SHOW_VALUE_INHOUSE)
             ->where('date', $date->format('Y-m-d'))
             ->first();
     }
 
-    public static function getValuesWithRow($analyticStat)
+    public static function getValuesWithRow(AnalyticStat $analyticStat): Collection|array
     {
-        return self::where('group_id', $analyticStat->group_id)
+        return self::query()
+            ->where('group_id', $analyticStat->group_id)
             ->where('date', $analyticStat->date)
             ->where('row_id', $analyticStat->row_id)
             ->where('type', self::INHOUSE)
-            ->where('value', '!=', null)
             ->where('value', '!=', '')
+            ->whereNotNull('value')
             ->get();
     }
 }
