@@ -1,7 +1,7 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
 	<b-tr
-		v-if="actualTargets.length"
+		v-if="actualTargets.length || !item.id"
 		class="PermissionItem"
 	>
 		<b-td class="person">
