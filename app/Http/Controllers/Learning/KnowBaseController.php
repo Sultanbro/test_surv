@@ -368,6 +368,7 @@ class KnowBaseController extends Controller
             }
 
             $page->access = $access;
+            $page->read_pairs = collect($request['who_can_read_pairs'])->toArray();
             $page->save();
 
         }
@@ -632,6 +633,7 @@ class KnowBaseController extends Controller
         return [
             'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),
             'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'edit'),
+            'who_can_read_pairs' => $book->read_pairs
         ];
     }
 
