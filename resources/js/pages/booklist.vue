@@ -1283,5 +1283,8 @@ export default {
 		opacity: 0;
 		transition: all 0.2s;
 	}
+	.tox.tox-tinymce--toolbar-sticky-on .tox-editor-header{
+		left: 0 !important;
+	}
 }
 </style>
