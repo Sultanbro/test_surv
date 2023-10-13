@@ -740,7 +740,7 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
         Route::any('/headhunter/create_lead',          [\App\Api\HeadHunter::class,'createLead'])->name('create-lead');
-        Route::any('/headhunter/check_lead',          [\App\Api\HeadHunter::class,'checkLead'])->name('create-lead');
+        Route::any('/headhunter/check_lead',          [\App\Api\HeadHunter::class,'checkLead'])->name('check-lead');
         // Bitrix -> Admin
         Route::any('/bitrix/new-lead',     [Services\IntellectController::class, 'newLead']);
         Route::any('/bitrix/edit-lead',    [Services\IntellectController::class, 'editLead']);
