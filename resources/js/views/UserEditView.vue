@@ -516,12 +516,12 @@ export default {
 		},
 
 		async deleteUser(){
-			if(this.file8 && this.fireCause !== 'Дубликат, 2 учетки') {
+			this.deleteError = ''
+			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки') {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
 
-			this.deleteError = ''
 			const formData = new FormData(this.$refs.deleteForm)
 			try{
 				const {data} = await axios({
