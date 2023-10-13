@@ -39,11 +39,11 @@
 					</div>
 
 					<div
-						v-if="isOwner"
+						v-if="isOwner && mode === 'edit'"
 						class="btn btn-grey mb-3 px-3"
 						@click="isGlossaryAccessDialog = true"
 					>
-						<i class="icon-nd-settings" />
+						<i class="fa fa-cog" />
 					</div>
 				</div>
 
@@ -254,7 +254,7 @@
 			<Booklist
 				ref="booklist"
 				:trees="trees"
-				:can_edit="activeBook.access == 2 || can_edit"
+				:can_edit="!!(activeBook.access == 2 || isAdmin || canEditBook)"
 				:parent_name="activeBook.title"
 				:parent_id="activeBook.id"
 				:show_page_id="show_page_id"
@@ -350,7 +350,7 @@
 					class="form-control mb-4"
 				>
 
-				<div :key="superselectKey">
+				<div>
 					<p class="mb-2">
 						Кто может видеть
 					</p>
@@ -552,13 +552,14 @@ export default {
 		can_edit: {
 			type: Boolean,
 			default: false
-		}
+		},
 	},
 	data() {
 		return {
-			books: [],
 			mode: 'read',
+			books: [],
 			archived_books: [],
+
 			trees: [],
 			settings: null,
 			section: 0,
@@ -574,9 +575,9 @@ export default {
 
 			showEdit: false,
 			show_page_id: 0,
-			superselectKey: 1,
 			section_name: '',
 			update_book: null,
+
 			search: {
 				input: '',
 				items: []
@@ -603,10 +604,11 @@ export default {
 	},
 	computed: {
 		...mapGetters([
+			'user',
 			'users',
 			'accessDictionaries',
 		]),
-		...mapState(usePortalStore, ['isOwner']),
+		...mapState(usePortalStore, ['isOwner', 'isAdmin']),
 		whoCanReadActual(){
 			return this.who_can_read.slice().filter(target => {
 				if(types[target.type] === 'all') return true
@@ -623,6 +625,22 @@ export default {
 			return this.glossaryEditAccess.slice().filter(target => {
 				if(types[target.type] === 'all') return true
 				return ~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id)
+			})
+		},
+		currentUserGroups(){
+			return this.accessDictionaries.profile_groups.slice().filter(group => ~group.users?.findIndex(user => user.id === this.user.id))
+		},
+		canEditBook(){
+			if(!this.activeBook) return false
+			return ~this.whoCanEditActual.findIndex(access => {
+				switch(access.type){
+				case 1:
+					return access.id === this.user?.id
+				case 2:
+					return ~this.currentUserGroups.findIndex(group => group.id === access.id)
+				case 3:
+					return access.id === this.user?.position_id
+				}
 			})
 		}
 	},
@@ -708,6 +726,7 @@ export default {
 
 		async selectSection(book, page_id = 0) {
 			try {
+				this.fetchAccess(book)
 				const data = await API.fetchKBBook(book.id)
 
 				if(data.error) return this.$toast.info('Раздел не найден')
@@ -791,28 +810,64 @@ export default {
 			})
 		},
 
-		async editAccess(book) {
-			this.showEdit = true
-			this.update_book = book
-
+		async fetchAccess(book){
 			try {
 				const {
 					who_can_edit,
 					who_can_read,
-					who_can_read_position,
-					who_can_read_group,
+					who_can_read_pairs,
 				} = await API.fetchKBAccess(book.id)
 				this.who_can_edit = who_can_edit
 				this.who_can_read = who_can_read
-				this.whoCanReadPosition = who_can_read_position || []
-				this.whoCanReadGroup = who_can_read_group || []
-				this.superselectKey++
+				this.parseAccessPairs(who_can_read_pairs)
 			}
 			catch (error) {
 				console.error(error)
 				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить доступы')
 			}
+		},
+
+		async editAccess(book) {
+			this.clearAccess()
+			this.showEdit = true
+			this.update_book = book
+			this.fetchAccess(book)
+		},
+
+		clearAccess(){
+			this.who_can_read = []
+			this.who_can_edit = []
+			this.whoCanReadPosition = []
+			this.whoCanReadGroup = []
+		},
+
+		parseAccessPairs(pairs){
+			if(!pairs || !pairs.length) {
+				this.whoCanReadPosition = []
+				this.whoCanReadGroup = []
+				return
+			}
+
+			const position = this.accessDictionaries.positions.find(pos => pos.id === pairs[0].position_id)
+			const group = this.accessDictionaries.profile_groups.find(group => group.id === pairs[0].group_id)
+
+			if(!position || !group){
+				this.whoCanReadPosition = []
+				this.whoCanReadGroup = []
+				return
+			}
+
+			this.whoCanReadPosition = [{
+				id: position.id,
+				name: position.name,
+				type: 3
+			}]
+			this.whoCanReadGroup = [{
+				id: group.id,
+				name: position.name,
+				type: 2
+			}]
 		},
 
 		async addSection() {
@@ -855,6 +910,7 @@ export default {
 
 		async updateSection() {
 			if (this.update_book.title.length <= 2) return this.$toast.error('Слишком короткое название!')
+			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
 
 			const loader = this.$loading.show()
 
@@ -864,8 +920,7 @@ export default {
 					title: this.update_book.title,
 					who_can_read: this.who_can_read,
 					who_can_edit: this.who_can_edit,
-					whoCanReadPosition: this.whoCanReadPosition,
-					whoCanReadGroup: this.whoCanReadGroup,
+					who_can_read_pairs: this.whoCanReadPosition,
 				})
 
 				this.showEdit = false
@@ -876,7 +931,7 @@ export default {
 				this.update_book = null
 				this.who_can_read = []
 				this.who_can_edit = []
-				this.whoCanReadGroup = []
+				this.whoCanReadPosition = []
 				this.whoCanReadGroup = []
 
 				this.$toast.success('Изменения сохранены')
