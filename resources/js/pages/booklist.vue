@@ -55,7 +55,7 @@
 							v-for="item in search.items"
 							:key="item.id"
 							class="search-item"
-							@click="showPage(item.id, true)"
+							@click="showPage(item.id, true, false)"
 						>
 							<p
 								v-if="item.book"
@@ -660,11 +660,13 @@ export default {
 			parent_title: '',
 			search: {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			},
 			editorHeight: window.innerHeight - 128,
 			attachment: null,
 			breadcrumbs: [],
+			highlight: '',
 
 			// modals
 			showImageModal: false,
@@ -688,13 +690,23 @@ export default {
 	watch: {
 		activesbook: {
 			handler(){
-				if(!this.glossary) return
+				const urlParams = new URLSearchParams(window.location.search)
+				const hl = urlParams.get('hl')
 				this.$nextTick(() => {
 					const instance = new Mark(document.querySelector('.Booklist .bp-text'))
 					instance.unmark({
 						element: 'span',
 						className: 'Booklist-mark',
 						done: () => {
+							if(hl){
+								instance.mark(hl, {
+									...markOptions,
+									each: el => {
+										this.$nextTick(() => el.classList.add('Booklist-mark_justmark'))
+									}
+								})
+							}
+							if(!this.glossary) return
 							this.glossary.forEach(term => {
 								instance.mark(term.word, {
 									...markOptions,
@@ -742,9 +754,11 @@ export default {
 			}
 		},
 		clearSearch() {
+			clearTimeout(this.search.timeout)
 			this.search = {
 				input: '',
-				items: []
+				items: [],
+				timeout: null
 			}
 		},
 		beforeunloadFn(e) {
@@ -854,6 +868,7 @@ export default {
 
 					// set active book
 					const urlParams = new URLSearchParams(window.location.search);
+					this.highlight = urlParams.get('hl')
 					let book_id = urlParams.get('b');
 					this.breadcrumbs = [{id:this.id, title: this.parent_title}];
 
@@ -861,18 +876,20 @@ export default {
 					this.ids = [];
 					this.returnArray(this.tree);
 
+					if(this.search.input) this.highlight = this.search.input
+
 					if(this.course_page) {
 						book_id = this.show_page_id
 
 						if(this.show_page_id == 0 || this.show_page_id == null) {
-							this.showPage(this.tree[0].id);
+							this.showPage(this.tree[0].id, false, false);
 						} else {
 							// find element
 							let index = this.ids.findIndex(el => el.id == this.show_page_id);
 
 							if(index != -1) {
 								let el = this.findItem(this.ids[index]);
-								this.showPage(el.id);
+								this.showPage(el.id, false, false);
 							}
 						}
 					} else { // not course page
@@ -923,6 +940,11 @@ export default {
 		},
 
 		searchInput() {
+			clearTimeout(this.search.timeout)
+			this.search.timeout = setTimeout(this.runSearch, 500)
+		},
+
+		runSearch(){
 			if(this.search.input.length <= 2) return null;
 
 			this.axios
@@ -1083,8 +1105,7 @@ export default {
 					this.parent_title = response.data.top_parent.title
 					this.tree = response.data.tree
 					this.showSearch = false;
-					this.search.input = false;
-					this.search.items = [];
+					this.clearSearch()
 				}
 
 				// for course
@@ -1097,7 +1118,7 @@ export default {
 				this.setTargetBlank();
 
 				if(this.enable_url_manipulation) {
-					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id);
+					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id + (this.highlight ? `&hl=${this.highlight}` : ''));
 				}
 			})
 				.catch(() => {loader.hide()})
@@ -1259,6 +1280,13 @@ export default {
 					visibility: visible;
 					opacity: 1;
 				}
+			}
+		}
+		&_justmark{
+			background-color: #fcf8e3;
+			padding: 0 0.2em;
+			&:after{
+				content: none;
 			}
 		}
 	}

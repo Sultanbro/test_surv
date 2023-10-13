@@ -124,6 +124,7 @@ export default {
 			cityText: this.user?.working_country || '',
 			cityLat: 0,
 			cityLon: 0,
+			file8: null,
 		}
 	},
 	computed: {
@@ -515,7 +516,7 @@ export default {
 		},
 
 		async deleteUser(){
-			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
+			if(this.file8 && this.fireCause !== 'Дубликат, 2 учетки') {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
@@ -1039,6 +1040,7 @@ export default {
 														type="file"
 														class="inputfile inputfile-1"
 														style="display:none"
+														@change="file8 = $event.target.files"
 													>
 													<label
 														v-if="user.downloads && user.downloads.resignation"
