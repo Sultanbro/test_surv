@@ -341,6 +341,7 @@
 			size="md"
 			dialog-class="modallxe"
 			hide-footer
+			no-enforce-focus
 		>
 			<div v-if="update_book != null">
 				<input
@@ -399,6 +400,7 @@
 			size="md"
 			dialog-class="modallxe"
 			hide-footer
+			no-enforce-focus
 		>
 			<div>
 				<p class="mb-2">
