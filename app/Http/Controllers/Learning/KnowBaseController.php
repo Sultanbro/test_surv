@@ -49,14 +49,16 @@ class KnowBaseController extends Controller
      */
     private function getBooks($access = 0) : array
     {
+        /** @var User $auth_user */
+        $auth_user = auth()->user();
         $books = [];
-        if(auth()->user()->is_admin == 1)  {
+        if($auth_user->is_admin == 1)  {
             $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
         } else {
 
-            $groups = auth()->user()->inGroups();
+            $groups = $auth_user->inGroups();
             $group_ids = collect($groups)->pluck('id')->toArray();
-            $position_id =  auth()->user()->position_id;
+            $position_id =  $auth_user->position_id;
             $user_id =  auth()->id();
 
             $up = KnowBaseModel::
@@ -82,10 +84,21 @@ class KnowBaseController extends Controller
 
             $books = array_merge($books, $up);
 
-
+            $readPairs = [];
+            foreach ($group_ids as $group_id) {
+                $readPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
+            }
             $books_with_read_access =  KnowBase::withTrashed()
                 ->whereNull('parent_id')
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
+                ->orWhere(function ($query) use ($readPairs) {
+                    if (count($readPairs) > 0) {
+                        $query->whereJsonContains('read_pairs', $readPairs[0]);
+                        foreach ($readPairs as $pair) {
+                            $query->orWhereJsonContains('read_pairs', $pair);
+                        }
+                    }
+                })
                 ->get('id')->pluck('id')
                 ->toArray();
 
