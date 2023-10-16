@@ -213,13 +213,16 @@ class KnowBaseController extends Controller
 
         }
 
-        $kb_ids = $book->getOrder();
+        $item_models = [];
+        if($book){
+            $kb_ids = $book->getOrder();
 
-        $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
-            ->where('type', 3)
-            ->where('user_id', auth()->id())
-            ->where('course_item_id', $course_item_id)
-            ->get();
+            $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
+                ->where('type', 3)
+                ->where('user_id', auth()->id())
+                ->where('course_item_id', $course_item_id)
+                ->get();
+        }
 
         return [
             'trees' => $trees,

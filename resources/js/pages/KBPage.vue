@@ -582,7 +582,8 @@ export default {
 
 			search: {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			},
 
 			show_glossary: false,
@@ -663,9 +664,11 @@ export default {
 			if (this.search.input.length === 0) this.clearSearch()
 		},
 		clearSearch() {
+			clearTimeout(this.search.timeout)
 			this.search = {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			}
 		},
 		init(){
@@ -733,19 +736,19 @@ export default {
 
 				if(data.error) return this.$toast.info('Раздел не найден')
 
-				this.trees = data.trees
-				this.activeBook = data.book
-				this.show_page_id = page_id
-				this.showSearch = false
-				this.search.input = ''
-				this.search.items = []
-
 				// change URL
 				const urlParams = new URLSearchParams(window.location.search)
 				const b = urlParams.get('b')
 				let uri = '/kb?s=' + book.id
+				if(this.search.input) uri += '&hl=' + this.search.input
 				if(b) uri += '&b=' + b
 				window.history.replaceState({}, 'База знаний', uri)
+
+				this.trees = data.trees
+				this.activeBook = data.book
+				this.show_page_id = page_id
+				this.showSearch = false
+				this.clearSearch()
 			}
 			catch (error) {
 				console.error(error)
@@ -792,7 +795,12 @@ export default {
 			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
 		},
 
-		async searchInput() {
+		searchInput() {
+			clearTimeout(this.search.timeout)
+			this.search.timeout = setTimeout(this.runSearch, 500)
+		},
+
+		async runSearch(){
 			if(this.search.input.length <= 2) return null
 			try {
 				const data = await API.searchKBBook(this.search.input)
@@ -867,7 +875,7 @@ export default {
 			}]
 			this.whoCanReadGroup = [{
 				id: group.id,
-				name: position.name,
+				name: group.name,
 				type: 2
 			}]
 		},
@@ -915,6 +923,13 @@ export default {
 			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
 
 			const loader = this.$loading.show()
+			const pairs = []
+			for(let i = 0, l = this.whoCanReadGroup.length; i < l; ++i){
+				pairs.push({
+					position_id: this.whoCanReadPosition[i].id,
+					group_id: this.whoCanReadGroup[i].id
+				})
+			}
 
 			try {
 				await API.updateKBBook({
@@ -922,7 +937,7 @@ export default {
 					title: this.update_book.title,
 					who_can_read: this.who_can_read,
 					who_can_edit: this.who_can_edit,
-					who_can_read_pairs: this.whoCanReadPosition,
+					who_can_read_pairs: pairs,
 				})
 
 				this.showEdit = false
