@@ -617,6 +617,7 @@ export default {
 				'all': 'Все',
 				'active': 'Работающие',
 				'deactivated': 'Уволенные',
+				'reactivated': 'Восстановленные',
 				'trainees': 'Стажеры',
 				'nonfilled': 'Незаполненные',
 			},
