@@ -125,6 +125,9 @@ $buttonBG: #b7e100;
 			color:#ED2353;
 		}
 	}
+	&-html{
+		white-space: pre-line;
+	}
 	&-read{
 		width: 6.4rem;
 		height: 100%;
@@ -164,9 +167,6 @@ $buttonBG: #b7e100;
 			&_absolute{
 				display: none;
 			}
-		}
-		&-html{
-			white-space: pre-line;
 		}
 	}
 }
