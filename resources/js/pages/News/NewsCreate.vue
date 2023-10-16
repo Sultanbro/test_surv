@@ -410,7 +410,9 @@ export default {
 
 			if (this.titleError || this.contentError || this.availableError) return
 
-			formData.append('available_for', this.availableToEveryone ? '' : JSON.stringify(this.accessList))
+			const allChecked = this.accessList.length && !this.accessList[0].type
+
+			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
 			if (this.postFiles.length) {
 				const fileIds = []
@@ -455,7 +457,9 @@ export default {
 
 			if (this.titleError || this.contentError || this.availableError) return
 
-			formData.append('available_for', this.availableToEveryone ? '' : JSON.stringify(this.accessList))
+			const allChecked = this.accessList.length && !this.accessList[0].type
+
+			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
 
 			if (this.postFiles.length != 0) {
