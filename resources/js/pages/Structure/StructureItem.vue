@@ -253,7 +253,7 @@ export default {
 			}, [])
 		},
 		localSkip(){
-			if(this.card.manager) return [...this.skipUsers, this.card.manager.user_id]
+			if(this.manager) return [...this.skipUsers, this.manager.id]
 			return this.skipUsers
 		},
 		name(){
@@ -266,6 +266,11 @@ export default {
 		manager(){
 			if(!this.card) return null
 			if(!this.card.manager) return null
+			if(this.card.status && this.position && this.card.group_id){
+				const users = this.dictionaries.users.filter(user => !!user.profile_group?.find(group => group.id === this.card.group_id))
+				const manager = users.find(user => user.position_id === this.position.id)
+				if(manager) return manager
+			}
 			const manager = this.dictionaries.users.find(user => user.id === this.card.manager.user_id)
 			if(manager) return manager
 			if(this.card.is_vacant) return {
