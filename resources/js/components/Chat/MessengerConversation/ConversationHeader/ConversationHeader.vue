@@ -368,6 +368,9 @@ export default {
 		// 	}
 		// },
 	},
+	created(){
+		if(!this.accessDictionaries?.users?.length) this.loadCompany()
+	},
 	methods: {
 		...mapActions([
 			'setCurrentChatContacts',
@@ -386,6 +389,7 @@ export default {
 			'unmuteChat',
 			'loadChat',
 			'removeMembers',
+			'loadCompany',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {
