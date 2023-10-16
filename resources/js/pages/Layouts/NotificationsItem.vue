@@ -13,7 +13,7 @@
 		</div>
 		<div class="NotificationsItem-text">
 			<!-- eslint-disable-next-line -->
-			<div v-html="linkedMessage" />
+			<div class="NotificationsItem-html" v-html="linkedMessage" />
 			<div
 				v-if="active && isOvertime"
 				class="Notification-actions"
@@ -164,6 +164,9 @@ $buttonBG: #b7e100;
 			&_absolute{
 				display: none;
 			}
+		}
+		&-html{
+			white-space: pre-line;
 		}
 	}
 }
