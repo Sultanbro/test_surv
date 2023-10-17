@@ -2,42 +2,30 @@
 
 namespace App\Service\Referral;
 
-use App\Service\Referral\Core\{ReferralDeterminationInterface,
-    ReferralGeneratorInterface,
-    ReferralInterface,
-    ReferrerInterface,
-    ReferrerSalaryHandlerInterface};
+use App\Service\Referral\Core\{GeneratorInterface, ReferrerInterface, SalaryHandlerInterface};
 use App\User;
 
 class ReferralService
 {
-    private ReferralGeneratorInterface $generator;
-    private ReferralDeterminationInterface $determination;
-    private ReferrerSalaryHandlerInterface $salaryHandler;
+    private GeneratorInterface $generator;
+    private SalaryHandlerInterface $salaryHandler;
 
     public function __construct(
-        ReferralGeneratorInterface     $generator,
-        ReferralDeterminationInterface $determination,
-        ReferrerSalaryHandlerInterface $salaryHandler,
+        GeneratorInterface     $generator,
+        SalaryHandlerInterface $salaryHandler,
     )
     {
         $this->generator = $generator;
-        $this->determination = $determination;
         $this->salaryHandler = $salaryHandler;
     }
 
-    public function generateReferral(User $user): Core\ReferralDto
+    public function url(User $user): Core\ReferralUrlDto
     {
         return $this->generator->generate($user);
     }
 
-    public function request(ReferralInterface $referral): ReferrerInterface
+    public function handle(ReferrerInterface $referrer): void
     {
-        return $this->determination->determinate($referral);
-    }
-
-    public function handle(ReferrerInterface $referral): void
-    {
-        $this->salaryHandler->handle($referral);
+        $this->salaryHandler->handle($referrer);
     }
 }

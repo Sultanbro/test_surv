@@ -2,28 +2,23 @@
 
 namespace App\Service\Referral\Core;
 
-use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
- * @property int $parent_referrer_id
- * @property-read static $parentReferrer
- * @property-read Collection $referees
- * @property-read User $user
+ * @property int $referrer_id
+ * @property-read static $referrer
+ * @property-read Collection<ReferrerInterface> $referrals
  */
 interface ReferrerInterface
 {
-    public function referral(): HasOne;
+    public function referrals(): HasMany;
 
-    public function user(): BelongsTo;
+    public function referrer(): BelongsTo;
 
-    public function referees(): HasMany;
+    public function hasParent(): bool;
 
-    public function parentReferrer(): BelongsTo;
-
-    public function hasParentReferrer(): bool;
+    public function url(): string;
 }

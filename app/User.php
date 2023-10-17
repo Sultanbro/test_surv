@@ -4,24 +4,28 @@ namespace App;
 
 use App\Api\BitrixOld as Bitrix;
 use App\Classes\Helpers\Phone;
+use App\Enums\SalaryResourceType;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
+use App\Models\Bitrix\Lead;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
-use App\Models\Referral\Referrer;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
+use App\Models\User\Referral\Referrer;
 use App\Models\UserCoordinate;
 use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
+use App\Service\Referral\Core\ReferrerInterface;
+use App\Service\Referral\Core\ReferrerStatus;
 use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
 use Exception;
@@ -84,15 +88,20 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $phone_4
  * @property int $work_chart_id
  * @property int $coordinate_id
+ * @property int $referrer_id
+ * @property string $referrer_status
+ * @property Collection<Service\Salary\> $salaries
+ * @property Collection<Service\Salary\> $referralBonuses
  * @mixin Builder
  */
-class User extends Authenticatable implements Authorizable
+class User extends Authenticatable implements Authorizable, ReferrerInterface
 {
     use Notifiable,
         SoftDeletes,
         HasFactory,
         HasRoles,
-        HasTenants;
+        HasTenants,
+        Referrer;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
@@ -147,11 +156,13 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
         'work_chart_id',
-        'coordinate_id'
+        'coordinate_id',
+        'referrer_id',
+        'referrer_status',
     ];
 
     protected $casts = [
-        'timezone' => 'float',
+        'timezone' => 'float'
     ];
 
     /**
@@ -167,16 +178,6 @@ class User extends Authenticatable implements Authorizable
     public function scopeGetByEmail(Builder $query, string $email): Builder
     {
         return $query->where('email', $email);
-    }
-
-    /* @author Vahagn */
-    public function asReferrer(): hasOne
-    {
-        return $this->hasOne(
-            Referrer::class
-            , 'user_id'
-            , 'id'
-        );
     }
 
     /**
@@ -577,6 +578,11 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
     }
 
+    public function referralLeads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'referrer_id', 'id');
+    }
+
     public function integration_token(string $server)
     {
         return Oauth::get_token($this->id, $server);
@@ -912,7 +918,6 @@ class User extends Authenticatable implements Authorizable
 
     public function daytypes()
     {
-
         return $this->hasMany('App\DayType', 'user_id');
 
     }
@@ -932,9 +937,15 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\Downloads', 'user_id', 'id');
     }
 
-    public function salaries()
+    public function salaries(): HasMany
     {
         return $this->hasMany(Salary::class, 'user_id');
+    }
+
+    public function referralBonuses(): HasMany
+    {
+        return $this->hasMany(Salary::class, 'user_id')
+            ->where('resource', SalaryResourceType::REFERRAL);
     }
 
     public function profileContacts()
@@ -1590,8 +1601,6 @@ class User extends Authenticatable implements Authorizable
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
             $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
         }
-
-
         return $working_hours;
     }
 

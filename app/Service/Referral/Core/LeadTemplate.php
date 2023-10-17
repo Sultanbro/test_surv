@@ -11,15 +11,15 @@ class LeadTemplate
     const SEGMENT_ID = 3548;
 
     public function __construct(
-        private readonly ReferralInterface    $referral
-        , private readonly ReferralRequestDto $request
+        private readonly ReferrerInterface $referrer
+        , private readonly RequestDto      $request
     )
     {
     }
 
     public function get(string $key = null): array|string|null
     {
-        $user = $this->referral->referrer->user;
+        $user = $this->referrer;
         $hash = Hash::make(uniqid() . mt_rand());
         $countries = Countries::toArray();
         $data = [
@@ -33,17 +33,20 @@ class LeadTemplate
             'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
             "PHONE" => [["VALUE" => $this->request->phone, "VALUE_TYPE" => "WORK"]],
             "UF_CRM_1658397129" => '', // город
-            "UF_CRM_1658163204" => $this->referral->url(),
+            "UF_CRM_1658163204" => $this->referrer->url(),
             "UF_CRM_1693466068" => $user->name . ' ' . $user->last_name
         ];
         if ($key) {
+            $key = Str::lower($key);
             $adapted = [];
+            if ($key) {
+                return $hash;
+            }
             foreach ($data as $arrayKey => $item) {
                 $adapted[Str::lower($arrayKey)] = $item;
             }
             return $adapted[$key] ?? null;
         }
-
         return $data;
     }
 }

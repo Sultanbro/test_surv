@@ -7,6 +7,7 @@ use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
+use App\Console\Commands\ForTestingCommand;
 use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
@@ -42,6 +43,7 @@ class Kernel extends ConsoleKernel
         NotificationTemplatePusher::class,
         SetExitTimetracking::class,
         TenantMigrateFreshCommand::class,
+        ForTestingCommand::class
     ];
 
     /**

@@ -22,7 +22,6 @@ abstract class TenantTestCase extends BaseTestCase
     {
         $this->seed($class);
         $this->defaultConnection = config('database.default');
-        DB::beginTransaction();
         config([
             'database.default' => 'tenant'
         ]);
@@ -42,7 +41,6 @@ abstract class TenantTestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
-        DB::rollBack();
         tenancy()->end();
         config([
             'database.default' => $this->defaultConnection

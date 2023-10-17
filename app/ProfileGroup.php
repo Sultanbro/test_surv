@@ -10,6 +10,7 @@ use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
@@ -28,12 +29,12 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class ProfileGroup extends Model
 {
-    use HasRoles;
+    use HasRoles, HasFactory;
 
     protected $table = 'profile_groups';
 
     protected $guard_name = 'web';
-    
+
     public $timestamps = true;
 
     protected $casts = [
@@ -76,16 +77,16 @@ class ProfileGroup extends Model
         'switch_rentability'
     ];
 
-    CONST IS_ACTIVE = 1;
-    CONST NOT_ACTIVE = 0;
+    const IS_ACTIVE = 1;
+    const NOT_ACTIVE = 0;
 
-    CONST NOT_ANALYTICS = 0;
-    CONST HAS_ANALYTICS = 1;
-    CONST ARCHIVED      = -1;
+    const NOT_ANALYTICS = 0;
+    const HAS_ANALYTICS = 1;
+    const ARCHIVED = -1;
 
     // time_address
-    CONST FROM_UCALLS = -1;
-    CONST NOWHERE = 0;
+    const FROM_UCALLS = -1;
+    const NOWHERE = 0;
 
     const IT_DEPARTMENT_ID = 26;
 
@@ -180,12 +181,12 @@ class ProfileGroup extends Model
     public function dialer()
     {
         return $this->hasOne('App\Models\CallibroDialer', 'group_id', 'id');
-	}
+    }
 
     public function plan()
     {
         return $this->hasOne('App\GroupPlan', 'group_id', 'id');
-	}
+    }
 
     /**
      * Получаем активные и архивированные группы, которые попадают под фильтр.
@@ -194,38 +195,34 @@ class ProfileGroup extends Model
      * @param $month
      * @return array
      */
-    public function scopeProfileGroupsWithArchived($query, $year, $month, $withArchive = true,  $archivedThisMonth = false, string $switchColumn = ''): array
+    public function scopeProfileGroupsWithArchived($query, $year, $month, $withArchive = true, $archivedThisMonth = false, string $switchColumn = ''): array
     {
         $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
         $profileGroups = $this->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)
             ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)));
-        if ($switchColumn !== ''){
+        if ($switchColumn !== '') {
             $profileGroups->where($switchColumn, 1); // написано так, чтобы не сломать работающий код
         }
 
-        if($archivedThisMonth){
+        if ($archivedThisMonth) {
             $firstDayMonth = Carbon::create($year, $month)->firstOfMonth()->format('Y-m-d');
             $profileGroups->where('has_analytics', self::HAS_ANALYTICS)
                 ->orWhere('archived_date', '>=', $firstDayMonth);
-        }
-        else if ($withArchive){
+        } else if ($withArchive) {
             $profileGroups->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED]);
-        }
-        else{
+        } else {
             $profileGroups->where('has_analytics', self::HAS_ANALYTICS);
         }
 
         $profileGroups->where(fn($group) => $group->whereNull('archived_date')->orWhere(
             fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
         )->get()->reject(function ($group) {
-            if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null)
-            {
+            if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null) {
                 return $group;
             }
-            if ($group->has_analytics == self::ARCHIVED && $group->archived_date == null)
-            {
+            if ($group->has_analytics == self::ARCHIVED && $group->archived_date == null) {
                 return $group;
             }
         });
@@ -246,7 +243,8 @@ class ProfileGroup extends Model
         ])->get()->pluck('id')->toArray();
     }
 
-    public function groupUsers(){
+    public function groupUsers()
+    {
 
         $user_ids = json_decode($this->users);
 
@@ -258,15 +256,16 @@ class ProfileGroup extends Model
         return null;
     }
 
-    public static function addBookgroupsToProfileGroup($profile_id, $groups) {
+    public static function addBookgroupsToProfileGroup($profile_id, $groups)
+    {
         $profile = ProfileGroup::find($profile_id);
 
         $group_ids = [];
-        foreach($groups as $group) {
-            array_push($group_ids, $group['id']); 
+        foreach ($groups as $group) {
+            array_push($group_ids, $group['id']);
         }
-        
-        if($profile) {
+
+        if ($profile) {
             $profile->book_groups = json_encode($group_ids);
             $profile->save();
         }
@@ -274,10 +273,10 @@ class ProfileGroup extends Model
     }
 
     public static function getBookGroupsArray($profile_id)
-    {   
+    {
         $profile = self::find($profile_id);
-        
-        if($profile) {
+
+        if ($profile) {
             return json_decode($profile->book_groups) ? json_decode($profile->book_groups) : [];
         } else {
             return [];
@@ -286,10 +285,10 @@ class ProfileGroup extends Model
     }
 
     public static function getBookGroups($profile_id)
-    {   
+    {
         $profile = ProfileGroup::find($profile_id);
 
-        if($profile) {
+        if ($profile) {
             $book_group_ids = json_decode($profile->book_groups);
             return BookGroup::whereIn('id', $book_group_ids)->get();
         } else {
@@ -301,14 +300,14 @@ class ProfileGroup extends Model
      * @return array
      */
     public static function pluckIdName()
-    {   
+    {
         $groups_collection = self::get();
 
         $groups = [
             '0' => 'Все группы', // Все
-        ]; 
+        ];
 
-        foreach($groups_collection as $group) {
+        foreach ($groups_collection as $group) {
             $groups[$group->id] = $group->name;
         }
 
@@ -318,7 +317,8 @@ class ProfileGroup extends Model
     /**
      * Получить руководителей всех групп
      */
-    public static function getHeads() {
+    public static function getHeads()
+    {
         $groups = ProfileGroup::get();
 
         $heads = [];
@@ -335,50 +335,52 @@ class ProfileGroup extends Model
      * Где является руководм сотрудник
      *
      */
-    public static function headIn($user_id, $is_array = true) {
+    public static function headIn($user_id, $is_array = true)
+    {
         $groups = self::get();
 
         $g = [];
 
         foreach ($groups as $key => $group) {
-            if(in_array($user_id, json_decode($group->head_id))) {
+            if (in_array($user_id, json_decode($group->head_id))) {
                 array_push($g, $group->id);
             }
         }
 
-        if($is_array) {
+        if ($is_array) {
             return array_unique($g);
         } else {
-            if(count($g) > 0) {
+            if (count($g) > 0) {
                 return self::where('id', array_unique($g))->get();
             } else {
                 return collect([]);
             }
         }
-        
+
     }
 
     /**
      * User in groups
      */
-    public static function userIn($user_id, $is_array = true) {
+    public static function userIn($user_id, $is_array = true)
+    {
         $groups = self::get();
 
         $g = [];
 
         foreach ($groups as $key => $group) {
-            if($group->users == null) continue;
-            if(in_array($user_id, json_decode($group->users))) {
+            if ($group->users == null) continue;
+            if (in_array($user_id, json_decode($group->users))) {
                 array_push($g, $group->id);
             }
         }
 
-        if($is_array) {
+        if ($is_array) {
             return array_unique($g);
         } else {
             return self::whereIn('id', array_unique($g))->get();
         }
-        
+
     }
 
     /**
@@ -393,8 +395,9 @@ class ProfileGroup extends Model
         Carbon|string $date = null,
         ?int          $deleteType = 0,
         ?array        $positionIds = [],
-    ) {
-        if($date) {
+    )
+    {
+        if ($date) {
             $date = Carbon::parse($date)->subMonth();
         }
         $query = (new ProfileGroupUsersQuery())
@@ -402,7 +405,7 @@ class ProfileGroup extends Model
             ->deletedByMonthFilter($deleteType, $date)
             ->groupeFilter($groupId, $date);
 
-        if(count($positionIds) > 0) {
+        if (count($positionIds) > 0) {
             $query->wherePositionIds($positionIds);
         }
 
@@ -413,8 +416,9 @@ class ProfileGroup extends Model
      * @param ?Carbon|string $date
      * @return array<int>
      */
-    public function workers($date = null) { 
-        if($date) {
+    public function workers($date = null)
+    {
+        if ($date) {
             $date = Carbon::parse($date);
         }
 
@@ -429,9 +433,9 @@ class ProfileGroup extends Model
      * @param ?Carbon|string $date
      * @return array<int>
      */
-    public function trainees($date = null) 
+    public function trainees($date = null)
     {
-        if($date) {
+        if ($date) {
             $date = Carbon::parse($date);
         }
 
@@ -461,7 +465,7 @@ class ProfileGroup extends Model
             ->where('profile_groups.active', 1)
             ->where('profile_groups.is_ucalls', 1)
             ->leftJoin('callibro_dialers', 'callibro_dialers.group_id', 'profile_groups.id')
-            ->get()->each(function ($group){
+            ->get()->each(function ($group) {
                 $group['activities'] = Activity::select('id')
                     ->where('group_id', $group->id)
                     ->where('is_ucalls', 1)
@@ -478,19 +482,21 @@ class ProfileGroup extends Model
     public static function getActiveProfileGroupsAnyAnalytics()
     {
         return self::where('active', 1)
-            ->where('has_analytics',self::HAS_ANALYTICS)
+            ->where('has_analytics', self::HAS_ANALYTICS)
             ->get();
     }
 
-    public static function updateSwitch(SwitchTopDTO $dto){
+    public static function updateSwitch(SwitchTopDTO $dto)
+    {
         return self::findOrFail($dto->id)
             ->update([
                 $dto->switchColumn => $dto->switchValue
             ]);
     }
 
-    public function activitiesSetting(){
-        return $this->belongsTo(AnalyticsActivitiesSetting::class,  'activities_setting_id', 'id');
+    public function activitiesSetting()
+    {
+        return $this->belongsTo(AnalyticsActivitiesSetting::class, 'activities_setting_id', 'id');
     }
 
     public function scopeWhereHasAnalytics($query)
@@ -522,12 +528,12 @@ class ProfileGroup extends Model
             ->select('id', 'name', 'last_name', 'full_time', 'email')
             ->withTrashed()
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-            ->whereDate('from','<=', $dateFrom)
-            ->where(fn ($query) => $query->whereNull('to')->orWhere(
-                fn ($query) => $query->whereDate('to', '>=', $dateTo))
+            ->whereDate('from', '<=', $dateFrom)
+            ->where(fn($query) => $query->whereNull('to')->orWhere(
+                fn($query) => $query->whereDate('to', '>=', $dateTo))
             )
-            ->when($dateFrom, function ($query) use ($dateFrom){
-                $query->where(function(\Illuminate\Database\Eloquent\Builder $query) use($dateFrom){
+            ->when($dateFrom, function ($query) use ($dateFrom) {
+                $query->where(function (\Illuminate\Database\Eloquent\Builder $query) use ($dateFrom) {
                     $query->where('users.deleted_at', '>', $dateFrom)
                         ->orWhereNull('users.deleted_at');
                 });

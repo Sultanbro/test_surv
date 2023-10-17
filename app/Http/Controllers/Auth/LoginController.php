@@ -28,7 +28,7 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = 'profile';
-   // protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -37,14 +37,15 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')
+            ->except('logout');
     }
 
 
     /**
      * Get the failed login response instance.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -65,12 +66,11 @@ class LoginController extends Controller
     {
         $login = request()->input('username');
 
-        if(is_numeric($login)){
+        if (is_numeric($login)) {
             $field = 'phone';
         } elseif (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             $field = 'email';
-        } 
-        else {
+        } else {
             $field = 'email';
         }
 
@@ -81,16 +81,16 @@ class LoginController extends Controller
 
     /**
      * Login
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return array
      */
     public function login(Request $request)
-    {   
+    {
         // create credentials
         $field = $this->username();
-       
+
         $request[$field] = $request->username;
 
         $credentials = [
@@ -98,17 +98,17 @@ class LoginController extends Controller
             'password' => $request->password,
         ];
         // failed to login
-        if ( !\Auth::attempt($credentials) ) {
+        if (!\Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email или пароль не совпадает'
             ], 401);
-        } 
+        }
 
         // login was success
         $request->session()->regenerate();
 
         // redirect to - admin.jobtron.org
-        if(request()->getHost() == 'admin.' .config('app.domain')) {
+        if (request()->getHost() == 'admin.' . config('app.domain')) {
             return [
                 'link' => $this->redirectTo
             ];
@@ -116,11 +116,10 @@ class LoginController extends Controller
 
         // login from central app  - jobtron.org/login
         // redirect to subdomain with auth
-        if(request()->getHost() == config('app.domain')) {
-            $links = $this->loginLinks( $request->email );
+        if (request()->getHost() == config('app.domain')) {
+            $links = $this->loginLinks($request->email);
 
-            if (!empty($links))
-            {
+            if (!empty($links)) {
                 return count($links) > 1
                     ? [
                         'links' => $links
@@ -131,8 +130,8 @@ class LoginController extends Controller
             }
 
             return [];
-        } 
-        
+        }
+
         // login from tenant app
         return [
             'link' => $this->redirectTo

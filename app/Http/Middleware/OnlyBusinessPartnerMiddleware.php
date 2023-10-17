@@ -16,7 +16,7 @@ class OnlyBusinessPartnerMiddleware
      * @param Closure(Request): (Response|RedirectResponse) $next
      * @return Response|RedirectResponse|string
      */
-    public function handle(Request $request, Closure $next): Response|RedirectResponse|string
+    public function handle(Request $request, Closure $next)
     {
         if (tenant('id') !== config('tenancy.default_tenant')) {
             return response()->json(
