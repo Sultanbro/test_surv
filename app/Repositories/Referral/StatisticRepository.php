@@ -64,8 +64,8 @@ class StatisticRepository implements StatisticRepositoryInterface
         return [
             'employee_price' => $accepted ? $salaryTotal / $referrers->where('is_trainee', 0)
                     ->count() : 0,
-            'deal_lead_conversion' => ($deals / $leads) * 100 . ' %',
-            'applied_deal_conversion' => ($usersCount / $deals) * 100 . ' %',
+            'deal_lead_conversion' => $leads ? ($deals / $leads) * 100 : 0,
+            'applied_deal_conversion' => $deals ? ($usersCount / $deals) * 100 : 0,
             'earned' => $earnedTotalForMonth,
             'paid' => $piedTotalForMonth,
         ];
@@ -108,7 +108,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $user->load(['referrals' => fn(HasMany $query) => $query
             ->when($date, fn(Builder $query) => $query
-                ->whereRelation('applied', '>=', $date))
+                ->whereRelation('description', 'applied', '>=', $date))
             ->whereRelation('description', 'is_trainee', 1)]);
     }
 

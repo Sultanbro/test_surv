@@ -55,7 +55,8 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $sortedSubReferrers = $subReferrers->sortByDesc(function ($user) {
             return $user->referrals->count();
         });
-        return $sortedSubReferrers->take(5);
+        return $sortedSubReferrers->take(5)
+            ->toArray();
     }
 
     private function getSubReferrers(User $user, int $level = 3)
