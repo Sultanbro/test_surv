@@ -56,6 +56,7 @@ class UserFactory extends Factory
                 'phone_3' => $this->faker->phoneNumber,
                 'phone_4' => $this->faker->phoneNumber,
                 'work_chart_id' => $this->faker->randomNumber(4),
+                'referrer_id' => null,
             ];
         }
         return array_merge($central, $tenant);

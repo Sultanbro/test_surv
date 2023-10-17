@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace App\Service\Settings;
 
 use App\AdaptationTalk;
-use App\DTO\Settings\StoreUserDTO;
 use App\DTO\Settings\UpdateUserDTO;
 use App\Enums\ErrorCode;
+use App\Facade\Referring;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Coordinate;
 use App\Models\UserCoordinate;
-use App\Position;
 use App\Repositories\UserRepository;
 use App\Service\TaxService;
 use App\User;
 use Carbon\Carbon;
 use Exception;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 final class UserUpdateService
@@ -26,7 +24,8 @@ final class UserUpdateService
     public function __construct(
         public UserRepository $userRepository
     )
-    {}
+    {
+    }
 
     /**
      * @throws Exception
@@ -44,8 +43,7 @@ final class UserUpdateService
         $this->emailCheck($user, $userDTO->email);
         $user = $this->updateUserData($user, $userDTO);
 
-        if ($userDTO->adaptationTalks)
-        {
+        if ($userDTO->adaptationTalks) {
             $this->setAdaptationTalks($user->id, $userDTO->adaptationTalks);
         }
 
@@ -66,16 +64,15 @@ final class UserUpdateService
             $userDTO->file3 || $userDTO->file4 ||
             $userDTO->file5 || $userDTO->file6 ||
             $userDTO->file7
-        )
-        {
+        ) {
             FileHelper::storeDocumentsFile([
                 'dog_okaz_usl' => $userDTO->file1,
                 'sohr_kom_tainy' => $userDTO->file2,
-                'dog_o_nekonk'  => $userDTO->file3,
-                'trud_dog'      => $userDTO->file4,
-                'ud_lich'       => $userDTO->file5,
-                'photo'         => $userDTO->file6,
-                'archive'       => $userDTO->file7
+                'dog_o_nekonk' => $userDTO->file3,
+                'trud_dog' => $userDTO->file4,
+                'ud_lich' => $userDTO->file5,
+                'photo' => $userDTO->file6,
+                'archive' => $userDTO->file7
             ], $user->id);
         }
 
@@ -101,16 +98,17 @@ final class UserUpdateService
      */
     private function changeTraineeToEmployee(
         User $user,
-        $isTrainee
+             $isTrainee
     ): void
     {
-        if ($isTrainee == "false")
-        {
+        if ($isTrainee == "false") {
             $user->description()->update([
                 'is_trainee' => 0
             ]);
+            Referring::touchReferrerStatus($user);
         }
     }
+
     /**
      * @param User $user
      * @param int|null $bitrixId
@@ -121,8 +119,7 @@ final class UserUpdateService
         ?int $bitrixId
     ): void
     {
-        if (isset($bitrixId))
-        {
+        if (isset($bitrixId)) {
             $user->user_description()->update([
                 'bitrix_id' => $bitrixId
             ]);
@@ -142,78 +139,77 @@ final class UserUpdateService
             throw new Exception($e->getMessage());
         }
     }
+
     /**
      * @param int $userId
      * @param array $talks
      * @return void
      */
     private function setAdaptationTalks(
-        int $userId,
+        int   $userId,
         array $talks
     ): void
     {
         try {
-            foreach ($talks as $talk)
-            {
+            foreach ($talks as $talk) {
                 $at = AdaptationTalk::query()->where('user_id', $userId)->where('day', $talk['day'])->first();
-                if($at) {
+                if ($at) {
                     $at->inter_id = $talk['inter_id'];
                     $at->text = $talk['text'];
                     $at->date = $talk['date'];
                     $at->save();
                 } else {
                     AdaptationTalk::query()->create([
-                        'inter_id'  => $talk['inter_id'],
-                        'text'      => $talk['text'],
-                        'day'       => $talk['day'],
-                        'date'      => $talk['date'],
-                        'user_id'   => $userId,
+                        'inter_id' => $talk['inter_id'],
+                        'text' => $talk['text'],
+                        'day' => $talk['day'],
+                        'date' => $talk['date'],
+                        'user_id' => $userId,
                     ]);
                 }
             }
-        }catch (Throwable $exception) {
+        } catch (Throwable $exception) {
             redirect()->withErrors(ErrorCode::MESSAGES['save']);
         }
     }
 
     /**
      * @param User $user
-     * @param StoreUserDTO $userDTO
+     * @param UpdateUserDTO $userDTO
      * @return User
      */
     private function updateUserData(
-        User $user,
+        User          $user,
         UpdateUserDTO $userDTO
     ): User
     {
-        if ($userDTO->newPassword)
-        {
+        if ($userDTO->newPassword) {
             $user->password = \Hash::make($userDTO->newPassword);
         }
 
-        $user->new_email    = $userDTO->email;
-        $user->name         = $userDTO->name;
-        $user->last_name    = $userDTO->lastName;
-        $user->phone        = $userDTO->phone;
-        $user->phone_1      = $userDTO->phoneHome;
-        $user->phone_2      = $userDTO->phoneHusband;
-        $user->phone_3      = $userDTO->phoneRelatives;
-        $user->phone_4      = $userDTO->phoneChildren;
-        $user->birthday     = $userDTO->birthday;
-        $user->full_time    = $userDTO->fullTime;
-        $user->description  = $userDTO->description;
-        $user->currency     = $userDTO->currency ?? 'kzt';
-        $user->position_id  = $userDTO->positionId ?? 0;
-        $user->user_type    = $userDTO->userType;
-        $user->timezone     = $userDTO->timezone;
-        $user->program_id   = $userDTO->programType;
-        $user->working_day_id   = $userDTO->workingDays;
-        $user->working_time_id  = $userDTO->workTimes;
-        $user->weekdays     = $userDTO->weekdays;
+        $user->new_email = $userDTO->email;
+        $user->name = $userDTO->name;
+        $user->last_name = $userDTO->lastName;
+        $user->phone = $userDTO->phone;
+        $user->phone_1 = $userDTO->phoneHome;
+        $user->phone_2 = $userDTO->phoneHusband;
+        $user->phone_3 = $userDTO->phoneRelatives;
+        $user->phone_4 = $userDTO->phoneChildren;
+        $user->birthday = $userDTO->birthday;
+        $user->full_time = $userDTO->fullTime;
+        $user->description = $userDTO->description;
+        $user->currency = $userDTO->currency ?? 'kzt';
+        $user->position_id = $userDTO->positionId ?? 0;
+        $user->user_type = $userDTO->userType;
+        $user->timezone = $userDTO->timezone;
+        $user->program_id = $userDTO->programType;
+        $user->working_day_id = $userDTO->workingDays;
+        $user->working_time_id = $userDTO->workTimes;
+        $user->weekdays = $userDTO->weekdays;
         $user->first_work_day = $userDTO->firstWorkDay;
         $user->working_country = $userDTO->workingCountry;
         $user->working_city = $userDTO->workingCity;
-        if ($userDTO->coordinates)$user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
+        if ($userDTO->coordinates) $user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
 //         $this->setCountryAndCity($user, $userDTO->workingCountry);
 
         $user->save();
@@ -227,12 +223,12 @@ final class UserUpdateService
      * @return User
      */
     private function setCountryAndCity(
-        User $user,
+        User    $user,
         ?string $country
     )
     {
-        $user->working_country  = $country;
-        $user->working_city     = Coordinate::query()->where('country', 'LIKE', "%$country%")->first()->id ?? null;
+        $user->working_country = $country;
+        $user->working_city = Coordinate::query()->where('country', 'LIKE', "%$country%")->first()->id ?? null;
 
         return $user;
     }
@@ -243,29 +239,27 @@ final class UserUpdateService
      * @return void
      */
     private function emailCheck(
-        User $user,
+        User   $user,
         string $email,
 
     ): void
     {
         $existEmail = $this->userRepository->getUserByEmail($email);
         $existEmail = $this->userRepository->getUserByEmail($email);
-        if ($existEmail && $email != $user->email)
-        {
-            if ($existEmail->deleted_at != null)
-            {
+        if ($existEmail && $email != $user->email) {
+            if ($existEmail->deleted_at != null) {
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
-                $text .= '<tr><td><b>Имя:</b></td><td>'.$existEmail->name.'</td></tr>';
-                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$existEmail->last_name.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $existEmail->id .'" target="_blank"> '. $existEmail->email .'</a></td></tr>';
-                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($existEmail->deleted_at)->setTimezone('Asia/Dacca').'</td></tr>';
+                $text .= '<tr><td><b>Имя:</b></td><td>' . $existEmail->name . '</td></tr>';
+                $text .= '<tr><td><b>Фамилия:</b></td><td>' . $existEmail->last_name . '</td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id=' . $existEmail->id . '" target="_blank"> ' . $existEmail->email . '</a></td></tr>';
+                $text .= '<tr><td><b>Дата увольнения:</b></td><td>' . Carbon::parse($existEmail->deleted_at)->setTimezone('Asia/Dacca') . '</td></tr>';
                 $text .= '</table>';
                 redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
                 return;
             }
 
-            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $email .'<br><a href="/timetracking/edit-person?id=' . $existEmail->id . '"   target="_blank">' . $existEmail->last_name . ' ' . $existEmail->name . '</a>';
+            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $email . '<br><a href="/timetracking/edit-person?id=' . $existEmail->id . '"   target="_blank">' . $existEmail->last_name . ' ' . $existEmail->name . '</a>';
             redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
         }
     }
@@ -273,16 +267,13 @@ final class UserUpdateService
     private function setCoordinate(array $coordinatesArray)
     {
         $coordinate = UserCoordinate::query()
-            ->where('geo_lat',$coordinatesArray['geo_lat'])
-            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->where('geo_lat', $coordinatesArray['geo_lat'])
+            ->where('geo_lon', $coordinatesArray['geo_lon'])
             ->first();
 
-        if ($coordinate)
-        {
+        if ($coordinate) {
             return $coordinate->id;
-        }
-        else
-        {
+        } else {
             $coordinate = UserCoordinate::query()->create([
                 'geo_lat' => $coordinatesArray['geo_lat'],
                 'geo_lon' => $coordinatesArray['geo_lon']

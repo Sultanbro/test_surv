@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use App\ProfileGroup;
 use Carbon\Carbon;
@@ -43,11 +44,12 @@ class UserDescription extends Model
     public function user()
     {
        return $this->belongsTo('App\User');
-    } 
+    }
 
     /**
      * Check if record exists and update or create new one
      * @return UserDescription
+     * @throws Exception
      */
     public static function make(array $data) {
         if(array_key_exists('user_id', $data)) {
@@ -60,7 +62,7 @@ class UserDescription extends Model
 
             return $ud;
         } else {
-            throw new \Exception("User_id is not specified in array");
+            throw new Exception("User_id is not specified in array");
         }
     }
 

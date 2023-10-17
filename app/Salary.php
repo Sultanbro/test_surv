@@ -39,6 +39,7 @@ class Salary extends Model
         'comment_paid',
         'comment_bonus',
         'comment_award',
+        'resource',
     ];
 
     /**
