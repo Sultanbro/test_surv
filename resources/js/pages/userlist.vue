@@ -653,7 +653,7 @@ export default {
 				},
 				{
 					key: 'created_at',
-					label: 'Дата регистрации',
+					label: 'Дата регистрации (сделка)',
 					sortable: true,
 				},
 				{
