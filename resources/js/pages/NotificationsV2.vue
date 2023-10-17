@@ -521,7 +521,11 @@ export default {
 		},
 		async onChangeStatus(notification){
 			notification.status = notification.status ? 0 : 1
-			const {message} = await updateNotification(notification)
+			const request = JSON.parse(JSON.stringify(notification))
+			if(!request.recipients?.length){
+				delete request.recipients
+			}
+			const {message} = await updateNotification(request)
 			if(message === 'Success'){
 				this.$toast.success(`Уведомление ${notification.status ? 'активировано' : 'деактивировано'}`)
 				const index = this.notifications.findIndex(n => n.id === notification.id)
