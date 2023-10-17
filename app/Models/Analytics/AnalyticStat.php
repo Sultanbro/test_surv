@@ -894,7 +894,7 @@ class AnalyticStat extends Model
             ->first() : null;
     }
 
-    public static function getRentabilityDiff(int $group_id, Carbon $date): float
+    public static function getRentabilityDiff(int $group_id, string $date): float
     {
         $impl = self::getRentabilityOnDay($group_id, $date);
 
