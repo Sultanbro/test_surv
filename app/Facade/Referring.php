@@ -2,17 +2,16 @@
 
 namespace App\Facade;
 
-use App\Service\Referral\Core\ReferralDto;
-use App\Service\Referral\Core\ReferralInterface;
+use App\Jobs\Referral\ProcessTouchReferrerStatus;
+use App\Service\Referral\Core\ReferralUrlDto;
 use App\Service\Referral\Core\ReferrerInterface;
 use App\Service\Referral\ReferralService;
 use App\User;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static ReferralDto generateReferral(User $user)
- * @method static ReferrerInterface request(ReferralInterface $referral)
- * @method static array calculate(ReferrerInterface $referrer)
+ * @method static ReferralUrlDto url(User $user)
+ * @method static void handle(ReferrerInterface $referrer)
  * @use ReferralService
  */
 class Referring extends Facade
@@ -27,5 +26,13 @@ class Referring extends Facade
     protected static function getFacadeAccessor(): string
     {
         return 'referral';
+    }
+
+    public static function touchReferrerStatus(User $user): void
+    {
+        if ($user->referrer_id) {
+            ProcessTouchReferrerStatus::dispatch($user->referrer)
+                ->afterCommit();
+        }
     }
 }

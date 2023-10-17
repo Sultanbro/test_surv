@@ -10,13 +10,13 @@ class ReferrerDto
     /**
      * @param int|null $id
      * @param Collection|null $referees
-     * @param int|null $parent_referrer_id
+     * @param int|null $parent_id
      * @param ReferrerInterface|null $parentReferrer
      */
     public function __construct(
         public null|int                 $id
         , public null|Collection        $referees
-        , public null|int               $parent_referrer_id
+        , public null|int               $parent_id
         , public null|ReferrerInterface $parentReferrer
     )
     {
@@ -26,9 +26,9 @@ class ReferrerDto
     {
         return new static(
             $referrer->id,
-            $referrer->referees,
-            $referrer->parent_referrer_id,
-            $referrer->parentReferrer
+            $referrer->referrals,
+            $referrer->parent_id,
+            $referrer->referrer
         );
     }
 }

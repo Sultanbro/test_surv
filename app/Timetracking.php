@@ -205,12 +205,13 @@ class Timetracking extends Model
 
     public static function getTimeTrackingReportPaginate($request, $users_ids, $year, $perPage = 1000)
     {
-        $users = User::withTrashed()->with([
+        return User::withTrashed()->with([
             'timetracking' => function ($q) use ($request, $year) {
-                $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")->orderBy('id', 'ASC')
-                    ->whereMonth('enter', '=', $request->month)->whereYear('enter', $year);
+                $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                    ->orderBy('id', 'ASC')
+                    ->whereMonth('enter', '=', $request->month)
+                    ->whereYear('enter', $year);
             },
-
             'fines' => function ($q) use ($request, $year) {
                 $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', '=', $request->month)->whereYear('day', $year);
             },
@@ -220,14 +221,13 @@ class Timetracking extends Model
             'trackHistory' => function ($q) use ($request, $year) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
             }
-        ])->whereIn('id', array_unique($users_ids))->orderBy('last_name', 'asc')
+        ])->whereIn('id', array_unique($users_ids))
+            ->orderBy('last_name', 'asc')
 
             //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
 
             ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays', 'timezone'])
             ->paginate($perPage);
-
-        return $users;
     }
 
     public static function totalHours($date, $group_id)

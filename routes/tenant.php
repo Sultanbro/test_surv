@@ -10,6 +10,7 @@ use App\Http\Controllers\Article as Article;
 use App\Http\Controllers\Auth as Auth;
 use App\Http\Controllers\Company;
 use App\Http\Controllers\Course as Course;
+use App\Http\Controllers\Deal as Deal;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Learning as Learning;
 use App\Http\Controllers\Salary as Salary;
@@ -18,11 +19,9 @@ use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
-use App\Http\Controllers\Deal as Deal;
-use App\Http\Controllers\V2\Analytics\V2AnalyticController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web','tenant'])->group(function () {
+Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -37,7 +36,10 @@ Route::middleware(['web','tenant'])->group(function () {
 });
 
 // Portal Api
-Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
+Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
+
+    /** @author Vahagn */
+    require_once __DIR__ . '/referral.php';
 
     Route::post('/online', [User\EmployeeController::class, 'online']);
     Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
@@ -45,7 +47,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
     Route::group([
         'prefix' => 'work-chart',
-        'as'    => 'work-chart.'
+        'as' => 'work-chart.'
     ], function () {
         Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
         Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
@@ -78,7 +80,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     });
 
     // Настройка субдомена
-    Route::get('/cabinet', [User\CabinetController::class, 'index'] );
+    Route::get('/cabinet', [User\CabinetController::class, 'index']);
     Route::get('/cabinet/get', [User\CabinetController::class, 'get']);
     Route::post('/cabinet/save', [User\CabinetController::class, 'save']);
     Route::any('/profile/edit/user/cart/', [User\CabinetController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
@@ -124,7 +126,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     // courses
     Route::group([
         'prefix' => 'course',
-        'as'    => 'course.'
+        'as' => 'course.'
     ], function () {
         Route::post('/regress', [Course\RegressCourseController::class, 'regress']);
         Route::get('/progress', [Course\CourseProgressController::class, 'progress']);
@@ -192,7 +194,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/videos/add_comment', [Learning\Video\VideoController::class, 'add_comment'])->name('videos.add_comment');
     Route::post('/videos/get_comment', [Learning\Video\VideoController::class, 'get_comment'])->name('videos.get_comment');
     Route::post('/videos/upload_progress', [Learning\Video\VideoController::class, 'upload_progress'])->name('videos.upload_progress');
-    Route::post('/playlists/delete-question',[Learning\Video\VideoPlaylistController::class, 'deleteQuestion']);
+    Route::post('/playlists/delete-question', [Learning\Video\VideoPlaylistController::class, 'deleteQuestion']);
 
     // Книги
     Route::get('/admin/upbooks', [Learning\UpbookController::class, 'index']);
@@ -278,8 +280,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::post('/checklist/tasks', [Settings\CheckListController::class, 'getTasks']);
     Route::post('/checklist/save', [Settings\CheckListController::class, 'saveTasks']);
-    Route::post('/checklist/get-checklist-by-user',[Settings\CheckListController::class,'getChecklistByUser']);
-    Route::post('/checklist/save-checklist',[Settings\CheckListController::class, 'saveChecklist']);
+    Route::post('/checklist/get-checklist-by-user', [Settings\CheckListController::class, 'getChecklistByUser']);
+    Route::post('/checklist/save-checklist', [Settings\CheckListController::class, 'saveChecklist']);
 
     Route::post('/timetracking/settings/add/check', [Settings\CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [Settings\CheckListController::class, 'listViewCheck']); /// список Чек листов
@@ -324,12 +326,12 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
     Route::any('/timetracking/zarplata-table-new', [Timetrack\TimetrackingController::class, 'zarplatatableNew']);
-    Route::post('/timetracking/salary-balance',[Timetrack\SalaryWorkChartController::class,'salaryBalance']);
+    Route::post('/timetracking/salary-balance', [Timetrack\SalaryWorkChartController::class, 'salaryBalance']);
     Route::post('/order-persons-to-group', [Timetrack\TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [Timetrack\TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [Timetrack\TimetrackingController::class, 'getTotalsOfReports']);
 
-    Route::group(['prefix' => 'group-user'], function() {
+    Route::group(['prefix' => 'group-user'], function () {
         Route::post('/save', [Timetrack\TimetrackingController::class, 'addUsers']);
         Route::post('/drop', [Timetrack\TimetrackingController::class, 'dropUsers']);
     });
@@ -482,7 +484,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::get('/timetracking/analytics/activity/export', [Analytics\HrController::class, 'exportActivityExcel']);
     Route::get('/hr/ref-links', [Analytics\HrController::class, 'getRefLinks']);
     Route::post('/hr/ref-links/save', [Analytics\HrController::class, 'saveRefLinks']);
-    Route::post('/timetracking/getactivetrainees',[Analytics\HrController::class,'getActiveTrainees']);
+    Route::post('/timetracking/getactivetrainees', [Analytics\HrController::class, 'getActiveTrainees']);
 
     // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
@@ -528,27 +530,27 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         ->middleware(['tenant']);
 
     // Редактирование бонусов
-    Route::group(['prefix' => 'bonus', 'as' => 'bonus.'], function() {
-        Route::post('get',[Kpi\BonusController::class,'get'])->name('get');
-        Route::post('user',[Kpi\BonusController::class,'getUserBonuses'])->name('getUserBonuses');
-        Route::post('save',[Kpi\BonusController::class,'save'])->name('save');
-        Route::put('update',[Kpi\BonusController::class,'update'])->name('update');
-        Route::delete('delete/{id}',[Kpi\BonusController::class,'delete'])->name('delete');
+    Route::group(['prefix' => 'bonus', 'as' => 'bonus.'], function () {
+        Route::post('get', [Kpi\BonusController::class, 'get'])->name('get');
+        Route::post('user', [Kpi\BonusController::class, 'getUserBonuses'])->name('getUserBonuses');
+        Route::post('save', [Kpi\BonusController::class, 'save'])->name('save');
+        Route::put('update', [Kpi\BonusController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [Kpi\BonusController::class, 'delete'])->name('delete');
         Route::post('/set/status', [Kpi\KpiBonusStatusController::class, 'setActive']);
-        Route::put('read',[Kpi\BonusController::class,'read'])->name('read');
+        Route::put('read', [Kpi\BonusController::class, 'read'])->name('read');
     });
 
     // Редактирование квартальной премии
-    Route::group(['prefix' => 'quartal-premiums'], function(){
-        Route::post('get',[Kpi\QuartalPremiumController::class,'get'])->name('quartal-premium.get');
-        Route::post('save',[Kpi\QuartalPremiumController::class,'save'])->name('quartal-premium.save');
-        Route::put('update',[Kpi\QuartalPremiumController::class,'update'])->name('quartal-premium.update');
-        Route::delete('delete/{id}',[Kpi\QuartalPremiumController::class,'destroy']);
+    Route::group(['prefix' => 'quartal-premiums'], function () {
+        Route::post('get', [Kpi\QuartalPremiumController::class, 'get'])->name('quartal-premium.get');
+        Route::post('save', [Kpi\QuartalPremiumController::class, 'save'])->name('quartal-premium.save');
+        Route::put('update', [Kpi\QuartalPremiumController::class, 'update'])->name('quartal-premium.update');
+        Route::delete('delete/{id}', [Kpi\QuartalPremiumController::class, 'destroy']);
         Route::post('/set/status', [Kpi\QuartalPremiumStatusController::class, 'setActive']);
     });
 
     // Статистика для KPI
-    Route::group(['prefix' => 'statistics', 'as' => 'kpi-statistic.'], function (){
+    Route::group(['prefix' => 'statistics', 'as' => 'kpi-statistic.'], function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [Kpi\KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [Kpi\KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
@@ -562,20 +564,20 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('quartal-premiums/read', [Kpi\KpiStatController::class, 'readQuartalPremiums'])->name('quartal-premium.read');
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
         Route::post('update-stat', [Kpi\KpiStatController::class, 'updateStat'])->name('updateStat');
-        Route::get('activities',[Kpi\KpiStatController::class,'getActivities'])->name('getActivites');
+        Route::get('activities', [Kpi\KpiStatController::class, 'getActivities'])->name('getActivites');
         Route::get('/kpi/user-groups', [Kpi\KpiStatController::class, 'groups']);
     });
 
     // Редактирование показателей
-    Route::group(['prefix'=> 'activities', 'as' => 'activities.', 'middleware' => 'superuser'], function(){
+    Route::group(['prefix' => 'activities', 'as' => 'activities.', 'middleware' => 'superuser'], function () {
         Route::post('/get', [Kpi\IndicatorController::class, 'fetch'])->name('all');
         Route::get('/{id}', [Kpi\IndicatorController::class, 'get'])->name('one');
-        Route::post('save',[Kpi\IndicatorController::class,'save'])->name('save');
-        Route::put('update',[Kpi\IndicatorController::class,'update'])->name('update');
-        Route::delete('delete/{id}',[Kpi\IndicatorController::class,'delete'])->name('delete');
+        Route::post('save', [Kpi\IndicatorController::class, 'save'])->name('save');
+        Route::put('update', [Kpi\IndicatorController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [Kpi\IndicatorController::class, 'delete'])->name('delete');
     });
 
-    Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
+    Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
         Route::post('/set/status', [Kpi\KpiStatusController::class, 'setActive']);
     });
@@ -592,7 +594,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::get('/callibro/login', [Services\CallibroController::class, 'login']);
 
-    Route::group(['prefix' => 'notifications','as' => 'notifications.'], function () {
+    Route::group(['prefix' => 'notifications', 'as' => 'notifications.'], function () {
         Route::any('/', [Services\NotificationControlller::class, 'get']);
         Route::any('/read', [Services\NotificationControlller::class, 'read']);
         Route::get('/unread-count', [Services\NotificationControlller::class, 'unReadCount']);
@@ -608,7 +610,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');
-        Route::post('/mark-articles-as-viewed', [Article\ArticleController::class,'makeViewedArticles'])->name('make-article-viewed');
+        Route::post('/mark-articles-as-viewed', [Article\ArticleController::class, 'makeViewedArticles'])->name('make-article-viewed');
 
 
         Route::prefix('{article_id}')->name('actions.')->group(function () {
@@ -664,7 +666,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::group([
         'prefix' => 'tax',
-        'as'     => 'tax.'
+        'as' => 'tax.'
     ], function () {
         Route::get('/', [Root\Tax\TaxController::class, 'get']);
         Route::get('/all', [Root\Tax\TaxController::class, 'all']);
@@ -681,21 +683,21 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
             Route::any('/courses', [User\ProfileController::class, 'courses']);
         });
 
-        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
+        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
             Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
             Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
             Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
         });
 
-        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function (){
+        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function () {
             Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
         });
     });
 
     Route::group([
         'prefix' => 'mailing',
-        'as'    => 'mailing.'
+        'as' => 'mailing.'
     ], function () {
         Route::get('/', [Root\Mailing\MailingController::class, 'get']);
         Route::get('/find/{id}', [Root\Mailing\MailingController::class, 'find']);
@@ -707,8 +709,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::group([
         'prefix' => 'notification-template',
-        'as'     => 'notification-template.'
-    ], function (){
+        'as' => 'notification-template.'
+    ], function () {
         Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
         Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
 
@@ -723,39 +725,39 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
  * API routes
  * instead of api.php
  */
-Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
+Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
 
-    Route::group(['prefix'   => 'api'], function() {
+    Route::group(['prefix' => 'api'], function () {
 
-        Route::any('/intellect/start',                 [Services\IntellectController::class, 'start']); // Bitrix -> Admin -> Intellect
-        Route::any('/intellect/save',                  [Services\IntellectController::class, 'save']);   // Intellect -> Admin -> Bitrix
-        Route::any('/intellect/get_name',              [Services\IntellectController::class, 'get_name']);   // Intellect -> Admin
-        Route::any('/intellect/get_link',              [Services\IntellectController::class, 'get_link']);   // Intellect -> Admin
-        Route::any('/intellect/get_time',              [Services\IntellectController::class, 'get_time']);   // Intellect -> Admin
-        Route::any('/intellect/change_status',         [Services\IntellectController::class, 'change_status']);   // Intellect -> Admin
-        Route::any('/intellect/send_message',          [Services\IntellectController::class, 'send_message']);   // Admin -> Intellect
-        Route::any('/intellect/create_lead',           [Services\IntellectController::class, 'create_lead']);   // Admin -> Intellect
-        Route::any('/intellect/test',                  [Services\IntellectController::class, 'test']);   // Admin -> Intellect
-        Route::any('/intellect/save_quiz_after_fire',  [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
+        Route::any('/intellect/start', [Services\IntellectController::class, 'start']); // Bitrix -> Admin -> Intellect
+        Route::any('/intellect/save', [Services\IntellectController::class, 'save']);   // Intellect -> Admin -> Bitrix
+        Route::any('/intellect/get_name', [Services\IntellectController::class, 'get_name']);   // Intellect -> Admin
+        Route::any('/intellect/get_link', [Services\IntellectController::class, 'get_link']);   // Intellect -> Admin
+        Route::any('/intellect/get_time', [Services\IntellectController::class, 'get_time']);   // Intellect -> Admin
+        Route::any('/intellect/change_status', [Services\IntellectController::class, 'change_status']);   // Intellect -> Admin
+        Route::any('/intellect/send_message', [Services\IntellectController::class, 'send_message']);   // Admin -> Intellect
+        Route::any('/intellect/create_lead', [Services\IntellectController::class, 'create_lead']);   // Admin -> Intellect
+        Route::any('/intellect/test', [Services\IntellectController::class, 'test']);   // Admin -> Intellect
+        Route::any('/intellect/save_quiz_after_fire', [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
         Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
-        Route::any('/headhunter/create_lead',          [\App\Api\HeadHunter::class,'createLead'])->name('create-lead');
-        Route::any('/headhunter/check_lead',          [\App\Api\HeadHunter::class,'checkLead'])->name('check-lead');
+        Route::any('/headhunter/create_lead', [\App\Api\HeadHunter::class, 'createLead'])->name('create-lead');
+        Route::any('/headhunter/check_lead', [\App\Api\HeadHunter::class, 'checkLead'])->name('check-lead');
         // Bitrix -> Admin
-        Route::any('/bitrix/new-lead',     [Services\IntellectController::class, 'newLead']);
-        Route::any('/bitrix/edit-lead',    [Services\IntellectController::class, 'editLead']);
-        Route::any('/bitrix/edit-deal',    [Services\IntellectController::class, 'editDeal']);
-        Route::any('/bitrix/lose-deal',    [Services\IntellectController::class, 'loseDeal']);
-        Route::any('/bitrix/create-link',  [Services\IntellectController::class, 'bitrixCreateLead']);
-        Route::any('/bitrix/change-resp',  [Services\IntellectController::class, 'changeResp']);
-        Route::any('/bitrix/inhouse',      [Services\IntellectController::class, 'inhouse']);
+        Route::any('/bitrix/new-lead', [Services\IntellectController::class, 'newLead']);
+        Route::any('/bitrix/edit-lead', [Services\IntellectController::class, 'editLead']);
+        Route::any('/bitrix/edit-deal', [Services\IntellectController::class, 'editDeal']);
+        Route::any('/bitrix/lose-deal', [Services\IntellectController::class, 'loseDeal']);
+        Route::any('/bitrix/create-link', [Services\IntellectController::class, 'bitrixCreateLead']);
+        Route::any('/bitrix/change-resp', [Services\IntellectController::class, 'changeResp']);
+        Route::any('/bitrix/inhouse', [Services\IntellectController::class, 'inhouse']);
 
 
-        Route::group(['prefix' => 'statistics'], function (){
+        Route::group(['prefix' => 'statistics'], function () {
             Route::any('/workdays', [Kpi\KpiStatController::class, 'workdays']);
         });
 
-        Route::group(['prefix' => 'department', 'as'     => 'department.'], function () {
+        Route::group(['prefix' => 'department', 'as' => 'department.'], function () {
             Route::get('/users/{id?}/{date?}', [Api\DepartmentUserController::class, 'getUsers'])->name('users');
             Route::get('/employees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getEmployees'])->name('employees');
             Route::get('/trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getTrainees'])->name('trainees');
@@ -766,33 +768,29 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
 
         //Api Structure
 
-        Route::group(['prefix'=>'structure','as'=>'structure.'],function(){
-            Route::post('/store',[App\Http\Controllers\Api\Structure\StructureCardController::class,'store'])->name('store');
-            Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class,'all'])->name('get-all');
+        Route::group(['prefix' => 'structure', 'as' => 'structure.'], function () {
+            Route::post('/store', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'store'])->name('store');
+            Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'all'])->name('get-all');
             Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
             Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
         });
 
-        Route::get('coordinates',[App\Http\Controllers\Coordinate\getCoordinateController::class,'get'])->name('get-coordinate');
+        Route::get('coordinates', [App\Http\Controllers\Coordinate\getCoordinateController::class, 'get'])->name('get-coordinate');
 
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
             Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
-
-        /** @author Vahagn */
-        require_once __DIR__ . '/referral.php';
     });
 });
-
 
 
 /**
  * Owners list
  * Admin.jobtron.org routes
  */
-Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
+Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
 
-    Route::group(['prefix' => 'admin','as' => 'admin.'], function () {
+    Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('/owners', [Admin\AdminController::class, 'owners']);
     });
 
@@ -805,7 +803,7 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
-    Route::group(['prefix' => 'admins','as' => 'admins.'], function () {
+    Route::group(['prefix' => 'admins', 'as' => 'admins.'], function () {
         Route::get('/', [Admin\AdminController::class, 'admins']);
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
@@ -825,7 +823,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::group([
         'prefix' => 'owner',
-        'as'     => 'owner.'
+        'as' => 'owner.'
     ], function () {
         Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
         Route::get('/info', [Admin\OwnerController::class, 'info'])->name('info');
