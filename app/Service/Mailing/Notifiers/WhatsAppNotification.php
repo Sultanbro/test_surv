@@ -40,15 +40,18 @@ class WhatsAppNotification implements Notification
      */
     public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        $recipients = $recipients ?? MailingFacade::getRecipients($notification->id);
-        $recipients = $recipients->where('phone', '!=', '');
-
-        foreach ($recipients as $recipient)
+        if($recipients == null)
         {
-            $this->sendNotification($recipient, $message);
-        }
+            return false;
+        }else {
+            $recipients = $recipients ?? MailingFacade::getRecipients($notification->id);
+            $recipients = $recipients->where('phone', '!=', '');
 
-        return true;
+            foreach ($recipients as $recipient) {
+                $this->sendNotification($recipient, $message);
+            }
+            return true;
+        }
     }
 
     /**
