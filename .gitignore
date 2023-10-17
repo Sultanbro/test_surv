@@ -26,6 +26,7 @@
 /public/mix-manifest.json
 /storage/*.key
 /storage/tenant*
+/storage/public
 /vendor
 Homestead.json
 Homestead.yaml
