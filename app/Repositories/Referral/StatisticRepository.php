@@ -41,7 +41,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         $deals = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
-            ->whereNotNull('deal_id')
+            ->whereNot('deal_id', 0)
             ->count();
 
         $piedTotalForMonth = Salary::query()
