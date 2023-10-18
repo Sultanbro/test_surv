@@ -78,7 +78,7 @@ class NotificationTemplatePusher extends Command
                 $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".$user->phone;
                 $message    = $notification?->title ."\n";
                 $message   .= $link;
-                $fired_user = User::withTrashed()->where('id',$user->id)->get();
+                $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
 
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);
             }
