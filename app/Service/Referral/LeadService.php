@@ -27,7 +27,6 @@ class LeadService implements LeadServiceInterface
     {
         $data = new LeadTemplate($referrer, $request);
         $fields = $this->fields($data->get());
-
         $bitrixLead = $this->leadApi->create($fields);
 //        throw_if(!array_key_exists('result', $bitrixLead), 'cant create lead in bitrix');
         Lead::query()->create([

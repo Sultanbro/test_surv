@@ -30,9 +30,6 @@ class ReferralController extends Controller
         $leadService = app(LeadServiceInterface::class);
         $leadService->create($user, $request->toDto());
 //        ProcessCreateLead::dispatch($user, $request->toDto());
-        header(
-            'Access-Control-Allow-Origin:https://job.bpartners.kz'
-        );
         return response()->json([
             'message' => 'successfully processed!'
         ]);

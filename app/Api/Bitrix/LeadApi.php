@@ -7,10 +7,11 @@ use App\Api\BitrixOld\Lead\Fields;
 
 class LeadApi implements LeadApiInterface
 {
-    public function __construct(
-        private readonly BitrixOld $bitrix
-    )
+    private BitrixOld $bitrix;
+
+    public function __construct()
     {
+        $this->bitrix = new BitrixOld('intellect');
     }
 
     public function create(Fields $fields): mixed
