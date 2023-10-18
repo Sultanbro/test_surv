@@ -44,7 +44,6 @@ class WhatsAppNotification implements Notification
         {
             return false;
         }else {
-            $recipients = $recipients ?? MailingFacade::getRecipients($notification->id);
             $recipients = $recipients->where('phone', '!=', '');
 
             foreach ($recipients as $recipient) {
