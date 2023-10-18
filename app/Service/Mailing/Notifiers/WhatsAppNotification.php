@@ -28,7 +28,8 @@ class WhatsAppNotification implements Notification
 
     public function __construct()
     {
-        $this->token = config('wazzup')['token'];
+//        $this->token = config('wazzup')['token'];
+        $this->token = "8336a1a30ab94f38bb3d77209ac5047a";
     }
 
     /**
@@ -65,7 +66,8 @@ class WhatsAppNotification implements Notification
     ): void
     {
         $phone      = Phone::normalize($user->phone);
-        $channelId  = config('wazzup')['channel_id'];
+//        $channelId  = config('wazzup')['channel_id'];
+        $channelId  = '488ad573-2d11-4f16-8271-c533ab9ad891';
 
         $response = Http::withHeaders([
             "Content-Type"  => "application/json",
