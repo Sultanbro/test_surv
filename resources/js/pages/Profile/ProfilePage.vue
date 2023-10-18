@@ -126,13 +126,14 @@ import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
+import { useReferralStore } from '@/stores/Referral'
 
 export default {
 	name: 'ProfilePage',
@@ -217,12 +218,14 @@ export default {
 	},
 	mounted(){
 		if(this.isReady) this.initAnimOnScroll()
+		this.fetchUserStats()
 	},
 	beforeUnmount(){
 		this.intersectionObserver.disconnect()
 		this.intersectionObserver = null
 	},
 	methods: {
+		...mapActions(useReferralStore, ['fetchUserStats']),
 		pop(window) {
 			if(window == 'balance') this.popBalance = true;
 			if(window == 'kpi') this.popKpi = true;

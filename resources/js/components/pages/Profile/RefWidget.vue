@@ -1,5 +1,8 @@
 <template>
-	<div class="RefWidget">
+	<div
+		v-if="isReady"
+		class="RefWidget"
+	>
 		<div class="RefWidget-title">
 			Реферальная программа «Business&nbsp;Family»
 			<b-badge variant="warning">
@@ -61,40 +64,31 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
 import { copy2clipboard } from '@/composables/copy2clipboard'
-const fakeData = {
-	status: 'Promouter', // Promoter/Activist/Ambassador
-	reflink: location.origin + '/reflink?r=qwerty123456',
-	total: 100,
-	month: 50,
-	monthRef: 10,
-	leads: 1,
-}
+import { useReferralStore } from '@/stores/Referral'
+
 export default {
 	name: 'RefWidget',
 	components: {},
 	data(){
+		/* global Laravel */
 		return {
-			reflink: '',
+			reflink: 'https://job.bpartners.kz/ref?r=' + Laravel.userId,
 			status: '',
-			total: 0,
-			month: 0,
-			monthRef: 0,
-			leads: 0,
 		}
 	},
-	mounted(){
-		this.fetchData()
+	computed: {
+		...mapState(useReferralStore, [
+			'isReady',
+			'total',
+			'month',
+			'monthRef',
+			'leads',
+		])
 	},
+	mounted(){},
 	methods: {
-		async fetchData(){
-			this.reflink = fakeData.reflink
-			this.status = fakeData.status
-			this.total = fakeData.total
-			this.month = fakeData.month
-			this.monthRef = fakeData.monthRef
-			this.leads = fakeData.leads
-		},
 		copyLink () {
 			copy2clipboard(this.reflink)
 			this.$toast.info('Ссылка скопированна')

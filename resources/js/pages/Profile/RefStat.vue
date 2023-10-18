@@ -80,12 +80,15 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import JobtronTable from '@ui/Table.vue'
-import RefStatsReferals from '@/components/pages/Analytics/RefStatsReferals.vue'
+import { mapState } from 'pinia'
+import { useReferralStore } from '@/stores/Referral'
 import {
 	tableFields,
 	getFakeReferer,
 } from '@/components/pages/Analytics/helper'
+
+import JobtronTable from '@ui/Table.vue'
+import RefStatsReferals from '@/components/pages/Analytics/RefStatsReferals.vue'
 
 export default {
 	name: 'RefStat',
@@ -113,6 +116,10 @@ export default {
 	},
 	computed: {
 		...mapGetters(['user']),
+		...mapState(useReferralStore, [
+			'referrals',
+			'tops',
+		]),
 		sortedSubs(){
 			const sorted = {}
 			this.users.forEach(user => {

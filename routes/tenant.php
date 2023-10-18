@@ -720,6 +720,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
          */
         Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
     });
+
+
+    Route::prefix('')
+        ->group(base_path('routes/referral.php'))
+        ->middleware(['tenant']);
 });
 
 /**
