@@ -24,6 +24,5 @@ class VerifyCsrfToken extends Middleware
         '/mailing',
         '/mailing/*',
         '/notification-template/*',
-        "*"
     ];
 }
