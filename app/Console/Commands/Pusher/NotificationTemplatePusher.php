@@ -43,7 +43,7 @@ class NotificationTemplatePusher extends Command
     public function handle()
     {
         $notifications = MailingNotification::getTemplates()->isActive()
-            ->whereIn('frequency', [MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
+            ->whereIn('frequency', [MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
         foreach ($notifications as $notification)
@@ -72,8 +72,10 @@ class NotificationTemplatePusher extends Command
 
         $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
         $mailings = $notification?->mailings();
+
         foreach ($mailings as $mailing)
         {
+            $this->line("type of mailing:".$mailing);
             foreach ($users as $user)
             {
                 $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".Phone::normalize($user->phone);

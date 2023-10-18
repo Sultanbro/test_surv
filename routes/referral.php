@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Referral\MarkAsPaidController;
 use App\Http\Controllers\Referral\ReferralController;
 use App\Http\Controllers\Referral\StatisticsController;
 use App\Http\Controllers\Referral\UserStatisticsController;
@@ -15,7 +16,9 @@ Route::group([
     ]
     , function () {
         Route::get('/url', [ReferralController::class, 'url']);
-        Route::post('/request/{user}', [ReferralController::class, 'request']);
+        Route::post('/request/{user}', [ReferralController::class, 'request'])
+            ->withoutMiddleware('auth.basic');
         Route::get('user/statistics', UserStatisticsController::class);
+        Route::get('paid/{user}', MarkAsPaidController::class);
         Route::get('/statistics', StatisticsController::class);
     });
