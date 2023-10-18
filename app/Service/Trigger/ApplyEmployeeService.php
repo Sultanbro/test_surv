@@ -45,7 +45,7 @@ class ApplyEmployeeService
 
         $message = $notificationTemplate->title;
         $message .= '<br> <a href="' . $link . '" target="_blank"> ' . $user->full_name . ' </a> <br>';
-        $message .= 'Рабочий график: ' . $chart->start_time . '-' . $chart->end_time;
+        $message .= 'Рабочий график: ' . $chart?->start_time . '-' . $chart?->end_time;
 
         foreach ($types as $type)
         {

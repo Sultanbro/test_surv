@@ -29,7 +29,8 @@ class RewardRequest extends FormRequest
             'user_id'   => 'required|numeric|exists:users,id',
             'award_id'  => 'required|numeric|exists:awards,id',
             'course_id' => 'numeric|exists:courses,id',
-            'file'      => 'file|mimes:jpg,png,pdf|max:2048'
+            'file'      => 'file|mimes:jpg,png,pdf|max:2048',
+            'preview'   => 'file|mimes:jpg,png,pdf|max:2048'
         ];
     }
 
@@ -41,12 +42,14 @@ class RewardRequest extends FormRequest
         $awardId = Arr::get($transferData, 'award_id');
         $courseId = Arr::get($transferData, 'course_id') ?? null;
         $file = Arr::get($transferData, 'file') ?? null;
+        $preview = Arr::get($transferData, 'preview') ?? null;
 
         return RewardDTO::toArray(
             $userId,
             $courseId,
             $awardId,
-            $file
+            $file,
+            $preview
         );
     }
 }

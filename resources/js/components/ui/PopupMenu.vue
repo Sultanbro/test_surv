@@ -5,6 +5,7 @@
 		@mousedown.stop
 		@contextmenu.prevent
 	>
+		<slot name="before" />
 		<div
 			v-if="maxHeight"
 			class="PopupMenu-scroll"
@@ -15,6 +16,7 @@
 		<template v-else>
 			<slot />
 		</template>
+		<slot name="after" />
 	</div>
 </template>
 
@@ -63,7 +65,7 @@ export default {
 		right: 0;
 		bottom: 100%;
 	}
-	&_topRight{
+	&_topLeft{
 		left: 0;
 		bottom: 100%;
 	}

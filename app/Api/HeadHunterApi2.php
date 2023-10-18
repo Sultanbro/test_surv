@@ -88,7 +88,7 @@ class HeadHunterApi2 {
      * Получить токен, если срок истек обновляет
      * @return void 
      */
-    public function getActualToken() { 
+    public function getActualToken() {
         $oauth = OauthClientToken::where([
             'server' => 'hh2'
         ])->first();

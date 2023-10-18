@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -27,8 +26,12 @@ return new class extends Migration
     public function down()
     {
         Schema::table('tariff_payment', function (Blueprint $table) {
-            $table->dropColumn('payment_id');
-            $table->dropColumn('service_for_payment ');
+            if (column_exists('tariff_payment', 'payment_id', $this->getConnection())) {
+                $table->dropColumn('payment_id');
+            }
+            if (column_exists('tariff_payment', 'service_for_payment', $this->getConnection())) {
+                $table->dropColumn('service_for_payment');
+            }
         });
     }
 };

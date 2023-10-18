@@ -20,7 +20,7 @@ use App\Models\PermissionItem;
 class PermissionController extends Controller
 {
     public function index(Request $request)
-    {   
+    {
         View::share('menu', 'permissions');
         View::share('link', 'permissions');
 
@@ -28,13 +28,13 @@ class PermissionController extends Controller
     }
 
     public function get(Request $request)
-    {   
-        $rolesx = Role::with('permissions')->get(['name', 'id']); 
+    {
+        $rolesx = Role::with('permissions')->get(['name', 'id']);
 
 
 
         foreach($rolesx as $role) {
-            $arr = []; 
+            $arr = [];
             foreach ($role->permissions as $key => $perm) {
                 $arr[$perm->name] = true;
             }
@@ -42,7 +42,7 @@ class PermissionController extends Controller
             $role->perms = $arr;
         }
 
-   
+
 
         $items = PermissionItem::get();
 
@@ -71,7 +71,7 @@ class PermissionController extends Controller
 
             $item->targets = $targets;
             $item->groups_all = $item->groups_all == 1;
-            
+
             $_groups = ProfileGroup::whereIn('id', $item->groups)->get();
             $groups = [];
             foreach ($_groups as $key => $group) {
@@ -93,9 +93,9 @@ class PermissionController extends Controller
 
             $item->roles = $roles;
         }
-        
-  
-     
+
+
+
 
         $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->orderBy('id', 'asc')->get();
 
@@ -108,13 +108,13 @@ class PermissionController extends Controller
                 ->whereNotIn('id', $all_users_with_all_their_roles->pluck('id')->toArray())
                 ->orderBy('id', 'desc')
                 ->get([\DB::raw("CONCAT(last_name,' ',name, ' #', id) as name"), 'id']);
-        
+
         $groups_x = ProfileGroup::where('active', 1)->get(['name', 'id'])->toArray();
         array_unshift($groups_x, [
-            'id' => 0, 
+            'id' => 0,
             'name' => 'Все отделы'
         ]);
-                
+
 
         return [
             'users' => $users,
@@ -131,18 +131,18 @@ class PermissionController extends Controller
 
         foreach ($groups as $key => $group) {
             $editors_id = json_decode($group->editors_id);
-            if($group->editors_id == null) continue;
+            if($editors_id == null) continue;
             if(in_array($id, $editors_id)) {
                 array_push($arr, [
                     'id' => $group->id,
                     'name' => $group->name
                 ]);
-            } 
+            }
         }
 
         return $arr;
     }
-    
+
     private function getPages()
     {
         $pages = \App\Models\Page::whereNull('parent_id')->with('children')->get();
@@ -291,8 +291,8 @@ class PermissionController extends Controller
 
         foreach ($groups as $key => $group) {
             $editors_id = json_decode($group->editors_id);
-            if($group->editors_id == null) $editors_id = [];
-            
+            if($editors_id == null) $editors_id = [];
+
             if($full_access || in_array($group->id, $arr)) {
                 array_push($editors_id, $user_id);
             } else {
@@ -317,72 +317,72 @@ class PermissionController extends Controller
         } else {
             $role = Role::create(['name' => $request->role['name']]);
         }
-        
+
         if(!$role) return '';
 
         $role->name = $request->role['name'];
         $role->save();
 
-       
+
         foreach ($this->getPages() as $key => $page) {
 
             $permission = $page['key'] . '_view';
-           
+
             if(in_array($permission, $request->permissions)) {
-                $role->givePermissionTo($permission);       
+                $role->givePermissionTo($permission);
             } else {
                 $role->revokePermissionTo($permission);
             }
-            
+
             $permission = $page['key'] . '_edit';
             if(in_array($permission, $request->permissions)) {
-                $role->givePermissionTo($permission);          
+                $role->givePermissionTo($permission);
             } else {
                 $role->revokePermissionTo($permission);
             }
 
             if($page->children) {
                 foreach ($page->children as $key => $child) {
-                 
+
                     $permission = $child['key'] . '_view';
 
                     if(in_array($permission, $request->permissions)) {
-                        $role->givePermissionTo($permission);       
+                        $role->givePermissionTo($permission);
                     } else {
                         $role->revokePermissionTo($permission);
                     }
-                    
+
                     $permission = $child['key'] . '_edit';
                     if(in_array($permission, $request->permissions)) {
-                        $role->givePermissionTo($permission);          
+                        $role->givePermissionTo($permission);
                     } else {
                         $role->revokePermissionTo($permission);
                     }
                 }
             }
 
-            
+
         }
 
         return $role;
-    }   
+    }
 
     public function deleteTarget(Request $request) {
-  
+
         $pi = PermissionItem::find($request->id);
         if($pi) {
             foreach ($pi->targets as $key => $target) {
                 if($target['type'] == 1) {
                     $item = User::withTrashed()->with('roles')->find($target['id']);
-                } 
-                
+                }
+
                 if($target['type'] == 2) {
                     $item = ProfileGroup::where('active',1)->with('roles')->find($target['id']);
-                } 
-        
+                }
+
                 if($target['type'] == 3) {
                     $item = Position::with('roles')->find($target['id']);
-                } 
+                }
 
                 if($item) {
                     foreach ($item->roles as $key => $role) {
@@ -395,7 +395,7 @@ class PermissionController extends Controller
             $pi->delete();
         }
 
-    } 
+    }
 
     public function deleteRole(Request $request) {
         $role = Role::with('permissions')->find($request['role']['id']);
@@ -415,7 +415,7 @@ class PermissionController extends Controller
 
             $role->delete();
         }
-        
+
     }
 
     public function superselect(Request $request)
@@ -532,5 +532,5 @@ class PermissionController extends Controller
         ];
     }
 
-    
+
 }

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tenant_pivot', function (Blueprint $table) {
+        Schema::connection('mysql')->create('tenant_pivot', function (Blueprint $table) {
             $table->increments('id');
             $table->string('tenant_id');
             $table->integer('user_id');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tenant_pivot');
+        Schema::connection('mysql')->dropIfExists('tenant_pivot');
     }
 };

@@ -1,5 +1,5 @@
 <template>
-	<div class="d-flex">
+	<div class="Booklist d-flex">
 		<aside
 			id="left-panel"
 			class="lp"
@@ -55,7 +55,7 @@
 							v-for="item in search.items"
 							:key="item.id"
 							class="search-item"
-							@click="showPage(item.id, true)"
+							@click="showPage(item.id, true, false)"
 						>
 							<p
 								v-if="item.book"
@@ -549,6 +549,39 @@ import NestedCourse from '@/components/nested_course'
 import Editor from '@tinymce/tinymce-vue'
 import Questions from '@/pages/Questions'
 import ProgressBar from '@/components/ProgressBar'
+import Mark from 'mark.js/dist/mark.es6.js'
+
+const quotes = ['«»', '“”', '""', '()']
+const enders = '.,!?:;'.split('')
+const markOptions = {
+	element: 'span',
+	className: 'Booklist-mark',
+	exclude: ['.Booklist-definition'],
+	accuracy: 'exactly',
+}
+function createDefinition(text){
+	const span = document.createElement('span')
+	span.innerText = text
+	span.classList.add('Booklist-definition')
+	return span
+}
+function getSynonims(term){
+	const result = []
+	enders.forEach(char => {
+		result.push(term + char)
+	})
+	quotes.forEach(pair => {
+		result.push(pair[0] + term)
+		result.push(term + pair[1])
+		result.push(pair[0] + term + pair[1])
+		enders.forEach(char => {
+			result.push(pair[0] + term + char)
+			result.push(term + pair[1] + char)
+			result.push(pair[0] + term + pair[1] + char)
+		})
+	})
+	return result
+}
 
 export default {
 	name: 'PageBooklist',
@@ -608,6 +641,10 @@ export default {
 			type: Number,
 			default: 0
 		},
+		glossary: {
+			type: Array,
+			default: () => []
+		}
 	},
 	data() {
 		return {
@@ -623,11 +660,13 @@ export default {
 			parent_title: '',
 			search: {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			},
 			editorHeight: window.innerHeight - 128,
 			attachment: null,
 			breadcrumbs: [],
+			highlight: '',
 
 			// modals
 			showImageModal: false,
@@ -645,7 +684,51 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['user'])
+		...mapGetters(['user']),
+	},
+
+	watch: {
+		activesbook: {
+			handler(){
+				const urlParams = new URLSearchParams(window.location.search)
+				const hl = urlParams.get('hl')
+				this.$nextTick(() => {
+					const instance = new Mark(document.querySelector('.Booklist .bp-text'))
+					instance.unmark({
+						element: 'span',
+						className: 'Booklist-mark',
+						done: () => {
+							if(hl){
+								instance.mark(hl, {
+									...markOptions,
+									each: el => {
+										this.$nextTick(() => el.classList.add('Booklist-mark_justmark'))
+									}
+								})
+							}
+							if(!this.glossary) return
+							this.glossary.forEach(term => {
+								instance.mark(term.word, {
+									...markOptions,
+									each: el => {
+										this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+									}
+								})
+								getSynonims(term.word).forEach(word => {
+									instance.mark(word, {
+										...markOptions,
+										each: el => {
+											this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+										}
+									})
+								})
+							})
+						}
+					})
+				})
+			},
+			deep: true
+		}
 	},
 
 	created() {
@@ -671,9 +754,11 @@ export default {
 			}
 		},
 		clearSearch() {
+			clearTimeout(this.search.timeout)
 			this.search = {
 				input: '',
-				items: []
+				items: [],
+				timeout: null
 			}
 		},
 		beforeunloadFn(e) {
@@ -783,6 +868,7 @@ export default {
 
 					// set active book
 					const urlParams = new URLSearchParams(window.location.search);
+					this.highlight = urlParams.get('hl')
 					let book_id = urlParams.get('b');
 					this.breadcrumbs = [{id:this.id, title: this.parent_title}];
 
@@ -790,18 +876,20 @@ export default {
 					this.ids = [];
 					this.returnArray(this.tree);
 
+					if(this.search.input) this.highlight = this.search.input
+
 					if(this.course_page) {
 						book_id = this.show_page_id
 
 						if(this.show_page_id == 0 || this.show_page_id == null) {
-							this.showPage(this.tree[0].id);
+							this.showPage(this.tree[0].id, false, false);
 						} else {
 							// find element
 							let index = this.ids.findIndex(el => el.id == this.show_page_id);
 
 							if(index != -1) {
 								let el = this.findItem(this.ids[index]);
-								this.showPage(el.id);
+								this.showPage(el.id, false, false);
 							}
 						}
 					} else { // not course page
@@ -852,6 +940,11 @@ export default {
 		},
 
 		searchInput() {
+			clearTimeout(this.search.timeout)
+			this.search.timeout = setTimeout(this.runSearch, 500)
+		},
+
+		runSearch(){
 			if(this.search.input.length <= 2) return null;
 
 			this.axios
@@ -1012,8 +1105,7 @@ export default {
 					this.parent_title = response.data.top_parent.title
 					this.tree = response.data.tree
 					this.showSearch = false;
-					this.search.input = false;
-					this.search.items = [];
+					this.clearSearch()
 				}
 
 				// for course
@@ -1026,7 +1118,7 @@ export default {
 				this.setTargetBlank();
 
 				if(this.enable_url_manipulation) {
-					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id);
+					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id + (this.highlight ? `&hl=${this.highlight}` : ''));
 				}
 			})
 				.catch(() => {loader.hide()})
@@ -1163,11 +1255,64 @@ export default {
 };
 
 </script>
-<style>
+<style lang="scss">
 .content {
-    max-height: unset;
-    overflow: unset;
+	max-height: unset;
+	overflow: unset;
+}
+.Booklist{
+	&-mark{
+		display: inline-flex;
+
+		position: relative;
+		font-weight: inherit;
+		font-size: inherit;
+		font-family: inherit;
+		cursor: help;
+		&:after{
+			content: '*';
+			color: #00F;
+		}
+		&:hover{
+			.Booklist{
+				&-definition{
+					transform: translate(-50%, 0);
+					visibility: visible;
+					opacity: 1;
+				}
+			}
+		}
+		&_justmark{
+			background-color: #fcf8e3;
+			padding: 0 0.2em;
+			&:after{
+				content: none;
+			}
+		}
+	}
+	&-definition{
+		flex: 0 1 content;
+		width: max-content;
+		max-width: 400px;
+		padding: 5px 10px;
+		border: 1px solid #000;
+
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+
+		font-size: 14px;
+		font-weight: 400;
+		color: #333;
+
+		background-color: #fff;
+		transform: translate(-50%, -50%);
+		visibility: hidden;
+		opacity: 0;
+		transition: all 0.2s;
+	}
+	.tox.tox-tinymce--toolbar-sticky-on .tox-editor-header{
+		left: 0 !important;
+	}
 }
 </style>
-
-

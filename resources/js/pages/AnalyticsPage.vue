@@ -6,7 +6,7 @@
 		<div class="AnalyticsPage-filters row mb-4">
 			<div class="col-3">
 				<select
-					v-model="currentGroup"
+					v-model="currentGroupId"
 					class="form-control"
 					@change="fetchData"
 				>
@@ -94,29 +94,38 @@
 		</div>
 		<template v-if="!firstEnter">
 			<template v-if="hasPremission">
-				<template v-if="dataLoaded">
+				<template v-if="true">
 					<div class="AnalyticsPage-header wrap mb-4">
 						<TopGauges
+							v-if="ready.performances"
 							:key="123"
-							:utility_items="data.utility"
+							:utility_items="gauges"
 							:editable="false"
 							wrapper_class="d-flex"
 							page="analytics"
 							class="AnalyticsPage-gauges"
 						/>
+						<template v-else>
+							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
+							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
+							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-a mb-4 mr-4" />
+						</template>
 
-						<div class="p-4">
+						<div
+							v-if="ready.fired && firedInfo"
+							class="p-4"
+						>
 							<p class="ap-text">
-								Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
+								Процент текучки кадров за прошлый месяц: <span>{{ firedInfo.fired_percent_prev }}%</span>
 							</p>
 							<p class="ap-text">
-								Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
+								Процент текучки кадров за текущий месяц: <span>{{ firedInfo.fired_percent }}%</span>
 							</p>
 							<p class="ap-text">
-								В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
+								В прошлом месяце было уволено: <span>{{ firedInfo.fired_number_prev }}</span>
 							</p>
 							<p class="ap-text">
-								В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
+								В текущем месяце было уволено: <span>{{ firedInfo.fired_number }}</span>
 							</p>
 						</div>
 					</div>
@@ -134,26 +143,43 @@
 								<span v-b-popover.hover.top="'таблица продаж'">Сводная</span>
 							</template>
 							<div class="mb-5 mt-4">
-								<AnalyticStat
-									:table="data.table"
-									:fields="data.columns"
-									:activeuserid="activeuserid"
-									:is-admin="isAdmin"
-									:month-info="monthInfo"
-									:group_id="currentGroup"
-									:activities="activity_select"
+								<template v-if="ready.analytics && ready.activities">
+									<AnalyticStat
+										v-if="table"
+										:table="table"
+										:fields="columns"
+										:activeuserid="activeuserid"
+										:is-admin="isAdmin"
+										:month-info="monthInfo"
+										:group_id="currentGroupId"
+										:activities="activitiesOptions"
+									/>
+								</template>
+								<b-skeleton-table
+									v-else
+									:rows="6"
+									:columns="5"
+									:table-props="{ bordered: true, striped: true }"
 								/>
 							</div>
 
 							<CallBase
-								v-if="currentGroup == 53"
+								v-if="currentGroupId == 53"
 								:data="call_bases"
 								:month-info="monthInfo"
 							/>
 
 							<TableDecomposition
+								v-if="ready.decompositions"
 								:month="monthInfo"
-								:data="data.decomposition"
+								:decompositions="decompositions"
+								:group-id="currentGroupId"
+							/>
+							<b-skeleton-table
+								v-else
+								:rows="6"
+								:columns="5"
+								:table-props="{ bordered: true, striped: true }"
 							/>
 						</b-tab>
 
@@ -166,13 +192,21 @@
 								<span v-b-popover.hover.top="'данные по показателям'">Подробная</span>
 							</template>
 							<AnalyticsDetailes
-								:activities="data.activities"
-								:current-group="currentGroup"
+								v-if="ready.activities"
+								:activities="activities"
+								:weeks="weeks"
+								:current-group="currentGroupId"
 								:month-info="monthInfo"
-								:activity-select="activity_select"
+								:activity-select="activitiesOptions"
 								@updateActivity="onUpdateActivity"
 								@deleteActivity="onDeleteActivity"
 								@orderActivity="onOrderActivity"
+							/>
+							<b-skeleton-table
+								v-else
+								:rows="6"
+								:columns="5"
+								:table-props="{ bordered: true, striped: true }"
 							/>
 						</b-tab>
 					</b-tabs>
@@ -242,6 +276,13 @@ import {
 	createAnalyticsGroup,
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
+
+	fetchActivitiesV2,
+	fetchDecompositionsV2,
+	fetchPerformancesV2,
+	fetchFiredInfoV2,
+	fetchAnalyticsGroupsV2,
+	fetchAnalyticsV2,
 } from '@/stores/api'
 
 const API = {
@@ -249,6 +290,13 @@ const API = {
 	createAnalyticsGroup,
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
+
+	fetchActivitiesV2,
+	fetchDecompositionsV2,
+	fetchPerformancesV2,
+	fetchFiredInfoV2,
+	fetchAnalyticsGroupsV2,
+	fetchAnalyticsV2,
 }
 
 export default {
@@ -278,19 +326,17 @@ export default {
 			data: [],
 			ggroups: [],
 			active: '1',
-			hasPremission: false, // доступ
+			hasPremission: true, // доступ
 			yearActivityTableFields: [],
 			yearMin: 0,
 			yearMax: 0,
 			currentYear: new Date().getFullYear(),
 			monthInfo: {},
-			currentGroup: null,
+			currentGroupId: null,
 			loader: null,
 			firstEnter: true,
 			showArchive: false,
 			askey: 1,
-			activity_select: [],
-			archived_groups: [],
 			call_bases: [], // euras call base unique table
 			restore_group: null,
 			noan: false, // нет аналитики
@@ -300,6 +346,26 @@ export default {
 				{ name: 'Joao', id: 1 },
 				{ name: 'Jean', id: 2 }
 			],
+
+			activities: [],
+			weeks: [],
+			decompositions: [],
+			performances: {
+				utility: [],
+				rentability: null,
+			},
+			firedInfo: null,
+			archived_groups: [],
+			columns: [],
+			table: null,
+			ready: {
+				activities: false,
+				decompositions: false,
+				performances: false,
+				fired: false,
+				groups: false,
+				analytics: false,
+			},
 		}
 	},
 	computed: {
@@ -307,6 +373,27 @@ export default {
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+		activitiesOptions(){
+			return this.activities.map(({name, id}) => ({
+				id,
+				name,
+			}))
+		},
+		gauges(){
+			if(!this.performances.utility.length) return []
+			return [{
+				gauges: [
+					...this.performances.utility[0].gauges,
+					{
+						...this.performances.rentability,
+						name: 'Рентабельность'
+					},
+				]
+			}]
+		},
+		currentGroup(){
+			return this.ggroups.find(group => group.id === this.currentGroupId)
 		},
 	},
 	watch: {
@@ -323,51 +410,58 @@ export default {
 		init(){
 			// выбор группы
 			// переделать на роуты
-			const urlParams = new URLSearchParams(window.location.search);
-			let group = urlParams.get('group');
-			let active = urlParams.get('active');
-			let load = urlParams.get('load');
+			const urlParams = new URLSearchParams(window.location.search)
+			const group = parseInt(urlParams.get('group') || 0)
+			const active = urlParams.get('active')
+			const load = urlParams.get('load')
+			const year = parseInt(urlParams.get('year') || 0)
 
 			this.ggroups = this.groups
-			this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+			this.currentGroupId = group || this.groups[0].id
+			this.currentYear = year || new Date().getFullYear()
 
-			this.active = (active == null) ? '1' : active
+			this.active = active || '1'
 
 			this.setMonth()
 			this.setYear()
 			this.setActivityYearTableFields()
 
-			if(load != null) {
-				this.fetchData()
-			}
+			const now = new Date()
+			this.fetchGroups({
+				month: now.getMonth() + 1,
+				year: now.getFullYear(),
+				group_id: this.currentGroupId,
+			})
+
+			if(load) this.fetchData()
 		},
 
 		/**
 		 * ACTIVITY YEAR
 		 */
 		setActivityYearTableFields() {
-			let fieldsArray = [];
-			let order = 1;
+			const fieldsArray = []
+			let order = 1
 
 			fieldsArray.push({
 				key: 'name',
 				name: 'Сотрудник',
 				order: order++,
 				classes: ' b-table-sticky-column text-left t-name wd',
-			});
+			})
 
 			for (let i = 1; i <= 12; i++) {
-				if (i.length == 1) i = '0' + i;
+				const month = (i.length === 1 ? '0': '') + i
 
 				fieldsArray.push({
 					key: i,
-					name: this.$moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					name: this.$moment(this.currentYear + '-' + month + '-01').format('MMMM'),
 					order: order++,
 					classes: 'text-center px-1 month',
-				});
+				})
 			}
 
-			this.yearActivityTableFields = fieldsArray;
+			this.yearActivityTableFields = fieldsArray
 		},
 
 		setMonth() {
@@ -379,159 +473,214 @@ export default {
 			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
 			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
 			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays // Колличество рабочих дней
+			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 // Колличество рабочих дней
 
 		},
 		//Установка выбранного года
 		setYear() {
 			this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
-			this.monthInfo.currentYear = this.currentYear;
+			this.monthInfo.currentYear = this.currentYear
 		},
 
 		onTabChange(active) {
-			this.active = active;
-			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
+			this.active = active
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
 		},
 
-		fetchData() {
-			let loader = this.$loading.show();
+		async fetchActivities(request){
+			try{
+				const {activities, weeks} = await API.fetchActivitiesV2(request)
+				this.activities = activities
+				this.weeks = weeks
+				this.ready.activities = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке показателей')
+			}
+		},
 
-			API.fetchAnalytics({
+		async fetchDecompositions(request){
+			try{
+				this.decompositions = await API.fetchDecompositionsV2(request)
+				this.ready.decompositions = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке декомпозиции')
+			}
+		},
+
+		async fetchPerformances(request){
+			try{
+				this.performances = await API.fetchPerformancesV2(request)
+				this.ready.performances = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке полезности')
+			}
+		},
+
+		async fetchFiredInfo(request){
+			try{
+				this.firedInfo = await API.fetchFiredInfoV2(request)
+				this.ready.fired = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке информации о уволенных сотрудниках')
+			}
+		},
+
+		async fetchGroups(request){
+			try{
+				const {is_active, is_archived } = await API.fetchAnalyticsGroupsV2(request)
+				this.ggroups = Array.isArray(is_active) ? is_active : Object.values(is_active)
+				this.archived_groups = Array.isArray(is_archived) ? is_archived : Object.values(is_archived)
+				this.ready.groups = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке информации о отделах')
+			}
+		},
+
+		async fetchAnalytics(request){
+			try{
+				const {columns, table } = await API.fetchAnalyticsV2(request)
+				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
+				this.table = Array.isArray(table) ? table : Object.values(table)
+				this.ready.analytics = true
+			}
+			catch(error){
+				console.error(error)
+				this.$toast('Ошибка при загрузке сводной')
+			}
+		},
+
+		async fetchData() {
+			this.ready = {
+				activities: false,
+				decompositions: false,
+				performances: false,
+				fired: false,
+				groups: false,
+				analytics: false,
+			}
+			this.firstEnter = false
+
+			const request = {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
-				group_id: this.currentGroup
-			}).then(data => {
-				if (data.error && data.error == 'access') {
-					this.hasPremission = false
-					loader.hide();
-					return;
-				}
-				this.hasPremission = true
+				group_id: this.currentGroupId,
+			}
 
-				this.setMonth()
-				this.setYear()
+			await Promise.all([
+				this.fetchActivities(request),
+				this.fetchDecompositions(request),
+				this.fetchPerformances(request),
+				this.fetchFiredInfo(request),
+				this.fetchAnalytics(request),
+			])
+			this.setMonth()
+			this.setYear()
 
-				let urlParamss = new URLSearchParams(window.location.search);
+			this.dataLoaded = true
+			this.noan = false
+			this.firstEnter = false
+			this.hasPremission = true
+			const urlParamss = new URLSearchParams(window.location.search)
+			const active = urlParamss.get('active')
+			this.active = active ? active : '1'
 
-				this.firstEnter = false
-
-				let active = urlParamss.get('active');
-				this.active = (active == null) ? '1' : active
-
-				if(data.error !== undefined) {
-					this.dataLoaded = false
-					this.noan = true;
-					this.archived_groups = data.archived_groups
-					this.ggroups = data.groups
-				}
-				else {
-					this.dataLoaded = true
-					this.data = data
-					this.noan = false;
-
-					this.activity_select = [];
-
-					this.data.activities.forEach(act => {
-						this.activity_select.push({
-							'name':act.name,
-							'id':act.id,
-						});
-					})
-
-					this.call_bases = data.call_bases;
-					this.archived_groups = data.archived_groups;
-					this.ggroups = data.groups;
-				}
-
-				this.askey++;
-				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
-				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, data.workdays)
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				alert(error)
-			});
+			this.askey++
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
+			this.monthInfo.workDays = this.getBusinessDateCount(this.monthInfo.month, this.monthInfo.currentYear, this.currentGroup.workdays)
 		},
 
 		getBusinessDateCount(month, year, workdays) {
-			month = month - 1;
-			let next_month = (month + 1) == 12 ? 0 : month + 1;
-			let next_year = (month + 1) == 12 ? year + 1 : year;
+			month = month - 1
+			const next_month = (month + 1) == 12 ? 0 : month + 1
+			const next_year = (month + 1) == 12 ? year + 1 : year
 
-			var start = new Date(year, month, 1);
-			var end = new Date(next_year, next_month, 1);
+			const start = new Date(year, month, 1)
+			const end = new Date(next_year, next_month, 1)
 
-			let days = (end - start) / 86400000;
+			const days = (end - start) / 86400000
+			const weekends = workdays == 5 ? [0,6] : [0]
 
-			let business_days = 0,
-				weekends = workdays == 5 ? [0,6] : [0];
+			let business_days = 0
 
 			for(let i = 1; i <= days; i++) {
-				let d = new Date(year, month, i).getDay();
-				if(!weekends.includes(d)) business_days++;
+				const d = new Date(year, month, i).getDay()
+				if(!weekends.includes(d)) business_days++
 			}
 
-			return business_days;
+			return business_days
 		},
 
-		add_analytics() {
-			let loader = this.$loading.show();
-			API.createAnalyticsGroup({
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-				year: this.currentYear,
-				group_id: this.currentGroup
-			}).then(() => {
+		async add_analytics() {
+			const loader = this.$loading.show()
+			try {
+				await API.createAnalyticsGroup({
+					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+					year: this.currentYear,
+					group_id: this.currentGroupId
+				})
 				this.$toast.success('Аналитика для группы добавлена!')
 				this.fetchData()
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			}
+			catch (error) {
 				this.$toast.error('Аналитика для группы не добавлена!')
-				alert(error)
-			});
+				console.error(error)
+			}
+			loader.hide()
 		},
 
-		restore_analytics() {
+		async restore_analytics() {
 			if (!confirm('Вы уверены что хотите восстановить аналитику группы?')) return
 
-			let loader = this.$loading.show();
-			API.restoreAnalyticsGroup({
-				id: this.restore_group
-			}).then(data => {
-				this.$toast.success('Восстановлен!');
-				this.currentGroup = this.restore_group
-				this.ggroups =data.groups
-				this.fetchData();
+			const loader = this.$loading.show()
+			try {
+				const data = await API.restoreAnalyticsGroup({
+					id: this.restore_group
+				})
+				this.$toast.success('Восстановлен!')
+				this.currentGroupId = this.restore_group
+				this.ggroups = data.groups
+				this.fetchData()
 				this.restore_group = null
 				this.showArchive = false
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				this.$toast.error('Ошибка!');
-				alert(error)
-			});
+			}
+			catch (error) {
+				this.$toast.error('Не удалось восстановить аналитику!')
+				console.error(error)
+			}
+			loader.hide()
 		},
 
-		archive() {
+		async archive() {
 			if (!confirm('Вы уверены что хотите архивировать аналитику группы ?')) return
 
-			let loader = this.$loading.show();
-			API.archiveAnalyticsGroup({
-				id: this.currentGroup
-			}).then(() => {
-				this.$toast.success('Архивирован!');
-				this.currentGroup = this.ggroups[0].id
-				this.fetchData();
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				this.$toast.error('Ошибка!');
-				alert(error)
-			});
+			const loader = this.$loading.show()
+			try {
+				await API.archiveAnalyticsGroup({
+					id: this.currentGroupId
+				})
+				this.$toast.success('Архивирован!')
+				this.currentGroupId = this.ggroups[0].id
+				this.fetchData()
+			}
+			catch (error) {
+				this.$toast.error('Не удалось архивировать аналитику!')
+				console.error(error)
+			}
+			loader.hide()
 		},
 		onUpdateActivity(activities){
-			this.data.activities = activities
+			this.activities = activities
 			this.fetchData()
 		},
 		onDeleteActivity(){
@@ -563,6 +712,11 @@ export default {
 				margin-left: auto;
 			}
 		}
+	}
+
+	&-skeletonImg{
+		width: 100px;
+		height: 100px;
 	}
 
 	.btn {

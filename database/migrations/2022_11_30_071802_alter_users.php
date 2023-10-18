@@ -13,23 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'login_at')) {
+        Schema::connection('mysql')->table('users', function (Blueprint $table) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'login_at')) {
                 $table->timestamp('login_at')->nullable();
             }
-            if (!Schema::hasColumn('users', 'birthday')) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'birthday')) {
                 $table->timestamp('birthday')->nullable();
             }
-            if (!Schema::hasColumn('users', 'balance')) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'balance')) {
                 $table->integer('balance');
             }
-            if (!Schema::hasColumn('users', 'country')) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'country')) {
                 $table->string('country', 50)->nullable();
             }
-            if (!Schema::hasColumn('users', 'city')) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'city')) {
                 $table->string('city', 50)->nullable();
             }
-            if (!Schema::hasColumn('users', 'lead')) {
+            if (!Schema::connection('mysql')->hasColumn('users', 'lead')) {
                 $table->string('lead')->nullable();
             }
         });

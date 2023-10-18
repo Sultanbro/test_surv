@@ -13,7 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 class Position extends Model
 {
     use HasRoles, SoftDeletes;
-    
+
     public $timestamps = true;
 
     protected $guard_name = 'web';
@@ -25,7 +25,8 @@ class Position extends Model
         'position',
         'indexation', // Ведется ли индексация в течение одного года
         'sum', // Сумма
-        'is_head' // boolean
+        'is_head', // boolean
+        'is_spec', // boolean
     ];
 
     /**

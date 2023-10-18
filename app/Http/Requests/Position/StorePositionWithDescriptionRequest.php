@@ -32,6 +32,7 @@ class StorePositionWithDescriptionRequest extends FormRequest
             'sum'           => ['numeric'],
             'desc'          => ['array'],
             'is_head'      => ['boolean'],
+            'is_spec'      => ['boolean'],
             'desc.require'  => ['nullable', 'min:3'],
             'desc.actions'  => ['nullable', 'min:3'],
             'desc.time'     => ['nullable', 'min:3'],
@@ -55,6 +56,7 @@ class StorePositionWithDescriptionRequest extends FormRequest
         $sum = Arr::get($validated, 'sum');
         $description = Arr::get($validated, 'desc');
         $is_head = Arr::get($validated, 'is_head');
+        $is_spec = Arr::get($validated, 'is_spec');
 
         return new StorePositionWithDescriptionDTO(
             $id,
@@ -62,7 +64,8 @@ class StorePositionWithDescriptionRequest extends FormRequest
             $indexation,
             $sum,
             $description,
-            $is_head
+            $is_head,
+            $is_spec,
         );
     }
 }

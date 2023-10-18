@@ -174,6 +174,14 @@
 		</div>
 
 		<div class="my-2 d-flex align-items-center justify-content-end">
+			<a
+				v-if="currentUser === 18 && isBP"
+				href="javasctipt:void(0)"
+				class="btn btn-success btn-sm mr-a rounded d-block"
+				@click.prevent="exportData()"
+			>
+				<i class="far fa-file-excel" /> Экспорт
+			</a>
 			<div>
 				<b-pagination
 					v-model="currentPage"
@@ -183,7 +191,6 @@
 					size="sm"
 					class="my-0 p-0"
 				/>
-				<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
 			</div>
 		</div>
 
@@ -462,6 +469,55 @@
 				</div>
 			</div>
 
+			<div
+				v-if="tableFilter != 'trainees'"
+				class="row mt-2"
+			>
+				<div class="col-md-6 mb-2">
+					<div class="d-flex align-items-center">
+						<input
+							v-model="active.date_applied"
+							type="checkbox"
+							class="mr-3"
+						>
+						<p
+							class="mb-0 pointer"
+							@click="toggleActive('date_reapplied')"
+						>
+							Дата восстановления
+						</p>
+					</div>
+				</div>
+
+				<div class="col-6">
+					<div
+						class="relative ooooo"
+						:class="{'active': active.date_reapplied}"
+					>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>От</label> <input
+								v-model="filter.start_date_reapplied"
+								class="form-control mb-1 form-control-sm"
+								type="date"
+							>
+						</div>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>До</label> <input
+								v-model="filter.end_date_reapplied"
+								class="form-control form-control-sm"
+								type="date"
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="row mt-2">
 				<div class="col-md-6 mb-2">
 					<p>Сегмент</p>
@@ -561,6 +617,7 @@ export default {
 				'all': 'Все',
 				'active': 'Работающие',
 				'deactivated': 'Уволенные',
+				'reactivated': 'Восстановленные',
 				'trainees': 'Стажеры',
 				'nonfilled': 'Незаполненные',
 			},
@@ -596,7 +653,7 @@ export default {
 				},
 				{
 					key: 'created_at',
-					label: 'Дата регистрации',
+					label: 'Дата регистрации (сделка)',
 					sortable: true,
 				},
 				{
@@ -651,12 +708,15 @@ export default {
 				end_date_deactivate: '2030-01-01',
 				start_date_applied: '2015-01-01',
 				end_date_applied: '2030-01-01',
+				start_date_reapplied: '2015-01-01',
+				end_date_reapplied: '2030-01-01',
 				segment: 0
 			},
 			active: {
 				date: false,
 				date_deactivate: false,
 				date_applied: false,
+				date_reapplied: false,
 			},
 			filterOn: [],
 			value: [],
@@ -695,45 +755,50 @@ export default {
 
 				if(Number(this.filter.group) !== 0) {
 					return el.groups.includes(Number(this.filter.group))
-								&& (el.email.toLowerCase().indexOf(this.searchText) > -1
-								|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
-								|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
-								|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
-								|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
-								|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
-								|| el.name.toLowerCase().indexOf(this.searchText) > -1
-								|| el.id.toString().indexOf(this.searchText) > -1)
-				} else {
+						&& (el.email.toLowerCase().indexOf(this.searchText) > -1
+						|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
+						|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
+						|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
+						|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
+						|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
+						|| el.name.toLowerCase().indexOf(this.searchText) > -1
+						|| el.id.toString().indexOf(this.searchText) > -1)
+				}
+				else {
 					return el.email.toLowerCase().indexOf(this.searchText) > -1
-								|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
-								|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
-								|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
-								|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
-								|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
-								|| el.name.toLowerCase().indexOf(this.searchText) > -1
-								|| el.id.toString().indexOf(this.searchText) > -1
+						|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
+						|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
+						|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
+						|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
+						|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
+						|| el.name.toLowerCase().indexOf(this.searchText) > -1
+						|| el.id.toString().indexOf(this.searchText) > -1
 				}
 			})
 		},
 		staff_res(){
 			let res = 0
-			this.filtered.forEach(xx => {
-				if(xx.full_time == 1) {
-					res += 1;
-				} else {
-					res += 0.5;
+			this.filtered.forEach(user => {
+				if(user.full_time == 1) {
+					res += 1
+				}
+				else {
+					res += 0.5
 				}
 			})
 			return res
 		},
 		totalRows(){
 			return this.filtered.length || 0
-		}
+		},
+		isBP(){
+			return ['test', 'bp'].includes(location.hostname.split('.')[0])
+		},
 	},
 	watch: {
 		showFields: {
 			handler: function (val) {
-				localStorage.showFields = JSON.stringify(val);
+				localStorage.showFields = JSON.stringify(val)
 			},
 			deep: true
 		},
@@ -749,20 +814,20 @@ export default {
 	mounted() {},
 	methods: {
 		init(){
-			this.myPositions = this.positions;
+			this.myPositions = this.positions
 			this.myPositions.forEach(value => {
-				this.jobFilters.push({ text: value.position, value: value.id });
-			});
+				this.jobFilters.push({ text: value.position, value: value.id })
+			})
 			this.getUsers()
 			this.setDefaultShowFields()
 		},
 
 
 		setDefaultShowFields() {
-
 			if(localStorage.showFields) {
-				this.showFields = JSON.parse(localStorage.getItem('showFields'));
-			} else {
+				this.showFields = JSON.parse(localStorage.getItem('showFields'))
+			}
+			else {
 				this.showFields = { // Какие поля показывать
 					number: true,
 					id: true,
@@ -777,9 +842,8 @@ export default {
 					segment: false,
 					applied: false,
 					full_time: false,
-				};
+				}
 			}
-
 		},
 
 		resetInfoModal() {
@@ -802,64 +866,73 @@ export default {
 			}
 
 			if(this.active.date) {
-				filter.start_date = this.filter.start_date;
-				filter.end_date = this.filter.end_date;
+				filter.start_date = this.filter.start_date
+				filter.end_date = this.filter.end_date
 			}
 
 			if(this.active.date_deactivate && this.tableFilter != 'active') {
-				filter.start_date_deactivate = this.filter.start_date_deactivate;
-				filter.end_date_deactivate = this.filter.end_date_deactivate;
+				filter.start_date_deactivate = this.filter.start_date_deactivate
+				filter.end_date_deactivate = this.filter.end_date_deactivate
 			}
 
 			if(this.active.date_applied && this.tableFilter != 'trainees') {
-				filter.start_date_applied = this.filter.start_date_applied;
-				filter.end_date_applied = this.filter.end_date_applied;
+				filter.start_date_applied = this.filter.start_date_applied
+				filter.end_date_applied = this.filter.end_date_applied
 			}
 
-			this.axios.post('/timetracking/get-persons', filter)
-				.then(response => {
-					this.items = response.data.users
-					this.groups = response.data.groups
-					this.segments = response.data.segments
+			if(this.active.date_reapplied && this.tableFilter != 'trainees') {
+				filter.start_date_reapplied = this.filter.start_date_reapplied
+				filter.end_date_reapplied = this.filter.end_date_reapplied
+			}
 
-					this.can_login_users = response.data.can_login_users
-					this.auth_token = response.data.auth_token
-					this.currentUser = response.data.currentUser
-					if(this.filter.start_date == null) {
-						this.filter.start_date = response.data.start_date
-						this.filter.end_date = response.data.end_date
-						this.filter.start_date_deactivate = response.data.start_date
-						this.filter.end_date_deactivate = response.data.end_date
-						this.filter.start_date_applied = response.data.start_date
-						this.filter.end_date_applied = response.data.end_date
-					}
+			this.axios.post('/timetracking/get-persons', filter).then(response => {
+				this.items = response.data.users
+				this.groups = response.data.groups
+				this.segments = response.data.segments
 
-				})
+				this.can_login_users = response.data.can_login_users
+				this.auth_token = response.data.auth_token
+				this.currentUser = response.data.currentUser
+				if(this.filter.start_date == null) {
+					this.filter.start_date = response.data.start_date
+					this.filter.end_date = response.data.end_date
+					this.filter.start_date_deactivate = response.data.start_date
+					this.filter.end_date_deactivate = response.data.end_date
+					this.filter.start_date_applied = response.data.start_date
+					this.filter.end_date_applied = response.data.end_date
+					this.filter.start_date_reapplied = response.data.start_date
+					this.filter.end_date_reapplied = response.data.end_date
+				}
+			})
 		},
 
 		exportData() {
-
-			var link = '/timetracking/get-persons';
-			link += '?filter=' + this.tableFilter;
+			var link = '/timetracking/get-persons'
+			link += '?filter=' + this.tableFilter
 
 			if(this.active.date) {
-				link += '&start_date=' + this.filter.start_date;
-				link += '&end_date=' + this.filter.end_date;
+				link += '&start_date=' + this.filter.start_date
+				link += '&end_date=' + this.filter.end_date
 			}
 
 			if(this.active.date_deactivate && this.tableFilter != 'active') {
-				link += '&start_date_deactivate=' + this.filter.start_date_deactivate;
-				link += '&end_date_deactivate=' + this.filter.end_date_deactivate;
+				link += '&start_date_deactivate=' + this.filter.start_date_deactivate
+				link += '&end_date_deactivate=' + this.filter.end_date_deactivate
 			}
 
 			if(this.active.date_applied && this.tableFilter != 'trainees') {
-				link += '&start_date_applied=' + this.filter.start_date_applied;
-				link += '&end_date_applied=' + this.filter.end_date_applied;
+				link += '&start_date_applied=' + this.filter.start_date_applied
+				link += '&end_date_applied=' + this.filter.end_date_applied
 			}
 
-			link += '&segment=' + this.filter.segment;
-			link += '&excel=1';
-			window.location.href = link;
+			if(this.active.date_reapplied && this.tableFilter != 'trainees') {
+				link += '&start_date_reapplied=' + this.filter.start_date_reapplied
+				link += '&end_date_reapplied=' + this.filter.end_date_reapplied
+			}
+
+			link += '&segment=' + this.filter.segment
+			link += '&excel=1'
+			window.location.href = link
 		},
 
 		toggleActive(item) {
@@ -876,9 +949,9 @@ export default {
 <style lang="scss">
 .ul table {
 	border-radius: 3px;
-			border-left: 1px solid #dee2e6;
-			border-right: 1px solid #dee2e6;
-			border-bottom: 1px solid #dee2e6;
+	border-left: 1px solid #dee2e6;
+	border-right: 1px solid #dee2e6;
+	border-bottom: 1px solid #dee2e6;
 }
 
 .ant-btn.ant-btn-primary {

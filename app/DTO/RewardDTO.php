@@ -13,7 +13,8 @@ class RewardDTO
         public int $userId,
         public int|null $courseId,
         public int $awardId,
-        public UploadedFile|null $file
+        public UploadedFile|null $file,
+        public UploadedFile|null $preview
     )
     {
 
@@ -23,8 +24,8 @@ class RewardDTO
         int $userId,
         ?int $courseId,
         int $awardId,
-        ?UploadedFile $file
-
+        ?UploadedFile $file,
+        ?UploadedFile $preview
     ): self
     {
         $courseId = $courseId ?? null;
@@ -33,7 +34,8 @@ class RewardDTO
             (int) $userId,
             $courseId,
             (int) $awardId,
-            $file
+            $file,
+            $preview
         );
     }
 }

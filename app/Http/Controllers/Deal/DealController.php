@@ -13,7 +13,7 @@ use App\Service\Integrations\BitrixIntegrationService;
 
 class DealController extends Controller
 {
-    public function dealUpdatedWebhook(Request $request, BitrixIntegrationService $bitrix, UserService $user_service)
+    public function dealUpdatedWebhook(Request $request, BitrixIntegrationService $bitrix, UserService $user_service): void
     {
         info('Test228Test', $request->all());
 
@@ -21,7 +21,5 @@ class DealController extends Controller
         $deal = $bitrix->getDeal($deal_id);
 
         UpdateDealJob::dispatch($deal)->delay(now()->addSeconds(2));
-
-        return ;
     }
 }

@@ -62,8 +62,8 @@
 </template>
 
 <script>
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
-import VueHtml2pdf from './Html2pdf';
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import VueHtml2pdf from './Html2pdf'
 
 export default {
 	name: 'SaveCertificate',
@@ -103,63 +103,55 @@ export default {
 		}
 	},
 	async mounted() {
-		if (this.course_id) {
-			if (Object.keys(this.item).length !== 0) {
-				await this.axios
-					.get('/awards/course?course_id=' + this.course_id)
-					.then(response => {
-						this.award = response.data.data;
-						if(this.award.award){
-							this.styles = JSON.parse(this.award.award.styles);
-							this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
-							this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
-							this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
-							this.loading = false;
-						} else {
-							let log = {
-								title: `user ID - ${this.item.id}. Курс - ${this.item.course.name}. ФИО - ${this.item.user.name} ${this.item.user.last_name}`,
-								fileName: null
-							};
-							this.$emit('generated', null, log);
-						}
-					})
-					.catch(error => {
-						console.error(error);
-					})
+		if(!this.course_id) return
+		if(!Object.keys(this.item).length) return
+		try {
+			const {data} = await this.axios.get('/awards/course?course_id=' + this.course_id)
+			this.award = data.data
+			if(this.award.award){
+				this.styles = JSON.parse(this.award.award.styles)
+				this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`
+				this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`
+				this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`
+				this.loading = false
 			}
+			else {
+				const log = {
+					title: `user ID - ${this.item.id}. Курс - ${this.item.course.name}. ФИО - ${this.item.user.name} ${this.item.user.last_name}`,
+					fileName: null
+				}
+				this.$emit('generated', null, log)
+			}
+		}
+		catch (error) {
+			console.error(error)
 		}
 	},
 	methods: {
 		onProgress(progress) {
-			this.progress = progress;
+			this.progress = progress
 		},
-		beforeDownload() {
-
-		},
+		beforeDownload() {},
 		hasDownloaded(blobPdf) {
-			this.pdfDownloaded = true;
-			let file = new File([blobPdf], `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`, {
+			this.pdfDownloaded = true
+			const file = new File([blobPdf], `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`, {
 				type: blobPdf.type,
-			});
-			let log = {
+			})
+			const log = {
 				title: `User ID - ${this.item.id}. Курс - ${this.item.course.name}. ФИО - ${this.item.user.name} ${this.item.user.last_name}`,
 				fileName: `${this.course_id}_${this.item.user.id}_${this.item.course.name}-${this.item.user.name}-${this.item.user.last_name}.pdf`
-			};
-			this.$emit('generated', file, log);
+			}
+			this.$emit('generated', file, log)
 		},
 		renderedEmbed() {
-			const canvas = document.querySelector('.vue-pdf-embed canvas');
-			let canvasHeight = canvas.offsetHeight;
-			let canvasWidth = canvas.offsetWidth;
-			let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
-			let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
-			this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
-			if (canvasWidthCalc > canvasHeightCalc) {
-				this.options.jsPDF.orientation = 'landscape';
-			} else {
-				this.options.jsPDF.orientation = 'portrait';
-			}
-			this.$refs.html2Pdf.generatePdf();
+			const canvas = document.querySelector('.vue-pdf-embed canvas')
+			const canvasHeight = canvas.offsetHeight
+			const canvasWidth = canvas.offsetWidth
+			const canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2)
+			const canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2)
+			this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc]
+			this.options.jsPDF.orientation = canvasWidthCalc > canvasHeightCalc ? 'landscape' : 'portrait'
+			this.$refs.html2Pdf.generatePdf()
 		}
 	}
 }
@@ -167,16 +159,14 @@ export default {
 
 
 <style lang="scss">
-    .certificate-creator {
-        .layout-container{
-            display: none !important;
-        }
-        canvas {
-        }
+.certificate-creator {
+	.layout-container{
+		display: none !important;
+	}
 
-        .draggable-container {
-            position: relative;
-            width: 1000px;
-        }
-    }
+	.draggable-container {
+		position: relative;
+		width: 1000px;
+	}
+}
 </style>

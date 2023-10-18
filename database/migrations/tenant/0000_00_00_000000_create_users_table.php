@@ -56,6 +56,7 @@ class CreateUsersTable extends Migration
             $table->string('avatar', 125)->nullable();
             $table->string('cropped_img_url', 150);
             $table->timestamps();
+//            $table->timestamp('applied_at')->nullable();
             $table->softDeletes();
         });
     }

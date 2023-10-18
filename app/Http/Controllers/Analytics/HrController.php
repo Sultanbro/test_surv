@@ -2,39 +2,34 @@
 
 namespace App\Http\Controllers\Analytics;
 
-use App\Api\BitrixOld;
-use App\Models\CentralUser;
+use App\Api\BitrixOld as Bitrix;
+use App\CallBase;
+use App\Classes\Analytics\FunnelTable;
+use App\Classes\Analytics\Recruiting as RM;
+use App\Classes\Helpers\Phone;
+use App\DayType;
+use App\Http\Controllers\Controller;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\DecompositionValue;
+use App\Models\Analytics\RecruiterStat;
+use App\Models\Analytics\TraineeReport;
+use App\Models\Bitrix\Lead;
+use App\Models\Bitrix\Segment;
+use App\Models\GroupUser;
+use App\Models\User\NotificationTemplate;
+use App\ProfileGroup;
 use App\Service\SendMessageTraineesService;
 use App\Service\Tenancy\CabinetService;
-use App\Timetracking;
-use Closure;
-use DB;
-use Illuminate\Support\Facades\Artisan;
-use View;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Controllers\Controller;
-use App\Classes\Helpers\Phone;
-use App\Api\BitrixOld as Bitrix;
-use App\Classes\Analytics\Recruiting as RM;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
 use App\Zarplata;
-use App\DayType;
-use App\CallBase;
-use App\ProfileGroup;
-use App\Models\Analytics\Activity;
-use App\Models\Bitrix\Lead;
-use App\Models\Bitrix\Segment;
-use App\Models\Analytics\RecruiterStat;
-use App\Classes\Analytics\FunnelTable;
-use App\Models\User\NotificationTemplate;
-use App\Models\Analytics\DecompositionValue;
-use App\Models\Analytics\TraineeReport;
-use App\Models\GroupUser;
-use function JmesPath\search;
+use Carbon\Carbon;
+use Closure;
+use DB;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use View;
 
 class HrController extends Controller
 {
@@ -44,13 +39,13 @@ class HrController extends Controller
      * Object with helper functions
      */
     private $helper;
-    
+
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
         $this->middleware('auth');
         $this->middleware(function (Request $request, Closure $next) {
-            if(!auth()->user()->can('hr_view')) {
+            if (!auth()->user()->can('hr_view')) {
                 return $this->response('Access denied.', [], '403');
             }
             return $next($request);
@@ -62,41 +57,40 @@ class HrController extends Controller
     }
 
 
-
     /**
      * Страница аналитика группы
      */
     public function index()
     {
-        if(!auth()->user()->can('hr_view') && tenant('id') != 'bp') {
+        if (!auth()->user()->can('hr_view') && tenant('id') != 'bp') {
             return redirect('/');
         }
 
         $currentUser = auth()->user();
 
         $recruting = ProfileGroup::find(48);
-   
-        // Доступ к группе 
+
+        // Доступ к группе
 
         $groups = [];
-        
+
         if ($recruting && auth()->user()->can('hr_view')) {
             $groups[] = [
                 'id' => 48,
                 'name' => $recruting->name,
                 'groups' => [48],
             ];
-        }  
-    
-        
+        }
+
+
         $groups = collect($groups);
-        
+
         View::share('menu', 'timetracking_hr');
         return view('admin.analytics', compact('groups'));
     }
-    
+
     /**
-     * 
+     *
      */
     public function saveCallBase(Request $request)
     {
@@ -130,7 +124,7 @@ class HrController extends Controller
         $trainees = DayType::whereYear('date', $request->year) // Стажеры
         ->whereMonth('date', $request->month)
             ->whereDay('date', RM::getLastDay($month))
-            ->whereIn('type', [5,7])
+            ->whereIn('type', [5, 7])
             ->select('user_id')
             ->distinct('user_id')
             ->count('user_id');
@@ -143,14 +137,14 @@ class HrController extends Controller
         $remain_apply = $data[RM::S_APPLIED]['plan'] - $data[RM::S_APPLIED]['fact'];
 
         $indicators = [];
-        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
+        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100) . '%' : 0; // Cтажировались в этом месяце
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
-        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
+        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact'] . ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100) . '%' : 0; // Принято сотрудников
         $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
         $indicators['info']['created'] = $data[RM::S_CREATED]['fact']; // Создано лидов
-        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%' : 0; // Обработано лидов
-        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact']. ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%'  : 0; // Сконвертировано лидов
-        $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'] ;  // Увоолено в этом месяце
+        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100) . '%' : 0; // Обработано лидов
+        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact'] . ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100) . '%' : 0; // Сконвертировано лидов
+        $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'];  // Увоолено в этом месяце
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
         $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
@@ -196,7 +190,7 @@ class HrController extends Controller
             //Method - getDismissStatistics. IV Увольнение - 1. Причины и процент текучки
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
 
             //Method - getDismissBot. IV Увольнение - 2. Причины: Бот
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
@@ -221,7 +215,7 @@ class HrController extends Controller
      */
     public function getRecruitmentStatictics(Request $request)
     {
-        $date = Carbon::createFromFormat('d-m-Y', $request->day.'-'.$request->month.'-'.$request->year);
+        $date = Carbon::createFromFormat('d-m-Y', $request->day . '-' . $request->month . '-' . $request->year);
 
         $settings = RM::getSummaryTable($date);
 
@@ -261,7 +255,7 @@ class HrController extends Controller
         $trainees = DayType::whereYear('date', $request->year) // Стажеры
         ->whereMonth('date', $request->month)
             ->whereDay('date', RM::getLastDay($month))
-            ->whereIn('type', [5,7])
+            ->whereIn('type', [5, 7])
             ->select('user_id')
             ->distinct('user_id')
             ->count('user_id');
@@ -274,14 +268,14 @@ class HrController extends Controller
         $remain_apply = $data[RM::S_APPLIED]['plan'] - $data[RM::S_APPLIED]['fact'];
 
         $indicators = [];
-        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
+        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100) . '%' : 0; // Cтажировались в этом месяце
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
-        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
+        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact'] . ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100) . '%' : 0; // Принято сотрудников
         $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
         $indicators['info']['created'] = $data[RM::S_CREATED]['fact']; // Создано лидов
-        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%' : 0; // Обработано лидов
-        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact']. ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%'  : 0; // Сконвертировано лидов
-        $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'] ;  // Увоолено в этом месяце
+        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100) . '%' : 0; // Обработано лидов
+        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact'] . ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100) . '%' : 0; // Сконвертировано лидов
+        $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'];  // Увоолено в этом месяце
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
         $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
@@ -391,7 +385,7 @@ class HrController extends Controller
         return [
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($month->startOfMonth()),
             'causes' => RM::fireCauses($date), // причины увольнения
         ];
@@ -405,21 +399,21 @@ class HrController extends Controller
     public function redirectToBitrixDeal($id)
     {
         $lead = Lead::where('lead_id', $id)->first();
-   
+
         $deal_id = 0;
 
-        if($lead) {
+        if ($lead) {
 
-            if($lead->deal_id == 0) {
+            if ($lead->deal_id == 0) {
                 $bitrix = new Bitrix();
                 $deal_id = $bitrix->findDeal($lead->lead_id, false);
             } else {
                 $deal_id = $lead->deal_id;
             }
-            
+
         }
 
-        if($deal_id == 0) {
+        if ($deal_id == 0) {
             return redirect('https://infinitys.bitrix24.kz/crm/lead/details/' . $id . '/');
         } else {
             return redirect('https://infinitys.bitrix24.kz/crm/deal/details/' . $deal_id . '/');
@@ -432,32 +426,32 @@ class HrController extends Controller
      * Пригласить на стажировку во вкладке Аналитика Групп (Рекрутинг) - Стажеры
      * Создает пользователей и меняет сделку в битриксе
      */
-    public function inviteUsers(Request $request,SendMessageTraineesService $service)
+    public function inviteUsers(Request $request, SendMessageTraineesService $service)
     {
         $userIds = [];
         $leads = Lead::whereIn('id', $request->users)->get();
-        
+
         /////////// check group and zoom link existence
         $group = ProfileGroup::find($request['group_id']);
 
-        if(!$group) {
+        if (!$group) {
             return [
                 'code' => 201
             ];
         }
-        
+
         ////
-        if($request->time) {
-            $hour   = substr($request->time, 0, 2);
+        if ($request->time) {
+            $hour = substr($request->time, 0, 2);
             $minute = substr($request->time, 3, 2);
-            $invite_at = Carbon::parse($request->date)->hour($hour)->minute($minute); 
+            $invite_at = Carbon::parse($request->date)->hour($hour)->minute($minute);
         } else {
-            $invite_at = Carbon::parse($request->date); 
+            $invite_at = Carbon::parse($request->date);
         }
 
-        $day_second = Carbon::parse($request->date)->addDays(1); 
-        if($day_second->dayOfWeek == 6) $day_second->addDays(2);
-        if($day_second->dayOfWeek == 0) $day_second->addDays(1);
+        $day_second = Carbon::parse($request->date)->addDays(1);
+        if ($day_second->dayOfWeek == 6) $day_second->addDays(2);
+        if ($day_second->dayOfWeek == 0) $day_second->addDays(1);
 
         $msg_for_group_leader = '';
 
@@ -467,7 +461,7 @@ class HrController extends Controller
          * leads
          */
         foreach ($leads as $lead) {
-           
+
             // Проверить существует ли user
 
 
@@ -476,36 +470,36 @@ class HrController extends Controller
             $user_password = $salt . md5($salt . $original_password);
 
 
-            if($lead->email) {
+            if ($lead->email) {
                 $email = $lead->email;
             } else {
                 $email = 'user' . $lead->lead_id . '@bpartners.kz';
-                if($lead->status == 'MAN') {
+                if ($lead->status == 'MAN') {
                     $email = 'person' . $lead->id . '@bpartners.kz';
                 }
             }
 
             try {
-                if(in_array($lead->wishtime, [4,5,6])) {
+                if (in_array($lead->wishtime, [4, 5, 6])) {
                     $full_time = 0;
                 } else {
                     $full_time = 1;
                 }
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $full_time = 1;
             }
-            
+
             $user = User::withTrashed()->where('email', $email)->first();
 
             $currency = Phone::getCurrency($lead->phone);
             $user_type = $lead->skyped ? 'remote' : 'office';
 
-            if($user_type == 'remote') {
+            if ($user_type == 'remote') {
                 $has_remote_to_send_notification = true;
             }
 
             $uname = strlen($lead->name) > 50 ? mb_substr($lead->name, 0, 49) : $lead->name;
-            if(!$user) {
+            if (!$user) {
                 $user = User::query()->create([
                     'email' => $email,
                     'name' => $uname,
@@ -526,11 +520,12 @@ class HrController extends Controller
                     'segment' => $lead->segment,
                     'currency' => $currency,
                     'role_id' => 1,
-                    'is_admin' => 0 
+                    'is_admin' => 0,
+                    'referrer_id' => $lead->referrer_id,
                 ]);
 
                 (new CabinetService)->add(tenant('id'), $user, false);
-                
+
                 UserDescription::make([
                     'user_id' => $user->id,
                     'lead_id' => $lead->lead_id,
@@ -540,34 +535,33 @@ class HrController extends Controller
 
                 $old_invite_at = $lead->invite_at;
 
-                $lead->invite_group_id = $request->group_id;    
+                $lead->invite_group_id = $request->group_id;
                 $lead->day_second = $day_second;
                 $lead->invite_at = $invite_at;
                 $lead->user_id = $user->id;
                 $lead->invited = 1;
 
-                if($user_type == 'remote') {
+                if ($user_type == 'remote') {
                     $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
-                $userIds[]=$user->id;
+                $userIds[] = $user->id;
 
-                
-                
+
             } else {
 
                 $old_invite_at = $lead->invite_at;
 
-                $lead->invite_group_id = $request->group_id;    
+                $lead->invite_group_id = $request->group_id;
                 $lead->invite_at = $invite_at;
                 $lead->day_second = $day_second;
                 $lead->user_id = $user->id;
                 $lead->invited = 2; // Сотрудник уже существует
-                
-                if($user_type == 'remote') {
+
+                if ($user_type == 'remote') {
                     $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
-            
-                
+
+
                 UserDescription::make([
                     'user_id' => $user->id,
                     'lead_id' => $lead->lead_id,
@@ -576,7 +570,8 @@ class HrController extends Controller
                 ]);
 
                 $user->segment = $lead->segment;
-                $userIds[]=$user->id;
+                $user->referrer_id = $lead->referrer_id;
+                $userIds[] = $user->id;
 
                 $user->save();
             }
@@ -588,7 +583,7 @@ class HrController extends Controller
              * zarplata
              */
             $zarplata = Zarplata::where('user_id', $user->id)->first();
-            if($zarplata) {
+            if ($zarplata) {
                 $zarplata->zarplata = 70000;
                 $zarplata->save();
             } else {
@@ -606,45 +601,45 @@ class HrController extends Controller
             /*==============================================================*/
             /*******  Зачисление пользователя в отдел */
             /*==============================================================*/
-            
+
             /* Удаление стажера из всех груп */
             GroupUser::where('user_id', $user->id)
                 ->whereNull('to')
                 ->update([
-                    'to'     => date('Y-m-d'),
+                    'to' => date('Y-m-d'),
                     'status' => 'drop',
                 ]);
-            
+
             /* Зачисление в выбранную отдел */
             GroupUser::create([
-                'user_id'  => $user->id,
+                'user_id' => $user->id,
                 'group_id' => $group->id,
-                'from'     => date('Y-m-d'),
-                'status'   => 'active',
+                'from' => date('Y-m-d'),
+                'status' => 'active',
             ]);
-            
+
             /*==============================================================*/
             /*******  Начало стажировки */
             /*==============================================================*/
 
             $date = $request->date;
 
-            if($old_invite_at) {
+            if ($old_invite_at) {
                 $daytype = DayType::where([
                     'user_id' => $user->id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
-                    'date' => Carbon::parse($old_invite_at)->format('Y-m-d'), 
+                    'date' => Carbon::parse($old_invite_at)->format('Y-m-d'),
                 ])->first();
-    
-                if($daytype) $daytype->delete();
-            } 
+
+                if ($daytype) $daytype->delete();
+            }
 
             $daytype = DayType::where([
                 'user_id' => $user->id,
-                'date' => $date, 
+                'date' => $date,
             ])->first();
 
-            if($daytype) {
+            if ($daytype) {
                 $daytype->admin_id = 1;
                 $daytype->type = DayType::DAY_TYPES['TRAINEE'];
                 $daytype->save();
@@ -652,7 +647,7 @@ class HrController extends Controller
                 $daytype = DayType::create([
                     'user_id' => $user->id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
-                    'email' =>'',
+                    'email' => '',
                     'date' => $date,
                     'admin_id' => 1,
                 ]);
@@ -664,17 +659,17 @@ class HrController extends Controller
                 $bitrix = new Bitrix('intellect');
 
                 if ($lead->inhouse) {
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1633576992" => Carbon::parse($request->date." ".$request->time)->subHour(3)->format('Y-m-d H:i:s')]);
-                }else{
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1568000119" => Carbon::parse($request->date." ".$request->time)->subHour(3)->format('Y-m-d H:i:s')]);
-                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1648978687" => Carbon::parse($request->date." ".$request->time)->subHour(3)->addDay()->format('Y-m-d H:i:s')]);
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1633576992" => Carbon::parse($request->date . " " . $request->time)->subHour(3)->format('Y-m-d H:i:s')]);
+                } else {
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1568000119" => Carbon::parse($request->date . " " . $request->time)->subHour(3)->format('Y-m-d H:i:s')]);
+                    $bitrix->updateDeal($lead->deal_id, ["UF_CRM_1648978687" => Carbon::parse($request->date . " " . $request->time)->subHour(3)->addDay()->format('Y-m-d H:i:s')]);
                 }
             }
         }
         /*==============================================================*/
         /*******  Уведомление стажёров на whatsApp */
         /*==============================================================*/
-        if(tenant('id') === 'bp') {
+        if (tenant('id') === 'bp') {
             $service->handle($userIds);
         }
         /*==============================================================*/
@@ -682,16 +677,16 @@ class HrController extends Controller
         /*==============================================================*/
 
         $msg_for_group_leader .= 'Приглашение в отдел "' . $group->name . '" на ' . date('d.m.Y', strtotime($request->date)) . ' в 9:30';
-        
-        $heads = json_decode($group->head_id); 
+
+        $heads = json_decode($group->head_id);
 
         $timestampx = now();
 
         $notification_receivers = NotificationTemplate::getReceivers(6, $group->id);
-        
 
-        if($has_remote_to_send_notification) {
-            foreach($notification_receivers as $user_id) {
+
+        if ($has_remote_to_send_notification) {
+            foreach ($notification_receivers as $user_id) {
                 UserNotification::create([
                     'user_id' => $user_id,
                     'about_id' => 0,
@@ -701,8 +696,8 @@ class HrController extends Controller
                 ]);
             }
         }
-        
-        
+
+
         return response()->json([
             'code' => 200
         ]);
@@ -711,7 +706,7 @@ class HrController extends Controller
     /**
      * Сформировать сообщение для руководителя на ватсап
      */
-    private function msgForGroupLeader(String $msg, User $user)
+    private function msgForGroupLeader(string $msg, User $user)
     {
         $msg .= $user->phone;
         // if($user->phone_1) $msg .= ', ' . $user->phone_1;
@@ -722,7 +717,7 @@ class HrController extends Controller
 
     public function update(Request $request)
     {
-       
+
     }
 
     /**
@@ -750,13 +745,14 @@ class HrController extends Controller
      */
     public function exportActivityExcel(Request $request)
     {
-        
+
         $group = ProfileGroup::find($request->group_id);
-        
-        $request->month = (int) $request->month;
+
+        $request->month = (int)$request->month;
         $currentUser = auth()->user();
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id) ? $editors_id : [];
 
         // Доступ к группе
         if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
@@ -766,28 +762,28 @@ class HrController extends Controller
         }
 
         $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
-        ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
+            ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
 
         /****************************** */
         /******==================================== */
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 
-        $title = 'Аналитика активностей ' . $request->month . ' месяц '. $request->year;
+        $title = 'Аналитика активностей ' . $request->month . ' месяц ' . $request->year;
 
-        if(in_array($request->group_id, [35,42,56])) { // Kaspi
+        if (in_array($request->group_id, [35, 42, 56])) { // Kaspi
             $data = json_decode($this->getActivities($request), true);
-            $title = 'Аналитика активностей KASPI ' . $request->month. ' месяц '. $request->year;
+            $title = 'Аналитика активностей KASPI ' . $request->month . ' месяц ' . $request->year;
         } else {
             $data = json_decode($this->getActivities($request), true);
         }
 
         /******==================================== */
-        
+
         $sheets = [];
 
         $minute_headings = Activity::getHeadings($date, Activity::UNIT_MINUTES);
         $percent_headings = Activity::getHeadings($date, Activity::UNIT_PERCENTS);
-        
+
         $sheets = [
             [
                 'title' => 'Минуты разговора',
@@ -801,10 +797,10 @@ class HrController extends Controller
             ]
         ];
 
-        // @TODO Наверное не нужен 
-        if(tenant('id') == 'bp') {
-            if($request->group_id == 31) {
-     
+        // @TODO Наверное не нужен
+        if (tenant('id') == 'bp') {
+            if ($request->group_id == 31) {
+
                 $sheets = [
                     [
                         'title' => 'Часы работы',
@@ -822,9 +818,9 @@ class HrController extends Controller
                         'sheet' => Activity::getSheet($data[2]['records'], $date, Activity::UNIT_MINUTES)
                     ]
                 ];
-            } else if(in_array($request->group_id, [53])) { 
+            } else if (in_array($request->group_id, [53])) {
                 $sheets = [];
-                foreach($data as $item) {
+                foreach ($data as $item) {
                     $_headings = $item['plan_unit'] == 'minutes' ? $minute_headings : $percent_headings;
                     $_units = $item['plan_unit'] == 'minutes' ? Activity::UNIT_MINUTES : Activity::UNIT_PERCENTS;
                     $sheets[] = [
@@ -833,52 +829,53 @@ class HrController extends Controller
                         'sheet' => Activity::getSheet($item['records'], $date, $_units),
                     ];
                 }
-            } 
+            }
         }
-       
+
         /******==================================== */
 
-        if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
+        if (ob_get_length() > 0) ob_clean(); //  ob_end_clean();
 
-        if($date->daysInMonth == 28) $last_cell = 'AH3';
-        if($date->daysInMonth == 29) $last_cell = 'AI3';
-        if($date->daysInMonth == 30) $last_cell = 'AJ3';
-        if($date->daysInMonth == 31) $last_cell = 'AK3';
+        if ($date->daysInMonth == 28) $last_cell = 'AH3';
+        if ($date->daysInMonth == 29) $last_cell = 'AI3';
+        if ($date->daysInMonth == 30) $last_cell = 'AJ3';
+        if ($date->daysInMonth == 31) $last_cell = 'AK3';
 
         Excel::create($title, function ($excel) use ($sheets, $last_cell) {
             $excel->setTitle('Отчет');
             $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
             $excel->setDescription('экспорт данных в Excel файл');
-            
-            foreach($sheets as $page) {
+
+            foreach ($sheets as $page) {
                 $excel->sheet($page['title'], function ($sheet) use ($page, $last_cell) {
-                
+
                     $sheet->fromArray($page['sheet'], null, 'A4', false, false);
                     $sheet->prependRow(3, $page['headings']);
-                    
-                    $sheet->cell('A1', function($cell) use ($page){
+
+                    $sheet->cell('A1', function ($cell) use ($page) {
                         $cell->setValue($page['title']);
-                        $cell->setFontWeight('bold'); 
-                        $cell->setFontSize(14); 
+                        $cell->setFontWeight('bold');
+                        $cell->setFontSize(14);
                     });
 
-                    $sheet->cell('A3:'. $last_cell, function($cell) {
-                        $cell->setBackground('#8ccf5b');  
+                    $sheet->cell('A3:' . $last_cell, function ($cell) {
+                        $cell->setBackground('#8ccf5b');
                         $cell->setFontWeight('bold');
                     });
                 });
             }
-            
+
             $excel->setActiveSheetIndex(0);
         })->export('xlsx');
-        
+
     }
 
     /**
      * Поменять профиль рекрутера в почасовой таблице
-     * Для сотрудников группы 48 Рекрутинг 
+     * Для сотрудников группы 48 Рекрутинг
      */
-    public function changeRecruiterProfile(Request $request){
+    public function changeRecruiterProfile(Request $request)
+    {
         RecruiterStat::changeProfile($request['user_id'], $request['profile'], Carbon::createFromDate($request->year, $request->month, $request->day));
     }
 
@@ -891,12 +888,12 @@ class HrController extends Controller
         $groups1 = ProfileGroup::whereIn('id', [42])->get();
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
         $groups = $groups->merge($groups1);
-                $startDate = Carbon::now();
-        foreach($groups as $group) {
+        $startDate = Carbon::now();
+        foreach ($groups as $group) {
             $item = [];
 
             $item['name'] = $group->name;
-            
+
             $leads = Lead::whereYear('invite_at', $date->year)
                 ->whereMonth('invite_at', $date->month)
                 ->where('invite_group_id', $group->id)
@@ -906,7 +903,7 @@ class HrController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', json_decode($group->users))
-                ->where('ud.is_trainee', 1) 
+                ->where('ud.is_trainee', 1)
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
@@ -914,11 +911,11 @@ class HrController extends Controller
             $item['sent'] = $leads->count();
 
             $item['working'] = 1;
-                
-            $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
+
+            $percent = $item['sent'] > 0 ? $item['working'] / $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
 
-            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $trainee_users)->whereIn('type',[5,7])->get()->count();//$item['sent'];
+            $item['active'] = DayType::where('date', $date->toDateString())->whereIn('user_id', $trainee_users)->whereIn('type', [5, 7])->get()->count();//$item['sent'];
             array_push($arr, $item);
         }
 
@@ -928,38 +925,38 @@ class HrController extends Controller
 
     public function getRefLinks(Request $request)
     {
-        return  \App\Models\BPReflink::get();
+        return \App\Models\BPReflink::get();
     }
 
     public function saveRefLinks(Request $request)
     {
         $id = $request->id;
-        
-        if($request->method == 'save') {
-            if(strlen($request->name) == 0) return $id;
-            if($request->id == 0) {
+
+        if ($request->method == 'save') {
+            if (strlen($request->name) == 0) return $id;
+            if ($request->id == 0) {
                 $item = \App\Models\BPReflink::create([
-                    'name' =>  $request->name,
+                    'name' => $request->name,
                     'info' => $request->info
                 ]);
 
                 $id = $item->id;
             } else {
                 \App\Models\BPReflink::where('id', $request->id)->update([
-                    'name' =>  $request->name,
+                    'name' => $request->name,
                     'info' => $request->info
                 ]);
             }
-            
-        }   
 
-        if($request->method == 'delete') {
+        }
+
+        if ($request->method == 'delete') {
             \App\Models\BPReflink::where('id', $request->id)->delete();
         }
 
         return $id;
-        
+
     }
-    
+
 }
 

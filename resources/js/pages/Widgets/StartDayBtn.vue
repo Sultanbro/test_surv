@@ -10,7 +10,7 @@
 				'profile__button_loading': status === 'loading',
 				'profile__button_dayoff': workdayStatus === 'workdone'
 			}"
-			@click="$emit('clickStart')"
+			@click="onClick"
 		>
 			<svg
 				id="loader-1"
@@ -66,18 +66,10 @@
 				>Завершить рабочий день</p>
 				<p
 					v-if="workdayStatus === 'workdone'"
-					class="profile__button-text"
-				>---</p>
+					class="StartDayBtn-overtime"
+				>Оставить заявку на&nbsp;сверхурочную</p>
 			</template>
 		</a>
-
-		<JobtronButton
-			v-if="workdayStatus === 'workdone'"
-			class="StartDayBtn-overtime mb-4"
-			@click="clickOvertime"
-		>
-			Оставить заявку на&nbsp;сверхурочную
-		</JobtronButton>
 	</div>
 </template>
 
@@ -85,12 +77,9 @@
 /* global Laravel */
 import { mapActions } from 'pinia'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
-import JobtronButton from '@ui/Button.vue'
 export default {
 	name: 'StartDayBtn',
-	components: {
-		JobtronButton,
-	},
+	components: {},
 	props: {
 		workdayStatus: {
 			type: String,
@@ -111,16 +100,28 @@ export default {
 		...mapActions(useProfileStatusStore, ['pushOvertime']),
 		async clickOvertime(){
 			if(confirm('Хотите запросить у руководителя работу в выходной?')){
-				/* eslint-disable camelcase */
-				await this.pushOvertime({
-					user_id: Laravel.userId,
-					date: this.$moment(Date.now()).format('YYYY-MM-DD'),
-					start_time: this.$moment(Date.now()).format('HH:mm:ss'),
-				})
-				/* eslint-enable camelcase */
-				alert('Запрос на работу в выходной отправлен')
+				try {
+					/* eslint-disable camelcase */
+					await this.pushOvertime({
+						user_id: Laravel.userId,
+						date: this.$moment(Date.now()).format('YYYY-MM-DD'),
+						start_time: this.$moment(Date.now()).format('HH:mm:ss'),
+					})
+					alert('Запрос на работу в выходной отправлен')
+					/* eslint-enable camelcase */
+				}
+				catch (error) {
+					console.error(error)
+					window.onerror && window.onerror(error)
+
+					alert(error?.response?.data?.message || '!Запрос на работу в выходной не отправлен!')
+				}
 			}
-		}
+		},
+		onClick(){
+			if(this.workdayStatus === 'workdone') return this.clickOvertime()
+			this.$emit('clickStart')
+		},
 	}
 }
 </script>
@@ -243,10 +244,14 @@ export default {
 .StartDayBtn{
 	&-overtime{
 		display: flex;
-		width: 100%;
-		max-width: 28rem;
 		justify-content: center;
-		background-color: #608ee9;
+
+		position: relative;
+
+		font-size: 1.3rem;
+		font-weight: 600;
+		white-space: nowrap;
+
 		border-radius: 1rem;
 	}
 }

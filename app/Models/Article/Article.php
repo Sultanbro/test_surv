@@ -89,10 +89,10 @@ class Article extends Model
     }
 
     public function getContentAttribute()
-    {   
+    {
         $content = $this->attributes['content'];
 
-        preg_match_all('/<img[^>]+>/i', $content, $result); 
+        preg_match_all('/<img[^>]+>/i', $content, $result);
 
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
@@ -106,13 +106,13 @@ class Article extends Model
 
             if($host !== 'storage.oblako.kz') continue;
             if($path == '') continue;
-            
+
             $path = str_replace('/tenant'.tenant('id'), '', $path);
 
             $tempUrl = \Storage::disk('s3')->temporaryUrl(
                 $path, now()->addMinutes(360)
             );
-            
+
             $tag->setAttribute('src', $tempUrl);
 
             //$content = str_replace(utf8_decode($url), $tempUrl, $content);

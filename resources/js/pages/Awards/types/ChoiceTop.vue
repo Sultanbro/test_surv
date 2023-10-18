@@ -44,41 +44,47 @@ export default {
 		}
 	},
 	mounted(){
-		let loader = this.$loading.show();
-		this.axios
-			.get('/awards/get')
-			.then(response => {
-				const data = response.data.data;
-				data.forEach(item => {
-					if(item.targetable_id !== null && item.targetable_type !== null){
-						let type = 0;
-						if(item.targetable_type === 'App\\ProfileGroup'){
-							type = 2;
-						}
-						if(item.targetable_type === 'App\\Position'){
-							type = 3;
-						}
-						this.courses.push({
-							id: item.targetable_id,
-							type: type
-						})
-					}
-				});
-				this.done = true;
-				loader.hide();
-			}).catch(error => {console.error(error)});
+		const loader = this.$loading.show()
+		this.axios.get('/awards/get').then(({data}) => {
+			const awards = data.data
+			awards.forEach(item => {
+				const hasTarget = item.targetable_id !== null && item.targetable_type !== null
+				if(!hasTarget) return
+
+				const type = item.targetable_type === 'App\\ProfileGroup'
+					? 2
+					: item.targetable_type === 'App\\Position'
+						? 3
+						: 0
+
+				this.courses.push({
+					id: item.targetable_id,
+					type: type
+				})
+			})
+			this.done = true
+			loader.hide()
+		}).catch(error => {
+			console.error(error)
+			loader.hide()
+		})
 	},
 	methods: {
 		superselectChoice(values) {
-			const data = {};
-			data.id = values.id;
-			if (values.type === 2) {
-				data.type = 'App\\ProfileGroup';
+			const data = {}
+			data.id = values.id
+
+			switch(values.type){
+			case 2:
+				data.type = 'App\\ProfileGroup'
+				break
+
+			case 3:
+				data.type = 'App\\Position'
+				break
 			}
-			if (values.type === 3) {
-				data.type = 'App\\Position';
-			}
-			this.$emit('choiced-top', data);
+
+			this.$emit('choiced-top', data)
 		},
 	}
 }

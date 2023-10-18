@@ -26,6 +26,7 @@
 /public/mix-manifest.json
 /storage/*.key
 /storage/tenant*
+/storage/public
 /vendor
 Homestead.json
 Homestead.yaml
@@ -35,9 +36,10 @@ yarn-error.log
 .vscode
 .vagrant
 .env
+.env.testing
 .htaccess
 .DS_Store
-
+/database/sql/*.sql
 
 /deployment
 /mysql

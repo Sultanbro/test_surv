@@ -49,11 +49,11 @@ class SetAbsent extends Command
     public function __construct()
     {
         parent::__construct();
-
-        $this->groups = ProfileGroup::where('active', 1)->get();
-
-        $this->marked_users = UserPresence::where('date', date('Y-m-d'))
-            ->get()->pluck('user_id')->toArray();
+//
+//        $this->groups = ProfileGroup::where('active', 1)->get();
+//
+//        $this->marked_users = UserPresence::where('date', date('Y-m-d'))
+//            ->get()->pluck('user_id')->toArray();
     }
 
     /**

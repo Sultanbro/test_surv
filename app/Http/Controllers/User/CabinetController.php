@@ -25,11 +25,11 @@ class CabinetController extends Controller
 
     public function get()
     {
-        $users = User::withTrashed()->get(['id', \DB::raw("CONCAT(name,' ',last_name) as email")]);
+        // $users = User::withTrashed()->get(['id', \DB::raw("CONCAT(name,' ',last_name) as email")]);
 
-        foreach($users as $user) {
-            if($user->email == '') $user->email = 'x';
-        }
+        // foreach($users as $user) {
+        //     if($user->email == '') $user->email = 'x';
+        // }
 
         $admins = User::withTrashed()
             ->where('is_admin', 1)
@@ -42,7 +42,7 @@ class CabinetController extends Controller
         $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number','phone')->get()->toArray();
 
         return [
-            'users' => $users,
+            // 'users' => $users,
             'user' => $user,
             'admins' => $admins,
             'user_payment'=> $user_payment,

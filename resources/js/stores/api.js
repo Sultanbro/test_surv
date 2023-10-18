@@ -14,6 +14,7 @@ export * from './api/company.js'
 export * from './api/top.js'
 export * from './api/analytics.js'
 export * from './api/structure.js'
+export * from './api/kb.js'
 
 export async function updateOnlineStatus(){
 	await axios.post('/online')

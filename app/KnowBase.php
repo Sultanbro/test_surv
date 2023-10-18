@@ -8,26 +8,31 @@ use App\Contracts\CourseInterface;
 use App\Models\KnowBaseModel;
 
 class KnowBase extends Model implements CourseInterface
-{   
+{
     use SoftDeletes;
-    
+
     protected $table = 'kb';
 
     public $timestamps = true;
 
     protected $appends = ['opened'];
-    
+
+    protected $casts = [
+        'read_pairs' => 'array'
+    ];
+
     protected $fillable = [
         'parent_id',
-        'title', 
-        'user_id', // author 
-        'editor_id', // 
-        'text', 
-        'is_deleted', 
-        'order', 
+        'title',
+        'user_id', // author
+        'editor_id', //
+        'text',
+        'is_deleted',
+        'order',
         'pass_grade',
         'hash', // уникальная ссылка чтобы поделиться
-        'access' // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию
+        'access', // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию,
+        'read_pairs'
     ];
 
 
@@ -35,7 +40,7 @@ class KnowBase extends Model implements CourseInterface
     {
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
-    
+
     public function children()
     {
         return $this->hasMany(self::class, 'parent_id')
@@ -72,15 +77,15 @@ class KnowBase extends Model implements CourseInterface
             array_push($arr, [
                 'id' => $child->id,
                 'parent_id' => $child->parent_id,
-                'title' => $child->title, 
-                'user_id'=> $child->user_id, 
-                'editor_id'=> $child->editor_id, 
-                'text'=> $child->text, 
-                'is_deleted'=> $child->is_deleted, 
-                'order'=> $child->order, 
-                'hash'=> $child->hash, 
+                'title' => $child->title,
+                'user_id'=> $child->user_id,
+                'editor_id'=> $child->editor_id,
+                'text'=> $child->text,
+                'is_deleted'=> $child->is_deleted,
+                'order'=> $child->order,
+                'hash'=> $child->hash,
             ]);
-            
+
             self::getArray($arr, $child);
         }
     }
@@ -128,7 +133,7 @@ class KnowBase extends Model implements CourseInterface
     public  function getUsersWithAccess()
     {
         $items = \App\Models\KnowBaseModel::where('book_id',$this->id)->get();
-        
+
         $arr = [];
 
         foreach ($items as $key => $item) {
@@ -150,11 +155,11 @@ class KnowBase extends Model implements CourseInterface
 
         }
 
-        return array_unique($arr); 
+        return array_unique($arr);
     }
 
     private static function getBooks($access = 0, User $user = null) {
-        
+
         $user = $user ?? auth()->user();
 
         $books = [];
@@ -187,18 +192,18 @@ class KnowBase extends Model implements CourseInterface
             $up = $up->get('book_id')
                 ->pluck('book_id')
                 ->toArray();
-               
+
             $books = array_merge($books, $up);
-            
+
             $books_with_read_access = KnowBase::withTrashed()
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->get('id')->pluck('id')
                 ->toArray();
-                
+
             $books = array_merge($books, $books_with_read_access);
         }
-   
-            
+
+
         return $books;
     }
 
@@ -206,7 +211,7 @@ class KnowBase extends Model implements CourseInterface
      * CourseInterface
      * @param mixed $id
      * @param mixed $items
-     * 
+     *
      * @return [type]
      */
     public function pluckArticles($items) {
@@ -227,15 +232,15 @@ class KnowBase extends Model implements CourseInterface
     public function getOrder()
     {
         $kb = self::with('children')->find($this->id);
-        
+
         return $this->pluckArticles($kb->children);
     }
 
     /**
      * CourseInterface
-     * 
+     *
      * @param mixed $id
-     * 
+     *
      * @return [type]
      */
     public function nextElement($id)
@@ -244,6 +249,6 @@ class KnowBase extends Model implements CourseInterface
         $key = array_search($id, $arr);
         return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
     }
-    
-    
+
+
 }

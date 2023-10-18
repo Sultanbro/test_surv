@@ -15,15 +15,18 @@ class CreateTenantUserImpersonationTokensTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('tenant_user_impersonation_tokens', function (Blueprint $table) {
+        Schema::connection('mysql')->create('tenant_user_impersonation_tokens', function (Blueprint $table) {
             $table->string('token', 128)->primary();
             $table->string('tenant_id');
             $table->string('user_id');
             $table->string('auth_guard');
             $table->string('redirect_url');
-            $table->timestamp('created_at');
-
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
+            $table->timestamps();
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
@@ -34,6 +37,6 @@ class CreateTenantUserImpersonationTokensTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tenant_user_impersonation_tokens');
+        Schema::connection('mysql')->dropIfExists('tenant_user_impersonation_tokens');
     }
 }

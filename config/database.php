@@ -58,6 +58,22 @@ return [
             'timezone' => '+00:00',
         ],
 
+        'testing' => [
+            'driver' => env('DB_DRIVER', 'mysql'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+            'timezone' => '+00:00',
+        ],
+
         /*
         |--------------------------------------------------------------------------
         | Tenant app DB
@@ -71,7 +87,7 @@ return [
             'driver' => env('DB_DRIVER', 'mysql'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => 'jobtronx',
+            'database' => env('TENANT_DB_DATABASE', 'jobtronx'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
@@ -143,9 +159,9 @@ return [
             'driver' => env('DB_CALLIBRO_DRIVER', 'mysql'),
             'host' => env('DB_CALLIBRO_HOST', '127.0.0.1'),
             'port' => env('DB_CALLIBRO_PORT', '3306'),
-            'database' => env('DB_CALLIBRO_DATABASE','forge'),
-            'username' => env('DB_CALLIBRO_USERNAME','forge'),
-            'password' => env('DB_CALLIBRO_PASSWORD', ),
+            'database' => env('DB_CALLIBRO_DATABASE', 'forge'),
+            'username' => env('DB_CALLIBRO_USERNAME', 'forge'),
+            'password' => env('DB_CALLIBRO_PASSWORD',),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
@@ -153,7 +169,7 @@ return [
 
         'call_center' => [
             'driver' => env('DB_CALLIBRO_FS_DRIVER', 'pgsql'),
-            'host' => env('DB_CALLIBRO_FS_HOST', '127.0.0.1'), 
+            'host' => env('DB_CALLIBRO_FS_HOST', '127.0.0.1'),
             'port' => env('DB_CALLIBRO_FS_PORT', '5432'),
             'database' => env('DB_CALLIBRO_FS_DATABASE', 'forge'),
             'username' => env('DB_CALLIBRO_FS_USERNAME', 'forge'),
@@ -162,8 +178,6 @@ return [
             'prefix' => '',
             'schema' => 'public',
         ],
-
-
     ],
 
     /*
@@ -202,5 +216,4 @@ return [
         ],
 
     ],
-
 ];

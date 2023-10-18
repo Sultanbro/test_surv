@@ -81,37 +81,38 @@
 
 					<div class="form-group d-flex aic">
 						<label class="mb-0 mr-3 w-200px">Администраторы</label>
-						<Multiselect
-							v-model="admins"
-							:options="users"
-							:multiple="true"
-							:close-on-select="false"
-							:clear-on-select="true"
-							:preserve-search="true"
-							placeholder="Выберите"
-							label="email"
-							track-by="email"
-							:taggable="true"
-							class="multiselect-surv"
-							@tag="addTag"
-						/>
+						<div
+							class="PageCabinet-badges form-control"
+							@click="isAdminsSelect = true"
+						>
+							<template v-for="admin, index in admins">
+								<b-badge
+									v-if="admin.email"
+									:key="index"
+								>
+									{{ admin.email }}
+								</b-badge>
+							</template>
+							&nbsp;
+						</div>
 					</div>
 
 					<div class="form-group d-flex aic">
 						<label class="mb-0 mr-3 w-200px">Кто может писать в&nbsp;общий чат</label>
-						<Multiselect
-							v-model="generalChatUsers"
-							:options="users"
-							:multiple="true"
-							:close-on-select="false"
-							:clear-on-select="true"
-							:preserve-search="true"
-							placeholder="Выберите"
-							label="email"
-							track-by="id"
-							:taggable="true"
-							class="multiselect-surv"
-						/>
+						<div
+							class="PageCabinet-badges form-control"
+							@click="isGeneralChatUsersOpen = true"
+						>
+							<template v-for="chatUser, index in generalChatUsers">
+								<b-badge
+									v-if="chatUser.email"
+									:key="index"
+								>
+									{{ chatUser.email }}
+								</b-badge>
+							</template>
+							&nbsp;
+						</div>
 					</div>
 
 					<div
@@ -488,16 +489,49 @@
 		>
 			<div id="cabinet-croppie" />
 		</b-modal>
+
+		<JobtronOverlay
+			v-if="isAdminsSelect"
+			@close="isAdminsSelect = false"
+		>
+			<AccessSelect
+				:value="adminsForm"
+				:tabs="['Сотрудники']"
+				:access-dictionaries="accessDictionariesAdmins"
+				search-position="beforeTabs"
+				:submit-button="'Применить'"
+				class="PageCabinet-accessSelect"
+				@submit="onSubmitAdmins"
+			/>
+		</JobtronOverlay>
+
+		<JobtronOverlay
+			v-if="isGeneralChatUsersOpen"
+			@close="isGeneralChatUsersOpen = false"
+		>
+			<AccessSelect
+				:value="generalChatUsers"
+				:tabs="[]"
+				:access-dictionaries="accessDictionariesChat"
+				search-position="beforeTabs"
+				:submit-button="'Применить'"
+				class="PageCabinet-accessSelect"
+				@submit="onSubmitGeneralChatUsers"
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
 <script>
 /* eslint-disable camelcase */
-import Multiselect from 'vue-multiselect'
+
+import { mapGetters, mapActions } from 'vuex'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import LocalitySelect from '@ui/LocalitySelect.vue'
+import JobtronOverlay from '@ui/Overlay'
+import AccessSelect from '@ui/AccessSelect/AccessSelect'
 
 import API from '@/components/Chat/Store/API.vue'
 
@@ -506,8 +540,9 @@ export default {
 	name: 'PageCabinet',
 	directives: {mask},
 	components:{
-		Multiselect,
 		LocalitySelect,
+		JobtronOverlay,
+		AccessSelect,
 	},
 	props: {
 		authRole: {
@@ -531,12 +566,9 @@ export default {
 			test: 'dsa',
 			items: [],
 			myCroppa: {},
-			users: [],
 			user: [],
 			user_card: [],
-			admins: [],
-			generalChatUsers: [],
-			generalChatUsersOld: [],
+
 			activeCourse: null,
 			page: 'profile',
 			img: '',
@@ -564,9 +596,47 @@ export default {
 			croppie: null,
 			geo_lat: 0,
 			geo_lon: 0,
+
+			isAdminsSelect: false,
+			admins: [],
+			adminsForm: [],
+
+			isGeneralChatUsersOpen: false,
+			generalChatUsers: [],
+			generalChatUsersOld: [],
 		};
 	},
 	computed: {
+		...mapGetters([
+			'users',
+			'positions',
+			'profileGroups',
+			'accessDictionaries',
+		]),
+		accessDictionariesAdmins(){
+			const newUsers = JSON.parse(JSON.stringify(this.accessDictionaries.users))
+			this.adminsForm.forEach(admin => {
+				const exists = newUsers.find(user => user.id === admin.id)
+				if(!exists) newUsers.push(admin)
+			})
+			return {
+				positions: this.accessDictionaries.positions,
+				profile_groups: this.accessDictionaries.profile_groups,
+				users: newUsers,
+			}
+		},
+		accessDictionariesChat(){
+			const newUsers = JSON.parse(JSON.stringify(this.accessDictionaries.users))
+			this.generalChatUsers.forEach(admin => {
+				const exists = newUsers.find(user => user.id === admin.id)
+				if(!exists) newUsers.push(admin)
+			})
+			return {
+				positions: this.accessDictionaries.positions,
+				profile_groups: this.accessDictionaries.profile_groups,
+				users: newUsers,
+			}
+		},
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
@@ -606,11 +676,13 @@ export default {
 		})
 	},
 	created() {
+		if(!this.users.length) this.loadCompany()
 		if (this.authRole) {
 			this.init()
 		}
 	},
 	methods: {
+		...mapActions(['loadCompany']),
 		getYoutubeVideoId(url) {
 			const urlObj = new URL(url)
 			if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
@@ -842,7 +914,11 @@ export default {
 				.get('/cabinet/get')
 				.then(({data}) => {
 					this.admins = data.admins;
-					this.users = data.users;
+					this.adminsForm = data.admins.map(admin => ({
+						...admin,
+						name: admin.email,
+						type: 1,
+					}))
 					this.user = data.user;
 					this.keywords = data.user.working_country;
 					this.working_city = data.user.working_city;
@@ -879,6 +955,7 @@ export default {
 			API.getChatInfo(0, ({users}) => {
 				this.generalChatUsers = JSON.parse(JSON.stringify(users)).map(user => {
 					user.email = `${user.name} ${user.last_name}`
+					user.type = 1
 					return user
 				})
 				this.generalChatUsersOld = JSON.parse(JSON.stringify(users))
@@ -900,16 +977,13 @@ export default {
 						this.$toast.error('Заполните все поля')
 					}
 				}
-				this.axios
-					.post('/cabinet/save', {
-						admins: this.admins,
-					})
-					.then(() => {
-						this.$toast.success('Сохранено')
-					})
-					.catch((error) => {
-						alert(error)
-					})
+				this.axios.post('/cabinet/save', {
+					admins: this.admins,
+				}).then(() => {
+					this.$toast.success('Сохранено')
+				}).catch((error) => {
+					alert(error)
+				})
 			}
 			catch(err) {
 				console.error(err)
@@ -940,52 +1014,76 @@ export default {
 						});
 				}
 			}
-		}
+		},
+		onSubmitAdmins(newAdmins){
+			this.$nextTick(() => {
+				this.admins = newAdmins.map(admin => ({
+					id: admin.id,
+					email: admin.name,
+				}))
+				this.adminsForm = newAdmins.map(admin => ({
+					id: admin.id,
+					email: admin.name,
+					name: admin.name,
+					type: 1,
+				}))
+				this.isAdminsSelect = false
+			})
+		},
+		onSubmitGeneralChatUsers(users){
+			this.$nextTick(() => {
+				this.generalChatUsers = users.map(user => ({
+					id: user.id,
+					email: user.name,
+				}))
+				this.isGeneralChatUsersOpen = false
+			})
+		},
 	},
 };
 </script>
 
 <style lang="scss">
-	.video-add-content{
-		.form-group{
-			position: relative;
-		}
-		.img-info{
-			position: absolute;
-			top: -9px;
-			right: -8px;
-			background: #fff;
-			border-radius: 50%;
-			z-index: 3;
-		}
-		input::-webkit-outer-spin-button,
-		input::-webkit-inner-spin-button {
-			-webkit-appearance: none;
-		}
-
-		/* Firefox */
-		input[type=number] {
-			-moz-appearance: textfield;
-		}
-
-	}
-	.no-youtube{
-		height: auto;
-		img{
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		}
-	}
-	.youtube-content{
+.video-add-content{
+	.form-group{
 		position: relative;
-		padding-bottom: 56.25%;
-		iframe{
-			position: absolute;
-			width: 100%!important;
-			height: 100%!important;
-		}
 	}
+	.img-info{
+		position: absolute;
+		top: -9px;
+		right: -8px;
+		background: #fff;
+		border-radius: 50%;
+		z-index: 3;
+	}
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+	}
+
+	/* Firefox */
+	input[type=number] {
+		-moz-appearance: textfield;
+		appearance: textfield;
+	}
+}
+.no-youtube{
+	height: auto;
+	img{
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+.youtube-content{
+	position: relative;
+	padding-bottom: 56.25%;
+	iframe{
+		position: absolute;
+		width: 100%!important;
+		height: 100%!important;
+	}
+}
 .container-left-padding{
 	padding-top: 0;
 }
@@ -1175,7 +1273,40 @@ a.lp-link {
 	width: 100%;
 	max-width: 30rem;
 }
-	.cabinet-lp{
-		padding: 4px 10px 10px 10px;
+.cabinet-lp{
+	padding: 4px 10px 10px 10px;
+}
+
+.PageCabinet{
+	&-accessSelect{
+		width: 420px;
+		height: 720px;
+		max-height: 80vh;
+		padding: 20px;
+		border-radius: 15px;
+
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		background-color: #fff;
 	}
+	&-badges{
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 5px;
+
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+		border-radius: 6px;
+
+		font-size: 14px;
+		line-height: 1.3;
+
+		background-color: #F7FAFC;
+	}
+}
 </style>

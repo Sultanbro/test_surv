@@ -42,6 +42,5 @@ class AuthServiceProvider extends ServiceProvider
             
             return $user->is_admin == 1  ? true : null;
         });
-
     }
 }

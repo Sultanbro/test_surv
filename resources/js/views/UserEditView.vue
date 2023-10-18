@@ -11,6 +11,7 @@ import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
 import UserEditMisc from '@/components/pages/UserEdit/UserEditMisc'
 import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
 import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageData'
+import { loadMapsApi } from '@/composables/ymapsLoader'
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
 import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
 import 'vue-croppie'
@@ -123,6 +124,7 @@ export default {
 			cityText: this.user?.working_country || '',
 			cityLat: 0,
 			cityLon: 0,
+			file8: null,
 		}
 	},
 	computed: {
@@ -180,6 +182,10 @@ export default {
 			if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
 				return this.$moment(this.user.deleted_at).format(DATE_DMY)
 			return ''
+		},
+		history(){
+			if(!this.user) return null
+			return this.user.history
 		}
 	},
 	watch: {
@@ -196,6 +202,9 @@ export default {
 				}
 			}
 		},
+	},
+	created(){
+		loadMapsApi()
 	},
 	mounted(){
 		this.updatePageData();
@@ -507,12 +516,12 @@ export default {
 		},
 
 		async deleteUser(){
-			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
+			this.deleteError = ''
+			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки') {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
 
-			this.deleteError = ''
 			const formData = new FormData(this.$refs.deleteForm)
 			try{
 				const {data} = await axios({
@@ -746,8 +755,8 @@ export default {
 						>
 
 						<template v-if="user">
-							<div class="row">
-								<div class="col-12 col-md-6">
+							<div class="row mt-4">
+								<div class="col-12 col-md-6 py-4">
 									<div class="card-profile-edit">
 										<div class="d-flex">
 											<label
@@ -777,17 +786,20 @@ export default {
 										</div>
 									</div>
 								</div>
-								<div class="col-12 col-md-6">
-									<div class="card-profile-edit overflow-hidden p-0">
-										<UserEditAdditional
-											:user="user"
-											:user-created="userCreated"
-											:user-applied="userApplied"
-											:user-applied-days="userAppliedDays"
-											:is-trainee="isTrainee"
-											:user-deleted="userDeleted"
-											:user-deleted-at="userDeletedAt"
-										/>
+								<div class="col-12 col-md-6 py-4">
+									<div class="UserEditView-scrollCard">
+										<div class="card-profile-edit p-0">
+											<UserEditAdditional
+												:user="user"
+												:user-created="userCreated"
+												:user-applied="userApplied"
+												:user-applied-days="userAppliedDays"
+												:is-trainee="isTrainee"
+												:user-deleted="userDeleted"
+												:user-deleted-at="userDeletedAt"
+												:history="history"
+											/>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -946,6 +958,7 @@ export default {
 				</form>
 			</div>
 		</div>
+
 		<template v-if="user">
 			<b-modal
 				id="modal-deactivate"
@@ -1027,6 +1040,7 @@ export default {
 														type="file"
 														class="inputfile inputfile-1"
 														style="display:none"
+														@change="file8 = $event.target.files"
 													>
 													<label
 														v-if="user.downloads && user.downloads.resignation"
@@ -1116,6 +1130,7 @@ export default {
 					</div>
 				</div>
 			</b-modal>
+
 			<b-modal
 				id="modal-activate"
 				v-model="isRestoreConfirm"
@@ -2376,4 +2391,43 @@ input[type="radio"] {
 }
 
 
+</style>
+
+<style lang="scss">
+.card-profile-edit{
+	padding: 20px;
+	// margin: 20px 0;
+	border: 1px solid #ddd;
+
+	border-radius: 10px;
+	background-color: #fff;
+
+	.add-info-title{
+		margin: 5px 20px;
+
+		font-size: 16px;
+		font-weight: 500;
+		color: #999;
+	}
+	.table{
+		margin: 0;
+		border: none;
+
+		th,td{
+			padding: 5px 20px;
+			border-left: 1px solid #ddd;
+
+			&:first-child{
+				border-left: none;
+			}
+		}
+	}
+}
+
+.UserEditView{
+	&-scrollCard{
+		height: 200px;
+		max-height: 200px;
+	}
+}
 </style>

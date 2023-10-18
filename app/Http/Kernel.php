@@ -4,8 +4,14 @@ namespace App\Http;
 
 use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
+use App\Http\Middleware\OnlyBusinessPartnerMiddleware;
 use App\Http\Middleware\Portal\IsOwner;
 use App\Http\Middleware\UpdateLastSeenTime;
+use App\Http\Middleware\V2\Analytics\AnalyticsCached;
+use App\Http\Middleware\V2\Analytics\CacheAnalyticsData;
+use App\Http\Middleware\V2\Analytics\CheckAnalyticPermission;
+use App\Http\Middleware\V2\Analytics\DecompositionCached;
+use App\Http\Middleware\V2\Analytics\GroupsAndActivitiesCached;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -18,14 +24,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Fruitcake\Cors\HandleCors::class,
-        //\Illuminate\Http\Middleware\HandleCors::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
-
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 
     ];
@@ -41,12 +45,11 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\UserActivity::class,
-            \App\Http\Middleware\TestMiddleware::class,
+            \App\Http\Middleware\NotificationMiddleware::class,
             \App\Http\Middleware\Admin::class,
             \App\Http\Middleware\CheckPermissions::class,
             \App\Http\Middleware\ActiveUser::class,
@@ -88,6 +91,11 @@ class Kernel extends HttpKernel
         'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
-        'owner' => IsOwner::class
+        'owner' => IsOwner::class,
+        'analytics_permission' => CheckAnalyticPermission::class,
+        'decomposition_cached' => DecompositionCached::class,
+        'analytics_cached' => AnalyticsCached::class,
+        'groups_activities_cached' => GroupsAndActivitiesCached::class,
+        'only_bp' => OnlyBusinessPartnerMiddleware::class
     ];
 }

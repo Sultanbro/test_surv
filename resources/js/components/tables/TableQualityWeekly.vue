@@ -1,7 +1,7 @@
 <template>
 	<div class="mt-5 quality">
 		<div class="mb-3">
-			Кол-во показателей: <b>{{ total_count }}</b> , Среднее значение: <b>{{ total_avg }}</b>
+			Кол-во показателей: <b>{{ totalCount }}</b> , Среднее значение: <b>{{ totalAvg }}</b>
 		</div>
 		<div class="table-responsive table-container">
 			<table class="table table-bordered">
@@ -29,7 +29,8 @@
 								{{ item.name }}
 
 								<JobtronCup
-									:place="item.show_cup"
+									v-if="topUsers.includes(item.id)"
+									:place="topUsers.indexOf(item.id) + 1"
 									rotate
 								/>
 							</div>
@@ -69,33 +70,84 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		weeks: {
+			type: Array,
+			default: () => []
+		},
 	},
 	data() {
 		return {
 			users: [],
-			fields: [],
 			user_ids: {},
 			total_avg: 0,
 			total_count: 0,
 			loader: null,
-		};
+		}
+	},
+
+	computed: {
+		totalCount(){
+			return this.users.reduce((result, user) => user.total > 0 ? result + 1 : result, 0)
+		},
+		totalAvg(){
+			if(this.totalCount <= 0) return 0
+			return Math.round((this.users.reduce((result, user) => {
+				if(user.total > 0) {
+					result += user.total
+				}
+				return result
+			}, 0) / this.totalCount) * 100) / 100
+		},
+		sortedUsers(){
+			return this.users.slice().sort((a, b) => b.total - a.total)
+		},
+		topUsers(){
+			return this.sortedUsers.slice(0, 3).map(user => user.id)
+		},
+		fields(){
+			let order = 1
+			const fieldsArray = [{
+				key: 'total',
+				name: 'Итог',
+				order: order++,
+				klass: ' text-center px-1 t-total'
+			}]
+
+			this.weeks.forEach((week, weekIndex) => {
+				week.forEach((day, dayIndex) => {
+					fieldsArray.push({
+						key: day,
+						name: day,
+						order: order++,
+						klass: 'text-center px-1',
+						type: 'day'
+					})
+
+					if(dayIndex + 1 === week.length){
+						fieldsArray.push({
+							key: 'avg' + (weekIndex + 1),
+							name: 'Ср. ' + (weekIndex + 1),
+							order: order++,
+							klass: 'text-center px-1 averages',
+							type: 'avg'
+						})
+					}
+				})
+			})
+			return fieldsArray
+		}
 	},
 
 	created() {
-
-		this.setWeeksTableFields()
-
 		this.users = this.items;
 		this.setLeaders();
 	},
 
 	methods: {
-
 		setLeaders() {
 			this.users.forEach(item => {
 				item.show_cup = 0;
 			});
-
 
 			let arr = this.users;
 			arr.sort((a, b) => Number(a.total) < Number(b.total)  ?
@@ -136,66 +188,6 @@ export default {
 		//     })
 		//     item.editable = true
 		// },
-
-		setWeeksTableFields() {
-
-			let fieldsArray = []
-			let weekNumber = 1;
-			let order = 1;
-
-			fieldsArray.push({
-				key: 'total',
-				name: 'Итог',
-				order: order++,
-				klass: ' text-center px-1 t-total'
-			})
-
-
-			for(let i = 1; i <= this.monthInfo.daysInMonth; i++) {
-
-				let m = this.monthInfo.month.toString()
-				let d = i
-				if(d.toString().length == 1) d = '0' + d;
-				if(m.length == 1) m = '0' + m;
-
-				let date = this.$moment(this.monthInfo.currentYear + '-' + m + '-' + d);
-				let dow = date.day();
-
-				fieldsArray.push({
-					key: i,
-					name: i,
-					order: order++,
-					klass: 'text-center px-1',
-					type: 'day'
-				})
-
-
-
-				if(dow == 0) {
-					fieldsArray.push({
-						key: 'avg' + weekNumber,
-						name: 'Ср. ' + weekNumber ,
-						order: order++,
-						klass: 'text-center px-1 averages',
-						type: 'avg'
-					})
-					weekNumber++
-				}
-
-				if(dow != 0 && i == this.monthInfo.daysInMonth) {
-					fieldsArray.push({
-						key: 'avg' + weekNumber,
-						name: 'Ср. ' + weekNumber,
-						order: order++,
-						klass: 'text-center px-1 averages',
-						type: 'avg'
-					})
-				}
-			}
-
-			this.fields = fieldsArray
-
-		},
 
 		// updateWeekValue(item, key) {
 

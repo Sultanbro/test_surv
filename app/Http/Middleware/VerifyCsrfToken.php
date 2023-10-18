@@ -12,15 +12,17 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/bp/job/agreement/', 
-        '/bp/job/skype/',  
-        '/bp/choose_time', 
-        '/statistics/kpi', 
+        '*',
+        '/bp/job/agreement/',
+        '/bp/job/agreement/',
+        '/bp/job/skype/',
+        '/bp/choose_time',
+        '/statistics/kpi',
         '/course-results/nullify',
         '/profile/upload/edit',
         '/course-results/get',
         '/mailing',
         '/mailing/*',
-        '/notification-template/*'
+        '/notification-template/*',
     ];
 }

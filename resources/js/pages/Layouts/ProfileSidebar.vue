@@ -449,6 +449,10 @@ export default {
 		}
 		this.initCorpBook();
 		this.fetchPortal()
+
+		if(window.admin){
+			window.addAdminTool('profileBookTest', this.testCorpBook)
+		}
 	},
 	created(){
 		this.isRoot = window.location.pathname === '/'
@@ -529,6 +533,22 @@ export default {
 		initCorpBook(){
 			if((this.isProfile || this.isRoot) && this.status === 'started' && this.corp_book) {
 				this.showCorpBookPage = this.corp_book !== null
+				this.bookCounter()
+			}
+		},
+
+		async testCorpBook(id){
+			const {data} = await this.axios.post('/kb/get', {
+				id,
+				// eslint-disable-next-line
+				course_item_id: 0,
+				refresh: false
+			})
+			if(data?.book){
+				const statusStore = useProfileStatusStore()
+				// eslint-disable-next-line
+				statusStore.corp_book = data?.book
+				this.showCorpBookPage = true
 				this.bookCounter()
 			}
 		},

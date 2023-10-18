@@ -63,7 +63,7 @@
 						<div class="mb-2">
 							Сообщение
 							<img
-								v-b-popover.hover="'Максимум 244 символа'"
+								v-b-popover.hover="'Максимум 1000 символов'"
 								src="/images/dist/profit-info.svg"
 								class="img-info"
 								alt="info icon"
@@ -72,7 +72,7 @@
 						<div
 							class="form-control relative"
 							:class="{
-								'NotificationsTemplates-error': value.title.length > 244
+								'NotificationsTemplates-error': value.title.length > 1000
 							}"
 						>
 							<JobtronTextarea

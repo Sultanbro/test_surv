@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands\Pusher;
 
+use App\Classes\Helpers\Phone;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
+use App\Models\GroupUser;
 use App\Models\Mailing\Mailing;
 use App\Models\Mailing\MailingNotification;
 use App\Models\Mailing\MailingNotificationSchedule;
@@ -23,7 +25,7 @@ class NotificationTemplatePusher extends Command
      *
      * @var string
      */
-    protected $signature = 'run:pusher:template';
+    protected $signature = 'run:pusher:template {force?}';
 
     /**
      * The console command description.
@@ -41,7 +43,7 @@ class NotificationTemplatePusher extends Command
     public function handle()
     {
         $notifications = MailingNotification::getTemplates()->isActive()
-            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
+            ->whereIn('frequency', [MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
         foreach ($notifications as $notification)
@@ -66,18 +68,22 @@ class NotificationTemplatePusher extends Command
         MailingNotification $notification
     )
     {
-        $date     = Carbon::now()->subDay()->format('Y-m-d');
-        $users    = DB::table('users')->whereNotNull('deleted_at')->whereDate('deleted_at', $date)->get();
+        $date = Carbon::now()->subDay()->format('Y-m-d');
 
+        $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
         $mailings = $notification?->mailings();
-
-        $link       = "https://bp.jobtron.org/";
-        $message    = $notification?->title . ' <br> ';
-        $message   .= $link;
-
         foreach ($mailings as $mailing)
         {
-            NotificationFactory::createNotification($mailing)->send($notification, $message, $users);
+            foreach ($users as $user)
+            {
+                $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".Phone::normalize($user->phone);
+                $this->line("Id of user:".$user->id);
+                $message    = $notification?->title ."\n";
+                $message   .= $link;
+                $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
+
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);
+            }
         }
     }
 
@@ -98,11 +104,13 @@ class NotificationTemplatePusher extends Command
             ->orderBy('last_name', 'asc')
             ->get();
 
-        $link       = 'Ссылка на опрос <br>';
         $message    = $notification->title;
-        $message   .= $link;
+        if(tenant('id') == 'bp'){
+            $link = '<br> <a href="/estimate_your_trainer" class="btn btn-primary btn-sm rounded mt-1" target="_blank">Оценить</a>';
+            $message .= $link;
+        }
 
-        if ($daysRemaining == 2)
+        if ($daysRemaining == 2 || $this->argument('force') == 'true')
         {
             foreach ($mailings as $mailing)
             {

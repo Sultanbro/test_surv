@@ -27,7 +27,8 @@ class StorePositionRequest extends FormRequest
     {
         return [
             'position' => ['required', 'string'],
-            'is_head' => ['boolean']
+            'is_head' => ['boolean'],
+            'is_spec' => ['boolean'],
         ];
     }
 
@@ -40,7 +41,8 @@ class StorePositionRequest extends FormRequest
 
         $position = Arr::get($validated, 'position');
         $is_head = Arr::get($validated, 'is_head');
+        $is_spec = Arr::get($validated, 'is_spec');
 
-        return new AnyPositionDTO($position,$is_head);
+        return new AnyPositionDTO($position, $is_head, $is_spec);
     }
 }

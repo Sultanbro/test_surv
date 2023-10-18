@@ -82,6 +82,31 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
+			<b-row
+				v-if="isBP"
+				class="align-items-center mt-4"
+			>
+				<b-col
+					cols="12"
+					md="4"
+				>
+					<b-form-group>
+						<b-form-checkbox
+							v-model="isSpec"
+							:value="1"
+							:unchecked-value="0"
+							switch
+						>
+							Старший специалист
+							<img
+								v-b-popover.hover.right="'Сотрудника с такой должностью будут оценивать сотрудники отдела'"
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+							>
+						</b-form-checkbox>
+					</b-form-group>
+				</b-col>
+			</b-row>
 			<b-row class="align-items-center">
 				<b-col
 					cols="12"
@@ -233,6 +258,7 @@ export default {
 			sum: 0,
 			activebtn: null,
 			isHead: false,
+			isSpec: false,
 			desc: {
 				require: '',
 				actions: '',
@@ -241,12 +267,13 @@ export default {
 				knowledge:'',
 				next_step:'',
 				show: 0
-			}
+			},
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		}
 	},
 	watch:{
 		positions(value) {
-			//конвертирую прилетевший объект в массив для работы vue-multiselect
+			// конвертирую прилетевший объект в массив для работы vue-multiselect
 			// если данных нет, то в this.data будет пустой массив
 			Object.keys(value).forEach(item => {
 				this.data.push({
@@ -262,6 +289,8 @@ export default {
 			this.position_id = 0;
 			this.indexation = 0;
 			this.sum = 0;
+			this.isHead = 0;
+			this.isSpec = 0;
 			this.activebtn = null;
 			this.desc = {
 				require: '',
@@ -270,7 +299,7 @@ export default {
 				salary: '',
 				knowledge: '',
 				next_step: '',
-				show: 0
+				show: 0,
 			}
 		},
 		addNewPosition() {
@@ -292,6 +321,7 @@ export default {
 				this.position_id = data[0].id;
 				this.indexation = data[0].indexation;
 				this.isHead = data[0].is_head;
+				this.isSpec = data[0].is_spec;
 				this.sum = data[0].sum;
 				this.desc = {
 					require: data[0].require,
@@ -310,6 +340,7 @@ export default {
 			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {
 				position: this.new_position,
 				is_head: this.isHead,
+				is_spec: this.isSpec,
 			})
 			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
 
@@ -339,6 +370,7 @@ export default {
 					sum: this.sum,
 					desc: this.desc,
 					is_head: this.isHead,
+					is_spec: this.isSpec,
 				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
 				this.$toast.success(this.addNew ? 'Новая должность создана!' : 'Изменения сохранены');

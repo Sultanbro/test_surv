@@ -30,7 +30,6 @@ return new class extends Migration
                 'password',
                 'birthday',
                 'working_city',
-                'working_country',
                 'currency',
             ])
             ->whereNotIn('email', $existCentralEmails)
@@ -40,7 +39,7 @@ return new class extends Migration
         $newCentralUsers = [];
 
         foreach ($tenantOnlyUsers as $tenantUser) {
-            array_push($newCentralUsers, [
+            $newCentralUsers[] = [
                 'email' => $tenantUser->email,
                 'phone' => $tenantUser->phone ?? '77000000000',
                 'name' => $tenantUser->name ?? 'Noname',
@@ -48,9 +47,8 @@ return new class extends Migration
                 'password' => $tenantUser->password,
                 'birthday' => $tenantUser->birthday,
                 'city' => $tenantUser->working_city,
-                'country' => $tenantUser->working_country,
                 'currency' => $tenantUser->currency,
-            ]);
+            ];
         }
 
         DB::connection('mysql')

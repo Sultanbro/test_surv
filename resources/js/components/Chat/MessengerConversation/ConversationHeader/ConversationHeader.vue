@@ -80,7 +80,7 @@
 									:image="'/users_img/' + member.img_url"
 									:size="27"
 									:class="{
-										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
+										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id) && chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
 									}"
 									tooltip
 								/>
@@ -97,7 +97,7 @@
 										class="PopupMenu-item wsnw ChatIcon-parent"
 										@click="userPopup === 0; changeAdmin(member)"
 									>
-										{{ (chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+										{{ (chat.users.find(u => u.id === member.id) && chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
 									</div>
 									<div
 										class="PopupMenu-item wsnw ChatIcon-parent"
@@ -132,7 +132,7 @@
 												:image="'/users_img/' + user.img_url"
 												:size="24"
 												:class="{
-													'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false
+													'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id) && chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false
 												}"
 											/>
 											{{ `${user.name} ${user.last_name}` }}
@@ -150,7 +150,7 @@
 												class="PopupMenu-item wsnw ChatIcon-parent"
 												@click="userPopup === 0; changeAdmin(user)"
 											>
-												{{ (chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+												{{ (chat.users.find(u => u.id === user.id) && chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
 											</div>
 											<div
 												class="PopupMenu-item wsnw ChatIcon-parent"
@@ -318,12 +318,23 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['chat', 'user']),
+		...mapGetters(['chat', 'user', 'accessDictionaries']),
 		members() {
-			if (this.chat) {
-				return this.chat.users;
-			}
-			return [];
+			if(!this.chat) return []
+			if(!this.chat.id) return this.accessDictionaries.users.map(user => ({
+				id: user.io,
+				name: user.name.split(' ')[0],
+				/* eslint-disable camelcase */
+				last_name: user.name.split(' ').splice(1, 5).join(' '),
+				img_url: user.avatar,
+				pivot: {
+					chat_id: 0,
+					is_admin: 0,
+					user_id: user.id
+				}
+				/* eslint-enable camelcase */
+			}))
+			return this.chat.users
 		},
 		isAdmin() {
 			if(!this.chat?.users) return false
@@ -357,6 +368,9 @@ export default {
 		// 	}
 		// },
 	},
+	created(){
+		if(!this.accessDictionaries?.users?.length) this.loadCompany()
+	},
 	methods: {
 		...mapActions([
 			'setCurrentChatContacts',
@@ -375,6 +389,7 @@ export default {
 			'unmuteChat',
 			'loadChat',
 			'removeMembers',
+			'loadCompany',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {

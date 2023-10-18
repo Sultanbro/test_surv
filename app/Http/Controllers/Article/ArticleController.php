@@ -29,11 +29,11 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $articles = Article::availableFor($user)->filter($filter)
+        $articles = Article::with("views")->availableFor($user)->filter($filter)
              ->where('created_at', '>', $user->created_at)
              ->orderByDesc('created_at');
 
-       
+
         $pinArticles = (clone $articles)
             ->whereHas('pins', function ($q) use ($user) {
                 $q->where('user_id', $user->id);

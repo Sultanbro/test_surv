@@ -4,15 +4,16 @@ namespace App\Models;
 
 use App\Models\Portal\Portal;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
+use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
-    use HasDatabase, HasDomains;
+    use HasDatabase, HasDomains, HasFactory;
 
     protected $fillable = [
         'id',

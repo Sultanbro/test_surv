@@ -56,7 +56,8 @@ class QualityController extends Controller
             'error' => 'access',
         ];
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        $editors_id = json_decode($group->editors_id);
+        $group_editors = is_array($editors_id) ? $editors_id : [];
 
         if (auth()->user()->is_admin != 1 && !in_array($currentUser->id, $group_editors)) {
             return [
@@ -108,9 +109,9 @@ class QualityController extends Controller
                 $count = 0;
 
                 foreach($value as $val){
-                    if(isset($item['weeks'][$val])) {
+                    if(isset($item['weeks'][$val]) && $item['weeks'][$val] > 0) {
                         $avg += $item['weeks'][$val];
-                        if($item['weeks'][$val] >= 0) $count++;
+                        $count++;
                     }
                 }
 
@@ -295,6 +296,7 @@ class QualityController extends Controller
             'check_users' => $check_users['check_users'] ?? null,
             'individual_type' => $check_users['individual_type'] ?? null,
             'individual_current' => $check_users['individual_current'] ?? null,
+            'weeks' => $weeks,
         ]);
     }
 

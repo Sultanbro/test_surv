@@ -5,10 +5,8 @@ namespace App\Listeners;
 use App\Events\WorkdayEvent;
 use App\Models\WorkChart\Workday;
 use App\Repositories\WorkChart\WorkdayRepository;
-use App\Service\WorkChart\ChartFactory;
 use Exception;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class WorkdayListener
 {
@@ -36,10 +34,11 @@ class WorkdayListener
      */
     public function handle(WorkdayEvent $event): void
     {
-        $chart = $event->user->activeGroup()->workChart()->first();
-
-        if ($event->user->workChart()->exists())
-        {
+        $group = $event->user->activeGroup();
+        if ($group) {
+            $chart = $group->workChart()->first();
+        }
+        if ($event->user->workChart()->exists()) {
             $chart = $event->user->workChart()->first();
         }
 
@@ -51,8 +50,7 @@ class WorkdayListener
 
         $exist = $this->repository->getUserWorkDaysPerWeek($event->user->id, $date->format('Y-m-d'), $date->weekNumberInMonth, $date->dayOfWeek)->exists();
 
-        if (!$exist)
-        {
+        if (!$exist) {
             Workday::createOrFail(
                 $event->user->id,
                 $date->dayOfWeek,

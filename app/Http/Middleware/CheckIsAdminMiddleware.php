@@ -21,7 +21,7 @@ class CheckIsAdminMiddleware
     {
         $user = auth()->user();
 
-        if (!$user->is_admin || $user->can('awards_edit') || $user->can('awards_view')){
+        if (!$user->is_admin && (!$user->can('awards_edit') || !$user->can('awards_view'))){
             throw new \Exception('У вас нет права Администратора!');
         }
         return $next($request);

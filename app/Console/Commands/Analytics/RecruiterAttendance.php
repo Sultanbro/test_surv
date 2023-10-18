@@ -56,9 +56,8 @@ class RecruiterAttendance extends Command
      */
     public function __construct()
     {
-        parent::__construct();
 
-        
+        parent::__construct();
 
         $this->activity = new RecruitingActivityService();
      
@@ -67,18 +66,18 @@ class RecruiterAttendance extends Command
 
         // TODO users
         // get users
-        $group = ProfileGroup::find(Recruiting::GROUP_ID);
-        $users = json_decode($group->users);
-
-        $this->users = User::withTrashed()
-            ->with('user_description')
-            ->whereHas('user_description', function ($query) {
-                $query->where('is_trainee', 0);
-            })
-            ->whereIn('id', $users)
-            ->get(['id'])
-            ->pluck('id')
-            ->toArray();
+//        $group = ProfileGroup::find(Recruiting::GROUP_ID);
+//        $users = json_decode($group->users);
+//
+//        $this->users = User::withTrashed()
+//            ->with('user_description')
+//            ->whereHas('user_description', function ($query) {
+//                $query->where('is_trainee', 0);
+//            })
+//            ->whereIn('id', $users)
+//            ->get(['id'])
+//            ->pluck('id')
+//            ->toArray();
     }
 
     /**
