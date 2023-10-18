@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Pusher;
 
+use App\Classes\Helpers\Phone;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
 use App\Models\GroupUser;
@@ -75,7 +76,7 @@ class NotificationTemplatePusher extends Command
         {
             foreach ($users as $user)
             {
-                $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".$user->phone;
+                $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".Phone::normalize($user->phone);
                 $this->line("Id of user:".$user->id);
                 $message    = $notification?->title ."\n";
                 $message   .= $link;
