@@ -44,6 +44,12 @@
 			@init="intro['indicators'] = true"
 		/>
 
+		<RefStat
+			ref="referals"
+			:class="{ _active: anim.referals }"
+			@init="intro['referals'] = true"
+		/>
+
 		<Popup
 			v-if="popBalance"
 			title="Баланс оклада"
@@ -113,19 +119,21 @@ import Courses from '@/pages/Profile/Courses.vue'
 import Profit from '@/pages/Profile/Profit.vue'
 import TraineeEstimation from '@/pages/Profile/TraineeEstimation.vue'
 import CompareIndicators from '@/pages/Profile/CompareIndicators.vue'
+import RefStat from '@/pages/Profile/RefStat.vue'
 import Popup from '@/pages/Layouts/Popup.vue'
 import Balance from '@/pages/Profile/Popups/Balance.vue'
 import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
+import { useReferralStore } from '@/stores/Referral'
 
 export default {
 	name: 'ProfilePage',
@@ -138,6 +146,7 @@ export default {
 		Profit,
 		TraineeEstimation,
 		CompareIndicators,
+		RefStat,
 		Popup,
 		Balance,
 		Kpi,
@@ -160,6 +169,7 @@ export default {
 				profit: false,
 				estimation: false,
 				indicators: false,
+				referals: false,
 			},
 			anim: {
 				intro: false,
@@ -167,7 +177,8 @@ export default {
 				courses: false,
 				profit: false,
 				estimation: false,
-				indicators: false
+				indicators: false,
+				referals: false,
 			},
 			intersectionObserver: null
 		};
@@ -207,12 +218,14 @@ export default {
 	},
 	mounted(){
 		if(this.isReady) this.initAnimOnScroll()
+		this.fetchUserStats()
 	},
 	beforeUnmount(){
 		this.intersectionObserver.disconnect()
 		this.intersectionObserver = null
 	},
 	methods: {
+		...mapActions(useReferralStore, ['fetchUserStats']),
 		pop(window) {
 			if(window == 'balance') this.popBalance = true;
 			if(window == 'kpi') this.popKpi = true;
@@ -237,6 +250,7 @@ export default {
 					this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.intersectionObserver.observe(this.$refs.indicators.$el)
+					this.intersectionObserver.observe(this.$refs.referals.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {

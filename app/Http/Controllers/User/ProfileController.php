@@ -432,4 +432,14 @@ class ProfileController extends Controller
 
         return response()->json($response);
     }
+
+    /**
+     * Условия оплаты из отделов и должности
+     *
+     * @return JsonResponse
+     */
+    public function promotionalMaterial()
+    {
+        return view('promotional-material');
+    }
 }
