@@ -19,12 +19,29 @@
 </template>
 
 <script>
+const fileTypes = [
+	'',
+	'alt',
+	'image',
+	'audio',
+	'video',
+	'archive',
+	'pdf',
+	'word',
+	'excel',
+	'powerpoint',
+	'code',
+]
+
 export default {
 	name: 'PromotionalMaterialFile',
 	props: {
 		type: {
 			type: String,
-			default: 'pdf',
+			default: '',
+			validator(value) {
+				return fileTypes.includes(value)
+			}
 		},
 		href: {
 			type: String,
