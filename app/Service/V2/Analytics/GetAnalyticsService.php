@@ -33,6 +33,7 @@ class GetAnalyticsService
             ];
         });
         dd(AnalyticsFacade::analytics($dto));
+        dd(AnalyticStat::form($dto->groupId, $date));
         return [
             'table' => AnalyticStat::form($dto->groupId, $date),
             'columns' => $columns
