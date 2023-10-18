@@ -15,7 +15,6 @@ use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
 use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
-use App\Jobs\Referral\ProcessTouchReferrerStatus;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
@@ -1639,6 +1638,8 @@ class TimetrackingController extends Controller
             $daytype->admin_id = $user->id;
             $daytype->save();
         }
+
+        Referring::touchReferrerSalary($request->user_id, $request->type);
 
         $authorName = $user->name . ' ' . $user->last_name;
         $desc = isset($request['comment']) ? $description . '. Причина: ' . $request['comment'] : $description;

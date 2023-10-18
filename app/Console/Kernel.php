@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\Api\CheckPaymentsStatusCommand;
 use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
+use App\Console\Commands\CheckForReferrerDaily;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
 use App\Console\Commands\ForTestingCommand;
@@ -43,7 +44,8 @@ class Kernel extends ConsoleKernel
         NotificationTemplatePusher::class,
         SetExitTimetracking::class,
         TenantMigrateFreshCommand::class,
-        ForTestingCommand::class
+        ForTestingCommand::class,
+        CheckForReferrerDaily::class
     ];
 
     /**
@@ -80,6 +82,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run usernotification:estimate_trainer --tenants=bp')->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
         $schedule->command('tenants:run intellect:send --tenants=bp')->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
+        $schedule->command('tenants:run referrer:daily --tenants=bp')->withoutOverlapping()
+            ->dailyAt('21:00');
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command('tenants:run usernotification:foreigner --tenants=bp')->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
         $schedule->command('tenants:run start_day:it_department --tenants=bp')->daily(); // Запускается каждый день начинает день для IT отдела

@@ -179,7 +179,6 @@ class CreateTraineeReport extends Command
                 'day_7' => array_key_exists('day_7', $arr) ? $arr['day_7'] : 0,
             ]);
         }
-
     }
 
     public function getNextDates($date)

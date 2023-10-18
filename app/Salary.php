@@ -40,6 +40,7 @@ class Salary extends Model
         'comment_bonus',
         'comment_award',
         'resource',
+        'is_paid', // это для того когда деньги начислены, но не выплачены
     ];
 
     /**
