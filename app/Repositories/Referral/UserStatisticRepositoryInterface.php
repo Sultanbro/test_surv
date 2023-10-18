@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Referral;
 
-interface UserStatisticRepositoryInterface extends StatisticRepositoryInterface
+interface UserStatisticRepositoryInterface
 {
     public function getStatistic(array $filter): array;
 }
