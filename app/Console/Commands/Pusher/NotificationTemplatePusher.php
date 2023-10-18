@@ -72,9 +72,10 @@ class NotificationTemplatePusher extends Command
 
         $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
         $mailings = $notification?->mailings();
-        $this->line("type of mailing:".$mailings);
+
         foreach ($mailings as $mailing)
         {
+            $this->line("type of mailing:".$mailing);
             foreach ($users as $user)
             {
                 $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".Phone::normalize($user->phone);
