@@ -6,7 +6,6 @@ use App\Facade\Referring;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Referral\Request;
 use App\Http\Resources\Referral\ReferralUrlResource;
-use App\Jobs\Referral\ProcessCreateLead;
 use App\Service\Referral\Core\LeadServiceInterface;
 use App\User;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +30,9 @@ class ReferralController extends Controller
         $leadService = app(LeadServiceInterface::class);
         $leadService->create($user, $request->toDto());
 //        ProcessCreateLead::dispatch($user, $request->toDto());
-
+        header(
+            'Access-Control-Allow-Origin:https://job.bpartners.kz'
+        );
         return response()->json([
             'message' => 'successfully processed!'
         ]);
