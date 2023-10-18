@@ -72,6 +72,7 @@ class NotificationTemplatePusher extends Command
 
         $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
         $mailings = $notification?->mailings();
+        $this->line("type of mailing:".$mailings);
         foreach ($mailings as $mailing)
         {
             foreach ($users as $user)
