@@ -77,6 +77,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/courses/{id}', [User\ProfileController::class, 'course']);
         Route::any('/trainee-report', [User\ProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [User\ProfileController::class, 'paymentTerms']);
+        Route::get('/promotional-material', [User\ProfileController::class, 'promotionalMaterial']);
     });
 
     // Настройка субдомена
@@ -719,6 +720,10 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
          */
         Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
     });
+
+    Route::prefix('')
+        ->group(base_path('routes/referral.php'))
+        ->middleware(['tenant']);
 });
 
 /**
