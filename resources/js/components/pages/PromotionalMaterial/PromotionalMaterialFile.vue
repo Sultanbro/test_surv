@@ -6,7 +6,7 @@
 		<i
 			class="fa PromotionalMaterialFile-icon"
 			:class="[
-				`fa-file-${type}`
+				`fa-file${type ? '-' + type : ''}`
 			]"
 		/>
 		<div class="PromotionalMaterialFile-name">

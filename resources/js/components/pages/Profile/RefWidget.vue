@@ -5,20 +5,17 @@
 	>
 		<div class="RefWidget-title">
 			Реферальная программа «Business&nbsp;Family»
-			<b-badge variant="warning">
-				Demo
-			</b-badge>
 		</div>
 
 		<div class="RefWidget-border">
-			Ваш статус: {{ status }}
+			Ваш статус: {{ user ? user.referrer_status : '' }}
 		</div>
 
-		<div class="RefWidget-border">
+		<!-- <div class="RefWidget-border">
 			<router-link :to="'/ref-preza'">
 				«Как заработать миллион»
 			</router-link>
-		</div>
+		</div> -->
 
 		<div
 			class="RefWidget-border pointer"
@@ -27,11 +24,11 @@
 			{{ reflink }}
 		</div>
 
-		<div class="RefWidget-border">
+		<!-- <div class="RefWidget-border">
 			<router-link :to="'/profile/promotional-material'">
 				Рекламный материал
 			</router-link>
-		</div>
+		</div> -->
 
 		<div class="RefWidget-subtitle">
 			Заработанно:
@@ -65,6 +62,7 @@
 
 <script>
 import { mapState } from 'pinia'
+import { mapGetters } from 'vuex'
 import { copy2clipboard } from '@/composables/copy2clipboard'
 import { useReferralStore } from '@/stores/Referral'
 
@@ -75,7 +73,6 @@ export default {
 		/* global Laravel */
 		return {
 			reflink: 'https://job.bpartners.kz/ref?r=' + Laravel.userId,
-			status: '',
 		}
 	},
 	computed: {
@@ -85,7 +82,8 @@ export default {
 			'month',
 			'monthRef',
 			'leads',
-		])
+		]),
+		...mapGetters(['user']),
 	},
 	mounted(){},
 	methods: {

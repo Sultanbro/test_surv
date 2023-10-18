@@ -1,5 +1,6 @@
 <template>
 	<div
+		v-if="users.length"
 		id="RefStat"
 		class="RefStat index block _anim _anim-no-hide"
 		:class="{
@@ -8,19 +9,56 @@
 	>
 		<div class="title index__title mt-5">
 			Реферальная программа «Business Family»
-			<b-badge variant="warning">
-				Demo
-			</b-badge>
 		</div>
-
-		<!-- <div class="subtitle index__subtitle">
-			Сравните Ваши показатели с другими сотрудниками
-		</div> -->
 
 		<div
 			v-if="refUser"
 			class="RefStat-table index__table"
 		>
+			<div class="RefStat-diff">
+				<div class="RefStat-self">
+					<div class="RefStat-subtitle">
+						Вы
+					</div>
+					<div class="RefStat-users">
+						<div class="RefStat-user">
+							<JobtronAvatar
+								:image="user.avatar"
+								:title="`${user.name} ${user.last_name}`"
+							/>
+							<div class="RefStat-userName">
+								{{ user.name }} {{ user.last_name }}
+							</div>
+							<div class="RefStat-userLeads">
+								{{ leads }}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="RefStat-tops">
+					<div class="RefStat-subtitle">
+						Топчики
+					</div>
+					<div class="RefStat-users">
+						<div
+							v-for="topUser in tops"
+							:key="topUser.id"
+							class="RefStat-user"
+						>
+							<JobtronAvatar
+								:image="topUser.avatar"
+								:title="`${topUser.name} ${topUser.last_name}`"
+							/>
+							<div class="RefStat-userName">
+								{{ topUser.name }} {{ topUser.last_name }}
+							</div>
+							<div class="RefStat-userLeads">
+								{{ topUser.referrals.length }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="ovx">
 				<JobtronTable
 					:fields="tableFields"
@@ -84,17 +122,18 @@ import { mapState } from 'pinia'
 import { useReferralStore } from '@/stores/Referral'
 import {
 	tableFields,
-	getFakeReferer,
 } from '@/components/pages/Analytics/helper'
 
 import JobtronTable from '@ui/Table.vue'
 import RefStatsReferals from '@/components/pages/Analytics/RefStatsReferals.vue'
+import JobtronAvatar from '@ui/Avatar.vue'
 
 export default {
 	name: 'RefStat',
 	components: {
 		JobtronTable,
 		RefStatsReferals,
+		JobtronAvatar,
 	},
 	data(){
 		return {
@@ -119,6 +158,7 @@ export default {
 		...mapState(useReferralStore, [
 			'referrals',
 			'tops',
+			'leads',
 		]),
 		sortedSubs(){
 			const sorted = {}
@@ -155,14 +195,7 @@ export default {
 	methods: {
 		fetchData() {
 			this.loading = true
-			this.refUser = {
-				...getFakeReferer(),
-				title: `${this.user.name} ${this.user.last_name}`
-			}
-			this.users = [
-				this.refUser
-			]
-			this.uncollapsed.push(this.refUser.id)
+			this.users = []
 			this.loading = false
 		},
 		toggleAfter(id){
@@ -263,6 +296,37 @@ export default {
 		padding: $cellpadding;
 		margin: $bgmargin;
 	}
+	&-diff{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		gap: 40px;
+		margin-bottom: 20px;
+	}
+	// &-self,
+	// &-tops{}
+	&-tops{
+		flex: 1;
+	}
+	&-subtitle{
+		margin-bottom: 20px;
+		font-size: 20px;
+		font-weight: 700;
+		text-align: center;
+	}
+	&-users{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		gap: 20px;
+	}
+	&-user{
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		gap: 10px;
+	}
+
 
 	.RefStatsReferals{
 		&-subtable{

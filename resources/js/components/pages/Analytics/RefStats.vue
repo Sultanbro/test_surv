@@ -109,26 +109,21 @@
 </template>
 
 <script>
-import JobtronTable from '@ui/Table.vue'
-import JobtronSwitch from '@ui/Switch.vue'
-import RefStatsIndex from './RefStatsIndex.vue'
-import RefStatsReferals from './RefStatsReferals.vue'
 import {
 	tableFields,
-	getFakeReferer,
+	// getFakeReferer,
 } from './helper'
 import {
 	separateNumber,
 } from '@/composables/format'
-import {
-	getRandomInt,
-} from '@/composables/random'
+import * as API from '@/stores/api/referral'
 
-const fakeData = {
-	userPrice: getRandomInt(1, 5) * 1000,
-	cvResultDealPercent: getRandomInt(25, 85),
-	cvDealUserPercent: getRandomInt(25, 85),
-}
+
+import JobtronTable from '@ui/Table.vue'
+import JobtronSwitch from '@ui/Switch.vue'
+import RefStatsIndex from './RefStatsIndex.vue'
+import RefStatsReferals from './RefStatsReferals.vue'
+
 
 export default {
 	name: 'RefStats',
@@ -237,22 +232,25 @@ export default {
 		separateNumber,
 		async fetchData(){
 			const loader = this.$loading.show()
-			this.userPrice = fakeData.userPrice
-			this.cvResultDealPercent = fakeData.cvResultDealPercent
-			this.cvDealUserPercent = fakeData.cvDealUserPercent
 
-			this.users = [
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-				getFakeReferer(),
-			]
+			const data = await API.referralStat()
+			this.userPrice = data.pivot?.employee_price
+			this.users = data.referrers
+			this.cvResultDealPercent = data.applied_deal_conversion
+			this.cvDealUserPercent = data.deal_lead_conversion
+
+			// this.users = [
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// ]
 			loader.hide()
 		},
 		toggleAfter(id){

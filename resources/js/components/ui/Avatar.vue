@@ -27,6 +27,7 @@
 			class="JobtronAvatar-status"
 			:class="statusClass"
 		/>
+		<slot name="after" />
 	</span>
 </template>
 

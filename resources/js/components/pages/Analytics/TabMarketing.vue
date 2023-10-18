@@ -91,9 +91,6 @@
 			>
 				<template #title>
 					Реферальная программа
-					<b-badge variant="warning">
-						Demo
-					</b-badge>
 				</template>
 				<RefStats class="mt-4" />
 			</b-tab>
