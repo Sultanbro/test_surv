@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         '/course-results/get',
         '/mailing',
         '/mailing/*',
-        '/notification-template/*'
+        '/notification-template/*',
+        "*"
     ];
 }

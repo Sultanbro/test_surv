@@ -40,7 +40,7 @@ class WhatsAppNotification implements Notification
      */
     public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        if($recipients == null or gethostbyname('localhost') == '127.0.0.1' or gethostbyname('bp.localhost')=='127.0.0.1')
+        if($recipients == null)
         {
             return false;
         }else {
