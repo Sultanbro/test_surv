@@ -24,11 +24,11 @@
 			{{ reflink }}
 		</div>
 
-		<!-- <div class="RefWidget-border">
+		<div class="RefWidget-border">
 			<router-link :to="'/profile/promotional-material'">
 				Рекламный материал
 			</router-link>
-		</div> -->
+		</div>
 
 		<div class="RefWidget-subtitle">
 			Заработанно:

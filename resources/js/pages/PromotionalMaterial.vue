@@ -21,7 +21,7 @@
 
 		<div class="PromotionalMaterial-content">
 			<b-tabs>
-				<b-tab title="Документы">
+				<!-- <b-tab title="Документы">
 					<div class="d-flex gap-4 mt-4">
 						<PromotionalMaterialFile
 							name="test"
@@ -36,31 +36,32 @@
 							href="javascript:void(0)"
 						/>
 					</div>
-				</b-tab>
+				</b-tab> -->
 				<b-tab title="Баннеры">
 					<div class="d-flex gap-4 mt-4">
 						<PromotionalMaterialFile
-							name="test"
-							href="javascript:void(0)"
+							name="Баннеры"
+							type="archive"
+							href="/static/banners.rar"
 						/>
 					</div>
 				</b-tab>
-				<b-tab title="Mail рассылки и соцсети">
+				<!-- <b-tab title="Mail рассылки и соцсети">
 					<div class="d-flex gap-4 mt-4">
 						<PromotionalMaterialFile
 							name="test"
 							href="javascript:void(0)"
 						/>
 					</div>
-				</b-tab>
-				<b-tab title="HTML шаблоны для Mail рассылки">
+				</b-tab> -->
+				<!-- <b-tab title="HTML шаблоны для Mail рассылки">
 					<div class="d-flex gap-4 mt-4">
 						<PromotionalMaterialFile
 							name="test"
 							href="javascript:void(0)"
 						/>
 					</div>
-				</b-tab>
+				</b-tab> -->
 			</b-tabs>
 		</div>
 	</div>
