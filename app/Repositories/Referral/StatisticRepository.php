@@ -169,8 +169,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                         $types[$i] = 1000;
                     }
                 }
-                for ($i = 1; $i <= 18; $i++) {
-                    $types[$i . '_week'] = null;
+                $toCheck = [1, 2, 3, 4, 6, 8, 12];
+                foreach ([1, 2, 3, 4, 6, 8, 12] as $week) {
+                    $types[$week . '_week'] = null;
                 }
                 if ($user->description()->first()?->is_trainee == 0) {
                     $types['pass certification'] = 5000;
@@ -183,13 +184,15 @@ class StatisticRepository implements StatisticRepositoryInterface
                         ->count();
 
                     for ($i = 1; $i <= $timetracking / 6; $i++) {
-                        if ($i > 18) {
+                        if ($i > 12) {
                             break;
                         }
-                        if ($i == 1) {
-                            $types[$i . '_week'] = 10000;
-                        } else {
-                            $types[$i . '_week'] = 5000;
+                        if (in_array($i, $toCheck)) {
+                            if ($i == 1) {
+                                $types[$i . '_week'] = 10000;
+                            } else {
+                                $types[$i . '_week'] = 5000;
+                            }
                         }
                     }
                 }
