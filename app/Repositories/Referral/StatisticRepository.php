@@ -163,9 +163,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $day = $dates
                         ->where('day', $i)
                         ->first();
-                    if ($day?->type == DayType::DAY_TYPES['ABCENSE']) {
+                    if (is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE']) {
                         $types[$i] = null;
-                    } elseif (in_array($day?->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])) {
+                    } elseif (in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])) {
                         $types[$i] = 1000;
                     }
                 }
