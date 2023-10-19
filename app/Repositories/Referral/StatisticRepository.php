@@ -171,7 +171,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->where('award', '>=', 5000)->toArray();
 
                 $forStat = $salaries
-                    ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === Carbon::parse($user->description()->first()->applied)->format("Y-m-d"))
+                    ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
                     ->first()?->toArray();
                 for ($i = 1; $i <= $date->daysInMonth; $i++) {
                     $day = $dates
