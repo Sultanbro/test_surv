@@ -43,8 +43,9 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         if (!$user->referralLeads()->count()) {
             return [];
         }
-        return User::with('referralLeads as leads')
+        return User::query()
             ->where('id', $user->getKey())
+            ->withCount('referralLeads as leads')
             ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
                 ->where('deal_id', '>', 0)])
             ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
