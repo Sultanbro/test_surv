@@ -70,8 +70,12 @@ class StatisticRepository implements StatisticRepositoryInterface
         $userList = is_array($this->usersList()) ? collect($this->usersList()) : $this->usersList();
         return $userList
             ->map(function (User $user) {
-                $employees = $user->referrals()
+                $traines = $user->referrals()
                     ->whereRelation('description', 'is_trainee', 1)
+                    ->get();
+                $employees = $user->referrals()
+                    ->whereRelation('description', 'is_trainee', 0)
+                    ->whereRelation('description', 'applied', '!=', 0)
                     ->get();
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->applieds = count($employees);
@@ -129,11 +133,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
             ->withSum(['salaries as absolute_earned' => fn(Builder $query) => $query
-                    ->where('is_paid', 0)
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
             ->withSum(['salaries as month_earned' => fn(Builder $query) => $query
-                    ->where('is_paid', 0)
                     ->where('date', '>=', $this->date())
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
