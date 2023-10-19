@@ -169,6 +169,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                         $types[$i] = 1000;
                     }
                 }
+                for ($i = 1; $i <= 18; $i++) {
+                    $types[$i . '_week'] = null;
+                }
                 if ($user->description()->first()?->is_trainee == 0) {
                     $types['pass certification'] = 5000;
                     $timetracking = Timetracking::query()

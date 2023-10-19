@@ -459,6 +459,14 @@ class ForTestingCommand extends Command
             'date' => now()->format("Y-m-d"),
         ]);
 
+        Salary::factory(5)->create([
+            'is_paid' => 1,
+            'award' => 5000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->format("Y-m-d"),
+        ]);
+
         Salary::factory()->create([
             'is_paid' => 1,
             'award' => 10000,
@@ -466,13 +474,15 @@ class ForTestingCommand extends Command
             'user_id' => $referrer->getKey(),
             'date' => now()->format("Y-m-d"),
         ]);
+
         Salary::factory()->create([
-            'is_paid' => 0,
-            'award' => 5000,
+            'is_paid' => 1,
+            'award' => 1000,
             'resource' => SalaryResourceType::REFERRAL,
             'user_id' => $referrer->getKey(),
             'date' => now()->format("Y-m-d"),
         ]);
+
         dump($repository->getStatistic([]));
         DB::rollBack();
     }
