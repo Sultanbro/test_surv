@@ -477,7 +477,7 @@ class ForTestingCommand extends Command
         ]);
 
         Salary::factory()->create([
-            'is_paid' => 1,
+            'is_paid' => 0,
             'comment_award' => $trainee->getKey(),
             'award' => 1000,
             'resource' => SalaryResourceType::REFERRAL,
@@ -485,7 +485,7 @@ class ForTestingCommand extends Command
             'date' => now()->subDays()->format("Y-m-d"),
         ]);
         Salary::factory()->create([
-            'is_paid' => 1,
+            'is_paid' => 0,
             'comment_award' => $trainee->getKey(),
             'award' => 1000,
             'resource' => SalaryResourceType::REFERRAL,
