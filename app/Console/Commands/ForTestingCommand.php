@@ -39,397 +39,413 @@ class ForTestingCommand extends Command
         ]);
         DB::beginTransaction();
         $referrer = User::factory()->create();
-        $referral1 = User::factory()->create([
+        $employee = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);
-        $referral1->description()->create([
+        $applet_at = now()->format("Y-m-d");
+        $employee->description()->create([
             'is_trainee' => 0,
-            'applied' => now()->format("Y-m-d"),
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
-        ]);
-        $referral1->timetracking()->create([
-            'enter' => now()->subHours(5)
-                ->format("Y-m-d"),
-            'exit' => now()
-                ->format("Y-m-d")
-            ,
-            'total_hours' => 5,
+            'applied' => $applet_at,
         ]);
 
-
-        $referral2 = User::factory()->create([
+        $trainee = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);
-        $referral2->description()->create([
+        $trainee->description()->create([
             'is_trainee' => 1,
             'applied' => 0,
         ]);
-        $referral2->daytypes()->create([
+
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+        $employee->timetracking()->create([
+            'enter' => now()->subHours(5)
+                ->format("Y-m-d"),
+            'exit' => now()
+                ->format("Y-m-d")
+            ,
+            'total_hours' => 5,
+        ]);
+
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays()->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['TRAINEE'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays(2)->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['TRAINEE'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays(3)->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['TRAINEE'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays(4)->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['RETURNED'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays()->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['TRAINEE'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
             'date' => now()->subDays(5)->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['ABCENSE'],
             'email' => 'test@gmail.com',
         ]);
-        $referral2->daytypes()->create([
+        $trainee->daytypes()->create([
             'admin_id' => $referrer->getKey(),
-            'date' => now()->subDays(6)->format('Y-m-d'),
+            'date' => now()->format('Y-m-d'),
             'type' => DayType::DAY_TYPES['TRAINEE'],
             'email' => 'test@gmail.com',
         ]);
 
         Lead::factory()->create([
-            'user_id' => $referral1->getKey(),
-            'lead_id' => $referrer->getKey(),
-            'referrer_id' => $referrer->getKey(),
-            'name' => "test",
-            'phone' => "64545454545454",
-            'status' => 'NEW',
-            'segment' => 3548,
-            'hash' => md5(45454)
-        ]);
-        Lead::factory()->create([
-            'user_id' => $referral2->getKey(),
+            'user_id' => $trainee->getKey(),
             'lead_id' => $referrer->getKey(),
             'deal_id' => $referrer->getKey(),
             'referrer_id' => $referrer->getKey(),
@@ -440,10 +456,10 @@ class ForTestingCommand extends Command
             'hash' => md5(45454)
         ]);
         Lead::factory()->create([
-            'user_id' => $referral2->getKey(),
+            'user_id' => $trainee->getKey(),
             'lead_id' => $referrer->getKey(),
             'deal_id' => $referrer->getKey(),
-            'referrer_id' => $referral1->getKey(),
+            'referrer_id' => $referrer->getKey(),
             'name' => "test",
             'phone' => "64545454545454",
             'status' => 'NEW',
@@ -453,31 +469,122 @@ class ForTestingCommand extends Command
 
         Salary::factory()->create([
             'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
             'award' => 10000,
             'resource' => SalaryResourceType::REFERRAL,
-            'user_id' => $referral1->getKey(),
+            'user_id' => $referrer->getKey(),
+            'date' => $applet_at,
+        ]);
+
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays()->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(1)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(2)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(3)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(4)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(5)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $trainee->getKey(),
+            'award' => 1000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
             'date' => now()->format("Y-m-d"),
         ]);
 
-        Salary::factory(5)->create([
+        Salary::factory()->create([
             'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
             'award' => 5000,
             'resource' => SalaryResourceType::REFERRAL,
             'user_id' => $referrer->getKey(),
             'date' => now()->format("Y-m-d"),
         ]);
-
         Salary::factory()->create([
             'is_paid' => 1,
-            'award' => 10000,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
             'resource' => SalaryResourceType::REFERRAL,
             'user_id' => $referrer->getKey(),
-            'date' => now()->format("Y-m-d"),
+            'date' => now()->subDays()->format("Y-m-d"),
         ]);
-
         Salary::factory()->create([
             'is_paid' => 1,
-            'award' => 1000,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(2)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(3)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(4)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
+            'resource' => SalaryResourceType::REFERRAL,
+            'user_id' => $referrer->getKey(),
+            'date' => now()->subDays(5)->format("Y-m-d"),
+        ]);
+        Salary::factory()->create([
+            'is_paid' => 1,
+            'comment_award' => $employee->getKey(),
+            'award' => 5000,
             'resource' => SalaryResourceType::REFERRAL,
             'user_id' => $referrer->getKey(),
             'date' => now()->format("Y-m-d"),
