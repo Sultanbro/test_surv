@@ -7,6 +7,7 @@ use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
 use App\Salary;
 use App\Service\Referral\Core\LeadTemplate;
+use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,7 +76,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->whereRelation('description', 'is_trainee', 0)
                     ->whereRelation('description', 'applied', '!=', 0)
                     ->get();
-                $user->trainees = $this->schedule($user);
+                $user->users = $this->schedule($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->applieds = count($employees);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
@@ -150,12 +151,11 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $date = Carbon::parse($this->date());
         return $user->referrals()
-            ->whereRelation('description', 'is_trainee', 1)
             ->get()
-            ->map(function (User $trainee) use ($date) {
+            ->map(function (User $user) use ($date) {
                 $dates = DayType::query()
                     ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                    ->where('user_id', $trainee->getKey())
+                    ->where('user_id', $user->getKey())
                     ->whereMonth('date', '=', $date->month)
                     ->whereYear('date', $date->year)
                     ->get();
@@ -169,8 +169,29 @@ class StatisticRepository implements StatisticRepositoryInterface
                         $types[$i] = 1000;
                     }
                 }
-                $trainee->datetypes = $types;
-                return $trainee;
+                if ($user->description()->first()?->is_trainee == 0) {
+                    $types['pass certification'] = 5000;
+                    $timetracking = Timetracking::query()
+                        ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                        ->where('user_id', $user->getKey())
+                        ->whereMonth('enter', '=', $date->month)
+                        ->whereYear('enter', $date->year)
+                        ->orderBy('id', 'ASC')
+                        ->count();
+
+                    for ($i = 1; $i <= $timetracking / 6; $i++) {
+                        if ($i > 18) {
+                            break;
+                        }
+                        if ($i == 1) {
+                            $types[$i . '_week'] = 10000;
+                        } else {
+                            $types[$i . '_week'] = 5000;
+                        }
+                    }
+                }
+                $user->datetypes = $types;
+                return $user;
             });
     }
 }
