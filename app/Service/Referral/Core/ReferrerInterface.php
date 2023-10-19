@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $referrer_id
  * @property-read static $referrer
- * @property-read Collection<ReferrerInterface> $referrals
+ * @property Collection<ReferrerInterface> $referrals
  */
 interface ReferrerInterface
 {
