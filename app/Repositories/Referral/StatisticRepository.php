@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Referral;
 
+use App\DayType;
 use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
 use App\Salary;
@@ -70,13 +71,11 @@ class StatisticRepository implements StatisticRepositoryInterface
         $userList = is_array($this->usersList()) ? collect($this->usersList()) : $this->usersList();
         return $userList
             ->map(function (User $user) {
-                $tranines = $user->referrals()
-                    ->whereRelation('description', 'is_trainee', 1)
-                    ->get();
                 $employees = $user->referrals()
                     ->whereRelation('description', 'is_trainee', 0)
                     ->whereRelation('description', 'applied', '!=', 0)
                     ->get();
+                $user->trainees = $this->schedule($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->applieds = count($employees);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
@@ -145,5 +144,27 @@ class StatisticRepository implements StatisticRepositoryInterface
                 , 'award')
             ->orderBy('leads', 'desc')
             ->get();
+    }
+
+    private function schedule(User $user)
+    {
+        $date = Carbon::parse($this->date());
+        return $user->referrals()
+            ->whereRelation('description', 'is_trainee', 1)
+            ->get()
+            ->map(function (User $trainee) use ($date) {
+                for ($i = 1; $i <= $date->daysInMonth; $i++) {
+                    $day = $trainee->daytypes()
+                        ->where('day', $i)
+                        ->first();
+                    if ($day->type == DayType::DAY_TYPES['ABCENSE']) {
+                        $types[$i] = null;
+                    } else {
+                        $types[$i] = 1000;
+                    }
+                }
+                $trainee->datetypes = $types;
+                return $trainee;
+            });
     }
 }
