@@ -55,7 +55,6 @@ class StatisticRepository implements StatisticRepositoryInterface
         $earnedTotalForMonth = Salary::query()
             ->where('date', '>=', $this->date())
             ->where('resource', SalaryResourceType::REFERRAL)
-            ->where('is_paid', 0)
             ->sum('award');
 
         return [
