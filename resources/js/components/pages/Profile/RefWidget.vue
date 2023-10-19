@@ -4,7 +4,7 @@
 		class="RefWidget"
 	>
 		<div class="RefWidget-title">
-			Реферальная программа «Business&nbsp;Family»
+			Реферальная программа «Business&nbsp;Friends»
 		</div>
 
 		<div class="RefWidget-border">
@@ -24,11 +24,11 @@
 			{{ reflink }}
 		</div>
 
-		<!-- <div class="RefWidget-border">
+		<div class="RefWidget-border">
 			<router-link :to="'/profile/promotional-material'">
 				Рекламный материал
 			</router-link>
-		</div> -->
+		</div>
 
 		<div class="RefWidget-subtitle">
 			Заработанно:

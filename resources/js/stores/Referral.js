@@ -10,7 +10,7 @@ export const useReferralStore = defineStore('referral', {
 		month: 0,
 		monthRef: 0,
 		leads: 0,
-		referrals: [],
+		users: [],
 		tops: [],
 	}),
 	actions: {
@@ -20,16 +20,16 @@ export const useReferralStore = defineStore('referral', {
 			try{
 				const {
 					tops,
-					referrals,
-					mine,
-					from_referrals: monthRef,
-					absolute
+					users,
+					month,
+					monthRef,
+					total,
 				} = await API.referralUserStat()
-				this.total = absolute
-				this.month = mine
+				this.total = total
+				this.month = month
 				this.monthRef = monthRef
-				this.leads = referrals.length
-				this.referrals = referrals
+				this.leads = (users[0]?.users || []).length
+				this.users = users
 				this.tops = tops
 				this.isReady = true
 			}

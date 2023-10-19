@@ -34,15 +34,16 @@
 			</template>
 			<template #cell="{value, item, field}">
 				<div
+					v-if="value"
 					:class="{
-						'RefStatsReferals-money': value.value > 0,
-						'RefStatsReferals-money_paid': value.value > 0 && value.paid,
+						'RefStatsReferals-money': value.sum > 0,
+						'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
 						'pointer usn': $can('referal_edit'),
 					}"
 					:title="value.comment"
 					@click="$emit('payment-click', {item, field})"
 				>
-					{{ value.value || '' }}
+					{{ value.sum || '' }}
 				</div>
 			</template>
 			<template #afterRow="secondLayerData">
@@ -84,15 +85,16 @@
 						</template>
 						<template #cell="{value, item, field}">
 							<div
+								v-if="value"
 								:class="{
-									'RefStatsReferals-money': value.value > 0,
-									'RefStatsReferals-money_paid': value.value > 0 && value.paid,
+									'RefStatsReferals-money': value.sum > 0,
+									'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
 									'pointer usn': $can('referal_edit'),
 								}"
 								:title="value.comment"
 								@click="$emit('payment-click', {item, field})"
 							>
-								{{ value.value || '' }}
+								{{ value.sum || '' }}
 							</div>
 						</template>
 						<template #afterRow="thirdLayerData">
@@ -122,15 +124,16 @@
 									</template>
 									<template #cell="{value, item, field}">
 										<div
+											v-if="value"
 											:class="{
-												'RefStatsReferals-money': value.value > 0,
-												'RefStatsReferals-money_paid': value.value > 0 && value.paid,
+												'RefStatsReferals-money': value.sum > 0,
+												'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
 												'pointer usn': $can('referal_edit'),
 											}"
 											:title="value.comment"
 											@click="$emit('payment-click', {item, field})"
 										>
-											{{ value.value || '' }}
+											{{ value.sum || '' }}
 										</div>
 									</template>
 								</JobtronTable>

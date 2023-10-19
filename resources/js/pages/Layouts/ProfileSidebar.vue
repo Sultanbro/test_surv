@@ -331,7 +331,7 @@ export default {
 			selectedDate: this.$moment(Date.now()).format('DD.MM.YYYY'),
 			isDatePicker: false,
 			needUpdateSalary: false,
-			isBP: location.hostname.split('.')[0] === 'bp',
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		};
 	},
 	computed: {
