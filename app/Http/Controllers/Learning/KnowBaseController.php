@@ -413,7 +413,7 @@ class KnowBaseController extends Controller
     /**
      * update knowbase title and text
      */
-    public function updatePage(Request $request, $id = null) : void
+    public function updatePage(Request $request, $id = null): void
     {
         $page = KnowBase::find($request->id);
         if ($page) {
@@ -424,7 +424,7 @@ class KnowBaseController extends Controller
 
             $page->save();
 
-           // $this->notifyAboutChanges('Страница: ', $page);
+            $this->notifyAboutChanges('Страница: ', $page);
         }
     }
 
@@ -441,20 +441,20 @@ class KnowBaseController extends Controller
      * send notifications to users who has access to knowbase
      * if settings was set
      */
-    private function notifyAboutChanges($text, KnowBase $page) : void
+    private function notifyAboutChanges($text, KnowBase $page): void
     {
-        $setting = Setting::where('name', 'send_notification_after_edit')
-                ->first();
+        $setting = Setting::query()->where('name', 'send_notification_after_edit')
+            ->first();
 
-        if($setting && $setting->value == 1) {
+        if ($setting && $setting->value == 1) {
 
             $TOP_parent = $this->getTopParent($page->id);
 
-            if(!$TOP_parent) return;
+            if (!$TOP_parent) return;
 
 
-            if($TOP_parent->access == 1 || $TOP_parent->access == 2) {
-                $users = User::with('user_description')
+            if ($TOP_parent->access == 1 || $TOP_parent->access == 2) {
+                $users = User::query()->with('user_description')
                     ->whereHas('user_description', function ($query) {
                         $query->where('is_trainee', 0);
                     })
@@ -466,11 +466,11 @@ class KnowBaseController extends Controller
             }
 
 
-            $message = 'База знаний: <b>' . $TOP_parent->title . '</b><br><b>'. $text . ':</b> ';
-            $message .= '<a href="/kb?s=' . $TOP_parent->id .'&b=' . $page->id . '" target="_blank">' . $page->title . '</a>';
+            $message = 'База знаний: <b>' . $TOP_parent->title . '</b><br><b>' . $text . ':</b> ';
+            $message .= '<a href="/kb?s=' . $TOP_parent->id . '&b=' . $page->id . '" target="_blank">' . $page->title . '</a>';
 
             foreach ($users as $key => $user_id) {
-                \App\UserNotification::create([
+                \App\UserNotification::query()->create([
                     'user_id' => $user_id,
                     'about_id' => 0,
                     'title' => 'Изменения в базе знаний',
