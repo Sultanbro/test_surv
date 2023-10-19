@@ -20,7 +20,7 @@ class MarkAsPaidController extends Controller
         }
         $salary->update(
             [
-                'is_paid' => 1,
+                'is_paid' => $data['paid'],
                 'note' => $data['comment'] ?? null
             ]
         );

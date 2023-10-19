@@ -11,6 +11,7 @@ class PaidRequest extends FormRequest
     {
         return [
             'id' => ['required', Rule::exists('salaries')],
+            'paid' => ['required', 'bool'],
             'comment' => ['nullable', 'string']
         ];
     }
