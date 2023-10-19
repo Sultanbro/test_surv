@@ -39,6 +39,11 @@ class ForTestingCommand extends Command
         ]);
         DB::beginTransaction();
         $referrer = User::factory()->create();
+        $referrer->description()->create([
+            'is_trainee' => 0,
+            'applied' => now()->subDays(5)->format("Y-m-d"),
+        ]);
+
         $employee = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);

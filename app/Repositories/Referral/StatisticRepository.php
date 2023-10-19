@@ -22,18 +22,15 @@ class StatisticRepository implements StatisticRepositoryInterface
         $this->filter = $filter;
         return [
             'pivot' => $this->getPivot(),
-            'referrers' => $this->getReferrersStatistics()
+//            'referrers' => $this->getReferrersStatistics()
         ];
     }
 
     protected function getPivot(): array
     {
-        $referrers = User::query()
+        $accepted = User::query()
+            ->whereRelation('description', 'is_trainee', 0)
             ->whereRelation('description', 'applied', '>=', $this->date())
-            ->whereHas('referralLeads')
-            ->get();
-
-        $accepted = $referrers->where('is_trainee', 0)
             ->whereNotNull('referrer_id')
             ->count();
 
@@ -45,7 +42,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->whereNot('deal_id', 0)
             ->count();
-
         $piedTotalForMonth = Salary::query()
             ->where('date', '>=', $this->date())
             ->where('resource', SalaryResourceType::REFERRAL)
