@@ -70,7 +70,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         $userList = is_array($this->usersList()) ? collect($this->usersList()) : $this->usersList();
         return $userList
             ->map(function (User $user) {
-                $traines = $user->referrals()
+                $tranines = $user->referrals()
                     ->whereRelation('description', 'is_trainee', 1)
                     ->get();
                 $employees = $user->referrals()
@@ -95,7 +95,6 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $user->salaries()
             ->when($date, fn($query) => $query->where('date', '>=', $date))
-            ->where('is_paid', 0)
             ->where('resource', SalaryResourceType::REFERRAL)
             ->sum('award');
     }

@@ -37,7 +37,7 @@ class ForTestingCommand extends Command
             'database.default' => 'tenant'
         ]);
         DB::beginTransaction();
-        $referrer = User::factory()->create();
+    $referrer = User::factory()->create();
         $referral1 = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);
