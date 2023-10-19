@@ -22,7 +22,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         $this->filter = $filter;
         return [
             'pivot' => $this->getPivot(),
-//            'referrers' => $this->getReferrersStatistics()
+            'referrers' => $this->getReferrersStatistics()
         ];
     }
 
