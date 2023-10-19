@@ -170,6 +170,8 @@ class StatisticRepository implements StatisticRepositoryInterface
                     }
                 }
                 $toCheck = [1, 2, 3, 4, 6, 8, 12];
+                $types['pass certification'] = null;
+
                 foreach ([1, 2, 3, 4, 6, 8, 12] as $week) {
                     $types[$week . '_week'] = null;
                 }
