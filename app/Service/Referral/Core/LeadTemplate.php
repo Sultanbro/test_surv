@@ -23,7 +23,7 @@ class LeadTemplate
         $hash = Hash::make(uniqid() . mt_rand());
         $countries = Countries::toArray();
         $data = [
-            "TITLE" => "Удаленный " . $this->request->name,
+            "TITLE" => "Реферал,удаленный : " . $this->request->name,
             "NAME" => $this->request->name,
             'UF_CRM_1498210379' => self::SEGMENT_ID, // сегмент
             "UF_CRM_1635442762" => $countries[Phone::getCountry($this->request->phone)], //страна

@@ -147,18 +147,32 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->get();
     }
 
-    private function schedule(User $user)
+    private function schedule(User $referrer)
     {
         $date = Carbon::parse($this->date());
-        return $user->referrals()
+        return $referrer->referrals()
             ->get()
-            ->map(function (User $user) use ($date) {
+            ->map(function (User $user) use ($date, $referrer) {
                 $dates = DayType::query()
                     ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
                     ->where('user_id', $user->getKey())
                     ->whereMonth('date', '=', $date->month)
                     ->whereYear('date', $date->year)
                     ->get();
+                $salaries = $referrer->salaries()
+                    ->where('comment_award', $user->getKey())
+                    ->where('resource', SalaryResourceType::REFERRAL)
+                    ->get();
+
+                $forTrainee = $salaries->where('award', '<', 5000)->toArray();
+
+                $forWork = $salaries
+                    ->where('date', '!=', Carbon::parse($user->description()->first()->applied)->format("Y-m-d"))
+                    ->where('award', '>=', 5000)->toArray();
+
+                $forStat = $salaries
+                    ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === Carbon::parse($user->description()->first()->applied)->format("Y-m-d"))
+                    ->first()?->toArray();
                 for ($i = 1; $i <= $date->daysInMonth; $i++) {
                     $day = $dates
                         ->where('day', $i)
@@ -166,34 +180,56 @@ class StatisticRepository implements StatisticRepositoryInterface
                     if (is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE']) {
                         $types[$i] = null;
                     } elseif (in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])) {
-                        $types[$i] = 1000;
+                        $salary = [];
+                        foreach ($forTrainee as $item) {
+                            if (Carbon::parse($item['date'])->format("Y-m-d") == $day->date->format("Y-m-d")) {
+                                $salary = $item;
+                            }
+                        }
+                        $types[$i] = [
+                            'paid' => (bool)($salary['is_paid'] ?? null),
+                            'sum' => $salary['award'] ?? null,
+                            'comment' => $salary['note'] ?? null,
+                        ];
                     }
                 }
                 $toCheck = [1, 2, 3, 4, 6, 8, 12];
-                $types['pass certification'] = null;
+                $types['pass_certification'] = null;
 
                 foreach ([1, 2, 3, 4, 6, 8, 12] as $week) {
                     $types[$week . '_week'] = null;
                 }
+
                 if ($user->description()->first()?->is_trainee == 0) {
-                    $types['pass certification'] = 5000;
+                    $types['pass_certification'] = [
+                        'paid' => (bool)($forStat['is_paid'] ?? null),
+                        'sum' => $forStat['award'] ?? null,
+                        'comment' => $forStat['note'] ?? null,
+                    ];
                     $timetracking = Timetracking::query()
                         ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
                         ->where('user_id', $user->getKey())
                         ->whereMonth('enter', '=', $date->month)
                         ->whereYear('enter', $date->year)
                         ->orderBy('id', 'ASC')
-                        ->count();
-
-                    for ($i = 1; $i <= $timetracking / 6; $i++) {
-                        if ($i > 12) {
-                            break;
-                        }
-                        if (in_array($i, $toCheck)) {
-                            if ($i == 1) {
-                                $types[$i . '_week'] = 10000;
-                            } else {
-                                $types[$i . '_week'] = 5000;
+                        ->get();
+                    foreach ($timetracking as $timer) {
+                        for ($i = 1; $i <= $timetracking->count() / 6; $i++) {
+                            if ($i > 12) {
+                                break;
+                            }
+                            if (in_array($i, $toCheck)) {
+                                $current = [];
+                                foreach ($forWork as $item) {
+                                    if (Carbon::parse($item['date'])->format("Y-m-d") == $timer->exit->format("Y-m-d")) {
+                                        $current = $item;
+                                    }
+                                }
+                                $types[$i . '_week'] = [
+                                    'paid' => (bool)($current['is_paid'] ?? null),
+                                    'sum' => $current['award'] ?? null,
+                                    'comment' => $current['note'] ?? null,
+                                ];
                             }
                         }
                     }
