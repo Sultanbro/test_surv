@@ -167,7 +167,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $forTrainee = $salaries->where('award', '<', 5000)->toArray();
 
                 $forWork = $salaries
-                    ->where('date', '!=', Carbon::parse($user->description()->first()->applied)->format("Y-m-d"))
+                    ->where('date', '!=', Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
                     ->where('award', '>=', 5000)->toArray();
 
                 $forStat = $salaries
