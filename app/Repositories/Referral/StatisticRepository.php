@@ -182,9 +182,10 @@ class StatisticRepository implements StatisticRepositoryInterface
                             }
                         }
                         $types[$i] = [
-                            'paid' => (bool)($salary['is_paid'] ?? null),
-                            'sum' => $salary['award'] ?? null,
-                            'comment' => $salary['note'] ?? null,
+                            'paid' => (bool)($salary['is_paid']),
+                            'sum' => $salary['award'],
+                            'comment' => $salary['note'],
+                            'date' => Carbon::parse($salary['date'])->format("Y-m-d"),
                         ];
                     }
                 }
@@ -200,6 +201,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                         'paid' => (bool)($forStat['is_paid'] ?? null),
                         'sum' => $forStat['award'] ?? null,
                         'comment' => $forStat['note'] ?? null,
+                        'date' => Carbon::parse($forStat['date'])->format("Y-m-d"),
                     ];
                     $timetracking = Timetracking::query()
                         ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
@@ -224,6 +226,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                                     'paid' => (bool)($current['is_paid'] ?? null),
                                     'sum' => $current['award'] ?? null,
                                     'comment' => $current['note'] ?? null,
+                                    'date' => Carbon::parse($current['date'])->format("Y-m-d"),
                                 ];
                             }
                         }

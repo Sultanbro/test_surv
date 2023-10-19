@@ -184,7 +184,6 @@ class ProfileGroup extends Model
 
     /**
      * Получаем активные и архивированные группы, которые попадают под фильтр.
-     * @param $query
      * @param $year
      * @param $month
      * @param bool $withArchive

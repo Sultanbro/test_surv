@@ -12,6 +12,7 @@ class PaidRequest extends FormRequest
     {
         return [
             'type' => ['required', new Enum(PaidType::class)],
+            'date' => ['required', "date"],
             'amount' => ['required', 'integer'],
             'comment' => ['nullable', 'string']
         ];

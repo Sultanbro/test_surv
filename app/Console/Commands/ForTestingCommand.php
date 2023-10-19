@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\DayType;
 use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
-use App\Repositories\Referral\StatisticRepository;
+use App\Repositories\Referral\UserStatisticRepository;
 use App\Salary;
 use App\User;
 use Illuminate\Console\Command;
@@ -32,7 +32,7 @@ class ForTestingCommand extends Command
     /**
      * @throws Throwable
      */
-    public function handle(StatisticRepository $repository): void
+    public function handle(UserStatisticRepository $repository): void
     {
         config([
             'database.default' => 'tenant'

@@ -6,6 +6,7 @@ use App\Enums\SalaryResourceType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Referral\PaidRequest;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 class MarkAsPaidController extends Controller
@@ -14,8 +15,10 @@ class MarkAsPaidController extends Controller
     {
         $data = $request->validated();
         $referrer = $user->referrer;
+        $date = Carbon::parse($data['date'])->format("Y-m-d");
         $query = $referrer->salaries()
             ->where('award', $data['amount'])
+            ->where('date', $date)
             ->where('resource', SalaryResourceType::REFERRAL)
             ->where('comment_award', $user->id);
         if ($data['type'] = 3) {
