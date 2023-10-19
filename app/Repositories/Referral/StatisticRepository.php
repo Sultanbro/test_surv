@@ -197,12 +197,14 @@ class StatisticRepository implements StatisticRepositoryInterface
                 }
 
                 if ($user->description()->first()?->is_trainee == 0) {
-                    $types['pass_certification'] = [
-                        'paid' => (bool)($forStat['is_paid'] ?? null),
-                        'sum' => $forStat['award'] ?? null,
-                        'comment' => $forStat['note'] ?? null,
-                        'date' => Carbon::parse($forStat['date'])->format("Y-m-d"),
-                    ];
+                    if ($forStat) {
+                        $types['pass_certification'] = [
+                            'paid' => (bool)($forStat['is_paid'] ?? null),
+                            'sum' => $forStat['award'] ?? null,
+                            'comment' => $forStat['note'] ?? null,
+                            'date' => Carbon::parse($forStat['date'])->format("Y-m-d"),
+                        ];
+                    }
                     $timetracking = Timetracking::query()
                         ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
                         ->where('user_id', $user->getKey())
