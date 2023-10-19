@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\DayType;
 use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
 use App\Repositories\Referral\StatisticRepository;
@@ -37,17 +38,65 @@ class ForTestingCommand extends Command
             'database.default' => 'tenant'
         ]);
         DB::beginTransaction();
-    $referrer = User::factory()->create();
+        $referrer = User::factory()->create();
         $referral1 = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);
+        $referral1->description()->create([
+            'is_trainee' => 0,
+            'applied' => now()->format("Y-m-d"),
+        ]);
+
         $referral2 = User::factory()->create([
             'referrer_id' => $referrer->getKey()
         ]);
         $referral2->description()->create([
-            'is_trainee' => 0,
-            'applied' => now()->format("Y-m-d"),
+            'is_trainee' => 1,
+            'applied' => 0,
         ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays()->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['TRAINEE'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays(2)->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['TRAINEE'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays(3)->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['TRAINEE'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays(4)->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['RETURNED'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays()->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['TRAINEE'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays(5)->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['ABCENSE'],
+            'email' => 'test@gmail.com',
+        ]);
+        $referral2->daytypes()->create([
+            'admin_id' => $referrer->getKey(),
+            'date' => now()->subDays(6)->format('Y-m-d'),
+            'type' => DayType::DAY_TYPES['TRAINEE'],
+            'email' => 'test@gmail.com',
+        ]);
+
         Lead::factory()->create([
             'user_id' => $referral1->getKey(),
             'lead_id' => $referrer->getKey(),

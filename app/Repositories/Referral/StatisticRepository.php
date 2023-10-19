@@ -153,13 +153,19 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereRelation('description', 'is_trainee', 1)
             ->get()
             ->map(function (User $trainee) use ($date) {
+                $dates = DayType::query()
+                    ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->where('user_id', $trainee->getKey())
+                    ->whereMonth('date', '=', $date->month)
+                    ->whereYear('date', $date->year)
+                    ->get();
                 for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                    $day = $trainee->daytypes()
+                    $day = $dates
                         ->where('day', $i)
                         ->first();
-                    if ($day->type == DayType::DAY_TYPES['ABCENSE']) {
+                    if ($day?->type == DayType::DAY_TYPES['ABCENSE']) {
                         $types[$i] = null;
-                    } else {
+                    } elseif (in_array($day?->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])) {
                         $types[$i] = 1000;
                     }
                 }
