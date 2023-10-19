@@ -123,6 +123,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     protected function usersList(): Collection|array
     {
         return User::query()
+            ->WhereHas('referralLeads')
             ->withCount('referralLeads as leads')
             ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
                 ->where('deal_id', '>', 0)])
