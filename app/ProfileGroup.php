@@ -3,25 +3,19 @@
 namespace App;
 
 use App\DTO\Top\SwitchTopDTO;
-use App\Helpers\FileHelper;
 use App\Models\Analytics\Activity;
 use App\Models\AnalyticsActivitiesSetting;
+use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
-use DB;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Books\BookGroup;
-use App\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -190,16 +184,18 @@ class ProfileGroup extends Model
 
     /**
      * Получаем активные и архивированные группы, которые попадают под фильтр.
-     * @param $query
      * @param $year
      * @param $month
+     * @param bool $withArchive
+     * @param bool $archivedThisMonth
+     * @param string $switchColumn
      * @return array
      */
-    public function scopeProfileGroupsWithArchived($query, $year, $month, $withArchive = true, $archivedThisMonth = false, string $switchColumn = ''): array
+    public static function profileGroupsWithArchived($year, $month, bool $withArchive = true, bool $archivedThisMonth = false, string $switchColumn = ''): array
     {
         $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
-        $profileGroups = $this->where('active', self::IS_ACTIVE)
+        $profileGroups = self::query()->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)
             ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)));
         if ($switchColumn !== '') {
