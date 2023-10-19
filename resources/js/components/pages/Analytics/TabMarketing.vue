@@ -92,7 +92,13 @@
 				<template #title>
 					Реферальная программа
 				</template>
-				<RefStats class="mt-4" />
+				<RefStats
+					:filters="{
+						year,
+						month,
+					}"
+					class="mt-4"
+				/>
 			</b-tab>
 		</b-tabs>
 	</div>

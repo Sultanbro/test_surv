@@ -2,17 +2,17 @@
 	<div class="RefStats">
 		<div class="d-flex gap-4 ais mb-4">
 			<RefStatsIndex
-				:value="separateNumber(userPrice)"
+				:value="separateNumber(parseInt(userPrice) === userPrice ? userPrice : userPrice.toFixed(2))"
 				label="Цена принятого сотрудника"
 				unit="₸"
 			/>
 			<RefStatsIndex
-				:value="separateNumber(cvResultDealPercent)"
+				:value="separateNumber(parseInt(cvResultDealPercent) === cvResultDealPercent ? cvResultDealPercent : cvResultDealPercent.toFixed(2))"
 				label="CV лид ➝ сделка"
 				unit="%"
 			/>
 			<RefStatsIndex
-				:value="separateNumber(cvDealUserPercent)"
+				:value="separateNumber(parseInt(cvDealUserPercent) === cvDealUserPercent ? cvDealUserPercent : cvDealUserPercent.toFixed(2))"
 				label="CV сделка ➝ сотрудник"
 				unit="%"
 			/>
@@ -125,6 +125,7 @@ import RefStatsIndex from './RefStatsIndex.vue'
 import RefStatsReferals from './RefStatsReferals.vue'
 
 
+const now = new Date()
 export default {
 	name: 'RefStats',
 	components: {
@@ -132,6 +133,15 @@ export default {
 		JobtronSwitch,
 		RefStatsIndex,
 		RefStatsReferals,
+	},
+	props: {
+		filters: {
+			type: Object,
+			default: () => ({
+				year: now.getFullYear(),
+				month: now.getMonth(),
+			})
+		}
 	},
 	data(){
 		return {
@@ -160,6 +170,7 @@ export default {
 				key: '',
 				paid: false,
 				comment: '',
+				sum: 0,
 			},
 		}
 	},
@@ -225,6 +236,14 @@ export default {
 			return this.users.reduce((result, user) => result + user.monthPaid, 0)
 		},
 	},
+	watch: {
+		filters: {
+			deep: true,
+			handler(){
+				this.fetchData()
+			}
+		}
+	},
 	mounted(){
 		this.fetchData()
 	},
@@ -233,24 +252,19 @@ export default {
 		async fetchData(){
 			const loader = this.$loading.show()
 
-			const data = await API.referralStat()
-			this.userPrice = data.pivot?.employee_price
-			this.users = data.referrers
-			this.cvResultDealPercent = data.applied_deal_conversion
-			this.cvDealUserPercent = data.deal_lead_conversion
+			try {
+				const data = await API.referralStat(this.filters)
+				this.userPrice = data.userPrice
+				this.cvResultDealPercent = data.cvResultDealPercent
+				this.cvDealUserPercent = data.cvDealUserPercent
+				this.users = data.users
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось получить статистику реферальной программы')
+			}
 
-			// this.users = [
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// ]
 			loader.hide()
 		},
 		toggleAfter(id){
@@ -289,15 +303,34 @@ export default {
 			this.paymentDialog.id = item.id
 			this.paymentDialog.key = field.key
 			this.paymentDialog.paid = item[field.key].paid
+			this.paymentDialog.transactionId = item[field.key].id
 			this.paymentDialog.comment = item[field.key].comment
 			this.paymentDialog.open = true
 		},
-		paymentSave(){
-			this.paymentDialog.open = false
-			this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = this.paymentDialog.paid
-			this.allReferals[this.paymentDialog.id][this.paymentDialog.key].comment = this.paymentDialog.comment
-			this.$toast.success('Сохранено')
+		async paymentSave(){
+			try {
+				await API.referralStatPay(this.paymentDialog.id, {
+					id: this.paymentDialog.transactionId,
+					type: this.field2type('' + this.paymentDialog.key),
+					paid: this.paymentDialog.paid,
+					commnet: this.paymentDialog.comment,
+				})
+				this.paymentDialog.open = false
+				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = true
+				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].comment = this.paymentDialog.comment
+				this.$toast.success('Сохранено')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не сохранено')
+			}
 		},
+		field2type(field){
+			if(field === 'attest') return 3
+			if(field.substring(field.length - 4) === 'Week') return 2
+			return 1
+		}
 	},
 }
 </script>

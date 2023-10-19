@@ -4,7 +4,7 @@
 		class="RefWidget"
 	>
 		<div class="RefWidget-title">
-			Реферальная программа «Business&nbsp;Family»
+			Реферальная программа «Business&nbsp;Friends»
 		</div>
 
 		<div class="RefWidget-border">

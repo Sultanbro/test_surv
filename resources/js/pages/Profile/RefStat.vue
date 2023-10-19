@@ -4,11 +4,11 @@
 		id="RefStat"
 		class="RefStat index block _anim _anim-no-hide"
 		:class="{
-			'v-loading': loading,
+			'v-loading': !isReady,
 		}"
 	>
 		<div class="title index__title mt-5">
-			Реферальная программа «Business Family»
+			Реферальная программа «Business&nbsp;Friends»
 		</div>
 
 		<div
@@ -137,12 +137,8 @@ export default {
 	},
 	data(){
 		return {
-			loading: true,
-
-			refUser: null,
-			users: [],
 			tableFields,
-			uncollapsed: [],
+			// uncollapsed: [],
 
 			sortSubCol: 'title',
 			sortSubOrder: 'desc',
@@ -156,10 +152,16 @@ export default {
 	computed: {
 		...mapGetters(['user']),
 		...mapState(useReferralStore, [
-			'referrals',
+			'users',
 			'tops',
 			'leads',
+			'isReady',
 		]),
+		refUser(){
+			/* global Laravel */
+			if(!this.users) return null
+			return this.users.find(user =>  user.id === Laravel.userId)
+		},
 		sortedSubs(){
 			const sorted = {}
 			this.users.forEach(user => {
@@ -188,24 +190,20 @@ export default {
 			})
 			return sorted
 		},
-	},
-	mounted(){
-		this.fetchData()
-	},
-	methods: {
-		fetchData() {
-			this.loading = true
-			this.users = []
-			this.loading = false
+		uncollapsed(){
+			return this.users.map(user => user.id)
 		},
-		toggleAfter(id){
-			const index = this.uncollapsed.findIndex(uId => uId === id)
-			if(~index){
-				this.uncollapsed.splice(index, 1)
-			}
-			else{
-				this.uncollapsed.push(id)
-			}
+	},
+	mounted(){},
+	methods: {
+		toggleAfter(/* id */){
+			// const index = this.uncollapsed.findIndex(uId => uId === id)
+			// if(~index){
+			// 	this.uncollapsed.splice(index, 1)
+			// }
+			// else{
+			// 	this.uncollapsed.push(id)
+			// }
 		},
 		rowAfterClass(row){
 			return this.uncollapsed.includes(row.id) ? 'RefStats-afterRowActive' : ''
@@ -232,6 +230,7 @@ export default {
 
 	&-table{
 		// overflow-x: auto;
+		overflow-x: auto;
 		> .JobtronTable{
 			width: auto;
 		}
@@ -397,6 +396,18 @@ export default {
 	.RefStatsReferals-switch{
 		padding: $cellpadding;
 		margin: $bgmargin;
+	}
+}
+.RefStats{
+	&-title{
+		width: 200px;
+		min-width: 200px;
+		max-width: 250px;
+
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 </style>

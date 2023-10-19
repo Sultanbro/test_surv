@@ -190,6 +190,7 @@ export default {
 		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
+		...mapState(useReferralStore, {refReady: 'isReady'}),
 		popupWidth(){
 			const w = this.$viewportSize.width
 			if(w < 651) return '100%'
@@ -206,6 +207,7 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
+				&& this.refReady
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
@@ -244,13 +246,13 @@ export default {
 					this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
 						threshold: 0.1
 					})
-					this.intersectionObserver.observe(this.$refs.intro.$el)
-					this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
-					this.intersectionObserver.observe(this.$refs.courses.$el)
-					this.intersectionObserver.observe(this.$refs.profit.$el)
-					this.intersectionObserver.observe(this.$refs.estimation.$el)
-					this.intersectionObserver.observe(this.$refs.indicators.$el)
-					this.intersectionObserver.observe(this.$refs.referals.$el)
+					this.$refs.intro.$el instanceof Element && this.intersectionObserver.observe(this.$refs.intro.$el)
+					this.$refs.profileSidebar.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
+					this.$refs.courses.$el instanceof Element && this.intersectionObserver.observe(this.$refs.courses.$el)
+					this.$refs.profit.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profit.$el)
+					this.$refs.estimation.$el instanceof Element && this.intersectionObserver.observe(this.$refs.estimation.$el)
+					this.$refs.indicators.$el instanceof Element && this.intersectionObserver.observe(this.$refs.indicators.$el)
+					this.$refs.referals.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {
