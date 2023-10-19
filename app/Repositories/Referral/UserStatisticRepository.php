@@ -50,7 +50,11 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
                 ->where('deal_id', '>', 0)])
             ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
                     ->where('resource', SalaryResourceType::REFERRAL)
-                    ->where('is_paid', 1)
+                ]
+                , 'award')
+            ->withSum(['salaries as month_paid' => fn(Builder $query) => $query
+                    ->where('date', '>=', $this->date())
+                    ->where('resource', SalaryResourceType::REFERRAL)
                 ]
                 , 'award')
             ->get();
