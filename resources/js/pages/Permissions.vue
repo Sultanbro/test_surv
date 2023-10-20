@@ -257,6 +257,14 @@
 import { mapGetters, mapActions } from 'vuex'
 
 import PermissionItem from '@/components/PermissionItem.vue'
+
+const types = [
+	'all',
+	'users',
+	'profile_groups',
+	'positions',
+]
+
 export default {
 	name: 'PagePermissions',
 	components: {
@@ -334,6 +342,8 @@ export default {
 				this.pages = response.data.pages || [];
 				this.items = response.data.items || [];
 
+				this.removeInactiveTargets()
+
 				loader.hide();
 			}).catch((error) => {
 				loader.hide();
@@ -381,7 +391,7 @@ export default {
 			});
 		},
 
-		updateItem(i) {
+		updateItem(i, silent) {
 			const loader = this.$loading.show();
 			this.axios.post( '/permissions/update-target', {
 				item: this.filteredItems[i],
@@ -391,17 +401,31 @@ export default {
 				if(index != -1) this.items.id = response.data.id;
 
 				loader.hide();
-				this.$toast.success('Цели сохранены');
+				if(!silent) this.$toast.success('Цели сохранены');
 			}).catch((error) => {
 				loader.hide();
 				if(error.response?.data?.error === 'Duplicate entry for unique key.') {
-					this.$toast.warning('Внесите изменения перед сохранением');
+					if(!silent) this.$toast.warning('Внесите изменения перед сохранением');
 				}
 				else{
 					console.error(error);
-					this.$toast.error('Не удалось сохранить доступ')
+					if(!silent) this.$toast.error('Не удалось сохранить доступ')
 				}
 			});
+		},
+
+		removeInactiveTargets(){
+			if(!this.accessDictionaries || !this.users.length) return
+			this.items.forEach((item, index) => {
+				const hasEmpty = item.tergets.find(target => !~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id))
+				if(!hasEmpty) return
+				console.warn('remove item', index, item)
+				// item = {
+				// 	...item,
+				// 	targets: item.targets.filter(target => ~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id))
+				// }
+				// this.updateItem(index, true)
+			})
 		},
 
 

@@ -918,7 +918,7 @@ export default {
 			loader.hide()
 		},
 
-		async updateSection() {
+		async updateSection(silent) {
 			if (this.update_book.title.length <= 2) return this.$toast.error('Слишком короткое название!')
 			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
 
@@ -935,8 +935,8 @@ export default {
 				await API.updateKBBook({
 					id: this.update_book.id,
 					title: this.update_book.title,
-					who_can_read: this.who_can_read,
-					who_can_edit: this.who_can_edit,
+					who_can_read: this.whoCanReadActual,
+					who_can_edit: this.whoCanEditActual,
 					who_can_read_pairs: pairs,
 				})
 
@@ -951,12 +951,12 @@ export default {
 				this.whoCanReadPosition = []
 				this.whoCanReadGroup = []
 
-				this.$toast.success('Изменения сохранены')
+				if(!silent) this.$toast.success('Изменения сохранены')
 			}
 			catch (error) {
 				console.error(error)
 				window.onerror && window.onerror(error)
-				this.$toast.error('Не удалось созранить изменения')
+				if(!silent) this.$toast.error('Не удалось созранить изменения')
 			}
 
 			loader.hide()
