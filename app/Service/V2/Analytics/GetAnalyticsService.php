@@ -32,10 +32,11 @@ class GetAnalyticsService
                 'key' => $column->name
             ];
         });
-        dd(AnalyticsFacade::analytics($dto));
-        dd(AnalyticStat::form($dto->groupId, $date));
+//        dd(AnalyticsFacade::analytics($dto));
+//        dd(AnalyticStat::form($dto->groupId, $date));
         return [
-            'table' => AnalyticStat::form($dto->groupId, $date),
+            'table' => AnalyticsFacade::analytics($dto),
+            //'table' => AnalyticStat::form($dto->groupId, $date),
             'columns' => $columns
         ];
     }

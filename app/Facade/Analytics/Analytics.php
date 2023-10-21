@@ -39,7 +39,6 @@ final class Analytics
     public function analytics(GetAnalyticDto $dto): array
     {
         $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
-
         $rows       = AnalyticRow::query()->where('date', $date)->where('group_id', $dto->groupId)->orderByDesc('order')->get();
         $columns    = AnalyticColumn::query()->where('date', $date)->where('group_id', $dto->groupId)->orderBy('order', 'asc')->get();
         $stats      = AnalyticStat::with('activity')->where('date', $date)->where('group_id', $dto->groupId)->get();
@@ -50,9 +49,7 @@ final class Analytics
 
 
         $weekdays       = AnalyticStat::getWeekdays($date);
-        $tableValues    = $this->analyticTableValue($rows, $columns);
         $table      = [];
-        $cellNumber = 0;
 
         foreach ($rows as $rowIndex => $row)
         {
@@ -243,30 +240,17 @@ final class Analytics
      */
     private function totalForDay(Activity $activity, $date): int|float
     {
+        $method = ($activity->plan_unit === 'minutes' || $activity->plan_unit === 'less_sum') ? 'sum' : 'avg';
 
-        $items = UserStat::query()->where('activity_id', $activity->id)->where('date', $date)->get();
+        $total = UserStat::query()->where('activity_id', $activity->id)
+            ->where('date', $date)
+            ->where('value', '>', 0)
+            ->{$method}('value');
 
-        if(($activity->plan_unit == 'minutes' || $activity->plan_unit == 'less_sum')) {
-            $method = 'sum';
-        }  else {
-            $method = 'avg';
+        if ($method === 'avg') {
+            $total = round($total, 1);
         }
 
-        $total = 0;
-        $count = 0;
-        foreach($items as $item) {
-            $total += (float)$item->value;
-            if((float)$item->value > 0) $count++;
-        }
-
-
-        if($method == 'avg') {
-            if($count > 0) {
-                $total = round($total / $count, 1);
-            } else {
-                $total = 0;
-            }
-        }
         return $total;
     }
 
