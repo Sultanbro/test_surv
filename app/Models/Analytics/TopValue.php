@@ -538,9 +538,10 @@ class TopValue extends Model
             ->whereNotIn('id', [34, 58, 26])
             ->where('has_analytics', '=', 1)
             ->where('active', '=', 1)
-            ->orWhere(fn($query) => $query->whereYear('archived_date', '<=', $year)
+            ->whereDate('created_at','<=',$date)
+            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
                 ->whereMonth('archived_date', '>=', $date->month)
-            )
+            ))
             ->get();
 
         $r_counts = []; // for count avg rentability on every monht
