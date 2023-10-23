@@ -81,7 +81,8 @@ class EmployeeController extends Controller
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
 
 
-        } elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
+        }
+        elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
 
             $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
@@ -100,7 +101,8 @@ class EmployeeController extends Controller
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
 
-        } elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        }
+        elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -132,11 +134,13 @@ class EmployeeController extends Controller
                 ->whereIn('users.id', array_values($users_1));
 
 
-        } elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
+        }
+        elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
 
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
 
@@ -145,6 +149,7 @@ class EmployeeController extends Controller
                 ->where('position_id',$request['job'])
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
             }
@@ -155,7 +160,8 @@ class EmployeeController extends Controller
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
 
 
-        } else {
+        }
+        else {
 
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -202,6 +208,7 @@ class EmployeeController extends Controller
             'users.program_id',
             'ud.fire_cause',
             'ud.applied',
+            //'bl.created_at as lead_created_at'
         ]);
 
         foreach ($users as $key => $user) {

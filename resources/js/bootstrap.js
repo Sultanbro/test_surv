@@ -47,8 +47,10 @@ window.Echo = new Echo({
 	wssHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
 	wsPort: process.env.VITE_PUSHER_PORT ?? 6001,
 	wssPort: process.env.VITE_PUSHER_PORT ?? 6001,
-	forceTLS: process.env.VITE_PUSHER_SECURE ?? false,
-	wsPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
-	wssPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
+	forceTLS: process.env.VITE_PUSHER_SECURE ?? true,
+	disableStats: true,
+	encrypted: false,
+	// wsPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
+	// wssPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
 	enabledTransports: ['ws', 'wss'],
 });
