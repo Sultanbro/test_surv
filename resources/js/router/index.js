@@ -116,7 +116,7 @@ const router = new VueRouter({
 			component: MyCoursesView,
 			meta: {
 				title: 'Мои курсы',
-				menuItem: 'courses',
+				menuItem: 'profile',
 			},
 		},
 		// admin/reports.blade.php

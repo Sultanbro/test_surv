@@ -112,15 +112,7 @@
 				</template>
 				<template #cell(id)="data">
 					<a
-						v-if="is_admin && subdomain == 'bp'"
-						:href="'https://test.jobtron.org/login-as-employee/' + data.item.id + '?auth=' + auth_token"
-						target="_blank"
-					>
-						{{ data.value }}
-					</a>
-					<a
-						v-else
-						:href="'/timetracking/edit-person?id='+data.item.id"
+						:href="idLink(data.item)"
 						target="_blank"
 					>
 						{{ data.value }}
@@ -193,13 +185,6 @@
 				/>
 			</div>
 		</div>
-
-
-
-
-
-
-
 
 		<b-modal
 			v-model="showModal"
@@ -319,7 +304,6 @@
 				</div>
 			</div>
 		</b-modal>
-
 
 		<b-modal
 			v-model="showFilterModal"
@@ -822,7 +806,6 @@ export default {
 			this.setDefaultShowFields()
 		},
 
-
 		setDefaultShowFields() {
 			if(localStorage.showFields) {
 				this.showFields = JSON.parse(localStorage.getItem('showFields'))
@@ -856,6 +839,7 @@ export default {
 			//this.$refs.table.refresh()
 			this.getUsers()
 		},
+
 		getUsers() {
 			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
 			//if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
@@ -942,6 +926,13 @@ export default {
 		onFiltered() {
 			this.currentPage = 1
 		},
+
+		idLink(user){
+			if(!(this.is_admin && this.subdomain == 'bp')) return `/timetracking/edit-person?id=${user.id}`
+			const testhost = location.host.split('.')
+			testhost[0] = 'test'
+			return `${location.protocol}//${testhost.join('.')}/login-as-employee/${user.id}?auth=${this.auth_token}`
+		}
 	}
 }
 </script>

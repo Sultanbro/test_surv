@@ -126,6 +126,7 @@ import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
+
 import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
