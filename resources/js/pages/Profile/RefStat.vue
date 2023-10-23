@@ -7,7 +7,7 @@
 			'v-loading': !isReady,
 		}"
 	>
-		<div class="title index__title mt-5">
+		<div class="title index__title mt-6 mb-4">
 			Реферальная программа «Business&nbsp;Friends»
 		</div>
 
@@ -396,6 +396,10 @@ export default {
 	.RefStatsReferals-switch{
 		padding: $cellpadding;
 		margin: $bgmargin;
+	}
+
+	.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child::before {
+		background-color: #F8F9FD;
 	}
 }
 .RefStats{
