@@ -917,41 +917,42 @@ export default {
 			},
 			dataLoaded: false,
 			currentGroup: null,
-			dateTypes: [{
-				label: 'Обычный',
-				color: '#fff',
-				type: 0,
-			},
-			{
-				label: 'Выходной',
-				color: '#ccc',
-				type: 1,
-				popover: 'Выходной – без начислений',
-			},
-			{
-				label: 'Прогул',
-				color: 'red',
-				type: 2,
-				popover: 'Прогул – будет отмечен красным цветом, без начислений',
-			},
-			{
-				label: 'Больничный',
-				color: 'aqua',
-				type: 3,
-				popover: 'Больничный – будет отмечен голубым цветом, без начислений',
-			},
-			{
-				label: 'Стажер',
-				color: 'orange',
-				type: 5,
-				popover: 'Если оплачиваемая стажировка – 50% от дневного оклада, не оплачивая – без начислений',
-			},
-			{
-				label: 'Переобучение',
-				color: 'pink',
-				type: 6,
-				popover: 'Будет начислено 50% от дневного оклада',
-			},
+			dateTypes: [
+				{
+					label: 'Обычный',
+					color: '#fff',
+					type: 0,
+				},
+				{
+					label: 'Выходной',
+					color: '#ccc',
+					type: 1,
+					popover: 'Выходной – без начислений',
+				},
+				{
+					label: 'Прогул',
+					color: 'red',
+					type: 2,
+					popover: 'Прогул – будет отмечен красным цветом, без начислений',
+				},
+				{
+					label: 'Больничный',
+					color: 'aqua',
+					type: 3,
+					popover: 'Больничный – будет отмечен голубым цветом, без начислений',
+				},
+				{
+					label: 'Стажер',
+					color: 'orange',
+					type: 5,
+					popover: 'Если оплачиваемая стажировка – 50% от дневного оклада, не оплачивая – без начислений',
+				},
+				{
+					label: 'Переобучение',
+					color: 'pink',
+					type: 6,
+					popover: 'Будет начислено 50% от дневного оклада',
+				},
 			],
 			numClicks: 0,
 			currentEditingCell: {},
@@ -1296,7 +1297,7 @@ export default {
 					key: 'total',
 					label: '',
 					sortable: true,
-					class: 'text-center td-lightgreen',
+					class: 'text-center td-lightgreen b-table-sticky-column',
 				}
 			];
 
@@ -1988,5 +1989,32 @@ hr {
 .ddpointer {
 	margin-top: 2px;
 	cursor: pointer;
+}
+
+#tabelTable{
+	table-layout: fixed;
+	th,
+	td{
+		width: 50px;
+		input{
+			width: 48px;
+			padding: 0 10px;
+		}
+		.td-div{
+			padding: 0;
+		}
+	}
+
+	.b-table-sticky-column{
+		&:nth-child(1){
+			width: 290px;
+		}
+		&:nth-child(2){
+			left: 290px;
+		}
+		&.td-lightgreen {
+			background-color: #B7E100;
+		}
+	}
 }
 </style>

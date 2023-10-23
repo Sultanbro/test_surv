@@ -519,7 +519,7 @@ export default {
 
 		async deleteUser(){
 			this.deleteError = ''
-			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки') {
+			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки' && !this.isTrainee) {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}

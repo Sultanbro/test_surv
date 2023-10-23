@@ -7,7 +7,7 @@
 			'v-loading': loading
 		}"
 	>
-		<div class="TraineeEstimation-title title mt-5">
+		<div class="TraineeEstimation-title title mt-6">
 			Оценка стажеров
 		</div>
 		<div class="TraineeEstimation-subtitle subtitle">

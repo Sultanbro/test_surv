@@ -152,3 +152,10 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.news-paginate{
+	transform-origin: center;
+	transform: scale(0.8);
+}
+</style>
