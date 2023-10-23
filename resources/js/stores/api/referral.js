@@ -46,6 +46,7 @@ function referrerToUser(user){
 		month: Number(user.month_earned || user.month_paid || 0),
 		monthRef: Number(user.referrers_earned || user.referrers_paid || 0),
 		monthPaid: Number(user.month_paid || 0),
+		avatar: 'users_img/' + user.img_url,
 		users: user.users?.map(referalToUser) || []
 	}
 }

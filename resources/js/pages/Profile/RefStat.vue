@@ -23,7 +23,7 @@
 					<div class="RefStat-users">
 						<div class="RefStat-user">
 							<JobtronAvatar
-								:image="user.avatar"
+								:image="`users_img/${user.img_url}`"
 								:title="`${user.name} ${user.last_name}`"
 							/>
 							<div class="RefStat-userName">
