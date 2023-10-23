@@ -55,6 +55,7 @@ class EmployeeController extends Controller
 
     public function getpersons(Request $request)
     {
+        $filterTrainee = false;
 
         $groups = ProfileGroup::where('active', 1)->get();
 
@@ -136,7 +137,7 @@ class EmployeeController extends Controller
 
         }
         elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
-
+            $filterTrainee = true;
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -184,8 +185,7 @@ class EmployeeController extends Controller
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
         }
 
-
-        $users = $users->get([
+        $columns = [
             'users.id',
             'users.email',
             'users.user_type',
@@ -207,9 +207,15 @@ class EmployeeController extends Controller
             'users.work_end',
             'users.program_id',
             'ud.fire_cause',
-            'ud.applied',
-            //'bl.created_at as lead_created_at'
-        ]);
+            'ud.applied'
+        ];
+
+        if ($filterTrainee) {
+            // while filtering trainees it joins to bitrix_leads table
+            $columns[] = 'bl.created_at as lead_created_at';
+        }
+
+        $users = $users->get($columns);
 
         foreach ($users as $key => $user) {
 
