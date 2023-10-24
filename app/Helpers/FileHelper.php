@@ -15,7 +15,7 @@ class FileHelper
         $storage = Storage::disk('s3');
 
         try {
-            $result = null;
+            $result = 0;
 
             if ($file->isValid()) {
                 $path = self::checkDirectory($path);
@@ -73,7 +73,6 @@ class FileHelper
 
     public static function getUrl(string $folder, string|null $filename): string
     {
-        $filename = $filename ?: '';
         return Storage::disk('s3')
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
     }
