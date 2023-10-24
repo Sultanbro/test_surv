@@ -17,11 +17,11 @@ class FileHelper
         try {
             $result = null;
 
-//            if ($file->isValid()) {
-            $path = self::checkDirectory($path);
-            $result = $storage->putFile($path, $file);
-            $result = $result ? basename($result) : null;
-//            }
+            if ($file->isValid()) {
+                $path = self::checkDirectory($path);
+                $result = $storage->putFile($path, $file);
+                $result = $result ? basename($result) : $file->getClientOriginalName();
+            }
 
             return $result;
 
@@ -71,8 +71,9 @@ class FileHelper
         return Storage::disk('s3')->path($path . '/' . $filename);
     }
 
-    public static function getUrl(string $folder, string $filename): string
+    public static function getUrl(string $folder, string|null $filename): string
     {
+        $filename = $filename ?: '';
         return Storage::disk('s3')
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
     }
