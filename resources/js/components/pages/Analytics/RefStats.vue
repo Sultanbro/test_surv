@@ -258,14 +258,14 @@ export default {
 				this.cvResultDealPercent = data.cvResultDealPercent
 				this.cvDealUserPercent = data.cvDealUserPercent
 				this.users = data.users
+				loader.hide()
 			}
 			catch (error) {
+				loader.hide()
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить статистику реферальной программы')
+				window.onerror && window.onerror(error)
 			}
-
-			loader.hide()
 		},
 		toggleAfter(id){
 			const index = this.uncollapsed.findIndex(uId => uId === id)
@@ -322,8 +322,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не сохранено')
+				window.onerror && window.onerror(error)
 			}
 		},
 		field2type(field){

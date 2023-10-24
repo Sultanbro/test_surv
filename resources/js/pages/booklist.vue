@@ -1085,13 +1085,14 @@ export default {
 			try {
 				const {data} = await this.axios.post('/upload/images/', formData)
 				success(data.location)
+				loader.hide()
 			}
 			catch (error) {
+				loader.hide()
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Ошибка загрузки изображения')
+				window.onerror && window.onerror(error)
 			}
-			loader.hide()
 		},
 
 		submit() {

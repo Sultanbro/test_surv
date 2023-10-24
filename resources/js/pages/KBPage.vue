@@ -692,8 +692,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить список разделов')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -707,8 +707,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить настройки')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -724,8 +724,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить настройки')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -752,8 +752,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -766,8 +766,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось удалить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -781,8 +781,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось восстановить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -809,8 +809,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Поиск не удался')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -833,8 +833,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить доступы')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -896,8 +896,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не создать раздел')
+				window.onerror && window.onerror(error)
 			}
 			loader.hide()
 		},
@@ -912,8 +912,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить архивные разделы')
+				window.onerror && window.onerror(error)
 			}
 			loader.hide()
 		},
@@ -952,14 +952,14 @@ export default {
 				this.whoCanReadGroup = []
 
 				if(!silent) this.$toast.success('Изменения сохранены')
+				loader.hide()
 			}
 			catch (error) {
+				loader.hide()
 				console.error(error)
-				window.onerror && window.onerror(error)
 				if(!silent) this.$toast.error('Не удалось созранить изменения')
+				window.onerror && window.onerror(error)
 			}
-
-			loader.hide()
 		},
 
 		async saveOrder(event) {
@@ -973,8 +973,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить порядок')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -995,8 +995,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.success('Не удалось загрузить глоссарий')
+				window.onerror && window.onerror(error)
 			}
 		},
 		addTerm(){
@@ -1019,8 +1019,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.success('Не удалось сохранить термин')
+				window.onerror && window.onerror(error)
 			}
 		},
 		async deleteTerm(deleteTerm){
@@ -1047,8 +1047,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось созранить изменения')
+				window.onerror && window.onerror(error)
 			}
 		},
 	},
