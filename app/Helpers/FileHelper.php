@@ -10,22 +10,22 @@ use Throwable;
 class FileHelper
 {
 
-    public static function save(UploadedFile $file, string $path = '/news/upload'): ?string
+    public static function save(UploadedFile $file, string $path): ?string
     {
         $storage = Storage::disk('s3');
 
         try {
             $result = null;
 
-            if ($file->isValid()) {
-                $path = self::checkDirectory($path);
-                $result = $storage->putFile($path, $file);
-                $result = $result ? basename($result) : null;
-            }
+//            if ($file->isValid()) {
+            $path = self::checkDirectory($path);
+            $result = $storage->putFile($path, $file);
+            $result = $result ? basename($result) : null;
+//            }
 
             return $result;
 
-        } catch (Throwable $ex) {
+        } catch (Throwable) {
             return null;
         }
     }
