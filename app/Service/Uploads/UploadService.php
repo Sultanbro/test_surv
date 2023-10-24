@@ -11,14 +11,10 @@ class UploadService
     /**
      * @param UploadedFile $file
      * @return string
-     * @throws BusinessLogicException
      */
     public function store(UploadedFile $file): string
     {
-        if (!$filename = FileHelper::save($file, config('app.upload.path'))) {
-            throw new BusinessLogicException(__('exception.upload_error'));
-        }
-
+        $filename = FileHelper::save($file, "uploads");
         return FileHelper::getUrl(config('app.upload.path'), $filename);
     }
 }

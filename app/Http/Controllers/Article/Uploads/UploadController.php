@@ -19,7 +19,6 @@ class UploadController extends Controller
     /**
      * @param UploadRequest $request
      * @return JsonResponse
-     * @throws BusinessLogicException
      */
     public function store(UploadRequest $request): JsonResponse
     {

@@ -10,7 +10,7 @@ use Throwable;
 class FileHelper
 {
 
-    public static function save(UploadedFile $file, string $path): ?string
+    public static function save(UploadedFile $file, string $path = '/news/upload'): ?string
     {
         $storage = Storage::disk('s3');
 
