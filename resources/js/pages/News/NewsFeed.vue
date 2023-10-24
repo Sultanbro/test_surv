@@ -142,12 +142,13 @@ export default {
 				const {data} = await this.axios.get(this.nextPageURL)
 				this.nextPageURL = data.data.pagination.next_page_url
 				this.posts = this.posts.concat(data.data.articles)
+				this.showPaginator = true
 			}
 			catch (error) {
+				this.showPaginator = true
 				console.error(error)
 				window.onerror && window.onerror(error)
 			}
-			this.showPaginator = true
 		}
 	}
 }
