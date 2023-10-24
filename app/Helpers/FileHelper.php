@@ -15,12 +15,12 @@ class FileHelper
         $storage = Storage::disk('s3');
 
         try {
-            $result = 0;
+            $result = false;
 
             if ($file->isValid()) {
                 $path = self::checkDirectory($path);
                 $result = $storage->putFile($path, $file);
-                $result = $result ? basename($result) : $file->getClientOriginalName();
+                $result = $result ? basename($result) : null;
             }
 
             return $result;
