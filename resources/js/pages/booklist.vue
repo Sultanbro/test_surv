@@ -1083,7 +1083,7 @@ export default {
 			formData.append('attachment', blobInfo.blob())
 			formData.append('id', this.activesbook.id)
 			try {
-				const {data} = this.axios.post('/upload/images/', formData)
+				const {data} = await this.axios.post('/upload/images/', formData)
 				success(data.location)
 			}
 			catch (error) {
