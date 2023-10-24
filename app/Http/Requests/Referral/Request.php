@@ -13,6 +13,7 @@ class Request extends FormRequest
         return [
               'name' => ['required', 'string', 'min:2']
             , 'phone' => ['required', new PhoneRule]
+            , 'city' => ['required', 'string']
         ];
     }
 
@@ -22,6 +23,7 @@ class Request extends FormRequest
         return new RequestDto(
               $data['name']
             , $data['phone']
+            , $data['city']
         );
     }
 }
