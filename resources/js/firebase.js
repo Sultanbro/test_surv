@@ -27,14 +27,16 @@ function weblog(msg, cause){
 	if(domain !== 'jobtron.org') return
 	const date = new Date().toISOString().substring(0,10)
 	const logdoc = doc(db, 'weblog', date);
+	const result = {
+		tenant,
+		userId: Laravel.userId,
+		msg: msg || '',
+		cause: cause || '',
+		location: location.pathname
+	}
+	console.error('weblog', result)
 	setDoc(logdoc, {
-		[Date.now()]: {
-			tenant,
-			userId: Laravel.userId,
-			msg: msg || '',
-			cause: cause || '',
-			location: location.pathname
-		}
+		[Date.now()]: result
 	},
 	{ merge: true });
 }
