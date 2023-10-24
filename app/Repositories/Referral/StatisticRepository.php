@@ -182,10 +182,10 @@ class StatisticRepository implements StatisticRepositoryInterface
                             }
                         }
                         $types[$i] = [
-                            'paid' => (bool)($salary['is_paid']),
-                            'sum' => $salary['award'],
-                            'comment' => $salary['note'],
-                            'id' => $salary['id'],
+                            'paid' => (bool)($salary['is_paid']) ?? false,
+                            'sum' => $salary['award'] ?? 0,
+                            'comment' => $salary['note'] ?? null,
+                            'id' => $salary['id'] ?? null,
                         ];
                     }
                 }
