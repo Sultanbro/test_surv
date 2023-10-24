@@ -90,6 +90,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $coordinate_id
  * @property int $referrer_id
  * @property string $referrer_status
+ * @property string $welcome_message
  * @property Collection<Service\Salary\> $salaries
  * @property Collection<Service\Salary\> $referralBonuses
  * @mixin Builder
@@ -159,6 +160,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         'coordinate_id',
         'referrer_id',
         'referrer_status',
+        'welcome_message'
     ];
 
     protected $casts = [
@@ -573,9 +575,14 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->hasOne('App\UserDescription', 'user_id', 'id');
     }
 
-    public function lead()
+    public function lead(): HasOne
     {
         return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
+    }
+
+    public function leadByPhone(): HasOne
+    {
+        return $this->hasOne('App\Models\Bitrix\Lead', 'phone', 'phone');
     }
 
     public function referralLeads(): HasMany
