@@ -181,12 +181,14 @@ class StatisticRepository implements StatisticRepositoryInterface
                                 $salary = $item;
                             }
                         }
-                        $types[$i] = [
-                            'paid' => (bool)($salary['is_paid']),
-                            'sum' => $salary['award'],
-                            'comment' => $salary['note'],
-                            'id' => $salary['id'],
-                        ];
+                        if (count($salary)) {
+                            $types[$i] = [
+                                'paid' => (bool)($salary['is_paid']) ?? false,
+                                'sum' => $salary['award'] ?? 0,
+                                'comment' => $salary['note'] ?? null,
+                                'id' => $salary['id'] ?? null,
+                            ];
+                        }
                     }
                 }
                 $toCheck = [1, 2, 3, 4, 6, 8, 12];

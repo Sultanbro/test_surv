@@ -1638,8 +1638,9 @@ class TimetrackingController extends Controller
             $daytype->admin_id = $user->id;
             $daytype->save();
         }
-
-        Referring::touchReferrerSalary($request->user_id, $request->type);
+        if ($request->user_id) {
+            Referring::touchReferrerSalary($request->user_id, $request->type);
+        }
 
         $authorName = $user->name . ' ' . $user->last_name;
         $desc = isset($request['comment']) ? $description . '. Причина: ' . $request['comment'] : $description;

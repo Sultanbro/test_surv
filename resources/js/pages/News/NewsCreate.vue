@@ -439,13 +439,13 @@ export default {
 				this.$refs.dropZone.removeAllFiles()
 				this.toggleInput(false, false)
 				this.$toast.success('Новость сохранена')
+				this.isEdit = false
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить новость')
+				window.onerror && window.onerror(error)
 			}
-			this.isEdit = false
 		},
 
 		async updatePost() {
@@ -489,13 +489,13 @@ export default {
 				this.$refs.dropZone.removeAllFiles()
 				this.toggleInput(false, false)
 				this.$toast.success('Новость сохранена')
+				this.isEdit = false
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить новость')
+				window.onerror && window.onerror(error)
 			}
-			this.isEdit = false
 		},
 	}
 }
