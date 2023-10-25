@@ -460,7 +460,7 @@
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
-							v-model="active.date_applied"
+							v-model="active.date_reapplied"
 							type="checkbox"
 							class="mr-3"
 						>
