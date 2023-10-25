@@ -39,7 +39,7 @@ class Referring extends Facade
         }
     }
 
-    public static function touchReferrerSalary($user_id, $type): void
+    public static function touchReferrerSalary($user_id, $type, $date): void
     {
         /** @var User $user */
         $user = User::with('description')
@@ -50,9 +50,9 @@ class Referring extends Facade
             return;
         }
 
-        if ($type == DayType::DAY_TYPES['ABCENSE']) {
+        if (in_array($type, [DayType::DAY_TYPES['ABCENSE'], DayType::DAY_TYPES['FIRED']])) {
             $salary = $referrer->salaries()
-                ->where('date', now()->format('Y-m-d'))
+                ->where('date', $date)
                 ->where('award', '=', 1000)
                 ->where('is_paid')
                 ->where('resource', SalaryResourceType::REFERRAL)
