@@ -21,7 +21,6 @@ use App\ProfileGroup;
 use App\Service\SendMessageTraineesService;
 use App\Service\Tenancy\CabinetService;
 use App\User;
-use App\UserDescription;
 use App\UserNotification;
 use App\Zarplata;
 use Carbon\Carbon;
@@ -489,6 +488,7 @@ class HrController extends Controller
                 $full_time = 1;
             }
 
+            /** @var User $user */
             $user = User::withTrashed()->where('email', $email)->first();
 
             $currency = Phone::getCurrency($lead->phone);
@@ -500,6 +500,7 @@ class HrController extends Controller
 
             $uname = strlen($lead->name) > 50 ? mb_substr($lead->name, 0, 49) : $lead->name;
             if (!$user) {
+                /** @var User $user */
                 $user = User::query()->create([
                     'email' => $email,
                     'name' => $uname,
@@ -526,11 +527,11 @@ class HrController extends Controller
 
                 (new CabinetService)->add(tenant('id'), $user, false);
 
-                UserDescription::make([
-                    'user_id' => $user->id,
+                $user->user_description()->updateOrCreate([
+                    'user_id' => $user->id], [
                     'lead_id' => $lead->lead_id,
                     'deal_id' => $lead->deal_id,
-                    'is_trainee' => 1,
+                    'is_trainee' => 1
                 ]);
 
                 $old_invite_at = $lead->invite_at;
@@ -561,13 +562,19 @@ class HrController extends Controller
                     $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
 
-
-                UserDescription::make([
-                    'user_id' => $user->id,
+                $user->user_description()->updateOrCreate([
+                    'user_id' => $user->id], [
                     'lead_id' => $lead->lead_id,
                     'deal_id' => $lead->deal_id,
-                    'is_trainee' => 1,
+                    'is_trainee' => 1
                 ]);
+
+//                UserDescription::make([  // почему make а не create ? не ясно
+//                    'user_id' => $user->id,
+//                    'lead_id' => $lead->lead_id,
+//                    'deal_id' => $lead->deal_id,
+//                    'is_trainee' => 1,
+//                ]);
 
                 $user->segment = $lead->segment;
                 $user->referrer_id = $lead->referrer_id;
