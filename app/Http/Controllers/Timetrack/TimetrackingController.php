@@ -1639,7 +1639,7 @@ class TimetrackingController extends Controller
             $daytype->save();
         }
         if ($request->user_id) {
-            Referring::touchReferrerSalary($request->user_id, $request->type);
+            Referring::touchReferrerSalary($request->user_id, $request->type, $date->format("Y-m-d"));
         }
 
         $authorName = $user->name . ' ' . $user->last_name;
