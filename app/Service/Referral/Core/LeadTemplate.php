@@ -23,7 +23,7 @@ class LeadTemplate
         $hash = Hash::make(uniqid() . mt_rand());
         $countries = Countries::toArray();
         $data = [
-            "TITLE" => "Реферал,удаленный : " . $this->request->name,
+            "TITLE" => "Реферал: " . $this->request->name,
             "NAME" => $this->request->name,
             'UF_CRM_1498210379' => self::SEGMENT_ID, // сегмент
             'UF_CRM_1686025529' => 3072, // есть ли комп
@@ -40,7 +40,7 @@ class LeadTemplate
         if ($key) {
             $key = Str::lower($key);
             $adapted = [];
-            if ($key) {
+            if ($key === 'hash') {
                 return $hash;
             }
             foreach ($data as $arrayKey => $item) {

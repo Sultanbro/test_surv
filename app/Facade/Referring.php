@@ -43,9 +43,9 @@ class Referring extends Facade
     {
         /** @var User $user */
         $user = User::with('description')
-            ->where('user_id', $user_id)
+            ->find($user_id)
             ->first();
-        $referrer = $user->referrer;
+        $referrer = $user?->referrer;
         if (!$referrer) {
             return;
         }
