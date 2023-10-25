@@ -3,17 +3,22 @@
 import API from '../../API.vue';
 import Vue from 'vue';
 
+import moment from 'moment'
+
 import {
 	MESSAGES_MAX_COUNT,
 	MESSAGES_LOAD_COUNT,
 	MESSAGES_LOAD_COUNT_ON_RESET,
 } from './constants.js';
 
+import {updateUserWelcome} from '@/stores/api.js'
+
 import {
 	hasLocal,
 	loadLocal,
 	saveLocal,
 } from './local'
+
 
 export default {
 	state: {
@@ -81,6 +86,44 @@ export default {
 						chat: getters.chat,
 					});
 
+					if(!chatId){
+						if(!getters.user.welcome_message) {
+							const date = moment(Date.now()).utc().format('YYYY-MM-DDTHH:mm:ss') + '.000000Z'
+							updateUserWelcome(date)
+							getters.user.welcome_message = date
+						}
+						if(!~getters.messages.findIndex(msg => !msg.id)){
+							messages.unshift({
+								id: 0,
+								created_at: moment(getters.user.welcome_message),
+								updated_at: moment(getters.user.welcome_message),
+								sender_id: 0,
+								chat_id: 0,
+								parent_id: null,
+								body: 'Event',
+								deleted: 0,
+								pinned: 0,
+								sender: {
+									id: 0,
+									neme: 'system',
+								},
+								event: {
+									id: 0,
+									created_at: moment(getters.user.welcome_message),
+									updated_at: moment(getters.user.welcome_message),
+									type: 'welcome',
+									message_id: 0,
+									payload: {},
+								},
+								files: [],
+								readers: [],
+								parent: null,
+								deleted_message: [],
+							})
+							messages = messages.sort((a, b) => moment(a.created_at).diff(b.created_at))
+						}
+					}
+
 					if (reset) {
 						commit('setMessages', messages);
 						saveLocal(chatId, messages)
@@ -110,13 +153,19 @@ export default {
 			});
 		},
 		async loadMoreOldMessages({commit, getters, dispatch}) {
+			if(!(getters.messages && getters.messages.length)) return
+			const msg = getters.messages.find(msg => msg.id)
+			if(!msg) return
 			commit('setMessagesLoadMoreCount', MESSAGES_LOAD_COUNT);
-			commit('setStartMessageId', getters.messages[0].id);
+			commit('setStartMessageId', msg.id);
 			dispatch('loadMessages');
 		},
 		async loadMoreNewMessages({commit, getters, dispatch}) {
+			if(!(getters.messages && getters.messages.length)) return
+			const msg = getters.messages.slice().reverse.find(msg => msg.id)
+			if(!msg) return
 			commit('setMessagesLoadMoreCount', -MESSAGES_LOAD_COUNT);
-			commit('setStartMessageId', getters.messages[getters.messages.length - 1].id);
+			commit('setStartMessageId', msg.id);
 			dispatch('loadMessages');
 		},
 		async sendMessage({commit, getters, dispatch}, message) {

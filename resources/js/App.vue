@@ -1,6 +1,9 @@
 <script>
 import { mapGetters } from 'vuex'
-import { updateOnlineStatus } from './stores/api'
+import {
+	updateOnlineStatus,
+	// checkVersion,
+} from './stores/api'
 
 const DEFAULT_TITLE = 'Jobtron.org';
 
@@ -45,9 +48,11 @@ export default {
 		this.stopOlineTracking()
 	},
 	methods: {
-		sendStatus(){
+		async sendStatus(){
 			if(this.sendStatusTimer) return (this.sendStatusDelayed = true)
 			updateOnlineStatus()
+			// const newVerion = await checkVersion()
+			// if(newVerion) this.$toast.info('Достуна новая версия сайта, обновите страницу')
 			this.sendStatusTimer = setTimeout(() => {
 				this.sendStatusTimer = null
 				if(this.sendStatusDelayed) this.sendStatus()
