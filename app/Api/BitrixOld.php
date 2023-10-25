@@ -141,6 +141,32 @@ class BitrixOld
     }
 
     /**
+     * @param $url
+     * @param $query
+     * @return mixed
+     */
+    private function curl_post($url, $query): mixed
+    {
+
+        // $query = http_build_query(array(
+        // 	'phone' =>  $request->phone,
+        // ));
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_POST => 1,
+            CURLOPT_HEADER => 0,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url,
+            CURLOPT_POSTFIELDS => $query,
+        ));
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return json_decode($result, true);
+    }
+
+    /**
      * @param string $id
      * @return bool
      */
@@ -482,32 +508,6 @@ class BitrixOld
         $query = http_build_query($fields);
 
         return $this->curl_post($this->link . 'voximplant.statistic.get.json', $query);
-    }
-
-    /**
-     * @param $url
-     * @param $query
-     * @return mixed
-     */
-    private function curl_post($url, $query): mixed
-    {
-
-        // $query = http_build_query(array(
-        // 	'phone' =>  $request->phone,
-        // ));
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_POST => 1,
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_POSTFIELDS => $query,
-        ));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
     }
 
     /**

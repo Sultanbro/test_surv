@@ -7,7 +7,7 @@
 			'v-loading': loading
 		}"
 	>
-		<div class="profit__title title mt-5">
+		<div class="profit__title title mt-6">
 			Как можно зарабатывать больше
 		</div>
 		<div class="profit__subtitle subtitle">

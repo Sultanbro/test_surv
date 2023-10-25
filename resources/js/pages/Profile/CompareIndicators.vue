@@ -7,7 +7,7 @@
 			'v-loading': loading
 		}"
 	>
-		<div class="title index__title mt-5">
+		<div class="title index__title mt-6">
 			Сравнение показателей
 		</div>
 		<div class="subtitle index__subtitle">
@@ -164,52 +164,68 @@ export default {
 
 <style lang="scss">
 .index__table{
-    >.tabs{
-        margin-top: -3rem;
-    }
-    .nav-tabs{
-        gap: 0 4rem;
-        padding-bottom: 0.5rem;
-        border: none;
-        .nav-link{
-            &.active{
-                border: none;
-                color: #ED2353;
-                background: none;
-            }
-        }
-    }
-    .nav-item{
-        margin-top: -0.1rem;
-    }
-    .nav-link{
-        padding: 1.5rem 0 0;
-        border: none;
-        background: none;
-        border-radius: 0;
+	>.tabs{
+		margin-top: -3rem;
+	}
+	.nav-tabs{
+		gap: 0 4rem;
+		padding-bottom: 0.5rem;
+		border: none;
+		.nav-link{
+			&.active{
+				border: none;
+				color: #ED2353;
+				background: none;
+			}
+		}
+	}
+	.nav-item{
+		margin-top: -0.1rem;
+	}
+	.nav-link{
+		padding: 1.5rem 0 0;
+		border: none;
+		background: none;
+		border-radius: 0;
 
-        line-height: 2em;
-        color: #8D8D8D;
-        font-size: 1.7rem;
-        font-family: "Open Sans", sans-serif;
-        font-weight: 600;
-        transition: color 0.3s;
-        cursor: pointer;
+		line-height: 2em;
+		color: #8D8D8D;
+		font-size: 1.7rem;
+		font-family: "Open Sans", sans-serif;
+		font-weight: 600;
+		transition: color 0.3s;
+		cursor: pointer;
 
-        &:hover{
-            color: #ED2353;
-        }
-    }
-    .index__tab{
-        padding-top: 0;
-    }
+		&:hover{
+			color: #ED2353;
+		}
+	}
+	.index__tab{
+		padding-top: 0;
+	}
+
+	.indicators-table-fixed tr:first-child{
+		position: relative;
+		z-index: 2;
+	}
+	.indicators-table-fixed tr:first-child th:first-child::before{
+		content: "";
+		position: absolute;
+		top: -11px;
+		left: -13px;
+		transform: skewX(326deg);
+		background-color: #F8F9FD;
+		width: 20px;
+		height: 20px;
+		border-radius: 50px;
+	}
 }
 
 @media(max-width:440px){
-    .index__table{
-        >.tabs{
-            margin-top: -2rem;
-        }
-    }
+	.index__table{
+		>.tabs{
+			margin-top: -2rem;
+		}
+	}
 }
 </style>

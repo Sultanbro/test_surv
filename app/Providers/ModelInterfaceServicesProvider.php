@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Referral\Referral;
-use App\Models\Referral\Referrer;
+use App\Models\User\Referral\Referrer;
 use App\Service\Referral\Core\ReferralInterface;
 use App\Service\Referral\Core\ReferrerInterface;
 use Illuminate\Support\ServiceProvider;

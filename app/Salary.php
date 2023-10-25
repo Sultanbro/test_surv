@@ -15,10 +15,13 @@ use Auth;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Salary extends Model
 {
+    use HasFactory;
+
     const ALL_USERS = 0;
     const WORKING_USERS = 1;
     const FIRED_USERS = 2;
@@ -28,7 +31,6 @@ class Salary extends Model
     protected $dates = ['date'];
 
     protected $fillable = [
-        'amount',
         'note',
         'user_id',
         'date',
@@ -39,6 +41,8 @@ class Salary extends Model
         'comment_paid',
         'comment_bonus',
         'comment_award',
+        'resource',
+        'is_paid', // это для того когда деньги начислены, но не выплачены
     ];
 
     /**

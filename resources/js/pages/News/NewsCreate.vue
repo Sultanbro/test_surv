@@ -410,7 +410,9 @@ export default {
 
 			if (this.titleError || this.contentError || this.availableError) return
 
-			formData.append('available_for', this.availableToEveryone ? '' : JSON.stringify(this.accessList))
+			const allChecked = this.accessList.length && !this.accessList[0].type
+
+			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
 			if (this.postFiles.length) {
 				const fileIds = []
@@ -437,13 +439,13 @@ export default {
 				this.$refs.dropZone.removeAllFiles()
 				this.toggleInput(false, false)
 				this.$toast.success('Новость сохранена')
+				this.isEdit = false
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить новость')
+				window.onerror && window.onerror(error)
 			}
-			this.isEdit = false
 		},
 
 		async updatePost() {
@@ -455,7 +457,9 @@ export default {
 
 			if (this.titleError || this.contentError || this.availableError) return
 
-			formData.append('available_for', this.availableToEveryone ? '' : JSON.stringify(this.accessList))
+			const allChecked = this.accessList.length && !this.accessList[0].type
+
+			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
 
 			if (this.postFiles.length != 0) {
@@ -485,13 +489,13 @@ export default {
 				this.$refs.dropZone.removeAllFiles()
 				this.toggleInput(false, false)
 				this.$toast.success('Новость сохранена')
+				this.isEdit = false
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить новость')
+				window.onerror && window.onerror(error)
 			}
-			this.isEdit = false
 		},
 	}
 }

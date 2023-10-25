@@ -4,24 +4,28 @@ namespace App;
 
 use App\Api\BitrixOld as Bitrix;
 use App\Classes\Helpers\Phone;
+use App\Enums\SalaryResourceType;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
+use App\Models\Bitrix\Lead;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
-use App\Models\Referral\Referrer;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
+use App\Models\User\Referral\Referrer;
 use App\Models\UserCoordinate;
 use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
+use App\Service\Referral\Core\ReferrerInterface;
+use App\Service\Referral\Core\ReferrerStatus;
 use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
 use Exception;
@@ -45,15 +49,60 @@ use InvalidArgumentException;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
+ * @property string $name
+ * @property string $last_name
+ * @property string $email
+ * @property string $phone
+ * @property string $password
+ * @property string $remember_token
+ * @property int $position_id
+ * @property int $program_id
+ * @property string $full_time
+ * @property string $user_type
+ * @property string $city
+ * @property string $address
+ * @property string $description
+ * @property string $currency
+ * @property string $timezone
+ * @property string $segment
+ * @property int $working_day_id
+ * @property int $working_time_id
+ * @property string $working_country
+ * @property string $working_city
+ * @property string $work_start
+ * @property string $work_end
+ * @property string $birthday
+ * @property string $read_corp_book_at
+ * @property string $has_noti
+ * @property string $notified_at
+ * @property string $role_id
+ * @property string $is_admin
+ * @property string $groups_all
+ * @property string $applied_at
+ * @property string $weekdays
+ * @property string $img_url
+ * @property string $headphones_sum
+ * @property string $phone_1
+ * @property string $phone_2
+ * @property string $phone_3
+ * @property string $phone_4
+ * @property int $work_chart_id
+ * @property int $coordinate_id
+ * @property int $referrer_id
+ * @property string $referrer_status
+ * @property string $welcome_message
+ * @property Collection<Service\Salary\> $salaries
+ * @property Collection<Service\Salary\> $referralBonuses
  * @mixin Builder
  */
-class User extends Authenticatable implements Authorizable
+class User extends Authenticatable implements Authorizable, ReferrerInterface
 {
     use Notifiable,
         SoftDeletes,
         HasFactory,
         HasRoles,
-        HasTenants;
+        HasTenants,
+        Referrer;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
@@ -108,11 +157,14 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
         'work_chart_id',
-        'coordinate_id'
+        'coordinate_id',
+        'referrer_id',
+        'referrer_status',
+        'welcome_message'
     ];
 
     protected $casts = [
-        'timezone' => 'float',
+        'timezone' => 'float'
     ];
 
     /**
@@ -128,16 +180,6 @@ class User extends Authenticatable implements Authorizable
     public function scopeGetByEmail(Builder $query, string $email): Builder
     {
         return $query->where('email', $email);
-    }
-
-    /* @author Vahagn */
-    public function asReferrer(): hasOne
-    {
-        return $this->hasOne(
-            Referrer::class
-            , 'user_id'
-            , 'id'
-        );
     }
 
     /**
@@ -533,9 +575,19 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\UserDescription', 'user_id', 'id');
     }
 
-    public function lead()
+    public function lead(): HasOne
     {
         return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
+    }
+
+    public function leadByPhone(): HasOne
+    {
+        return $this->hasOne('App\Models\Bitrix\Lead', 'phone', 'phone');
+    }
+
+    public function referralLeads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'referrer_id', 'id');
     }
 
     public function integration_token(string $server)
@@ -873,7 +925,6 @@ class User extends Authenticatable implements Authorizable
 
     public function daytypes()
     {
-
         return $this->hasMany('App\DayType', 'user_id');
 
     }
@@ -893,9 +944,15 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\Downloads', 'user_id', 'id');
     }
 
-    public function salaries()
+    public function salaries(): HasMany
     {
         return $this->hasMany(Salary::class, 'user_id');
+    }
+
+    public function referralBonuses(): HasMany
+    {
+        return $this->hasMany(Salary::class, 'user_id')
+            ->where('resource', SalaryResourceType::REFERRAL);
     }
 
     public function profileContacts()
@@ -1551,8 +1608,6 @@ class User extends Authenticatable implements Authorizable
             $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
             $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
         }
-
-
         return $working_hours;
     }
 

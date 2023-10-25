@@ -27,14 +27,16 @@ function weblog(msg, cause){
 	if(domain !== 'jobtron.org') return
 	const date = new Date().toISOString().substring(0,10)
 	const logdoc = doc(db, 'weblog', date);
+	const result = {
+		tenant,
+		userId: Laravel.userId,
+		msg: msg || '',
+		cause: cause || '',
+		location: location.pathname
+	}
+	console.error('weblog', result)
 	setDoc(logdoc, {
-		[Date.now()]: {
-			tenant,
-			userId: Laravel.userId,
-			msg: msg || '',
-			cause: cause || '',
-			location: location.pathname
-		}
+		[Date.now()]: result
 	},
 	{ merge: true });
 }
@@ -47,10 +49,10 @@ window.onerror = function(msg, url, line, col, error){
 const AXIOS_SEPARATOR = '#️⃣'
 
 axios.interceptors.response.use((response) => response, (error) => {
-	const msg = error?.response?.data?.message
-	if(msg === 'Unauthenticated.') return location.reload()
+	const msg = error?.response?.data?.message || ''
+	if(msg === 'Unauthenticated.') return location.assign('/')
 	const reqData = error?.response?.config?.data
 	const data = reqData instanceof FormData ? JSON.stringify(Object.fromEntries(reqData)) : JSON.stringify(reqData)
-	weblog('axios: ' + msg, error?.response?.config?.method + AXIOS_SEPARATOR + error?.response?.config?.url + AXIOS_SEPARATOR + data)
+	weblog('axios: ' + (~msg.indexOf('logs/laravel') ? 'LARAVEL LOGS' : msg), (error?.response?.config?.method || '') + AXIOS_SEPARATOR + (error?.response?.config?.url || '') + AXIOS_SEPARATOR + data)
 	throw error;
 });

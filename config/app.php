@@ -228,7 +228,7 @@ return [
         // Spatie\Permission\PermissionServiceProvider::class,
         /** @author vahagn99ghukasyan@gmail.com */
         App\Providers\FacadeServiceProvider::class,
-        App\Providers\CustomServicesProvider::class,
+        App\Providers\ReferralServicesProvider::class,
         App\Providers\ModelInterfaceServicesProvider::class,
     ],
 

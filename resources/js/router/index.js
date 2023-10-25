@@ -19,6 +19,7 @@ import SalaryView from '@/views/SalaryView'
 import QualityControlView from '@/views/QualityControlView'
 import MapView from '@/views/MapView'
 import KPIView from '@/views/KPIView'
+import PromotionalMaterialView from '@/views/PromotionalMaterialView'
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView'
@@ -38,6 +39,14 @@ const router = new VueRouter({
 				viewport: true,
 				bodyClass: 'profile-page',
 				menuItem: 'profile',
+			},
+		},
+		{
+			path: '/profile/promotional-material',
+			name: 'PromotionalMaterialView',
+			component: PromotionalMaterialView,
+			meta: {
+				title: 'Рекламный материал',
 			},
 		},
 		// cabinet.blade.php
@@ -107,7 +116,7 @@ const router = new VueRouter({
 			component: MyCoursesView,
 			meta: {
 				title: 'Мои курсы',
-				menuItem: 'courses',
+				menuItem: 'profile',
 			},
 		},
 		// admin/reports.blade.php

@@ -432,4 +432,30 @@ class ProfileController extends Controller
 
         return response()->json($response);
     }
+
+    /**
+     * Условия оплаты из отделов и должности
+     *
+     * @return
+     */
+    public function promotionalMaterial()
+    {
+        return view('promotional-material');
+    }
+
+    public function updateWelcomeMessage(Request $request): JsonResponse
+    {
+        $ownerId = auth()->id(); // validated by middleware guard
+        $owner = User::getAuthUser($ownerId);
+        $request->validate([
+            'welcome_message' => 'required|string'
+        ]);
+
+        $owner->welcome_message = $request->get('welcome_message');
+        $owner->update();
+
+        return response()->json([
+            'user' => $owner
+        ]);
+    }
 }

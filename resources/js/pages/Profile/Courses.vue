@@ -1,38 +1,51 @@
 <template>
 	<div
 		id="courses__anchor"
-		class="courses__wrapper block _anim _anim-no-hide mt-4"
+		class="courses__wrapper block _anim _anim-no-hide mt-4 Courses"
 	>
 		<div
 			class="courses__content"
-			:class="{'hidden': activeCourse !== null}"
+			:class="{'hidden': activeCourse}"
 		>
 			<div class="courses__title">
 				Ваши курсы
 			</div>
-			<div class="courses__content__wrapper">
+			<div
+				v-if="canSlide"
+				class="Courses-actions"
+			>
+				<div
+					class="Courses-action Courses-action_prev"
+					:class="{'Courses-action_disabled': !(currentSlide > 0)}"
+					@click="prevSlide"
+				/>
+				<div
+					class="Courses-action Courses-action_next"
+					:class="{'Courses-action_disabled': !(currentSlide < canSlide)}"
+					@click="nextSlide"
+				/>
+			</div>
+			<div
+				ref="slides"
+				class="courses__content__wrapper"
+			>
 				<template v-if="courses.length">
 					<div
 						v-for="(course, index) in unfinished"
 						:key="index"
 						class="courses__item"
-						:class="{'current': index == 0}"
+						:class="{'current': !index}"
 					>
 						<img
-							v-if="course.img"
-							:src="course.img"
+							:src="course.img ? course.img : '/images/course.jpg'"
 							alt="курс"
-							class="courses__image"
+							class="courses__image pointer"
 							@click="selectCourse(index)"
 						>
-						<img
-							v-else
-							src="/images/course.jpg"
-							alt="курс"
-							class="courses__image"
+						<div
+							class="courses__name pointer"
 							@click="selectCourse(index)"
 						>
-						<div class="courses__name">
 							{{ course.name }}
 						</div>
 						<div class="courses__progress">
@@ -51,14 +64,14 @@
 								&nbsp;
 							</template>
 						</div>
-						<div
+						<!-- <div
 							v-if="isRegressed(course)"
 							class="courses__regress"
 						>
 							<div class="courses__regress-message">
 								Курс обнулен!
 							</div>
-						</div>
+						</div> -->
 						<a
 							:href="'/my-courses?id=' + course.id"
 							class="courses__button"
@@ -79,7 +92,7 @@
 		</div>
 
 		<div
-			v-if="activeCourse !== null"
+			v-if="activeCourse"
 			class="profit__info active"
 		>
 			<div class="profit__info-title">
@@ -169,13 +182,14 @@ export default {
 			},
 			slickCount: {
 				520: 2,
-				940: 3,
+				680: 3,
 				1200: 4,
 				1360: 3,
-				1600: 4,
-				1800: 5,
+				1480: 4,
+				1600: 5,
 				2140: 6,
-			}
+			},
+			currentSlide: 0,
 		};
 	},
 	computed: {
@@ -212,13 +226,16 @@ export default {
 		canAddCourses(){
 			return this.$laravel.is_admin
 		},
+		canSlide(){
+			return Math.max(this.unfinished.length - this.slidesToShow, 0)
+		}
 	},
 	watch: {
 		courses(){
 			this.initCourses()
 		},
 		slidesToShow(){
-			this.resizeCarousel()
+			// this.resizeCarousel()
 		}
 	},
 	created(){},
@@ -231,12 +248,13 @@ export default {
 			this.courses.forEach(course => {
 				this.fetchCourseInfo(course.id)
 			})
-			this.$nextTick(() => this.initSlider())
+			// this.$nextTick(() => this.initSlider())
 			window.addEventListener('resize', this.resizeCarousel)
 		},
 		resizeCarousel(){
-			const $coursesWrapper = VJQuery('.courses__content__wrapper')
-			if($coursesWrapper[0] && $coursesWrapper[0].slick) $coursesWrapper.slick('slickSetOption', 'slidesToShow', this.slidesToShow, true)
+			// const $coursesWrapper = VJQuery('.courses__content__wrapper')
+			// if($coursesWrapper[0] && $coursesWrapper[0].slick) $coursesWrapper.slick('slickSetOption', 'slidesToShow', this.slidesToShow, true)
+			this.$nextTick(this.scrollToSlide)
 		},
 		isRegressed(course){
 			if(!this.results[course.id] || !this.results[course.id][0]) return false
@@ -291,82 +309,6 @@ export default {
 		},
 
 		/**
-		 * init inner slider that opens when click concrete course
-		 */
-		initInnerSlider() {
-			VJQuery('.profit__info__wrapper').slick({
-				variableWidth: false,
-				infinite: false,
-				slidesToScroll: 2,
-				slidesToShow: 10,
-				responsive: [
-					{
-						breakpoint: 2140,
-						settings: {
-							variableWidth: false,
-							infinite:false,
-							swipeToSlide: false,
-							slidesToScroll: 2,
-							slidesToShow: 9,
-						}
-					},
-					{
-						breakpoint: 2000,
-						settings: {
-							variableWidth: false,
-							infinite:false,
-							swipeToSlide: false,
-							slidesToScroll: 2,
-							slidesToShow: 6,
-						}
-					},
-					{
-						breakpoint: 1800,
-						settings: {
-							variableWidth: false,
-							infinite:false,
-							swipeToSlide: false,
-							slidesToScroll: 2,
-							slidesToShow: 5,
-						}
-					},
-					{
-						breakpoint: 1600,
-						settings: {
-							infinite: true,
-							variableWidth: true,
-							swipeToSlide: true,
-							slidesToShow: 1,
-						}
-					},
-
-					{
-						breakpoint: 780,
-						settings: {
-							variableWidth: false,
-							infinite:false,
-							slidesToShow: 2,
-							slidesToScroll: 2,
-							swipeToSlide: false,
-						}
-					},
-					{
-						breakpoint: 500,
-						settings: {
-							variableWidth: false,
-							infinite:false,
-							slidesToShow: 1,
-							slidesToScroll: 1,
-							swipeToSlide: false,
-						}
-					},
-
-				]
-
-			});
-		},
-
-		/**
 		 * private: helper for template
 		 * count progress of course item
 		 */
@@ -374,7 +316,27 @@ export default {
 			return item.all_stages > 0
 				? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
 				: 0;
-		}
+		},
+
+		nextSlide(){
+			if(!(this.currentSlide < this.canSlide)) return
+			++this.currentSlide
+			this.scrollToSlide()
+		},
+		prevSlide(){
+			if(!(this.currentSlide > 0)) return
+			--this.currentSlide
+			this.scrollToSlide()
+		},
+		scrollToSlide(){
+			const slides = this.$refs.slides
+			const width = slides.offsetWidth
+			const slideWidth = width / this.slidesToShow
+			slides.scrollTo({
+				left: slideWidth * this.currentSlide,
+				behavior: 'smooth',
+			})
+		},
 	}
 };
 </script>
@@ -431,6 +393,157 @@ export default {
 		text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
 
 		transform: translate(-50%, -50%);
+	}
+}
+.courses__content__wrapper{
+	.slick-slide{
+		> div{
+			height: 100%;
+		}
+	}
+	.courses__item{
+		display: flex;
+		flex-flow: column nowrap;
+		height: 100%;
+		margin: 10px;
+	}
+}
+
+// slickCount: {
+// 	520: 2,
+// 	680: 3,
+// 	1200: 4,
+// 	1360: 3,
+// 	1480: 4,
+// 	1600: 5,
+// 	2140: 6,
+// }
+.courses__content{
+	&:after{
+		content: '';
+		height: 30px;
+		position: absolute;
+		z-index: 5;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: #F8F9FD;
+	}
+}
+.courses__content__wrapper{
+	display: flex;
+	flex-flow: row nowrap;
+
+	margin: -10px;
+	// padding: 10px;
+	padding-bottom: 30px;
+
+	position: relative;
+
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-padding: 10px;
+	scroll-behavior: smooth;
+
+	.courses__item{
+		scroll-snap-align: start;
+		flex: 0 0 calc(100% - 20px);
+	}
+}
+@media (min-width: 520px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(50% - 20px);
+		}
+	}
+}
+@media (min-width: 680px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(33.333% - 20px);
+		}
+	}
+}
+@media (min-width: 1200px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(25% - 20px);
+		}
+	}
+}
+@media (min-width: 1360px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(33.333% - 20px);
+		}
+	}
+}
+@media (min-width: 1480px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(25% - 20px);
+		}
+	}
+}
+@media (min-width: 1600px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(20% - 20px);
+		}
+	}
+}
+@media (min-width: 2140px) {
+	.courses__content__wrapper{
+		.courses__item{
+			flex: 0 0 calc(16.666% - 20px);
+		}
+	}
+}
+
+.Courses{
+	&-actions{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+
+		position: absolute;
+		top: 2rem;
+		right: 2rem;
+	}
+	&-action{
+		width: 2rem;
+		height: 2rem;
+		opacity: 0.9;
+		cursor: pointer;
+		&:hover{
+			opacity: 1;
+		}
+		&_prev{
+			background: url(/images/info-arrow-prev.svg?892948cfd03d132d274cabe5a3073b99) 50% no-repeat;
+			background-size: cover;
+		}
+		&_next{
+			background: url(/images/info-arrow-next.svg?e2f543056600235aa0b8104c3af5ac0e) 50% no-repeat;
+			background-size: cover;
+		}
+		&_disabled{
+			opacity: 0.5;
+			pointer-events: none;
+		}
+	}
+}
+@media (min-width: 778px) {
+	.Courses{
+		&-actions{
+			top: 3rem;
+			right: 3rem;
+		}
+	}
+	.courses__content{
+		&:after{
+			bottom: 3rem;
+		}
 	}
 }
 </style>

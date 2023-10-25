@@ -9,8 +9,8 @@ use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
-use App\Service\Department\UserService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -20,45 +20,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property bool $archive_utility
- * @property mixed name
- * @property mixed users
- * @property mixed work_start
- * @property mixed work_end
- * @property mixed workdays
- * @property mixed editors_id
- * @property mixed required
- * @property mixed provided
- * @property mixed head_id
- * @property mixed bp_link
- * @property mixed zoom_link
- * @property mixed checktime
- * @property mixed checktime_users
- * @property mixed salary_approved
- * @property mixed salary_approved_by
- * @property mixed salary_approved_date
- * @property mixed active
- * @property mixed payment_terms
- * @property mixed has_analytics
- * @property mixed quality
- * @property mixed editable_time
- * @property mixed time_address
- * @property mixed time_exceptions
- * @property mixed paid_internship
- * @property mixed rentability_max
- * @property mixed show_payment_terms
- * @property mixed archived_date
- * @property mixed work_chart_id
- * @property mixed switch_utility
- * @property mixed switch_proceeds
- * @property mixed switch_rentability
  */
 class ProfileGroup extends Model
 {
-    use HasRoles;
+    use HasRoles, HasFactory;
 
     protected $table = 'profile_groups';
 
-    protected string $guard_name = 'web';
+    protected $guard_name = 'web';
 
     public $timestamps = true;
 
@@ -224,24 +193,17 @@ class ProfileGroup extends Model
      */
     public static function profileGroupsWithArchived($year, $month, bool $withArchive = true, bool $archivedThisMonth = false, string $switchColumn = ''): array
     {
-        $date = Carbon::create($year, $month)
-            ->lastOfMonth()
-            ->format('Y-m-d');
+        $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
-        $profileGroups = static::query()
-            ->where('active', self::IS_ACTIVE)
+        $profileGroups = self::query()->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)
-            ->where(fn($q) => $q->whereNull('archived_date')
-                ->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)
-                    ->whereMonth('archived_date', '>=', $month)));
+            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)));
         if ($switchColumn !== '') {
             $profileGroups->where($switchColumn, 1); // написано так, чтобы не сломать работающий код
         }
 
         if ($archivedThisMonth) {
-            $firstDayMonth = Carbon::create($year, $month)
-                ->firstOfMonth()
-                ->format('Y-m-d');
+            $firstDayMonth = Carbon::create($year, $month)->firstOfMonth()->format('Y-m-d');
             $profileGroups->where('has_analytics', self::HAS_ANALYTICS)
                 ->orWhere('archived_date', '>=', $firstDayMonth);
         } else if ($withArchive) {
@@ -250,21 +212,16 @@ class ProfileGroup extends Model
             $profileGroups->where('has_analytics', self::HAS_ANALYTICS);
         }
 
-        $profileGroups->where(fn($group) => $group
-            ->whereNull('archived_date')
-            ->orWhere(
-                fn($q) => $q->whereYear('archived_date', '>=', $year)
-                    ->whereMonth('archived_date', '>=', $month))
-        )
-            ->get()
-            ->reject(function ($group) {
-                if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null) {
-                    return $group;
-                }
-                if ($group->has_analytics == self::ARCHIVED && $group->archived_date == null) {
-                    return $group;
-                }
-            });
+        $profileGroups->where(fn($group) => $group->whereNull('archived_date')->orWhere(
+            fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
+        )->get()->reject(function ($group) {
+            if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null) {
+                return $group;
+            }
+            if ($group->has_analytics == self::ARCHIVED && $group->archived_date == null) {
+                return $group;
+            }
+        });
 
         return $profileGroups->pluck('id')->toArray();
     }
@@ -563,12 +520,6 @@ class ProfileGroup extends Model
         string $dateTo
     ): BelongsToMany
     {
-        $service = new UserService();
-
-//        $firedEmployees = $service->getFiredEmployeeIds($this->id, $dateFrom);
-//        $employees = $service->getEmployeeIds($this->id, $dateFrom);
-//        $users_ids = array_unique(array_merge($firedEmployees, $employees));
-
         return $this->users()
             ->select('id', 'name', 'last_name', 'full_time', 'email')
             ->withTrashed()

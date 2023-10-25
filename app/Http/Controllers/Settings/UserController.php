@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Facade\Referring;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\SettingUserRequest;
 use App\Http\Requests\Settings\GetUserRequest;
+use App\Http\Requests\Settings\SettingUserRequest;
 use App\Http\Requests\Settings\StoreUserRequest;
 use App\Http\Requests\Settings\UpdateUserRequest;
 use App\Http\Resources\Users\UserResource;
@@ -19,10 +20,11 @@ use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
     public function __construct(
-        public UserService $userService,
+        public UserService       $userService,
         public UserUpdateService $updateService
     )
-    {}
+    {
+    }
 
     /**
      * @OA\Post(

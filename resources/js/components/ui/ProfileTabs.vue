@@ -110,7 +110,7 @@ export default {
 		color: #8D8D8D;
 		font-size: 1.7rem;
 		font-family: "Open Sans", sans-serif;
-		line-height: 2em;
+		line-height: 1.1em;
 		font-weight: 600;
 
 		transition: color 0.3s;

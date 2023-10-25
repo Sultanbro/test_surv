@@ -124,6 +124,7 @@ export default {
 			cityText: this.user?.working_country || '',
 			cityLat: 0,
 			cityLon: 0,
+			file8: null,
 		}
 	},
 	computed: {
@@ -492,12 +493,14 @@ export default {
 			catch (error){
 				console.error(error);
 				const msg = 'Не удалось сохранить информацию о сотруднике'
+				const pwdMsg = 'Значения поля "Новый пароль" некорректно.\nПароль должен содержать минимум 8 символов и хотя бы одну строчную и одну заглавную букву'
 				if (error.response) {
 					if (error.response.data?.message) {
-						this.$toast.error(`${msg}\n${error.response.data.message}`)
+						const respMsg = error.response.data.message.replace('Количество символов в поле new pwd должно быть не меньше 8.', pwdMsg)
+						this.$toast.error(`${msg}\n${respMsg.replace('Значение поля new pwd некорректно.', pwdMsg)}`, {timeout: 10000})
 					}
 					else{
-						this.$toast.error(msg);
+						this.$toast.error(msg)
 					}
 					if (error.response.data?.errors) {
 						this.fieldErrors = error.response.data?.errors
@@ -515,12 +518,12 @@ export default {
 		},
 
 		async deleteUser(){
-			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
+			this.deleteError = ''
+			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки' && !this.isTrainee) {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
 
-			this.deleteError = ''
 			const formData = new FormData(this.$refs.deleteForm)
 			try{
 				const {data} = await axios({
@@ -572,7 +575,7 @@ export default {
 			this.cityText = `Страна: ${city.country} Город: ${city.name}`
 			this.cityLat = city.coords[0]
 			this.cityLon = city.coords[1]
-		}
+		},
 	}
 }
 </script>
@@ -1039,6 +1042,7 @@ export default {
 														type="file"
 														class="inputfile inputfile-1"
 														style="display:none"
+														@change="file8 = $event.target.files"
 													>
 													<label
 														v-if="user.downloads && user.downloads.resignation"

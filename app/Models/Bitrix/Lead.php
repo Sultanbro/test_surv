@@ -2,15 +2,18 @@
 
 namespace App\Models\Bitrix;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
-use App\User;
 use App\ProfileGroup;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Lead extends Model
-{   
+{
+    use HasFactory;
+
     protected $table = 'bitrix_leads';
 
     public $timestamps = true;
@@ -29,7 +32,8 @@ class Lead extends Model
     protected $fillable = [
         'lead_id',
         'deal_id',
-        'user_id', 
+        'user_id',
+        'referrer_id', // если имеет, значить перешел по рефералке
         'resp_id', // responsible manager
         'segment', // сегмент Кандидат на вакансию
         'phone',
@@ -68,7 +72,7 @@ class Lead extends Model
 
     public $segment_field_bitrix = 'UF_CRM_1498210379';
     public $project_field_bitrix_deal = 'UF_CRM_5F61AD2B3241C';
-    
+
     const SEGMENT_TARGET = 1; // 1018 Кандидаты на вакансию (таргет)
     const SEGMENT_HH = 2; // 1462 Кандидаты на вакансию (hh, nur, job)
     const SEGMENT_PROMO = 3; // 1604 Кандидаты на вакансию (promo акции)
@@ -84,13 +88,13 @@ class Lead extends Model
     const SEGMENT_SITE_BP = 13;
     const SEGMENT_INCOME = 14;
 
-    CONST SEGMENTS = [
+    const SEGMENTS = [
         'Кандидаты (таргет)' => 1,
         'Кандидаты (hh, nur и др.)' => 2,
-        'Кандидаты (promo акции)' => 3, 
-        'Кандидаты (вацап, телега и др мессенджеры)' => 4, 
+        'Кандидаты (promo акции)' => 3,
+        'Кандидаты (вацап, телега и др мессенджеры)' => 4,
         'Кандидаты на вакансию (Гарантия трудоустройства)' => 5,
-        'Кандидаты на вакансию (Участники семинаров, форумов, встреч)' => 6, 
+        'Кандидаты на вакансию (Участники семинаров, форумов, встреч)' => 6,
         'Кандидаты на вакансию (Муса)' => 7, // derprecated
         'Кандидаты на вакансию (Алина)' => 8, // derprecated
         'Кандидаты на вакансию (Салтанат)' => 9,  // derprecated
@@ -98,18 +102,19 @@ class Lead extends Model
         'Кандидаты на вакансию (Дархан)' => 11, // derprecated
         'Кандидаты на вакансию (Шолпан)' => 12, // derprecated
         'Кандидаты на вакансию (Сайт BP)' => 13, // derprecated
-        'Busines Partner (Входящее обращение)' => 14, 
+        'Busines Partner (Входящее обращение)' => 14,
         'Кандидаты (Интеллектуальный обзвон)' => 15,
         'Кандидаты (job.bpartners.kz)' => 16,
         'Кандидаты (QR)' => 17,
         'Кандидаты (ВХ звонок)' => 18,
+        'Кандидаты (рефералка с профиля JT)' => 19,
     ];
 
-    CONST SEGMENTS_ALT = [
+    const SEGMENTS_ALT = [
         '1018' => 1,
         '1462' => 2,
         '1604' => 3,
-        '1666' => 4, 
+        '1666' => 4,
         '2012' => 5,
         '1442' => 6,
         '2362' => 7,
@@ -119,58 +124,62 @@ class Lead extends Model
         '2536' => 11,
         '2538' => 12,
         '2436' => 13,
-        '873'  => 14,
+        '873' => 14,
         '2012' => 15,
         '2436' => 16,
         '2362' => 17,
         '2426' => 18,
+        '3548' => 19,
     ];
 
 
-    public static function getSegment($str) {
-        if($str == NULL) return 0;
+    public static function getSegment($str)
+    {
+        if ($str == NULL) return 0;
         $segment = Segment::where('name', $str)->first();
         return $segment ? $segment->id : 99;
     }
- 
-    public static function getSegmentAlt($str) {
-        if($str == NULL) return 0;
-        $segment = Segment::where('on_lead', $str)->first();
-        return $segment ? $segment->id : 99;
+
+    public static function getSegmentAlt($str)
+    {
+        if ($str == NULL) return 0;
+        $segment = Segment::query()->where('on_lead', $str)->first();
+        return $segment ? $segment->getKey() : 99;
     }
-    
+
     /**
      * get leads (OLD)
      */
-    public static function fetch(array $date) {
+    public static function fetch(array $date)
+    {
 
         $leads = self::query()
-            ->where(function($query) use ($date) {
+            ->where(function ($query) use ($date) {
                 $query->whereNotNull('skyped')
                     ->whereMonth('skyped', $date['month'])
                     ->whereYear('skyped', $date['year']);
             })
-            ->orWhere(function($query) use ($date) {
+            ->orWhere(function ($query) use ($date) {
                 $query->whereNotNull('inhouse')
                     ->whereMonth('inhouse', $date['month'])
                     ->whereYear('inhouse', $date['year']);
             })
-            ->orderBy('inhouse','desc')
-            ->orderBy('skyped','desc')
+            ->orderBy('inhouse', 'desc')
+            ->orderBy('skyped', 'desc')
             ->take(200)
             ->get();
 
         $groups = ProfileGroup::get();
         $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray())->first();
-            
+
         foreach ($leads as $lead) {
-          
-            $fileLink = 'https://' .tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
+
+            $fileLink = 'https://' . tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
             $signedAt = $lead->skyped ?? $lead->inhouse;
             $respUser = $respUsers->where('email', $lead->resp_id)->first();
-                
+
             $lead->user_type = $lead->skyped ? 'remote' : 'office';
-            $lead->file = count( json_decode($lead->files) ) > 0 ?  $fileLink . json_decode($lead->files)[0] : '';
+            $lead->file = count(json_decode($lead->files)) > 0 ? $fileLink . json_decode($lead->files)[0] : '';
             $lead->invite_group = $groups->where('id', $lead->invite_group_id)->first()?->name;
             $lead->invited_at = $lead->invite_at ? Carbon::parse($lead->invite_at)->format('d.m.Y H:i') : '';
             $lead->skyped_old = date('Y-m-d H:i:s', Carbon::parse($signedAt)->timestamp);
@@ -181,27 +190,28 @@ class Lead extends Model
             $lead->resp = $respUser ? $respUser->last_name . '<br>' . $respUser->name : '';
         }
 
-        return array_values( $leads->sortByDesc('os')->toArray() );
+        return array_values($leads->sortByDesc('os')->toArray());
     }
 
     /**
      * get leads (OLD)
      */
-    public static function fetchWithPagination(array $date) {
+    public static function fetchWithPagination(array $date)
+    {
 
         $leads = self::query()
-            ->where(function($query) use ($date) {
+            ->where(function ($query) use ($date) {
                 $query->whereNotNull('skyped')
                     ->whereMonth('skyped', $date['month'])
                     ->whereYear('skyped', $date['year']);
             })
-            ->orWhere(function($query) use ($date) {
+            ->orWhere(function ($query) use ($date) {
                 $query->whereNotNull('inhouse')
                     ->whereMonth('inhouse', $date['month'])
                     ->whereYear('inhouse', $date['year']);
             })
-            ->orderBy('inhouse','DESC')
-            ->orderBy('skyped','DESC')
+            ->orderBy('inhouse', 'DESC')
+            ->orderBy('skyped', 'DESC')
             ->paginate($date['limit']);
 
         $groups = ProfileGroup::get();
@@ -209,12 +219,12 @@ class Lead extends Model
 
         foreach ($leads as $lead) {
 
-            $fileLink = 'https://' .tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
+            $fileLink = 'https://' . tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
             $signedAt = $lead->skyped ?? $lead->inhouse;
             $respUser = $respUsers->where('email', $lead->resp_id)->first();
 
             $lead->user_type = $lead->skyped ? 'remote' : 'office';
-            $lead->file = count( json_decode($lead->files) ) > 0 ?  $fileLink . json_decode($lead->files)[0] : '';
+            $lead->file = count(json_decode($lead->files)) > 0 ? $fileLink . json_decode($lead->files)[0] : '';
             $lead->invite_group = $groups->where('id', $lead->invite_group_id)->first()?->name;
             $lead->invited_at = $lead->invite_at ? Carbon::parse($lead->invite_at)->format('d.m.Y H:i') : '';
             $lead->skyped_old = date('Y-m-d H:i:s', Carbon::parse($signedAt)->timestamp);
@@ -229,10 +239,11 @@ class Lead extends Model
     }
 
     /**
-     *  Trainee (Lead) has many daytypes 
+     *  Trainee (Lead) has many daytypes
      */
-    public function daytypes() {
-        return $this->hasMany('App\DayType','user_id', 'user_id');
+    public function daytypes()
+    {
+        return $this->hasMany('App\DayType', 'user_id', 'user_id');
     }
 
     /**
@@ -245,5 +256,14 @@ class Lead extends Model
     public function scopeUserLeadByDesc($query, User $user)
     {
         return $query->where('user_id', $user->id)->orderBy('id', 'desc');
+    }
+
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class
+            , "referrer_id"
+            , "id"
+        );
     }
 }

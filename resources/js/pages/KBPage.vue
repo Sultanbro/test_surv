@@ -582,7 +582,8 @@ export default {
 
 			search: {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			},
 
 			show_glossary: false,
@@ -663,9 +664,11 @@ export default {
 			if (this.search.input.length === 0) this.clearSearch()
 		},
 		clearSearch() {
+			clearTimeout(this.search.timeout)
 			this.search = {
 				input: '',
-				items: []
+				items: [],
+				timeout: null,
 			}
 		},
 		init(){
@@ -689,8 +692,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить список разделов')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -704,8 +707,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить настройки')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -721,8 +724,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить настройки')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -733,24 +736,24 @@ export default {
 
 				if(data.error) return this.$toast.info('Раздел не найден')
 
-				this.trees = data.trees
-				this.activeBook = data.book
-				this.show_page_id = page_id
-				this.showSearch = false
-				this.search.input = ''
-				this.search.items = []
-
 				// change URL
 				const urlParams = new URLSearchParams(window.location.search)
 				const b = urlParams.get('b')
 				let uri = '/kb?s=' + book.id
+				if(this.search.input) uri += '&hl=' + this.search.input
 				if(b) uri += '&b=' + b
 				window.history.replaceState({}, 'База знаний', uri)
+
+				this.trees = data.trees
+				this.activeBook = data.book
+				this.show_page_id = page_id
+				this.showSearch = false
+				this.clearSearch()
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -763,8 +766,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось удалить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -778,8 +781,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось восстановить раздел')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -792,7 +795,12 @@ export default {
 			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
 		},
 
-		async searchInput() {
+		searchInput() {
+			clearTimeout(this.search.timeout)
+			this.search.timeout = setTimeout(this.runSearch, 500)
+		},
+
+		async runSearch(){
 			if(this.search.input.length <= 2) return null
 			try {
 				const data = await API.searchKBBook(this.search.input)
@@ -801,8 +809,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Поиск не удался')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -825,8 +833,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить доступы')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -867,7 +875,7 @@ export default {
 			}]
 			this.whoCanReadGroup = [{
 				id: group.id,
-				name: position.name,
+				name: group.name,
 				type: 2
 			}]
 		},
@@ -888,8 +896,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не создать раздел')
+				window.onerror && window.onerror(error)
 			}
 			loader.hide()
 		},
@@ -904,25 +912,32 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось получить архивные разделы')
+				window.onerror && window.onerror(error)
 			}
 			loader.hide()
 		},
 
-		async updateSection() {
+		async updateSection(silent) {
 			if (this.update_book.title.length <= 2) return this.$toast.error('Слишком короткое название!')
 			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
 
 			const loader = this.$loading.show()
+			const pairs = []
+			for(let i = 0, l = this.whoCanReadGroup.length; i < l; ++i){
+				pairs.push({
+					position_id: this.whoCanReadPosition[i].id,
+					group_id: this.whoCanReadGroup[i].id
+				})
+			}
 
 			try {
 				await API.updateKBBook({
 					id: this.update_book.id,
 					title: this.update_book.title,
-					who_can_read: this.who_can_read,
-					who_can_edit: this.who_can_edit,
-					who_can_read_pairs: this.whoCanReadPosition,
+					who_can_read: this.whoCanReadActual,
+					who_can_edit: this.whoCanEditActual,
+					who_can_read_pairs: pairs,
 				})
 
 				this.showEdit = false
@@ -936,15 +951,15 @@ export default {
 				this.whoCanReadPosition = []
 				this.whoCanReadGroup = []
 
-				this.$toast.success('Изменения сохранены')
+				if(!silent) this.$toast.success('Изменения сохранены')
+				loader.hide()
 			}
 			catch (error) {
+				loader.hide()
 				console.error(error)
+				if(!silent) this.$toast.error('Не удалось созранить изменения')
 				window.onerror && window.onerror(error)
-				this.$toast.error('Не удалось созранить изменения')
 			}
-
-			loader.hide()
 		},
 
 		async saveOrder(event) {
@@ -958,8 +973,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить порядок')
+				window.onerror && window.onerror(error)
 			}
 		},
 
@@ -980,8 +995,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.success('Не удалось загрузить глоссарий')
+				window.onerror && window.onerror(error)
 			}
 		},
 		addTerm(){
@@ -1004,8 +1019,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.success('Не удалось сохранить термин')
+				window.onerror && window.onerror(error)
 			}
 		},
 		async deleteTerm(deleteTerm){
@@ -1032,8 +1047,8 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось созранить изменения')
+				window.onerror && window.onerror(error)
 			}
 		},
 	},

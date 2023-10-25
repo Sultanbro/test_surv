@@ -42,10 +42,16 @@ return [
         'app_id' => env('PUSHER_APP_ID'),
         'options' => [
             'cluster' => env('PUSHER_APP_CLUSTER'),
-            'encrypted' => false,
             'host' => env('PUSHER_HOST', 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com',
-            'port' => env('PUSHER_PORT', 443),
+            'port' => env('PUSHER_PORT', 6001),
             'scheme' => env('PUSHER_SCHEME', 'https'),
+            'useTLS' => env('PUSHER_SCHEME') == 'https',
+            'encrypted' => false,
+            'disableStats' => true,
+            'curl_options' => [
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0,
+            ],
         ],
     ],
 

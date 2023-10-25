@@ -348,6 +348,7 @@ export default {
 		async fetchNotifications(){
 			const notifications = await fetchNotificationVariants()
 			this.notifications = this.parseNotifications(notifications)
+			this.removeInactiveTargets()
 		},
 		parseNotifications(notifications){
 			return notifications.map(notification => {
@@ -463,14 +464,14 @@ export default {
 				this.selectedNotification = null
 			}
 			else{
-				this.$toast.error(message)
+				this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
 			}
 			this.fetchNotifications()
 		},
-		async updateNotification(notification){
+		async updateNotification(notification, silent){
 			const {message} = await updateNotification(notification)
 			if(message === 'Success'){
-				this.$toast.success('Уведомление успешно сохранено')
+				if(!silent) this.$toast.success('Уведомление успешно сохранено')
 				this.template = ''
 				this.selectedTemplate = null
 				this.selectedNotification = null
@@ -479,7 +480,7 @@ export default {
 				this.$set(this.notifications, index, notification)
 			}
 			else{
-				this.$toast.error(message)
+				if(!silent) this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
 			}
 		},
 		async fetchSettings(){
@@ -521,7 +522,11 @@ export default {
 		},
 		async onChangeStatus(notification){
 			notification.status = notification.status ? 0 : 1
-			const {message} = await updateNotification(notification)
+			const request = JSON.parse(JSON.stringify(notification))
+			if(!request.recipients?.length){
+				delete request.recipients
+			}
+			const {message} = await updateNotification(request)
 			if(message === 'Success'){
 				this.$toast.success(`Уведомление ${notification.status ? 'активировано' : 'деактивировано'}`)
 				const index = this.notifications.findIndex(n => n.id === notification.id)
@@ -531,6 +536,16 @@ export default {
 			else{
 				this.$toast.error(message)
 			}
+		},
+		removeInactiveTargets(){
+			this.notifications.forEach(item => {
+				const hasEmpty = item.recipients.find(rec => !rec.name)
+				if(!hasEmpty) return
+				this.updateNotification({
+					...item,
+					recipients: item.recipients.filter(rec => rec.name)
+				}, true)
+			})
 		},
 	}
 }

@@ -112,9 +112,8 @@ export default {
 				}
 				catch (error) {
 					console.error(error)
-					window.onerror && window.onerror(error)
-
 					alert(error?.response?.data?.message || '!Запрос на работу в выходной не отправлен!')
+					window.onerror && window.onerror(error)
 				}
 			}
 		},

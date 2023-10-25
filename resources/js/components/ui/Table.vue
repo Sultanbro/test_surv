@@ -35,38 +35,57 @@
 			</tr>
 		</thead>
 		<tbody class="JobtronTable-body">
-			<tr
-				v-for="row, rowIndex in items"
-				:key="rowIndex"
-				class="JobtronTable-row"
-				:class="[trClassFn(row)]"
-			>
-				<td
-					v-for="field in fields"
-					:key="field.key"
-					class="JobtronTable-td"
-					:class="field.tdClass"
+			<template v-for="row, rowIndex in items">
+				<tr
+					:key="rowIndex"
+					class="JobtronTable-row"
+					:class="[trClassFn(row)]"
 				>
-					<slot
-						v-if="$scopedSlots[`cell(${field.key})`]"
-						:name="`cell(${field.key})`"
-						:value="row[field.key]"
-						:item="row"
-						:field="field"
-						:index="rowIndex"
-					/>
-					<slot
-						v-else
-						name="cell"
-						:value="row[field.key]"
-						:item="row"
-						:field="field"
-						:index="rowIndex"
+					<td
+						v-for="field in fields"
+						:key="field.key"
+						class="JobtronTable-td"
+						:class="field.tdClass"
 					>
-						{{ row[field.key] }}
-					</slot>
-				</td>
-			</tr>
+						<slot
+							v-if="$scopedSlots[`cell(${field.key})`]"
+							:name="`cell(${field.key})`"
+							:value="row[field.key]"
+							:item="row"
+							:field="field"
+							:index="rowIndex"
+						/>
+						<slot
+							v-else
+							name="cell"
+							:value="row[field.key]"
+							:item="row"
+							:field="field"
+							:index="rowIndex"
+						>
+							{{ row[field.key] }}
+						</slot>
+					</td>
+				</tr>
+				<template v-if="$scopedSlots['afterRow']">
+					<tr
+						:key="'after' + rowIndex"
+						class="JobtronTable-row JobtronTable-afterRow"
+						:class="[trAfterClassFn(row)]"
+					>
+						<td
+							class="JobtronTable-td"
+							colspan="9999"
+						>
+							<slot
+								:name="`afterRow`"
+								:value="row"
+								:index="rowIndex"
+							/>
+						</td>
+					</tr>
+				</template>
+			</template>
 		</tbody>
 	</table>
 </template>
@@ -90,6 +109,10 @@ export default {
 			default: false
 		},
 		trClassFn: {
+			type: Function,
+			default: () => ''
+		},
+		trAfterClassFn: {
 			type: Function,
 			default: () => ''
 		}
@@ -144,7 +167,7 @@ export default {
 		position: relative;
     z-index: 2;
 		&:last-child{
-			.JobtronTable-th,
+			// .JobtronTable-th,
 			.JobtronTable-td{
 				border-bottom: 1px solid #E7EAEA;
 			}
@@ -164,7 +187,7 @@ export default {
 	}
 
 	&-th{
-		background-color: #F8F9FD;
+		background-color: #f8f9fd;
 		font-weight: 700;
 	}
 	&-td{

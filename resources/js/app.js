@@ -244,6 +244,7 @@ Vue.prototype.$can = function (permission/* , authorId = false */) {
 if(process.env.NODE_ENV === 'production') {
 	(() => import(/* webpackChunkName: "Firebase" */ './firebase.js'))()
 }
+Vue.prototype.$debug = process.env.NODE_ENV !== 'production'
 
 if(Laravel.is_admin){
 	window.admin = {}
