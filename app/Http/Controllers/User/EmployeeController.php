@@ -55,20 +55,15 @@ class EmployeeController extends Controller
 
     public function getpersons(Request $request)
     {
-        $filterTrainee = false;
-
         $groups = ProfileGroup::where('active', 1)->get();
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
-            //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
-            $users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+            $users = \DB::table('get_persons_view');
 
-            if($request['job'] != 0){
-                $users = \DB::table('users')
-                ->where('position_id',$request['job'])
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+            if ($request['job'] != 0) {
+                $users = \DB::table('get_persons_view')
+                    ->where('position_id', $request['job']);
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -83,19 +78,17 @@ class EmployeeController extends Controller
 
 
         }
-        elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
+        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
 
-            $users = \DB::table('users')
+            $users = \DB::table('get_persons_view')
                 ->whereNotNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
 
-            if($request['job'] != 0){
-                $users = \DB::table('users')
-                ->where('position_id',$request['job'])
-                ->whereNotNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0);
+            if ($request['job'] != 0) {
+                $users = \DB::table('get_persons_view')
+                    ->where('position_id', $request['job'])
+                    ->whereNotNull('deleted_at')
+                    ->where('is_trainee', 0);
             }
 
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
@@ -103,11 +96,10 @@ class EmployeeController extends Controller
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
 
         }
-        elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
-            $users_1 = \DB::table('users')
+            $users_1 = \DB::table('get_persons_view')
                 ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->get(['users.id'])
                 ->pluck('id')
@@ -118,41 +110,33 @@ class EmployeeController extends Controller
                 ->pluck('user_id')
                 ->toArray();
 
-            $users_1 = array_diff($users_1 ,array_unique($downloads));
+            $users_1 = array_diff($users_1, array_unique($downloads));
 
-            $users = \DB::table('users')
+            $users = \DB::table('get_persons_view')
                 ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->where(function($query){
-                    $query->whereNull('users.position_id')
-                            ->orWhereNull('users.phone')
-                            ->orWhereNull('users.birthday')
-                            ->orWhereNull('users.working_day_id')
-                            ->orWhereNull('users.working_time_id');
+                ->where(function ($query) {
+                    $query->whereNull('position_id')
+                        ->orWhereNull('phone')
+                        ->orWhereNull('birthday')
+                        ->orWhereNull('working_day_id')
+                        ->orWhereNull('working_time_id');
                 })
                 ->orWhere('is_trainee', 0)
-                ->whereIn('users.id', array_values($users_1));
-
-
+                ->whereIn('id', array_values($users_1));
         }
-        elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
-            $filterTrainee = true;
-            $users = \DB::table('users')
+        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+            $users = \DB::table('get_persons_view')
                 ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 1)
-                ->whereNull('ud.fire_date');
+                ->whereNull('fire_date');
 
-            if($request['job'] != 0){
-                $users = \DB::table('users')
-                ->where('position_id',$request['job'])
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
-                ->where('is_trainee', 1)
-                ->whereNull('ud.fire_date');
+            if ($request['job'] != 0) {
+                $users = \DB::table('get_persons_view')
+                    ->where('position_id', $request['job'])
+                    ->whereNull('deleted_at')
+                    ->where('is_trainee', 1)
+                    ->whereNull('fire_date');
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -160,21 +144,18 @@ class EmployeeController extends Controller
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
 
-
         }
         else {
 
-            $users = \DB::table('users')
+            $users = \DB::table('get_persons_view')
                 ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
 
-            if($request['job'] != 0){
-                $users = \DB::table('users')
-                ->where('position_id',$request['job'])
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0);
+            if ($request['job'] != 0) {
+                $users = \DB::table('get_persons_view')
+                    ->where('position_id', $request['job'])
+                    ->whereNull('deleted_at')
+                    ->where('is_trainee', 0);
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -185,50 +166,20 @@ class EmployeeController extends Controller
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
         }
 
-        $columns = [
-            'users.id',
-            'users.email',
-            'users.user_type',
-            'users.segment as segment',
-            'users.last_name',
-            'users.name',
-            'users.full_time',
-            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
-            DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            'users.created_at',
-            'users.deleted_at',
-            'users.position_id',
-            'users.phone',
-            'users.birthday',
-            'users.description',
-            'users.working_day_id',
-            'users.working_time_id',
-            'users.work_start',
-            'users.work_end',
-            'users.program_id',
-            'ud.fire_cause',
-            'ud.applied'
-        ];
-
-        if ($filterTrainee) {
-            // while filtering trainees it joins to bitrix_leads table
-            $columns[] = 'bl.created_at as lead_created_at';
-        }
-
-        $users = $users->get($columns);
+        $users = $users->get();
 
         foreach ($users as $key => $user) {
 
             $_user = User::withTrashed()->find($user->id);
 
             $userGroups = collect($this->getPersonGroup($_user->id))->pluck('id')->toArray();
-            $user->groups = $_user ?  $userGroups : [];
+            $user->groups = $_user ? $userGroups : [];
 
-            if(is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
+            if (is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
                 $user->deleted_at = '';
             } else {
                 $user->deleted_at = Carbon::parse($user->deleted_at)->addHours(6)->format('Y-m-d H:i:s');
-                if($user->deleted_at == '30.11.-0001 00:00:00') {
+                if ($user->deleted_at == '30.11.-0001 00:00:00') {
                     $user->deleted_at = '';
                 }
             }
@@ -249,7 +200,7 @@ class EmployeeController extends Controller
 
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
 
-            if($user->applied) {
+            if ($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
             }
 
@@ -262,7 +213,7 @@ class EmployeeController extends Controller
                     ->toArray();
 
                 $user->groups = $deleted;
-            } elseif($user->deleted_at) {
+            } elseif ($user->deleted_at) {
                 $deleted = GroupUser::where('status', 'fired')
                     ->where('user_id', $user->id)
                     ->get()
@@ -272,7 +223,6 @@ class EmployeeController extends Controller
                 $user->groups = $deleted;
             }
 
-
         }
 
 
@@ -280,7 +230,7 @@ class EmployeeController extends Controller
 
         $groups = $groups->pluck('name', 'id')->toArray();
 
-        if($request->excel) {
+        if ($request->excel) {
             $export = new UserExport($users, $groups);
             $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
             return Excel::download($export, $title);
@@ -290,12 +240,11 @@ class EmployeeController extends Controller
         $users = $users->values();
 
 
-
         ////////////////////
 
         return [
             'users' => $users,
-            'can_login_users' => [5,18,1],
+            'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
             'segments' => Segment::pluck('name', 'id'),
@@ -315,12 +264,12 @@ class EmployeeController extends Controller
         // if($rectuiting) $users = json_decode($rectuiting->users);
         // if(in_array($user, ))
 
-        if(!Auth::user()) return redirect('/');
+        if (!Auth::user()) return redirect('/');
 
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
 
-        if(!auth()->user()->can('users_view')) {
+        if (!auth()->user()->can('users_view')) {
             return redirect('/');
         }
 
@@ -335,14 +284,14 @@ class EmployeeController extends Controller
      * @param null $type
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function editPerson(Request $request,$type = null)
+    public function editPerson(Request $request, $type = null)
     {
-        if(!Auth::user()) return redirect('/');
+        if (!Auth::user()) return redirect('/');
 
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
 
-        if(!auth()->user()->can('users_view')) {
+        if (!auth()->user()->can('users_view')) {
             return redirect('/');
         }
         return view('admin.users.create', $this->preparePersonInputs($request->id));
@@ -355,7 +304,7 @@ class EmployeeController extends Controller
     private function preparePersonInputs($id = 0)
     {
         $positions = Position::all();
-        $groups    = ProfileGroup::where('active', 1)->get();
+        $groups = ProfileGroup::where('active', 1)->get();
         $corpbooks = [];
 
         $knowbase_models = DB::table('knowbase_model')
@@ -363,12 +312,12 @@ class EmployeeController extends Controller
             ->get()
             ->toArray();
 
-        if (!empty($knowbase_models)){
-            foreach ($knowbase_models as $k => $knowbase_model){
-                $knowbase_query[] = KnowBase::where('id',$knowbase_model->book_id)->get()->toArray();
+        if (!empty($knowbase_models)) {
+            foreach ($knowbase_models as $k => $knowbase_model) {
+                $knowbase_query[] = KnowBase::where('id', $knowbase_model->book_id)->get()->toArray();
             }
 
-            foreach ($knowbase_query as $corpbook){
+            foreach ($knowbase_query as $corpbook) {
                 $corpbooks[] = array_shift($corpbook);
             }
         }
@@ -380,13 +329,13 @@ class EmployeeController extends Controller
 
         $arr = compact('positions', 'groups', 'timezones', 'programs', 'workingDays', 'workingTimes', 'corpbooks');
 
-        if($id != 0) {
+        if ($id != 0) {
             $user = User::withTrashed()
                 ->where('id', $id)
                 ->with(['zarplata', 'downloads', 'user_description', 'coordinate'])
                 ->first();
 
-            if($user->weekdays == '' || $user->weekdays == null) {
+            if ($user->weekdays == '' || $user->weekdays == null) {
                 $user->weekdays = '0000000';
                 $user->save();
             }
@@ -396,17 +345,17 @@ class EmployeeController extends Controller
 
             $user->cards = Card::where('user_id', $user->id)->get();
 
-            $user->delete_time  = null;
+            $user->delete_time = null;
             $head_in_groups = [];
 
-            if($user) {
-                if($user->trainee) {
+            if ($user) {
+                if ($user->trainee) {
                     $user->applied_at = $user->applied;
                 } else {
                     $user->applied_at = $user->created_at;
                 }
 
-                if($user->is_trainee){
+                if ($user->is_trainee) {
                     $arr['fire_causes'] = [
                         'Был на основной работе',
                         'Бросает трубку',
@@ -457,18 +406,17 @@ class EmployeeController extends Controller
                 }
 
 
-
                 $groups = $user->inGroups(true);
 
-                foreach($groups as $gr) {
+                foreach ($groups as $gr) {
                     array_push($head_in_groups, $gr);
                 }
 
                 $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-                if($delete_plan) $user->delete_time = $delete_plan->delete_time;
+                if ($delete_plan) $user->delete_time = $delete_plan->delete_time;
 
 
-                if($user->user_description){
+                if ($user->user_description) {
                     $user->fire_cause = $user->user_description->fire_cause;
                     $user->recruiter_comment = $user->user_description->recruiter_comment;
                     $user->bitrix_id = $user->user_description->bitrix_id;
@@ -480,13 +428,13 @@ class EmployeeController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                if($segment != '') {
+                if ($segment != '') {
                     $user->segment = $segment;
                 }
 
-                if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
+                if ($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
                     $user->worked_with_us = round((Carbon::parse($user->deleted_at)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
-                } else if(!$user->is_trainee && $user->deleted_at == null) {
+                } else if (!$user->is_trainee && $user->deleted_at == null) {
                     $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->created_at)->timestamp) / 3600 / 24) . ' дней';
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
@@ -494,8 +442,8 @@ class EmployeeController extends Controller
 
                 $user->in_groups = $this->getPersonGroup($user->id);
 
-                if($user->user_description) {
-                    $user->in_books  = '[]';
+                if ($user->user_description) {
+                    $user->in_books = '[]';
                 }
 
                 $user->head_in_groups = $head_in_groups;
@@ -506,10 +454,6 @@ class EmployeeController extends Controller
 
             $arr['user'] = $user;
         }
-
-
-
-
 
 
         return $arr;
@@ -523,7 +467,7 @@ class EmployeeController extends Controller
      */
     public function updatePerson(Request $request)
     {
-        if(!auth()->user()->can('users_view')) {
+        if (!auth()->user()->can('users_view')) {
             return redirect('/');
         }
         /*==============================================================*/
@@ -549,19 +493,17 @@ class EmployeeController extends Controller
             if ($oldUser->deleted_at != null) {  // Ранее уволен
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
-                $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->name.'</td></tr>';
-                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->last_name.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->email .'</a></td></tr>';
-                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deleted_at)->setTimezone('Asia/Dacca').'</td></tr>';
+                $text .= '<tr><td><b>Имя:</b></td><td>' . $oldUser->name . '</td></tr>';
+                $text .= '<tr><td><b>Фамилия:</b></td><td>' . $oldUser->last_name . '</td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id=' . $oldUser->id . '" target="_blank"> ' . $oldUser->email . '</a></td></tr>';
+                $text .= '<tr><td><b>Дата увольнения:</b></td><td>' . Carbon::parse($oldUser->deleted_at)->setTimezone('Asia/Dacca') . '</td></tr>';
                 $text .= '</table>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
 
 
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
-                return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
-
-
+            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] . '<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
+            return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
 
 
         }
@@ -570,28 +512,27 @@ class EmployeeController extends Controller
         /********** Редактирование user  */
         /*==============================================================*/
 
-        if (isset($request['selectedCityInput']) && !empty($request['selectedCityInput']) ) {
+        if (isset($request['selectedCityInput']) && !empty($request['selectedCityInput'])) {
 
-            if (auth()->user()->working_city === $request['working_city']){
+            if (auth()->user()->working_city === $request['working_city']) {
                 $country = $request['selectedCityInput'];
-                $explodeCountry = explode(' ',$country);
-                foreach ($explodeCountry as $country){
-                    $searchCountry = DB::table('coordinates')->where('city',$country)->get()->toArray();
+                $explodeCountry = explode(' ', $country);
+                foreach ($explodeCountry as $country) {
+                    $searchCountry = DB::table('coordinates')->where('city', $country)->get()->toArray();
                 }
-                if (isset($searchCountry[0]->id) && !empty($searchCountry)){
+                if (isset($searchCountry[0]->id) && !empty($searchCountry)) {
                     $request['working_city'] = $searchCountry[0]->id;
-                }else{
+                } else {
                     $request['working_city'] = null;
                     $request['selectedCityInput'] = null;
                 }
             }
-        }else{
+        } else {
             $request['working_city'] = null;
             $request['selectedCityInput'] = null;
         }
 
-        if ($request['is_trainee'] == "false")
-        {
+        if ($request['is_trainee'] == "false") {
             $user->description()->update([
                 'is_trainee' => 0
             ]);
@@ -623,7 +564,7 @@ class EmployeeController extends Controller
         $user->headphones_sum = $request['headphones_amount'];
 
 
-        if($request->new_pwd != '') {
+        if ($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
         }
 
@@ -636,7 +577,7 @@ class EmployeeController extends Controller
         foreach ($request->adaptation_talks as $key => $talk) {
 
             $at = AdaptationTalk::where('user_id', $user->id)->where('day', $talk['day'])->first();
-            if($at) {
+            if ($at) {
                 $at->inter_id = $talk['inter_id'];
                 $at->text = $talk['text'];
                 $at->date = $talk['date'];
@@ -667,11 +608,11 @@ class EmployeeController extends Controller
         $ud = UserDescription::where('user_id', $user->id)
             ->first();
 
-        if($ud) {
+        if ($ud) {
             $ud->bitrix_id = $request->bitrix_id;
 
             // Headphones for Salary
-            if($request->headphones_amount > 0) {
+            if ($request->headphones_amount > 0) {
                 $ud->headphones_amount = $request->headphones_amount;
                 $ud->headphones_date = date('Y-m-d');
             } else {
@@ -682,13 +623,13 @@ class EmployeeController extends Controller
             $ud->save();
         }
 
-        if(in_array($user->segment, [7,8,9,10,11,12])) {
+        if (in_array($user->segment, [7, 8, 9, 10, 11, 12])) {
 
             $ud = UserDescription::where('is_trainee', 0)->where('user_id', $user->id)->first();
 
-            if($ud) {
+            if ($ud) {
                 $comment = '';
-                if($request->recruiter_comment != '') {
+                if ($request->recruiter_comment != '') {
                     $ud->recruiter_comment = $request->recruiter_comment;
                     $ud->save();
                     $comment = $request->recruiter_comment;
@@ -697,15 +638,15 @@ class EmployeeController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=';
-                $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
+                $msg_fragment = '<a href="https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=';
+                $msg_fragment .= $user->id . '">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
-                $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
+                $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: ' . $comment;
 
                 $timestamp = now();
                 $notification_receivers = NotificationTemplate::getReceivers(10);
 
-                foreach($notification_receivers as $user_id) {
+                foreach ($notification_receivers as $user_id) {
                     UserNotification::create([
                         'user_id' => $user_id,
                         'about_id' => 0,
@@ -723,10 +664,10 @@ class EmployeeController extends Controller
         /*==============================================================*/
         /*******  Руковод или нет  */
         /*==============================================================*/
-        if($request->position == 45) {
+        if ($request->position == 45) {
 
             $last_groups = $user->headInGroups();
-            foreach($last_groups as $gr) {
+            foreach ($last_groups as $gr) {
 
                 $gr_users = json_decode($gr->head_id);
                 $gr_users = array_diff($gr_users, [$user->id]);
@@ -765,14 +706,14 @@ class EmployeeController extends Controller
         if ($request->has('cards') && count($request->cards) > 0) {
             $cards = Card::where('user_id', $user->id)->delete();
             foreach ($request->cards as $card) {
-               Card::create([
-                'user_id' => $user->id,
-                'bank' => $card['bank'],
-                'country'=> $card['country'],
-                'cardholder'=> $card['cardholder'],
-                'phone' => $card['phone'],
-                'number'=> $card['number'],
-               ]);
+                Card::create([
+                    'user_id' => $user->id,
+                    'bank' => $card['bank'],
+                    'country' => $card['country'],
+                    'cardholder' => $card['cardholder'],
+                    'phone' => $card['phone'],
+                    'number' => $card['number'],
+                ]);
             }
         }
 
@@ -856,7 +797,7 @@ class EmployeeController extends Controller
         if ($user->zarplata === null) {
             $zarplata = new Zarplata();
             $zarplata->user_id = $user->id;
-            $zarplata->zarplata =  $request->zarplata == 0 ? 70000 : $request->zarplata;
+            $zarplata->zarplata = $request->zarplata == 0 ? 70000 : $request->zarplata;
             $zarplata->kaspi = $request->kaspi;
             $zarplata->jysan = $request->jysan;
             $zarplata->card_kaspi = $request->card_kaspi;
@@ -866,7 +807,6 @@ class EmployeeController extends Controller
             $zarplata->card_number = intval(preg_replace('/\s+/', '', $request->card_number));
             $zarplata->save();
         } else {
-
 
 
             $user->zarplata()->update([
@@ -886,21 +826,22 @@ class EmployeeController extends Controller
 
         $groups = ProfileGroup::where('active', 1)->get();
 
-        foreach($groups as $group) {
-            if($group->users == null) continue;
+        foreach ($groups as $group) {
+            if ($group->users == null) continue;
             $group_users = json_decode($group->users);
 
-            if(in_array($user->id, $group_users)) {
+            if (in_array($user->id, $group_users)) {
                 $group->show = false;
                 array_push($_groups, $group->id);
             }
         }
 
-        if($request->increment_provided == 'true' && count($_groups) > 0)  {
+        if ($request->increment_provided == 'true' && count($_groups) > 0) {
 
             $group = ProfileGroup::find($_groups[0]);
-            if($group) {
-                $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в отдел */
+            if ($group) {
+                $group->provided = $group->provided + 1;
+                /*******  Увеличиваем принятых в отдел */
                 $group->save();
             }
 
@@ -918,7 +859,8 @@ class EmployeeController extends Controller
      *
      * @throws \Exception
      */
-    public function editPersonGroup(Request $request) {
+    public function editPersonGroup(Request $request)
+    {
 
         (new UserService)->setGroup(
             $request['group_id'],
@@ -934,7 +876,7 @@ class EmployeeController extends Controller
      * @return void
      * @throws Exception
      */
-    public function setUserHeadInGroups(SetHeadToGroupRequest $request) : void
+    public function setUserHeadInGroups(SetHeadToGroupRequest $request): void
     {
         $group = ProfileGroup::find($request['group_id']);
         $exist = $group->users()->where([
@@ -944,18 +886,18 @@ class EmployeeController extends Controller
         ])->whereNull('to')->exists();
 
         try {
-            if($request['action'] == 'add' && !$exist) {
+            if ($request['action'] == 'add' && !$exist) {
                 $group->users()->where('user_id', $request['user_id'])->update([
                     'is_head' => true
                 ]);
             }
 
-            if($request['action'] == 'delete') {
+            if ($request['action'] == 'delete') {
                 $group->users()->where('user_id', $request['user_id'])->update([
                     'is_head' => false
                 ]);
             }
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             throw new \Exception($exception);
         }
     }
@@ -967,9 +909,9 @@ class EmployeeController extends Controller
      *
      * @return array
      */
-    public function getPersonGroup(int $user_id) : array
+    public function getPersonGroup(int $user_id): array
     {
-        $groups =  GroupUser::where('user_id', $user_id)
+        $groups = GroupUser::where('user_id', $user_id)
             ->where('status', 'active')
             ->get()
             ->pluck('group_id')
@@ -980,9 +922,9 @@ class EmployeeController extends Controller
         // ->toArray();
 
         return ProfileGroup::whereIn('id', array_values($groups))
-        ->select(['id', 'name'])
-        ->get()
-        ->toArray();
+            ->select(['id', 'name'])
+            ->get()
+            ->toArray();
 
         // return
 
@@ -1009,7 +951,7 @@ class EmployeeController extends Controller
      */
     public function deleteUser(Request $request)
     {
-        DB::transaction(function () use ($request){
+        DB::transaction(function () use ($request) {
             $user = User::where([
                 'id' => $request->id,
             ])->first();
@@ -1043,11 +985,11 @@ class EmployeeController extends Controller
 
             ///////  УВолить с отработкой или без
 
-            if($request->delay == 1) { // Удалить через 2 недели
+            if ($request->delay == 1) { // Удалить через 2 недели
 
                 $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
 
-                if($delete_plan) $delete_plan->delete();
+                if ($delete_plan) $delete_plan->delete();
 
                 $fire_date = Carbon::now()->addHours(24 * 14);
 
@@ -1060,11 +1002,10 @@ class EmployeeController extends Controller
             } else { // Сразу удалить
 
 
-
                 /////////// Удалить связанные уведомления
                 $notis = UserNotification::where('about_id', $user->id)->get();
-                if($notis->count() > 0) {
-                    foreach($notis as $noti) {
+                if ($notis->count() > 0) {
+                    foreach ($notis as $noti) {
                         $noti->read_at = now();
                         $noti->save();
                     }
@@ -1074,18 +1015,18 @@ class EmployeeController extends Controller
 
                 $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->id)->first();
 
-                if($trainee) {
-                    if($trainee->lead_id != 0 && $trainee->lead_id) {
+                if ($trainee) {
+                    if ($trainee->lead_id != 0 && $trainee->lead_id) {
                         $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
                     } else {
                         $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
                     }
 
-                    if($lead) {
+                    if ($lead) {
                         $bitrix = new Bitrix();
                         $deal_id = $bitrix->findDeal($lead->lead_id, false);
 
-                        if($deal_id != 0) {
+                        if ($deal_id != 0) {
                             $bitrix->changeDeal($deal_id, [
                                 'STAGE_ID' => 'C4:12' // не присутствовал на обучении
                             ]);
@@ -1095,7 +1036,7 @@ class EmployeeController extends Controller
                 }
 
                 $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-                if($delete_plan) $delete_plan->delete();
+                if ($delete_plan) $delete_plan->delete();
 
                 $fire_date = now();
                 (new CabinetService)->remove(tenant('id'), $user);
@@ -1107,7 +1048,7 @@ class EmployeeController extends Controller
             $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
             $ud = UserDescription::where('user_id', $request->id)->first();
 
-            if($ud) {
+            if ($ud) {
                 $ud->fire_cause = $cause;
                 $ud->fire_date = $fire_date;
                 $ud->save();
@@ -1131,7 +1072,7 @@ class EmployeeController extends Controller
      */
     public function recoverUser(Request $request)
     {
-        if(!Auth::user()) return redirect('/');
+        if (!Auth::user()) return redirect('/');
 
         $user = User::withTrashed()->where('id', $request->id)->first();
 
@@ -1143,7 +1084,7 @@ class EmployeeController extends Controller
 
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
-            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
+            if ($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
 
 
             (new CabinetService)->add(tenant('id'), $user, false);
@@ -1186,11 +1127,11 @@ class EmployeeController extends Controller
         if (isset($request['user_id']) && $request['user_id'] != 'new_user') {
             $update_user = User::withTrashed()->find($request['user_id']);
 
-            if (!empty($update_user->img_url)){
-                $filename = "users_img/".$update_user->img_url;
+            if (!empty($update_user->img_url)) {
+                $filename = "users_img/" . $update_user->img_url;
 
                 if (file_exists($filename)) {
-                    unlink(public_path('users_img/'.$update_user->img_url));
+                    unlink(public_path('users_img/' . $update_user->img_url));
                 }
             }
 
@@ -1199,29 +1140,28 @@ class EmployeeController extends Controller
 
             file_put_contents("users_img/$imageName", $data);
 
-            $img = '<img src="'.url('/users_img').'/'.$imageName.'"  />';
+            $img = '<img src="' . url('/users_img') . '/' . $imageName . '"  />';
 
-            return response(['src'=>$img,'filename'=>$imageName]);
-
-
-
-        } elseif ($request['user_id'] == 'new_user'){
+            return response(['src' => $img, 'filename' => $imageName]);
 
 
-            if ($request['file_name'] != 'empty'){
-                $filename = "users_img/".$request['file_name'];
+        } elseif ($request['user_id'] == 'new_user') {
+
+
+            if ($request['file_name'] != 'empty') {
+                $filename = "users_img/" . $request['file_name'];
 
                 if (file_exists($filename)) {
-                    unlink( public_path('users_img/'.$request['file_name'] ));
+                    unlink(public_path('users_img/' . $request['file_name']));
                 }
             }
 
 
             file_put_contents("users_img/$imageName", $data);
 
-            $img = '<img src="'.asset('users_img/').''.$imageName.'"  />';
+            $img = '<img src="' . asset('users_img/') . '' . $imageName . '"  />';
 
-            return response(['src'=>$img,'filename'=>$imageName]);
+            return response(['src' => $img, 'filename' => $imageName]);
         }
 
     }
@@ -1231,8 +1171,8 @@ class EmployeeController extends Controller
      */
     public function searchCountry(Request $request)
     {
-        $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
-        return response()->json($data); ;
+        $data = DB::table('coordinates')->where('city', 'LIKE', '%' . $request->keyword . '%')->get();
+        return response()->json($data);;
     }
 
     /**
@@ -1245,24 +1185,21 @@ class EmployeeController extends Controller
         $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
 
 
-
-        if ($user->img_url){
-            $filename = "users_img/".$user->img_url;
+        if ($user->img_url) {
+            $filename = "users_img/" . $user->img_url;
             if (file_exists($filename)) {
-                unlink(public_path('users_img/'.$user->img_url));
+                unlink(public_path('users_img/' . $user->img_url));
             }
         }
 
 
-
-
-        if ($request->file == "null" || $request->file == 'undefined'){
+        if ($request->file == "null" || $request->file == 'undefined') {
             $user->img_url = null;
             $user->save();
 
-            $img = '<img src="'.url('/users_img').'/'.'noavatar.png'.'" alt="avatar" />';
+            $img = '<img src="' . url('/users_img') . '/' . 'noavatar.png' . '" alt="avatar" />';
 
-            return response(['img'=>$img,'filename'=>'noavatar.png','type'=>0]);
+            return response(['img' => $img, 'filename' => 'noavatar.png', 'type' => 0]);
 
         } else {
 
@@ -1271,17 +1208,15 @@ class EmployeeController extends Controller
             ]);
 
 
-
             $upload_path = public_path('users_img/');
-            $generated_new_name = time() . '.' .'png';
+            $generated_new_name = time() . '.' . 'png';
             $request->file->move($upload_path, $generated_new_name);
             $user->img_url = $generated_new_name;
             $user->save();
 
-            $img = '<img src="'.url('/users_img').'/'.$generated_new_name.'" alt="avatar" />';
-            return response(['img'=>$img,'filename'=>$generated_new_name,'type'=>1]);
+            $img = '<img src="' . url('/users_img') . '/' . $generated_new_name . '" alt="avatar" />';
+            return response(['img' => $img, 'filename' => $generated_new_name, 'type' => 1]);
         }
-
 
 
     }
@@ -1294,8 +1229,7 @@ class EmployeeController extends Controller
     {
         $authId = auth()->id();
 
-        if (Auth::check())
-        {
+        if (Auth::check()) {
             $user = User::getUserById($authId);
             $user->last_seen = now();
             $user->save();
