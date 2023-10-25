@@ -31,7 +31,7 @@ class LeadService implements LeadServiceInterface
 //        throw_if(!array_key_exists('result', $bitrixLead), 'cant create lead in bitrix');
         Lead::query()->create([
             'lead_id' => $bitrixLead['result'],
-            'name' => $data->get('name'),
+            'name' => $request->name,
             'phone' => $request->phone,
             'status' => 'NEW',
             'segment' => LeadTemplate::SEGMENT_ID,
