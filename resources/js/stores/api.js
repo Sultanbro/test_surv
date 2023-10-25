@@ -19,6 +19,14 @@ export * from './api/kb.js'
 export async function updateOnlineStatus(){
 	await axios.post('/online')
 }
+export async function checkVersion(){
+	const current = window.appVersion
+	const {data} = await axios.get('/mix-manifest.json')
+	const server = (data['/js/app.js'] || '').split('?id=')[1]
+	// eslint-disable-next-line
+	window.appVersion = server
+	return current && current !== server
+}
 
 /**
  * ApiResponse

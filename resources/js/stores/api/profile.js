@@ -187,6 +187,13 @@ export async function rejectOvertime(userId){
 	return data
 }
 
+export async function updateUserWelcome(welcome_message){
+	const { data } = await axios.put('/profile/welcome_message', {
+		welcome_message
+	})
+	return data
+}
+
 /**
  * @typedef ProfilePersonalInfoResponse
  * @type {object}
