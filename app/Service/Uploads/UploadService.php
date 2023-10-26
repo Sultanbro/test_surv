@@ -13,7 +13,7 @@ class UploadService
      */
     public function store(UploadedFile $file): string
     {
-        $filename = FileHelper::save($file, "uploads");
-        return FileHelper::getUrl('uploads', $filename);
+        $filename = FileHelper::save($file, config('app.upload.path'));
+        return FileHelper::getUrl(config('app.upload.path'), $filename);
     }
 }
