@@ -11,13 +11,13 @@ class FileHelper
 {
     public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
     {
-        $storage = Storage::disk('public');
+        $storage = Storage::disk($disk);
 
         if (!$file->isValid()) {
             return null;
         }
 
-        $path = self::checkDirectory($path, 'public');
+        $path = self::checkDirectory($path, $disk);
         $result = $storage->putFile($path, $file);
 
         if (!$result) {

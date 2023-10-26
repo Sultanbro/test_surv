@@ -2,7 +2,7 @@
 
 namespace App\Service\Uploads;
 
-use App\Helpers\FileHelper;
+use App\Service\Custom\Files\FileManager;
 use Illuminate\Http\UploadedFile;
 
 class UploadService
@@ -13,7 +13,9 @@ class UploadService
      */
     public function store(UploadedFile $file): string
     {
-        $filename = FileHelper::save($file, "uploads");
-        return FileHelper::getUrl('uploads', $filename);
+        /** @var FileManager $manager */
+        $manager = app(FileManager::class);
+        $manager->apply($file, 'uploads');
+        return $manager->url();
     }
 }

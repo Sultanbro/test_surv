@@ -8,7 +8,6 @@ use App\Http\Requests\Files\FileRequest;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Resources\Files\FileResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
-use App\Service\Custom\Files\FileManager;
 use App\Service\Files\FileService;
 use Illuminate\Http\JsonResponse;
 
