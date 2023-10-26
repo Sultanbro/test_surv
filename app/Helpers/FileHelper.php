@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Downloads;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -10,28 +11,24 @@ use Throwable;
 class FileHelper
 {
 
-    public static function save(UploadedFile $file, string $path): ?string
+    public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
     {
-        $storage = Storage::disk('public');
-//        $storage = Storage::disk('s3');
-
-        try {
-            $result = false;
-
-            if ($file->isValid()) {
-                $path = self::checkDirectory($path);
-                $result = $storage->putFile($path, $file);
-                $result = $result ? basename($result) : null;
-            }
-
-            return $result;
-
-        } catch (Throwable) {
+        $storage = Storage::disk($disk);
+        if (!$file->isValid()) {
             return null;
         }
+
+        $path = self::checkDirectory($path, $storage);
+        $result = $storage->putFile($path, $file);
+
+        if (!$result) {
+            return null;
+        }
+        return basename($result);
     }
 
-    public static function delete(string $filename, string $path): bool
+    public
+    static function delete(string $filename, string $path): bool
     {
         $storage = Storage::disk('s3');
 
@@ -47,10 +44,9 @@ class FileHelper
         }
     }
 
-    private static function checkDirectory(string $path): string
+    private static function checkDirectory(string $path, null|FilesystemAdapter $adapter = null): string
     {
-        $storage = Storage::disk('s3');
-
+        $storage = $adapter ?: Storage::disk('s3');
 
         if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
@@ -59,20 +55,23 @@ class FileHelper
         return $path;
     }
 
-    public static function checkFile(string $path): string
+    public
+    static function checkFile(string $path): string
     {
         $storage = Storage::disk('s3');
 
         return $storage->exists($path);
     }
 
-    public static function getPath(string $folder, string $filename): string
+    public
+    static function getPath(string $folder, string $filename): string
     {
         $path = self::checkDirectory($folder);
         return Storage::disk('s3')->path($path . '/' . $filename);
     }
 
-    public static function getUrl(string $folder, string|null $filename): string
+    public
+    static function getUrl(string $folder, string|null $filename): string
     {
         return Storage::disk('s3')
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
@@ -83,7 +82,8 @@ class FileHelper
      * @param int $userId
      * @return void
      */
-    public static function storeDocumentsFile(
+    public
+    static function storeDocumentsFile(
         array $files,
         int   $userId
     ): void
