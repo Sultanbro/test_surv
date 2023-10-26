@@ -1,14 +1,25 @@
 <template>
 	<div class="AccessSelectList">
 		<AccessSelectListItem
-			v-for="item in items"
+			v-for="item in itemsChecked"
 			:key="(type ? type : item.type) + '' + item.id"
 			:item="item"
 			:type="type ? type : item.type"
 			:position="type ? position : item.type === types.USER"
 			:avatar="type ? avatar : item.type === types.USER"
 			:search="lowerSearch"
-			:checked="checked(item, type ? type : item.type)"
+			:checked="true"
+			@change="$emit('change', $event)"
+		/>
+		<AccessSelectListItem
+			v-for="item in itemsUnchecked"
+			:key="(type ? type : item.type) + '' + item.id"
+			:item="item"
+			:type="type ? type : item.type"
+			:position="type ? position : item.type === types.USER"
+			:avatar="type ? avatar : item.type === types.USER"
+			:search="lowerSearch"
+			:checked="false"
 			@change="$emit('change', $event)"
 		/>
 	</div>
@@ -57,6 +68,12 @@ export default {
 	computed: {
 		lowerSearch(){
 			return this.search.toLowerCase()
+		},
+		itemsChecked(){
+			return this.items.slice().filter(item => this.checked(item, this.type ? this.type : item.type))
+		},
+		itemsUnchecked(){
+			return this.items.slice().filter(item => !this.checked(item, this.type ? this.type : item.type))
 		},
 	},
 	methods: {
