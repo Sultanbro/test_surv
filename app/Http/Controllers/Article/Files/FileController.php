@@ -8,6 +8,7 @@ use App\Http\Requests\Files\FileRequest;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Resources\Files\FileResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
+use App\Service\Custom\Files\FileManager;
 use App\Service\Files\FileService;
 use Illuminate\Http\JsonResponse;
 
@@ -20,7 +21,6 @@ class FileController extends Controller
     /**
      * @param FileStoreRequest $request
      * @return JsonResponse
-     * @throws BusinessLogicException
      */
     public function store(FileStoreRequest $request): JsonResponse
     {
@@ -28,7 +28,7 @@ class FileController extends Controller
             new JsonSuccessResponse(
                 __('model/file.store'),
                 (new FileResource(
-                    $this->service->store(
+                    $this->service->storeV2(
                         $request->getFile(),
                         'public'
                     )
