@@ -23,7 +23,7 @@ class FileService
      */
     public function store(UploadedFile $file, string $disk = 's3'): File
     {
-        if (!$filename = FileHelper::save($file, config('app.file.path', $disk))) {
+        if (!$filename = FileHelper::save($file, config('app.file.path'), $disk)) {
             throw new BusinessLogicException(__('exception.save_error'));
         }
         return $this->repository->store(new FileStoreDTO(
