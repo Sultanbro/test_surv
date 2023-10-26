@@ -12,23 +12,22 @@ class FileHelper
 
     public static function save(UploadedFile $file, string $path): ?string
     {
-        $storage = Storage::disk('public');
-//        $storage = Storage::disk('s3');
+//        $storage = Storage::disk('public');
+        $storage = Storage::disk('s3');
+//        try {
+        $result = false;
 
-        try {
-            $result = false;
-
-            if ($file->isValid()) {
-                $path = self::checkDirectory($path);
-                $result = $storage->putFile($path, $file);
-                $result = $result ? basename($result) : null;
-            }
-
-            return $result;
-
-        } catch (Throwable) {
-            return null;
+        if ($file->isValid()) {
+            $path = self::checkDirectory($path);
+            $result = $storage->put($path, $file);
+            $result = $result ? basename($result) : null;
         }
+
+        return $result;
+//
+//        } catch (Throwable) {
+//            return null;
+//        }
     }
 
     public static function delete(string $filename, string $path): bool
