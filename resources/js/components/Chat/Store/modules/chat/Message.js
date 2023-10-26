@@ -13,11 +13,11 @@ import {
 
 import {updateUserWelcome} from '@/stores/api.js'
 
-import {
-	hasLocal,
-	loadLocal,
-	saveLocal,
-} from './local'
+// import {
+// 	hasLocal,
+// 	loadLocal,
+// 	saveLocal,
+// } from './local'
 
 
 export default {
@@ -43,10 +43,10 @@ export default {
 				return;
 			}
 			const chatId = getters.chat.id
-			if (reset && hasLocal(chatId)) {
-				commit('setMessages', loadLocal(chatId))
-				dispatch('setLoading', false)
-			}
+			// if (reset && hasLocal(chatId)) {
+			// 	commit('setMessages', loadLocal(chatId))
+			// 	dispatch('setLoading', false)
+			// }
 			commit('setMessagesLoading', true);
 
 			let count, startMessageId, including;
@@ -126,7 +126,7 @@ export default {
 
 					if (reset) {
 						commit('setMessages', messages);
-						saveLocal(chatId, messages)
+						// saveLocal(chatId, messages)
 						dispatch('requestScroll', 0);
 					}
 					else if (count > 0) {
