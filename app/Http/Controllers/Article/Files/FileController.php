@@ -27,7 +27,12 @@ class FileController extends Controller
         return response()->json(
             new JsonSuccessResponse(
                 __('model/file.store'),
-                (new FileResource($this->service->store($request->getFile(), 'public')))->toArray($request)
+                (new FileResource(
+                    $this->service->store(
+                        $request->getFile(),
+                        'public'
+                    )
+                ))->toArray($request)
             )
         );
     }
