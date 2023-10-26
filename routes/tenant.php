@@ -78,6 +78,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/trainee-report', [User\ProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [User\ProfileController::class, 'paymentTerms']);
         Route::get('/promotional-material', [User\ProfileController::class, 'promotionalMaterial']);
+        Route::get('/referral-prsentation', [User\ProfileController::class, 'promotionalMaterial']);
         Route::put('/welcome_message', [User\ProfileController::class, 'updateWelcomeMessage']);
     });
 

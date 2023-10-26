@@ -1,6 +1,11 @@
 <template>
 	<div class="PromotionalMaterial">
-		<div class="PromotionalMaterial-jumbotron mb-4">
+		<img
+			src="/images/promotional-material.jpg"
+			alt=""
+			class="mb-5 w-100"
+		>
+		<!-- <div class="PromotionalMaterial-jumbotron mb-4">
 			<h1 class="PromotionalMaterial-header">
 				Зарабатывайте
 				<br>
@@ -17,7 +22,7 @@
 					Готовые помощники для ваших клиентов
 				</span>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="PromotionalMaterial-content">
 			<b-tabs>
@@ -89,7 +94,7 @@ export default {
 
 		position: relative;
 
-		background-image: url(/images/promotional-material.png);
+		background-image: url(/images/promotional-material.jpg);
 		background-size: cover;
 	}
 	&-header{
