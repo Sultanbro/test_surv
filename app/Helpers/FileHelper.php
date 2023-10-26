@@ -9,8 +9,7 @@ use Throwable;
 
 class FileHelper
 {
-
-    public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
+    public static function save(UploadedFile $file, string $path, string $disk = 'public'): ?string
     {
         $storage = Storage::disk($disk);
 
@@ -18,8 +17,8 @@ class FileHelper
             return null;
         }
 
-//        $path = self::checkDirectory($path, $disk);
-        $result = $storage->putFile("uploads", $file);
+        $path = self::checkDirectory($path, $disk);
+        $result = $storage->putFile($path, $file);
 
         if (!$result) {
             return null;
