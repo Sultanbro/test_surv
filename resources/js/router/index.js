@@ -20,6 +20,7 @@ import QualityControlView from '@/views/QualityControlView'
 import MapView from '@/views/MapView'
 import KPIView from '@/views/KPIView'
 import PromotionalMaterialView from '@/views/PromotionalMaterialView'
+import ReferralPrsentationView from '@/views/ReferralPrsentationView'
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView'
@@ -45,6 +46,14 @@ const router = new VueRouter({
 			path: '/profile/promotional-material',
 			name: 'PromotionalMaterialView',
 			component: PromotionalMaterialView,
+			meta: {
+				title: 'Рекламный материал',
+			},
+		},
+		{
+			path: '/profile/referral-prsentation',
+			name: 'ReferralPrsentationView',
+			component: ReferralPrsentationView,
 			meta: {
 				title: 'Рекламный материал',
 			},
