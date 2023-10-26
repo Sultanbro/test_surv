@@ -51,7 +51,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
 
@@ -65,28 +65,28 @@ return [
 
         's3' => [
             'driver' => 's3',
-			'key' => 'O4493_admin',
-			'secret' => 'nzxk4iNukQWx',
-			'region' => 'us-east-1',
-			'bucket' => 'video',
-			'endpoint' => 'https://storage.oblako.kz:443',
-			'use_path_style_endpoint' => true,
-			'throw' => false,
-			'visibility' => 'public',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'video',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => true,
+            'visibility' => 'public',
         ],
 
         'ftp' => [
-            'driver'   => 'ftp',
-            'host'     => 'storage.oblako.kz',
+            'driver' => 'ftp',
+            'host' => 'storage.oblako.kz',
             'username' => 'O4493.O4493_admin',
             'password' => 'nzxk4iNukQWx',
             'root' => '/',
-            'port'     => 21,
-            'passive'  => true,
-            'ssl'      => false, 
-            'timeout'  => 900,
+            'port' => 21,
+            'passive' => true,
+            'ssl' => false,
+            'timeout' => 900,
         ],
-        
+
 
     ],
 

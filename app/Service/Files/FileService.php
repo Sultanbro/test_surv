@@ -17,24 +17,20 @@ class FileService
 
     /**
      * @param UploadedFile $file
+     * @param string $disk
      * @return File
      * @throws BusinessLogicException
      */
-    public function store(UploadedFile $file): File
+    public function store(UploadedFile $file, string $disk = 's3'): File
     {
-        if (!$filename = FileHelper::save($file, config('app.file.path'))) {
+        if (!$filename = FileHelper::save($file, config('app.file.path', $disk))) {
             throw new BusinessLogicException(__('exception.save_error'));
         }
-
-        if (!$model = $this->repository->store(new FileStoreDTO(
+        return $this->repository->store(new FileStoreDTO(
             $filename,
             $file->getClientOriginalName(),
             $file->getClientOriginalExtension(),
-        ))) {
-            throw new BusinessLogicException(__('exception.save_error'));
-        }
-
-        return $model;
+        ));
     }
 
     /**
