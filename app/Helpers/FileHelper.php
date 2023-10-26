@@ -13,21 +13,20 @@ class FileHelper
     public static function save(UploadedFile $file, string $path): ?string
     {
         $storage = Storage::disk('s3');
+//        try {
+        $result = null;
 
-        try {
-            $result = false;
-
-            if ($file->isValid()) {
-                $path = self::checkDirectory($path);
-                $result = $storage->putFile($path, $file);
-                $result = $result ? basename($result) : null;
+        if ($file->isValid()) {
+            $path = self::checkDirectory($path);
+            if ($result = $storage->putFile($path, $file)) {
+                return basename($result);
             }
-
-            return $result;
-
-        } catch (Throwable) {
-            return null;
         }
+        return $result;
+//
+//        } catch (Throwable) {
+//            return null;
+//        }
     }
 
     public static function delete(string $filename, string $path): bool
@@ -49,7 +48,6 @@ class FileHelper
     private static function checkDirectory(string $path): string
     {
         $storage = Storage::disk('s3');
-
 
         if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
