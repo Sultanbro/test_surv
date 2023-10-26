@@ -73,6 +73,7 @@ return [
             'use_path_style_endpoint' => true,
             'throw' => true,
             'visibility' => 'public',
+            'scheme'  => 'http'
         ],
 
         'ftp' => [

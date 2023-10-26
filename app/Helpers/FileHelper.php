@@ -18,7 +18,7 @@ class FileHelper
         }
 
         $path = self::checkDirectory($path, $disk);
-        $result = $storage->putFile($path, $file);
+        $result = $storage->put($path, $file);
 
         if (!$result) {
             return null;
