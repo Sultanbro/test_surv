@@ -84,7 +84,7 @@ export default {
 
 <style lang="scss">
 .PromotionalMaterial{
-	max-width: 1200px;
+	max-width: 1600px;
 	padding: 2rem;
 	margin: 0 auto;
 	&-jumbotron{
