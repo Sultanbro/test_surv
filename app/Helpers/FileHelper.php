@@ -66,10 +66,15 @@ class FileHelper
         return Storage::disk('s3')->path($path . '/' . $filename);
     }
 
-    public static function getUrl(string $folder, string|null $filename, string $disk = 's3'): string
+    public static function getUrl(string $folder, string|null $filename): string
     {
-        return Storage::disk($disk)
+        return Storage::disk('s3')
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
+    }
+
+    public static function getUrlFromPublic(string $folder, string|null $filename): string
+    {
+        return Storage::disk('public')->url(($folder !== '' ? ($folder . '/') : '') . $filename);
     }
 
     /**

@@ -14,6 +14,6 @@ class UploadService
     public function store(UploadedFile $file): string
     {
         $filename = FileHelper::save($file, "uploads", 'public');
-        return FileHelper::getUrl('uploads', $filename, 'public');
+        return FileHelper::getUrlFromPublic('uploads', $filename);
     }
 }
