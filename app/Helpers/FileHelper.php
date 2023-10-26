@@ -12,7 +12,8 @@ class FileHelper
 
     public static function save(UploadedFile $file, string $path): ?string
     {
-        $storage = Storage::disk('s3');
+        $storage = Storage::disk('public');
+//        $storage = Storage::disk('s3');
 
         try {
             $result = false;
