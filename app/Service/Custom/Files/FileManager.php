@@ -33,7 +33,7 @@ class FileManager implements FileManagerInterface
         ,            $directory
         , bool       $usOriginalName = false
         , string     $prefix = ''
-        , string     $access = 's3'
+        , string     $access = 'public'
     ): static
     {
         $this->setFile($file);

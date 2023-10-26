@@ -74,7 +74,8 @@ class FileHelper
 
     public static function getUrlFromPublic(string $folder, string|null $filename): string
     {
-        return Storage::disk('public')->url(($folder !== '' ? ($folder . '/') : '') . $filename);
+        return Storage::disk('public')
+            ->url(($folder !== '' ? ($folder . '/') : '') . $filename);
     }
 
     /**
