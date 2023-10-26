@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Downloads;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -14,12 +13,13 @@ class FileHelper
     public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
     {
         $storage = Storage::disk($disk);
+
         if (!$file->isValid()) {
             return null;
         }
 
-        $path = self::checkDirectory($path, $storage);
-        $result = $storage->putFile($path, $file);
+//        $path = self::checkDirectory($path, $disk);
+        $result = $storage->putFile("uploads", $file);
 
         if (!$result) {
             return null;
@@ -27,8 +27,7 @@ class FileHelper
         return basename($result);
     }
 
-    public
-    static function delete(string $filename, string $path): bool
+    public static function delete(string $filename, string $path): bool
     {
         $storage = Storage::disk('s3');
 
@@ -44,9 +43,9 @@ class FileHelper
         }
     }
 
-    private static function checkDirectory(string $path, null|FilesystemAdapter $adapter = null): string
+    private static function checkDirectory(string $path, string $disk = 's3'): string
     {
-        $storage = $adapter ?: Storage::disk('s3');
+        $storage = Storage::disk($disk);
 
         if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
@@ -55,8 +54,7 @@ class FileHelper
         return $path;
     }
 
-    public
-    static function checkFile(string $path): string
+    public static function checkFile(string $path): string
     {
         $storage = Storage::disk('s3');
 
