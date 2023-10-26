@@ -19,7 +19,7 @@ class FileHelper
 
         if ($file->isValid()) {
             $path = self::checkDirectory($path);
-            $result = $storage->put($path, $file);
+            $result = $storage->putFile($path, $file);
             $result = $result ? basename($result) : null;
         }
 
