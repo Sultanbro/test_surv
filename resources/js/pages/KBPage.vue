@@ -353,7 +353,7 @@
 
 				<div>
 					<p class="mb-2">
-						Кто может видеть
+						Кто может видеть (чтение)
 					</p>
 					<AccessSelectFormControl
 						:items="whoCanReadActual"
@@ -366,14 +366,32 @@
 								:items="whoCanReadPosition"
 								class="mb-4"
 								@click="isReadPositionSelect = true"
-							/>
+							>
+								<template #placeholder>
+									Укажите должность
+									<img
+										v-b-popover.hover.right="'Сотрудники с этой должностью будут видеть этот раздел'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+									>
+								</template>
+							</AccessSelectFormControl>
 						</b-col>
 						<b-col>
 							<AccessSelectFormControl
 								:items="whoCanReadGroup"
 								class="mb-4"
 								@click="isReadGroupSelect = true"
-							/>
+							>
+								<template #placeholder>
+									Укажите отдел
+									<img
+										v-b-popover.hover.right="'Сотрудники из этого отдела будут видеть этот раздел'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+									>
+								</template>
+							</AccessSelectFormControl>
 						</b-col>
 					</b-row>
 					<p class="mb-2">
@@ -381,9 +399,43 @@
 					</p>
 					<AccessSelectFormControl
 						:items="whoCanEditActual"
-						class="mb-4"
+						class="mb-2"
 						@click="isEditSelect = true"
 					/>
+					<b-row>
+						<b-col>
+							<AccessSelectFormControl
+								:items="whoCanEditPosition"
+								class="mb-4"
+								@click="isEditPositionSelect = true"
+							>
+								<template #placeholder>
+									Укажите должность
+									<img
+										v-b-popover.hover.right="'Сотрудники с этой должностью будут редактировать этот раздел'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+									>
+								</template>
+							</AccessSelectFormControl>
+						</b-col>
+						<b-col>
+							<AccessSelectFormControl
+								:items="whoCanEditGroup"
+								class="mb-4"
+								@click="isEditGroupSelect = true"
+							>
+								<template #placeholder>
+									Укажите отдел
+									<img
+										v-b-popover.hover.right="'Сотрудники из этого отдела будут редактировать этот раздел'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+									>
+								</template>
+							</AccessSelectFormControl>
+						</b-col>
+					</b-row>
 				</div>
 				<button
 					class="btn btn-primary rounded m-auto"
@@ -455,7 +507,11 @@
 		>
 			<AccessSelect
 				v-model="whoCanReadPosition"
-				:access-dictionaries="accessDictionaries"
+				:access-dictionaries="{
+					users: [],
+					positions: accessDictionaries.positions,
+					profile_groups: [],
+				}"
 				:tabs="['Должности']"
 				search-position="beforeTabs"
 				submit-button=""
@@ -471,7 +527,51 @@
 		>
 			<AccessSelect
 				v-model="whoCanReadGroup"
-				:access-dictionaries="accessDictionaries"
+				:access-dictionaries="{
+					users: [],
+					positions: [],
+					profile_groups: accessDictionaries.profile_groups
+				}"
+				:tabs="['Отделы']"
+				search-position="beforeTabs"
+				submit-button=""
+				absolute
+				single
+			/>
+		</JobtronOverlay>
+
+		<JobtronOverlay
+			v-if="isEditPositionSelect"
+			:z="99999"
+			@close="isEditPositionSelect = false"
+		>
+			<AccessSelect
+				v-model="whoCanEditPosition"
+				:access-dictionaries="{
+					users: [],
+					positions: accessDictionaries.positions,
+					profile_groups: [],
+				}"
+				:tabs="['Должности']"
+				search-position="beforeTabs"
+				submit-button=""
+				absolute
+				single
+			/>
+		</JobtronOverlay>
+
+		<JobtronOverlay
+			v-if="isEditGroupSelect"
+			:z="99999"
+			@close="isEditGroupSelect = false"
+		>
+			<AccessSelect
+				v-model="whoCanEditGroup"
+				:access-dictionaries="{
+					users: [],
+					positions: [],
+					profile_groups: accessDictionaries.profile_groups
+				}"
 				:tabs="['Отделы']"
 				search-position="beforeTabs"
 				submit-button=""
@@ -603,6 +703,11 @@ export default {
 			isReadGroupSelect: false,
 			whoCanReadPosition: [],
 			whoCanReadGroup: [],
+
+			isEditPositionSelect: false,
+			isEditGroupSelect: false,
+			whoCanEditPosition: [],
+			whoCanEditGroup: [],
 		};
 	},
 	computed: {
@@ -826,10 +931,12 @@ export default {
 					who_can_edit,
 					who_can_read,
 					who_can_read_pairs,
+					who_can_edit_pairs,
 				} = await API.fetchKBAccess(book.id)
 				this.who_can_edit = who_can_edit
 				this.who_can_read = who_can_read
 				this.parseAccessPairs(who_can_read_pairs)
+				this.parseEditPairs(who_can_edit_pairs)
 			}
 			catch (error) {
 				console.error(error)
@@ -850,6 +957,8 @@ export default {
 			this.who_can_edit = []
 			this.whoCanReadPosition = []
 			this.whoCanReadGroup = []
+			this.whoCanEditPosition = []
+			this.whoCanEditGroup = []
 		},
 
 		parseAccessPairs(pairs){
@@ -874,6 +983,34 @@ export default {
 				type: 3
 			}]
 			this.whoCanReadGroup = [{
+				id: group.id,
+				name: group.name,
+				type: 2
+			}]
+		},
+
+		parseEditPairs(pairs){
+			if(!pairs || !pairs.length) {
+				this.whoCanEditPosition = []
+				this.whoCanEditGroup = []
+				return
+			}
+
+			const position = this.accessDictionaries.positions.find(pos => pos.id === pairs[0].position_id)
+			const group = this.accessDictionaries.profile_groups.find(group => group.id === pairs[0].group_id)
+
+			if(!position || !group){
+				this.whoCanEditPosition = []
+				this.whoCanEditGroup = []
+				return
+			}
+
+			this.whoCanEditPosition = [{
+				id: position.id,
+				name: position.name,
+				type: 3
+			}]
+			this.whoCanEditGroup = [{
 				id: group.id,
 				name: group.name,
 				type: 2
@@ -930,6 +1067,13 @@ export default {
 					group_id: this.whoCanReadGroup[i].id
 				})
 			}
+			const editPairs = []
+			for(let i = 0, l = this.whoCanEditGroup.length; i < l; ++i){
+				editPairs.push({
+					position_id: this.whoCanEditPosition[i].id,
+					group_id: this.whoCanEditGroup[i].id
+				})
+			}
 
 			try {
 				await API.updateKBBook({
@@ -938,6 +1082,7 @@ export default {
 					who_can_read: this.whoCanReadActual,
 					who_can_edit: this.whoCanEditActual,
 					who_can_read_pairs: pairs,
+					who_can_edit_pairs: editPairs,
 				})
 
 				this.showEdit = false
@@ -950,6 +1095,8 @@ export default {
 				this.who_can_edit = []
 				this.whoCanReadPosition = []
 				this.whoCanReadGroup = []
+				this.whoCanEditPosition = []
+				this.whoCanEditGroup = []
 
 				if(!silent) this.$toast.success('Изменения сохранены')
 				loader.hide()
