@@ -11,11 +11,11 @@
 			Ваш статус: {{ user ? user.referrer_status : '' }}
 		</div>
 
-		<!-- <div class="RefWidget-border">
-			<router-link :to="'/ref-preza'">
+		<div class="RefWidget-border">
+			<router-link :to="'/profile/referral-prsentation'">
 				«Как заработать миллион»
 			</router-link>
-		</div> -->
+		</div>
 
 		<div
 			class="RefWidget-border pointer"
