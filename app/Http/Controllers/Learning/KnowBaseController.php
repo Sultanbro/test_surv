@@ -56,8 +56,10 @@ class KnowBaseController extends Controller
             $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
         } else {
 
-            $groups = $auth_user->inGroups();
-            $group_ids = collect($groups)->pluck('id')->toArray();
+            $employee_groups = $auth_user->inGroups()->pluck('id')->toArray();
+            $supervisor_groups = $auth_user->inGroups(true)->pluck('id')->toArray();
+            $group_ids = array_unique(array_merge($employee_groups, $supervisor_groups));
+
             $position_id =  $auth_user->position_id;
             $user_id =  auth()->id();
 
@@ -84,18 +86,26 @@ class KnowBaseController extends Controller
 
             $books = array_merge($books, $up);
 
-            $readPairs = [];
+            $readOrEditPairs = [];
             foreach ($group_ids as $group_id) {
-                $readPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
+                $readOrEditPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
             }
             $books_with_read_access =  KnowBase::withTrashed()
                 ->whereNull('parent_id')
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
-                ->orWhere(function ($query) use ($readPairs) {
-                    if (count($readPairs) > 0) {
-                        $query->whereJsonContains('read_pairs', $readPairs[0]);
-                        foreach ($readPairs as $pair) {
+                ->orWhere(function ($query) use ($readOrEditPairs) {
+                    if (count($readOrEditPairs) > 0) {
+                        $query->whereJsonContains('read_pairs', $readOrEditPairs[0]);
+                        foreach ($readOrEditPairs as $pair) {
                             $query->orWhereJsonContains('read_pairs', $pair);
+                        }
+                    }
+                })
+                ->orWhere(function ($query) use ($readOrEditPairs) {
+                    if (count($readOrEditPairs) > 0) {
+                        $query->whereJsonContains('edit_pairs', $readOrEditPairs[0]);
+                        foreach ($readOrEditPairs as $pair) {
+                            $query->orWhereJsonContains('edit_pairs', $pair);
                         }
                     }
                 })
@@ -385,6 +395,7 @@ class KnowBaseController extends Controller
 
             $page->access = $access;
             $page->read_pairs = collect($request['who_can_read_pairs'])->toArray();
+            $page->edit_pairs = collect($request['who_can_edit_pairs'])->toArray();
             $page->save();
 
         }
@@ -649,7 +660,8 @@ class KnowBaseController extends Controller
         return [
             'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),
             'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'edit'),
-            'who_can_read_pairs' => $book->read_pairs
+            'who_can_read_pairs' => $book->read_pairs,
+            'who_can_edit_pairs' => $book->edit_pairs
         ];
     }
 
