@@ -60,12 +60,14 @@ class EmployeeController extends Controller
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             $users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone');
 
             if ($request['job'] != 0) {
                 $users = \DB::table('users')
                     ->where('position_id',$request['job'])
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone');
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -85,6 +87,7 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
@@ -92,6 +95,7 @@ class EmployeeController extends Controller
                     ->where('position_id',$request['job'])
                     ->whereNotNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                     ->where('is_trainee', 0);
             }
 
@@ -120,6 +124,7 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -135,6 +140,7 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
 
@@ -143,6 +149,7 @@ class EmployeeController extends Controller
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                     ->where('is_trainee', 1)
                     ->whereNull('ud.fire_date');
             }
@@ -158,6 +165,7 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
@@ -165,6 +173,7 @@ class EmployeeController extends Controller
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', 'bl.phone', '=', 'users.phone')
                     ->where('is_trainee', 0);
             }
 
@@ -186,7 +195,7 @@ class EmployeeController extends Controller
             'users.full_time',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            'users.created_at',
+            DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
             'users.deleted_at',
             'users.position_id',
             'users.phone',
