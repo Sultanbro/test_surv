@@ -15,7 +15,7 @@ class FileHelper
 //        $storage = Storage::disk('public');
         $storage = Storage::disk('s3');
 //        try {
-        $result = false;
+        $result = null;
 
         if ($file->isValid()) {
             $path = self::checkDirectory($path);
