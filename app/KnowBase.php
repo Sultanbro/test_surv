@@ -18,7 +18,8 @@ class KnowBase extends Model implements CourseInterface
     protected $appends = ['opened'];
 
     protected $casts = [
-        'read_pairs' => 'array'
+        'read_pairs' => 'array',
+        'edit_pairs' => 'array'
     ];
 
     protected $fillable = [
@@ -32,7 +33,8 @@ class KnowBase extends Model implements CourseInterface
         'pass_grade',
         'hash', // уникальная ссылка чтобы поделиться
         'access', // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию,
-        'read_pairs'
+        'read_pairs',
+        'edit_pairs'
     ];
 
 
