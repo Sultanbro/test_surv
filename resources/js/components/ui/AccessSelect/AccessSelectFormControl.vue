@@ -3,7 +3,7 @@
 		class="AccessSelectFormControl"
 		@click="$emit('click', $event)"
 	>
-		<slot>
+		<slot v-if="items.length">
 			<b-badge
 				v-for="item, index in items"
 				:key="index"
@@ -12,6 +12,12 @@
 			>
 				{{ item.name }}
 			</b-badge>
+		</slot>
+		<slot
+			v-else
+			name="placeholder"
+		>
+			{{ placeholder }}
 		</slot>
 	</div>
 </template>
@@ -24,7 +30,11 @@ export default {
 		items: {
 			type: Array,
 			default: () => []
-		}
+		},
+		placeholder: {
+			type: String,
+			default: ''
+		},
 	}
 }
 </script>
