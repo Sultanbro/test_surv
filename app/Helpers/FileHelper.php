@@ -60,17 +60,15 @@ class FileHelper
         return $storage->exists($path);
     }
 
-    public
-    static function getPath(string $folder, string $filename): string
+    public static function getPath(string $folder, string $filename): string
     {
         $path = self::checkDirectory($folder);
         return Storage::disk('s3')->path($path . '/' . $filename);
     }
 
-    public
-    static function getUrl(string $folder, string|null $filename): string
+    public static function getUrl(string $folder, string|null $filename, string $disk = 's3'): string
     {
-        return Storage::disk('s3')
+        return Storage::disk($disk)
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
     }
 
@@ -79,8 +77,7 @@ class FileHelper
      * @param int $userId
      * @return void
      */
-    public
-    static function storeDocumentsFile(
+    public static function storeDocumentsFile(
         array $files,
         int   $userId
     ): void
