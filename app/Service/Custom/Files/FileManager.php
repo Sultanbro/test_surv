@@ -33,7 +33,7 @@ class FileManager implements FileManagerInterface
         ,            $directory
         , bool       $usOriginalName = false
         , string     $prefix = ''
-        , string     $access = 'public'
+        , string     $access = 's3'
     ): static
     {
         $this->setFile($file);
@@ -85,7 +85,9 @@ class FileManager implements FileManagerInterface
      */
     private function upload($directory, $access): string|false
     {
-        return $this->file->storeAs(self::__DEFAULT_PATH__ . $directory, $this->name, $access);
+        return $this->file->storeAs(self::__DEFAULT_PATH__ . $directory, $this->name, [
+            'disk' => $access
+        ]);
     }
 
     /**

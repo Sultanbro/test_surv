@@ -55,6 +55,7 @@ class FileService
     {
         /** @var FileManager $manager */
         $manager = app(FileManager::class);
+        $manager->setDisk($disk);
         $manager->apply($file, 'uploads');
         return $this->save($manager->name(), $file);
     }
