@@ -10,11 +10,12 @@
 			image: item.avatar || null
 		})"
 	>
-		<img
-			v-if="avatar"
-			:src="item.avatar || null"
-			class="AccessSelectListItem-avatar"
-		>
+		<JobtronAvatar
+			v-if="type === types.USER"
+			:image="item.avatar || null"
+			:title="item.name"
+			:size="40"
+		/>
 		<template v-else>
 			<i
 				v-if="type === types.GROUP"
@@ -56,9 +57,13 @@
 <script>
 import {types} from './types.js'
 
+import JobtronAvatar from '@ui/Avatar.vue'
+
 export default {
 	name: 'AccessSelectListItem',
-	components: {},
+	components: {
+		JobtronAvatar,
+	},
 	props: {
 		item: {
 			type: Object,
@@ -94,8 +99,8 @@ export default {
 		show(){
 			if(!this.search) return true
 			const inName = this.item?.name?.toLowerCase().includes(this.search)
-			const inPosition = this.position && this.item?.position?.toLowerCase().includes(this.search)
-			return inName || inPosition
+			// const inPosition = this.position && this.item?.position?.toLowerCase().includes(this.search)
+			return inName/*  || inPosition */
 		}
 	}
 }
