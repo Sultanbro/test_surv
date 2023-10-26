@@ -9,15 +9,15 @@ use Throwable;
 
 class FileHelper
 {
-    public static function save(UploadedFile $file, string $path, string $disk = 'public'): ?string
+    public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
     {
-        $storage = Storage::disk($disk);
+        $storage = Storage::disk('public');
 
         if (!$file->isValid()) {
             return null;
         }
 
-        $path = self::checkDirectory($path, $disk);
+        $path = self::checkDirectory($path, 'public');
         $result = $storage->putFile($path, $file);
 
         if (!$result) {
