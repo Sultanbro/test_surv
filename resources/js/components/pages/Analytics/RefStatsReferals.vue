@@ -1,14 +1,52 @@
 <template>
 	<div class="RefStatsReferals">
 		<JobtronTable
-			:fields="[
-				{key: 'switch', label: ''},
+			:fields="subsCount(sortedSubs[userId]) ? [
+				{key: 'switch', label: '', rowspan: 2},
 				...subTableFields
-			]"
+			] : subTableFields"
 			:items="sortedSubs[userId]"
 			:tr-after-class-fn="rowAfterClass"
 			class="RefStatsReferals-firstLayer"
 		>
+			<template #thead="{fields}">
+				<thead class="JobtronTable-head">
+					<tr class="JobtronTable-row">
+						<template v-for="field in fields">
+							<th
+								v-if="field.key.slice(-4) !== 'Week'"
+								:key="field.key"
+								class="JobtronTable-th"
+								:class="field.thClass"
+								:colspan="field.colspan"
+								:rowspan="field.rowspan"
+							>
+								{{ field.label }}
+							</th>
+						</template>
+						<th
+							class="JobtronTable-th"
+							colspan="7"
+						>
+							Отработал недель
+						</th>
+					</tr>
+					<tr class="JobtronTable-row">
+						<template v-for="field in fields">
+							<th
+								v-if="field.key.slice(-4) === 'Week'"
+								:key="field.key"
+								class="JobtronTable-th"
+								:class="field.thClass"
+								:colspan="field.colspan"
+								:rowspan="field.rowspan"
+							>
+								{{ field.label }}
+							</th>
+						</template>
+					</tr>
+				</thead>
+			</template>
 			<template #header="{field}">
 				<div
 					class="RefStatsReferals-header pointer"
@@ -52,14 +90,52 @@
 					class="RefStatsReferals-subtable"
 				>
 					<JobtronTable
-						:fields="[
-							{key: 'switch', label: ''},
+						:fields="subsCount(sortedSubs[secondLayerData.value.id]) ? [
+							{key: 'switch', label: '', rowspan: 2},
 							...subTableFields
-						]"
+						] : subTableFields"
 						:items="sortedSubs[secondLayerData.value.id]"
 						:tr-after-class-fn="rowAfterClass"
 						class="RefStatsReferals-secondLayer"
 					>
+						<template #thead="{fields}">
+							<thead class="JobtronTable-head">
+								<tr class="JobtronTable-row">
+									<template v-for="field in fields">
+										<th
+											v-if="field.key.slice(-4) !== 'Week'"
+											:key="field.key"
+											class="JobtronTable-th"
+											:class="field.thClass"
+											:colspan="field.colspan"
+											:rowspan="field.rowspan"
+										>
+											{{ field.label }}
+										</th>
+									</template>
+									<th
+										class="JobtronTable-th"
+										colspan="7"
+									>
+										Отработал недель
+									</th>
+								</tr>
+								<tr class="JobtronTable-row">
+									<template v-for="field in fields">
+										<th
+											v-if="field.key.slice(-4) === 'Week'"
+											:key="field.key"
+											class="JobtronTable-th"
+											:class="field.thClass"
+											:colspan="field.colspan"
+											:rowspan="field.rowspan"
+										>
+											{{ field.label }}
+										</th>
+									</template>
+								</tr>
+							</thead>
+						</template>
 						<template #header="{field}">
 							<div
 								class="RefStatsReferals-header pointer"
@@ -108,6 +184,44 @@
 									:tr-after-class-fn="rowAfterClass"
 									class="RefStatsReferals-thirdLayer"
 								>
+									<template #thead="{fields}">
+										<thead class="JobtronTable-head">
+											<tr class="JobtronTable-row">
+												<template v-for="field in fields">
+													<th
+														v-if="field.key.slice(-4) !== 'Week'"
+														:key="field.key"
+														class="JobtronTable-th"
+														:class="field.thClass"
+														:colspan="field.colspan"
+														:rowspan="field.rowspan"
+													>
+														{{ field.label }}
+													</th>
+												</template>
+												<th
+													class="JobtronTable-th"
+													colspan="7"
+												>
+													Отработал недель
+												</th>
+											</tr>
+											<tr class="JobtronTable-row">
+												<template v-for="field in fields">
+													<th
+														v-if="field.key.slice(-4) === 'Week'"
+														:key="field.key"
+														class="JobtronTable-th"
+														:class="field.thClass"
+														:colspan="field.colspan"
+														:rowspan="field.rowspan"
+													>
+														{{ field.label }}
+													</th>
+												</template>
+											</tr>
+										</thead>
+									</template>
 									<template #header="{field}">
 										<div
 											class="RefStatsReferals-header pointer"
@@ -175,6 +289,9 @@ export default {
 	},
 	computed: {},
 	methods: {
+		subsCount(user){
+			return user.reduce((result, user) => result + user.users.length, 0)
+		},
 		toggleAfter(id){
 			const index = this.uncollapsed.findIndex(uId => uId === id)
 			if(~index){

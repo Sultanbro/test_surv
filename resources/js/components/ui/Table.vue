@@ -3,37 +3,44 @@
 		v-if="fields && items"
 		class="JobtronTable"
 	>
-		<thead class="JobtronTable-head">
-			<tr
-				class="JobtronTable-row"
-				:class="{
-					'JobtronTable-stickyHeader': stickyHeader
-				}"
-			>
-				<template v-for="field in fields">
-					<th
-						v-if="!field.hide"
-						:key="field.key"
-						class="JobtronTable-th"
-						:class="field.thClass"
-						:colspan="field.colspan"
-					>
-						<slot
-							v-if="$scopedSlots[`header(${field.key})`]"
-							:name="`header(${field.key})`"
-							:field="field"
-						/>
-						<slot
-							v-else
-							name="header"
-							:field="field"
+		<slot
+			name="thead"
+			:fields="fields"
+		>
+			<thead class="JobtronTable-head">
+				<slot name="theadBefore" />
+				<tr
+					class="JobtronTable-row"
+					:class="{
+						'JobtronTable-stickyHeader': stickyHeader
+					}"
+				>
+					<template v-for="field in fields">
+						<th
+							v-if="!field.hide"
+							:key="field.key"
+							class="JobtronTable-th"
+							:class="field.thClass"
+							:colspan="field.colspan"
+							:rowspan="field.rowspan"
 						>
-							{{ field.label }}
-						</slot>
-					</th>
-				</template>
-			</tr>
-		</thead>
+							<slot
+								v-if="$scopedSlots[`header(${field.key})`]"
+								:name="`header(${field.key})`"
+								:field="field"
+							/>
+							<slot
+								v-else
+								name="header"
+								:field="field"
+							>
+								{{ field.label }}
+							</slot>
+						</th>
+					</template>
+				</tr>
+			</thead>
+		</slot>
 		<tbody class="JobtronTable-body">
 			<template v-for="row, rowIndex in items">
 				<tr

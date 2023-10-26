@@ -1463,7 +1463,7 @@ export default {
 				}
 
 				items.push({
-					name: `${item.name} ${item.last_name}`,
+					name: `${item.last_name} ${item.name}`,
 					total: Number(total).toFixed(1),
 					enable_comment: item.enable_comment,
 					id: item.id,
@@ -2008,6 +2008,20 @@ hr {
 	.b-table-sticky-column{
 		&:nth-child(1){
 			width: 290px;
+			div{
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+				flex-flow: row nowrap;
+				gap: 10px;
+				span{
+					&:first-of-type{
+						white-space: nowrap;
+						text-overflow: ellipsis;
+						overflow: hidden;
+					}
+				}
+			}
 		}
 		&:nth-child(2){
 			left: 290px;

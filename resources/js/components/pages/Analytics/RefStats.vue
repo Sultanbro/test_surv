@@ -381,7 +381,11 @@ export default {
 	}
 	&-subtable{
 		margin: $bgmargin;
-		padding-left: 15px;
+		.RefStats{
+			&-subtable{
+				padding-left: 15px;
+			}
+		}
 	}
 
 	&-title{

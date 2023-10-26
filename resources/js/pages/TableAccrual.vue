@@ -1370,7 +1370,7 @@ export default {
 					user_id: item.id,
 					hours: item.hours,
 					awards: item.awards,
-					name: `${item.name} ${item.last_name}`,
+					name: `${item.last_name} ${item.name}`,
 					avanses: item.avanses,
 					bonuses: item.bonuses,
 					user_type: item.user_type,

@@ -27,10 +27,10 @@
 								:title="`${user.name} ${user.last_name}`"
 							/>
 							<div class="RefStat-userName">
-								{{ user.name }} {{ user.last_name }}
+								{{ user.name }}
 							</div>
 							<div class="RefStat-userLeads">
-								{{ leads }}
+								Принято: {{ accepted }}
 							</div>
 						</div>
 					</div>
@@ -47,13 +47,13 @@
 						>
 							<JobtronAvatar
 								:image="topUser.avatar"
-								:title="`${topUser.name} ${topUser.last_name}`"
+								:title="`${topUser.name} ${topUser.lastName}`"
 							/>
 							<div class="RefStat-userName">
-								{{ topUser.name }} {{ topUser.last_name }}
+								{{ topUser.name }}
 							</div>
 							<div class="RefStat-userLeads">
-								{{ topUser.referrals.length }}
+								{{ topUser.accepted }}
 							</div>
 						</div>
 					</div>
@@ -154,7 +154,7 @@ export default {
 		...mapState(useReferralStore, [
 			'users',
 			'tops',
-			'leads',
+			'accepted',
 			'isReady',
 		]),
 		refUser(){

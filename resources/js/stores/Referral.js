@@ -10,6 +10,7 @@ export const useReferralStore = defineStore('referral', {
 		month: 0,
 		monthRef: 0,
 		leads: 0,
+		accepted: 0,
 		users: [],
 		tops: [],
 	}),
@@ -29,6 +30,7 @@ export const useReferralStore = defineStore('referral', {
 				this.month = month
 				this.monthRef = monthRef
 				this.leads = (users[0]?.users || []).length
+				this.accepted = users[0] ? users[0].accepted : 0
 				this.users = users
 				this.tops = tops
 				this.isReady = true

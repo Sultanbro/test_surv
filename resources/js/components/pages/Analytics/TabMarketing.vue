@@ -2,6 +2,21 @@
 	<div class="TabMarketing">
 		<b-tabs>
 			<b-tab
+				v-if="isBP"
+				key="101"
+			>
+				<template #title>
+					Реферальная программа
+				</template>
+				<RefStats
+					:filters="{
+						year,
+						month,
+					}"
+					class="mt-4"
+				/>
+			</b-tab>
+			<b-tab
 				key="100"
 				title="Лидогенерация"
 				card
@@ -84,21 +99,6 @@
 						</b-tab>
 					</b-tabs>
 				</div>
-			</b-tab>
-			<b-tab
-				v-if="isBP"
-				key="101"
-			>
-				<template #title>
-					Реферальная программа
-				</template>
-				<RefStats
-					:filters="{
-						year,
-						month,
-					}"
-					class="mt-4"
-				/>
 			</b-tab>
 		</b-tabs>
 	</div>
