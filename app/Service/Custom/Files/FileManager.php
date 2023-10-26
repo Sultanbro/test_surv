@@ -85,9 +85,7 @@ class FileManager implements FileManagerInterface
      */
     private function upload($directory, $access): string|false
     {
-        return $this->file->storeAs(self::__DEFAULT_PATH__ . $directory, $this->name, [
-            'disk' => $access
-        ]);
+        return $this->file->storeAs(self::__DEFAULT_PATH__ . $directory, $this->name, $access);
     }
 
     /**
@@ -106,7 +104,7 @@ class FileManager implements FileManagerInterface
     public function url(array $parameters = [], bool $secure = false): string
     {
         $secure = app()->isProduction();
-        return url($this->path, $parameters, $secure);
+        return url('tenant' . tenant('id') . '/' . $this->path, $parameters, $secure);
     }
 
     /**

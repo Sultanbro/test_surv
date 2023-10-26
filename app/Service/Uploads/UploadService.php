@@ -15,9 +15,10 @@ class UploadService
     {
 //        $filename = FileHelper::save($file, "uploads");
 //        return FileHelper::getUrl('uploads', $filename);
+
         /** @var FileManager $manager */
         $manager = app(FileManager::class);
         $manager->apply($file, 'uploads');
-        return $manager->url();
+        return $manager->url([], true);
     }
 }
