@@ -67,6 +67,10 @@
 						/>
 					</div>
 				</b-tab> -->
+				<b-tab
+					title="Презентация реферальной программы"
+					@click="onPrez"
+				/>
 			</b-tabs>
 		</div>
 	</div>
@@ -79,6 +83,11 @@ export default {
 	components: {
 		PromotionalMaterialFile,
 	},
+	methods: {
+		onPrez(){
+			this.$router.push('/profile/referral-prsentation')
+		}
+	}
 }
 </script>
 

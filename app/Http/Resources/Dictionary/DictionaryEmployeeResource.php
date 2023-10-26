@@ -28,6 +28,7 @@ class DictionaryEmployeeResource extends JsonResource
             'profile_group' => array_merge($group, $groupHead),
             'deleted_at' => $this->resource->deleted_at,
             'last_seen' => $this->resource->last_seen,
+            'referrer_status' => $this->resource->referrer_status,
         ];
     }
 }

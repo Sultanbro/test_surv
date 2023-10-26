@@ -71,11 +71,20 @@
 					</p>
 				</template>
 				<template v-else-if="manager">
-					<img
-						:src="manager.avatar"
-						alt="photo"
-						class="director-photo"
-					>
+					<div class="relative">
+						<img
+							:src="manager.avatar"
+							alt="photo"
+							class="director-photo"
+						>
+						<template v-if="['activist', 'ambassador'].includes(status)">
+							<img
+								:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+								alt=""
+								class="StructureItem-refIcon"
+							>
+						</template>
+					</div>
 					<StructureInfo
 						:info="{
 							avatar: manager.avatar,
@@ -372,6 +381,12 @@ export default {
 			opacity: 0;
 			visibility: hidden;
 		}
+	}
+	&-refIcon{
+		position: absolute;
+		right: 50%;
+		bottom: 0px;
+		transform: translateX(32px);
 	}
 	.PulseCard{
 		border-radius: 12px;

@@ -8,7 +8,29 @@
 		</div>
 
 		<div class="RefWidget-border">
-			Ваш статус: {{ user ? user.referrer_status : '' }}
+			Ваш статус: {{ status }}
+			<img
+				:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+				alt=""
+			>
+			<template v-if="['activist', 'ambassador'].includes(status)">
+				<img
+					:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+					alt=""
+				>
+			</template>
+			<a
+				href="https://www.youtube.com/"
+				target="_blank"
+				class="RefWidget-play"
+			>
+				<img
+					src="/images/ref-play.png"
+					alt=""
+					class="RefWidget-playImage"
+				>
+				Play
+			</a>
 		</div>
 
 		<div class="RefWidget-border">
@@ -33,16 +55,16 @@
 		<div class="RefWidget-subtitle">
 			Заработанно:
 		</div>
-		<div class="RefWidget-border">
+		<div class="RefWidget-border RefWidget-border_small">
 			за все время: {{ total }} ₸
 		</div>
-		<div class="RefWidget-border">
+		<div class="RefWidget-border RefWidget-border_small">
 			свои за месяц: {{ month }} ₸
 		</div>
-		<div class="RefWidget-border">
+		<div class="RefWidget-border RefWidget-border_small">
 			от рефералов: {{ monthRef }} ₸
 		</div>
-		<div class="RefWidget-border">
+		<div class="RefWidget-border RefWidget-border_small">
 			<a
 				v-if="leads"
 				href="#RefStat"
@@ -84,6 +106,9 @@ export default {
 			'leads',
 		]),
 		...mapGetters(['user']),
+		status(){
+			return this.user ? this.user.referrer_status : ''
+		}
 	},
 	mounted(){},
 	methods: {
@@ -133,11 +158,32 @@ export default {
 		color: #62788b;
 
 		border-radius: 1rem;
+		&_small{
+			min-height: 3.25rem;
+		}
 	}
 	&-subtitle{
 		text-align: center;
 		font-size: 14px;
 		margin-bottom: 0.5rem;
+	}
+	&-play{
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+
+		padding: 4px 8px 0;
+
+		color: #fff;
+		font-weight: 700;
+		font-family: 'Courier New';
+
+		background-color: rgb(253, 66, 100);
+		border-radius: 8px;
+	}
+	&-playImage{
+		width: 20px;
+		margin-bottom: 4px;
 	}
 }
 .header__profile._active{

@@ -270,7 +270,11 @@ export default {
 	}
 	&-subtable{
 		margin: $bgmargin;
-		padding-left: 15px;
+		.RefStat{
+			&-subtable{
+				padding-left: 15px;
+			}
+		}
 	}
 
 	&-title{
@@ -298,7 +302,7 @@ export default {
 	&-diff{
 		display: flex;
 		flex-flow: row nowrap;
-		align-items: center;
+		align-items: flex-start;
 		gap: 40px;
 		margin-bottom: 20px;
 	}

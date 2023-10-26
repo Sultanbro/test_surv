@@ -6,6 +6,13 @@
 				:src="avatar"
 				alt="avatar image"
 			>
+			<template v-if="['activist', 'ambassador'].includes(status)">
+				<img
+					class="LeftSidebar-refIcon"
+					:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+					alt=""
+				>
+			</template>
 			<!-- hover menu -->
 			<div class="hover-avatar-area">
 				<div class="header_menu_avatar">
@@ -756,6 +763,14 @@ export default {
 				opacity:0;
 				visibility: hidden;
 			}
+		}
+	}
+
+	.LeftSidebar{
+		&-refIcon{
+			position: absolute;
+			right: 0;
+			bottom: 0;
 		}
 	}
 </style>
