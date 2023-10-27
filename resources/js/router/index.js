@@ -285,6 +285,14 @@ const router = new VueRouter({
 				menuItem: 'structure',
 			},
 		},
+		{
+			path: '/awards/fix-preview',
+			name: 'FixAwardView',
+			component: () => import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),
+			meta: {
+				title: 'FixAwardView',
+			},
+		},
 	],
 })
 

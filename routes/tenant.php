@@ -279,6 +279,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::put('/update/{award}', [Settings\Award\AwardController::class, 'update'])->middleware('is_admin')->name('update');
         Route::delete('/delete/{award}', [Settings\Award\AwardController::class, 'destroy'])->name('destroy');
         Route::get('/download/{award}', [Settings\Award\AwardController::class, 'downloadFile'])->name('downloadFile');
+        Route::get('/fix-preview', [Settings\Award\AwardController::class, 'fixPreviewPage']);
     });
 
     Route::post('/checklist/tasks', [Settings\CheckListController::class, 'getTasks']);
