@@ -3,7 +3,9 @@ import axios from 'axios'
 function referalToUser(ref){
 	const user = {
 		id: Number(ref.id),
-		title: `${ref.name} ${ref.last_name}`,
+		name: ref.name,
+		lastName: ref.last_name,
+		title: `${ref.last_name} ${ref.name}`,
 		status: ref.referrer_status,
 	}
 
@@ -36,6 +38,8 @@ function referrerToUser(user){
 	return {
 		id: Number(user.id),
 		title: `${user.name} ${user.last_name}`,
+		name: user.name,
+		lastName: user.last_name,
 		status: user.referrer_status,
 		leads: Number(user.leads || 0),
 		deals: Number(user.deals || 0),

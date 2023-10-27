@@ -125,7 +125,7 @@
 							<div>
 								{{ nameData.value }}
 								<b-badge
-									v-if="nameData.field.key == 'name' && nameData.value"
+									v-if="nameData.field.key == 'name' && nameData.value && nameData.item.user_type"
 									pill
 									variant="success"
 								>

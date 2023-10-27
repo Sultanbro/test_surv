@@ -19,7 +19,7 @@ export default {
 	<DefaultLayout>
 		<div class="old__content">
 			<vue-pdf-embed
-				source="/storage/ilgiz-valinurov-recruting-na-100.pdf"
+				source="/static/BusinessFriends.pdf"
 			/>
 		</div>
 	</DefaultLayout>

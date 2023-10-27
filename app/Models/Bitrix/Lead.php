@@ -136,14 +136,18 @@ class Lead extends Model
     public static function getSegment($str)
     {
         if ($str == NULL) return 0;
-        $segment = Segment::where('name', $str)->first();
+        $segment = Segment::query()
+            ->where('name', $str)
+            ->first();
         return $segment ? $segment->id : 99;
     }
 
     public static function getSegmentAlt($str)
     {
         if ($str == NULL) return 0;
-        $segment = Segment::query()->where('on_lead', $str)->first();
+        $segment = Segment::query()
+            ->where('on_lead', $str)
+            ->first();
         return $segment ? $segment->getKey() : 99;
     }
 
@@ -169,7 +173,7 @@ class Lead extends Model
             ->take(200)
             ->get();
 
-        $groups = ProfileGroup::get();
+        $groups = ProfileGroup::query()->get();
         $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray())->first();
 
         foreach ($leads as $lead) {

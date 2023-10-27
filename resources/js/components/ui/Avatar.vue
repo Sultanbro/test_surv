@@ -85,7 +85,7 @@ export default {
 		style(){
 			return [
 				this.sizeStyle,
-				`background: linear-gradient(220.73deg, #${this.background} 12.66%, #${shade(this.background, -20)} 83.08%) `,
+				(this.image && !this.imageError) ? '' : `background: linear-gradient(220.73deg, #${this.background} 12.66%, #${shade(this.background, -20)} 83.08%) `,
 			].join(';')
 		},
 		statusClass(){

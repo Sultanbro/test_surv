@@ -17,7 +17,7 @@ class UploadService
         $s3Manager = app(S3Manager::class);
         $contents = file_get_contents($file->getRealPath());
         $filename = $file->getClientOriginalName();
-        $s3Manager->storeFile($filename, $contents);
+    $s3Manager->storeFile($filename, $contents);
         return $s3Manager->generateTemporaryUrl($filename, 60 * 6);
     }
 }

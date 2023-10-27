@@ -67,6 +67,10 @@
 						/>
 					</div>
 				</b-tab> -->
+				<b-tab
+					title="Презентация реферальной программы"
+					@click="onPrez"
+				/>
 			</b-tabs>
 		</div>
 	</div>
@@ -79,12 +83,17 @@ export default {
 	components: {
 		PromotionalMaterialFile,
 	},
+	methods: {
+		onPrez(){
+			this.$router.push('/profile/referral-prsentation')
+		}
+	}
 }
 </script>
 
 <style lang="scss">
 .PromotionalMaterial{
-	max-width: 1200px;
+	max-width: 1600px;
 	padding: 2rem;
 	margin: 0 auto;
 	&-jumbotron{

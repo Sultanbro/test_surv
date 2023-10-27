@@ -27,9 +27,9 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
 
     private function tops(User $user): array
     {
-        $subReferrers = $this->getSubReferrers($user->load('referrals'));
+        $referrals = $this->getSubReferrers($user->load('referrals'));
         // Sort the sub-referrers by the count of their referrals.
-        $sortedSubReferrers = $subReferrers->sortByDesc(function ($user) {
+        $sortedSubReferrers = $referrals->sortByDesc(function ($user) {
             return $user->referrals->count();
         });
         return $sortedSubReferrers->take(5)
@@ -66,13 +66,17 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         if ($level === 0) {
             return collect();
         }
-        $subReferrers = $user->referrals()
+        $referrals = $user->referrals()
+            ->with([
+                'referrals' => fn(Builder $query) => $query->whereHas('referrals')
+                    ->whereRelation('description', 'applied', '>=', $this->date())
+            ])
             ->whereHas('referralLeads')
             ->get();
 
-        foreach ($subReferrers as $subReferrer) {
-            $subReferrers = $subReferrers->merge($this->getSubReferrers($subReferrer->load('referrals'), $level - 1));
+        foreach ($referrals as $referral) {
+            $referrals = $referrals->merge($this->getSubReferrers($referral->load('referrals'), $level - 1));
         }
-        return $subReferrers;
+        return $referrals;
     }
 }

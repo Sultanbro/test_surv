@@ -27,10 +27,10 @@
 								:title="`${user.name} ${user.last_name}`"
 							/>
 							<div class="RefStat-userName">
-								{{ user.name }} {{ user.last_name }}
+								{{ user.name }}
 							</div>
 							<div class="RefStat-userLeads">
-								{{ leads }}
+								Принято: {{ accepted }}
 							</div>
 						</div>
 					</div>
@@ -47,13 +47,13 @@
 						>
 							<JobtronAvatar
 								:image="topUser.avatar"
-								:title="`${topUser.name} ${topUser.last_name}`"
+								:title="`${topUser.name} ${topUser.lastName}`"
 							/>
 							<div class="RefStat-userName">
-								{{ topUser.name }} {{ topUser.last_name }}
+								{{ topUser.name }}
 							</div>
 							<div class="RefStat-userLeads">
-								{{ topUser.referrals.length }}
+								{{ topUser.accepted }}
 							</div>
 						</div>
 					</div>
@@ -154,7 +154,7 @@ export default {
 		...mapState(useReferralStore, [
 			'users',
 			'tops',
-			'leads',
+			'accepted',
 			'isReady',
 		]),
 		refUser(){
@@ -166,24 +166,30 @@ export default {
 			const sorted = {}
 			this.users.forEach(user => {
 				sorted[user.id] = user.users.slice().sort((a, b) => {
+					const aVal = a[this.sortSubCol]
+					const bVal = b[this.sortSubCol]
 					if(['title', 'status'].includes(this.sortSubCol)){
-						return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+						return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 					}
-					return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+					return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 				})
 				user.users.forEach(user2 => {
 					sorted[user2.id] = user2.users.slice().sort((a, b) => {
+						const aVal = a[this.sortSubCol]
+						const bVal = b[this.sortSubCol]
 						if(['title', 'status'].includes(this.sortSubCol)){
-							return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+							return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 						}
-						return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+						return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 					})
 					user2.users.forEach(user3 => {
 						sorted[user3.id] = user3.users.slice().sort((a, b) => {
+							const aVal = a[this.sortSubCol]
+							const bVal = b[this.sortSubCol]
 							if(['title', 'status'].includes(this.sortSubCol)){
-								return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+								return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 							}
-							return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+							return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 						})
 					})
 				})
@@ -270,7 +276,11 @@ export default {
 	}
 	&-subtable{
 		margin: $bgmargin;
-		padding-left: 15px;
+		.RefStat{
+			&-subtable{
+				padding-left: 15px;
+			}
+		}
 	}
 
 	&-title{
@@ -298,7 +308,7 @@ export default {
 	&-diff{
 		display: flex;
 		flex-flow: row nowrap;
-		align-items: center;
+		align-items: flex-start;
 		gap: 40px;
 		margin-bottom: 20px;
 	}

@@ -728,7 +728,7 @@ export default {
 			this.showSkypeFieldsDesc = {
 				checked: 'Номер',
 				lead_id: 'Сделка',
-				skyped: 'Дата подписи',
+				skyped: 'Дата сделки',
 				project: 'Проект',
 				name: 'ФИО',
 				lang: 'Языки',
@@ -799,7 +799,7 @@ export default {
 				},
 				{
 					key: 'skyped',
-					label: 'Дата подписи',
+					label: 'Дата сделки',
 					variant: 'title',
 					class: 'text-left t-name'
 				},

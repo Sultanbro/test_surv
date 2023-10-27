@@ -147,7 +147,13 @@
 					</b-badge>
 				</template>
 				<template #cell(created_at)="row">
-					{{ $moment(row.value).format('DD.MM.YYYY') }}
+					{{ row.value ? $moment(row.value).format('DD.MM.YYYY') : '' }}
+				</template>
+				<template #cell(deleted_at)="row">
+					{{ row.value ? $moment(row.value).format('DD.MM.YYYY') : '' }}
+				</template>
+				<template #cell(applied)="row">
+					{{ row.value ? $moment(row.value).format('DD.MM.YYYY') : '' }}
 				</template>
 				<template #cell(full_time)="data">
 					<div v-if="data.value == 1">
