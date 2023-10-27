@@ -37,15 +37,14 @@ class StatisticRepository implements StatisticRepositoryInterface
         $leads = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->count();
-
         $deals = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
-            ->whereNot('deal_id', 0)
+            ->where('deal_id', '>', 0)
             ->count();
         $piedTotalForMonth = Salary::query()
             ->where('date', '>=', $this->date())
             ->where('resource', SalaryResourceType::REFERRAL)
-            ->where('is_paid', 1)
+            ->where('is_paid', 1) // this means that salary was accepted!
             ->sum('award');
 
         $earnedTotalForMonth = Salary::query()
@@ -153,21 +152,16 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->where('user_id', $user->getKey())
                     ->whereMonth('date', '=', $date->month)
                     ->whereYear('date', $date->year)
-                    ->get();
-                $salaries = $referrer->salaries()
-                    ->where('comment_award', $user->getKey())
-                    ->where('resource', SalaryResourceType::REFERRAL)
-                    ->get();
+                    ->get();;
 
-                $forTrainee = $salaries->where('award', '<', 5000)->toArray();
+                $salaries = $this->getSalariesForReferral($referrer, $user);
 
-                $forWork = $salaries
-                    ->where('date', '!=', Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
-                    ->where('award', '>=', 5000)->toArray();
+                $forTrainee = $this->filterTraineeSalaries($salaries);
 
-                $forStat = $salaries
-                    ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
-                    ->first()?->toArray();
+                $forWork = $this->filterEmployeesSalaries($salaries, $user);
+
+                $appliedSalary = $this->filterCertificateSalary($salaries, $user);
+
                 for ($i = 1; $i <= $date->daysInMonth; $i++) {
                     $day = $dates
                         ->where('day', $i)
@@ -197,14 +191,13 @@ class StatisticRepository implements StatisticRepositoryInterface
                 foreach ([1, 2, 3, 4, 6, 8, 12] as $week) {
                     $types[$week . '_week'] = null;
                 }
-
                 if ($user->description()->first()?->is_trainee == 0) {
-                    if ($forStat) {
+                    if ($appliedSalary) {
                         $types['pass_certification'] = [
-                            'paid' => (bool)($forStat['is_paid'] ?? null),
-                            'sum' => $forStat['award'] ?? null,
-                            'comment' => $forStat['note'] ?? null,
-                            'id' => $forStat['id'],
+                            'paid' => (bool)($appliedSalary['is_paid'] ?? null),
+                            'sum' => $appliedSalary['award'] ?? null,
+                            'comment' => $appliedSalary['note'] ?? null,
+                            'id' => $appliedSalary['id'],
                         ];
                     }
                     $timetracking = Timetracking::query()
@@ -240,5 +233,31 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $user->datetypes = $types;
                 return $user;
             });
+    }
+
+    private function getSalariesForReferral(User $referrer, User $referral): Collection
+    {
+        return $referrer->salaries()
+            ->where('comment_award', $referral->getKey())
+            ->where('resource', SalaryResourceType::REFERRAL)
+            ->get();
+    }
+
+    private function filterTraineeSalaries(Collection $salaries): array
+    {
+        return $salaries->where('award', '<', 5000)->toArray();
+    }
+    private function filterEmployeesSalaries(Collection $salaries, User $user): array
+    {
+        return $salaries
+            ->where('date', '!=', Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
+            ->where('award', '>=', 5000)->toArray();
+    }
+    private function filterCertificateSalary($salaries, User $user)
+    {
+        $appliedAt = Carbon::parse($user->description()?->first()?->applied);
+        return $salaries
+            ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === $appliedAt->format("Y-m-d"))
+            ->first()?->toArray();
     }
 }
