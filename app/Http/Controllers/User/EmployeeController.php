@@ -55,7 +55,9 @@ class EmployeeController extends Controller
 
     public function getpersons(Request $request)
     {
-        $groups = ProfileGroup::where('active', 1)->get();
+        $groups = ProfileGroup::query()
+            ->where('active', 1)
+            ->get();
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
@@ -282,7 +284,7 @@ class EmployeeController extends Controller
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
-            'segments' => Segment::pluck('name', 'id'),
+            'segments' => Segment::query()->pluck('name', 'id'),
             'groups' => [0 => 'Выберите отдел'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
