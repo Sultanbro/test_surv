@@ -1,161 +1,21 @@
 <template>
 	<div class="RefStatsReferals">
-		<JobtronTable
-			:fields="[
-				{key: 'switch', label: ''},
-				...subTableFields
-			]"
-			:items="sortedSubs[userId]"
-			:tr-after-class-fn="rowAfterClass"
-			class="RefStatsReferals-firstLayer"
-		>
-			<template #header="{field}">
-				<div
-					class="RefStatsReferals-header pointer"
-					@click="$emit('sub-sort', '' + field.key)"
-				>
-					{{ field.label }}
-				</div>
-			</template>
-			<template #cell(switch)="{item}">
-				<div
-					v-if="item.users.length"
-					class="RefStatsReferals-switch pointer"
-					@click="toggleAfter(item.id)"
-				>
-					{{ uncollapsed.includes(item.id) ? '-' : '+' }}
-				</div>
-			</template>
-			<template #cell(title)="{value}">
-				{{ value }}
-			</template>
-			<template #cell(status)="{value}">
-				{{ value }}
-			</template>
-			<template #cell="{value, item, field}">
-				<div
-					v-if="value"
-					:class="{
-						'RefStatsReferals-money': value.sum > 0,
-						'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
-						'pointer usn': $can('referal_edit'),
-					}"
-					:title="value.comment"
-					@click="$emit('payment-click', {item, field})"
-				>
-					{{ value.sum || '' }}
-				</div>
-			</template>
-			<template #afterRow="secondLayerData">
-				<div
-					v-if="secondLayerData.value.users.length && uncollapsed.includes(secondLayerData.value.id)"
-					class="RefStatsReferals-subtable"
-				>
-					<JobtronTable
-						:fields="[
-							{key: 'switch', label: ''},
-							...subTableFields
-						]"
-						:items="sortedSubs[secondLayerData.value.id]"
-						:tr-after-class-fn="rowAfterClass"
-						class="RefStatsReferals-secondLayer"
-					>
-						<template #header="{field}">
-							<div
-								class="RefStatsReferals-header pointer"
-								@click="$emit('sub-sort', '' + field.key)"
-							>
-								{{ field.label }}
-							</div>
-						</template>
-						<template #cell(switch)="{item}">
-							<div
-								v-if="item.users.length"
-								class="RefStatsReferals-switch pointer"
-								@click="toggleAfter(item.id)"
-							>
-								{{ uncollapsed.includes(item.id) ? '-' : '+' }}
-							</div>
-						</template>
-						<template #cell(title)="{value}">
-							{{ value }}
-						</template>
-						<template #cell(status)="{value}">
-							{{ value }}
-						</template>
-						<template #cell="{value, item, field}">
-							<div
-								v-if="value"
-								:class="{
-									'RefStatsReferals-money': value.sum > 0,
-									'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
-									'pointer usn': $can('referal_edit'),
-								}"
-								:title="value.comment"
-								@click="$emit('payment-click', {item, field})"
-							>
-								{{ value.sum || '' }}
-							</div>
-						</template>
-						<template #afterRow="thirdLayerData">
-							<div
-								v-if="thirdLayerData.value.users.length && uncollapsed.includes(thirdLayerData.value.id)"
-								class="RefStatsReferals-subtable"
-							>
-								<JobtronTable
-									:fields="subTableFields"
-									:items="sortedSubs[thirdLayerData.value.id]"
-									:tr-after-class-fn="rowAfterClass"
-									class="RefStatsReferals-thirdLayer"
-								>
-									<template #header="{field}">
-										<div
-											class="RefStatsReferals-header pointer"
-											@click="$emit('sub-sort', '' + field.key)"
-										>
-											{{ field.label }}
-										</div>
-									</template>
-									<template #cell(title)="{value}">
-										{{ value }}
-									</template>
-									<template #cell(status)="{value}">
-										{{ value }}
-									</template>
-									<template #cell="{value, item, field}">
-										<div
-											v-if="value"
-											:class="{
-												'RefStatsReferals-money': value.sum > 0,
-												'RefStatsReferals-money_paid': value.sum > 0 && value.paid,
-												'pointer usn': $can('referal_edit'),
-											}"
-											:title="value.comment"
-											@click="$emit('payment-click', {item, field})"
-										>
-											{{ value.sum || '' }}
-										</div>
-									</template>
-								</JobtronTable>
-							</div>
-						</template>
-					</JobtronTable>
-				</div>
-			</template>
-		</JobtronTable>
+		<RefStatsReferalsTable
+			:user-id="userId"
+			:sorted-subs="sortedSubs"
+			:layer="1"
+			@sub-sort="$emit('sub-sort', $event)"
+		/>
 	</div>
 </template>
 
 <script>
-import JobtronTable from '@ui/Table.vue'
-import {
-	subTableFields,
-} from './helper'
+import RefStatsReferalsTable from './RefStatsReferalsTable.vue'
 
 export default {
 	name: 'RefStatsReferals',
 	components: {
-		JobtronTable,
+		RefStatsReferalsTable,
 	},
 	props: {
 		userId: {
@@ -168,26 +28,10 @@ export default {
 		},
 	},
 	data(){
-		return {
-			subTableFields,
-			uncollapsed: [],
-		}
+		return {}
 	},
 	computed: {},
-	methods: {
-		toggleAfter(id){
-			const index = this.uncollapsed.findIndex(uId => uId === id)
-			if(~index){
-				this.uncollapsed.splice(index, 1)
-			}
-			else{
-				this.uncollapsed.push(id)
-			}
-		},
-		rowAfterClass(row){
-			return this.uncollapsed.includes(row.id) ? 'RefStats-afterRowActive' : ''
-		},
-	},
+	methods: {},
 }
 </script>
 
