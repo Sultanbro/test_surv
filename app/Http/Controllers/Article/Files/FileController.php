@@ -20,14 +20,18 @@ class FileController extends Controller
     /**
      * @param FileStoreRequest $request
      * @return JsonResponse
-     * @throws BusinessLogicException
      */
     public function store(FileStoreRequest $request): JsonResponse
     {
         return response()->json(
             new JsonSuccessResponse(
                 __('model/file.store'),
-                (new FileResource($this->service->store($request->getFile())))->toArray($request)
+                (new FileResource(
+                    $this->service->storeV2(
+                        $request->getFile(),
+                        'public'
+                    )
+                ))->toArray($request)
             )
         );
     }

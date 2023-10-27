@@ -59,11 +59,13 @@ class EmployeeController extends Controller
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
-            $users = \DB::table('get_persons_view');
+            $users = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
 
             if ($request['job'] != 0) {
-                $users = \DB::table('get_persons_view')
-                    ->where('position_id', $request['job']);
+                $users = \DB::table('users')
+                    ->where('position_id',$request['job'])
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -80,14 +82,16 @@ class EmployeeController extends Controller
         }
         elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
 
-            $users = \DB::table('get_persons_view')
+            $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
-                $users = \DB::table('get_persons_view')
-                    ->where('position_id', $request['job'])
+                $users = \DB::table('users')
+                    ->where('position_id',$request['job'])
                     ->whereNotNull('deleted_at')
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('is_trainee', 0);
             }
 
@@ -98,8 +102,9 @@ class EmployeeController extends Controller
         }
         elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
-            $users_1 = \DB::table('get_persons_view')
+            $users_1 = \DB::table('users')
                 ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->get(['users.id'])
                 ->pluck('id')
@@ -112,31 +117,34 @@ class EmployeeController extends Controller
 
             $users_1 = array_diff($users_1, array_unique($downloads));
 
-            $users = \DB::table('get_persons_view')
+            $users = \DB::table('users')
                 ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
-                    $query->whereNull('position_id')
-                        ->orWhereNull('phone')
-                        ->orWhereNull('birthday')
-                        ->orWhereNull('working_day_id')
-                        ->orWhereNull('working_time_id');
+                    $query->whereNull('users.position_id')
+                        ->orWhereNull('users.phone')
+                        ->orWhereNull('users.birthday')
+                        ->orWhereNull('users.working_day_id')
+                        ->orWhereNull('users.working_time_id');
                 })
                 ->orWhere('is_trainee', 0)
-                ->whereIn('id', array_values($users_1));
+                ->whereIn('users.id', array_values($users_1));
         }
         elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
-            $users = \DB::table('get_persons_view')
+            $users = \DB::table('users')
                 ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 1)
-                ->whereNull('fire_date');
+                ->whereNull('ud.fire_date');
 
             if ($request['job'] != 0) {
-                $users = \DB::table('get_persons_view')
+                $users = \DB::table('users')
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('is_trainee', 1)
-                    ->whereNull('fire_date');
+                    ->whereNull('ud.fire_date');
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -147,14 +155,16 @@ class EmployeeController extends Controller
         }
         else {
 
-            $users = \DB::table('get_persons_view')
+            $users = \DB::table('users')
                 ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
-                $users = \DB::table('get_persons_view')
+                $users = \DB::table('users')
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('is_trainee', 0);
             }
 
@@ -166,7 +176,32 @@ class EmployeeController extends Controller
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
         }
 
-        $users = $users->get();
+        $columns = [
+            'users.id',
+            'users.email',
+            'users.user_type',
+            'users.segment as segment',
+            'users.last_name',
+            'users.name',
+            'users.full_time',
+            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
+            DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
+            'users.created_at',
+            'users.deleted_at',
+            'users.position_id',
+            'users.phone',
+            'users.birthday',
+            'users.description',
+            'users.working_day_id',
+            'users.working_time_id',
+            'users.work_start',
+            'users.work_end',
+            'users.program_id',
+            'ud.fire_cause',
+            'ud.applied'
+        ];
+
+        $users = $users->get($columns);
 
         foreach ($users as $key => $user) {
 

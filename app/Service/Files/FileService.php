@@ -7,6 +7,7 @@ use App\Exceptions\News\BusinessLogicException;
 use App\Helpers\FileHelper;
 use App\Models\File\File;
 use App\Repositories\Interfaces\Article\FileRepositoryInterface;
+use App\Service\Custom\Files\FileManager;
 use Illuminate\Http\UploadedFile;
 
 class FileService
@@ -17,24 +18,19 @@ class FileService
 
     /**
      * @param UploadedFile $file
+     * @param string $disk
      * @return File
      * @throws BusinessLogicException
      */
-    public function store(UploadedFile $file): File
+    public function store(UploadedFile $file, string $disk = 's3'): File
     {
-        if (!$filename = FileHelper::save($file, config('app.file.path'))) {
+        $filename = FileHelper::save($file, config('app.file.path', "upload"), $disk);
+
+        if (!$filename) {
             throw new BusinessLogicException(__('exception.save_error'));
         }
 
-        if (!$model = $this->repository->store(new FileStoreDTO(
-            $filename,
-            $file->getClientOriginalName(),
-            $file->getClientOriginalExtension(),
-        ))) {
-            throw new BusinessLogicException(__('exception.save_error'));
-        }
-
-        return $model;
+        return $this->save($filename, $file);
     }
 
     /**
@@ -53,5 +49,22 @@ class FileService
         FileHelper::delete($filename, config('app.file.path'));
 
         return $result;
+    }
+
+    public function storeV2(UploadedFile $file, string $disk): File
+    {
+        /** @var FileManager $manager */
+        $manager = app(FileManager::class);
+        $manager->apply($file, 'uploads');
+        return $this->save($manager->name(), $file);
+    }
+
+    private function save(string $filename, UploadedFile $file): File
+    {
+        return $this->repository->store(new FileStoreDTO(
+            $filename,
+            $file->getClientOriginalName(),
+            $file->getClientOriginalExtension(),
+        ));
     }
 }

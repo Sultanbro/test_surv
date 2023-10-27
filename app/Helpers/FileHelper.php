@@ -9,24 +9,21 @@ use Throwable;
 
 class FileHelper
 {
-
-    public static function save(UploadedFile $file, string $path): ?string
+    public static function save(UploadedFile $file, string $path, string $disk = 's3'): ?string
     {
-        $storage = Storage::disk('s3');
-//        try {
-        $result = null;
+        $storage = Storage::disk($disk);
 
-        if ($file->isValid()) {
-            $path = self::checkDirectory($path);
-            if ($result = $storage->putFile($path, $file)) {
-                return basename($result);
-            }
+        if (!$file->isValid()) {
+            return null;
         }
-        return $result;
-//
-//        } catch (Throwable) {
-//            return null;
-//        }
+
+        $path = self::checkDirectory($path, $disk);
+        $result = $storage->put($path, $file);
+
+        if (!$result) {
+            return null;
+        }
+        return basename($result);
     }
 
     public static function delete(string $filename, string $path): bool
@@ -45,9 +42,9 @@ class FileHelper
         }
     }
 
-    private static function checkDirectory(string $path): string
+    private static function checkDirectory(string $path, string $disk = 's3'): string
     {
-        $storage = Storage::disk('s3');
+        $storage = Storage::disk($disk);
 
         if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
@@ -73,6 +70,12 @@ class FileHelper
     {
         return Storage::disk('s3')
             ->temporaryUrl(($folder !== '' ? ($folder . '/') : '') . $filename, now()->addMinutes(360));
+    }
+
+    public static function getUrlFromPublic(string $folder, string|null $filename): string
+    {
+        return Storage::disk('public')
+            ->url(($folder !== '' ? ($folder . '/') : '') . $filename);
     }
 
     /**
