@@ -6,6 +6,13 @@
 				:src="avatar"
 				alt="avatar image"
 			>
+			<template v-if="['activist', 'ambassador'].includes(status)">
+				<img
+					class="LeftSidebar-refIcon"
+					:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+					alt=""
+				>
+			</template>
 			<!-- hover menu -->
 			<div class="hover-avatar-area">
 				<div class="header_menu_avatar">
@@ -146,10 +153,13 @@
 
 <script>
 /* global Laravel */
-import LeftSidebarItem from './LeftSidebarItem'
 import { bus } from '../../bus'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
+import { mapGetters } from 'vuex'
+
+import LeftSidebarItem from './LeftSidebarItem'
+
 export default {
 	name: 'LeftSidebar',
 	components: {
@@ -171,6 +181,11 @@ export default {
 		};
 	},
 	computed: {
+		...mapGetters(['user']),
+		status(){
+			if(!this.user) return ''
+			return this.user.referrer_status
+		},
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
 		},
@@ -756,6 +771,14 @@ export default {
 				opacity:0;
 				visibility: hidden;
 			}
+		}
+	}
+
+	.LeftSidebar{
+		&-refIcon{
+			position: absolute;
+			right: 0;
+			bottom: 0;
 		}
 	}
 </style>

@@ -59,51 +59,56 @@ export const subTableFields = [
 		label: 'Реферал',
 		tdClass: 'text-left RefStatsReferals-title',
 		thClass: 'text-left RefStatsReferals-title',
+		rowspan: 2,
 	},
 	{
 		key: 'status',
-		label: 'Статус'
+		label: 'Статус',
+		rowspan: 2,
 	}
 ]
 
 for(let i = 0; i < 15; ++i){
 	subTableFields.push({
-		key: i + 1,
+		key: `${i + 1}`,
 		label: `${i + 1}`,
 		thClass: 'RefStatsReferals-referalValue',
+		rowspan: 2,
+		days: true,
 	})
 }
 subTableFields.push({
 	key: 'attest',
-	label: 'Сдал аттестацию'
+	label: 'Сдал аттестацию',
+	rowspan: 2,
 })
 subTableFields.push({
 	key: 'firstWeek',
-	label: 'Отработал 1ю неделю'
+	label: '1'
 })
 subTableFields.push({
 	key: 'secondWeek',
-	label: 'вторую'
+	label: '2'
 })
 subTableFields.push({
 	key: 'thirdWeek',
-	label: 'третью'
+	label: '3'
 })
 subTableFields.push({
 	key: 'fourthWeek',
-	label: 'четвертую'
+	label: '4'
 })
 subTableFields.push({
 	key: 'sixthWeek',
-	label: '6ю'
+	label: '6'
 })
 subTableFields.push({
 	key: 'eighthWeek',
-	label: '8ю'
+	label: '8'
 })
 subTableFields.push({
 	key: 'twelfthWeek',
-	label: '12ю'
+	label: '12'
 })
 
 let fakeId = 0;
