@@ -74,6 +74,7 @@ for(let i = 0; i < 15; ++i){
 		label: `${i + 1}`,
 		thClass: 'RefStatsReferals-referalValue',
 		rowspan: 2,
+		days: true,
 	})
 }
 subTableFields.push({

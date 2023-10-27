@@ -153,10 +153,13 @@
 
 <script>
 /* global Laravel */
-import LeftSidebarItem from './LeftSidebarItem'
 import { bus } from '../../bus'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
+import { mapGetters } from 'vuex'
+
+import LeftSidebarItem from './LeftSidebarItem'
+
 export default {
 	name: 'LeftSidebar',
 	components: {
@@ -178,6 +181,11 @@ export default {
 		};
 	},
 	computed: {
+		...mapGetters(['user']),
+		status(){
+			if(!this.user) return ''
+			return this.user.referrer_status
+		},
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
 		},

@@ -8,11 +8,27 @@
 		</div>
 
 		<div class="RefWidget-border">
-			Ваш статус: {{ status }}
-			<img
-				:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
-				alt=""
+			Ваш статус:
+			<span
+				v-if="status === 'promoter'"
+				class="underdot ml-2 relative"
+				@mouseenter="isHoverStatus = true"
+				@mouseleave="isHoverStatus = false"
 			>
+				{{ status }}
+				<PopupMenu
+					v-if="isHoverStatus"
+					position="topLeft"
+					class="px-3"
+					style="width: 150px;"
+				>
+					Следующий статус - activist (+10% к&nbsp;начислениям)
+				</PopupMenu>
+			</span>
+			<span
+				v-else
+				class="ml-2"
+			>{{ status }}</span>
 			<template v-if="['activist', 'ambassador'].includes(status)">
 				<img
 					:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
@@ -22,7 +38,7 @@
 			<a
 				href="https://www.youtube.com/"
 				target="_blank"
-				class="RefWidget-play"
+				class="RefWidget-play ml-a"
 			>
 				<img
 					src="/images/ref-play.png"
@@ -73,10 +89,18 @@
 			</a>
 			<span
 				v-else
-				v-b-popover.hover.righttop="'У Вас пока нет приглашенных кандидатов и статистики. Начните скорее отправлять реферальную ссылку'"
-				class="underdot"
+				v-b-popover.hover.righttop="''"
+				class="underdot relative"
 			>
 				статистика
+				<PopupMenu
+					v-if="isHoverStat"
+					position="topLeft"
+					class="px-3"
+					style="width: 150px;"
+				>
+					У Вас пока нет приглашенных кандидатов и&nbsp;статистики. Начните скорее отправлять реферальную ссылку
+				</PopupMenu>
 			</span>
 		</div>
 	</div>
@@ -88,13 +112,19 @@ import { mapGetters } from 'vuex'
 import { copy2clipboard } from '@/composables/copy2clipboard'
 import { useReferralStore } from '@/stores/Referral'
 
+import PopupMenu from '@ui/PopupMenu.vue'
+
 export default {
 	name: 'RefWidget',
-	components: {},
+	components: {
+		PopupMenu,
+	},
 	data(){
 		/* global Laravel */
 		return {
 			reflink: 'https://job.bpartners.kz/ref?r=' + Laravel.userId,
+			isHoverStatus: false,
+			isHoverStats: false,
 		}
 	},
 	computed: {
@@ -145,7 +175,7 @@ export default {
 	}
 	&-border{
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		align-items: center;
 
 		width: 100%;
