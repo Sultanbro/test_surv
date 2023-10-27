@@ -190,24 +190,30 @@ export default {
 			const sorted = {}
 			this.users.forEach(user => {
 				sorted[user.id] = user.users.slice().sort((a, b) => {
+					const aVal = a[this.sortSubCol]
+					const bVal = b[this.sortSubCol]
 					if(['title', 'status'].includes(this.sortSubCol)){
-						return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+						return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 					}
-					return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+					return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 				})
 				user.users.forEach(user2 => {
 					sorted[user2.id] = user2.users.slice().sort((a, b) => {
+						const aVal = a[this.sortSubCol]
+						const bVal = b[this.sortSubCol]
 						if(['title', 'status'].includes(this.sortSubCol)){
-							return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+							return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 						}
-						return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+						return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 					})
 					user2.users.forEach(user3 => {
 						sorted[user3.id] = user3.users.slice().sort((a, b) => {
+							const aVal = a[this.sortSubCol]
+							const bVal = b[this.sortSubCol]
 							if(['title', 'status'].includes(this.sortSubCol)){
-								return this.sortSubOrder === 'asc' ? this.sortFn.str(a[this.sortSubCol], b[this.sortSubCol]) : this.sortFn.str(b[this.sortSubCol], a[this.sortSubCol])
+								return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
 							}
-							return this.sortSubOrder === 'asc' ? this.sortFn.int(a[this.sortSubCol].value, b[this.sortSubCol].value) : this.sortFn.int(b[this.sortSubCol].value, a[this.sortSubCol].value)
+							return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
 						})
 					})
 				})
