@@ -4,11 +4,11 @@ namespace App\Service\Referral\Core;
 
 use Illuminate\Support\Str;
 
-enum ReferrerStatus: int
+enum ReferrerStatus
 {
-    case PROMOTER = 0;
-    case ACTIVIST = 5;
-    case AMBASSADOR = 15;
+    case PROMOTER;
+    case ACTIVIST;
+    case AMBASSADOR;
 
     public static function fromCount(int $count): ReferrerStatus
     {
