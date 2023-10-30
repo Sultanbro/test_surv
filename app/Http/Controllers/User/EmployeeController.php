@@ -96,7 +96,6 @@ class EmployeeController extends Controller
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
 
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
@@ -206,7 +205,6 @@ class EmployeeController extends Controller
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
         }
         else {
@@ -248,7 +246,6 @@ class EmployeeController extends Controller
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
         }
 
@@ -279,6 +276,10 @@ class EmployeeController extends Controller
         ];
 
         $users = $users->get($columns);
+
+        if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
+        $users = $users->whereIn('id',$usersIds);
+        }
 
         foreach ($users as $key => $user) {
 
