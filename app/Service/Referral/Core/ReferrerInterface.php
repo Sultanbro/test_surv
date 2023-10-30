@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property int $referrer_id
- * @property ReferrerStatus $referrer_status
+ * @property string $referrer_status
  * @property-read static $referrer
  * @property Collection<ReferrerInterface> $referrals
  */

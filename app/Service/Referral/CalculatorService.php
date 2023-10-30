@@ -6,9 +6,13 @@ use App\Service\Referral\Core\CalculateInterface;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\ReferrerInterface;
 use App\Service\Referral\Core\ReferrerStatus;
+use Exception;
 
 class CalculatorService implements CalculateInterface
 {
+    /**
+     * @throws Exception
+     */
     public function calculate(ReferrerInterface $user, PaidType $type): float|int
     {
         $actualTotal = $this->typeTotal($type);
@@ -24,6 +28,9 @@ class CalculatorService implements CalculateInterface
         return PaidType::getValue($type);
     }
 
+    /**
+     * @throws Exception
+     */
     private function statusPercent(ReferrerInterface $user): int
     {
         return ReferrerStatus::getPercent($user->referrer_status);

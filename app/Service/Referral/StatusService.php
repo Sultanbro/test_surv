@@ -42,8 +42,8 @@ class StatusService implements StatusServiceInterface
 //        return $user->load(['referrals' => fn($query) => $query->load('description')]);
     }
 
-    private function nextStatus(int $countReferrals): ReferrerStatus
+    private function nextStatus(int $countReferrals): string
     {
-        return ReferrerStatus::fromCount($countReferrals);
+        return ReferrerStatus::fromCount($countReferrals)->serialize();
     }
 }
