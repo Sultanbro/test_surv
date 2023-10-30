@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\DayType;
 use App\Enums\SalaryResourceType;
+use App\Service\Referral\Core\CalculateInterface;
+use App\Service\Referral\Core\PaidType;
 use App\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +35,8 @@ class CheckForReferrerDaily extends Command
      */
     public function handle(): int
     {
+        /** @var CalculateInterface $calculateService */
+        $calculateService = app(CalculateInterface::class);
         $date = now()->format("Y-m-d");
 
         /** @var Collection<User> $trainers */
@@ -40,6 +44,7 @@ class CheckForReferrerDaily extends Command
             ->whereNotNull('referrer_id')
             ->whereRelation('description', 'is_trainee', 1)
             ->get();
+
         foreach ($trainers as $trainer) {
             $count = $trainer->daytypes()
                 ->where('date', $date)
@@ -50,7 +55,6 @@ class CheckForReferrerDaily extends Command
                     ->salaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $trainer->id,
                         'note' => $trainer->name,
@@ -64,7 +68,7 @@ class CheckForReferrerDaily extends Command
         $employees = User::query()
             ->whereNotNull('referrer_id')
             ->whereRelation('description', 'is_trainee', 0)
-            ->whereRelation('description', 'applied', '>=', $date)
+//            ->whereRelation('description', 'applied', '>=', $date)
             ->get();
 
         foreach ($employees as $employee) {
@@ -74,6 +78,7 @@ class CheckForReferrerDaily extends Command
                 ->count();
             // TODO: refactor this
             if ($daysCount === 6) {
+                $amount = $calculateService->calculate($referrer, PaidType::FIRST_WORK);
                 $referrer
                     ->salaries()
                     ->create([
@@ -81,10 +86,12 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 10000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
+
+            $amount = $calculateService->calculate($referrer, PaidType::WORK);
             if ($daysCount === 12) {
                 $referrer
                     ->salaries()
@@ -93,7 +100,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
@@ -105,7 +112,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
@@ -117,7 +124,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
@@ -129,7 +136,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
@@ -141,7 +148,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }
@@ -153,7 +160,7 @@ class CheckForReferrerDaily extends Command
                         'amount' => 0,
                         'resource' => SalaryResourceType::REFERRAL,
                         'comment_award' => $employee->id,
-                        'award' => 5000,
+                        'award' => $amount,
                         'is_paid' => 0,
                     ]);
             }

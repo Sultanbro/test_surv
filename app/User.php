@@ -165,7 +165,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     ];
 
     protected $casts = [
-        'timezone' => 'float'
+        'timezone' => 'float',
+        'referrer_status' => ReferrerStatus::class,
     ];
 
     /**
@@ -1729,7 +1730,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     /**
      * @return HasMany
      */
-    public function restoredData():HasMany
+    public function restoredData(): HasMany
     {
         return $this->hasMany(UserRestored::class, 'user_id')->whereNotNull('restored_at');
     }

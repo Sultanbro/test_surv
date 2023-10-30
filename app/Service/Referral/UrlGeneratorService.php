@@ -5,7 +5,7 @@ namespace App\Service\Referral;
 use App\Service\Referral\Core\GeneratorInterface;
 use App\User;
 
-class ReferralService
+class UrlGeneratorService
 {
     private GeneratorInterface $generator;
 

@@ -428,10 +428,13 @@ class HrController extends Controller
     public function inviteUsers(Request $request, SendMessageTraineesService $service)
     {
         $userIds = [];
-        $leads = Lead::whereIn('id', $request->users)->get();
+        $leads = Lead::query()
+            ->whereIn('id', $request->users)
+            ->get();
 
         /////////// check group and zoom link existence
-        $group = ProfileGroup::find($request['group_id']);
+        $group = ProfileGroup::query()
+            ->find($request['group_id']);
 
         if (!$group) {
             return [
@@ -651,13 +654,14 @@ class HrController extends Controller
                 $daytype->type = DayType::DAY_TYPES['TRAINEE'];
                 $daytype->save();
             } else {
-                $daytype = DayType::create([
-                    'user_id' => $user->id,
-                    'type' => DayType::DAY_TYPES['TRAINEE'],
-                    'email' => '',
-                    'date' => $date,
-                    'admin_id' => 1,
-                ]);
+                $daytype = DayType::query()
+                    ->create([
+                        'user_id' => $user->id,
+                        'type' => DayType::DAY_TYPES['TRAINEE'],
+                        'email' => '',
+                        'date' => $date,
+                        'admin_id' => 1,
+                    ]);
             }
 
             /*========================= Обновление webhook-ом время собеседование =====================================*/

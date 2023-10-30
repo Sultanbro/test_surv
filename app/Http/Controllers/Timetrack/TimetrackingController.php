@@ -628,10 +628,11 @@ class TimetrackingController extends Controller
     public function applyPerson(Request $request)
     {
 
-        UserDescription::query()->make([
+        UserDescription::query()->firstOrCreate([
             'user_id' => $request->get('user_id'),
-            'applied' => now(),
             'is_trainee' => 0,
+        ], [
+            'applied' => now(),
         ]);
 
         /** @var User $user */
@@ -709,7 +710,7 @@ class TimetrackingController extends Controller
 
         // TODO : check in production
         Referring::touchReferrerStatus($user);
-
+        Referring::touchReferrerSalaryForCertificate($user);
         return [
             'msg' => 'Заявка отправлена рекрутерам'
         ];
@@ -1638,9 +1639,6 @@ class TimetrackingController extends Controller
             $daytype->admin_id = $user->id;
             $daytype->save();
         }
-        if ($request->user_id) {
-            Referring::touchReferrerSalary($request->user_id, $request->type, $date->format("Y-m-d"));
-        }
 
         $authorName = $user->name . ' ' . $user->last_name;
         $desc = isset($request['comment']) ? $description . '. Причина: ' . $request['comment'] : $description;
@@ -1669,7 +1667,6 @@ class TimetrackingController extends Controller
                 $salary->amount = 0;
                 $salary->save();
             }
-
         }
         /**
          * TODO Тут нет условия если не стажер
@@ -1791,8 +1788,7 @@ class TimetrackingController extends Controller
                     ]);
                 }
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-
-
+                Referring::deleteReferrerDailySalary($targetUser->id, $date->format("Y-m-d"));
             }
 
 
@@ -1822,8 +1818,6 @@ class TimetrackingController extends Controller
                 }
 
             }
-
-
         }
 
 
@@ -1888,11 +1882,9 @@ class TimetrackingController extends Controller
                 }
 
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-
-
+                Referring::touchReferrerSalaryForTrain($targetUser->id, $date);
             }
         }
-
 
         if ($request->type == 7) {
             $up = UserPresence::where('date', $date)

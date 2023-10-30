@@ -106,6 +106,7 @@ final class UserUpdateService
                 'is_trainee' => 0
             ]);
             Referring::touchReferrerStatus($user);
+            Referring::touchReferrerSalaryForCertificate($user);
         }
     }
 
