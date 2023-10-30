@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service\V2\Analytics;
 
 use App\DTO\Analytics\V2\GetAnalyticDto;
+use App\Facade\Analytics\Analytics;
 use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
 use App\Models\Analytics\AnalyticStat;
@@ -31,9 +32,11 @@ class GetAnalyticsService
                 'key' => $column->name
             ];
         });
-
+//        dd(AnalyticsFacade::analytics($dto));
+//        dd(AnalyticStat::form($dto->groupId, $date));
         return [
-            'table' => AnalyticStat::form($dto->groupId, $date),
+            'table' => AnalyticsFacade::analytics($dto),
+            //'table' => AnalyticStat::form($dto->groupId, $date),
             'columns' => $columns
         ];
     }

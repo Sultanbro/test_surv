@@ -89,14 +89,13 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['start_restored_date'] and $request['end_restored_date']){
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
                 $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_restored_date'])
-                    ->whereDate('restored_at','<=',$request['end_restored_date'])
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
 
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
@@ -199,14 +198,13 @@ class EmployeeController extends Controller
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-            if ($request['start_restored_date'] and $request['end_restored_date']){
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
                 $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_restored_date'])
-                    ->whereDate('restored_at','<=',$request['end_restored_date'])
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
         }
         else {
@@ -241,14 +239,13 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['start_restored_date'] and $request['end_restored_date']){
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
                 $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_restored_date'])
-                    ->whereDate('restored_at','<=',$request['end_restored_date'])
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
                     ->pluck('user_id')
                     ->unique()
                     ->toArray();
-                $users = $users->whereIn('id',$usersIds);
             }
         }
 
@@ -279,6 +276,10 @@ class EmployeeController extends Controller
         ];
 
         $users = $users->get($columns);
+
+        if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
+        $users = $users->whereIn('id',$usersIds);
+        }
 
         foreach ($users as $key => $user) {
 

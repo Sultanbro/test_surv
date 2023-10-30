@@ -15,7 +15,6 @@ class SegmentSeeder extends Seeder
     public function run()
     {
         $segments = array(
-            "3452" => "Кандидаты (hh2)",
             "3460" => "Кандидаты (ВХ звонок тестовой линии)",
             "3878" => "Кандидаты (inhouse холодный поиск)",
             "3480" => "Кандидаты (от Кадровых А)",

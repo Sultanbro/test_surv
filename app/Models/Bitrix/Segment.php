@@ -11,9 +11,9 @@ class Segment extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'name', 
+        'name',
         'on_lead', // Id сегмента в лиде
         'on_deal', // Id сегмента в сделке
-        'active', 
+        'active',
     ];
 }
