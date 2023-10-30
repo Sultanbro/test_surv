@@ -32,7 +32,7 @@ class StatisticRepositoryTest extends TenantTestCase
         DB::rollBack();
     }
 
-    private function seedData()
+    private function seedData(): void
     {
         $date = now()->format("Y-m-d");
 
