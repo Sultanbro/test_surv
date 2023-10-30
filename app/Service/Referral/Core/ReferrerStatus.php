@@ -19,6 +19,15 @@ enum ReferrerStatus: int
         };
     }
 
+    public static function getPercent(ReferrerStatus $status): int
+    {
+        return match ($status) {
+            self::PROMOTER => 0,
+            self::ACTIVIST => 10,
+            self::AMBASSADOR => 12,
+        };
+    }
+
     public function serialize(): string
     {
         return Str::lower($this->name);
