@@ -26,6 +26,6 @@ class LeadApi implements LeadApiInterface
 
     public function get(int $id): mixed
     {
-        return $this->bitrix->getLeads($id);
+        return $this->bitrix->getLeads(lead_id: $id);
     }
 }
