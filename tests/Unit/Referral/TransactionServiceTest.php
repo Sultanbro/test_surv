@@ -23,7 +23,7 @@ class TransactionServiceTest extends TenantTestCase
     {
         DB::beginTransaction();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::PROMOTER
+            'referrer_status' => ReferrerStatus::PROMOTER->serialize()
         ]);
 
         $referral = User::factory()->create([

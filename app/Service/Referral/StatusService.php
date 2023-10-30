@@ -46,5 +46,4 @@ class StatusService implements StatusServiceInterface
     {
         return ReferrerStatus::fromCount($countReferrals);
     }
-
 }

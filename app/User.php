@@ -166,7 +166,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     protected $casts = [
         'timezone' => 'float',
-        'referrer_status' => ReferrerStatus::class,
     ];
 
     /**

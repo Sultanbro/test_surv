@@ -2,6 +2,8 @@
 
 namespace App\Service\Referral\Core;
 
+use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 enum ReferrerStatus
@@ -19,12 +21,17 @@ enum ReferrerStatus
         };
     }
 
-    public static function getPercent(ReferrerStatus $status): int
+    /**
+     * @throws Exception
+     */
+    public static function getPercent(string $status): int
     {
-        return match ($status) {
-            self::PROMOTER => 0,
-            self::ACTIVIST => 10,
-            self::AMBASSADOR => 12,
+        $statuses = Arr::map(self::cases(), fn(ReferrerStatus $status) => $status->serialize());
+        return match (true) {
+            $status == $statuses[0] => 0,
+            $status == $statuses[1] => 10,
+            $status == $statuses[2] => 12,
+            default => throw new Exception('Unexpected match value'),
         };
     }
 

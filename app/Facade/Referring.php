@@ -22,11 +22,6 @@ class Referring extends Facade
 {
     protected static $cached = true;
 
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
     protected static function getFacadeAccessor(): string
     {
         return 'referral';
