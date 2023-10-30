@@ -78,7 +78,7 @@ class Referring extends Facade
         }
 
 //        $service->useDate(now()); // this can use when date is not current date
-        $service->touch($user->referrer, PaidType::ATTESTATION);
+        $service->touch($user, PaidType::ATTESTATION);
     }
 
     public static function touchReferrerSalaryForTrain(User $user, Carbon $date): void
@@ -96,6 +96,6 @@ class Referring extends Facade
             return;
         }
         $service->useDate($date); // this can use when date is not current date
-        $service->touch($user->referrer, PaidType::TRAINEE);
+        $service->touch($user, PaidType::TRAINEE);
     }
 }

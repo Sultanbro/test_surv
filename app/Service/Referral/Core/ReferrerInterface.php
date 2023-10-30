@@ -18,7 +18,6 @@ interface ReferrerInterface
     public function referrals(): HasMany;
 
     public function referrer(): BelongsTo;
-
     public function hasParent(): bool;
 
     public function url(): string;
