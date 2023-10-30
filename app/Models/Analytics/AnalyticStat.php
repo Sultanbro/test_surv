@@ -9,6 +9,7 @@ use App\Timetracking;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AnalyticStat extends Model
 {
@@ -924,5 +925,13 @@ class AnalyticStat extends Model
             ->where('value', '!=', '')
             ->whereNotNull('value')
             ->get();
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function activity(): BelongsTo
+    {
+        return $this->belongsTo(Activity::class);
     }
 }
