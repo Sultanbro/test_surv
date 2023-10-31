@@ -89,15 +89,6 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
-                $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
-                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
-                    ->pluck('user_id')
-                    ->unique()
-                    ->toArray();
-            }
-
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
 
 
@@ -198,14 +189,6 @@ class EmployeeController extends Controller
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
-                $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
-                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
-                    ->pluck('user_id')
-                    ->unique()
-                    ->toArray();
-            }
         }
         elseif (isset($request['filter']) && $request['filter'] == 'reactivated')
         {
@@ -248,14 +231,6 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
-                $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
-                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
-                    ->pluck('user_id')
-                    ->unique()
-                    ->toArray();
-            }
         }
         else {
 
@@ -289,14 +264,6 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
-                $usersIds = UserRestored::query()
-                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
-                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
-                    ->pluck('user_id')
-                    ->unique()
-                    ->toArray();
-            }
         }
 
         $columns = [
@@ -325,14 +292,26 @@ class EmployeeController extends Controller
             'ud.applied',
         ];
         if (isset($request['filter']) && $request['filter'] == 'reactivated') {
-            array_push($columns,'ur.destroyed_at', 'ur.restored_at');
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
+                $users->distinct()->join('users_restored as urs', function ($join) use ($request){
+                    $join->on('users.id', '=', 'urs.user_id')
+                        ->whereBetween('urs.restored_at', [$request['start_date_reapplied'], $request['end_date_reapplied']]);
+                });
+                array_push($columns,'urs.destroyed_at', 'urs.restored_at');
+            }else{
+                array_push($columns,'ur.destroyed_at', 'ur.restored_at');
             }
-
+        }
+        if ($request['start_date_reapplied'] and $request['end_date_reapplied'] and $request['filter'] != 'reactivated') {
+            $users->distinct()->join('users_restored as urst', function ($join) use ($request){
+                $join->on('users.id', '=', 'urst.user_id')
+                    ->whereBetween('urst.restored_at', [$request['start_date_reapplied'], $request['end_date_reapplied']]);
+            });
+            array_push($columns,'urst.destroyed_at', 'urst.restored_at');
+        }
         $users = $users->get($columns);
 
-        if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
-        $users = $users->whereIn('id',$usersIds);
-        }
+
 
         foreach ($users as $key => $user) {
 
