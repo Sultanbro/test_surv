@@ -26,7 +26,6 @@ use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use App\Service\Referral\Core\ReferrerInterface;
-use App\Service\Referral\Core\ReferrerStatus;
 use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
 use Exception;
@@ -797,8 +796,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             UserRestored::query()->create([
                 "user_id" => $user->id,
                 "destroyed_at" => $fireDate,
-                "cause" => $ud->fire_cause
-
+                "cause" => $ud->fire_cause ?? 'не понятно!'
             ]);
             return back()->withSuccess('Успешно удален');
         } else {
