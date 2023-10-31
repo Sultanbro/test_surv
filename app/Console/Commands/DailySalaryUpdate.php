@@ -6,7 +6,6 @@ use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Database\Query\Builder;
 
 class DailySalaryUpdate extends Command
 {
@@ -29,18 +28,19 @@ class DailySalaryUpdate extends Command
         $endDate = Carbon::parse($this->argument('date')) ?? now();
         $startDate = $endDate->subDays(10);
 
+        // Get all users within the date range using whereBetween
+        $users = User::query()
+            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
+            ->with(['salaries' => fn($query) => $query->whereBetween('date', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")])])
+            ->with('zarplata')
+            ->where(fn($query) => $query
+                ->whereNull('deleted_at')
+                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")]))
+            )
+            ->get();
+
         while ($startDate <= $endDate) {
             $date = $startDate->format("Y-m-d");
-
-            // Get all users within the date range using whereBetween
-            $users = User::query()
-                ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
-                ->with(['salaries' => fn($query) => $query->where('date', $date)])
-                ->with('zarplata')
-                ->where(fn($query) => $query->whereNull('deleted_at')
-                    ->orWhere(fn($query) => $query->whereDate('deleted_at', '>=', $date)))
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
 
             foreach ($users as $key => $user) {
                 // Find the salary for the user
