@@ -44,8 +44,9 @@ class SyncBitrixSegment extends Command
                         } else {
                             $this->info("Segment: $name ; net v nashey baze!");
                         }
+                    } else {
+                        $this->info("Segment id: $segment ; net v nashey spiske!");
                     }
-                    $this->info("Segment id: $segment ; net v nashey spiske!");
                 }
                 sleep(1);
             }
