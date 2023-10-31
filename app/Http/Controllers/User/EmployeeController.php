@@ -229,7 +229,6 @@ class EmployeeController extends Controller
                         $join->on('users.id', '=', 'ur.user_id')
                             ->whereRaw('ur.created_at = (SELECT MAX(created_at) FROM users_restored WHERE user_id = users.id)');
                     })
-                    ->whereIn('id',$usersReactivated)
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -323,7 +322,9 @@ class EmployeeController extends Controller
             'users.work_end',
             'users.program_id',
             'ud.fire_cause',
-            'ud.applied'
+            'ud.applied',
+            'ur.destroyed_at',
+            'ur.restored_at'
         ];
 
         $users = $users->get($columns);
