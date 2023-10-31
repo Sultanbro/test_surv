@@ -257,10 +257,10 @@
 						:title="segments.hasOwnProperty(data.value) ? segments[data.value] : data.value"
 					>
 						<template v-if="segments.hasOwnProperty(data.value)">
-							{{ segments[data.value] }}
+							{{ data.value === 0 ? 'Нет сегмента' : segments[data.value] }}
 						</template>
 						<template v-else>
-							{{ data.value }}
+							{{ data.value === 0 ? 'Нет сегмента' : data.value }}
 						</template>
 					</div>
 				</template>
