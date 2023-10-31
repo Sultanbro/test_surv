@@ -193,7 +193,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $appliedAt = Carbon::parse($user->description()?->first()?->applied);
         return $salaries
-            ->filter(fn(ReferralSalary $salary) => $salary->date->format("Y-m-d") === $appliedAt->format("Y-m-d"))
+            ->filter(fn(ReferralSalary $salary) => $salary->date == $appliedAt->format("Y-m-d"))
             ->first()?->toArray();
     }
 
