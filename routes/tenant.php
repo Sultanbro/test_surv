@@ -280,6 +280,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::delete('/delete/{award}', [Settings\Award\AwardController::class, 'destroy'])->name('destroy');
         Route::get('/download/{award}', [Settings\Award\AwardController::class, 'downloadFile'])->name('downloadFile');
         Route::get('/fix-preview', [Settings\Award\AwardController::class, 'fixPreviewPage']);
+        Route::post('/add-preview', [Settings\Award\AwardController::class, 'addPreview'])->name('add-preview');
     });
 
     Route::post('/checklist/tasks', [Settings\CheckListController::class, 'getTasks']);

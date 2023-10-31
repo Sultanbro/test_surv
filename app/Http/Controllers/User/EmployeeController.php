@@ -9,6 +9,7 @@ use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
+use App\Models\UserRestored;
 use App\Service\Department\UserService;
 use App\Service\TaxService;
 use App\Traits\CurrencyTrait;
@@ -55,17 +56,29 @@ class EmployeeController extends Controller
 
     public function getpersons(Request $request)
     {
-        $groups = ProfileGroup::where('active', 1)->get();
+        $groups = ProfileGroup::query()
+            ->where('active', 1)
+            ->get();
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             $users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                });
 
             if ($request['job'] != 0) {
                 $users = \DB::table('users')
                     ->where('position_id',$request['job'])
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', function ($q) {
+                        // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                        $q->on('bl.phone', '=', 'users.phone')
+                            ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                    });
             }
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -76,6 +89,15 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
+                $usersIds = UserRestored::query()
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
+                    ->pluck('user_id')
+                    ->unique()
+                    ->toArray();
+            }
+
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
 
 
@@ -85,6 +107,11 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                })
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
@@ -92,6 +119,11 @@ class EmployeeController extends Controller
                     ->where('position_id',$request['job'])
                     ->whereNotNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', function ($q) {
+                        // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                        $q->on('bl.phone', '=', 'users.phone')
+                            ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                    })
                     ->where('is_trainee', 0);
             }
 
@@ -120,6 +152,11 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                })
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -135,6 +172,11 @@ class EmployeeController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                      ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                })
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
 
@@ -143,6 +185,11 @@ class EmployeeController extends Controller
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', function ($q) {
+                        // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                        $q->on('bl.phone', '=', 'users.phone')
+                            ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                    })
                     ->where('is_trainee', 1)
                     ->whereNull('ud.fire_date');
             }
@@ -151,13 +198,25 @@ class EmployeeController extends Controller
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
+                $usersIds = UserRestored::query()
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
+                    ->pluck('user_id')
+                    ->unique()
+                    ->toArray();
+            }
         }
         else {
 
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                })
                 ->where('is_trainee', 0);
 
             if ($request['job'] != 0) {
@@ -165,6 +224,11 @@ class EmployeeController extends Controller
                     ->where('position_id', $request['job'])
                     ->whereNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', function ($q) {
+                        // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                        $q->on('bl.phone', '=', 'users.phone')
+                            ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                    })
                     ->where('is_trainee', 0);
             }
 
@@ -174,6 +238,15 @@ class EmployeeController extends Controller
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
+
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
+                $usersIds = UserRestored::query()
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
+                    ->pluck('user_id')
+                    ->unique()
+                    ->toArray();
+            }
         }
 
         $columns = [
@@ -186,6 +259,7 @@ class EmployeeController extends Controller
             'users.full_time',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
+            DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
             'users.created_at',
             'users.deleted_at',
             'users.position_id',
@@ -202,6 +276,10 @@ class EmployeeController extends Controller
         ];
 
         $users = $users->get($columns);
+
+        if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
+        $users = $users->whereIn('id',$usersIds);
+        }
 
         foreach ($users as $key => $user) {
 
@@ -282,7 +360,7 @@ class EmployeeController extends Controller
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
-            'segments' => Segment::pluck('name', 'id'),
+            'segments' => Segment::query()->pluck('name', 'id'),
             'groups' => [0 => 'Выберите отдел'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
@@ -367,7 +445,7 @@ class EmployeeController extends Controller
         if ($id != 0) {
             $user = User::withTrashed()
                 ->where('id', $id)
-                ->with(['zarplata', 'downloads', 'user_description', 'coordinate'])
+                ->with(['zarplata', 'downloads', 'user_description', 'coordinate','restoredData'])
                 ->first();
 
             if ($user->weekdays == '' || $user->weekdays == null) {
@@ -1123,6 +1201,16 @@ class EmployeeController extends Controller
 
 
             (new CabinetService)->add(tenant('id'), $user, false);
+
+            //add restored_at to users_restored
+
+            UserRestored::query()
+                ->where('user_id',$request->id)
+                ->whereNull('restored_at')
+                ->firstOrFail()
+                ->update([
+                    "restored_at" => Carbon::now()->format('Y-m-d')
+                ]);
         }
 
         View::share('title', 'Сотрудник восстановлен');

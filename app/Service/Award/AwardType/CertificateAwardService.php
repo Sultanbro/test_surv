@@ -188,7 +188,7 @@ class CertificateAwardService implements AwardInterface
      * @return array
      * @throws BusinessLogicException
      */
-    private function saveAwardPreview($request): array
+    public function saveAwardPreview($request): array
     {
         if (!$request->hasFile('preview')) {
             return [

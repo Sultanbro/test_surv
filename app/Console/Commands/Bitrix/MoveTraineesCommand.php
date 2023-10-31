@@ -5,6 +5,7 @@ namespace App\Console\Commands\Bitrix;
 use Illuminate\Console\Command;
 use App\Service\Integrations\BitrixIntegrationService;
 use App\Api\BitrixOld as Bitrix;
+use Illuminate\Http\Client\HttpClientException;
 
 class MoveTraineesCommand extends Command
 {
@@ -29,8 +30,9 @@ class MoveTraineesCommand extends Command
      * Execute the console command.
      *
      * @return int
+     * @throws HttpClientException
      */
-    public function handle()
+    public function handle(): int
     {
         $this->service = new BitrixIntegrationService;
         $this->bitrix = new Bitrix;

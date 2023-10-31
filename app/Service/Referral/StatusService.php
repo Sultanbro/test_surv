@@ -15,11 +15,11 @@ class StatusService implements StatusServiceInterface
     public function touch(?ReferrerInterface $user = null): User
     {
         $user = $this->user($user);
-        $referralsCount = $this->countReferrals($user);
+
         $user->update([
-            'referrer_status' => ReferrerStatus::fromCount($referralsCount)
-                ->serialize()
+            'referrer_status' => $this->nextStatus($this->countReferrals($user))
         ]);
+
         return $user;
     }
 
@@ -42,4 +42,8 @@ class StatusService implements StatusServiceInterface
 //        return $user->load(['referrals' => fn($query) => $query->load('description')]);
     }
 
+    private function nextStatus(int $countReferrals): string
+    {
+        return ReferrerStatus::fromCount($countReferrals)->serialize();
+    }
 }

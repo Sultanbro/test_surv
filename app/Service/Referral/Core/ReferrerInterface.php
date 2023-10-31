@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property int $referrer_id
+ * @property string $referrer_status
  * @property-read static $referrer
  * @property Collection<ReferrerInterface> $referrals
  */
@@ -17,7 +18,6 @@ interface ReferrerInterface
     public function referrals(): HasMany;
 
     public function referrer(): BelongsTo;
-
     public function hasParent(): bool;
 
     public function url(): string;

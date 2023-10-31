@@ -8,12 +8,14 @@ use App\Http\Requests\Award\CourseAwardRequest;
 use App\Http\Requests\Award\StoreAwardRequest;
 use App\Http\Requests\Award\UpdateAwardRequest;
 use App\Http\Requests\GetCoursesAwardsRequest;
+use App\Http\Requests\Referral\Request;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreCoursesAwardsRequest;
 use App\Models\Award\Award;
 use App\Repositories\AwardRepository;
 use App\Service\Award\AwardBuilder;
 use App\Service\Award\AwardService;
+use App\Service\Award\AwardType\CertificateAwardService;
 use App\Service\Award\Reward\RewardBuilder;
 use App\User;
 use Exception;
@@ -78,6 +80,19 @@ class AwardController extends Controller
             ->update($request, $award);
 
         return response()->success($response);
+    }
+
+    public function addPreview(Request $request,CertificateAwardService $service)
+    {
+        $award = Award::query()->findOrFail($request->id);
+
+        if ($request->has('preview')) {
+            $preview = $service->saveAwardPreview($request);
+            $parameters['preview_format'] = $preview['format'];
+            $parameters['preview_path'] = $preview['relative'];
+        }
+
+        return  $award->update($parameters);
     }
 
     /**

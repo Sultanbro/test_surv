@@ -20,6 +20,7 @@ use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
 use App\Models\User\Referral\Referrer;
 use App\Models\UserCoordinate;
+use App\Models\UserRestored;
 use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
@@ -164,7 +165,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     ];
 
     protected $casts = [
-        'timezone' => 'float'
+        'timezone' => 'float',
     ];
 
     /**
@@ -791,6 +792,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 $ud->save();
             }
 
+            //create new value in table user_restored
+            UserRestored::query()->create([
+                "user_id" => $user->id,
+                "destroyed_at" => $fireDate,
+                "cause" => $ud->fire_cause
+
+            ]);
             return back()->withSuccess('Успешно удален');
         } else {
             return back()->withErrors('Пользователь не найден');
@@ -1716,5 +1724,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function weekQualities(): HasMany
     {
         return $this->hasMany(QualityRecordWeeklyStat::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function restoredData(): HasMany
+    {
+        return $this->hasMany(UserRestored::class, 'user_id')->whereNotNull('restored_at');
     }
 }

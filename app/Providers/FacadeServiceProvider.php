@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Service\Referral\Core\GeneratorInterface;
 use App\Service\Referral\Core\SalaryHandlerInterface;
-use App\Service\Referral\ReferralService;
+use App\Service\Referral\UrlGeneratorService;
 use Illuminate\Support\ServiceProvider;
 
 class FacadeServiceProvider extends ServiceProvider
@@ -17,7 +17,7 @@ class FacadeServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind('referral', function ($app) {
-            return new ReferralService(
+            return new UrlGeneratorService(
                 $app->make(GeneratorInterface::class),
                 $app->make(SalaryHandlerInterface::class),
             );

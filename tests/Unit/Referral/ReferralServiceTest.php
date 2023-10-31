@@ -4,8 +4,7 @@ namespace Tests\Unit\Referral;
 
 use App\Service\Referral\Core\GeneratorInterface;
 use App\Service\Referral\Core\ReferralUrlDto;
-use App\Service\Referral\Core\SalaryHandlerInterface;
-use App\Service\Referral\ReferralService;
+use App\Service\Referral\UrlGeneratorService;
 use App\User;
 use Mockery;
 use Tests\TenantTestCase;
@@ -13,12 +12,10 @@ use Tests\TenantTestCase;
 class ReferralServiceTest extends TenantTestCase
 {
     protected GeneratorInterface $generatorMock;
-    protected SalaryHandlerInterface $salaryHandlerMock;
 
     public function setUp(): void
     {    // Create mock instances of the interfaces
         $this->generatorMock = Mockery::mock(GeneratorInterface::class);
-        $this->salaryHandlerMock = Mockery::mock(SalaryHandlerInterface::class);
         parent::setUp();
 
     }
@@ -39,8 +36,8 @@ class ReferralServiceTest extends TenantTestCase
             ->with($referrer)
             ->andReturn($referralDto);
 
-        // Create an instance of ReferralService with the mocked dependencies
-        $service = new ReferralService($this->generatorMock, $this->salaryHandlerMock);
+        // Create an instance of UrlGeneratorService with the mocked dependencies
+        $service = new UrlGeneratorService($this->generatorMock);
 
         // Call the generateReferral method
         $result = $service->url($referrer);

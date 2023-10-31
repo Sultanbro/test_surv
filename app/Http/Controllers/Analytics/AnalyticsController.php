@@ -131,8 +131,19 @@ class AnalyticsController extends Controller
         $fired_number = $analyticService->getFiredUsersPerMonth($group, $date->addMonth());
 
         return [
+            'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
+            'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
             'table' => AnalyticStat::form($group_id, $date->format('Y-m-d')),
+            'columns' => AnalyticStat::columns($group_id, $date->format('Y-m-d')),
+            'utility' => $util,
+            'totals' => [],
+            'groups' => $groups,
+            'archived_groups' => ProfileGroup::where('has_analytics', -1)->get(),
             'call_bases' => $call_bases,
+            'fired_percent_prev' => $fired_percent_prev,
+            'fired_percent' => $fired_percent,
+            'fired_number_prev' => $fired_number_prev,
+            'fired_number' => $fired_number,
         ];
     }
 

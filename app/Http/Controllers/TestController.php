@@ -11,12 +11,12 @@ class TestController extends Controller
 
 	public function test() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/token
-		$auth_code = 'RF9AP9HMJGNLG3N84027PC4M7CSPMNNP26V8I845MPTSLCNB40KBHS2H4KBNNNB2';
+		$auth_code = 'OD1E5P7URCJ7P6K0ARQHC13BD9MQ4QLJAEE2PFVOSM4QENQCRFS2PJSLK2390N4E';
 		dd((new \App\Api\HeadHunter)->refresh($auth_code));
 	}
 
     public function test2() {
-        $auth_code = 'GOVE2NFS5958TQD1RJ1PV4RLNA2ODRMKG6TNEIKOGO6IJEK0G2LTACG8TVS14ULV';
+        $auth_code = 'J8KOT95362INC0LJK1IKSIS470QBM3B5NP078T5C7PNE7BQB0A636GLMJMK50U9J';
         dd((new \App\Api\HeadHunterApi2())->refresh($auth_code));
     }
 }
