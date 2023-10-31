@@ -6,6 +6,7 @@ use App\Api\Bitrix\LeadApiInterface;
 use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Fields;
 use App\Models\Bitrix\Lead;
+use App\Models\Bitrix\Segment;
 use App\Service\Referral\Core\LeadServiceInterface;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\ReferrerInterface;
@@ -34,7 +35,7 @@ class LeadService implements LeadServiceInterface
             'name' => $request->name,
             'phone' => $request->phone,
             'status' => 'NEW',
-            'segment' => LeadTemplate::SEGMENT_ID,
+            'segment' => 26,
             'hash' => $data->get('hash'),
             'referrer_id' => $referrer->id,
         ]);
