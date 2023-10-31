@@ -120,10 +120,12 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return User::query()
             ->WhereHas('referralLeads')
-            ->withCount('referralLeads as leads')
             ->with('referrals')
             ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID )
                 ->where('deal_id', '>', 0)])
+            ->withCount(['referralLeads as leads' => fn(Builder $query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID )])
             ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
                     ->where('is_paid', 1)
                     ->where('resource', SalaryResourceType::REFERRAL)]
