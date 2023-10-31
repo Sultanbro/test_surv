@@ -97,7 +97,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     protected function getRatio($convertible, $to): float
     {
         if ($to) {
-            return ceil(($convertible / $to) * 100);
+            return ceil(($convertible * $to) / 100);
         }
         return 0;
     }
