@@ -44,7 +44,7 @@ class DailySalaryUpdate extends Command
 
             foreach ($users as $key => $user) {
                 // Find the salary for the user
-                $salary = $user->salaries->first();
+                $salary = $user->salaries->where('date', $date)->first();
 
                 // Find the zarplata for the user
                 $zarplata = $user->zarplata;
