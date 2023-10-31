@@ -207,6 +207,57 @@ class EmployeeController extends Controller
                     ->toArray();
             }
         }
+        elseif ($request['filter'] && $request['filter'] == 'reactivated')
+        {
+            $users = \DB::table('users')
+                ->join('users_restored as ur', function ($join) {
+                    $join->on('users.id', '=', 'ur.user_id')
+                        ->whereRaw('ur.created_at = (SELECT MAX(created_at) FROM users_restored WHERE user_id = users.id)');
+                })
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->leftJoin('bitrix_leads as bl', function ($q) {
+                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                    $q->on('bl.phone', '=', 'users.phone')
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                })
+                ->where('is_trainee', 0);
+
+                 if ($request['job'] != 0) {
+                $users = \DB::table('users')
+                    ->join('users_restored as ur', function ($join) {
+                        $join->on('users.id', '=', 'ur.user_id')
+                            ->whereRaw('ur.created_at = (SELECT MAX(created_at) FROM users_restored WHERE user_id = users.id)');
+                    })
+                    ->whereIn('id',$usersReactivated)
+                    ->where('position_id', $request['job'])
+                    ->whereNull('deleted_at')
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                    ->leftJoin('bitrix_leads as bl', function ($q) {
+                        // users left joint with bitrix_leads, and get last record on bitrix_leads table
+                        $q->on('bl.phone', '=', 'users.phone')
+                            ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                    })
+                    ->where('is_trainee', 0);
+            }
+
+            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
+            if ($request['segment']) $users = $users->where('segment', $request['segment']);
+            if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
+            if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
+            if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
+            if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
+
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
+                $usersIds = UserRestored::query()
+                    ->whereDate('restored_at','>=',$request['start_date_reapplied'])
+                    ->whereDate('restored_at','<=',$request['end_date_reapplied'])
+                    ->pluck('user_id')
+                    ->unique()
+                    ->toArray();
+            }
+        }
         else {
 
             $users = \DB::table('users')
