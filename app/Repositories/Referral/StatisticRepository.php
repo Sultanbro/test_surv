@@ -54,7 +54,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         return [
             'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
-            'deal_lead_conversion' => $leads ? ($deals / $leads) * 100 : 0,
+            'deal_lead_conversion' => $this->getRatio($deals, $leads),
             'applied_deal_conversion' => $deals ? ($accepted / $deals) * 100 : 0,
             'earned' => $earnedTotalForMonth,
             'paid' => $piedTotalForMonth,
