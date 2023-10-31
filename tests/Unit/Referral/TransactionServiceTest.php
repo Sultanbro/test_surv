@@ -37,10 +37,10 @@ class TransactionServiceTest extends TenantTestCase
         $transaction->touch($referral, PaidType::ATTESTATION); // Replace PaidType::SOME_TYPE with the actual paid type.
 
         // Assert
-        $this->assertDatabaseHas('salaries', [
-            'user_id' => $referrer->getKey(),
-            'comment_award' => $referral->getKey(),
-            'award' => 5000,
+        $this->assertDatabaseHas('referral_salaries', [
+            'referrer_id' => $referrer->getKey(),
+            'referral_id' => $referral->getKey(),
+            'amount' => 5000,
             'is_paid' => 0,
             'date' => now()->format("Y-m-d"),
         ]);

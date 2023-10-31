@@ -3,8 +3,8 @@
 namespace Tests\Unit\Referral;
 
 use App\Models\Bitrix\Lead;
+use App\Models\Referral\ReferralSalary;
 use App\Repositories\Referral\StatisticRepository;
-use App\Salary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\User;
 use Illuminate\Support\Collection;
@@ -57,11 +57,11 @@ class StatisticRepositoryTest extends TenantTestCase
                 'deal_id' => 56565,
             ]);
 
-            Salary::factory()->create([
+            ReferralSalary::factory()->create([
                 'is_paid' => $key % 2 === 0,
-                'award' => 5000,
-                'comment_award' => $referral->getKey(),
-                'user_id' => $referrer->getKey(),
+                'amount' => 5000,
+                'comment' => $referral->getKey(),
+                'referrer_id' => $referrer->getKey(),
                 'date' => now()->format("Y-m-d"),
             ]);
         }

@@ -9,8 +9,6 @@ use App\Http\Resources\Referral\ReferralUrlResource;
 use App\Service\Referral\Core\LeadServiceInterface;
 use App\User;
 use Illuminate\Http\JsonResponse;
-use Throwable;
-
 
 class ReferralController extends Controller
 {
@@ -21,9 +19,6 @@ class ReferralController extends Controller
         return ReferralUrlResource::make(Referring::url($user));
     }
 
-    /**
-     * @throws Throwable
-     */
     public function request(Request $request, User $user): JsonResponse
     {
 

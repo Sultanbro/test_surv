@@ -23,7 +23,7 @@ class CalculatorServiceTest extends TenantTestCase
         DB::beginTransaction();
         $service = new CalculatorService();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::PROMOTER
+            'referrer_status' => ReferrerStatus::PROMOTER->serialize()
         ]);
         User::factory()->create([
             'referrer_id' => $referrer->getKey()
@@ -41,7 +41,7 @@ class CalculatorServiceTest extends TenantTestCase
         DB::beginTransaction();
         $service = new CalculatorService();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::PROMOTER
+            'referrer_status' => ReferrerStatus::PROMOTER->serialize()
         ]);
         User::factory()->create([
             'referrer_id' => $referrer->getKey()
@@ -50,12 +50,16 @@ class CalculatorServiceTest extends TenantTestCase
         $this->assertSame($amount, 1000);
         DB::rollBack();
     }
+
+    /**
+     * @throws Throwable
+     */
     public function test_it_can_calculate_amount_of_first_work_for_referrer()
     {
         DB::beginTransaction();
         $service = new CalculatorService();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::PROMOTER
+            'referrer_status' => ReferrerStatus::PROMOTER->serialize()
         ]);
         User::factory()->create([
             'referrer_id' => $referrer->getKey()
@@ -73,7 +77,7 @@ class CalculatorServiceTest extends TenantTestCase
         DB::beginTransaction();
         $service = new CalculatorService();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::ACTIVIST
+            'referrer_status' => ReferrerStatus::ACTIVIST->serialize()
         ]);
         User::factory()->create([
             'referrer_id' => $referrer->getKey()
@@ -91,7 +95,7 @@ class CalculatorServiceTest extends TenantTestCase
         DB::beginTransaction();
         $service = new CalculatorService();
         $referrer = User::factory()->create([
-            'referrer_status' => ReferrerStatus::AMBASSADOR
+            'referrer_status' => ReferrerStatus::AMBASSADOR->serialize()
         ]);
         User::factory()->create([
             'referrer_id' => $referrer->getKey()

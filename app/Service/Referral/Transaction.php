@@ -2,7 +2,6 @@
 
 namespace App\Service\Referral;
 
-use App\Enums\SalaryResourceType;
 use App\Service\Referral\Core\CalculateInterface;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\TransactionInterface;
@@ -34,12 +33,12 @@ class Transaction implements TransactionInterface
     private function addSalary(): void
     {
         $referrer = $this->referral->referrer;
-        $referrer->salaries()
+        $referrer->referralSalaries()
             ->updateOrCreate([
                 'date' => $this->date->format("Y-m-d"),
-                'award' => $this->amount,
-                'resource' => SalaryResourceType::REFERRAL,
-                'comment_award' => $this->referral->getKey(),
+                'amount' => $this->amount,
+                'type' => $this->paidType->name,
+                'referral_id' => $this->referral->getKey(),
             ], [
                 'is_paid' => 0,
             ]);

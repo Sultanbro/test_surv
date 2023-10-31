@@ -2,7 +2,6 @@
 
 namespace App\Facade;
 
-use App\Enums\SalaryResourceType;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\ReferralUrlDto;
 use App\Service\Referral\Core\ReferrerInterface;
@@ -49,16 +48,15 @@ class Referring extends Facade
             return;
         }
 
-        $salary = $referrer->salaries()
+        $salary = $referrer->referralSalaries()
             ->where(fn($query) => $query
                 ->where('date', $date->format("Y-m-d"))
-                ->where('comment_award', $referral->getKey())
-                ->where('award', '<', 5000)
-                ->where('resource', SalaryResourceType::REFERRAL)
+                ->where('referral_id', $referral->getKey())
+                ->where('type', PaidType::TRAINEE)
             )
             ->first();
         $salary?->update([
-            'award' => 0
+            'amount' => 0
         ]);
     }
 

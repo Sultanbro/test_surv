@@ -4,7 +4,6 @@ namespace App;
 
 use App\Api\BitrixOld as Bitrix;
 use App\Classes\Helpers\Phone;
-use App\Enums\SalaryResourceType;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
@@ -14,6 +13,7 @@ use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
+use App\Models\Referral\ReferralSalary;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
@@ -956,10 +956,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->hasMany(Salary::class, 'user_id');
     }
 
-    public function referralBonuses(): HasMany
+    public function referralSalaries(): HasMany
     {
-        return $this->hasMany(Salary::class, 'user_id')
-            ->where('resource', SalaryResourceType::REFERRAL);
+        return $this->hasMany(
+            ReferralSalary::class,
+            'referrer_id',
+            'id',
+        );
     }
 
     public function profileContacts()

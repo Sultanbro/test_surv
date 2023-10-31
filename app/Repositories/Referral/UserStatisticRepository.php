@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Referral;
 
-use App\Enums\SalaryResourceType;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -48,15 +47,10 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             ->withCount('referralLeads as leads')
             ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
                 ->where('deal_id', '>', 0)])
-            ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
-                    ->where('resource', SalaryResourceType::REFERRAL)
-                ]
-                , 'award')
-            ->withSum(['salaries as month_paid' => fn(Builder $query) => $query
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)
-                ]
-                , 'award')
+            ->withSum('referralSalaries as absolute_paid', 'amount')
+            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
+                ->where('date', '>=', $this->date())
+            ], 'amount')
             ->get();
     }
 

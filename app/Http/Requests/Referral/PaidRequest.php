@@ -10,7 +10,7 @@ class PaidRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', Rule::exists('salaries')],
+            'id' => ['required', Rule::exists('referral_salaries')],
             'paid' => ['required', 'bool'],
             'comment' => ['nullable', 'string']
         ];

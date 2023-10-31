@@ -5,7 +5,7 @@ namespace App\Repositories\Referral;
 use App\DayType;
 use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
-use App\Salary;
+use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Timetracking;
 use App\User;
@@ -43,16 +43,14 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->where('deal_id', '>', 0)
             ->count();
 
-        $piedTotalForMonth = Salary::query()
+        $piedTotalForMonth = ReferralSalary::query()
             ->where('date', '>=', $this->date())
-            ->where('resource', SalaryResourceType::REFERRAL)
             ->where('is_paid', 1) // this means that salary was accepted!
-            ->sum('award');
+            ->sum('amount');
 
-        $earnedTotalForMonth = Salary::query()
+        $earnedTotalForMonth = ReferralSalary::query()
             ->where('date', '>=', $this->date())
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->sum('award');
+            ->sum('amount');
 
         return [
             'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
@@ -89,10 +87,9 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function getUserEarned(User $user, ?string $date = null): float
     {
-        return $user->salaries()
+        return $user->referralSalaries()
             ->when($date, fn($query) => $query->where('date', '>=', $date))
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->sum('award');
+            ->sum('amount');
     }
 
 
@@ -122,26 +119,22 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->WhereHas('referralLeads')
             ->with('referrals')
             ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID )
+                ->where('segment', LeadTemplate::SEGMENT_ID)
                 ->where('deal_id', '>', 0)])
             ->withCount(['referralLeads as leads' => fn(Builder $query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID )])
-            ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->withSum(['referralSalaries as absolute_paid' => fn(Builder $query) => $query
+                    ->where('is_paid', 1)]
+                , 'amount')
+            ->withSum(['referralSalaries as absolute_earned' => fn(Builder $query) => $query]
+                , 'amount')
+            ->withSum(['referralSalaries as month_earned' => fn(Builder $query) => $query
+                    ->where('date', '>=', $this->date())]
+                , 'amount')
+            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
                     ->where('is_paid', 1)
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as absolute_earned' => fn(Builder $query) => $query
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as month_earned' => fn(Builder $query) => $query
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as month_paid' => fn(Builder $query) => $query
-                    ->where('is_paid', 1)
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
+                    ->where('date', '>=', $this->date())]
+                , 'amount')
             ->orderBy('leads', 'desc')
             ->get();
     }
@@ -179,29 +172,28 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     private function getSalariesForReferral(User $referrer, User $referral): Collection
     {
-        return $referrer->salaries()
-            ->where('comment_award', $referral->getKey())
-            ->where('resource', SalaryResourceType::REFERRAL)
+        return $referrer->referralSalaries()
+            ->where('referral_id', $referral->getKey())
             ->get();
     }
 
     private function filterTraineeSalaries(Collection $salaries): array
     {
-        return $salaries->where('award', '<', 5000)->toArray();
+        return $salaries->where('amount', '<', 5000)->toArray();
     }
 
     private function filterEmployeesSalaries(Collection $salaries, User $user): array
     {
         return $salaries
             ->where('date', '!=', Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
-            ->where('award', '>=', 5000)->toArray();
+            ->where('amount', '>=', 5000)->toArray();
     }
 
     private function filterCertificateSalary($salaries, User $user)
     {
         $appliedAt = Carbon::parse($user->description()?->first()?->applied);
         return $salaries
-            ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === $appliedAt->format("Y-m-d"))
+            ->filter(fn(ReferralSalary $salary) => $salary->date->format("Y-m-d") === $appliedAt->format("Y-m-d"))
             ->first()?->toArray();
     }
 
@@ -224,8 +216,8 @@ class StatisticRepository implements StatisticRepositoryInterface
                 if (count($salary)) {
                     $types[$i] = [
                         'paid' => (bool)($salary['is_paid']) ?? false,
-                        'sum' => $salary['award'] ?? 0,
-                        'comment' => $salary['note'] ?? null,
+                        'sum' => $salary['amount'] ?? 0,
+                        'comment' => $salary['comment'] ?? null,
                         'id' => $salary['id'] ?? null,
                     ];
                 }
@@ -247,8 +239,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             if ($appliedSalary) {
                 $types['pass_certification'] = [
                     'paid' => (bool)($appliedSalary['is_paid'] ?? null),
-                    'sum' => $appliedSalary['award'] ?? null,
-                    'comment' => $appliedSalary['note'] ?? null,
+                    'sum' => $appliedSalary['amount'] ?? null,
+                    'comment' => $appliedSalary['comment'] ?? null,
                     'id' => $appliedSalary['id'],
                 ];
             }
@@ -275,8 +267,8 @@ class StatisticRepository implements StatisticRepositoryInterface
                         }
                         $types[$i . '_week'] = [
                             'paid' => (bool)($current['is_paid'] ?? null),
-                            'sum' => $current['award'] ?? null,
-                            'comment' => $current['note'] ?? null,
+                            'sum' => $current['amount'] ?? null,
+                            'comment' => $current['comment'] ?? null,
                             'date' => Carbon::parse($current['date'])->format("Y-m-d"),
                             'id' => $current['id'],
                         ];

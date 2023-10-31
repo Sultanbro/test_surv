@@ -8,9 +8,13 @@ use App\Service\Referral\LeadService;
 use App\User;
 use Mockery;
 use Tests\TenantTestCase;
+use Throwable;
 
 class ReferralLeadServiceTest extends TenantTestCase
 {
+    /**
+     * @throws Throwable
+     */
     public function test_can_create_lead(): void
     {
         // Create a mock for LeadApiInterface
@@ -28,6 +32,7 @@ class ReferralLeadServiceTest extends TenantTestCase
         $request = new RequestDto(
             'test name',
             '37493270709',
+            'erevan'
         );
 
         // Test the create method of ReferralLeadService

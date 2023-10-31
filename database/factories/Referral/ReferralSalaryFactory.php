@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Referral;
 
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\PaidType;
