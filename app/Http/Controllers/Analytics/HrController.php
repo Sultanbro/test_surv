@@ -301,7 +301,7 @@ class HrController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getTrainees(Request $request)
+    public function getTrainees(Request $request): array
     {
         $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
         $date = [
@@ -943,7 +943,7 @@ class HrController extends Controller
     {
         $id = $request->id;
 
-        if ($request->method == 'save') {
+        if ($request->method() == 'save') {
             if (strlen($request->name) == 0) return $id;
             if ($request->id == 0) {
                 $item = \App\Models\BPReflink::create([
@@ -961,7 +961,7 @@ class HrController extends Controller
 
         }
 
-        if ($request->method == 'delete') {
+        if ($request->method() == 'delete') {
             \App\Models\BPReflink::where('id', $request->id)->delete();
         }
 

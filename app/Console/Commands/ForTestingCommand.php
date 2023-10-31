@@ -595,7 +595,7 @@ class ForTestingCommand extends Command
             'date' => now()->format("Y-m-d"),
         ]);
 
-        dump($repository->getStatistic([]));
+        dump($repository->statistic([]));
         DB::rollBack();
     }
 }

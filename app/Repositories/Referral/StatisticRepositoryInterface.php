@@ -6,5 +6,5 @@ use App\User;
 
 interface StatisticRepositoryInterface
 {
-    public function getStatistic(array $filter): array;
+    public function statistic(array $filter): array;
 }

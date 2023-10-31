@@ -10,14 +10,14 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
 {
     protected array $filter = [];
 
-    public function getStatistic(array $filter): array
+    public function statistic(array $filter): array
     {
         $this->filter = $filter;
         /** @var User $user */
         $user = auth()->user();
         return [
             'tops' => $this->tops($user),
-            'referrals' => $this->getReferrersStatistics(),
+            'referrals' => $this->forEach(),
             'mine' => $this->getUserEarned($user, $this->date()),
             'from_referrals' => $this->getUserReferrersEarned($user, $this->date()),
             'absolute' => $this->getUserEarned($user),

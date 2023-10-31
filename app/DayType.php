@@ -2,8 +2,16 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $user_id
+ * @property int $admin_id
+ * @property Carbon $date
+ * @property string $type
+ * @property string $email
+*/
 class DayType extends Model
 {
     protected $table = 'employee_day_types';
