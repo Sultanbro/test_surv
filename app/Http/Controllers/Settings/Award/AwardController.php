@@ -224,4 +224,9 @@ class AwardController extends Controller
         ]);
     }
 
+
+    public function fixPreviewPage(){
+        // пустая страница
+        return view('newprofile');
+    }
 }
