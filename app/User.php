@@ -1731,6 +1731,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function restoredData(): HasMany
     {
-        return $this->hasMany(UserRestored::class, 'user_id')->whereNotNull('restored_at');
+        return $this->hasMany(UserRestored::class, 'user_id');
     }
 }
