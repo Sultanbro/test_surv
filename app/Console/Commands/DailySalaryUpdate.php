@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\User;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Console\Command;
 
 class DailySalaryUpdate extends Command
@@ -43,6 +42,7 @@ class DailySalaryUpdate extends Command
             $date = $startDate->format("Y-m-d");
 
             foreach ($users as $key => $user) {
+
                 // Find the salary for the user
                 $salary = $user->salaries->where('date', $date)->first();
 
@@ -53,13 +53,7 @@ class DailySalaryUpdate extends Command
 
                 if ($salary) {
                     $this->line($key . '+ Начисление не изменено');
-                    continue;
-                }
-
-                $this->line($key . '- Начисление обновлено');
-
-                // Error handling for salary creation
-                try {
+                } else {
                     $user->salaries()->create([
                         'date' => $date,
                         'note' => '',
@@ -70,12 +64,9 @@ class DailySalaryUpdate extends Command
                         'comment_award' => '',
                         'amount' => $salary_amount,
                     ]);
-                } catch (Exception $e) {
-                    // Handle the error (log it, report it, or take appropriate action)
-                    $this->error('Error creating salary for user: ' . $e->getMessage());
+                    $this->line($key . '- Начисление обновлено за дату ' . $date);
                 }
             }
-
             $startDate->addDay();
         }
     }
