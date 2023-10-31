@@ -37,10 +37,12 @@ class StatisticRepository implements StatisticRepositoryInterface
         $leads = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->count();
+
         $deals = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->where('deal_id', '>', 0)
             ->count();
+
         $piedTotalForMonth = Salary::query()
             ->where('date', '>=', $this->date())
             ->where('resource', SalaryResourceType::REFERRAL)
@@ -54,8 +56,8 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         return [
             'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
-            'deal_lead_conversion' => $this->getRatio($leads, $deals),
-            'applied_deal_conversion' => $deals ? ($accepted / $deals) * 100 : 0,
+            'deal_lead_conversion' => $this->getRatio($deals, $leads),
+            'applied_deal_conversion' => $this->getRatio($accepted, $deals),
             'earned' => $earnedTotalForMonth,
             'paid' => $piedTotalForMonth,
         ];
