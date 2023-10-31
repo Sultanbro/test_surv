@@ -38,6 +38,7 @@ class ReferralSalary extends Model
     protected $casts = [
         'type' => PaidType::class,
         'is_paid' => "boolean",
+        'date' => "date",
     ];
 
     protected static function newFactory(): ReferralSalaryFactory
