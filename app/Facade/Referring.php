@@ -36,7 +36,7 @@ class Referring extends Facade
         }
     }
 
-    public static function deleteReferrerDailySalary(int $user_id, string $date): void
+    public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
     {
         /** @var User $referral */
         $referral = User::with(['description', 'referrer'])
@@ -51,7 +51,7 @@ class Referring extends Facade
 
         $salary = $referrer->salaries()
             ->where(fn($query) => $query
-                ->where('date', $date)
+                ->where('date', $date->format("Y-m-d"))
                 ->where('comment_award', $referral->getKey())
                 ->where('award', '<', 5000)
                 ->where('resource', SalaryResourceType::REFERRAL)
