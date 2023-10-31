@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\UserRepository;
-use App\Salary;
-use App\Zarplata;
+use App\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Database\Query\Builder;
 
 class DailySalaryUpdate extends Command
 {
@@ -24,58 +24,30 @@ class DailySalaryUpdate extends Command
      */
     protected $description = 'Count daily salary amount'; // Считает сколько была сумма зарплаты на день. К примеру 70000, после сдачи экзамена стало 80000
 
-    /**
-     * Variables that used
-     *
-     * @var mixed
-     */
-    public $date; // Дата пересчета 
-
-    /**
-     * @var UserRepository
-     */
-    private UserRepository $repository;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->repository = new UserRepository();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
     public function handle(): void
     {
-
         $endDate = Carbon::parse($this->argument('date')) ?? now();
         $startDate = $endDate->subDays(10);
+
         while ($startDate <= $endDate) {
             $date = $startDate->format("Y-m-d");
-            $users = $this->repository
-                ->getUsersWithDescription($date)
+
+            // Get all users within the date range using whereBetween
+            $users = User::query()
+                ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
                 ->with(['salaries' => fn($query) => $query->where('date', $date)])
-                ->get();
-            $userIds = $users->pluck('id')->toArray();
-            $salaries = Salary::query()
-                ->where('date', $date)
-                ->whereIn('user_id', $userIds)
+                ->with('zarplata')
+                ->where(fn($query) => $query->whereNull('deleted_at')
+                    ->orWhere(fn($query) => $query->whereDate('deleted_at', '>=', $date)))
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->get();
 
-            foreach ($userIds as $key => $user_id) {
-                $salary = $salaries->where('user_id', $user_id)
-                    ->first();
-                $zarplata = Zarplata::query()
-                    ->where('user_id', $user_id)
-                    ->first();
+            foreach ($users as $key => $user) {
+                // Find the salary for the user
+                $salary = $user->salaries->first();
+
+                // Find the zarplata for the user
+                $zarplata = $user->zarplata;
 
                 $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
@@ -86,20 +58,25 @@ class DailySalaryUpdate extends Command
 
                 $this->line($key . '- Начисление обновлено');
 
-                Salary::query()->create([
-                    'user_id' => $user_id,
-                    'date' => $date,
-                    'note' => '',
-                    'paid' => 0,
-                    'bonus' => 0,
-                    'comment_paid' => '',
-                    'comment_bonus' => '',
-                    'comment_award' => '',
-                    'amount' => $salary_amount,
-                ]);
+                // Error handling for salary creation
+                try {
+                    $user->salaries()->create([
+                        'date' => $date,
+                        'note' => '',
+                        'paid' => 0,
+                        'bonus' => 0,
+                        'comment_paid' => '',
+                        'comment_bonus' => '',
+                        'comment_award' => '',
+                        'amount' => $salary_amount,
+                    ]);
+                } catch (Exception $e) {
+                    // Handle the error (log it, report it, or take appropriate action)
+                    $this->error('Error creating salary for user: ' . $e->getMessage());
+                }
             }
+
             $startDate->addDay();
         }
     }
-
 }

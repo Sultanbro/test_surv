@@ -94,6 +94,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $welcome_message
  * @property Collection<Service\Salary\> $salaries
  * @property Collection<Service\Salary\> $referralBonuses
+ * @property Zarplata $zarplata
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable, ReferrerInterface
