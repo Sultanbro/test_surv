@@ -8,6 +8,7 @@ use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class SyncBitrixSegment extends Command
 {
@@ -44,8 +45,9 @@ class SyncBitrixSegment extends Command
                         } else {
                             $this->info("Segment: $name ; net v nashey baze!");
                         }
+                    } else {
+                        $this->info("Segment id: $segment ; net v nashey spiske!");
                     }
-                    $this->info("Segment id: $segment ; net v nashey spiske!");
                 }
                 sleep(1);
             }
@@ -56,6 +58,7 @@ class SyncBitrixSegment extends Command
     {
         return Lead::query()
             ->where('segment', 99)
+            ->where( DB::raw('YEAR(created_at)'), '=', '2023')
             ->get();
     }
 }

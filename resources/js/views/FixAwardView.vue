@@ -1,17 +1,22 @@
 <script>
 import {fetchProfileAwards,} from '@/stores/api.js'
+import { resizeImageSrc } from '@/composables/images'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 
 export default {
 	name: 'FixAwardView',
 	components: {
 		DefaultLayout,
+		VuePdfEmbed,
 	},
 	data(){
 		return {
 			categories: [],
-			personalData: {}
+			personalData: {},
+			editedAward: null,
+			editLoader: null,
 		}
 	},
 	mounted(){
@@ -41,7 +46,50 @@ export default {
 			}
 			loader.hide()
 		},
-		fix(/* awardId */){},
+		async fix(award){
+			this.editLoader = this.$loader.show()
+			this.editedAward = award
+		},
+		createPreviews(){
+			const img = this.$refs.preview?.querySelector('img')
+			const _ = undefined
+			if(img){
+				resizeImageSrc(img.src, 400, _, true).then(path => {
+					this.onSuccess({
+						path,
+						format: 'jpg',
+					})
+				}).catch(this.onError)
+				return
+			}
+
+			const canvas = this.$refs.preview?.querySelector('canvas')
+			if(canvas){
+				resizeImageSrc(canvas.toDataURL('image/jpeg', 0.92), 400, _, true).then(path => {
+					this.onSuccess({
+						path,
+						format: 'jpg',
+					})
+				}).catch(this.onError)
+			}
+		},
+		async onSuccess({path}){
+			const data = new FormData()
+			data.append('id', this.editedAward.id)
+			data.append('preview', path)
+			try {
+				await this.axios.post('/awards/add-preview', data)
+				this.editLoader && this.editLoader.hide()
+				alert('Успешно')
+			}
+			catch (error) {
+				this.onError(error)
+			}
+		},
+		onError(){
+			this.editLoader && this.editLoader.hide()
+			alert('Ошибка')
+		},
 		fixUser(/* awardId */){},
 	},
 }
@@ -51,6 +99,23 @@ export default {
 	<DefaultLayout>
 		<div class="old__content">
 			<div class="FixAwardView">
+				<div
+					v-if="editedAward"
+					ref="preview"
+				>
+					<vue-pdf-embed
+						v-if="editedAward.format === 'pdf'"
+						:source="editedAward.tmpPath"
+						@rendered="createPreviews"
+					/>
+					<template v-else>
+						<img
+							:src="editedAward.tmpPath"
+							alt=""
+							@load="createPreviews"
+						>
+					</template>
+				</div>
 				<h2>Награды</h2>
 				<div
 					v-for="cat in categories"
@@ -82,7 +147,7 @@ export default {
 							</div>
 							<div class="FixAwardView-actions">
 								<button
-									@click="fix(item.id)"
+									@click="fix(item)"
 								>
 									Создать превью
 								</button>
