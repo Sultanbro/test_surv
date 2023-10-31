@@ -30,7 +30,7 @@ class StatusService implements StatusServiceInterface
                 ->where(fn(UserDescription|Builder $query) => $query
                     ->whereNull('fired')
                     ->where('is_trainee', 0)
-                    ->whereNotNull('applied')
+                    ->whereNot('applied', 0)
                 )
             )
             ->count();
@@ -39,7 +39,6 @@ class StatusService implements StatusServiceInterface
     private function user(?User $user): User|Authenticatable|null
     {
         return $user ?: auth()->user();
-//        return $user->load(['referrals' => fn($query) => $query->load('description')]);
     }
 
     private function nextStatus(int $countReferrals): string
