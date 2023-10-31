@@ -36,7 +36,7 @@
 				>
 			</template>
 			<a
-				href="https://www.youtube.com/"
+				href="https://www.youtube.com/watch?v=amIRBHrUjSg"
 				target="_blank"
 				class="RefWidget-play ml-a"
 			>
