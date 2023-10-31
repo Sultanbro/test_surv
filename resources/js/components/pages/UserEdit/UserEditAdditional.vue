@@ -55,6 +55,22 @@ export default {
 					<col class="UserEditAdditional-values">
 				</colgroup>
 				<tbody>
+					<tr>
+						<td>
+							<span>Дата регистрации</span>
+						</td>
+						<td>
+							<span>{{ userCreated }}</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span>Дата принятия на работу</span>
+						</td>
+						<td>
+							<span>{{ !userApplied && !isTrainee ? userCreated : userApplied }}</span>
+						</td>
+					</tr>
 					<tr v-if="user && userAppliedDays">
 						<td>
 							<span>Успел стать частью команды ~</span>
