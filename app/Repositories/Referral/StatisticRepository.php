@@ -30,7 +30,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $accepted = User::query()
             ->whereRelation('description', 'is_trainee', 0)
-            ->whereRelation('description', 'applied', '>=', $this->date())
+//            ->whereRelation('description', 'applied', '>=', $this->date())
             ->whereNotNull('referrer_id')
             ->count();
 
@@ -68,7 +68,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->map(function (User $user) {
                 $employees = $user->referrals()
                     ->whereRelation('description', 'is_trainee', 0)
-                    ->whereRelation('description', 'applied', '!=', 0)
+//                    ->whereRelation('description', 'applied', '!=', 0)
                     ->get();
                 $user->users = $this->schedule($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
