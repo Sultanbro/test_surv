@@ -207,7 +207,7 @@ class EmployeeController extends Controller
                     ->toArray();
             }
         }
-        elseif ($request['filter'] && $request['filter'] == 'reactivated')
+        elseif (isset($request['filter']) && $request['filter'] == 'reactivated')
         {
             $users = \DB::table('users')
                 ->join('users_restored as ur', function ($join) {
@@ -323,9 +323,10 @@ class EmployeeController extends Controller
             'users.program_id',
             'ud.fire_cause',
             'ud.applied',
-            'ur.destroyed_at',
-            'ur.restored_at'
         ];
+        if (isset($request['filter']) && $request['filter'] == 'reactivated') {
+            array_push($columns,'ur.destroyed_at', 'ur.restored_at');
+            }
 
         $users = $users->get($columns);
 
