@@ -660,7 +660,8 @@ class TimetrackingController extends Controller
         }
 
         //////////////////////// Set old notification read
-        $absent_notifications = UserNotification::where('about_id', $request->user_id)
+        UserNotification::query()
+            ->where('about_id', $request->user_id)
             ->where(function ($query) {
                 $query->where('title', 'Пропал с обучения')
                     ->orWhere('title', 'Пропал с обучения: 1 день')

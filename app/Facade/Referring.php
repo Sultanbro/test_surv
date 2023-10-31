@@ -38,22 +38,21 @@ class Referring extends Facade
 
     public static function deleteReferrerDailySalary(int $user_id, string $date): void
     {
-        /** @var User $user */
-        $user = User::with('description')
+        /** @var User $referral */
+        $referral = User::with(['description', 'referrer'])
             ->find($user_id)
             ->first();
-        if (!$user) {
+
+        $referrer = $referral?->referrer;
+
+        if (!$referrer) {
             return;
         }
 
-        if (!$user->referrer) {
-            return;
-        }
-
-        $salary = $user->referrer->salaries()
+        $salary = $referrer->salaries()
             ->where(fn($query) => $query
                 ->where('date', $date)
-                ->where('comment_award', $user->getKey())
+                ->where('comment_award', $referral->getKey())
                 ->where('award', '<', 5000)
                 ->where('resource', SalaryResourceType::REFERRAL)
             )
@@ -76,8 +75,6 @@ class Referring extends Facade
         if (!$user->referrer) {
             return;
         }
-
-//        $service->useDate(now()); // this can use when date is not current date
         $service->touch($user, PaidType::ATTESTATION);
     }
 
@@ -95,7 +92,8 @@ class Referring extends Facade
         if (!$user->referrer) {
             return;
         }
-        $service->useDate($date); // this can use when date is not current date
+
+        $service->useDate($date); // this can be used, when date is not now
         $service->touch($user, PaidType::TRAINEE);
     }
 }
