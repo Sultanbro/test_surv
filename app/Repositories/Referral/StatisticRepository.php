@@ -88,20 +88,20 @@ class StatisticRepository implements StatisticRepositoryInterface
         return User::query()
             ->WhereHas('referralLeads')
             ->with('referrals')
-            ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
+            ->withCount(['referralLeads as deals' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)
                 ->where('deal_id', '>', 0)])
-            ->withCount(['referralLeads as leads' => fn(Builder $query) => $query
+            ->withCount(['referralLeads as leads' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)])
-            ->withSum(['referralSalaries as absolute_paid' => fn(Builder $query) => $query
+            ->withSum(['referralSalaries as absolute_paid' => fn($query) => $query
                     ->where('is_paid', 1)]
                 , 'amount')
-            ->withSum(['referralSalaries as absolute_earned' => fn(Builder $query) => $query]
+            ->withSum(['referralSalaries as absolute_earned' => fn($query) => $query]
                 , 'amount')
-            ->withSum(['referralSalaries as month_earned' => fn(Builder $query) => $query
+            ->withSum(['referralSalaries as month_earned' => fn($query) => $query
                     ->where('date', '>=', $this->date())]
                 , 'amount')
-            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
+            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
                     ->where('is_paid', 1)
                     ->where('date', '>=', $this->date())]
                 , 'amount')
