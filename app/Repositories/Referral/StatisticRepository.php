@@ -141,9 +141,11 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->attestation($attestation),
                     $this->employeeWeekly($referral, $working)
                 );
+
                 if ($referral->referrals()->count()) {
-                    return $this->schedule($referral);
+                    $referral->users = $this->schedule($referral);
                 }
+
                 return $referral;
             });
     }
@@ -188,7 +190,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $referrer->referralSalaries()
             ->where([
                 'referral_id' => $referral->getKey(),
-                'referrer_id'=> $referrer->getKey()
+                'referrer_id' => $referrer->getKey()
             ])->get();
     }
 
