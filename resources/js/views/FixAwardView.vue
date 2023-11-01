@@ -192,12 +192,12 @@ export default {
 				>
 					<vue-pdf-embed
 						v-if="editedAward.format === 'pdf'"
-						:source="editedAward.tmpPath"
+						:source="editedAward.tempPath"
 						@rendered="createPreviews"
 					/>
 					<template v-else>
 						<img
-							:src="editedAward.tmpPath"
+							:src="editedAward.tempPath"
 							alt=""
 							@load="createPreviews"
 						>

@@ -888,7 +888,7 @@ export default {
 				filter.end_date_reapplied = this.filter.end_date_reapplied
 			}
 
-			this.isRestored = this.active.date_reapplied && this.tableFilter != 'trainees'
+			this.isRestored = this.tableFilter === 'reactivated'
 
 			this.axios.post('/timetracking/get-persons', filter).then(response => {
 				const users = []
