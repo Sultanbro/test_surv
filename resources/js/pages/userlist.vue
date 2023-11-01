@@ -900,7 +900,7 @@ export default {
 				})
 				this.items = users.reverse()
 				this.groups = response.data.groups
-				this.segments = response.data.segmentsё
+				this.segments = response.data.segments
 
 				this.can_login_users = response.data.can_login_users
 				this.auth_token = response.data.auth_token
