@@ -120,20 +120,20 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->WhereHas('referralLeads')
             ->withCount('referralLeads as leads')
             ->with('referrals')
-            ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
+            ->withCount(['referralLeads as deals' => fn($query) => $query
                 ->where('deal_id', '>', 0)])
-            ->withSum(['salaries as absolute_paid' => fn(Builder $query) => $query
+            ->withSum(['salaries as absolute_paid' => fn($query) => $query
                     ->where('is_paid', 1)
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
-            ->withSum(['salaries as absolute_earned' => fn(Builder $query) => $query
+            ->withSum(['salaries as absolute_earned' => fn($query) => $query
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
-            ->withSum(['salaries as month_earned' => fn(Builder $query) => $query
+            ->withSum(['salaries as month_earned' => fn($query) => $query
                     ->where('date', '>=', $this->date())
                     ->where('resource', SalaryResourceType::REFERRAL)]
                 , 'award')
-            ->withSum(['salaries as month_paid' => fn(Builder $query) => $query
+            ->withSum(['salaries as month_paid' => fn($query) => $query
                     ->where('is_paid', 1)
                     ->where('date', '>=', $this->date())
                     ->where('resource', SalaryResourceType::REFERRAL)]
