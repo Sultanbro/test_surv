@@ -12,11 +12,14 @@ export default {
 		VuePdfEmbed,
 	},
 	data(){
+		const editImg = document.createElement('img')
+		editImg.onload = this.previewImg
 		return {
 			categories: [],
 			personalData: {},
 			editedAward: null,
 			editLoader: null,
+			editImg,
 		}
 	},
 	mounted(){
@@ -49,20 +52,21 @@ export default {
 		async fix(award){
 			this.editLoader = this.$loading.show()
 			this.editedAward = award
-		},
-		createPreviews(){
-			const img = this.$refs.preview?.querySelector('img')
-			const _ = undefined
-			if(img){
-				resizeImageSrc(img.src, 400, _, true).then(path => {
-					this.onSuccess({
-						path,
-						format: 'jpg',
-					})
-				}).catch(this.onError)
-				return
+			if(this.editedAward.format !== 'pdf'){
+				this.editImg.src = this.editedAward.tempPath
 			}
-
+		},
+		previewImg(){
+			const _ = undefined
+			resizeImageSrc(this.editImg.src, 400, _, true).then(path => {
+				this.onSuccess({
+					path,
+					format: 'jpg',
+				})
+			}).catch(this.onError)
+		},
+		previewPdf(){
+			const _ = undefined
 			const canvas = this.$refs.preview?.querySelector('canvas')
 			if(canvas){
 				resizeImageSrc(canvas.toDataURL('image/jpeg', 0.92), 400, _, true).then(path => {
@@ -74,7 +78,6 @@ export default {
 				return
 			}
 
-			console.error(img, canvas)
 			return this.onError()
 		},
 		async onSuccess({path}){
@@ -193,15 +196,8 @@ export default {
 					<vue-pdf-embed
 						v-if="editedAward.format === 'pdf'"
 						:source="editedAward.tempPath"
-						@rendered="createPreviews"
+						@rendered="previewPdf"
 					/>
-					<template v-else>
-						<img
-							:src="editedAward.tempPath"
-							alt=""
-							@load="createPreviews"
-						>
-					</template>
 				</div>
 			</div>
 		</div>
