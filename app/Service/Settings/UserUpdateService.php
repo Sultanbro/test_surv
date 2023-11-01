@@ -103,7 +103,8 @@ final class UserUpdateService
     {
         if ($isTrainee == "false") {
             $user->description()->update([
-                'is_trainee' => 0
+                'is_trainee' => 0,
+                'applied' => now()
             ]);
             Referring::touchReferrerStatus($user);
             Referring::touchReferrerSalaryForCertificate($user);

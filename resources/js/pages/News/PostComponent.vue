@@ -84,8 +84,7 @@
 									</span>
 								</div>
 								<div
-									v-if="$can('news_edit')"
-									v-show="currentPost.author ? (($can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									v-if="isAdmin || isAuthor"
 									class="news-menu-popup__item"
 									@click="editPost"
 								>
@@ -99,8 +98,7 @@
 									</span>
 								</div>
 								<div
-									v-if="$can('news_edit')"
-									v-show="currentPost.author ? (($can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									v-if="isAdmin || isAuthor"
 									class="news-menu-popup__item"
 									@click="deletePost(currentPost.id)"
 								>
@@ -239,7 +237,7 @@
 							class="PostComponent-viewer"
 						>
 							<JobtronAvatar
-								size="24"
+								:size="24"
 								:image="view.avatar"
 								:title="view.name"
 							/>
@@ -313,7 +311,8 @@ import PopupMenu from '@ui/PopupMenu'
 import JobtronAvatar from '@ui/Avatar'
 
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
-import { mapActions } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+import { mapState, mapActions } from 'pinia'
 import { pluralForm } from '@/composables/pluralForm.js'
 
 const imageTypes = {
@@ -366,6 +365,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(usePortalStore, ['isAdmin']),
 		createdAt(){
 			const created = this.$moment.utc(this.currentPost.created_at)
 			const now = this.$moment.utc(Date.now())
@@ -382,6 +382,9 @@ export default {
 		},
 		content(){
 			return this.currentPost.content.replaceAll('<a ', '<a target="_blank" ')
+		},
+		isAuthor(){
+			return this.currentPost?.author?.id === this.me?.id
 		},
 	},
 	mounted() {

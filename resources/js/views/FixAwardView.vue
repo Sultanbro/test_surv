@@ -12,11 +12,19 @@ export default {
 		VuePdfEmbed,
 	},
 	data(){
+		const editImg = document.createElement('img')
+		editImg.onload = this.previewImg
+
+		const editUserImg = document.createElement('img')
+		editUserImg.onload = this.previewUserImg
 		return {
 			categories: [],
 			personalData: {},
 			editedAward: null,
+			editedUserAward: null,
 			editLoader: null,
+			editImg,
+			editUserImg,
 		}
 	},
 	mounted(){
@@ -46,23 +54,17 @@ export default {
 			}
 			loader.hide()
 		},
-		async fix(award){
-			this.editLoader = this.$loading.show()
-			this.editedAward = award
-		},
-		createPreviews(){
-			const img = this.$refs.preview?.querySelector('img')
+		previewImg(){
 			const _ = undefined
-			if(img){
-				resizeImageSrc(img.src, 400, _, true).then(path => {
-					this.onSuccess({
-						path,
-						format: 'jpg',
-					})
-				}).catch(this.onError)
-				return
-			}
-
+			resizeImageSrc(this.editImg.src, 400, _, true).then(path => {
+				this.onSuccess({
+					path,
+					format: 'jpg',
+				})
+			}).catch(this.onError)
+		},
+		previewPdf(){
+			const _ = undefined
 			const canvas = this.$refs.preview?.querySelector('canvas')
 			if(canvas){
 				resizeImageSrc(canvas.toDataURL('image/jpeg', 0.92), 400, _, true).then(path => {
@@ -74,7 +76,6 @@ export default {
 				return
 			}
 
-			console.error(img, canvas)
 			return this.onError()
 		},
 		async onSuccess({path}){
@@ -90,11 +91,67 @@ export default {
 				this.onError(error)
 			}
 		},
+		previewUserImg(){
+			const _ = undefined
+			resizeImageSrc(this.editUserImg.src, 400, _, true).then(path => {
+				this.onUserSuccess({
+					path,
+					format: 'jpg',
+				})
+			}).catch(this.onError)
+		},
+		previewUserPdf(){
+			const _ = undefined
+			const canvas = this.$refs.previewUser?.querySelector('canvas')
+			if(canvas){
+				resizeImageSrc(canvas.toDataURL('image/jpeg', 0.92), 400, _, true).then(path => {
+					this.onUserSuccess({
+						path,
+						format: 'jpg',
+					})
+				}).catch(this.onError)
+				return
+			}
+
+			return this.onError()
+		},
+		async onUserSuccess({path}){
+			const data = new FormData()
+			data.append('user_id', this.editedUserAward.user_id)
+			data.append('award_id', this.editedUserAward.award_id)
+			data.append('preview', path)
+			try {
+				await this.axios.post('/awards/add-preview-second', data)
+				this.editLoader && this.editLoader.hide()
+				alert('Успешно')
+			}
+			catch (error) {
+				this.onError(error)
+			}
+		},
 		onError(){
 			this.editLoader && this.editLoader.hide()
 			alert('Ошибка')
 		},
-		fixUser(/* awardId */){},
+
+		async fix(award){
+			this.editLoader = this.$loading.show()
+			this.editedAward = award
+			if(this.editedAward.format !== 'pdf'){
+				this.editImg.src = this.editedAward.tempPath
+			}
+		},
+		async fixUser(userAward){
+			this.editLoader = this.$loading.show()
+			this.editedUserAward = userAward
+			if(this.editedUserAward.format !== 'pdf'){
+				this.editUserImg.src = this.editedUserAward.tempPath
+			}
+		},
+		getFileName(href){
+			const url = new URL(href)
+			return url.pathname.split('/').reverse()[0]
+		}
 	},
 }
 </script>
@@ -166,14 +223,14 @@ export default {
 								v-for="item in cat.other"
 								:key="item.award_id + '-' + item.user_id"
 								class="FixAwardView-item d-flex gap-4 mb-4 py-2"
-								:class="item.preview_path ? '' : 'FixAwardView-item_error'"
+								:class="getFileName(item.previewPath) ? '' : 'FixAwardView-item_error'"
 							>
 								<!--  -->
 								<div class="FixAwardView-path flex-1">
-									{{ item.tempPath }}
+									{{ getFileName(item.tempPath) }}
 								</div>
 								<div class="FixAwardView-preview flex-1">
-									{{ item.preview_path }}
+									{{ getFileName(item.previewPath) }}
 								</div>
 								<div class="FixAwardView-actions">
 									<button
@@ -186,6 +243,7 @@ export default {
 						</template>
 					</template>
 				</div>
+
 				<div
 					v-if="editedAward"
 					ref="preview"
@@ -193,15 +251,18 @@ export default {
 					<vue-pdf-embed
 						v-if="editedAward.format === 'pdf'"
 						:source="editedAward.tempPath"
-						@rendered="createPreviews"
+						@rendered="previewPdf"
 					/>
-					<template v-else>
-						<img
-							:src="editedAward.tempPath"
-							alt=""
-							@load="createPreviews"
-						>
-					</template>
+				</div>
+				<div
+					v-if="editedUserAward"
+					ref="previewUser"
+				>
+					<vue-pdf-embed
+						v-if="editedUserAward.format === 'pdf'"
+						:source="editedUserAward.tempPath"
+						@rendered="previewUserPdf"
+					/>
 				</div>
 			</div>
 		</div>
