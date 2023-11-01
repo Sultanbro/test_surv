@@ -134,7 +134,7 @@ class Article extends Model
     {
         $user = User::getAuthUser($userId);
 
-        return Article::query()
+        return Article::availableFor($user)
             ->leftJoin(
                 'article_views_users as views',
                 function($join) use ($userId) {
