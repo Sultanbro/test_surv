@@ -169,7 +169,7 @@
 					</div>
 				</template>
 				<template #cell(restored_at)="data">
-					{{ data.value }}
+					{{ data.value ? $moment(data.value).format('DD.MM.YYYY') : '' }}
 				</template>
 			</b-table>
 		</div>
