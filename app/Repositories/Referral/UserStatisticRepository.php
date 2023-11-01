@@ -3,7 +3,6 @@
 namespace App\Repositories\Referral;
 
 use App\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserStatisticRepository extends StatisticRepository implements UserStatisticRepositoryInterface
