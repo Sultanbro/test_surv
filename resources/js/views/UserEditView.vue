@@ -185,7 +185,22 @@ export default {
 		},
 		history(){
 			if(!this.user) return null
-			return this.user.history
+			if(!this.user.restored_data.length) return null
+			const hist = []
+			this.user.restored_data.forEach(item => {
+				if(item.destroyed_at) hist.push({
+					label: 'Дата увольнения',
+					date: this.$moment(item.destroyed_at).format('DD.MM.YYYY'),
+					cause: item.cause,
+				})
+
+				if(item.restored_at) hist.push({
+					label: 'Дата восстановления',
+					date: this.$moment(item.restored_at).format('DD.MM.YYYY'),
+				})
+			})
+			hist.sort((a, b) => this.$moment(a, 'DD.MM.YYYY').diff(this.$moment(b, 'DD.MM.YYYY')))
+			return hist
 		}
 	},
 	watch: {

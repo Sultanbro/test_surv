@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\DayType;
-use App\Enums\SalaryResourceType;
 use App\Service\Referral\Core\CalculateInterface;
 use App\Service\Referral\Core\PaidType;
 use App\User;
@@ -52,14 +51,14 @@ class CheckForReferrerDaily extends Command
                 ->count();
             if ($count) {
                 $trainer->referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $trainer->id,
-                        'note' => $trainer->name,
-                        'award' => 1000,
+                        'referral_id' => $trainer->id,
+                        'comment' => $trainer->name,
+                        'amount' => 1000,
                         'is_paid' => 0,
+                        'type' => PaidType::TRAINEE->name,
                     ]);
             }
         }
@@ -76,92 +75,86 @@ class CheckForReferrerDaily extends Command
             $daysCount = $employee->timetracking()
                 ->where('total_hours', '>', 3 * 60)
                 ->count();
-            // TODO: refactor this
             if ($daysCount === 6) {
                 $amount = $calculateService->calculate($referrer, PaidType::FIRST_WORK);
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'referral_id' => $employee->id,
+                        'comment' => $employee->name,
+                        'amount' => $amount,
                         'is_paid' => 0,
+                        'type' => PaidType::FIRST_WORK->name,
                     ]);
             }
 
             $amount = $calculateService->calculate($referrer, PaidType::WORK);
             if ($daysCount === 12) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+
+                        'type' => PaidType::WORK->name,
                     ]);
             }
             if ($daysCount === 18) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+                        'type' => PaidType::WORK->name,
                     ]);
             }
             if ($daysCount === 24) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+                        'type' => PaidType::WORK->name,
                     ]);
             }
             if ($daysCount === 30) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+                        'type' => PaidType::WORK->name,
                     ]);
             }
             if ($daysCount === 36) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+                        'type' => PaidType::WORK->name,
                     ]);
             }
             if ($daysCount === 42) {
                 $referrer
-                    ->salaries()
+                    ->referralSalaries()
                     ->create([
                         'date' => $date,
-                        'amount' => 0,
-                        'resource' => SalaryResourceType::REFERRAL,
-                        'comment_award' => $employee->id,
-                        'award' => $amount,
+                        'amount' => $amount,
+                        'referral_id' => $employee->id,
                         'is_paid' => 0,
+                        'type' => PaidType::WORK->name,
                     ]);
             }
         }

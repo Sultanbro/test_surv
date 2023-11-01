@@ -19,7 +19,7 @@ class UserStatisticsController extends Controller
     public function __invoke(StatisticRequest $request): StatisticResource
     {
         $statistic = new StatisticDto(
-            $this->repository->getStatistic($request->validated())
+            $this->repository->statistic($request->validated())
         );
         return StatisticResource::make($statistic);
     }

@@ -2,7 +2,6 @@
 
 namespace App\Facade;
 
-use App\Enums\SalaryResourceType;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\ReferralUrlDto;
 use App\Service\Referral\Core\ReferrerInterface;
@@ -36,30 +35,28 @@ class Referring extends Facade
         }
     }
 
-    public static function deleteReferrerDailySalary(int $user_id, string $date): void
+    public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
     {
-        /** @var User $user */
-        $user = User::with('description')
+        /** @var User $referral */
+        $referral = User::with(['description', 'referrer'])
             ->find($user_id)
             ->first();
-        if (!$user) {
+
+        $referrer = $referral?->referrer;
+
+        if (!$referrer) {
             return;
         }
 
-        if (!$user->referrer) {
-            return;
-        }
-
-        $salary = $user->referrer->salaries()
+        $salary = $referrer->referralSalaries()
             ->where(fn($query) => $query
-                ->where('date', $date)
-                ->where('comment_award', $user->getKey())
-                ->where('award', '<', 5000)
-                ->where('resource', SalaryResourceType::REFERRAL)
+                ->where('date', $date->format("Y-m-d"))
+                ->where('referral_id', $referral->getKey())
+                ->where('type', PaidType::TRAINEE)
             )
             ->first();
         $salary?->update([
-            'award' => 0
+            'amount' => 0
         ]);
     }
 
@@ -76,8 +73,6 @@ class Referring extends Facade
         if (!$user->referrer) {
             return;
         }
-
-//        $service->useDate(now()); // this can use when date is not current date
         $service->touch($user, PaidType::ATTESTATION);
     }
 
@@ -95,7 +90,8 @@ class Referring extends Facade
         if (!$user->referrer) {
             return;
         }
-        $service->useDate($date); // this can use when date is not current date
+
+        $service->useDate($date); // this can be used, when date is not now
         $service->touch($user, PaidType::TRAINEE);
     }
 }

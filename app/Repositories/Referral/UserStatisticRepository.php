@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Referral;
 
-use App\Enums\SalaryResourceType;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,14 +10,14 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
 {
     protected array $filter = [];
 
-    public function getStatistic(array $filter): array
+    public function statistic(array $filter): array
     {
         $this->filter = $filter;
         /** @var User $user */
         $user = auth()->user();
         return [
             'tops' => $this->tops($user),
-            'referrals' => $this->getReferrersStatistics(),
+            'referrals' => $this->forEach(),
             'mine' => $this->getUserEarned($user, $this->date()),
             'from_referrals' => $this->getUserReferrersEarned($user, $this->date()),
             'absolute' => $this->getUserEarned($user),
@@ -46,17 +45,12 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         return User::query()
             ->where('id', $user->getKey())
             ->withCount('referralLeads as leads')
-            ->withCount(['referralLeads as deals' => fn($query) => $query
+            ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
                 ->where('deal_id', '>', 0)])
-            ->withSum(['salaries as absolute_paid' => fn($query) => $query
-                    ->where('resource', SalaryResourceType::REFERRAL)
-                ]
-                , 'award')
-            ->withSum(['salaries as month_paid' => fn($query) => $query
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)
-                ]
-                , 'award')
+            ->withSum('referralSalaries as absolute_paid', 'amount')
+            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
+                ->where('date', '>=', $this->date())
+            ], 'amount')
             ->get();
     }
 

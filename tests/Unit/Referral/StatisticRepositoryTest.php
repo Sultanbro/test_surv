@@ -3,9 +3,10 @@
 namespace Tests\Unit\Referral;
 
 use App\Models\Bitrix\Lead;
+use App\Models\Referral\ReferralSalary;
 use App\Repositories\Referral\StatisticRepository;
-use App\Salary;
 use App\Service\Referral\Core\LeadTemplate;
+use App\Service\Referral\Core\PaidType;
 use App\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +26,9 @@ class StatisticRepositoryTest extends TenantTestCase
         DB::beginTransaction();
         $this->seedData();
         User::factory()->create();
-        $repo = new StatisticRepository;
-        $result = $repo->getStatistic([]);
+        $repo = app(StatisticRepository::class);
+        $result = $repo->statistic([]);
+        dd($result);
         $this->assertArrayHasKey('pivot', $result, 'method returns the pivot statistic');
         $this->assertArrayHasKey('referrers', $result, 'method returns the referrers statistic');
         DB::rollBack();
@@ -50,6 +52,7 @@ class StatisticRepositoryTest extends TenantTestCase
                 'applied' => $date,
                 'is_trainee' => 0,
             ]);
+
             Lead::factory()->create([
                 'referrer_id' => $referrer->getKey(),
                 'user_id' => $referral->getKey(),
@@ -57,13 +60,32 @@ class StatisticRepositoryTest extends TenantTestCase
                 'deal_id' => 56565,
             ]);
 
-            Salary::factory()->create([
+            ReferralSalary::factory()->create([
                 'is_paid' => $key % 2 === 0,
-                'award' => 5000,
-                'comment_award' => $referral->getKey(),
-                'user_id' => $referrer->getKey(),
-                'date' => now()->format("Y-m-d"),
+                'amount' => 5000,
+                'referral_id' => $referral->getKey(),
+                'referrer_id' => $referrer->getKey(),
+                'date' => $date,
             ]);
+
+            if ($referral->description()->first()->is_trainne !== 0) {
+                for ($day = 1; $day <= 6; $day++) {
+                    $date = now()->subDays($day);
+                    $referral->timetracking()->create([
+                        'enter' => $date->subHours(8)->format("Y-m-d"),
+                        'exit' => $date->format("Y-m-d"),
+                        'total_hours' => 8,
+                    ]);
+                    ReferralSalary::factory()->create([
+                        'referrer_id' => $referrer->getKey(),
+                        'referral_id' => $referral->getKey(),
+                        'amount' => 5000,
+                        'date' => $date->format('Y-m-d'),
+                        'type' => PaidType::WORK->name,
+                        'is_paid' => $day % 2 === 0,
+                    ]);
+                }
+            }
         }
     }
 }

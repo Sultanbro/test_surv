@@ -630,8 +630,8 @@ class TimetrackingController extends Controller
 
         UserDescription::query()->firstOrCreate([
             'user_id' => $request->get('user_id'),
-            'is_trainee' => 0,
         ], [
+            'is_trainee' => 0,
             'applied' => now(),
         ]);
 
@@ -660,7 +660,8 @@ class TimetrackingController extends Controller
         }
 
         //////////////////////// Set old notification read
-        $absent_notifications = UserNotification::where('about_id', $request->user_id)
+        UserNotification::query()
+            ->where('about_id', $request->user_id)
             ->where(function ($query) {
                 $query->where('title', 'Пропал с обучения')
                     ->orWhere('title', 'Пропал с обучения: 1 день')
@@ -1788,7 +1789,7 @@ class TimetrackingController extends Controller
                     ]);
                 }
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-                Referring::deleteReferrerDailySalary($targetUser->id, $date->format("Y-m-d"));
+                Referring::deleteReferrerDailySalary($targetUser->id, $date);
             }
 
 

@@ -3,81 +3,136 @@
 namespace App\Repositories\Referral;
 
 use App\DayType;
-use App\Enums\SalaryResourceType;
 use App\Models\Bitrix\Lead;
-use App\Salary;
+use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
+use App\Service\Referral\Core\PaidType;
+use App\Service\Referral\SalaryFilter;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class StatisticRepository implements StatisticRepositoryInterface
 {
     protected array $filter = [];
 
-    public function getStatistic(array $filter): array
+    public function __construct(
+        private readonly SalaryFilter $salaryFilter
+    )
+    {
+    }
+
+    public function statistic(array $filter): array
     {
         $this->filter = $filter;
         return [
-            'pivot' => $this->getPivot(),
-            'referrers' => $this->getReferrersStatistics()
+            'pivot' => $this->pivot(),
+            'referrers' => $this->forEach()
         ];
     }
 
-    protected function getPivot(): array
+    protected function pivot(): array
     {
         $accepted = User::query()
             ->whereRelation('description', 'is_trainee', 0)
-            ->whereRelation('description', 'applied', '>=', $this->date())
             ->whereNotNull('referrer_id')
             ->count();
 
         $leads = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->count();
+
         $deals = Lead::query()
             ->where('segment', LeadTemplate::SEGMENT_ID)
             ->where('deal_id', '>', 0)
             ->count();
-        $piedTotalForMonth = Salary::query()
-            ->where('date', '>=', $this->date())
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->where('is_paid', 1) // this means that salary was accepted!
-            ->sum('award');
 
-        $earnedTotalForMonth = Salary::query()
+        $piedTotalForMonth = ReferralSalary::query()
             ->where('date', '>=', $this->date())
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->sum('award');
+            ->where('is_paid', 1) // this means that salary was accepted!
+            ->sum('amount');
+
+        $earnedTotalForMonth = ReferralSalary::query()
+            ->where('date', '>=', $this->date())
+            ->sum('amount');
 
         return [
             'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
-            'deal_lead_conversion' => $leads ? ($deals / $leads) * 100 : 0,
-            'applied_deal_conversion' => $deals ? ($accepted / $deals) * 100 : 0,
+            'deal_lead_conversion' => $this->getRatio($deals, $leads),
+            'applied_deal_conversion' => $this->getRatio($accepted, $deals),
             'earned' => $earnedTotalForMonth,
             'paid' => $piedTotalForMonth,
         ];
     }
 
-    protected function getReferrersStatistics(): array
+    protected function forEach(): array
     {
         $userList = is_array($this->usersList()) ? collect($this->usersList()) : $this->usersList();
         return $userList
             ->map(function (User $user) {
-                $employees = $user->referrals()
-                    ->whereRelation('description', 'is_trainee', 0)
-                    ->whereRelation('description', 'applied', '!=', 0)
-                    ->get();
-                $user->users = $this->schedule($user);
+                $applieds = $this->getAppliedReferrals($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
-                $user->applieds = count($employees);
-                $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
+                $user->appiled_deal_conversion_ratio = $this->getRatio($applieds->count(), $user->deals);
+                $user->applieds = $applieds->count();
                 $user->referrers_earned = $this->getUserReferrersEarned($user, $this->date());
+                $user->users = $this->schedule($user);
                 return $user;
             })
             ->toArray();
+    }
+
+    protected function usersList(): Collection|array
+    {
+        return User::query()
+            ->WhereHas('referralLeads')
+            ->with('referrals')
+            ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)
+                ->where('deal_id', '>', 0)])
+            ->withCount(['referralLeads as leads' => fn(Builder $query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->withSum(['referralSalaries as absolute_paid' => fn(Builder $query) => $query
+                    ->where('is_paid', 1)]
+                , 'amount')
+            ->withSum(['referralSalaries as absolute_earned' => fn(Builder $query) => $query]
+                , 'amount')
+            ->withSum(['referralSalaries as month_earned' => fn(Builder $query) => $query
+                    ->where('date', '>=', $this->date())]
+                , 'amount')
+            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
+                    ->where('is_paid', 1)
+                    ->where('date', '>=', $this->date())]
+                , 'amount')
+            ->orderBy('leads', 'desc')
+            ->get();
+    }
+
+    private function schedule(User $referrer)
+    {
+        $date = Carbon::parse($this->date());
+        return $referrer->referrals()
+            ->get()
+            ->map(function (User $referral) use ($date, $referrer) {
+
+                $days = $this->getReferralDayTypes($referral, $date);
+
+                $salaries = $this->getReferralSalaries($referrer, $referral);
+
+                $this->salaryFilter->forThisCollection($salaries);
+
+                $training = $this->salaryFilter->filter(PaidType::TRAINEE);
+                $working = $this->salaryFilter->filter(PaidType::WORK);
+                $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
+                $referral->datetypes = array_merge(
+                    $this->traineesDaily($date, $days, $training),
+                    $this->attestation($attestation),
+                    $this->employeeWeekly($referral, $date, $working)
+                );
+
+                return $referral;
+            });
     }
 
     protected function date(): string
@@ -87,17 +142,15 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function getUserEarned(User $user, ?string $date = null): float
     {
-        return $user->salaries()
+        return $user->referralSalaries()
             ->when($date, fn($query) => $query->where('date', '>=', $date))
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->sum('award');
+            ->sum('amount');
     }
-
 
     protected function getRatio($convertible, $to): float
     {
         if ($to) {
-            return ceil(($convertible / $to) * 100);
+            return ceil((100 * $convertible) / $to);
         }
         return 0;
     }
@@ -114,172 +167,162 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $total;
     }
 
-    protected function usersList(): Collection|array
+    private function getReferralSalaries(User $referrer, User $referral): Collection
     {
-        return User::query()
-            ->WhereHas('referralLeads')
-            ->withCount('referralLeads as leads')
-            ->with('referrals')
-            ->withCount(['referralLeads as deals' => fn($query) => $query
-                ->where('deal_id', '>', 0)])
-            ->withSum(['salaries as absolute_paid' => fn($query) => $query
-                    ->where('is_paid', 1)
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as absolute_earned' => fn($query) => $query
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as month_earned' => fn($query) => $query
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->withSum(['salaries as month_paid' => fn($query) => $query
-                    ->where('is_paid', 1)
-                    ->where('date', '>=', $this->date())
-                    ->where('resource', SalaryResourceType::REFERRAL)]
-                , 'award')
-            ->orderBy('leads', 'desc')
+        return $referrer->referralSalaries()
+            ->where('referral_id', $referral->getKey())
             ->get();
     }
 
-    private function schedule(User $referrer)
-    {
-        $date = Carbon::parse($this->date());
-        return $referrer->referrals()
-            ->get()
-            ->map(function (User $user) use ($date, $referrer) {
-                $days = DayType::query()
-                    ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                    ->where('user_id', $user->getKey())
-                    ->whereMonth('date', '=', $date->month)
-                    ->whereYear('date', $date->year)
-                    ->get();
-
-                $salaries = $this->getSalariesForReferral($referrer, $user);
-
-                $forTrainee = $this->filterTraineeSalaries($salaries);
-
-                $forWork = $this->filterEmployeesSalaries($salaries, $user);
-
-                $appliedSalary = $this->filterCertificateSalary($salaries, $user);
-
-                $schedule = array_merge(
-                    $this->traineesDaily($date, $days, $forTrainee),
-                    $this->employeeWeekly($user, $date, $forWork, $appliedSalary)
-                );
-
-                $user->datetypes = $schedule;
-                return $user;
-            });
-    }
-
-    private function getSalariesForReferral(User $referrer, User $referral): Collection
-    {
-        return $referrer->salaries()
-            ->where('comment_award', $referral->getKey())
-            ->where('resource', SalaryResourceType::REFERRAL)
-            ->get();
-    }
-
-    private function filterTraineeSalaries(Collection $salaries): array
-    {
-        return $salaries->where('award', '<', 5000)->toArray();
-    }
-
-    private function filterEmployeesSalaries(Collection $salaries, User $user): array
-    {
-        return $salaries
-            ->where('date', '!=', Carbon::parse($user->description()?->first()?->applied)->format("Y-m-d"))
-            ->where('award', '>=', 5000)->toArray();
-    }
-
-    private function filterCertificateSalary($salaries, User $user)
-    {
-        $appliedAt = Carbon::parse($user->description()?->first()?->applied);
-        return $salaries
-            ->filter(fn(Salary $salary) => $salary->date->format("Y-m-d") === $appliedAt->format("Y-m-d"))
-            ->first()?->toArray();
-    }
-
-    private function traineesDaily($date, $days, $forTrainee): array
+    private function traineesDaily(Carbon $date, Collection $days, $training): array
     {
         $types = [];
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
-            $day = $days
-                ->where('day', $i)
-                ->first();
-            if (is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE']) {
+            $day = $this->getDay($days, $i);
+            if ($this->isAbsence($day)) {
                 $types[$i] = null;
-            } elseif (in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])) {
-                $salary = [];
-                foreach ($forTrainee as $item) {
-                    if (Carbon::parse($item['date'])->format("Y-m-d") == $day->date->format("Y-m-d")) {
-                        $salary = $item;
-                    }
-                }
-                if (count($salary)) {
-                    $types[$i] = [
-                        'paid' => (bool)($salary['is_paid']) ?? false,
-                        'sum' => $salary['award'] ?? 0,
-                        'comment' => $salary['note'] ?? null,
-                        'id' => $salary['id'] ?? null,
-                    ];
-                }
+            } elseif ($this->isTrainee($day)) {
+                $types[$i] = $this->countTrainingDays($training, $day);
             }
         }
         return $types;
     }
 
-    private function employeeWeekly(User $user, $date, $forWork, $appliedSalary): array
+    private function attestation($attestation): ?array
     {
-        $toCheck = [1, 2, 3, 4, 6, 8, 12];
-        $types['pass_certification'] = null;
+        $appliedSalary = $attestation->toArray();
 
-        foreach ([1, 2, 3, 4, 6, 8, 12] as $week) {
-            $types[$week . '_week'] = null;
+        if (!count($appliedSalary)) {
+            return null;
         }
+        $appliedSalary = $appliedSalary[0];
 
-        if ($user->description()->first()?->is_trainee == 0) {
-            if ($appliedSalary) {
-                $types['pass_certification'] = [
-                    'paid' => (bool)($appliedSalary['is_paid'] ?? null),
-                    'sum' => $appliedSalary['award'] ?? null,
-                    'comment' => $appliedSalary['note'] ?? null,
-                    'id' => $appliedSalary['id'],
-                ];
-            }
+        $types['pass_certification'] = $this->parseSalary($appliedSalary);
 
-            $timetracking = Timetracking::query()
-                ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-                ->where('user_id', $user->getKey())
-                ->whereMonth('enter', '=', $date->month)
-                ->whereYear('enter', $date->year)
-                ->orderBy('id', 'ASC')
-                ->get();
+        return $types;
+    }
 
-            foreach ($timetracking as $timer) {
-                for ($i = 1; $i <= $timetracking->count() / 6; $i++) {
-                    if ($i > 12) {
-                        break;
-                    }
-                    if (in_array($i, $toCheck)) {
-                        $current = [];
-                        foreach ($forWork as $item) {
-                            if (Carbon::parse($item['date'])->format("Y-m-d") == $timer->exit->format("Y-m-d")) {
-                                $current = $item;
-                            }
+    private function employeeWeekly(User $referral, Carbon $date, Collection $working): array
+    {
+        $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
+        $weekTemplate = $this->createWeeksTemplate($weeksToTrack);
+        $timeTracking = $this->getReferralTimeTracking($referral, $date);
+
+        foreach ($timeTracking as $tracker) {
+            for ($week = 1; $week <= $weeksToTrack; $week++) {
+                // If the week is beyond 12, exit the loop
+                if ($week > 12) {
+                    break;
+                }
+
+                // Check if the current week is in the weeks to track
+                if (in_array($week, $weeksToTrack)) {
+                    $current = [];
+
+                    // Find the working item with the same date as the exit date
+                    foreach ($working as $item) {
+                        if ($this->isSameDate(Carbon::parse($item['date']), $tracker->exit)) {
+                            $current = $item->toArray();
+                            break; // Exit the loop once found
                         }
-                        $types[$i . '_week'] = [
-                            'paid' => (bool)($current['is_paid'] ?? null),
-                            'sum' => $current['award'] ?? null,
-                            'comment' => $current['note'] ?? null,
-                            'date' => Carbon::parse($current['date'])->format("Y-m-d"),
-                            'id' => $current['id'],
-                        ];
                     }
+
+                    // Store the parsed salary in the result array
+                    $weekTemplate[$week . '_week'] = $this->parseSalary($current);
                 }
             }
         }
+
+        return $weekTemplate;
+    }
+
+    private function getReferralTimeTracking(User $referral, Carbon $date): Collection
+    {
+        return Timetracking::query()
+            ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+            ->where('user_id', $referral->getKey())
+            ->whereMonth('enter', '=', $date->month)
+            ->whereYear('enter', $date->year)
+            ->orderBy('id', 'ASC')
+            ->get();
+    }
+
+    private function getAppliedReferrals(User $user): Collection
+    {
+        return $user->referrals()
+            ->whereRelation('description', 'is_trainee', 0)
+            ->get();
+    }
+
+    private function getReferralDayTypes(User $referral, Carbon $date): Collection
+    {
+        return DayType::query()
+            ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+            ->where('user_id', $referral->getKey())
+            ->whereMonth('date', '=', $date->month)
+            ->whereYear('date', $date->year)
+            ->get();
+    }
+
+    private function isAbsence(?DayType $day): bool
+    {
+        return is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE'];
+    }
+
+    private function isTrainee(?DayType $day): bool
+    {
+        if (!$day) {
+            return false;
+        }
+        return in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
+    }
+
+    private function getDay(Collection $days, int $day): ?DayType
+    {
+        /** @var DayType $day */
+        return $days
+            ->where('day', $day)
+            ->first();
+    }
+
+    private function countTrainingDays($training, DayType $day): ?array
+    {
+        $salary = [];
+        foreach ($training as $item) {
+            if ($this->isSameDate(Carbon::parse($item['date']), $day->date)) {
+                $salary = $item;
+            }
+        }
+
+        if (!count($salary)) {
+            return null;
+        }
+
+        return $this->parseSalary($salary);
+    }
+
+    private function isSameDate(Carbon $first, Carbon $second): bool
+    {
+        return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
+    }
+
+    private function createWeeksTemplate(array $weeks): array
+    {
+        $types = [];
+
+        foreach ($weeks as $week) {
+            $types[$week . '_week'] = null;
+        }
         return $types;
+    }
+
+    private function parseSalary(?array $current): array
+    {
+        return [
+            'paid' => (bool)($current['is_paid'] ?? null),
+            'sum' => $current['amount'] ?? null,
+            'comment' => $current['comment'] ?? null,
+            'id' => $current['id'] ?? null,
+        ];
     }
 }

@@ -4,7 +4,6 @@ namespace App;
 
 use App\Api\BitrixOld as Bitrix;
 use App\Classes\Helpers\Phone;
-use App\Enums\SalaryResourceType;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
@@ -14,6 +13,7 @@ use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Permission;
+use App\Models\Referral\ReferralSalary;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
@@ -26,7 +26,6 @@ use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use App\Service\Referral\Core\ReferrerInterface;
-use App\Service\Referral\Core\ReferrerStatus;
 use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
 use Exception;
@@ -94,6 +93,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $welcome_message
  * @property Collection<Service\Salary\> $salaries
  * @property Collection<Service\Salary\> $referralBonuses
+ * @property Zarplata $zarplata
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable, ReferrerInterface
@@ -796,8 +796,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             UserRestored::query()->create([
                 "user_id" => $user->id,
                 "destroyed_at" => $fireDate,
-                "cause" => $ud->fire_cause
-
+                "cause" => $ud->fire_cause ?? 'не понятно!'
             ]);
             return back()->withSuccess('Успешно удален');
         } else {
@@ -957,10 +956,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->hasMany(Salary::class, 'user_id');
     }
 
-    public function referralBonuses(): HasMany
+    public function referralSalaries(): HasMany
     {
-        return $this->hasMany(Salary::class, 'user_id')
-            ->where('resource', SalaryResourceType::REFERRAL);
+        return $this->hasMany(
+            ReferralSalary::class,
+            'referrer_id',
+            'id',
+        );
     }
 
     public function profileContacts()
@@ -1731,6 +1733,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function restoredData(): HasMany
     {
-        return $this->hasMany(UserRestored::class, 'user_id')->whereNotNull('restored_at');
+        return $this->hasMany(UserRestored::class, 'user_id');
     }
 }
