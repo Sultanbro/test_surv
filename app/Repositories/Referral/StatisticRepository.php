@@ -3,7 +3,6 @@
 namespace App\Repositories\Referral;
 
 use App\DayType;
-use App\Models\Bitrix\Lead;
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
@@ -35,18 +34,33 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function pivot(): array
     {
+        $leads = [];
+        $deal_lead_conversion = 0;
+        $applied_deal_conversion = 0;
+        $count = 1;
+
+        foreach ($this->forEach() as $key => $referer) {
+            $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
+            if ($referer['deal_lead_conversion_ratio'] > 0) {
+                $count += $key;
+            }
+        }
+
+        $deal_lead_conversion = $deal_lead_conversion / 100 * $count;
+        $count = 1;
+
+        foreach ($this->forEach() as $key => $referer) {
+            $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
+            if ($referer['appiled_deal_conversion_ratio'] > 0) {
+                $count += $key;
+            }
+        }
+
+        $applied_deal_conversion = $applied_deal_conversion / 100 * $count;
+
         $accepted = User::query()
             ->whereRelation('description', 'is_trainee', 0)
             ->whereNotNull('referrer_id')
-            ->count();
-
-        $leads = Lead::query()
-            ->where('segment', LeadTemplate::SEGMENT_ID)
-            ->count();
-
-        $deals = Lead::query()
-            ->where('segment', LeadTemplate::SEGMENT_ID)
-            ->where('deal_id', '>', 0)
             ->count();
 
         $piedTotalForMonth = ReferralSalary::query()
@@ -60,8 +74,8 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         return [
             'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
-            'deal_lead_conversion' => $this->getRatio($deals, $leads),
-            'applied_deal_conversion' => $this->getRatio($accepted, $deals),
+            'deal_lead_conversion' => $deal_lead_conversion,
+            'applied_deal_conversion' => $applied_deal_conversion,
             'earned' => $earnedTotalForMonth,
             'paid' => $piedTotalForMonth,
         ];
@@ -171,6 +185,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $referrer->referralSalaries()
             ->where('referral_id', $referral->getKey())
+            ->where('referrer_id', $referrer->getKey())
             ->get();
     }
 
@@ -188,18 +203,17 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $types;
     }
 
-    private function attestation($attestation): ?array
+    private function attestation($attestation): array
     {
-        $appliedSalary = $attestation->toArray();
+        $appliedSalary = current($attestation->toArray());
 
-        if (!count($appliedSalary)) {
-            return null;
+        if (!$appliedSalary) {
+            return [];
         }
-        $appliedSalary = $appliedSalary[0];
 
-        $types['pass_certification'] = $this->parseSalary($appliedSalary);
-
-        return $types;
+        return [
+            'pass_certification' => $this->parseSalary($appliedSalary)
+        ];
     }
 
     private function employeeWeekly(User $referral, Carbon $date, Collection $working): array
@@ -290,7 +304,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         $salary = [];
         foreach ($training as $item) {
             if ($this->isSameDate(Carbon::parse($item['date']), $day->date)) {
-                $salary = $item;
+                $salary = $item->toArray();
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Referral;
 
+use App\DayType;
 use App\Models\Bitrix\Lead;
 use App\Models\Referral\ReferralSalary;
 use App\Repositories\Referral\StatisticRepository;
@@ -48,27 +49,25 @@ class StatisticRepositoryTest extends TenantTestCase
         ]);
 
         foreach ($referrals as $key => $referral) {
-            $referral->description()->create([
-                'applied' => $date,
-                'is_trainee' => 0,
+            $desc = $referral->description()->create([
+                'is_trainee' => $key % 2 !== 0,
             ]);
-
-            Lead::factory()->create([
-                'referrer_id' => $referrer->getKey(),
-                'user_id' => $referral->getKey(),
-                'segment' => LeadTemplate::SEGMENT_ID,
-                'deal_id' => 56565,
-            ]);
-
-            ReferralSalary::factory()->create([
-                'is_paid' => $key % 2 === 0,
-                'amount' => 5000,
-                'referral_id' => $referral->getKey(),
-                'referrer_id' => $referrer->getKey(),
-                'date' => $date,
-            ]);
-
-            if ($referral->description()->first()->is_trainne !== 0) {
+            if ($desc->is_trainee) {
+                ReferralSalary::factory()->create([
+                    'is_paid' => $key % 2 === 0,
+                    'amount' => 1000,
+                    'referral_id' => $referral->getKey(),
+                    'referrer_id' => $referrer->getKey(),
+                    'type' => PaidType::TRAINEE->name,
+                    'date' => $date,
+                ]);
+                $referral->daytypes()->create([
+                    'admin_id' => $referrer->getKey(),
+                    'date' => $date,
+                    'type' => DayType::DAY_TYPES['TRAINEE'],
+                    'email' => 'test@gmail.com',
+                ]);
+            } else {
                 for ($day = 1; $day <= 6; $day++) {
                     $date = now()->subDays($day);
                     $referral->timetracking()->create([
@@ -84,8 +83,33 @@ class StatisticRepositoryTest extends TenantTestCase
                         'type' => PaidType::WORK->name,
                         'is_paid' => $day % 2 === 0,
                     ]);
+                    if ($day === 6) {
+                        ReferralSalary::factory()->create([
+                            'is_paid' => $key % 2 === 0,
+                            'amount' => 10000,
+                            'referral_id' => $referral->getKey(),
+                            'referrer_id' => $referrer->getKey(),
+                            'type' => PaidType::FIRST_WORK->name,
+                            'date' => $date,
+                        ]);
+                        ReferralSalary::factory()->create([
+                            'is_paid' => $key % 2 === 0,
+                            'amount' => 5000,
+                            'referral_id' => $referral->getKey(),
+                            'referrer_id' => $referrer->getKey(),
+                            'type' => PaidType::ATTESTATION->name,
+                            'date' => $date,
+                        ]);
+                    }
                 }
             }
+
+            Lead::factory()->create([
+                'referrer_id' => $referrer->getKey(),
+                'user_id' => $referral->getKey(),
+                'segment' => LeadTemplate::SEGMENT_ID,
+                'deal_id' => 56565,
+            ]);
         }
     }
 }
