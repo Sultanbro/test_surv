@@ -71,7 +71,11 @@ export default {
 						format: 'jpg',
 					})
 				}).catch(this.onError)
+				return
 			}
+
+			console.error(img, canvas)
+			return this.onError()
 		},
 		async onSuccess({path}){
 			const data = new FormData()
@@ -99,23 +103,6 @@ export default {
 	<DefaultLayout>
 		<div class="old__content">
 			<div class="FixAwardView">
-				<div
-					v-if="editedAward"
-					ref="preview"
-				>
-					<vue-pdf-embed
-						v-if="editedAward.format === 'pdf'"
-						:source="editedAward.tmpPath"
-						@rendered="createPreviews"
-					/>
-					<template v-else>
-						<img
-							:src="editedAward.tmpPath"
-							alt=""
-							@load="createPreviews"
-						>
-					</template>
-				</div>
 				<h2>Награды</h2>
 				<div
 					v-for="cat in categories"
@@ -197,6 +184,23 @@ export default {
 								</div>
 							</div>
 						</template>
+					</template>
+				</div>
+				<div
+					v-if="editedAward"
+					ref="preview"
+				>
+					<vue-pdf-embed
+						v-if="editedAward.format === 'pdf'"
+						:source="editedAward.tmpPath"
+						@rendered="createPreviews"
+					/>
+					<template v-else>
+						<img
+							:src="editedAward.tmpPath"
+							alt=""
+							@load="createPreviews"
+						>
 					</template>
 				</div>
 			</div>

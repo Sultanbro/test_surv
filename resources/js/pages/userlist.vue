@@ -80,7 +80,7 @@
 				show-empty
 				stacked="md"
 				:items="filtered"
-				:fields="fields"
+				:fields="fields2"
 				:current-page="currentPage"
 				:per-page="perPage"
 				:filter="filter"
@@ -167,6 +167,9 @@
 					<div v-if="tableFilter != 'active'">
 						{{ data.value }}
 					</div>
+				</template>
+				<template #cell(restored_at)="data">
+					{{ data.value }}
 				</template>
 			</b-table>
 		</div>
@@ -715,7 +718,8 @@ export default {
 				id: 'info-modal',
 				title: '',
 				content: ''
-			}
+			},
+			isRestored: false,
 		}
 	},
 	computed: {
@@ -784,6 +788,15 @@ export default {
 		isBP(){
 			return ['test', 'bp'].includes(location.hostname.split('.')[0])
 		},
+		fields2(){
+			return this.isRestored ? [
+				...this.fields,
+				{
+					key: 'restored_at',
+					label: 'Восстановлен'
+				}
+			] : this.fields
+		}
 	},
 	watch: {
 		showFields: {
@@ -875,10 +888,19 @@ export default {
 				filter.end_date_reapplied = this.filter.end_date_reapplied
 			}
 
+			this.isRestored = this.active.date_reapplied && this.tableFilter != 'trainees'
+
 			this.axios.post('/timetracking/get-persons', filter).then(response => {
-				this.items = response.data.users
+				const users = []
+				response.data.users.slice().reverse().forEach(user => {
+					const exists = users.find(u => u.id === user.id)
+					if(!exists) {
+						users.push(user)
+					}
+				})
+				this.items = users.reverse()
 				this.groups = response.data.groups
-				this.segments = response.data.segments
+				this.segments = response.data.segmentsё
 
 				this.can_login_users = response.data.can_login_users
 				this.auth_token = response.data.auth_token
