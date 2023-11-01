@@ -95,6 +95,20 @@ class AwardController extends Controller
         return  $award->update($parameters);
     }
 
+    public function addPreviewSecond(Request $request,CertificateAwardService $service)
+    {
+        $award = \DB::table('award_user')
+            ->where('user_id',$request->user_id)
+            ->where('award_id',$request->award_id)
+            ->whereNotNull('path');
+        if ($request->has('preview')) {
+            $preview = $service->saveAwardPreview($request);
+            $parameters['preview_format'] = $preview['format'];
+            $parameters['preview_path'] = $preview['relative'];
+        }
+        return $award->update($parameters);
+    }
+
     /**
      * @throws Exception
      */
