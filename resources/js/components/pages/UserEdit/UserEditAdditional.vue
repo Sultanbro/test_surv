@@ -55,6 +55,30 @@ export default {
 					<col class="UserEditAdditional-values">
 				</colgroup>
 				<tbody>
+					<tr v-if="user && user.lead && (user.lead.lead_id || user.lead.deal_id)">
+						<td
+							v-if="user.lead.lead_id"
+							:colspan="user.lead.deal_id ? 2 : 1"
+						>
+							<a
+								:href="`https://infinitys.bitrix24.kz/crm/lead/details/${user.lead.lead_id}/?any=details%2F${user.lead.lead_id}%2F`"
+								target="_blank"
+							>
+								Лид
+							</a>
+						</td>
+						<td
+							v-if="user.lead.deal_id"
+							:colspan="user.lead.lead_id ? 2 : 1"
+						>
+							<a
+								:href="`https://infinitys.bitrix24.kz/crm/deal/details/${user.lead.deal_id}/?any=details%2F${user.lead.deal_id}%2F`"
+								target="_blank"
+							>
+								Сделка
+							</a>
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<span>Дата регистрации</span>
@@ -104,6 +128,30 @@ export default {
 					<col class="UserEditAdditional-values">
 				</colgroup>
 				<tbody>
+					<tr v-if="user && user.lead && (user.lead.lead_id || user.lead.deal_id)">
+						<td
+							v-if="user.lead.lead_id"
+							:colspan="user.lead.deal_id ? 2 : 1"
+						>
+							<a
+								:href="`https://infinitys.bitrix24.kz/crm/lead/details/${user.lead.lead_id}/?any=details%2F${user.lead.lead_id}%2F`"
+								target="_blank"
+							>
+								Лид
+							</a>
+						</td>
+						<td
+							v-if="user.lead.deal_id"
+							:colspan="user.lead.lead_id ? 2 : 1"
+						>
+							<a
+								:href="`https://infinitys.bitrix24.kz/crm/deal/details/${user.lead.deal_id}/?any=details%2F${user.lead.deal_id}%2F`"
+								target="_blank"
+							>
+								Сделка
+							</a>
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<span>Дата регистрации</span>
