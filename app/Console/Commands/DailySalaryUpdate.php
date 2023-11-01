@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\User;
-use Carbon\Carbon;
+use App\Service\Salary\UpdateSalaryInterface;
 use Illuminate\Console\Command;
 
 class DailySalaryUpdate extends Command
@@ -15,6 +14,13 @@ class DailySalaryUpdate extends Command
      */
     protected $signature = 'salary:update {date?}';  //php artisan salary:update  2022-04-12
 
+    public function __construct(
+        private readonly UpdateSalaryInterface $updateSalary
+    )
+    {
+        parent::__construct();
+    }
+
     /**
      * The console command description.
      *
@@ -24,50 +30,6 @@ class DailySalaryUpdate extends Command
 
     public function handle(): void
     {
-        $endDate = Carbon::parse($this->argument('date')) ?? now();
-        $startDate = $endDate->subDays(10);
-
-        // Get all users within the date range using whereBetween
-        $users = User::query()
-            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
-            ->with(['salaries' => fn($query) => $query->whereBetween('date', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")])])
-            ->with('zarplata')
-            ->where(fn($query) => $query
-                ->whereNull('deleted_at')
-                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")]))
-            )
-            ->get();
-
-        while ($startDate <= $endDate) {
-            $date = $startDate->format("Y-m-d");
-
-            foreach ($users as $key => $user) {
-
-                // Find the salary for the user
-                $salary = $user->salaries->where('date', $date)->first();
-
-                // Find the zarplata for the user
-                $zarplata = $user->zarplata;
-
-                $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
-
-                if ($salary) {
-                    $this->line($key . '+ Начисление не изменено');
-                } else {
-                    $user->salaries()->create([
-                        'date' => $date,
-                        'note' => '',
-                        'paid' => 0,
-                        'bonus' => 0,
-                        'comment_paid' => '',
-                        'comment_bonus' => '',
-                        'comment_award' => '',
-                        'amount' => $salary_amount,
-                    ]);
-                    $this->line($key . '- Начисление обновлено за дату ' . $date);
-                }
-            }
-            $startDate->addDay();
-        }
+        $this->updateSalary->touch();
     }
 }

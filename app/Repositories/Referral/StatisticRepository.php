@@ -33,7 +33,6 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function pivot(): array
     {
-        $leads = [];
         $deal_lead_conversion = 0;
         $applied_deal_conversion = 0;
         $count = 1;

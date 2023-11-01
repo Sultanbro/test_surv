@@ -628,7 +628,7 @@ class TimetrackingController extends Controller
     public function applyPerson(Request $request)
     {
 
-        UserDescription::query()->firstOrCreate([
+        UserDescription::query()->updateOrCreate([
             'user_id' => $request->get('user_id'),
         ], [
             'is_trainee' => 0,
