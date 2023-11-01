@@ -39,22 +39,22 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         foreach ($this->forEach() as $key => $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
-            if ($referer['deal_lead_conversion_ratio'] > 0) {
+            if ($referer['leads'] > 0) {
                 $count += $key;
             }
         }
 
-        $deal_lead_conversion = $deal_lead_conversion / 100 * $count;
+        $deal_lead_conversion = $deal_lead_conversion / $count;
         $count = 1;
 
         foreach ($this->forEach() as $key => $referer) {
             $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
-            if ($referer['appiled_deal_conversion_ratio'] > 0) {
+            if ($referer['deals'] > 0) {
                 $count += $key;
             }
         }
 
-        $applied_deal_conversion = $applied_deal_conversion / 100 * $count;
+        $applied_deal_conversion = $applied_deal_conversion / $count;
 
         $accepted = User::query()
             ->whereRelation('description', 'is_trainee', 0)
@@ -62,12 +62,12 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->count();
 
         $piedTotalForMonth = ReferralSalary::query()
-            ->where('date', '>=', $this->date())
+            ->whereDate('date', '>=', $this->date())
             ->where('is_paid', 1) // this means that salary was accepted!
             ->sum('amount');
 
         $earnedTotalForMonth = ReferralSalary::query()
-            ->where('date', '>=', $this->date())
+            ->whereDate('date', '>=', $this->date())
             ->sum('amount');
 
         return [
@@ -111,11 +111,11 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->withSum(['referralSalaries as absolute_earned' => fn($query) => $query]
                 , 'amount')
             ->withSum(['referralSalaries as month_earned' => fn($query) => $query
-                    ->where('date', '>=', $this->date())]
+                    ->whereDate('date', '>=', $this->date())]
                 , 'amount')
             ->withSum(['referralSalaries as month_paid' => fn($query) => $query
                     ->where('is_paid', 1)
-                    ->where('date', '>=', $this->date())]
+                    ->whereDate('date', '>=', $this->date())]
                 , 'amount')
             ->orderBy('leads', 'desc')
             ->get();
@@ -123,12 +123,11 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     private function schedule(User $referrer)
     {
-        $date = Carbon::parse($this->date());
         return $referrer->referrals()
             ->get()
-            ->map(function (User $referral) use ($date, $referrer) {
+            ->map(function (User $referral) use ($referrer) {
 
-                $days = $this->getReferralDayTypes($referral, $date);
+                $days = $this->getReferralDayTypes($referral);
 
                 $salaries = $this->getReferralSalaries($referrer, $referral);
 
@@ -138,24 +137,29 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $working = $this->salaryFilter->filter(PaidType::WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
                 $referral->datetypes = array_merge(
-                    $this->traineesDaily($date, $days, $training),
+                    $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
-                    $this->employeeWeekly($referral, $date, $working)
+                    $this->employeeWeekly($referral, $working)
                 );
-
+                if ($referral->referrals()->count()) {
+                    return $this->schedule($referral);
+                }
                 return $referral;
             });
     }
 
-    protected function date(): string
+    protected function date(): Carbon
     {
-        return Carbon::parse($this->filter['date'] ?? now()->format("Y-m-d"))->startOfMonth()->format("Y-m-d");
+        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
+        return Carbon::parse($this->filter['date'])
+            ->startOfMonth()
+            ->copy();
     }
 
-    protected function getUserEarned(User $user, ?string $date = null): float
+    protected function getUserEarned(User $user, ?Carbon $date = null): float
     {
         return $user->referralSalaries()
-            ->when($date, fn($query) => $query->where('date', '>=', $date))
+            ->when($date, fn($query) => $query->whereDate('date', '>=', $date))
             ->sum('amount');
     }
 
@@ -167,7 +171,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return 0;
     }
 
-    protected function getUserReferrersEarned(User $user, ?string $date = null): float
+    protected function getUserReferrersEarned(User $user, ?Carbon $date = null): float
     {
         $total = 0;
         $referrers = $user->referrals()
@@ -182,15 +186,16 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function getReferralSalaries(User $referrer, User $referral): Collection
     {
         return $referrer->referralSalaries()
-            ->where('referral_id', $referral->getKey())
-            ->where('referrer_id', $referrer->getKey())
-            ->get();
+            ->where([
+                'referral_id' => $referral->getKey(),
+                'referrer_id'=> $referrer->getKey()
+            ])->get();
     }
 
-    private function traineesDaily(Carbon $date, Collection $days, $training): array
+    private function traineesDaily(Collection $days, $training): array
     {
         $types = [];
-        for ($i = 1; $i <= $date->daysInMonth; $i++) {
+        for ($i = 1; $i <= $this->date()->daysInMonth; $i++) {
             $day = $this->getDay($days, $i);
             if ($this->isAbsence($day)) {
                 $types[$i] = null;
@@ -214,11 +219,11 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    private function employeeWeekly(User $referral, Carbon $date, Collection $working): array
+    private function employeeWeekly(User $referral, Collection $working): array
     {
         $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
-        $weekTemplate = $this->createWeeksTemplate($weeksToTrack);
-        $timeTracking = $this->getReferralTimeTracking($referral, $date);
+        $weekTemplate = $this->createWeekTemplate($weeksToTrack);
+        $timeTracking = $this->getReferralTimeTracking($referral, $this->date());
 
         foreach ($timeTracking as $tracker) {
             for ($week = 1; $week <= $weeksToTrack; $week++) {
@@ -266,13 +271,13 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->get();
     }
 
-    private function getReferralDayTypes(User $referral, Carbon $date): Collection
+    private function getReferralDayTypes(User $referral): Collection
     {
         return DayType::query()
             ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
             ->where('user_id', $referral->getKey())
-            ->whereMonth('date', '=', $date->month)
-            ->whereYear('date', $date->year)
+            ->whereMonth('date', '=', $this->date()->month)
+            ->whereYear('date', $this->date()->year)
             ->get();
     }
 
@@ -318,7 +323,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
     }
 
-    private function createWeeksTemplate(array $weeks): array
+    private function createWeekTemplate(array $weeks): array
     {
         $types = [];
 

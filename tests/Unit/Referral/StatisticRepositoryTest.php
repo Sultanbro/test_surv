@@ -29,7 +29,6 @@ class StatisticRepositoryTest extends TenantTestCase
         User::factory()->create();
         $repo = app(StatisticRepository::class);
         $result = $repo->statistic([]);
-        dd($result);
         $this->assertArrayHasKey('pivot', $result, 'method returns the pivot statistic');
         $this->assertArrayHasKey('referrers', $result, 'method returns the referrers statistic');
         DB::rollBack();
@@ -37,8 +36,7 @@ class StatisticRepositoryTest extends TenantTestCase
 
     private function seedData(): void
     {
-        $date = now()->format("Y-m-d");
-
+        $date = now();
         $referrer = User::factory()->create([
             'referrer_id' => null
         ]);
@@ -59,19 +57,22 @@ class StatisticRepositoryTest extends TenantTestCase
                     'referral_id' => $referral->getKey(),
                     'referrer_id' => $referrer->getKey(),
                     'type' => PaidType::TRAINEE->name,
-                    'date' => $date,
+                    'date' => now()->format("Y-m-d"),
                 ]);
                 $referral->daytypes()->create([
                     'admin_id' => $referrer->getKey(),
-                    'date' => $date,
+                    'date' => now()->format("Y-m-d"),
                     'type' => DayType::DAY_TYPES['TRAINEE'],
                     'email' => 'test@gmail.com',
                 ]);
             } else {
                 for ($day = 1; $day <= 6; $day++) {
-                    $date = now()->subDays($day);
+                    $date = $date->copy()->subDays($day);
+                    $sub = $date->copy()->subDays($day)
+                        ->subHours(8)
+                        ->format("Y-m-d");
                     $referral->timetracking()->create([
-                        'enter' => $date->subHours(8)->format("Y-m-d"),
+                        'enter' => $sub,
                         'exit' => $date->format("Y-m-d"),
                         'total_hours' => 8,
                     ]);
@@ -79,26 +80,26 @@ class StatisticRepositoryTest extends TenantTestCase
                         'referrer_id' => $referrer->getKey(),
                         'referral_id' => $referral->getKey(),
                         'amount' => 5000,
-                        'date' => $date->format('Y-m-d'),
+                        'date' => $date->format("Y-m-d"),
                         'type' => PaidType::WORK->name,
                         'is_paid' => $day % 2 === 0,
                     ]);
                     if ($day === 6) {
                         ReferralSalary::factory()->create([
-                            'is_paid' => $key % 2 === 0,
+                            'is_paid' => true,
                             'amount' => 10000,
                             'referral_id' => $referral->getKey(),
                             'referrer_id' => $referrer->getKey(),
                             'type' => PaidType::FIRST_WORK->name,
-                            'date' => $date,
+                            'date' => $date->format("Y-m-d"),
                         ]);
                         ReferralSalary::factory()->create([
-                            'is_paid' => $key % 2 === 0,
+                            'is_paid' => true,
                             'amount' => 5000,
                             'referral_id' => $referral->getKey(),
                             'referrer_id' => $referrer->getKey(),
                             'type' => PaidType::ATTESTATION->name,
-                            'date' => $date,
+                            'date' => $date->format("Y-m-d"),
                         ]);
                     }
                 }
@@ -110,6 +111,31 @@ class StatisticRepositoryTest extends TenantTestCase
                 'segment' => LeadTemplate::SEGMENT_ID,
                 'deal_id' => 56565,
             ]);
+
+            $subReferral = User::factory()->create([
+                'referrer_id' => $referral->getKey()
+            ]);
+
+            $subReferral->description()->create([
+                'is_trainee' => true
+            ]);
+
+            Lead::factory()->create([
+                'referrer_id' => $referral->getKey(),
+                'user_id' => $subReferral->getKey(),
+                'segment' => LeadTemplate::SEGMENT_ID,
+                'deal_id' => 56565,
+            ]);
+
+            ReferralSalary::factory()->create([
+                'is_paid' => $key % 2 === 0,
+                'amount' => 5000,
+                'referrer_id' => $referral->getKey(),
+                'referral_id' => $subReferral->getKey(),
+                'type' => PaidType::ATTESTATION->name,
+                'date' => now()->format("Y-m-d"),
+            ]);
+
         }
     }
 }
