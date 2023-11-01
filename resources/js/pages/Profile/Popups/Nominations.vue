@@ -58,7 +58,7 @@
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
-											v-if="item.previewPath"
+											v-if="getFileName(item.previewPath)"
 											:src="item.previewPath"
 											alt="certificate image"
 										>
@@ -103,7 +103,7 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.previewPath"
+											v-if="getFileName(item.previewPath)"
 											:src="item.previewPath"
 											alt="certificate image"
 										>
@@ -138,7 +138,7 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.previewPath"
+											v-if="getFileName(item.previewPath)"
 											:src="item.previewPath"
 											alt="certificate image"
 										>
@@ -215,7 +215,7 @@
 										@click="modalShow(item, award.name, true)"
 									>
 										<img
-											v-if="item.previewPath"
+											v-if="getFileName(item.previewPath)"
 											:src="item.previewPath"
 											alt="certificate image"
 										>
@@ -275,7 +275,7 @@
 									>
 										<div class="certificates__item">
 											<img
-												v-if="item.previewPath"
+												v-if="getFileName(item.previewPath)"
 												:src="item.previewPath"
 												alt="certificate image"
 											>
@@ -314,7 +314,7 @@
 										@click="modalShow(item, award.name, false)"
 									>
 										<img
-											v-if="item.previewPath"
+											v-if="getFileName(item.previewPath)"
 											:src="item.previewPath"
 											alt="certificate image"
 										>
@@ -581,6 +581,10 @@ export default {
 				outer.style.zIndex = 1040000
 			})
 		},
+		getFileName(href){
+			const url = new URL(href)
+			return (url.pathname || '').split('/').reverse()[0]
+		}
 	}
 }
 </script>
