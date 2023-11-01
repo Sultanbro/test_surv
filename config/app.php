@@ -129,7 +129,7 @@ return [
     | Encryption Key
     |--------------------------------------------------------------------------
     |
-    | This key is used by the Illuminate encrypter service and should be set
+    | This key is used by the Illuminate encrypted service and should be set
     | to a random, 32 character string, otherwise these encrypted strings
     | will not be safe. Please do this before deploying an application!
     |
@@ -148,7 +148,7 @@ return [
     | the box, Laravel uses the Monolog PHP logging library. This gives
     | you a variety of powerful log handlers / formatters to utilize.
     |
-    | Available Settings: "single", "daily", "syslog", "errorlog"
+    | Available Settings: "single", "daily", "syslog", "error"
     |
     */
 
@@ -163,7 +163,7 @@ return [
     ],
     /*
     |--------------------------------------------------------------------------
-    | Autoloaded Service Providers
+    | Autoloader Service Providers
     |--------------------------------------------------------------------------
     |
     | The service providers listed here will be automatically loaded on the
@@ -220,16 +220,16 @@ return [
         App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
         App\Providers\ObserverServiceProvider::class,
-        \App\Providers\MailingNotificationProvider::class,
+        App\Providers\MailingNotificationProvider::class,
         // Spatie\Permission\PermissionServiceProvider::class,
         RegisterFacadeProvider::class,
 
-        \App\Providers\MailingNotificationProvider::class,
+        App\Providers\MailingNotificationProvider::class,
         // Spatie\Permission\PermissionServiceProvider::class,
         /** @author vahagn99ghukasyan@gmail.com */
         App\Providers\FacadeServiceProvider::class,
         App\Providers\ReferralServicesProvider::class,
-        App\Providers\ModelInterfaceServicesProvider::class,
+        App\Providers\SalaryServicesProvider::class,
     ],
 
     /*
@@ -239,7 +239,7 @@ return [
     |
     | This array of class aliases will be registered when this application
     | is started. However, feel free to register as many as you wish as
-    | the aliases are "lazy" loaded so they don't hinder performance.
+    | the aliases are "lazy" loaded, so they don't hinder performance.
     |
     */
 
@@ -259,7 +259,6 @@ return [
         'Event' => Illuminate\Support\Facades\Event::class,
         'File' => Illuminate\Support\Facades\File::class,
         'Gate' => Illuminate\Support\Facades\Gate::class,
-        'Form' => Intentor\LaravelForm\Facade::class,
         'Hash' => Illuminate\Support\Facades\Hash::class,
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,

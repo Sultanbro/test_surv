@@ -13,27 +13,29 @@ trait ResponseTrait
      * @param string $message
      * @param mixed $data
      * @param int $code
+     * @param bool $status
      * @return JsonResponse
      */
-    public function response(string $message, mixed $data = '', int $code = Response::HTTP_OK, $status = true): JsonResponse
+    public function response(string $message, mixed $data = '', int $code = Response::HTTP_OK, bool $status = true): JsonResponse
     {
         return response()->json([
             'status' => $status,
-            'message'       =>  $message,
-            'data'          =>  $data,
+            'message' => $message,
+            'data' => $data,
         ], $code);
     }
 
     /**
      * @param array $errors
      * @param int $code
+     * @param bool $status
      * @return JsonResponse
      */
-    public function jsonApiErrorResponse(array $errors, int $code = Response::HTTP_BAD_REQUEST, $status = false): JsonResponse
+    public function jsonApiErrorResponse(array $errors, int $code = Response::HTTP_BAD_REQUEST, bool $status = false): JsonResponse
     {
         return response()->json([
             'status' => $status,
-            'errors'    =>  $errors,
+            'errors' => $errors,
         ], $code);
     }
 
