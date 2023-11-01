@@ -47,7 +47,7 @@ export default {
 			loader.hide()
 		},
 		async fix(award){
-			this.editLoader = this.$loader.show()
+			this.editLoader = this.$loading.show()
 			this.editedAward = award
 		},
 		createPreviews(){
