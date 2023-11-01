@@ -45,10 +45,10 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         return User::query()
             ->where('id', $user->getKey())
             ->withCount('referralLeads as leads')
-            ->withCount(['referralLeads as deals' => fn(Builder $query) => $query
+            ->withCount(['referralLeads as deals' => fn($query) => $query
                 ->where('deal_id', '>', 0)])
             ->withSum('referralSalaries as absolute_paid', 'amount')
-            ->withSum(['referralSalaries as month_paid' => fn(Builder $query) => $query
+            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
                 ->where('date', '>=', $this->date())
             ], 'amount')
             ->get();
@@ -62,7 +62,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         }
         $referrals = $user->referrals()
             ->with([
-                'referrals' => fn(Builder $query) => $query->whereHas('referrals')
+                'referrals' => fn($query) => $query->whereHas('referrals')
                     ->whereRelation('description', 'applied', '>=', $this->date())
             ])
             ->whereHas('referralLeads')
