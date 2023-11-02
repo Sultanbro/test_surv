@@ -83,8 +83,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->get()
             ->map(function (User $user) {
                 $applies = $this->getAppliedReferrals($user);
-                $user->absolute_paid = $user->referralSalaries->where('is_paid', true)
-                    ->sum("amount");
                 $user->month_paid = $user->referralSalaries()
                     ->where('is_paid', true)
                     ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
@@ -97,7 +95,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($applies->count(), $user->deals);
                 $user->applieds = $applies->count();
-                $user->referrers_earned = $this->getReferralsEarned($user, $this->date());
+                $user->referrers_earned = $this->getReferralsEarned($user);
                 $user->users = $this->schedule($user);
                 return $user;
             })
@@ -174,14 +172,20 @@ class StatisticRepository implements StatisticRepositoryInterface
         return 0;
     }
 
-    protected function getReferralsEarned(User $user, ?Carbon $date = null): float
+    protected function getReferralsEarned(User $user): float
     {
         $total = 0;
+        /** @var Collection<User> $referrers */
         $referrers = $user->referrals()
             ->whereHas('referralLeads')
             ->get();
         foreach ($referrers as $referrer) {
-            $total += $this->getUserEarned($referrer, $date);
+            $total += $referrer->referralSalaries()
+                ->where(function ($query) {
+                    $query->where('type', PaidType::FIRST_WORK->name);
+                    $query->whereDate('date', $this->date()->format("Y-m-d"));
+                })
+                ->sum("amount");
         }
         return $total;
     }
