@@ -22,8 +22,7 @@ class UserDescriptionRepository extends CoreRepository
     public function setEmployee($userId): void
     {
         $this->model()->where('user_id', $userId)->update([
-            'is_trainee' => 1,
-            'applied' => now()
+            'is_trainee' => 1
         ]);
     }
 
@@ -51,7 +50,8 @@ class UserDescriptionRepository extends CoreRepository
                 'user_id' => $userId,
             ],
             [
-                'is_trainee' => $isTrainee
+                'is_trainee' => 0,
+                'applied' => now()
             ]
         );
     }
