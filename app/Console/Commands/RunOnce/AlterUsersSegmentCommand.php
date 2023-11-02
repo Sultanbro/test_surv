@@ -43,7 +43,9 @@ class AlterUsersSegmentCommand extends Command
                         'segment' => $segment
                     ]);
                 } else {
-                    $this->line("Not found segment for user $user->id");
+                    $user->update([
+                        'segment' => 0
+                    ]);
                 }
             }
             sleep(1);
