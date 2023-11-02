@@ -256,14 +256,12 @@ class EmployeeController extends Controller
                     })
                     ->where('is_trainee', 0);
             }
-
-            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
+            if ($request['start_date']) $users = $users->whereDate('users.created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['segment']) $users = $users->where('segment', $request['segment']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
-
         }
 
         $columns = [
@@ -277,7 +275,6 @@ class EmployeeController extends Controller
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
             DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
-            'users.created_at',
             'users.deleted_at',
             'users.position_id',
             'users.phone',
@@ -312,7 +309,6 @@ class EmployeeController extends Controller
         $users = $users->get($columns);
 
 
-
         foreach ($users as $key => $user) {
 
             $_user = User::withTrashed()->find($user->id);
@@ -341,7 +337,6 @@ class EmployeeController extends Controller
 //                $users->forget($key);
 //                continue;
 //            }
-
 
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
 
