@@ -3,7 +3,7 @@
 namespace App\Repositories\Referral;
 
 use App\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserStatisticRepository extends StatisticRepository implements UserStatisticRepositoryInterface
 {
@@ -34,7 +34,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             ->toArray();
     }
 
-    protected function usersList(): Collection
+    protected function baseQuery(): Builder
     {
         /** @var User $user */
         $user = auth()->user();
@@ -45,11 +45,9 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
                 ->where('deal_id', '>', 0)])
             ->withSum('referralSalaries as absolute_paid', 'amount')
             ->withSum(['referralSalaries as month_paid' => fn($query) => $query
-                ->where('date', '>=', $this->date())
-            ], 'amount')
-            ->get();
+                ->where('date', '>=', $this->date()->format("Y-m-d"))
+            ], 'amount');
     }
-
 
     private function getSubReferrers(User $user, int $level = 3)
     {
@@ -59,7 +57,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $referrals = $user->referrals()
             ->with([
                 'referrals' => fn($query) => $query->whereHas('referrals')
-                    ->whereRelation('description', 'applied', '>=', $this->date())
+                    ->whereRelation('description', 'applied', '>=', $this->date()->format("Y-m-d"))
             ])
             ->whereHas('referralLeads')
             ->get();
