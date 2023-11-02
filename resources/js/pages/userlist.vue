@@ -525,23 +525,12 @@
 							<option value="0">
 								Все сегменты
 							</option>
-							<option value="1">
-								Кандидаты на вакансию (таргет)
-							</option>
-							<option value="2">
-								Кандидаты на вакансию (hh, nur, job)
-							</option>
-							<option value="3">
-								Кандидаты на вакансию (promo акции)
-							</option>
-							<option value="4">
-								Кандидаты на вакансию (месенджеры)
-							</option>
-							<option value="5">
-								Кандидаты на вакансию (Гарантия трудоустройства)
-							</option>
-							<option value="6">
-								Кандидаты на вакансию (Участники семинаров, форумов, встреч)
+							<option
+								v-for="segment, key in segments"
+								:key="key"
+								:value="key"
+							>
+								{{ segment }}
 							</option>
 						</select>
 					</div>
