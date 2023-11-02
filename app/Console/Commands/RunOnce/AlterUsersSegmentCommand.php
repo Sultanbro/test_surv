@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Console\Commands\RunOnce;
+
+use App\Models\Bitrix\Lead;
+use App\User;
+use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+
+class AlterUsersSegmentCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'users:segment';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'One time command';
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $chunked = $this->leads()->chunk(50);
+        foreach ($chunked as $users) {
+            foreach ($users as $user) {
+                $segment = Lead::query()
+                    ->where('phone', $user->phone)
+                    ->orderByDesc('created_at')
+                    ->first()?->segment;
+                if ($segment) {
+                    $user->update([
+                        'segment' => $segment
+                    ]);
+                } else {
+                    $this->line("Not found segment for user $user->id");
+                }
+            }
+            sleep(1);
+        }
+    }
+
+    private function users(): Collection
+    {
+        return User::query()
+            ->where('segment', 99)
+            ->where(DB::raw('YEAR(created_at)'), '=', '2023')
+            ->get();
+    }
+}
