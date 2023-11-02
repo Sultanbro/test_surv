@@ -47,16 +47,4 @@ class SyncReferralSalary extends Command
             }
         }
     }
-
-    private function getType($award): string
-    {
-        if ($award < 2000) {
-            return PaidType::TRAINEE->name;
-        }
-
-        if ($award < 10000) {
-            return PaidType::ATTESTATION->name;
-        }
-        return PaidType::FIRST_WORK->name;
-    }
 }
