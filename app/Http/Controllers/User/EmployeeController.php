@@ -387,7 +387,7 @@ class EmployeeController extends Controller
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
-            'segments' => Segment::query()->pluck('name', 'id'),
+            'segments' => Segment::query()->get(['id', 'name', 'active']),
             'groups' => [0 => 'Выберите отдел'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
