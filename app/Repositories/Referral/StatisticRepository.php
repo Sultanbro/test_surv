@@ -37,8 +37,8 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $deal_lead_conversion = 0;
         $applied_deal_conversion = 0;
-        $countForDeals = 1;
-        $countForApplied = 1;
+        $countForDeals = 0;
+        $countForApplied = 0;
 
         foreach ($described as $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
@@ -59,21 +59,27 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereNotNull('referrer_id')
             ->count();
 
-        $piedTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
+        $paidTotal = ReferralSalary::query()
+            ->where('is_paid', 1) // this means that salary was accepted!
+            ->sum('amount');
+
+        $paidTotalForMonth = ReferralSalary::query()
+            ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
+            ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
             ->where('is_paid', 1) // this means that salary was accepted!
             ->sum('amount');
 
         $earnedTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
+            ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
+            ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
             ->sum('amount');
 
         return [
-            'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
+            'employee_price' => $accepted ? $paidTotal / $accepted : 0,
             'deal_lead_conversion' => $deal_lead_conversion,
             'applied_deal_conversion' => $applied_deal_conversion,
             'earned' => $earnedTotalForMonth,
-            'paid' => $piedTotalForMonth,
+            'paid' => $paidTotalForMonth,
         ];
     }
 
@@ -85,12 +91,14 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $applies = $this->getAppliedReferrals($user);
                 $user->month_paid = $user->referralSalaries()
                     ->where('is_paid', true)
-                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
+                    ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
+                    ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
                     ->sum("amount");
                 $user->absolute_earned = $user->referralSalaries
                     ->sum("amount");
                 $user->month_earned = $user->referralSalaries()
-                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
+                    ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
+                    ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
                     ->sum("amount");
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($applies->count(), $user->deals);
@@ -144,7 +152,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             });
     }
 
-    protected function date(): Carbon
+    protected function dateStart(): Carbon
     {
         $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
         return Carbon::parse($this->filter['date'])
@@ -152,10 +160,19 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->copy();
     }
 
-    protected function getUserEarned(User $user, ?Carbon $date = null): float
+    protected function dateEnd(): Carbon
+    {
+        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
+        return Carbon::parse($this->filter['date'])
+            ->endOfMonth()
+            ->copy();
+    }
+
+    protected function getUserEarned(User $user, ?Carbon $dateStart = null, ?Carbon $dateEnd = null): float
     {
         return $user->referralSalaries()
-            ->when($date, fn($query) => $query->whereDate('date', '>=', $date->format("Y-m-d")))
+            ->when($dateStart, fn($query) => $query->whereDate('date', '>=', $dateStart->format("Y-m-d")))
+            ->when($dateEnd, fn($query) => $query->whereDate('date', '<=', $dateEnd->format("Y-m-d")))
             ->sum('amount');
     }
 
@@ -178,7 +195,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             $total += $referrer->referralSalaries()
                 ->where(function ($query) {
                     $query->where('type', PaidType::FIRST_WORK->name);
-                    $query->whereDate('date', $this->date()->format("Y-m-d"));
+                    $query->whereDate('date', $this->dateStart()->format("Y-m-d"));
+                    $query->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"));
                 })
                 ->sum("amount");
         }
@@ -197,7 +215,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function traineesDaily(Collection $days, $training): array
     {
         $types = [];
-        for ($i = 1; $i <= $this->date()->daysInMonth; $i++) {
+        for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
             $day = $this->getDay($days, $i);
             if ($this->isAbsence($day)) {
                 $types[$i] = null;
@@ -225,7 +243,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
         $weekTemplate = $this->createWeekTemplate($weeksToTrack);
-        $timeTracking = $this->getReferralTimeTracking($referral, $this->date());
+        $timeTracking = $this->getReferralTimeTracking($referral, $this->dateStart());
 
         foreach ($timeTracking as $tracker) {
             for ($week = 1; $week <= $weeksToTrack; $week++) {
@@ -278,8 +296,8 @@ class StatisticRepository implements StatisticRepositoryInterface
         return DayType::query()
             ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
             ->where('user_id', $referral->getKey())
-            ->whereMonth('date', '=', $this->date()->month)
-            ->whereYear('date', $this->date()->year)
+            ->whereMonth('date', '=', $this->dateStart()->month)
+            ->whereYear('date', $this->dateStart()->year)
             ->get();
     }
 
