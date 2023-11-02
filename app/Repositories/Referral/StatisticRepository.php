@@ -37,8 +37,8 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         $deal_lead_conversion = 0;
         $applied_deal_conversion = 0;
-        $countForDeals = 1;
-        $countForApplied = 1;
+        $countForDeals = 0;
+        $countForApplied = 0;
 
         foreach ($described as $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
