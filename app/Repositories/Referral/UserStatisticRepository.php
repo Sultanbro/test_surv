@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Referral;
 
+use App\Service\Referral\Core\LeadTemplate;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -38,13 +39,14 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $user = auth()->user();
         return User::query()
             ->where('id', $user->getKey())
-            ->withCount('referralLeads as leads')
+            ->WhereHas('referralLeads')
+            ->with(['referrals', 'referralSalaries'])
             ->withCount(['referralLeads as deals' => fn($query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)
                 ->where('deal_id', '>', 0)])
-            ->withSum('referralSalaries as absolute_paid', 'amount')
-            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
-                ->where('date', '>=', $this->date()->format("Y-m-d"))
-            ], 'amount');
+            ->withCount(['referralLeads as leads' => fn($query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->orderBy('leads', 'desc');
     }
 
     private function getSubReferrers(User $referrer, int $level = 3)
