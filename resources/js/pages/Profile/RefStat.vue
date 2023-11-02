@@ -52,9 +52,7 @@
 							<div class="RefStat-userName">
 								{{ topUser.name }}
 							</div>
-							<div class="RefStat-userLeads">
-								{{ topUser.accepted }}
-							</div>
+							<div class="RefStat-userLeads" />
 						</div>
 					</div>
 				</div>
@@ -327,6 +325,7 @@ export default {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		justify-content: center;
 		gap: 20px;
 	}
 	&-user{
