@@ -8,7 +8,8 @@ use Illuminate\Support\Str;
 
 class LeadTemplate
 {
-    const SEGMENT_ID = 3548;
+    const BITRIX_SEGMENT_ID = 3548;
+    const SEGMENT_ID = 26;
 
     public function __construct(
         private readonly ReferrerInterface $referrer

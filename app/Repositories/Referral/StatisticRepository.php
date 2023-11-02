@@ -25,36 +25,33 @@ class StatisticRepository implements StatisticRepositoryInterface
     public function statistic(array $filter): array
     {
         $this->filter = $filter;
+        $described = $this->described();
         return [
-            'pivot' => $this->pivot(),
-            'referrers' => $this->forEach()
+            'pivot' => $this->pivot($described),
+            'referrers' => $described
         ];
     }
 
-    protected function pivot(): array
+    protected function pivot(array $described): array
     {
         $deal_lead_conversion = 0;
         $applied_deal_conversion = 0;
-        $count = 1;
+        $countForDeals = 1;
+        $countForApplied = 1;
 
-        foreach ($this->forEach() as $key => $referer) {
+        foreach ($described as $key => $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
             if ($referer['leads'] > 0) {
-                $count += $key;
+                $countForDeals += $key;
             }
-        }
-
-        $deal_lead_conversion = $deal_lead_conversion / $count;
-        $count = 1;
-
-        foreach ($this->forEach() as $key => $referer) {
             $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
             if ($referer['deals'] > 0) {
-                $count += $key;
+                $countForApplied += $key;
             }
         }
 
-        $applied_deal_conversion = $applied_deal_conversion / $count;
+        $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
+        $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
 
         $accepted = User::query()
             ->whereRelation('description', 'is_trainee', 0)
@@ -62,12 +59,12 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->count();
 
         $piedTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->date())
+            ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
             ->where('is_paid', 1) // this means that salary was accepted!
             ->sum('amount');
 
         $earnedTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->date())
+            ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
             ->sum('amount');
 
         return [
@@ -79,15 +76,14 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    protected function forEach(): array
+    protected function described(): array
     {
-        $userList = is_array($this->usersList()) ? collect($this->usersList()) : $this->usersList();
-        return $userList
+        return $this->usersList()
             ->map(function (User $user) {
-                $applieds = $this->getAppliedReferrals($user);
+                $applies = $this->getAppliedReferrals($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
-                $user->appiled_deal_conversion_ratio = $this->getRatio($applieds->count(), $user->deals);
-                $user->applieds = $applieds->count();
+                $user->appiled_deal_conversion_ratio = $this->getRatio($applies->count(), $user->deals);
+                $user->applieds = $applies->count();
                 $user->referrers_earned = $this->getUserReferrersEarned($user, $this->date());
                 $user->users = $this->schedule($user);
                 return $user;
@@ -95,7 +91,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->toArray();
     }
 
-    protected function usersList(): Collection|array
+    protected function usersList(): Collection
     {
         return User::query()
             ->WhereHas('referralLeads')
@@ -111,11 +107,11 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->withSum(['referralSalaries as absolute_earned' => fn($query) => $query]
                 , 'amount')
             ->withSum(['referralSalaries as month_earned' => fn($query) => $query
-                    ->whereDate('date', '>=', $this->date())]
+                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
                 , 'amount')
             ->withSum(['referralSalaries as month_paid' => fn($query) => $query
                     ->where('is_paid', 1)
-                    ->whereDate('date', '>=', $this->date())]
+                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
                 , 'amount')
             ->orderBy('leads', 'desc')
             ->get();
@@ -161,7 +157,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     protected function getUserEarned(User $user, ?Carbon $date = null): float
     {
         return $user->referralSalaries()
-            ->when($date, fn($query) => $query->whereDate('date', '>=', $date))
+            ->when($date, fn($query) => $query->whereDate('date', '>=', $date->format("Y-m-d")))
             ->sum('amount');
     }
 
