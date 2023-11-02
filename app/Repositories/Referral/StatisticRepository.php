@@ -111,16 +111,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                 ->where('segment', LeadTemplate::SEGMENT_ID)])
             ->withSum(['referralSalaries as absolute_earned' => fn($query) => $query]
                 , 'amount')
-//            ->withSum(['referralSalaries as absolute_paid' => fn($query) => $query
-//                    ->where('is_paid', true)]
-//                , 'amount')
             ->withSum(['referralSalaries as month_earned' => fn($query) => $query
                     ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
                 , 'amount')
-//            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
-//                    ->where('is_paid', 1)
-//                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
-//                , 'amount')
             ->orderBy('leads', 'desc');
     }
 
