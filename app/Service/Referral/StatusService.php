@@ -30,7 +30,6 @@ class StatusService implements StatusServiceInterface
                 ->where(fn(UserDescription|Builder $query) => $query
                     ->whereNull('fired')
                     ->where('is_trainee', 0)
-                    ->whereNot('applied', 0)
                 )
             )
             ->count();
