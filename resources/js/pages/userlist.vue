@@ -514,6 +514,22 @@
 				</div>
 			</div>
 
+			<div
+				v-if="tableFilter != 'trainees'"
+				class="row mt-2"
+			>
+				<div class="col-md-12 mb-2">
+					<label>
+						<input
+							v-model="filter.notrainees"
+							type="checkbox"
+							class="mr-3"
+						>
+						Не стажер
+					</label>
+				</div>
+			</div>
+
 			<div class="row mt-2">
 				<div class="col-md-3 mb-2">
 					<p>Сегмент</p>
@@ -675,7 +691,8 @@ export default {
 				end_date_applied: '2030-01-01',
 				start_date_reapplied: '2015-01-01',
 				end_date_reapplied: '2030-01-01',
-				segment: []
+				segment: [],
+				notrainees: false,
 			},
 			active: {
 				date: false,
@@ -842,6 +859,7 @@ export default {
 				filter: this.tableFilter,
 				segment: this.filter.segment.map(segment => segment.id),
 				job: this.position,
+				notrainees: this.filter.notrainees,
 			}
 
 			if(this.active.date) {
