@@ -367,7 +367,10 @@
 				</div>
 			</div>
 
-			<div class="row mt-2">
+			<div
+				v-if="tableFilter != 'active'"
+				class="row mt-2"
+			>
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
@@ -849,6 +852,7 @@ export default {
 		},
 
 		getUsers() {
+			const loader = this.$loading.show();
 			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
 			//if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
 			let filter = {
@@ -904,7 +908,8 @@ export default {
 					this.filter.start_date_reapplied = response.data.start_date
 					this.filter.end_date_reapplied = response.data.end_date
 				}
-			})
+				loader.hide()
+			}).catch(loader.hide)
 		},
 
 		exportData() {
