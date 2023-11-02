@@ -51,7 +51,7 @@ function referrerToUser(user){
 		monthRef: Number(user.referrers_earned || user.referrers_paid || 0),
 		monthPaid: Number(user.month_paid || 0),
 		avatar: 'users_img/' + user.img_url,
-		users: user.users?.map(referalToUser) || []
+		users: user.users?.map(referalToUser) || user.referrals?.map(referalToUser) || []
 	}
 }
 
@@ -61,7 +61,7 @@ export async function referralUserStat(){
 		month: Number(data.data?.mine || 0),
 		monthRef: Number(data.data?.from_referrals || 0),
 		total: Number(data.data?.absolute || 0),
-		tops: data.data?.top,
+		tops: data.data?.tops.map(referrerToUser) || [],
 		users: data.data?.referrals?.map(referrerToUser) || [],
 	}
 }
