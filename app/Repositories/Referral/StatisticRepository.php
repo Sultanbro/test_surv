@@ -10,6 +10,7 @@ use App\Service\Referral\SalaryFilter;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class StatisticRepository implements StatisticRepositoryInterface
@@ -39,14 +40,14 @@ class StatisticRepository implements StatisticRepositoryInterface
         $countForDeals = 1;
         $countForApplied = 1;
 
-        foreach ($described as $key => $referer) {
+        foreach ($described as $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
             if ($referer['leads'] > 0) {
-                $countForDeals += $key;
+                ++$countForDeals;
             }
             $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
             if ($referer['deals'] > 0) {
-                $countForApplied += $key;
+                ++$countForApplied;
             }
         }
 
@@ -78,7 +79,8 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function described(): array
     {
-        return $this->usersList()
+        return $this->baseQuery()
+            ->get()
             ->map(function (User $user) {
                 $applies = $this->getAppliedReferrals($user);
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
@@ -91,7 +93,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->toArray();
     }
 
-    protected function usersList(): Collection
+    protected function baseQuery(): Builder
     {
         return User::query()
             ->WhereHas('referralLeads')
@@ -113,8 +115,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->where('is_paid', 1)
                     ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
                 , 'amount')
-            ->orderBy('leads', 'desc')
-            ->get();
+            ->orderBy('leads', 'desc');
     }
 
     private function schedule(User $referrer)
