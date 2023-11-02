@@ -56,6 +56,7 @@ class AlterAppliedDateUserCommand extends Command
     {
         return UserDescription::query()
             ->whereNull('applied')
+            ->where('is_trainee', 0)
             ->where(DB::raw('YEAR(created_at)'), '=', '2023')
             ->get();
     }
