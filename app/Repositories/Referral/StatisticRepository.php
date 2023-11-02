@@ -89,7 +89,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     ->sum("amount");
                 $user->absolute_earned = $user->referralSalaries
                     ->sum("amount");
-                $user->month_paid = $user->referralSalaries()
+                $user->month_earned = $user->referralSalaries()
                     ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
                     ->sum("amount");
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
