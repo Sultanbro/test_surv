@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Console\Commands\Bitrix;
+namespace App\Console\Commands\RunOnce;
 
 use App\Api\Bitrix\LeadApi;
-use App\Api\BitrixOld;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use Illuminate\Console\Command;
@@ -24,7 +23,7 @@ class SyncBitrixSegment extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'One time command';
 
     public function handle(LeadApi $service): void
     {
