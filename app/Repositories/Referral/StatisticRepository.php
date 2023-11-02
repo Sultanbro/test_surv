@@ -83,6 +83,12 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->get()
             ->map(function (User $user) {
                 $applies = $this->getAppliedReferrals($user);
+                $user->absolute_paid = $user->referralSalaries->where('is_paid', true)
+                    ->sum("amount");
+                $user->month_paid = $user->referralSalaries()
+                    ->where('is_paid', true)
+                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
+                    ->sum("amount");
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($applies->count(), $user->deals);
                 $user->applieds = $applies->count();
@@ -97,24 +103,24 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return User::query()
             ->WhereHas('referralLeads')
-            ->with('referrals')
+            ->with(['referrals', 'referralSalaries'])
             ->withCount(['referralLeads as deals' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)
                 ->where('deal_id', '>', 0)])
             ->withCount(['referralLeads as leads' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)])
-            ->withSum(['referralSalaries as absolute_paid' => fn($query) => $query
-                    ->where('is_paid', 1)]
-                , 'amount')
             ->withSum(['referralSalaries as absolute_earned' => fn($query) => $query]
                 , 'amount')
+//            ->withSum(['referralSalaries as absolute_paid' => fn($query) => $query
+//                    ->where('is_paid', true)]
+//                , 'amount')
             ->withSum(['referralSalaries as month_earned' => fn($query) => $query
                     ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
                 , 'amount')
-            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
-                    ->where('is_paid', 1)
-                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
-                , 'amount')
+//            ->withSum(['referralSalaries as month_paid' => fn($query) => $query
+//                    ->where('is_paid', 1)
+//                    ->whereDate('date', '>=', $this->date()->format("Y-m-d"))]
+//                , 'amount')
             ->orderBy('leads', 'desc');
     }
 
