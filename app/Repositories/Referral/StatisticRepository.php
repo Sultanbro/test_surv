@@ -59,7 +59,11 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereNotNull('referrer_id')
             ->count();
 
-        $piedTotalForMonth = ReferralSalary::query()
+        $paidTotal = ReferralSalary::query()
+            ->where('is_paid', 1) // this means that salary was accepted!
+            ->sum('amount');
+
+        $paidTotalForMonth = ReferralSalary::query()
             ->whereDate('date', '>=', $this->date()->format("Y-m-d"))
             ->where('is_paid', 1) // this means that salary was accepted!
             ->sum('amount');
@@ -69,11 +73,11 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->sum('amount');
 
         return [
-            'employee_price' => $accepted ? $piedTotalForMonth / $accepted : 0,
+            'employee_price' => $accepted ? $paidTotal / $accepted : 0,
             'deal_lead_conversion' => $deal_lead_conversion,
             'applied_deal_conversion' => $applied_deal_conversion,
             'earned' => $earnedTotalForMonth,
-            'paid' => $piedTotalForMonth,
+            'paid' => $paidTotalForMonth,
         ];
     }
 
