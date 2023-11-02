@@ -5,6 +5,7 @@
 			:sorted-subs="sortedSubs"
 			:layer="1"
 			@sub-sort="$emit('sub-sort', $event)"
+			@payment-click="$emit('payment-click', $event)"
 		/>
 	</div>
 </template>
