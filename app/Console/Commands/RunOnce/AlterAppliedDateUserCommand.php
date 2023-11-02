@@ -45,7 +45,10 @@ class AlterAppliedDateUserCommand extends Command
                     ]);
                 }
                 else {
-                    $this->line("Not found timtracking $description->user_id");
+                    $description->update([
+                        'applied' => $description->created_at
+                    ]);
+                    $this->line("created at to applied for description id: $description->id");
                 }
             }
             sleep(1);
