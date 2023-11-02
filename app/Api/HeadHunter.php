@@ -479,14 +479,16 @@ class HeadHunter
 
     public function checkLead(Request $request)
     {
-      $lead = Lead::where('phone', $request->phone)
-            ->where('created_at', '>', Carbon::now()->subDays(7))
-            ->whereNotIn('status', ['LOSE'])
+        $lead = Lead::query()
+            ->where(fn($query) => $query
+                ->where('phone', $request->get('phone'))
+                ->where('created_at', '>', Carbon::now()->subDays(7))
+                ->whereNot('status', 'LOSE')
+            )
             ->first();
-
-      return response()->json([
-          "lead" => $lead
-      ]);
+        return response()->json([
+            "lead" => $lead
+        ]);
     }
 
 

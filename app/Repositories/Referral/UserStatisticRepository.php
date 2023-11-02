@@ -16,7 +16,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $user = auth()->user();
         return [
             'tops' => $this->tops($user),
-            'referrals' => $this->forEach(),
+            'referrals' => $this->described(),
             'mine' => $this->getUserEarned($user, $this->date()),
             'from_referrals' => $this->getUserReferrersEarned($user, $this->date()),
             'absolute' => $this->getUserEarned($user),
@@ -34,13 +34,10 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             ->toArray();
     }
 
-    protected function usersList(): Collection|array
+    protected function usersList(): Collection
     {
         /** @var User $user */
         $user = auth()->user();
-        if (!$user->referralLeads()->count()) {
-            return [];
-        }
         return User::query()
             ->where('id', $user->getKey())
             ->withCount('referralLeads as leads')

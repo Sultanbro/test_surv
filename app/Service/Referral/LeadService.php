@@ -6,7 +6,6 @@ use App\Api\Bitrix\LeadApiInterface;
 use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Fields;
 use App\Models\Bitrix\Lead;
-use App\Models\Bitrix\Segment;
 use App\Service\Referral\Core\LeadServiceInterface;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\ReferrerInterface;
@@ -29,7 +28,7 @@ class LeadService implements LeadServiceInterface
         $data = new LeadTemplate($referrer, $request);
         $fields = $this->fields($data->get());
         $bitrixLead = $this->leadApi->create($fields);
-//        throw_if(!array_key_exists('result', $bitrixLead), 'cant create lead in bitrix');
+
         Lead::query()->create([
             'lead_id' => $bitrixLead['result'],
             'name' => $request->name,

@@ -124,7 +124,7 @@ class StatisticRepositoryTest extends TenantTestCase
             Lead::factory()->create([
                 'referrer_id' => $referral->getKey(),
                 'user_id' => $subReferral->getKey(),
-                'segment' => LeadTemplate::SEGMENT_ID,
+                'segment' => 26,
                 'deal_id' => 56565,
             ]);
 
