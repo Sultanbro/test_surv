@@ -39,7 +39,7 @@ class SyncReferralSalary extends Command
                 $referrer->referralSalaries()->firstOrCreate([
                     'referral_id' => $referral->getKey(),
                     'amount' => 5000,
-                    'type' => PaidType::ATTESTATION,
+                    'type' => PaidType::ATTESTATION->name,
                 ], [
                     'is_paid' => false,
                     'date' => $referral->created_at->format("Y-m-d"),
