@@ -31,7 +31,7 @@ class AlterUsersSegmentCommand extends Command
      */
     public function handle()
     {
-        $chunked = $this->leads()->chunk(50);
+        $chunked = $this->users()->chunk(50);
         foreach ($chunked as $users) {
             foreach ($users as $user) {
                 $segment = Lead::query()
