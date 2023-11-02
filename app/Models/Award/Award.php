@@ -76,7 +76,7 @@ class Award extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'award_user', 'award_id','user_id')
-            ->withPivot(['path', 'format'])
+            ->withPivot(['path', 'format','preview_path','preview_format'])
             ->withTimestamps();
 
     }
