@@ -25,12 +25,10 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
 
     private function tops(User $user): array
     {
-        $referrals = $this->getSubReferrers($user->load('referrals'));
+        $tree = $this->getSubReferrers($user);
         // Sort the sub-referrers by the count of their referrals.
-        $sortedSubReferrers = $referrals->sortByDesc(function ($user) {
-            return $user->referrals->count();
-        });
-        return $sortedSubReferrers->take(5)
+        return $tree->sortByDesc(fn($user) => $user->referrals->count())
+            ->take(5)
             ->toArray();
     }
 
@@ -49,21 +47,19 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             ], 'amount');
     }
 
-    private function getSubReferrers(User $user, int $level = 3)
+    private function getSubReferrers(User $referrer, int $level = 3)
     {
         if ($level === 0) {
             return collect();
         }
-        $referrals = $user->referrals()
-            ->with([
-                'referrals' => fn($query) => $query->whereHas('referrals')
-                    ->whereRelation('description', 'applied', '>=', $this->date()->format("Y-m-d"))
-            ])
-            ->whereHas('referralLeads')
+        $referrals = $referrer->referrals()
+            ->where(function ($query) {
+                $query->whereRelation('description', 'is_trainee', 0);
+            })
             ->get();
 
         foreach ($referrals as $referral) {
-            $referrals = $referrals->merge($this->getSubReferrers($referral->load('referrals'), $level - 1));
+            $referrals = $referrals->merge($this->getSubReferrers($referral, $level - 1));
         }
         return $referrals;
     }
