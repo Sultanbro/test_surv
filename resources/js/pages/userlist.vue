@@ -128,10 +128,10 @@
 				<template #cell(segment)="data">
 					<div>
 						<div v-if="segments.hasOwnProperty(data.value)">
-							{{ segments[data.value] }}
+							{{ data.value === 0 || data.value === '0' ? 'Нет сегмента' : segments[data.value] }}
 						</div>
 						<div v-else>
-							{{ data.value }}
+							{{ data.value === 0 || data.value === '0' ? 'Нет сегмента' : data.value }}
 						</div>
 					</div>
 				</template>
