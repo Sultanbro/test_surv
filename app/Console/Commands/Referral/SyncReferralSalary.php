@@ -2,11 +2,10 @@
 
 namespace App\Console\Commands\Referral;
 
-use App\Enums\SalaryResourceType;
-use App\Models\Referral\ReferralSalary;
-use App\Salary;
 use App\Service\Referral\Core\PaidType;
+use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class SyncReferralSalary extends Command
 {
@@ -26,18 +25,25 @@ class SyncReferralSalary extends Command
 
     public function handle(): void
     {
-        $referrersSalaries = Salary::query()
-            ->where('resource', SalaryResourceType::REFERRAL)->get();
-        foreach ($referrersSalaries as $referrersSalary) {
-            if ($referrersSalary->comment_award) {
-                ReferralSalary::query()
-                    ->create([
-                        'amount' => $referrersSalary->award,
-                        'referrer_id' => $referrersSalary->user_id,
-                        'referral_id' => (int)$referrersSalary->comment_award,
-                        'is_paid' => $referrersSalary->is_paid,
-                        'type' => $this->getType($referrersSalary->award),
-                    ]);
+        /** @var Collection<User> $referrers */
+        $referrers = User::query()->withWhereHas("referrals")->get();
+        foreach ($referrers as $referrer) {
+            foreach ($referrer->referrals as $referral) {
+                $description = $referral?->description()?->first();
+                if (!$description) {
+                    break;
+                }
+                if ($description->is_trainee) {
+                    break;
+                }
+                $referrer->referralSalaries()->firstOrCreate([
+                    'referral_id' => $referral->getKey(),
+                    'amount' => 5000,
+                    'type' => PaidType::ATTESTATION,
+                ], [
+                    'is_paid' => false,
+                    'date' => $referral->created_at->format("Y-m-d"),
+                ]);
             }
         }
     }

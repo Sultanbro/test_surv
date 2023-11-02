@@ -2,6 +2,7 @@
 
 namespace App\Service\Referral\Core;
 
+use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $referrer_id
  * @property string $referrer_status
  * @property-read static $referrer
- * @property Collection<ReferrerInterface> $referrals
+ * @property Collection<User> $referrals
  */
 interface ReferrerInterface
 {
