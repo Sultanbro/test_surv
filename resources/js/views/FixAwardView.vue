@@ -119,6 +119,7 @@ export default {
 			const data = new FormData()
 			data.append('user_id', this.editedUserAward.user_id)
 			data.append('award_id', this.editedUserAward.award_id)
+			data.append('path', this.getFileName(this.editedUserAward.tempPath))
 			data.append('preview', path)
 			try {
 				await this.axios.post('/awards/add-preview-second', data)
