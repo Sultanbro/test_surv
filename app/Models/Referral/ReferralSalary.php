@@ -38,8 +38,13 @@ class ReferralSalary extends Model
     protected $casts = [
         'type' => PaidType::class,
         'is_paid' => "boolean",
-        'date' => "date",
+        'date' => "date:Y-m-d",
     ];
+
+    public function setDateAttribute( $value ): void
+    {
+        $this->attributes['date'] = (new Carbon($value))->format('Y-m-d');
+    }
 
     protected static function newFactory(): ReferralSalaryFactory
     {

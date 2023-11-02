@@ -13,6 +13,8 @@ use App\Models\UserCoordinate;
 use App\Support\Core\CustomException;
 use App\User;
 use App\User as Model;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Matrix\Builder;
@@ -22,6 +24,27 @@ use Matrix\Builder;
  */
 final class UserRepository extends CoreRepository
 {
+    /**
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return  Collection<User>
+     */
+    public function betweenDate(Carbon $startDate, Carbon $endDate): Collection
+    {
+        return User::query()
+            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
+            ->with(['salaries' => fn($query) => $query->whereBetween('date', [
+                $startDate->format("Y-m-d"),
+                $endDate->format("Y-m-d")
+            ])])
+            ->with('zarplata')
+            ->where(fn($query) => $query
+                ->whereNull('deleted_at')
+                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")]))
+            )
+            ->get();
+    }
+
     /**
      * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
      *
