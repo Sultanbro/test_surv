@@ -89,7 +89,7 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
+            if ($request['segment'] != []) $users = $users->whereIn('segment', $request['segment']);
 
 
         }
@@ -120,7 +120,7 @@ class EmployeeController extends Controller
 
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-            if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
+            if ($request['segment'] != []) $users = $users->whereIn('segment', $request['segment']);
 
         }
         elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
@@ -225,7 +225,7 @@ class EmployeeController extends Controller
 
             if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
-            if ($request['segment']) $users = $users->where('segment', $request['segment']);
+            if ($request['segment']) $users = $users->whereIn('segment', $request['segment']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
@@ -258,7 +258,7 @@ class EmployeeController extends Controller
             }
             if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
-            if ($request['segment']) $users = $users->where('segment', $request['segment']);
+            if ($request['segment']) $users = $users->whereIn('segment', $request['segment']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
