@@ -29,7 +29,6 @@ class StatisticRepositoryTest extends TenantTestCase
         User::factory()->create();
         $repo = app(StatisticRepository::class);
         $result = $repo->statistic([]);
-        dd($result);
         $this->assertArrayHasKey('pivot', $result, 'method returns the pivot statistic');
         $this->assertArrayHasKey('referrers', $result, 'method returns the referrers statistic');
         DB::rollBack();

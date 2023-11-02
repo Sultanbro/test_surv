@@ -52,7 +52,7 @@ class CheckForReferrerDaily extends Command
             if ($count) {
                 $trainer->referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'referral_id' => $trainer->id,
                         'comment' => $trainer->name,
@@ -67,7 +67,6 @@ class CheckForReferrerDaily extends Command
         $employees = User::query()
             ->whereNotNull('referrer_id')
             ->whereRelation('description', 'is_trainee', 0)
-//            ->whereRelation('description', 'applied', '>=', $date)
             ->get();
 
         foreach ($employees as $employee) {
@@ -79,7 +78,7 @@ class CheckForReferrerDaily extends Command
                 $amount = $calculateService->calculate($referrer, PaidType::FIRST_WORK);
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'referral_id' => $employee->id,
                         'comment' => $employee->name,
@@ -93,7 +92,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 12) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,
@@ -105,7 +104,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 18) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,
@@ -116,7 +115,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 24) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,
@@ -127,7 +126,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 30) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,
@@ -138,7 +137,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 36) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,
@@ -149,7 +148,7 @@ class CheckForReferrerDaily extends Command
             if ($daysCount === 42) {
                 $referrer
                     ->referralSalaries()
-                    ->create([
+                    ->updateOrCreate([
                         'date' => $date,
                         'amount' => $amount,
                         'referral_id' => $employee->id,

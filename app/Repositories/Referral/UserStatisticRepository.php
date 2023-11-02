@@ -55,7 +55,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             return collect();
         }
         $referrals = $referrer->referrals()
-            ->where(function ($query) {
+            ->where(function (Builder $query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             })
             ->get();
