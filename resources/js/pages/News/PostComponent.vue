@@ -171,8 +171,8 @@
 			</span>
 
 			<NewsQNA
-				v-if="QNA"
-				:qna="QNA"
+				v-if="currentPost.questions && currentPost.questions.length"
+				:qna="currentPost.questions"
 			/>
 
 			<div class="news-item__footer">
@@ -397,57 +397,6 @@ export default {
 		isAuthor(){
 			return this.currentPost?.author?.id === this.me?.id
 		},
-		QNA(){
-			return [
-				{
-					id: 1,
-					question: 'Вопрос 1',
-					variants: [
-						{
-							id: 2,
-							variant: 'Ответ 1',
-							answers: [5, 18, 84, 1739, 3462]
-						},
-						{
-							id: 3,
-							variant: 'Ответ 2',
-							answers: [3460]
-						},
-					],
-					config: {
-						manyanswers: false,
-						changeanswers: true,
-						public: false,
-					},
-				},
-				{
-					id: 4,
-					question: 'Вопрос 2',
-					variants: [
-						{
-							id: 5,
-							variant: 'Ответ 1',
-							answers: [18, 84, 18, 1739, 18, 3462, 18]
-						},
-						{
-							id: 6,
-							variant: 'Ответ 2',
-							answers: [3460]
-						},
-						{
-							id: 7,
-							variant: 'Ответ 3',
-							answers: []
-						},
-					],
-					config: {
-						manyanswers: true,
-						changeanswers: true,
-						public: true,
-					},
-				}
-			]
-		}
 	},
 	mounted() {
 		this.showFullContent = this.currentPost.is_pinned == false

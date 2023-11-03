@@ -23,9 +23,34 @@ export async function newsUpdate(id, formData){
 	return data
 }
 
+function question2QNA(question){
+	return {
+		id: question.id,
+		multiAnswer: !!question.multi_answer,
+		question: question.question,
+		order: question.order,
+		answers: question.answers || [],
+	}
+}
+
 export async function newsFetch(params){
 	const { data } = await axios.get('/news/get', {params})
-	return data.data
+	return {
+		pagination: data.data.pagination,
+		// eslint-disable-next-line
+		pinned_articles: data.data.pinned_articles?.map(article => {
+			return {
+				...article,
+				questions: (article.questions || []).map(question2QNA)
+			}
+		}),
+		articles: data.data.articles?.map(article => {
+			return {
+				...article,
+				questions: (article.questions || []).map(question2QNA)
+			}
+		})
+	}
 }
 
 export async function newsNextPage(url){

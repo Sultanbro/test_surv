@@ -415,6 +415,8 @@ export default {
 			this.editableId = data.id
 			this.postTitle = data.title
 			this.editorData = data.content
+			this.QNA = data.questions
+			if(data.questions.length) this.editorType = 1
 
 			this.$refs.dropZone.manualyAddFiles(data.files)
 
@@ -444,6 +446,8 @@ export default {
 			formData.append('title', this.postTitle)
 			formData.append('content', this.editorData)
 
+			if(this.editorType) formData.append('questions', JSON.stringify(this.QNA2Request()))
+
 			try {
 				await API.newsCreate(formData)
 			}
@@ -465,6 +469,28 @@ export default {
 			this.isEdit = false
 		},
 
+		QNA2Request(){
+			/* eslint-disable camelcase */
+			return this.QNA.map((q, index) => {
+				const question = {
+					multi_answer: q.multiAnswer,
+					question: q.question,
+					order: index,
+					answers: q.answers.map((a, index) => {
+						const answer = {
+							answer: a.answer,
+							order: index
+						}
+						if(a.id) answer.id = a.id
+						return answer
+					}),
+				}
+				if(q.id) question.id = q.id
+				return question
+			})
+			/* eslint-enable camelcase */
+		},
+
 		async updatePost() {
 			const formData = new FormData
 
@@ -478,7 +504,6 @@ export default {
 
 			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
-
 			if (this.postFiles.length != 0) {
 				const fileIds = []
 
@@ -488,6 +513,8 @@ export default {
 
 			formData.append('title', this.postTitle)
 			formData.append('content', this.editorData)
+
+			if(this.editorType) formData.append('questions', JSON.stringify(this.QNA2Request()))
 
 			try {
 				await API.newsUpdate(this.editableId, formData)
@@ -513,7 +540,9 @@ export default {
 
 		// QWRTRT
 		onAddQuestion(){
-			this.QNA.push(getEmptyQuestion())
+			const empty = getEmptyQuestion()
+			if(this.editableId) empty.articleId = this.editableId
+			this.QNA.push(empty)
 		},
 		onRemoveQuestion(index){
 			if(!confirm('Удалить вопрос?')) return

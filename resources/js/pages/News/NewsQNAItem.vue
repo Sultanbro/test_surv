@@ -4,7 +4,7 @@
 		:class="{
 			'NewsQNAItem_responded': isResponded,
 			'NewsQNAItem_notresponded': !isResponded || reanswer,
-			'NewsQNAItem_public': item.config.public,
+			'NewsQNAItem_public': true,
 		}"
 	>
 		<div class="NewsQNAItem-question">
@@ -12,38 +12,38 @@
 		</div>
 		<div class="NewsQNAItem-variants">
 			<component
-				:is="item.config.manyanswers ? 'b-form-checkbox-group' : 'div'"
+				:is="item.multiAnswer ? 'b-form-checkbox-group' : 'div'"
 				v-model="selected"
 				:name="`NewsQNAItem-check-${item.id}`"
 			>
 				<div
-					v-for="variant, index in item.variants"
+					v-for="answer, index in item.answers"
 					:key="index"
 					class="NewsQNAItem-variant"
 				>
 					<div
 						class="NewsQNAItem-content"
-						@click="onSelect(variant.id)"
+						@click="onSelect(answer.id)"
 					>
 						<div
 							v-if="isResponded || isAdmin"
 							class="NewsQNAItem-bar"
-							:style="`width: ${(variant.answers.length / max) * 100}%;`"
+							:style="`width: ${(answer.votes.length / max) * 100}%;`"
 						/>
 						<div class="NewsQNAItem-text">
-							{{ variant.variant }}
+							{{ answer.answer }}
 						</div>
 					</div>
 					<template v-if="!isResponded || reanswer">
 						<b-form-checkbox
-							v-if="item.config.manyanswers"
-							:value="variant.id"
+							v-if="item.multiAnswer"
+							:value="answer.id"
 							class="NewsQNAItem-check"
 						/>
 						<b-form-radio
 							v-else
 							v-model="selected"
-							:value="variant.id"
+							:value="answer.id"
 							:name="`NewsQNAItem-radio-${item.id}`"
 							class="NewsQNAItem-radio"
 						/>
@@ -52,8 +52,8 @@
 						v-if="isResponded || isAdmin"
 						class="NewsQNAItem-count"
 					>
-						{{ variant.answers.length }}
-						<template v-if="item.config.public">
+						{{ answer.votes.length }}
+						<template v-if="true">
 							<input
 								type="text"
 								class="NewsQNAItem-hidden"
@@ -64,18 +64,18 @@
 								max-height="200px"
 							>
 								<template #default>
-									<template v-for="answer, aIndex in answers[index].answers">
+									<template v-for="vote, aIndex in answer.votes">
 										<div
-											v-if="answer"
+											v-if="vote"
 											:key="aIndex"
 											class="NewsQNAItem-user"
 										>
 											<JobtronAvatar
-												:title="`${answer.name} ${answer.last_name}`"
-												:image="`/users_img/${answer.img_url}`"
+												:title="`${vote.name} ${vote.last_name}`"
+												:image="`/users_img/${vote.img_url}`"
 												:size="24"
 											/>
-											{{ answer.name }} {{ answer.last_name }}
+											{{ vote.name }} {{ vote.last_name }}
 										</div>
 									</template>
 								</template>
@@ -86,7 +86,7 @@
 						v-if="isResponded || isAdmin"
 						class="NewsQNAItem-percent"
 					>
-						{{ parseInt((variant.answers.length / max) * 100) }}%
+						{{ parseInt((answer.votes.length / max) * 100) }}%
 					</div>
 				</div>
 			</component>
@@ -123,7 +123,7 @@ export default {
 	},
 	data(){
 		return {
-			selected: this.item.config.manyanswers ? [] : null,
+			selected: this.item.multiAnswer ? [] : null,
 		}
 	},
 	computed: {
@@ -131,20 +131,14 @@ export default {
 		...mapState(usePortalStore, ['isAdmin']),
 		usersResponded(){
 			const result = []
-			this.item.variants.forEach(variant => {
-				result.push(...variant.answers)
+			this.item.answers.forEach(answer => {
+				result.push(...answer.votes.map(vote => vote.id))
 			})
 			return result
 		},
-		answers(){
-			return this.item.variants.map(variant => ({
-				variant: variant.variant,
-				answers: variant.answers.map(answer => this.users.find(user => user.id === answer))
-			}))
-		},
 		max(){
 			return Math.max(1, this.usersResponded.slice().length)
-			// if(!this.item.config.manyanswers) return Math.max(1, this.usersResponded.slice().filter(onlyUnique).length)
+			// if(!this.item.multiAnswer) return Math.max(1, this.usersResponded.slice().filter(onlyUnique).length)
 
 			// let max = 1
 			// this.item.variants.forEach(variant => {
@@ -160,7 +154,7 @@ export default {
 	},
 	methods: {
 		onSelect(id){
-			if(!this.item.config.manyanswers) {
+			if(!this.item.multiAnswer) {
 				this.selected = id
 				return
 			}
