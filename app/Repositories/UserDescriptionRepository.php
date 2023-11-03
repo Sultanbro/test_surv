@@ -43,8 +43,8 @@ class UserDescriptionRepository extends CoreRepository
     }
 
     public function touchDescription(
-        int $userId,
-        int $isTrainee
+        int  $userId,
+        bool $isTrainee
     ): void
     {
         UserDescription::query()->updateOrCreate(
@@ -53,7 +53,7 @@ class UserDescriptionRepository extends CoreRepository
             ],
             [
                 'is_trainee' => $isTrainee,
-                'applied' => $isTrainee ? now() : null
+                'applied' => $isTrainee ? now()->format("Y-m-d") : null
             ]
         );
     }

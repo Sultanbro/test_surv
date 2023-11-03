@@ -244,7 +244,6 @@ class UserService
     ): void
     {
         if ($isTrainee) {
-//            $this->descriptionRepository->setEmployee($userId); // TODO: why this in is_trainee
             (new DayTypeRepository)->createNew($userId);
         }
 
