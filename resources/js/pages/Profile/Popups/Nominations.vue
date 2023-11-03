@@ -582,6 +582,7 @@ export default {
 			})
 		},
 		getFileName(href){
+			if(!href) return ''
 			const url = new URL(href)
 			return (url.pathname || '').split('/').reverse()[0]
 		}
