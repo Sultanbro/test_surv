@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
+use App\Repositories\Articles\CommentRepository;
+use App\Repositories\Articles\FileRepository;
 use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
 use App\Repositories\Interfaces\Article\CommentRepositoryInterface;
 use App\Repositories\Interfaces\Article\FileRepositoryInterface;
-use App\Repositories\Articles\ArticleRepository;
-use App\Repositories\Articles\CommentRepository;
-use App\Repositories\Articles\FileRepository;
+use App\Repositories\Poll\PollRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -26,7 +26,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(
             ArticleRepositoryInterface::class,
-            ArticleRepository::class
+            PollRepository::class
         );
 
         $this->app->bind(
