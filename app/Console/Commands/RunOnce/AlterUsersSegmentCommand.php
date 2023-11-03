@@ -55,7 +55,7 @@ class AlterUsersSegmentCommand extends Command
     private function users(): Collection
     {
         return User::query()
-            ->whereIn('segment', [0, 99])
+            ->where('segment', 99)
             ->where(DB::raw('YEAR(created_at)'), '=', '2023')
             ->get();
     }
