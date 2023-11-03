@@ -22,27 +22,27 @@
 				</b-button>
 			</div>
 			<draggable
-				v-model="item.variants"
+				v-model="item.answers"
 				:options="{handle:'.NewsCreateQNA-move'}"
 				class="NewsCreateQNA-answers"
 			>
 				<div
-					v-for="variant, variantIndex in item.variants"
-					:key="variantIndex"
+					v-for="answer, aIndex in item.answers"
+					:key="aIndex"
 					class="NewsCreateQNA-answer"
 				>
 					<InputText
-						v-model="item.variants[variantIndex]"
+						v-model="item.answers[aIndex].answer"
 						placeholder="Введите вариант ответа"
-						@focus="onFocusAnswer(index, variantIndex)"
+						@focus="onFocusAnswer(index, aIndex)"
 					/>
 					<div class="NewsCreateQNA-move">
 						<i class="fa fa-sort" />
 					</div>
 					<b-button
-						v-if="item.variants.length > 2"
+						v-if="item.answers.length > 2"
 						class="NewsCreateQNA-trash btn btn-danger btn-icon"
-						@click="onRemoveAnswer(index, variantIndex)"
+						@click="onRemoveAnswer(index, aIndex)"
 					>
 						<i class="fa fa-trash" />
 					</b-button>
@@ -53,7 +53,7 @@
 					<b-col cols="4">
 						<label class="NewsCreateQNA-field">
 							<JobtronSwitch
-								v-model="item.config.manyanswers"
+								v-model="item.multiAnswer"
 							/>
 							Разрешить несколько ответов
 						</label>
@@ -112,12 +112,14 @@ export default {
 	methods: {
 		onFocusAnswer(qIndex, aIndex){
 			const question = this.value[qIndex]
-			if(question.variants.length - 1 === aIndex) question.variants.push('')
+			if(question.answers.length - 1 === aIndex) question.answers.push({
+				answer: ''
+			})
 		},
 		onRemoveAnswer(qIndex, aIndex){
 			const question = this.value[qIndex]
-			if(!question.variants[aIndex]) return question.variants.splice(aIndex, 1)
-			if(confirm('Удалить вариант ответа?')) return question.variants.splice(aIndex, 1)
+			if(!question.answers[aIndex]) return question.answers.splice(aIndex, 1)
+			if(confirm('Удалить вариант ответа?')) return question.answers.splice(aIndex, 1)
 		},
 	},
 }

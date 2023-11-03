@@ -47,7 +47,7 @@ export default {
 	data(){
 		return {
 			reanswer: false,
-			answers: {}
+			votes: {}
 		}
 	},
 	computed: {
@@ -55,8 +55,8 @@ export default {
 		participantIds(){
 			const ids = []
 			this.qna.forEach(item => {
-				item.variants.forEach(variant => {
-					ids.push(...variant.answers)
+				item.answers.forEach(answer => {
+					ids.push(...answer.votes.map(vote => vote.id))
 				})
 			})
 			return ids
@@ -66,12 +66,12 @@ export default {
 		},
 		isChangeAnswers(){
 			if(!this.qna.length) return false
-			return this.qna[0].config.changeanswers
+			return this.qna[0].changeAnswers
 		}
 	},
 	methods: {
 		onChange(item, values){
-			this.answers[item.id] = values
+			this.votes[item.id] = values
 		},
 		onSend(){},
 	}

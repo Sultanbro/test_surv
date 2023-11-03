@@ -171,8 +171,8 @@
 			</span>
 
 			<NewsQNA
-				v-if="QNA"
-				:qna="QNA"
+				v-if="currentPost.questions && currentPost.questions.length"
+				:qna="currentPost.questions"
 			/>
 
 			<div class="news-item__footer">
@@ -324,6 +324,7 @@ import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { usePortalStore } from '@/stores/Portal'
 import { mapState, mapActions } from 'pinia'
 import { pluralForm } from '@/composables/pluralForm.js'
+import * as API from '@/stores/api/news.js'
 
 const imageTypes = {
 	png: 'image/png',
@@ -397,57 +398,6 @@ export default {
 		isAuthor(){
 			return this.currentPost?.author?.id === this.me?.id
 		},
-		QNA(){
-			return [
-				{
-					id: 1,
-					question: 'Вопрос 1',
-					variants: [
-						{
-							id: 2,
-							variant: 'Ответ 1',
-							answers: [5, 18, 84, 1739, 3462]
-						},
-						{
-							id: 3,
-							variant: 'Ответ 2',
-							answers: [3460]
-						},
-					],
-					config: {
-						manyanswers: false,
-						changeanswers: true,
-						public: false,
-					},
-				},
-				{
-					id: 4,
-					question: 'Вопрос 2',
-					variants: [
-						{
-							id: 5,
-							variant: 'Ответ 1',
-							answers: [18, 84, 18, 1739, 18, 3462, 18]
-						},
-						{
-							id: 6,
-							variant: 'Ответ 2',
-							answers: [3460]
-						},
-						{
-							id: 7,
-							variant: 'Ответ 3',
-							answers: []
-						},
-					],
-					config: {
-						manyanswers: true,
-						changeanswers: true,
-						public: true,
-					},
-				}
-			]
-		}
 	},
 	mounted() {
 		this.showFullContent = this.currentPost.is_pinned == false
@@ -541,7 +491,7 @@ export default {
 
 		async likePost(id) {
 			try {
-				await this.axios.post('/news/' + id + '/like')
+				await API.newsLike(id)
 				if (this.currentPost.is_liked) {
 					this.currentPost.likes_count--
 				}
@@ -557,8 +507,8 @@ export default {
 
 		async viewsChanged() {
 			try {
-				const {data} = await this.axios.post('news/' + this.currentPost.id + '/views')
-				this.currentPost.views_count = data.data.views_count;
+				const {views_count} = await API.newsViews(this.currentPost.id)
+				this.currentPost.views_count = views_count
 			}
 			catch (error) {
 				console.error(error)
@@ -568,7 +518,7 @@ export default {
 
 		async favouritePost(id) {
 			try {
-				await this.axios.post('news/' + id + '/favourite')
+				await API.newsFavourite(id)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}
@@ -579,8 +529,8 @@ export default {
 
 		async pinPost(id) {
 			try {
-				const data = await this.axios.post('/news/' + id + '/pin')
-				this.post.is_pinned = data.data.is_pinned
+				const {is_pinned} = await API.newsPin(id)
+				this.post.is_pinned = is_pinned
 				this.showFullContent = false
 			}
 			catch (error) {
@@ -591,20 +541,21 @@ export default {
 		async sendComment(postId) {
 			if (this.commentText == '') return
 
-			const formData = new FormData;
+			const formData = new FormData
 			formData.set('content', this.commentText)
-			this.commentText = ''
 			formData.append('parent_id', this.parentId == null ? '' : this.parentId)
-			this.parentId = null
 
 			try {
-				await this.axios.post('/news/' + postId + '/comments', formData)
+				await API.newsComment(postId, formData)
 				this.currentPost.comments_count = this.currentPost.comments_count + 1
 				this.getPostComments(postId)
 			}
 			catch (error) {
 				console.error(error)
 			}
+
+			this.commentText = ''
+			this.parentId = null
 		},
 
 		editPost() {
@@ -625,7 +576,7 @@ export default {
 
 		async deletePost(postId) {
 			try {
-				await this.axios.delete('/news/' + postId)
+				await API.newsDelete(postId)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}

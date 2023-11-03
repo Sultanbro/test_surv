@@ -124,6 +124,8 @@
 
 <script>
 import ReactionComponent from '@/pages/News/ReactionComponent'
+import * as API from '@/stores/api/news.js'
+
 export default {
 	name: 'CommentsComponent',
 	components: {
@@ -144,32 +146,41 @@ export default {
 	},
 
 	methods: {
-
-
 		async getComments(postId) {
 			this.postId = postId;
 
-			await this.axios.get('/news/' + postId + '/comments')
-				.then(response => {
-					this.comments = response.data.data.comments;
-					this.commentsCount = response.data.data.comments_count;
+			let data
+			try {
+				data = await API.newsCommentsFetch()
+			}
+			catch (error) {
+				console.error(error)
+				return
+			}
+			if(!data) return
 
-					this.$emit('changeCommentsCount', {
-						/* eslint-disable-next-line camelcase */
-						comments_count: this.commentsCount,
-					});
-				})
-				.catch(() => {
-				});
+			this.comments = data.comments;
+			this.commentsCount = data.comments_count;
+
+			this.$emit('changeCommentsCount', {
+				/* eslint-disable-next-line camelcase */
+				comments_count: this.commentsCount,
+			})
 		},
 
 		async likeComment(commentId) {
-			await this.axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
-				.then(response => {
-					this.changeLikeComment(commentId, response.data.data)
-				})
-				.catch(() => {
-				});
+			let data
+
+			try {
+				data = await API.newsCommentsLike(this.postId, commentId)
+			}
+			catch (error) {
+				console.error(error)
+				return
+			}
+			if(!data) return
+
+			this.changeLikeComment(commentId, data)
 		},
 
 		sendData(parentId, name) {
@@ -180,13 +191,15 @@ export default {
 		},
 
 		async destroyComment(commentId) {
-			await this.axios.delete('news/' + this.postId + '/comments/' + commentId)
-				.then(() => {
-					this.getComments(this.postId);
-				})
-				.catch(res => {
-					console.error(res);
-				});
+			try {
+				await API.newsCommentsDelete(this.postId, commentId)
+			}
+			catch (error) {
+				console.error(error)
+				return
+			}
+
+			this.getComments(this.postId)
 		},
 
 		changeLikeComment(searchId, data) {
