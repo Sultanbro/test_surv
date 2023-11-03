@@ -48,6 +48,19 @@ class ArticleStoreRequest extends ArticleRequest
             'title' => ['required', 'string', 'max:125',],
             'content' => ['required', 'string', 'max:10000',],
 
+            # Poll attributes
+            'questions' => ['nullable', 'array'],
+            'questions.*' => ['required', 'array'],
+            'questions.*.multi_answer' => ['required', 'bool'],
+            'questions.*.question' => ['required', 'string'],
+            'questions.*.order' => ['required', 'int'],
+
+            'questions.*.answers' => ['required', 'array'],
+            'questions.*.answers.*' => ['required', 'array'],
+            'questions.*.answers.*.answer' => ['required', 'string'],
+            'questions.*.answers.*.order' => ['required', 'int'],
+            #
+
             'available_for' => ['nullable', 'array'],
             'available_for.*' => [
                 'required',

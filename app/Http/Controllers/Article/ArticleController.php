@@ -29,7 +29,7 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $articles = Article::with("views")->availableFor($user)->filter($filter)
+        $articles = Article::with("views", "questions.answers.votes")->availableFor($user)->filter($filter)
              ->where('created_at', '>', $user->created_at)
              ->orderByDesc('created_at');
 

@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read User $views
  * @property-read User $favourites
  * @property-read User $pins
+ * @property-read PollQuestion $questions
  *
  * @method static Builder|Article availableFor(User $user)
  * @method static Builder|Article filter(QueryFilter $filter)
@@ -71,6 +72,11 @@ class Article extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class, 'article_id', 'id');
+    }
+
+    public function questions()
+    {
+        return $this->hasMany(PollQuestion::class);
     }
 
     public function likes(): MorphMany
@@ -125,6 +131,8 @@ class Article extends Model
     {
         return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id')->withTrashed();
     }
+
+
 
     /**
      * @param int $userId

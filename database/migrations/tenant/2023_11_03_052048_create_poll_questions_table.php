@@ -15,10 +15,15 @@ return new class extends Migration
     {
         Schema::create('poll_questions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('poll_id');
+            $table->unsignedBigInteger('article_id');
             $table->tinyInteger('multi_answer');
             $table->text('question');
+            $table->tinyInteger('order');
             $table->timestamps();
+
+            $table->foreign('article_id')->on('articles')->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
