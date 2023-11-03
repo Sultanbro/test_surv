@@ -776,8 +776,10 @@ export default {
 
 	.LeftSidebar{
 		&-refIcon{
+			width: auto !important;
+
 			position: absolute;
-			right: 0;
+			right: 5px;
 			bottom: 0;
 		}
 	}
