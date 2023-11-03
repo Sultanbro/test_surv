@@ -362,8 +362,6 @@ export default {
 			let startDate = null;
 			let endDate = null;
 
-			let getParams = '?';
-
 			switch (this.dateType) {
 			case '1': {
 				startDate = moment().format('DD-MM-YYYY');
@@ -403,30 +401,29 @@ export default {
 			}
 			}
 
+			/* eslint-disable camelcase */
+
+			const params = {}
 			if (startDate != null && endDate != null) {
-				getParams = getParams + 'start_date=' + startDate + '&' + 'end_date=' + endDate;
+				params.start_date = startDate
+				params.end_date = endDate
 			}
 
 			if (this.author != '') {
-				getParams = getParams + '&' + 'author_id=' + this.author;
+				params.author_id = this.author
 			}
 
 			if (this.query != '') {
-				getParams = getParams + '&' + 'q=' + this.query;
+				params.q = this.query
 			}
 
-			if (this.query != '') {
-				getParams = getParams + '&' + 'q=' + this.query;
-			}
+			params.is_favourite = this.searchFavourite == true ? 1 : 0
 
-			getParams = getParams + '&' + 'is_favourite=' + (this.searchFavourite == true ? 1 : 0);
+			this.$root.$emit('toggle-white-bg', false)
+			this.showFilters = false
 
-			this.$root.$emit('toggle-white-bg', false);
-			this.showFilters = false;
-
-			this.$emit('searchNews', {
-				params: getParams,
-			})
+			this.$emit('searchNews', params)
+			/* eslint-enable camelcase */
 		},
 	}
 }

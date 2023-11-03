@@ -324,6 +324,7 @@ import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { usePortalStore } from '@/stores/Portal'
 import { mapState, mapActions } from 'pinia'
 import { pluralForm } from '@/composables/pluralForm.js'
+import * as API from '@/stores/api/news.js'
 
 const imageTypes = {
 	png: 'image/png',
@@ -490,7 +491,7 @@ export default {
 
 		async likePost(id) {
 			try {
-				await this.axios.post('/news/' + id + '/like')
+				await API.newsLike(id)
 				if (this.currentPost.is_liked) {
 					this.currentPost.likes_count--
 				}
@@ -506,8 +507,8 @@ export default {
 
 		async viewsChanged() {
 			try {
-				const {data} = await this.axios.post('news/' + this.currentPost.id + '/views')
-				this.currentPost.views_count = data.data.views_count;
+				const {views_count} = await API.newsViews(this.currentPost.id)
+				this.currentPost.views_count = views_count
 			}
 			catch (error) {
 				console.error(error)
@@ -517,7 +518,7 @@ export default {
 
 		async favouritePost(id) {
 			try {
-				await this.axios.post('news/' + id + '/favourite')
+				await API.newsFavourite(id)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}
@@ -528,8 +529,8 @@ export default {
 
 		async pinPost(id) {
 			try {
-				const data = await this.axios.post('/news/' + id + '/pin')
-				this.post.is_pinned = data.data.is_pinned
+				const {is_pinned} = await API.newsPin(id)
+				this.post.is_pinned = is_pinned
 				this.showFullContent = false
 			}
 			catch (error) {
@@ -540,20 +541,21 @@ export default {
 		async sendComment(postId) {
 			if (this.commentText == '') return
 
-			const formData = new FormData;
+			const formData = new FormData
 			formData.set('content', this.commentText)
-			this.commentText = ''
 			formData.append('parent_id', this.parentId == null ? '' : this.parentId)
-			this.parentId = null
 
 			try {
-				await this.axios.post('/news/' + postId + '/comments', formData)
+				await API.newsComment(postId, formData)
 				this.currentPost.comments_count = this.currentPost.comments_count + 1
 				this.getPostComments(postId)
 			}
 			catch (error) {
 				console.error(error)
 			}
+
+			this.commentText = ''
+			this.parentId = null
 		},
 
 		editPost() {
@@ -574,7 +576,7 @@ export default {
 
 		async deletePost(postId) {
 			try {
-				await this.axios.delete('/news/' + postId)
+				await API.newsDelete(postId)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}
