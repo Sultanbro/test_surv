@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Repositories;
+
+use App\UserDescription;
 use App\UserDescription as Model;
 
 /**
@@ -40,18 +42,18 @@ class UserDescriptionRepository extends CoreRepository
         ]);
     }
 
-    public function createDescription(
+    public function touchDescription(
         int $userId,
         int $isTrainee
-    ):void
+    ): void
     {
-        $this->model()->updateOrCreate(
+        UserDescription::query()->updateOrCreate(
             [
                 'user_id' => $userId,
             ],
             [
-                'is_trainee' => 0,
-                'applied' => now()
+                'is_trainee' => $isTrainee,
+                'applied' => $isTrainee ? now() : null
             ]
         );
     }
