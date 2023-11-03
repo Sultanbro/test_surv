@@ -35,7 +35,7 @@ class AlterUsersSegmentCommand extends Command
         foreach ($chunked as $users) {
             foreach ($users as $user) {
                 $segment = Lead::query()
-                    ->where('phone', $user->phone)
+                    ->where('phone', preg_replace("/[^[0-9]/", '', $user->phone))
                     ->orderByDesc('created_at')
                     ->first()?->segment;
                 if ($segment) {
