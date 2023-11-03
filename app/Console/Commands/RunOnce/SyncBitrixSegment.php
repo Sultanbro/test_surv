@@ -56,7 +56,7 @@ class SyncBitrixSegment extends Command
     private function leads(): Collection
     {
         return Lead::query()
-            ->where('segment', 99)
+            ->whereIn('segment', [0, 99])
             ->where( DB::raw('YEAR(created_at)'), '=', '2023')
             ->get();
     }

@@ -127,8 +127,8 @@
 
 				<template #cell(segment)="data">
 					<div>
-						<div v-if="segments.hasOwnProperty(data.value)">
-							{{ data.value === 0 || data.value === '0' ? 'Принят через Jobtron' : segments[data.value] }}
+						<div v-if="segments.find(segment => segment.id === data.value)">
+							{{ data.value === 0 || data.value === '0' ? 'Принят через Jobtron' : segments.find(segment => segment.id === data.value).name }}
 						</div>
 						<div v-else>
 							{{ data.value === 0 || data.value === '0' ? 'Принят через Jobtron' : data.value }}
@@ -367,7 +367,10 @@
 				</div>
 			</div>
 
-			<div class="row mt-2">
+			<div
+				v-if="tableFilter != 'active'"
+				class="row mt-2"
+			>
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
@@ -511,28 +514,40 @@
 				</div>
 			</div>
 
+			<div
+				v-if="tableFilter != 'trainees'"
+				class="row mt-2"
+			>
+				<div class="col-md-12 mb-2">
+					<label>
+						<input
+							v-model="filter.notrainees"
+							type="checkbox"
+							class="mr-3"
+						>
+						Не стажер
+					</label>
+				</div>
+			</div>
+
 			<div class="row mt-2">
-				<div class="col-md-6 mb-2">
+				<div class="col-md-3 mb-2">
 					<p>Сегмент</p>
 				</div>
 
-				<div class="col-6">
+				<div class="col-9">
 					<div class="d-flex align-items-center">
-						<select
+						<multiselect
 							v-model="filter.segment"
-							class="form-control mb-1 form-control-sm"
-						>
-							<option value="0">
-								Все сегменты
-							</option>
-							<option
-								v-for="segment, key in segments"
-								:key="key"
-								:value="key"
-							>
-								{{ segment }}
-							</option>
-						</select>
+							:options="activeSegments"
+							:multiple="true"
+							:preserve-search="true"
+							:hide-selected="true"
+							:close-on-select="false"
+							placeholder="Все сегменты"
+							label="name"
+							track-by="id"
+						/>
 					</div>
 				</div>
 			</div>
@@ -578,23 +593,7 @@ export default {
 				time: '',
 			},
 			tableFilter: 'active',
-			segments: {
-				0: 'Нет сегмента',
-				1: 'Таргет',
-				2: 'HH',
-				3: 'promo',
-				4: 'messenger',
-				5: 'Гарантия труд',
-				6: 'HH',
-				7: 'Муса',
-				8: 'Алина',
-				9: 'Салтанат',
-				10: 'Акжол',
-				11: 'Дархан',
-				12: 'Салтанат',
-				13: 'Сайт BP',
-				14: 'Вход. обр.',
-			},
+			segments: [],
 			tableFilters: {
 				'all': 'Все',
 				'active': 'Работающие',
@@ -692,7 +691,8 @@ export default {
 				end_date_applied: '2030-01-01',
 				start_date_reapplied: '2015-01-01',
 				end_date_reapplied: '2030-01-01',
-				segment: 0
+				segment: [],
+				notrainees: false,
 			},
 			active: {
 				date: false,
@@ -785,7 +785,10 @@ export default {
 					label: 'Восстановлен'
 				}
 			] : this.fields
-		}
+		},
+		activeSegments(){
+			return this.segments.slice().filter(segment => segment.active)
+		},
 	},
 	watch: {
 		showFields: {
@@ -849,12 +852,14 @@ export default {
 		},
 
 		getUsers() {
+			const loader = this.$loading.show();
 			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
 			//if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
 			let filter = {
 				filter: this.tableFilter,
-				segment: this.filter.segment,
+				segment: this.filter.segment.map(segment => segment.id),
 				job: this.position,
+				notrainees: this.filter.notrainees,
 			}
 
 			if(this.active.date) {
@@ -904,7 +909,8 @@ export default {
 					this.filter.start_date_reapplied = response.data.start_date
 					this.filter.end_date_reapplied = response.data.end_date
 				}
-			})
+				loader.hide()
+			}).catch(loader.hide)
 		},
 
 		exportData() {

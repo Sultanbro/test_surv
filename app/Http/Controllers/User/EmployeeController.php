@@ -81,15 +81,16 @@ class EmployeeController extends Controller
                     });
             }
 
-            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
+            if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
+            if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-            if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
+            if ($request['segment'] != []) $users = $users->whereIn('users.segment', $request['segment']);
 
 
         }
@@ -118,9 +119,10 @@ class EmployeeController extends Controller
                     ->where('is_trainee', 0);
             }
 
+            if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-            if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
+            if ($request['segment'] != []) $users = $users->whereIn('users.segment', $request['segment']);
 
         }
         elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
@@ -185,8 +187,8 @@ class EmployeeController extends Controller
                     ->whereNull('ud.fire_date');
             }
 
-            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
+            if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
         }
@@ -223,9 +225,10 @@ class EmployeeController extends Controller
                     ->where('is_trainee', 0);
             }
 
-            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
-            if ($request['segment']) $users = $users->where('segment', $request['segment']);
+            if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
+            if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
+            if ($request['segment']) $users = $users->whereIn('users.segment', $request['segment']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
@@ -256,9 +259,10 @@ class EmployeeController extends Controller
                     })
                     ->where('is_trainee', 0);
             }
-            if ($request['start_date']) $users = $users->whereDate('users.created_at', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
-            if ($request['segment']) $users = $users->where('segment', $request['segment']);
+            if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
+            if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
+            if ($request['segment']) $users = $users->whereIn('users.segment', $request['segment']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
@@ -387,7 +391,7 @@ class EmployeeController extends Controller
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
-            'segments' => Segment::query()->pluck('name', 'id'),
+            'segments' => Segment::query()->get(['id', 'name', 'active']),
             'groups' => [0 => 'Выберите отдел'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
