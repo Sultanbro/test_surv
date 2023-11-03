@@ -15,7 +15,7 @@ class ProfileGroupFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => $this->faker->word,
@@ -34,9 +34,9 @@ class ProfileGroupFactory extends Factory
             'salary_approved' => $this->faker->numberBetween(1000, 5000), // Replace with appropriate range
             'salary_approved_by' => $this->faker->name,
             'salary_approved_date' => $this->faker->dateTimeThisMonth,
-            'active' => $this->faker->randomElement([0, 1]),
+            'active' => $this->faker->boolean,
             'payment_terms' => $this->faker->sentence,
-            'has_analytics' => $this->faker->randomElement([-1, 0, 1]),
+            'has_analytics' => $this->faker->boolean,
             'editable_time' => $this->faker->randomElement([0, 1]),
             'time_address' => $this->faker->randomElement([-1, 0]),
             'paid_internship' => $this->faker->randomElement([0, 1]),

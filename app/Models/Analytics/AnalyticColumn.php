@@ -2,12 +2,14 @@
 
 namespace App\Models\Analytics;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 
 class AnalyticColumn extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
@@ -18,7 +20,8 @@ class AnalyticColumn extends Model
     ];
 
 
-    public static function defaults($group_id, $date) {
+    public static function defaults($group_id, $date)
+    {
         $fields = [
             'name',
             'plan',
@@ -26,29 +29,30 @@ class AnalyticColumn extends Model
             'avg',
         ];
 
-        foreach($fields as $index => $field) {
+        foreach ($fields as $index => $field) {
             self::create([
                 'group_id' => $group_id,
-                'name'=> $field,
-                'date'=> $date,
-                'order'=> $index + 1,
+                'name' => $field,
+                'date' => $date,
+                'order' => $index + 1,
             ]);
         }
 
         $date = Carbon::parse($date);
-        
-        for($i=1;$i<=$date->daysInMonth;$i++) {
+
+        for ($i = 1; $i <= $date->daysInMonth; $i++) {
             self::create([
                 'group_id' => $group_id,
-                'name'=> $i,
-                'date'=> $date,
-                'order'=> $i + 5,
+                'name' => $i,
+                'date' => $date,
+                'order' => $i + 5,
             ]);
         }
 
     }
 
-    public static function getValuesBetweenDates($group_id, $start_date, $end_date) {
+    public static function getValuesBetweenDates($group_id, $start_date, $end_date)
+    {
         return self::whereBetween('date', [$start_date, $end_date])
             ->where('group_id', $group_id)
             ->get()

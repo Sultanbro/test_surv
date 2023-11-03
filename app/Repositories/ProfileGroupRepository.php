@@ -3,17 +3,28 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\ProfileGroup;
 use App\ProfileGroup as Model;
-use App\Repositories\CoreRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 final class ProfileGroupRepository extends CoreRepository
 {
     protected function getModelClass(): string
     {
         return Model::class;
+    }
+
+    /**
+     * @return Collection<ProfileGroup>
+    */
+    public function getActiveGroupsWhereHasAnalytics(): Collection
+    {
+        return ProfileGroup::query()
+            ->where('active', 1)
+            ->where('has_analytics', 1)
+            ->get();
     }
 
     /**
@@ -33,7 +44,7 @@ final class ProfileGroupRepository extends CoreRepository
      */
     public function getGroupsIdNameWithPluck(bool $is_active = false): array
     {
-        return $this->model()->where('active', $is_active)->get()->pluck('name','id')->toArray();
+        return $this->model()->where('active', $is_active)->get()->pluck('name', 'id')->toArray();
     }
 
     /**
@@ -52,7 +63,7 @@ final class ProfileGroupRepository extends CoreRepository
      */
     public function getActiveGroupsIdName(): object
     {
-        return $this->model()->where('active',1)->select('name', 'id')->get();
+        return $this->model()->where('active', 1)->select('name', 'id')->get();
     }
 
     /**
@@ -73,9 +84,8 @@ final class ProfileGroupRepository extends CoreRepository
     {
         return $this->getActive()->reject(function ($group) use ($userId) {
             $editors_id = json_decode($group->editors_id);
-            if($editors_id == null) return $group;
-            if(!in_array($userId, json_decode($editors_id)))
-            {
+            if ($editors_id == null) return $group;
+            if (!in_array($userId, json_decode($editors_id))) {
                 return $group;
             };
         });
@@ -109,8 +119,7 @@ final class ProfileGroupRepository extends CoreRepository
     {
         $group = $this->model()->findOrFail($id);
 
-        if ($group->active == 0)
-        {
+        if ($group->active == 0) {
             return $group->update([
                 'active' => 1,
                 'archived_date' => null
@@ -195,7 +204,7 @@ final class ProfileGroupRepository extends CoreRepository
      * @return object
      */
     public function profileGroupWithRelation(
-        int $groupId,
+        int   $groupId,
         array $relations = []
     ): object
     {
@@ -209,23 +218,21 @@ final class ProfileGroupRepository extends CoreRepository
      */
     public function storeMultipleUsers(
         Model $group,
-        $users
+              $users
     ): void
     {
         $data = [];
 
-        foreach ($users as $userId)
-        {
+        foreach ($users as $userId) {
             $exist = $group->users()
                 ->where('user_id', $userId)
                 ->exists();
 
-            if (!$exist)
-            {
+            if (!$exist) {
                 $data[] = [
-                    'user_id'    => $userId,
-                    'group_id'   => $group->id,
-                    'from'       => Carbon::now()->toDateString(),
+                    'user_id' => $userId,
+                    'group_id' => $group->id,
+                    'from' => Carbon::now()->toDateString(),
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
@@ -257,7 +264,7 @@ final class ProfileGroupRepository extends CoreRepository
      * @return void
      */
     public function updateOrCreateDialer(
-        int $groupId,
+        int  $groupId,
         ?int $dialerId,
         ?int $scriptId,
         ?int $talkHours,
@@ -269,9 +276,9 @@ final class ProfileGroupRepository extends CoreRepository
                 'dialer_id' => $dialerId
             ],
             [
-                'script_id'     => $scriptId,
-                'talk_hours'    => $talkHours,
-                'talk_minutes'  => $talkMinutes
+                'script_id' => $scriptId,
+                'talk_hours' => $talkHours,
+                'talk_minutes' => $talkMinutes
             ]
         );
 

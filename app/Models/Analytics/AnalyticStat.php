@@ -8,11 +8,28 @@ use App\Models\Analytics\AnalyticRow as Row;
 use App\Timetracking;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property  int $row_id
+ * @property  int $column_id
+ * @property  string $date
+ * @property  int $group_id
+ * @property  string $value
+ * @property  string $show_value
+ * @property  int $activity_id
+ * @property  string $type
+ * @property  string $editable
+ * @property  string $class
+ * @property  string $decimals
+ * @property  string $comment
+ */
 class AnalyticStat extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'row_id',
         'column_id',
@@ -42,25 +59,23 @@ class AnalyticStat extends Model
     /**
      * Form pivot table to vue
      */
-    public static function form($group_id, $date)
+    public static function form($group_id, $date): array
     {
         $table = [];
 
-        $rows = Row::where('group_id', $group_id)
+        $rows = Row::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->orderBy('order', 'desc') // это неправильно правильно с order
             ->get();
 
-        $columns = Column::where('group_id', $group_id)
+        $columns = Column::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->orderBy('order', 'asc')
             ->get();
 
         $weekdays = self::getWeekdays($date); // coloring weekdays
-
-
-        $cell_number = 0;
-        $cell_letter = '';
 
         $row_keys = [];
         $col_keys = [];
@@ -74,14 +89,10 @@ class AnalyticStat extends Model
         }
 
         $all_activities = Activity::withTrashed()->where('group_id', $group_id)->get();
-        $all_stats = self::where('group_id', $group_id)
+        $all_stats = self::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->get();
-
-        //        $day_salaries = Salary::getSalaryForDays([
-        //            'date'     => $date,
-        //            'group_id' => $group_id,
-        //        ]);
 
         // returning items
         foreach ($rows as $r_index => $row) {
@@ -90,7 +101,9 @@ class AnalyticStat extends Model
 
             $cell_number = $r_index + 1;
 
-            $depending_from_row = Row::where('depend_id', $row->id)->first();
+            $depending_from_row = Row::query()
+                ->where('depend_id', $row->id)
+                ->first();
 
             foreach ($columns as $c_index => $column) {
 
@@ -109,14 +122,7 @@ class AnalyticStat extends Model
                 }
 
                 $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
-                //if($c_index >= 4) $l = self::getLetter($c_index);
                 $cell_letter = $l;
-
-                // $stat = self::where('group_id', $group_id)
-                //     ->where('date', $date)
-                //     ->where('row_id', $row->id)
-                //     ->where('column_id', $column->id)
-                //     ->first();
 
                 $stat = $all_stats->where('row_id', $row->id)
                     ->where('column_id', $column->id)
@@ -138,10 +144,6 @@ class AnalyticStat extends Model
                         'comment' => $stat->comment,
                         'sign' => ''
                     ];
-
-                    // if(($r_index == 2 || $r_index == 3) && in_array($column->name, ['plan', 'sum','name'])) { // cant edit prcsll and impl line
-                    //     $arr['editable'] = 0;
-                    // }
 
                     if ($stat->activity_id != null) {
                         $act = $all_activities->where('id', $stat->activity_id)->first();
@@ -188,7 +190,11 @@ class AnalyticStat extends Model
                     }
 
                     if ($stat->type == 'salary') {
-                        $gsalary = GroupSalary::where('group_id', $group_id)->where('date', $date)->get()->sum('total');
+                        $gsalary = GroupSalary::query()
+                            ->where('group_id', $group_id)
+                            ->where('date', $date)
+                            ->get()
+                            ->sum('total');
                         $val = floor($gsalary);
                         $stat->show_value = $val;
                         $stat->save();
@@ -208,7 +214,7 @@ class AnalyticStat extends Model
 
                     if ($stat->type == 'time') {
 
-                        $column = AnalyticColumn::find($column->id);
+                        $column = AnalyticColumn::query()->find($column->id);
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
 
                         $val = Timetracking::totalHours($day, $group_id);
@@ -229,7 +235,7 @@ class AnalyticStat extends Model
                     $type = 'initial';
                     if ($column->name == 'sum' && $r_index > 3) $type = 'sum';
                     if ($column->name == 'avg' && $r_index > 3) $type = 'avg';
-                    self::create([
+                    self::query()->create([
                         'group_id' => $group_id,
                         'date' => $date,
                         'row_id' => $row->id,
@@ -264,7 +270,7 @@ class AnalyticStat extends Model
                 $item[$column->name] = $arr;
             }
 
-            array_push($table, $item);
+            $table[] = $item;
         }
 
 
@@ -279,7 +285,8 @@ class AnalyticStat extends Model
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
 
-                    $stat = self::where('column_id', $item['column_id'])
+                    $stat = self::query()
+                        ->where('column_id', $item['column_id'])
                         ->where('row_id', $item['row_id'])
                         ->first();
 
@@ -298,7 +305,8 @@ class AnalyticStat extends Model
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
 
-                    $stat = self::where('column_id', $item['column_id'])
+                    $stat = self::query()
+                        ->where('column_id', $item['column_id'])
                         ->where('row_id', $item['row_id'])
                         ->first();
 
@@ -318,7 +326,7 @@ class AnalyticStat extends Model
     /**
      * Columns array for pivot table
      */
-    public static function columns($group_id, $date)
+    public static function columns($group_id, $date): array
     {
         $columns = [];
 
@@ -336,7 +344,7 @@ class AnalyticStat extends Model
         return $columns;
     }
 
-    public static function new_row($group_id, $after_row_id, $date)
+    public static function new_row($group_id, $after_row_id, $date): array
     {
 
         $new_row = Row::create([
@@ -467,7 +475,7 @@ class AnalyticStat extends Model
         return $text;
     }
 
-    public static function getLetter($number)
+    public static function getLetter($number): string
     {
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -494,7 +502,7 @@ class AnalyticStat extends Model
         return $res;
     }
 
-    public static function daysAvg($date, $row_id, $group_id)
+    public static function daysAvg($date, $row_id, $group_id): float|int
     {
         $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
@@ -527,7 +535,7 @@ class AnalyticStat extends Model
         return $total;
     }
 
-    public static function daysSum($date, $row_id, $group_id, $days = [])
+    public static function daysSum($date, $row_id, $group_id, $days = []): float|int
     {
 
         if (count($days) == 0) {
@@ -551,7 +559,7 @@ class AnalyticStat extends Model
     }
 
 
-    public static function getWeekdays($date)
+    public static function getWeekdays($date): array
     {
         $arr = [];
 
@@ -567,7 +575,7 @@ class AnalyticStat extends Model
         return $arr;
     }
 
-    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [])
+    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
         $text = $stat->value;
 
@@ -649,7 +657,7 @@ class AnalyticStat extends Model
         return round($res, $round);
     }
 
-    public static function getRentability($group_id, $date)
+    public static function getRentability($group_id, $date): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
         $column = Column::where('group_id', $group_id)
@@ -679,7 +687,7 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceedsPlan($group_id, $date)
+    public static function getProceedsPlan($group_id, $date): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
         $column = Column::where('group_id', $group_id)
@@ -709,7 +717,7 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceeds($group_id, $date, $only_days = [])
+    public static function getProceeds($group_id, $date, $only_days = []): array
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
@@ -772,7 +780,7 @@ class AnalyticStat extends Model
      * get value from cell string
      * ex: C4 or A5
      */
-    public static function getCellValue($group_id, $cell, $date, $round = 0)
+    public static function getCellValue($group_id, $cell, $date, $round = 0): float|int
     {
         // get indexes
         $r_index = 0;
@@ -852,7 +860,7 @@ class AnalyticStat extends Model
 
 
     /**
-     * получить рентабельность на конкретный день в месяце
+     * Получить рентабельность на конкретный день в месяце
      */
     public static function getRentabilityOnDay(int $group_id, string $date): float|int
     {
@@ -927,9 +935,6 @@ class AnalyticStat extends Model
             ->get();
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function activity(): BelongsTo
     {
         return $this->belongsTo(Activity::class);

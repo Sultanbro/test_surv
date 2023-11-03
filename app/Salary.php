@@ -455,6 +455,7 @@ class Salary extends Model
      *
      * @param array $data
      * @return array
+     * @throws Exception
      */
     public static function getSalaryForDays(array $data): array
     {
@@ -524,10 +525,7 @@ class Salary extends Model
         return $salaries;
     }
 
-    /**
-     * salaries Table
-     */
-    public static function salariesTable($user_types, $date, $users_ids, $group_id = 0)
+    public static function salariesTable($user_types, $date, $users_ids, $group_id = 0): array
     {
         $date = Carbon::parse($date)->day(1);
 
@@ -1022,7 +1020,7 @@ class Salary extends Model
         return $data;
     }
 
-    public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS)
+    public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS): array
     {
 
         $month_start = Carbon::parse($date)->startOfMonth();

@@ -5,19 +5,16 @@ namespace App\Repositories;
 
 use App\Classes\Helpers\Phone;
 use App\DTO\Settings\StoreUserDTO;
-use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
 use App\Models\CentralUser;
 use App\Models\UserCoordinate;
-use App\Support\Core\CustomException;
 use App\User;
 use App\User as Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Matrix\Builder;
 
 /**
  * Класс для работы с Repository.
@@ -40,7 +37,10 @@ final class UserRepository extends CoreRepository
             ->with('zarplata')
             ->where(fn($query) => $query
                 ->whereNull('deleted_at')
-                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [$startDate->format("Y-m-d"), $endDate->format("Y-m-d")]))
+                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [
+                    $startDate->format("Y-m-d"),
+                    $endDate->format("Y-m-d")
+                ]))
             )
             ->get();
     }
@@ -78,17 +78,17 @@ final class UserRepository extends CoreRepository
      */
     public function userTimeTrackRelation(
         array $userIds,
-        int $year,
-        int $month
+        int   $year,
+        int   $month
     ): object
     {
         return $this->model()->withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
             ->with([
-                'timetracking' => fn ($time) => $time->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
-                        ->orderBy('date')
-                        ->whereMonth('enter', $month)
-                        ->whereYear('enter', $year)
-        ])->whereIn('id', $userIds)->get();
+                'timetracking' => fn($time) => $time->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
+                    ->orderBy('date')
+                    ->whereMonth('enter', $month)
+                    ->whereYear('enter', $year)
+            ])->whereIn('id', $userIds)->get();
     }
 
     /**
@@ -105,22 +105,22 @@ final class UserRepository extends CoreRepository
      * @return object
      */
     public function userWithDescription(
-        string $type,
-        int $positionId,
+        string  $type,
+        int     $positionId,
         ?string $startDate = null,
         ?string $endDate = null,
         ?string $startDateDeactivate = null,
         ?string $endDateDeactivate = null,
         ?string $startDateApplied = null,
         ?string $endDateApplied = null,
-        ?int $segment = 0,
-        bool $isTrainee = false
+        ?int    $segment = 0,
+        bool    $isTrainee = false
     ): object
     {
         return $this->model()->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', $isTrainee)
             ->when($type == UserFilterEnum::DEACTIVATED, fn($q) => $q->whereNotNull('deleted_at'))
-            ->when($positionId != 0, fn ($q) => $q->where('position_id', $positionId))
+            ->when($positionId != 0, fn($q) => $q->where('position_id', $positionId))
             ->when($startDate, fn($q) => $q->whereDate('users.created_at', '>=', $startDate))
             ->when($endDate, fn($q) => $q->whereDate('users.created_at', '<=', $endDate))
             ->when($startDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '>=', $startDateDeactivate))
@@ -139,14 +139,14 @@ final class UserRepository extends CoreRepository
             ->join('profile_downloads as pd', 'pd.user_id', '=', 'users.id')
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
-            ->where(function($query){
+            ->where(function ($query) {
                 $query->whereNull('users.position_id')
                     ->orWhereNull('users.phone')
                     ->orWhereNull('users.birthday')
                     ->orWhereNull('users.working_day_id')
                     ->orWhereNull('users.working_time_id');
             }
-        );
+            );
     }
 
     /**
@@ -158,7 +158,7 @@ final class UserRepository extends CoreRepository
      * @return object
      */
     public function getTrainees(
-        int $positionId,
+        int     $positionId,
         ?string $startDate,
         ?string $endDate,
         ?string $startDateDeactivate,
@@ -167,7 +167,7 @@ final class UserRepository extends CoreRepository
     {
         return $this->model()
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->when($positionId != 0, fn ($q) => $q->where('position_id', $positionId))
+            ->when($positionId != 0, fn($q) => $q->where('position_id', $positionId))
             ->where('is_trainee', 1)
             ->whereNull('users.deleted_at')
             ->whereNull('ud.fire_date')
@@ -187,30 +187,30 @@ final class UserRepository extends CoreRepository
 
         $user = User::query()->updateOrCreate(
             [
-                'email'             => strtolower($dto->email)
+                'email' => strtolower($dto->email)
             ],
             [
-                'name'              => $dto->name,
-                'last_name'         => $dto->lastName,
-                'description'       => $dto->description,
-                'password'          => isset($centralUser) ? $centralUser->password : Hash::make($password),
-                'position_id'       => $dto->positionId,
-                'user_type'         => $dto->userType,
-                'timezone'          => 6,
-                'birthday'          => $dto->birthday,
-                'program_id'        => $dto->programType,
-                'working_day_id'    => $dto->workingDays,
-                'working_time_id'   => $dto->workTimes,
-                'phone'             => Phone::normalize($dto->phone),
-                'full_time'         => $dto->fullTime,
-                'currency'          => $dto->currency ?? 'kzt',
-                'weekdays'          => $dto->weekdays,
-                'working_country'   => $dto->workingCountry,
-                'working_city'      => $dto->workingCity,
-                'role_id'           => $dto->role_id ?? 1,
-                'is_admin'          => $dto->is_admin ?? 0,
-                'img_url'           => $dto->fileName,
-                'coordinate_id'     => isset($dto->coordinates) ? $this->setCoordinate($dto->coordinates) : null,
+                'name' => $dto->name,
+                'last_name' => $dto->lastName,
+                'description' => $dto->description,
+                'password' => isset($centralUser) ? $centralUser->password : Hash::make($password),
+                'position_id' => $dto->positionId,
+                'user_type' => $dto->userType,
+                'timezone' => 6,
+                'birthday' => $dto->birthday,
+                'program_id' => $dto->programType,
+                'working_day_id' => $dto->workingDays,
+                'working_time_id' => $dto->workTimes,
+                'phone' => Phone::normalize($dto->phone),
+                'full_time' => $dto->fullTime,
+                'currency' => $dto->currency ?? 'kzt',
+                'weekdays' => $dto->weekdays,
+                'working_country' => $dto->workingCountry,
+                'working_city' => $dto->workingCity,
+                'role_id' => $dto->role_id ?? 1,
+                'is_admin' => $dto->is_admin ?? 0,
+                'img_url' => $dto->fileName,
+                'coordinate_id' => isset($dto->coordinates) ? $this->setCoordinate($dto->coordinates) : null,
             ]
         );
 
@@ -218,8 +218,8 @@ final class UserRepository extends CoreRepository
 
         if (!isset($centralUser)) {
             $authData = [
-                'email'     => $dto->email,
-                'password'  => $password,
+                'email' => $dto->email,
+                'password' => $password,
             ];
         }
 
@@ -243,7 +243,7 @@ final class UserRepository extends CoreRepository
     }
 
     public function updateOrCreateSalary(
-        int $userId,
+        int     $userId,
         ?string $cardNumber,
         ?string $kaspi,
         ?string $jysan,
@@ -293,12 +293,12 @@ final class UserRepository extends CoreRepository
      * @return object
      */
     public function userWithRelations(
-        int $userId,
+        int   $userId,
         array $relations = []
     ): object
     {
         return $this->model()->withTrashed()
-            ->when(isset($relations), fn ($user) => $user->with($relations))
+            ->when(isset($relations), fn($user) => $user->with($relations))
             ->findOrFail($userId);
     }
 
@@ -308,12 +308,11 @@ final class UserRepository extends CoreRepository
      * @return bool
      */
     public function switchPermission(
-        int $userId,
+        int   $userId,
         array $permissions,
     ): bool
     {
-        foreach ($permissions as $permission)
-        {
+        foreach ($permissions as $permission) {
             $user = $this->model()->find($userId);
 
             if ($user->permissions->contains($permission['id'])) {
@@ -337,27 +336,24 @@ final class UserRepository extends CoreRepository
      */
     public function getUsersWithDescription(
         ?string $date,
-        bool $isTrainee = false
+        bool    $isTrainee = false
     ): \Illuminate\Database\Eloquent\Builder
     {
         return $this->model()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', $isTrainee))
-            ->where(fn($query) => $query->whereNull('deleted_at')->orWhere(fn ($query) => $query->whereDate('deleted_at', '>=', $date)));
+            ->where(fn($query) => $query->whereNull('deleted_at')->orWhere(fn($query) => $query->whereDate('deleted_at', '>=', $date)));
     }
 
     public function setCoordinate(array $coordinatesArray)
     {
         $coordinate = UserCoordinate::query()
-            ->where('geo_lat',$coordinatesArray['geo_lat'])
-            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->where('geo_lat', $coordinatesArray['geo_lat'])
+            ->where('geo_lon', $coordinatesArray['geo_lon'])
             ->first();
 
-        if ($coordinate)
-        {
+        if ($coordinate) {
             return $coordinate->id;
-        }
-        else
-        {
+        } else {
             $coordinate = UserCoordinate::query()->create([
                 'geo_lat' => $coordinatesArray['geo_lat'],
                 'geo_lon' => $coordinatesArray['geo_lon']

@@ -230,6 +230,7 @@ return [
         App\Providers\FacadeServiceProvider::class,
         App\Providers\ReferralServicesProvider::class,
         App\Providers\SalaryServicesProvider::class,
+        App\Providers\AnalyticServicesProvider::class,
     ],
 
     /*

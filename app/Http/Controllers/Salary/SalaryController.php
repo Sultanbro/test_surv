@@ -115,6 +115,7 @@ class SalaryController extends Controller
 
     /**
      * Страница начисления
+     * @throws Exception
      */
     public function salaries(Request $request)
     {
@@ -132,7 +133,7 @@ class SalaryController extends Controller
         $date = Carbon::createFromDate($year, $month, 1);
 
         $data = [];
-
+        $users_ids = [];
         if ($request->has('group_id')) {
             $group = ProfileGroup::find($request->group_id);
 
@@ -169,9 +170,6 @@ class SalaryController extends Controller
         }
 
         //////////////////////
-
-        $data['users'] = [];
-        $data['total_resources'] = 0;
 
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 

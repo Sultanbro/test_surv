@@ -2,14 +2,15 @@
 
 namespace App\Models\Analytics;
 
+use App\ProfileGroup;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
-use App\Models\Analytics\AnalyticStat;
-use App\ProfileGroup;
 
 class AnalyticRow extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
@@ -17,13 +18,14 @@ class AnalyticRow extends Model
         'group_id',
         'order',
         'date',
-        'depend_id', 
+        'depend_id',
     ];
 
-
-    public static function defaults($group_id, $date) {
+    public static function defaults($group_id, $date): void
+    {
         $fields = [
-            ProfileGroup::find($group_id)->name,
+            ProfileGroup::query()
+                ->find($group_id)->name,
             'second',
             'Impl',
             'Pr, cstll',
@@ -45,7 +47,7 @@ class AnalyticRow extends Model
             ->where('date', $date)
             ->where('name', 'avg')
             ->first();
-        
+
         $column_plan = AnalyticColumn::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'plan')
@@ -64,21 +66,21 @@ class AnalyticRow extends Model
 
         $order_index = count($fields);
 
-        foreach($fields as $index => $field) {
+        foreach ($fields as $index => $field) {
             $row = self::create([
                 'group_id' => $group_id,
-                'name'=> $field,
-                'date'=> $date,
-                'order'=> $order_index--,
+                'name' => $field,
+                'date' => $date,
+                'order' => $order_index--,
             ]);
 
-            if($index + 1 == 2) $row_2 = $row->id;
-            if($index + 1 == 3) $row_3 = $row->id;
-            if($index + 1 == 4) $row_4 = $row->id;
-            if($index + 1 == 7) $row_7 = $row->id;
-            if($index + 1 == 11) $row_11 = $row->id;
-            
-            if($index + 1 == 2)  continue;
+            if ($index + 1 == 2) $row_2 = $row->id;
+            if ($index + 1 == 3) $row_3 = $row->id;
+            if ($index + 1 == 4) $row_4 = $row->id;
+            if ($index + 1 == 7) $row_7 = $row->id;
+            if ($index + 1 == 11) $row_11 = $row->id;
+
+            if ($index + 1 == 2) continue;
             AnalyticStat::create([
                 'group_id' => $group_id,
                 'date' => $date,
@@ -92,20 +94,20 @@ class AnalyticRow extends Model
             ]);
 
             // if first row
-            if($index == 0) {
+            if ($index == 0) {
                 $fields = [
                     'name',
                     'plan',
                     'sum',
                     'avg',
                 ];
-        
-                foreach($fields as $field) {
+
+                foreach ($fields as $field) {
                     $col = AnalyticColumn::where('group_id', $group_id)
                         ->where('date', $date)
                         ->where('name', $field)
                         ->first();
-                    
+
                     $arr = [
                         'group_id' => $group_id,
                         'date' => $date,
@@ -122,7 +124,7 @@ class AnalyticRow extends Model
                 }
 
                 $datex = Carbon::parse($date);
-                for($i=1;$i<=$datex->daysInMonth;$i++) { // days row
+                for ($i = 1; $i <= $datex->daysInMonth; $i++) { // days row
 
                     $col = AnalyticColumn::where('group_id', $group_id)
                         ->where('date', $date)
@@ -137,14 +139,14 @@ class AnalyticRow extends Model
                         'value' => $i,
                         'show_value' => $i,
                         'class' => 'text-center font-bold bg-grey',
-                        'editable' => 1, 
+                        'editable' => 1,
                         'type' => AnalyticStat::INITIAL,
                     ]);
                 }
             }
 
-            if($index >=3) { // default sum and avg fields 
-                
+            if ($index >= 3) { // default sum and avg fields
+
                 $arr = [
                     'group_id' => $group_id,
                     'date' => $date,
@@ -153,10 +155,8 @@ class AnalyticRow extends Model
                     'class' => 'text-center font-bold',
                 ];
 
-                
-               
 
-                if($index == 3) { // C2
+                if ($index == 3) { // C2
                     $arr['type'] = 'sum';
                     $arr['column_id'] = $column_sum->id;
                     $arr['row_id'] = $row_2;
@@ -172,9 +172,9 @@ class AnalyticRow extends Model
                     $arr['class'] = 'text-center font-bold';
                 }
 
-                AnalyticStat::create($arr); 
-                
-                if($index != 3) {
+                AnalyticStat::create($arr);
+
+                if ($index != 3) {
                     $arr['type'] = 'avg';
                     $arr['column_id'] = $column_avg->id;
                     $arr['value'] = 0;
@@ -184,14 +184,14 @@ class AnalyticRow extends Model
 
                     AnalyticStat::create($arr);
                 }
-                
-                
+
+
             }
 
         }
 
         // add formulas  by default
-        foreach($fields as $index => $field) { 
+        foreach ($fields as $index => $field) {
 
             $arr = [
                 'group_id' => $group_id,
@@ -201,58 +201,58 @@ class AnalyticRow extends Model
                 'type' => 'formula',
             ];
 
-            if($index == 0) {
+            if ($index == 0) {
                 $arr['row_id'] = $row_2;
                 $arr['column_id'] = $column->id;
                 $arr['editable'] = 1;
-                $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] - [' . $column_plan->id . ':' . $row_2. ']';
+                $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] - [' . $column_plan->id . ':' . $row_2 . ']';
 
                 AnalyticStat::create($arr); // A2
-                
+
                 $arr['row_id'] = $row_2;
                 $arr['column_id'] = $column_plan->id;
                 $arr['editable'] = 1;
                 $arr['value'] = 0;
                 $arr['type'] = 'salary';
-                
-                
+
+
                 AnalyticStat::create($arr); // B2
-                
+
             }
 
-            if($index == 1) {
-               
+            if ($index == 1) {
+
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_plan->id;
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
-                $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] / [' . $column_plan->id . ':' . $row_4. '] * 100';
+                $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_plan->id . ':' . $row_4 . '] * 100';
                 $arr['comment'] = 'Баланс выполнения';
                 AnalyticStat::create($arr); // B3
 
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
-                $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] / [' . $column_sum->id . ':' . $row_4. '] * 100';
+                $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_sum->id . ':' . $row_4 . '] * 100';
                 $arr['comment'] = 'Процент выполнения месячного плана';
                 AnalyticStat::create($arr); // C3
-                
+
             }
 
-            if($index == 2) {
+            if ($index == 2) {
 
                 $arr['row_id'] = $row_4;
                 $arr['column_id'] = $column_plan->id;
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
-                $arr['value'] = '[' . $column_sum->id . ':'. $row_11 .']  * 250 * 8 * 3.5 / 1000';
+                $arr['value'] = '[' . $column_sum->id . ':' . $row_11 . ']  * 250 * 8 * 3.5 / 1000';
                 $arr['comment'] = 'Сколько на данный момент должны сделать';
                 AnalyticStat::create($arr); // B4
 
                 $arr['row_id'] = $row_4;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
-                $arr['value'] = '[' . $column_sum->id . ':'. $row_7 .']  * 250 * 3.5 / 1000';
+                $arr['value'] = '[' . $column_sum->id . ':' . $row_7 . ']  * 250 * 3.5 / 1000';
                 $arr['comment'] = 'План на месяц';
 
                 AnalyticStat::create($arr); // C4
