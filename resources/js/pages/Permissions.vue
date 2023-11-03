@@ -417,7 +417,7 @@ export default {
 		removeInactiveTargets(){
 			if(!this.accessDictionaries || !this.users.length) return
 			this.items.forEach((item, index) => {
-				const hasEmpty = item.tergets.find(target => !~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id))
+				const hasEmpty = item.tergets?.find(target => !~this.accessDictionaries[types[target.type]].findIndex(item => item.id === target.id))
 				if(!hasEmpty) return
 				console.warn('remove item', index, item)
 				// item = {
