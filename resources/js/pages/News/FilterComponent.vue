@@ -433,11 +433,7 @@ export default {
 </script>
 
 <style lang="scss">
-.FilterComponent{
-	&-readAll{
-		font-size: 2rem;
-	}
-}
+
 .news-filter-modal__footer{
 	&-img{
 		filter: invert(100%) sepia(100%) saturate(38%) hue-rotate(254deg) brightness(110%) contrast(110%);
@@ -450,6 +446,13 @@ export default {
 	}
 	.mx-icon-calendar{
 		right: 16px !important;
+	}
+}
+
+.FilterComponent{
+	&-readAll{
+		font-size: 2rem;
+		padding: 5px 15px;
 	}
 }
 </style>

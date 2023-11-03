@@ -1,5 +1,11 @@
 <template>
-	<div class="d-flex flex-column">
+	<div class="NewsCreate d-flex flex-column">
+		<ProfileTabs
+			v-model="editorType"
+			:tabs="['Опубликовать новость', 'Провести опрос']"
+			bottom
+			head-only
+		/>
 		<div
 			:class="'news-create ' + (editorOpen ? 'news-create--column' : '')"
 			@click="toggleInput(true, null)"
@@ -30,7 +36,7 @@
 				ref="newsCreateInput"
 				v-model="postTitle"
 				type="text"
-				placeholder="Заголовок новости"
+				:placeholder="['Напишите тут заголовок вашей новости', 'Напишите тут заголовок вашего опроса'][editorType]"
 				class="news-create__title"
 			>
 
@@ -105,6 +111,13 @@
 			</span>
 		</div>
 
+		<NewsCreateQNA
+			v-if="editorOpen && editorType === 1"
+			v-model="QNA"
+			@add-question="onAddQuestion"
+			@remove-question="onRemoveQuestion"
+		/>
+
 		<div
 			v-show="editorOpen"
 			:class="'news-create__bottom-menu ' + (fileInputOpen == true ? 'without-border-radius' : '')"
@@ -155,11 +168,15 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
+import { getEmptyQuestion } from './helper.js'
+import * as API from '@/stores/api/news.js'
 
 import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
 import DropZone from '@/pages/News/DropZone'
 import JobtronOverlay from '@ui/Overlay.vue'
 import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import ProfileTabs from '@ui/ProfileTabs.vue'
+import NewsCreateQNA from './NewsCreateQNA.vue'
 
 class UploadAdapter {
 	constructor(loader) {
@@ -234,6 +251,8 @@ export default {
 		DropZone,
 		JobtronOverlay,
 		AccessSelect,
+		ProfileTabs,
+		NewsCreateQNA,
 	},
 	props: {
 		me: {
@@ -255,6 +274,7 @@ export default {
 				allowedContent: true
 			},
 
+			editorType: 0,
 			editorOpen: false,
 			fileInputOpen: false,
 
@@ -277,6 +297,8 @@ export default {
 			titleError: false,
 			contentError: false,
 			availableError: false,
+
+			QNA: [getEmptyQuestion()],
 		}
 	},
 	computed: {
@@ -309,9 +331,7 @@ export default {
 				this.$refs.dropZone.fakeClick()
 			}
 
-			if (fileInputOpen) {
-				this.fileInputOpen = fileInputOpen
-			}
+			this.fileInputOpen = fileInputOpen || !!this.postFiles.length
 		},
 
 		updateFileList(data) {
@@ -425,27 +445,24 @@ export default {
 			formData.append('content', this.editorData)
 
 			try {
-				await this.axios.post('/news', formData, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
-				})
-				this.$emit('update-news-list')
-				this.postFiles = []
-				this.postTitle = ''
-				this.editorData = ''
-				this.clearAccessList()
-				this.$refs.dropZone.removeAllFiles()
-				this.toggleInput(false, false)
-				this.$toast.success('Новость сохранена')
-				this.isEdit = false
+				await API.newsCreate(formData)
 			}
 			catch (error) {
 				console.error(error)
 				this.$toast.error('Не удалось сохранить новость')
 				window.onerror && window.onerror(error)
+				return
 			}
+
+			this.$emit('update-news-list')
+			this.postFiles = []
+			this.postTitle = ''
+			this.editorData = ''
+			this.clearAccessList()
+			this.$refs.dropZone.removeAllFiles()
+			this.toggleInput(false, false)
+			this.$toast.success('Новость сохранена')
+			this.isEdit = false
 		},
 
 		async updatePost() {
@@ -471,32 +488,67 @@ export default {
 
 			formData.append('title', this.postTitle)
 			formData.append('content', this.editorData)
-			formData.append('_method', 'put')
 
 			try {
-				await this.axios.post('/news/' + this.editableId, formData, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
-				})
-				this.$emit('update-news-list')
-				this.postFiles = []
-				this.postTitle = ''
-				this.editorData = ''
-				this.editableId = null
-				this.clearAccessList()
-				this.$refs.dropZone.removeAllFiles()
-				this.toggleInput(false, false)
-				this.$toast.success('Новость сохранена')
-				this.isEdit = false
+				await API.newsUpdate(this.editableId, formData)
 			}
 			catch (error) {
 				console.error(error)
 				this.$toast.error('Не удалось сохранить новость')
 				window.onerror && window.onerror(error)
+				return
 			}
+
+			this.$emit('update-news-list')
+			this.postFiles = []
+			this.postTitle = ''
+			this.editorData = ''
+			this.editableId = null
+			this.clearAccessList()
+			this.$refs.dropZone.removeAllFiles()
+			this.toggleInput(false, false)
+			this.$toast.success('Новость сохранена')
+			this.isEdit = false
+		},
+
+		// QWRTRT
+		onAddQuestion(){
+			this.QNA.push(getEmptyQuestion())
+		},
+		onRemoveQuestion(index){
+			if(!confirm('Удалить вопрос?')) return
+			this.QNA.splice(index, 1)
 		},
 	}
 }
 </script>
+
+<style lang="scss">
+.NewsCreate{
+	.ProfileTabs{
+		padding-top: 20px;
+		padding-bottom: 0;
+		margin-left: 20px;
+		margin-right: 20px;
+		&-tab{
+			&_active{
+				border-top: 4px solid #156AE8;
+				color: #156AE8;
+			}
+			&:hover{
+				color: #156AE8;
+			}
+		}
+		&_bottom{
+			.ProfileTabs{
+				&-tab{
+					&_active{
+						border-top: none;
+						border-bottom: 4px solid #156AE8;
+					}
+				}
+			}
+		}
+	}
+}
+</style>

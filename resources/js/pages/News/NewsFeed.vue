@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import * as API from '@/stores/api/news.js'
+
 import NewsCreate from '@/pages/News/NewsCreate'
 import FilterComponent from '@/pages/News/FilterComponent'
 import PostComponent from '@/pages/News/PostComponent'
@@ -80,17 +82,10 @@ export default {
 		const queryString = window.location.search
 		const urlParams = new URLSearchParams(queryString)
 		const postId = urlParams.get('post_id')
-		if (postId != null) {
-			const params = {
-				params: '?post_id=' + postId,
-			}
-			this.getPosts(params)
-		}
-		else {
-			this.getPosts()
-		}
 
 		this.getMe()
+		// eslint-disable-next-line camelcase
+		this.getPosts(postId ? { post_id: postId } : undefined)
 
 		this.$root.$on('toggle-white-bg', (value) => {
 			this.showBg = value
@@ -118,18 +113,23 @@ export default {
 				window.onerror && window.onerror(error)
 			}
 		},
-		async getPosts(payload) {
+		async getPosts(params) {
+			let data
+
 			try {
-				const {data} = await this.axios.get('/news/get' + (payload ? payload.params : ''))
-				this.nextPageURL = data.data.pagination.next_page_url
-				this.posts = data.data.articles
-				this.pinnedPosts = data.data.pinned_articles
-				this.$forceUpdate()
+				data = await API.newsFetch(params)
 			}
 			catch (error) {
 				console.error(error)
 				window.onerror && window.onerror(error)
+				return
 			}
+			if(!data) return
+
+			this.nextPageURL = data.pagination.next_page_url
+			this.posts = data.articles
+			this.pinnedPosts = data.pinned_articles
+			this.$forceUpdate()
 		},
 
 		updatePost(data) {
@@ -137,18 +137,23 @@ export default {
 		},
 
 		async getNextPage() {
+			let data
+
 			this.showPaginator = false
+
 			try {
-				const {data} = await this.axios.get(this.nextPageURL)
-				this.nextPageURL = data.data.pagination.next_page_url
-				this.posts = this.posts.concat(data.data.articles)
-				this.showPaginator = true
+				data = await API.newsNextPage(this.nextPageURL)
 			}
 			catch (error) {
 				this.showPaginator = true
 				console.error(error)
 				window.onerror && window.onerror(error)
+				return
 			}
+
+			this.nextPageURL = data.pagination.next_page_url
+			this.posts = this.posts.concat(data.articles)
+			this.showPaginator = true
 		}
 	}
 }

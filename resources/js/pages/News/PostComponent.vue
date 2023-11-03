@@ -169,6 +169,12 @@
 			>
 				{{ showFullContent ? 'Скрыть подробности' : 'Показать полностью' }}
 			</span>
+
+			<NewsQNA
+				v-if="QNA"
+				:qna="QNA"
+			/>
+
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">
 					<div class="news-item__footer-action">
@@ -215,7 +221,10 @@
 					@mouseover="mouseEnterViews"
 					@mouseleave="mouseLeaveViews"
 				>
-					<img src="/icon/news/some-icons/view.svg">
+					<img
+						class="news-icon2"
+						src="/icon/news/some-icons/view.svg"
+					>
 					<span class="news-item__footer-count">{{ currentPost.views_count }}</span>
 					<PopupMenu
 						v-click-outside="closeViews"
@@ -309,6 +318,7 @@
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronAvatar from '@ui/Avatar'
+import NewsQNA from './NewsQNA'
 
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { usePortalStore } from '@/stores/Portal'
@@ -332,6 +342,7 @@ export default {
 		CommentsComponent,
 		PopupMenu,
 		JobtronAvatar,
+		NewsQNA,
 	},
 	props: {
 		post: {
@@ -386,6 +397,57 @@ export default {
 		isAuthor(){
 			return this.currentPost?.author?.id === this.me?.id
 		},
+		QNA(){
+			return [
+				{
+					id: 1,
+					question: 'Вопрос 1',
+					variants: [
+						{
+							id: 2,
+							variant: 'Ответ 1',
+							answers: [5, 18, 84, 1739, 3462]
+						},
+						{
+							id: 3,
+							variant: 'Ответ 2',
+							answers: [3460]
+						},
+					],
+					config: {
+						manyanswers: false,
+						changeanswers: true,
+						public: false,
+					},
+				},
+				{
+					id: 4,
+					question: 'Вопрос 2',
+					variants: [
+						{
+							id: 5,
+							variant: 'Ответ 1',
+							answers: [18, 84, 18, 1739, 18, 3462, 18]
+						},
+						{
+							id: 6,
+							variant: 'Ответ 2',
+							answers: [3460]
+						},
+						{
+							id: 7,
+							variant: 'Ответ 3',
+							answers: []
+						},
+					],
+					config: {
+						manyanswers: true,
+						changeanswers: true,
+						public: true,
+					},
+				}
+			]
+		}
 	},
 	mounted() {
 		this.showFullContent = this.currentPost.is_pinned == false
@@ -582,10 +644,10 @@ export default {
 			this.isViewsPopup = !this.isViewsPopup
 		},
 		mouseEnterViews(){
-			this.viewsPopupTimeout = setTimeout(this.openViews, 1000)
+			// this.viewsPopupTimeout = setTimeout(this.openViews, 1000)
 		},
 		mouseLeaveViews(){
-			clearTimeout(this.viewsPopupTimeout)
+			// clearTimeout(this.viewsPopupTimeout)
 		},
 	}
 }
