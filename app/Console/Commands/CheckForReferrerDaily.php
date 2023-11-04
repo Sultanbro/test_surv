@@ -74,6 +74,7 @@ class CheckForReferrerDaily extends Command
             $daysCount = $employee->timetracking()
                 ->where('total_hours', '>', 3 * 60)
                 ->count();
+
             if ($daysCount === 6) {
                 $amount = $calculateService->calculate($referrer, PaidType::FIRST_WORK);
                 $referrer

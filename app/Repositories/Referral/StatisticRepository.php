@@ -123,11 +123,11 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->orderBy('leads', 'desc');
     }
 
-    private function schedule(User $referrer)
+    private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
             ->get()
-            ->map(function (User $referral) use ($referrer) {
+            ->map(function (User $referral) use ($referrer, $step) {
 
                 $days = $this->getReferralDayTypes($referral);
 
@@ -145,7 +145,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                 );
 
                 if ($referral->referrals()->count()) {
-                    $referral->users = $this->schedule($referral);
+                    if ($step <= 3) {
+                        $referral->users = $this->schedule($referral, $step + 1);
+                    }
                 }
 
                 return $referral;
