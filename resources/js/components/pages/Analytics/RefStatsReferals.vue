@@ -37,23 +37,5 @@ export default {
 </script>
 
 <style lang="scss">
-.RefStatsReferals{
-	&-header{
-		user-select: none;
-	}
-	&-title{
-		width: 200px;
-		min-width: 200px;
-		max-width: 250px;
-
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	&-referalValue{
-		width: 48px;
-		min-width: 48px;
-	}
-}
+// .RefStatsReferals{}
 </style>

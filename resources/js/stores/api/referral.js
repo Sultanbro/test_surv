@@ -76,6 +76,8 @@ export async function referralStat({year, month}){
 		userPrice: Number(data.data?.pivot?.employee_price || 0),
 		cvResultDealPercent: Number(data.data?.pivot?.deal_lead_conversion || 0),
 		cvDealUserPercent: Number(data.data?.pivot?.applied_deal_conversion || 0),
+		earned: Number(data.data?.pivot?.earned || 0),
+		paid: Number(data.data?.pivot?.paid || 0),
 		users: data.data?.referrers?.map(referrerToUser) || [],
 	}
 }
