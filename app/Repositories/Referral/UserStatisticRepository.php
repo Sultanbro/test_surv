@@ -16,7 +16,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         /** @var User $user */
         $user = auth()->user();
         return [
-            'tops' => $this->tops($user),
+            'tops' => $this->tops(),
             'referrals' => $this->described(),
             'mine' => $this->getUserEarned($user, $this->dateStart(), $this->dateEnd()),
             'from_referrals' => $this->getReferralsEarned($user),
@@ -24,12 +24,16 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         ];
     }
 
-    private function tops(User $user): array
+    private function tops(): array
     {
-        $tree = $this->getSubReferrers($user);
-        // Sort the sub-referrers by the count of their referrals.
-        return $tree->sortByDesc(fn($user) => $user->referrals->count())
+        return User::query()
+            ->withCount(['referrals as applied_count' => function ($query) {
+                $query->whereRelation('description', 'is_trainee', 0);
+            }])
+            ->groupBy('users.id')
             ->take(5)
+            ->orderBy('applied_count', 'desc')
+            ->get()
             ->toArray();
     }
 
