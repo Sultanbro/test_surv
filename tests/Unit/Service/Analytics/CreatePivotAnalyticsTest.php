@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Service\Analytics;
+namespace Tests\Unit\Service\Analytics;
 
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;

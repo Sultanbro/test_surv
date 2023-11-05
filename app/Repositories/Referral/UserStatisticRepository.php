@@ -32,7 +32,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             }])
             ->groupBy('users.id')
             ->take(5)
-            ->orderBy('applied_count', 'desc')
+            ->orderBy('applied', 'desc')
             ->get()
             ->toArray();
     }

@@ -13,9 +13,18 @@ class CalculatorService implements CalculateInterface
     /**
      * @throws Exception
      */
-    public function calculate(ReferrerInterface $user, PaidType $type): float|int
+    public function calculate(ReferrerInterface $user, PaidType $type, int $level = 1): float|int
     {
         $actualTotal = $this->typeTotal($type);
+        if ($type === PaidType::FIRST_WORK) {
+            if ($level === 2) {
+                $actualTotal = 5000;
+            }
+            if ($level === 3) {
+                $actualTotal = 2000;
+            }
+        }
+
         $percentFromReferrerStatus = $this->statusPercent($user);
         if ($percentFromReferrerStatus === 0) {
             return $actualTotal;

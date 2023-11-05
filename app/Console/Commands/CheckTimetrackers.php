@@ -2,12 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use Illuminate\Console\Command;
-use App\User;
-use App\Account;
+use App\Service\Referral\ForReferrerDaily;
 use App\Timetracking;
-use App\ProfileGroup;
+use Illuminate\Console\Command;
 
 class CheckTimetrackers extends Command
 {
@@ -38,26 +35,30 @@ class CheckTimetrackers extends Command
     /**
      * Execute the console command.
      *
+     * @param ForReferrerDaily $service
      * @return void
      */
-    public function handle(): void
+    public function handle(ForReferrerDaily $service): void
     {
         $this->line('Checking for the end of the day for users');
-        
-        $recordsFromTimeTrack = Timetracking::query()->whereDate('enter', date('Y-m-d'))
+
+        $recordsFromTimeTrack = Timetracking::query()
+            ->whereDate('enter', date('Y-m-d'))
             ->whereNull('exit')
             ->get();
 
         foreach ($recordsFromTimeTrack as $recordFromTimeTrack) {
             $user = $recordFromTimeTrack->user;
 
-            if ($user)
-            {
+            if ($user) {
                 $userSchedule = $user->schedule();
                 $recordFromTimeTrack->update([
-                    'exit' => $userSchedule['end']->subHours($user->timezone)->format('Y-m-d H:i:s')
+                    'exit' => $userSchedule['end']->subHours($user->timezone)
+                        ->format('Y-m-d H:i:s')
                 ]);
             }
         }
+        // update referral daily salaries
+        $service->handle();
     }
 }
