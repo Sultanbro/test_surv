@@ -82,7 +82,7 @@
 					>
 						<td
 							class="JobtronTable-td"
-							colspan="9999"
+							:colspan="trAfterColspan"
 						>
 							<slot
 								:name="`afterRow`"
@@ -122,6 +122,10 @@ export default {
 		trAfterClassFn: {
 			type: Function,
 			default: () => ''
+		},
+		trAfterColspan: {
+			type: Number,
+			default: 9999
 		}
 	}
 }

@@ -17,73 +17,25 @@
 				unit="%"
 			/>
 			<RefStatsIndex
-				:value="separateNumber(totalMonth)"
+				:value="separateNumber(earned)"
 				label="Заработано"
 				unit="₸"
 			/>
 			<RefStatsIndex
-				:value="separateNumber(totalPaid)"
+				:value="separateNumber(paid)"
 				label="Выплачено"
 				unit="₸"
 			/>
 		</div>
 
-		<JobtronTable
+		<RefStatsTable
+			:items="users"
 			:fields="[
-				{key: 'switch', label: ''},
+				{key: 'switch', label: '', thClass: 'RefStats-switch'},
 				...tableFields,
 			]"
-			:items="sorted"
-			:tr-after-class-fn="rowAfterClass"
-			class="RefStats-table"
-		>
-			<template #header="{field}">
-				<div
-					class="RefStats-header pointer"
-					@click="setSort(field.key)"
-				>
-					{{ field.label }}
-				</div>
-			</template>
-			<template #cell(switch)="{item}">
-				<div
-					v-if="item.users.length"
-					class="RefStats-switch pointer"
-					@click="toggleAfter(item.id)"
-				>
-					{{ uncollapsed.includes(item.id) ? '-' : '+' }}
-				</div>
-			</template>
-			<template #cell(leadsToDealPercent)="{value}">
-				{{ value }}%
-			</template>
-			<template #cell(dealToUserPercent)="{value}">
-				{{ value }}%
-			</template>
-			<template #cell(monthPaid)="{item, value}">
-				<div
-					class="RefStats-money"
-					:class="{
-						'RefStats-money_paid': value >= (item.month + item.monthRef)
-					}"
-				>
-					{{ value }}
-				</div>
-			</template>
-			<template #afterRow="firstLayerData">
-				<div
-					v-if="firstLayerData.value.users.length && uncollapsed.includes(firstLayerData.value.id)"
-					class="RefStats-subtable"
-				>
-					<RefStatsReferals
-						:user-id="firstLayerData.value.id"
-						:sorted-subs="sortedSubs"
-						@payment-click="showPaymentDialog"
-						@sub-sort="setSubSort"
-					/>
-				</div>
-			</template>
-		</JobtronTable>
+			@payment-click="showPaymentDialog"
+		/>
 
 		<b-modal
 			v-model="paymentDialog.open"
@@ -118,21 +70,18 @@ import {
 } from '@/composables/format'
 import * as API from '@/stores/api/referral'
 
-
-import JobtronTable from '@ui/Table.vue'
 import JobtronSwitch from '@ui/Switch.vue'
 import RefStatsIndex from './RefStatsIndex.vue'
-import RefStatsReferals from './RefStatsReferals.vue'
+import RefStatsTable from './RefStatsTable.vue'
 
 
 const now = new Date()
 export default {
 	name: 'RefStats',
 	components: {
-		JobtronTable,
 		JobtronSwitch,
 		RefStatsIndex,
-		RefStatsReferals,
+		RefStatsTable,
 	},
 	props: {
 		filters: {
@@ -151,17 +100,6 @@ export default {
 
 			users: [],
 			tableFields,
-			uncollapsed: [],
-
-			sortCol: 'accepted',
-			sortOrder: 'desc',
-			sortSubCol: 'title',
-			sortSubOrder: 'desc',
-			sortFn: {
-				str: (a, b) => a.localeCompare(b),
-				int: (a, b) => (parseInt(a) || 0) - (parseInt(b) || 0),
-				float: (a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0),
-			},
 
 			paymentDialog: {
 				open: false,
@@ -175,51 +113,6 @@ export default {
 		}
 	},
 	computed: {
-		sorted(){
-			return this.users.slice().sort((a, b) => {
-				if(['title', 'status'].includes(this.sortCol)){
-					return this.sortOrder === 'asc' ? this.sortFn.str(a[this.sortCol], b[this.sortCol]) : this.sortFn.str(b[this.sortCol], a[this.sortCol])
-				}
-				if(['leads', 'deals', 'accepted', 'total', 'month', 'monthRef', 'monthPayd'].includes(this.sortCol)){
-					return this.sortOrder === 'asc' ? this.sortFn.int(a[this.sortCol], b[this.sortCol]) : this.sortFn.int(b[this.sortCol], a[this.sortCol])
-				}
-				return this.sortOrder === 'asc' ? this.sortFn.float(a[this.sortCol], b[this.sortCol]) : this.sortFn.float(b[this.sortCol], a[this.sortCol])
-			})
-		},
-		sortedSubs(){
-			const sorted = {}
-			this.users.forEach(user => {
-				sorted[user.id] = user.users.slice().sort((a, b) => {
-					const aVal = a[this.sortSubCol]
-					const bVal = b[this.sortSubCol]
-					if(['title', 'status'].includes(this.sortSubCol)){
-						return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
-					}
-					return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
-				})
-				user.users.forEach(user2 => {
-					sorted[user2.id] = user2.users.slice().sort((a, b) => {
-						const aVal = a[this.sortSubCol]
-						const bVal = b[this.sortSubCol]
-						if(['title', 'status'].includes(this.sortSubCol)){
-							return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
-						}
-						return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
-					})
-					user2.users.forEach(user3 => {
-						sorted[user3.id] = user3.users.slice().sort((a, b) => {
-							const aVal = a[this.sortSubCol]
-							const bVal = b[this.sortSubCol]
-							if(['title', 'status'].includes(this.sortSubCol)){
-								return this.sortSubOrder === 'asc' ? this.sortFn.str(aVal || '', bVal || '') : this.sortFn.str(bVal || '', aVal || '')
-							}
-							return this.sortSubOrder === 'asc' ? this.sortFn.int(aVal?.sum || 0, bVal?.sum || 0) : this.sortFn.int(bVal?.sum || 0, aVal?.sum || 0)
-						})
-					})
-				})
-			})
-			return sorted
-		},
 		allReferals(){
 			const referals = {}
 			this.users.forEach(user => {
@@ -263,7 +156,13 @@ export default {
 				this.userPrice = data.userPrice
 				this.cvResultDealPercent = data.cvResultDealPercent
 				this.cvDealUserPercent = data.cvDealUserPercent
+				this.earned = data.earned
+				this.paid = data.paid
 				this.users = data.users
+				// this.users = [
+				// 	getFakeReferer(),
+				// 	getFakeReferer(),
+				// ]
 				loader.hide()
 			}
 			catch (error) {
@@ -272,36 +171,6 @@ export default {
 				this.$toast.error('Не удалось получить статистику реферальной программы')
 				window.onerror && window.onerror(error)
 			}
-		},
-		toggleAfter(id){
-			const index = this.uncollapsed.findIndex(uId => uId === id)
-			if(~index){
-				this.uncollapsed.splice(index, 1)
-			}
-			else{
-				this.uncollapsed.push(id)
-			}
-		},
-		rowAfterClass(row){
-			return this.uncollapsed.includes(row.id) ? 'RefStats-afterRowActive' : ''
-		},
-		setSort(key){
-			if(key === 'switch') return
-			if(key === this.sortCol) {
-				this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
-				return
-			}
-			this.sortOrder = key === 'title' ? 'asc' : 'desc'
-			this.sortCol = key
-		},
-		setSubSort(key){
-			if(key === 'switch') return
-			if(key === this.sortSubCol) {
-				this.sortSubOrder = this.sortSubOrder === 'asc' ? 'desc' : 'asc'
-				return
-			}
-			this.sortSubOrder = key === 'title' ? 'asc' : 'desc'
-			this.sortSubCol = key
 		},
 		showPaymentDialog({item, field}){
 			if(!this.$can('referal_edit')) return
@@ -343,149 +212,12 @@ export default {
 
 <style lang="scss">
 .RefStats{
-	$cellpadding: 8px 10px;
-	$bgmargin: -8px -10px;
-
 	overflow-x: auto;
 	font-size: 14px;
 	position: relative;
 
-	&-table{
-		width: auto;
-	}
-	&-header{
-		user-select: none;
-	}
-	.JobtronTable-th,
-	.JobtronTable-td{
-		padding: $cellpadding;
-		font-size: 12px;
-		line-height: 1.1;
-		opacity: 0.9;
-	}
-	.JobtronTable-row:not(.JobtronTable-afterRow){
-		&:hover{
-			.JobtronTable-th,
-			.JobtronTable-td{
-				opacity: 1;
-			}
-		}
-	}
-	.JobtronTable-afterRow{
-		display: none;
-		&.RefStats-afterRowActive{
-			display: table-row;
-		}
-		.JobtronTable,
-		.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child,
-		.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:last-child{
-			border-radius: 0;
-		}
-		.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child::before{
-			display: none;
-		}
-	}
-	&-subtable{
-		margin: $bgmargin;
-		.RefStats{
-			&-subtable{
-				padding-left: 15px;
-			}
-		}
-	}
-
-	&-title{
-		width: 200px;
-		min-width: 200px;
-		max-width: 250px;
-
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	&-money{
-		padding: $cellpadding;
-		margin: $bgmargin;
-		background-color: #fdd;
-		&_paid{
-			background-color: #dfd;
-		}
-	}
 	&-switch{
-		padding: $cellpadding;
-		margin: $bgmargin;
-	}
-
-	.RefStatsReferals{
-		&-subtable{
-			margin: $bgmargin;
-			padding-left: 15px;
-		}
-	}
-	.RefStatsReferals-firstLayer{
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 5);
-				}
-				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 5);
-				}
-				.JobtronTable-td{
-					background-color: #dde9ff;
-				}
-			}
-		}
-	}
-	.RefStatsReferals-secondLayer{
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 10);
-				}
-				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 10);
-				}
-				.JobtronTable-td{
-					background-color: darken(#dde9ff, 5);
-				}
-			}
-		}
-
-	}
-	.RefStatsReferals-thirdLayer{
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 15);
-				}
-				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 15);
-				}
-				.JobtronTable-td{
-					background-color: darken(#dde9ff, 10);
-				}
-			}
-		}
-	}
-	.RefStatsReferals-money{
-		padding: $cellpadding;
-		margin: $bgmargin;
-		background-color: #fdd;
-		&_paid{
-			background-color: #dfd;
-		}
-	}
-	.RefStatsReferals-switch{
-		padding: $cellpadding;
-		margin: $bgmargin;
+		width: 48px;
 	}
 }
 </style>
