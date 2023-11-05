@@ -8,48 +8,59 @@ export const tableFields = [
 	{
 		key: 'title',
 		label: 'Реферер',
-		tdClass: 'text-left RefStats-title',
-		thClass: 'text-left RefStats-title',
+		tdClass: 'text-left RefStatsTable-title',
+		thClass: 'text-left RefStatsTable-title',
 	},
 	{
 		key: 'status',
-		label: 'Статус'
+		label: 'Статус',
+		thClass: 'RefStatsTable-status',
+		tdClass: 'RefStatsTable-status',
 	},
 	{
 		key: 'leads',
-		label: 'Лидов'
+		label: 'Лидов',
+		thClass: 'RefStatsTable-leads',
 	},
 	{
 		key: 'deals',
-		label: 'Сделок'
+		label: 'Сделок',
+		thClass: 'RefStatsTable-deals',
 	},
 	{
 		key: 'leadsToDealPercent',
-		label: 'CV лид/сделка'
+		label: 'CV лид/сделка',
+		thClass: 'RefStatsTable-cv1',
 	},
 	{
 		key: 'accepted',
-		label: 'Принято'
+		label: 'Принято',
+		thClass: 'RefStatsTable-accepted',
 	},
 	{
 		key: 'dealToUserPercent',
-		label: 'CV сделка/принят'
+		label: 'CV сделка/принят',
+		thClass: 'RefStatsTable-cv2',
 	},
 	{
 		key: 'total',
-		label: 'Абсолютно ₸'
+		label: 'Абсолютно ₸',
+		thClass: 'RefStatsTable-total',
 	},
 	{
 		key: 'month',
-		label: 'За месяц'
+		label: 'За месяц',
+		thClass: 'RefStatsTable-month',
 	},
 	{
 		key: 'monthRef',
-		label: 'От рефералов'
+		label: 'От рефералов',
+		thClass: 'RefStatsTable-monthRef',
 	},
 	{
 		key: 'monthPaid',
-		label: 'Выплачено'
+		label: 'Выплачено',
+		thClass: 'RefStatsTable-paid',
 	},
 ]
 
@@ -57,14 +68,16 @@ export const subTableFields = [
 	{
 		key: 'title',
 		label: 'Реферал',
-		tdClass: 'text-left RefStatsReferals-title',
-		thClass: 'text-left RefStatsReferals-title',
+		tdClass: 'text-left RefStatsReferalsTable-title',
+		thClass: 'text-left RefStatsReferalsTable-title',
 		rowspan: 2,
 	},
 	{
 		key: 'status',
 		label: 'Статус',
 		rowspan: 2,
+		thClass: 'RefStatsReferalsTable-status',
+		tdClass: 'RefStatsReferalsTable-status',
 	}
 ]
 
@@ -72,7 +85,7 @@ for(let i = 0; i < 15; ++i){
 	subTableFields.push({
 		key: `${i + 1}`,
 		label: `${i + 1}`,
-		thClass: 'RefStatsReferals-referalValue',
+		thClass: 'RefStatsReferalsTable-referalValue',
 		rowspan: 2,
 		days: true,
 	})
@@ -80,36 +93,66 @@ for(let i = 0; i < 15; ++i){
 subTableFields.push({
 	key: 'attest',
 	label: 'Сдал аттестацию',
+	thClass: 'RefStatsReferalsTable-attest',
 	rowspan: 2,
 })
 subTableFields.push({
 	key: 'firstWeek',
-	label: '1'
+	label: '1',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'secondWeek',
-	label: '2'
+	label: '2',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'thirdWeek',
-	label: '3'
+	label: '3',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'fourthWeek',
-	label: '4'
+	label: '4',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'sixthWeek',
-	label: '6'
+	label: '6',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'eighthWeek',
-	label: '8'
+	label: '8',
+	thClass: 'RefStatsReferalsTable-week',
 })
 subTableFields.push({
 	key: 'twelfthWeek',
-	label: '12'
+	label: '12',
+	thClass: 'RefStatsReferalsTable-week',
 })
+
+export const secondLayersFields = [
+	{
+		key: 'title',
+		label: 'Реферал',
+		tdClass: 'text-left RefStatsReferalsTable-title',
+		thClass: 'text-left RefStatsReferalsTable-title',
+		rowspan: 2,
+	},
+	{
+		key: 'status',
+		label: 'Статус',
+		rowspan: 2,
+		thClass: 'RefStatsReferalsTable-status',
+		tdClass: 'RefStatsReferalsTable-status',
+	},
+	{
+		key: 'firstWeek',
+		label: 'Отработал 1 неделю',
+		thClass: 'RefStatsReferalsTable-week1',
+	}
+]
 
 let fakeId = 0;
 
@@ -140,42 +183,42 @@ export function getFakeReferal(depth = 0){
 		title: `${person.name} ${person.lastName}`,
 		status: getRandomArrayItem(referalStatus),
 		attest: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		firstWeek: {
-			value: Math.random() < 0.5 ? 10000 : 0,
+			sum: Math.random() < 0.5 ? 10000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		secondWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		thirdWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		fourthWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		sixthWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		eighthWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
 		twelfthWeek: {
-			value: Math.random() < 0.5 ? 5000 : 0,
+			sum: Math.random() < 0.5 ? 5000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		},
@@ -183,7 +226,7 @@ export function getFakeReferal(depth = 0){
 	}
 	for(let i = 0; i < 15; ++i){
 		referal[i+1] = {
-			value: Math.random() < 0.5 ? 1000 : 0,
+			sum: Math.random() < 0.5 ? 1000 : 0,
 			paid: Math.random() < 0.5,
 			comment: getRandomArrayItem(comments),
 		}
@@ -212,6 +255,7 @@ export function getFakeReferer(){
 		month: getRandomInt(0, 30) * 1000,
 		monthRef: getRandomInt(0, 20) * 1000,
 		monthPaid: getRandomInt(0, 20) * 1000,
+		avatar: 'https://placekitten.com/200/200',
 		users: [],
 	}
 	for(let i = 0, l = getRandomInt(1, 5); i < l; ++i){
