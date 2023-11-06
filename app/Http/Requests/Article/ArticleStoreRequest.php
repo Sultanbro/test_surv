@@ -59,12 +59,14 @@ class ArticleStoreRequest extends ArticleRequest
             # Poll attributes
             'questions' => ['nullable', 'array'],
             'questions.*' => ['required', 'array'],
+            'questions.*.id' => [],
             'questions.*.multi_answer' => ['required'],
             'questions.*.question' => ['required', 'string'],
             'questions.*.order' => ['required', 'int'],
 
             'questions.*.answers' => ['required', 'array'],
             'questions.*.answers.*' => ['required', 'array'],
+            'questions.*.answers.*.id' => [],
             'questions.*.answers.*.answer' => ['required', 'string'],
             'questions.*.answers.*.order' => ['required', 'int'],
             #

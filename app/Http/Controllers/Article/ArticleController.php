@@ -132,6 +132,19 @@ class ArticleController extends Controller
     }
 
     /**
+     * @param ArticleRequest $request
+     * @return JsonResponse
+     */
+    public function voteForArticle(ArticleRequest $request): JsonResponse
+    {
+        $user = Auth::user();
+        $article = $request->getArticle();
+
+
+        return response()->json(['message' => "Success"]);
+    }
+
+    /**
      * @return JsonResponse
      */
     public function makeViewedArticles(): JsonResponse
