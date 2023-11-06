@@ -20,7 +20,14 @@
 					class="RefStatsTable-switch pointer"
 					@click="toggleAfter(item.id)"
 				>
-					{{ uncollapsed.includes(item.id) ? '-' : '+' }}
+					<i
+						v-if="uncollapsed.includes(item.id)"
+						class="fa fa-minus-circle"
+					/>
+					<i
+						v-else
+						class="fa fa-plus-circle"
+					/>
 				</div>
 			</template>
 			<template #cell(leadsToDealPercent)="{value}">
@@ -309,8 +316,9 @@ export default {
 		}
 	}
 	&-switch{
-		padding: $cellpadding;
+		// padding: $cellpadding;
 		margin: $bgmargin;
+		font-size: 16px;
 	}
 	&-scale{
 		&-enter-active,
