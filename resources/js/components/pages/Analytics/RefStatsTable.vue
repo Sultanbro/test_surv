@@ -40,17 +40,20 @@
 				</div>
 			</template>
 			<template #afterRow="firstLayerData">
-				<div
-					v-if="firstLayerData.value.users.length && (uncollapsed.includes(firstLayerData.value.id) || single)"
-					class="RefStatsTable-subtable"
-				>
-					<RefStatsReferals
-						:user-id="firstLayerData.value.id"
-						:sorted-subs="sortedSubs"
-						@sub-sort="setSubSort"
-						@payment-click="$emit('payment-click', $event)"
-					/>
-				</div>
+				<transition name="RefStatsTable-scale">
+					<div
+						v-if="firstLayerData && firstLayerData.value.users.length && (uncollapsed.includes(firstLayerData.value.id) || single)"
+						class="RefStatsTable-subtable"
+						data-max="10"
+					>
+						<RefStatsReferals
+							:user-id="firstLayerData.value.id"
+							:sorted-subs="sortedSubs"
+							@sub-sort="setSubSort"
+							@payment-click="$emit('payment-click', $event)"
+						/>
+					</div>
+				</transition>
 			</template>
 		</JobtronTable>
 	</div>
@@ -294,6 +297,20 @@ export default {
 	&-switch{
 		padding: $cellpadding;
 		margin: $bgmargin;
+	}
+	&-scale{
+		&-enter-active,
+		&-leave-active{
+			transition: all 0.5s;
+			transform: scale(1);
+			transform-origin: top center;
+		}
+		&-enter,
+		&-leave-to,
+		&-leave-active{
+			transform: scale(1, 0);
+			opacity: 0;
+		}
 	}
 }
 </style>

@@ -169,6 +169,7 @@ export default {
 			return this.layer > 1 ? secondLayersFields : this.subTableFields
 		},
 	},
+	mounted(){},
 	methods: {
 		subsCount(user){
 			return user.reduce((result, user) => result + user.users.length, 0)

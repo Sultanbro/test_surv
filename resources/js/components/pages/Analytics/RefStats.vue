@@ -97,6 +97,8 @@ export default {
 			userPrice: 0,
 			cvResultDealPercent: 0,
 			cvDealUserPercent: 0,
+			earned: 0,
+			paid: 0,
 
 			users: [],
 			tableFields,
