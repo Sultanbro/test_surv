@@ -126,7 +126,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->with('description')
+            ->with('user_description')
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
@@ -139,7 +139,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 $working = $this->salaryFilter->filter(PaidType::WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
-                $referral->is_trainee = $referral->description()->first()->is_trainee;
+                $referral->is_trainee = $referral->user_description->is_trainee;
                 $referral->datetypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),

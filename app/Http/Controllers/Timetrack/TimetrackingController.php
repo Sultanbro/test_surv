@@ -709,7 +709,6 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        // TODO : check in production
         Referring::touchReferrerStatus($user);
         Referring::touchReferrerSalaryForCertificate($user);
 

@@ -43,7 +43,6 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $user = auth()->user();
         return User::query()
             ->where('id', $user->getKey())
-            ->with(['description'])
             ->WhereHas('referralLeads')
             ->with(['referrals', 'referralSalaries'])
             ->withCount(['referralLeads as deals' => fn($query) => $query
