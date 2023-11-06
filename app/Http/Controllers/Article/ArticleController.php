@@ -15,7 +15,6 @@ use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Models\Article\Article;
 use App\Service\Article\ArticleService;
 use App\Service\PaginationService;
-use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,10 +28,11 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $articles = Article::with("views", "questions.answers.votes")->availableFor($user)->filter($filter)
-             ->where('created_at', '>', $user->created_at)
-             ->orderByDesc('created_at');
-
+        $articles = Article::with("views")
+            ->with(["questions" => fn($query) => $query->with(['answers' => fn($query) => $query->with("votes")])])
+            ->availableFor($user)->filter($filter)
+            ->where('created_at', '>', $user->created_at)
+            ->orderByDesc('created_at');
 
         $pinArticles = (clone $articles)
             ->whereHas('pins', function ($q) use ($user) {
@@ -134,14 +134,13 @@ class ArticleController extends Controller
     /**
      * @return JsonResponse
      */
-    public function makeViewedArticles():JsonResponse
+    public function makeViewedArticles(): JsonResponse
     {
         $user = Auth::user();
 
         $unviewedArticles = Article::getUnviewedArticle($user->id);
 
-        foreach($unviewedArticles as $item)
-        {
+        foreach ($unviewedArticles as $item) {
             $item->views()->attach($user->id);
         }
 
