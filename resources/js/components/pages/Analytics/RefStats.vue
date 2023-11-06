@@ -173,6 +173,10 @@ export default {
 				this.$toast.error('Не удалось получить статистику реферальной программы')
 				window.onerror && window.onerror(error)
 			}
+			// this.users = [
+			// 	getFakeReferer(),
+			// 	getFakeReferer(),
+			// ]
 		},
 		showPaymentDialog({item, field}){
 			if(!this.$can('referal_edit')) return

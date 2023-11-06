@@ -43,6 +43,7 @@
 				<transition name="RefStatsTable-scale">
 					<div
 						v-if="firstLayerData && firstLayerData.value.users.length && (uncollapsed.includes(firstLayerData.value.id) || single)"
+						:key="firstLayerData.value.id"
 						class="RefStatsTable-subtable"
 						data-max="10"
 					>
@@ -211,9 +212,22 @@ export default {
 		}
 	}
 	.JobtronTable-afterRow{
-		display: none;
+		// display: none;
+		// opacity: 0;
+		transition: visibility 0.5s;
+		visibility: hidden;
+		> .JobtronTable-td{
+			padding: 0;
+			border-width: 0;
+		}
 		&.RefStats-afterRowActive{
-			display: table-row;
+			// display: table-row;
+			// opacity: 1;
+			visibility: visible;
+			> .JobtronTable-td{
+				padding: 8px 10px;
+				border-width: 1px;
+			}
 		}
 		.JobtronTable,
 		.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child,
@@ -301,8 +315,7 @@ export default {
 	&-scale{
 		&-enter-active,
 		&-leave-active{
-			transition: all 0.5s;
-			transform: scale(1);
+			transition: all .5s;
 			transform-origin: top center;
 		}
 		&-enter,

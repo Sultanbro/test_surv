@@ -94,6 +94,7 @@ subTableFields.push({
 	key: 'attest',
 	label: 'Сдал аттестацию',
 	thClass: 'RefStatsReferalsTable-attest',
+	tdClass: 'RefStatsReferalsTable-attest',
 	rowspan: 2,
 })
 subTableFields.push({

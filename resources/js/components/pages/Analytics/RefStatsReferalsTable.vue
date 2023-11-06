@@ -94,18 +94,20 @@
 			v-if="layer < 3"
 			#afterRow="secondLayerData"
 		>
-			<div
-				v-if="secondLayerData.value.users.length && uncollapsed.includes(secondLayerData.value.id)"
-				class="RefStatsReferalsTable-subtable"
-			>
-				<RefStatsReferalsTable
-					:user-id="secondLayerData.value.id"
-					:sorted-subs="sortedSubs"
-					:layer="layer + 1"
-					@sub-sort="$emit('sub-sort', $event)"
-					@payment-click="$emit('payment-click', $event)"
-				/>
-			</div>
+			<transition name="RefStatsReferalsTable-scale">
+				<div
+					v-if="secondLayerData.value.users.length && uncollapsed.includes(secondLayerData.value.id)"
+					class="RefStatsReferalsTable-subtable"
+				>
+					<RefStatsReferalsTable
+						:user-id="secondLayerData.value.id"
+						:sorted-subs="sortedSubs"
+						:layer="layer + 1"
+						@sub-sort="$emit('sub-sort', $event)"
+						@payment-click="$emit('payment-click', $event)"
+					/>
+				</div>
+			</transition>
 		</template>
 	</JobtronTable>
 </template>
@@ -370,6 +372,21 @@ export default {
 					background-color: darken(#dde9ff, 10);
 				}
 			}
+		}
+	}
+	&-scale{
+		&-enter-active,
+		&-leave-active{
+			transition: all 0.5s;
+			transform: scale(1);
+			transform-origin: top center;
+		}
+		&-enter,
+		&-leave,
+		&-leave-to,
+		&-leave-active{
+			transform: scale(1, 0);
+			opacity: 0;
 		}
 	}
 }
