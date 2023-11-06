@@ -701,6 +701,7 @@ export default {
 
 			this.addButtonToFirstItem();
 
+			this.$forceUpdate()
 			loader.hide();
 		},
 
@@ -724,7 +725,7 @@ export default {
 				});
 			}
 
-			this.filterTable();
+			this.filterTable()
 		},
 
 		addButtonToFirstItem() {
@@ -783,6 +784,7 @@ export default {
 
 				return a
 			})
+			this.$forceUpdate()
 		},
 
 		calculateTotalsRow() {

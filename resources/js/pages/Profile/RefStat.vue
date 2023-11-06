@@ -21,7 +21,7 @@
 						Вы
 					</div>
 					<div class="RefStat-users">
-						<div class="RefStat-user">
+						<div class="RefStat-user RefStat-user_self">
 							<JobtronAvatar
 								:image="`users_img/${user.img_url}`"
 								:title="`${user.name} ${user.last_name}`"
@@ -198,15 +198,16 @@ export default {
 		flex-flow: row nowrap;
 		align-items: center;
 		justify-content: center;
-		gap: 20px;
+		// gap: 20px;
 	}
 	&-user{
+		flex: 0 0 150px;
 		display: flex;
 		flex-flow: column nowrap;
 		align-items: center;
 		gap: 10px;
-		&_top{
-			flex: 0 0 150px
+		&_self{
+			margin-right: 30px;
 		}
 	}
 	.RefStatsTable-title{
