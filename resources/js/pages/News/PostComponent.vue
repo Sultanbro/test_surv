@@ -571,6 +571,7 @@ export default {
 				title: this.currentPost.title,
 				content: this.currentPost.content,
 				files: this.currentPost.files,
+				questions: this.currentPost.questions,
 			})
 		},
 
