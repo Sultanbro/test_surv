@@ -6,7 +6,11 @@ function referalToUser(ref){
 		name: ref.name,
 		lastName: ref.last_name,
 		title: `${ref.last_name} ${ref.name}`,
-		status: ref.referrer_status,
+		status: ref.deleted_at
+			? 'Уволен'
+			: ref.is_trainee
+				? 'Стажер'
+				: 'Работающий',
 	}
 
 	const datetypes = ref.datetypes || {}
