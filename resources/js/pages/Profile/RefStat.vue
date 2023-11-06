@@ -106,7 +106,7 @@ export default {
 		...mapGetters(['user']),
 		...mapState(useReferralStore, [
 			'users',
-			// 'tops',
+			'tops',
 			'accepted',
 			'isReady',
 		]),
