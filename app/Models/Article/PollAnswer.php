@@ -13,7 +13,8 @@ class PollAnswer extends Model
     protected $fillable = [
         'article_id',
         'question_id',
-        'answer'
+        'answer',
+        'order'
     ];
 
     public function poll()

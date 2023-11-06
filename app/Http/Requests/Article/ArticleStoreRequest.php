@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 class ArticleStoreRequest extends ArticleRequest
 {
     protected ?array $availableFor = null;
+    protected ?array $questions = [];
 
     public function prepareForValidation()
     {
@@ -32,9 +33,16 @@ class ArticleStoreRequest extends ArticleRequest
             $availableArray = null;
         }
 
+        if ($this->input('questions') != null) {
+            $questionsArray = json_decode($this->input('questions'), 1);
+        } else {
+            $questionsArray = [];
+        }
+
         $this->merge([
             'files' => $filesArray,
             'available_for' => $availableArray,
+            'questions' => $questionsArray
         ]);
     }
 
@@ -51,7 +59,7 @@ class ArticleStoreRequest extends ArticleRequest
             # Poll attributes
             'questions' => ['nullable', 'array'],
             'questions.*' => ['required', 'array'],
-            'questions.*.multi_answer' => ['required', 'bool'],
+            'questions.*.multi_answer' => ['required'],
             'questions.*.question' => ['required', 'string'],
             'questions.*.order' => ['required', 'int'],
 
@@ -120,12 +128,12 @@ class ArticleStoreRequest extends ArticleRequest
     public function getData(): ArticleStoreDTO
     {
         $validated = parent::validated();
-
         return new ArticleStoreDTO(
             Auth::id(),
             $validated['title'],
             $validated['content'],
             $this->availableFor,
+            $validated['questions'],
             $validated['files'],
         );
     }
