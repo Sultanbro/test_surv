@@ -265,6 +265,7 @@
 				:glossary="glossary"
 				@back="back"
 				@toggleMode="toggleMode"
+				@page-add="fetchData"
 			/>
 		</div>
 
@@ -673,7 +674,6 @@ export default {
 			showBookSettings: false,
 			showArchive: false,
 			showSearch: false,
-
 
 			showEdit: false,
 			show_page_id: 0,
