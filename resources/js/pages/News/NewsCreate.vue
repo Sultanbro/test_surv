@@ -476,14 +476,16 @@ export default {
 					multi_answer: q.multiAnswer,
 					question: q.question,
 					order: index,
-					answers: q.answers.map((a, index) => {
+					answers: q.answers.reduce((result, a, index) => {
+						if(!a.answer) return result
 						const answer = {
 							answer: a.answer,
 							order: index
 						}
 						if(a.id) answer.id = a.id
-						return answer
-					}),
+						result.push(answer)
+						return result
+					}, []),
 				}
 				if(q.id) question.id = q.id
 				return question
