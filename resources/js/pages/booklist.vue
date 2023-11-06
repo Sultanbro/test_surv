@@ -913,10 +913,11 @@ export default {
 			book.author = name
 			book.editor = name
 
-			this.activesbook = book;
-			this.edit_actives_book = true;
-			parent.push(this.activesbook);
-			this.$toast.info('Добавлена страница');
+			this.activesbook = book
+			this.edit_actives_book = true
+			parent.push(this.activesbook)
+			this.$emit('page-add')
+			this.$toast.info('Добавлена страница')
 		},
 
 		deletePage() {
