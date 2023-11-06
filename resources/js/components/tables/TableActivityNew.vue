@@ -161,7 +161,7 @@
 						</template>
 
 						<th
-							v-for="day in month.daysInMonth"
+							v-for="day in daysInMonth"
 							:key="day"
 							class="text-center px-1"
 						>
@@ -233,7 +233,7 @@
 							</td>
 						</template>
 
-						<template v-for="day in month.daysInMonth">
+						<template v-for="day in daysInMonth">
 							<td
 								v-if="item.editable && editable"
 								:key="day"
@@ -572,6 +572,8 @@ export default {
 
 			showHideUsersOverlay: false,
 			activityUsersToShowForm: [],
+
+			daysInMonth: this.month?.daysInMonth,
 		};
 	},
 	computed: {
@@ -604,7 +606,7 @@ export default {
 				const isShowed = this.activityUsersToShowForm.find(u => u.id === user.id)
 				return !isShowed
 			})
-		}
+		},
 	},
 	watch: {
 		activity: function() {
@@ -616,6 +618,12 @@ export default {
 			},
 			deep: true
 		},
+		month: {
+			deep: true,
+			handler(){
+				this.daysInMonth = this.month.daysInMonth
+			}
+		}
 		// user_types() {
 		// 	this.fetchData()
 		// },
