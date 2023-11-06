@@ -577,6 +577,9 @@ export default {
 				group_id: this.currentGroupId,
 			}
 
+
+			this.setMonth()
+			this.setYear()
 			await Promise.all([
 				this.fetchActivities(request),
 				this.fetchDecompositions(request),
@@ -584,8 +587,6 @@ export default {
 				this.fetchFiredInfo(request),
 				this.fetchAnalytics(request),
 			])
-			this.setMonth()
-			this.setYear()
 
 			this.dataLoaded = true
 			this.noan = false
