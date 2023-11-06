@@ -30,6 +30,7 @@ class DailySalaryUpdate extends Command
 
     public function handle(): void
     {
-        $this->updateSalary->touch();
+        $date = $this->argument("date") ?? now()->format("Y-m-d");
+        $this->updateSalary->touch($date);
     }
 }

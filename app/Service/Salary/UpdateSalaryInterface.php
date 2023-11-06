@@ -4,5 +4,5 @@ namespace App\Service\Salary;
 
 interface UpdateSalaryInterface
 {
-    public function touch(): void;
+    public function touch(string $date): void;
 }
