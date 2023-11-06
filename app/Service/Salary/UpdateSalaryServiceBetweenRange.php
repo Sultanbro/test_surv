@@ -38,20 +38,22 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
         ];
     }
 
-    private function updateDaySalary(Collection $users, mixed $date): void
+    private function updateDaySalary(Collection $users, Carbon $date): void
     {
         foreach ($users as $user) {
 
             // Find the salary for the user
 
-            $salary = $user->salaries()->whereDate('date', $date)->first();
+            $salary = $user->salaries()
+                ->whereDate('date', $date->format("Y-m-d"))
+                ->first();
 
             // Find the zarplata for the user
             $zarplata = $user->zarplata;
 
             $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
-            if (!$salary) {
+            if (!$salary || (int)$salary->amount === 0) {
                 $user->salaries()->create([
                     'date' => $date,
                     'note' => '',
