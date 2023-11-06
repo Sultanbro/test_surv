@@ -56,7 +56,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
             if (!$salary || (int)$salary->amount === 0) {
                 $user->salaries()->create([
                     'date' => $date,
-                    'note' => '',
+                    'note' => 'test',
                     'paid' => 0,
                     'bonus' => 0,
                     'comment_paid' => '',
