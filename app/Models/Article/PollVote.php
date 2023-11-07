@@ -15,4 +15,8 @@ class PollVote extends Model
         'answer_id',
         'user_id'
     ];
+
+    protected $casts = [
+        'answer_ids' => 'array'
+    ];
 }

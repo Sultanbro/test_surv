@@ -9,12 +9,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\ArticleIndexRequest;
 use App\Http\Requests\Article\ArticleRequest;
 use App\Http\Requests\Article\ArticleStoreRequest;
+use App\Http\Requests\Article\ArticleVoteRequest;
 use App\Http\Resources\Articles\ArticleResource;
 use App\Http\Resources\Pagination\PaginationResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Models\Article\Article;
+use App\Models\Article\PollVote;
 use App\Service\Article\ArticleService;
 use App\Service\PaginationService;
+use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -132,14 +135,25 @@ class ArticleController extends Controller
     }
 
     /**
-     * @param ArticleRequest $request
+     * @param ArticleVoteRequest $request
      * @return JsonResponse
      */
-    public function voteForArticle(ArticleRequest $request): JsonResponse
+    public function voteForArticle(ArticleVoteRequest $request): JsonResponse
     {
-        $user = Auth::user();
+        $data = $request->validated();
         $article = $request->getArticle();
-
+        /** @var User $user */
+        $user = Auth::user();
+        foreach ($data as $vote) {
+            if (!$user->votes()->where('question_id', $vote['question_id'])->exists()) {
+                PollVote::query()->create([
+                    'article_id' => $article->id,
+                    'question_id' => $vote['question_id'],
+                    'answer_id' => $vote['answer_id'],
+                    'user_id' => $user->id
+                ]);
+            }
+        }
 
         return response()->json(['message' => "Success"]);
     }
