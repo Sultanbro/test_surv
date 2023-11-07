@@ -63,7 +63,7 @@
 <script>
 import {
 	tableFields,
-	// getFakeReferer,
+	getFakeReferer,
 } from './helper'
 import {
 	separateNumber,
@@ -173,10 +173,10 @@ export default {
 				this.$toast.error('Не удалось получить статистику реферальной программы')
 				window.onerror && window.onerror(error)
 			}
-			// this.users = [
-			// 	getFakeReferer(),
-			// 	getFakeReferer(),
-			// ]
+			this.users = [
+				getFakeReferer(),
+				getFakeReferer(),
+			]
 		},
 		showPaymentDialog({item, field}){
 			if(!this.$can('referal_edit')) return
@@ -223,7 +223,7 @@ export default {
 	position: relative;
 
 	&-switch{
-		width: 48px;
+		width: 32px;
 	}
 }
 </style>
