@@ -215,5 +215,9 @@ export default {
 		min-width: 298px;
 		max-width: 298px;
 	}
+
+	.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child::before{
+		display: none;
+	}
 }
 </style>
