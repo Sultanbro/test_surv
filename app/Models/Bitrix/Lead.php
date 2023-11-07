@@ -219,13 +219,19 @@ class Lead extends Model
             ->paginate($date['limit']);
 
         $groups = ProfileGroup::get();
-        $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray());
-
+        $respUsersArray = User::withTrashed()->whereIn('email', $leads->unique('resp_id')->where("resp_id","!=",0)->pluck('resp_id')->toArray())->select('name','last_name','email')->get()->unique('email')->toArray();
+        $respUsers = [];
+        foreach ($respUsersArray as $item)
+        {
+            $respUsers[$item['email']] = [
+                "name"=>$item['name'],
+                "last_name"=>$item['last_name']
+            ];
+        }
         foreach ($leads as $lead) {
 
             $fileLink = 'https://' . tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
             $signedAt = $lead->skyped ?? $lead->inhouse;
-            $respUser = $respUsers->where('email', $lead->resp_id)->first();
 
             $lead->user_type = $lead->skyped ? 'remote' : 'office';
             $lead->file = count(json_decode($lead->files)) > 0 ? $fileLink . json_decode($lead->files)[0] : '';
@@ -236,7 +242,13 @@ class Lead extends Model
             $lead->os = Carbon::parse($signedAt)->timestamp;
             $lead->country = Phone::getCountry($lead->phone);
             $lead->checked = false;
-            $lead->resp = $respUser ? $respUser->FullName : '';
+
+            if ($lead->resp_id !== 0 && array_key_exists($lead->resp_id, $respUsers)) {
+                $resp = $respUsers[$lead->resp_id]['name'] . ' ' . $respUsers[$lead->resp_id]['last_name'];
+            } else {
+                $resp = '';
+            }
+            $lead->resp = $resp;
         }
 
         return $leads;
