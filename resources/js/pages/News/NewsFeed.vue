@@ -126,10 +126,14 @@ export default {
 			}
 			if(!data) return
 
-			this.nextPageURL = data.pagination.next_page_url
-			this.posts = data.articles
-			this.pinnedPosts = data.pinned_articles
-			this.$forceUpdate()
+			this.posts = []
+			this.pinnedPosts = []
+			this.$nextTick(() => {
+				this.nextPageURL = data.pagination.next_page_url
+				this.posts = data.articles
+				this.pinnedPosts = data.pinned_articles
+				this.$forceUpdate()
+			})
 		},
 
 		updatePost(data) {
