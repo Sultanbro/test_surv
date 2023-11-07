@@ -40,22 +40,24 @@
 						Топчики
 					</div>
 					<div class="RefStat-users">
-						<div
-							v-for="topUser in tops"
-							:key="topUser.id"
-							class="RefStat-user RefStat-user_top"
-						>
-							<JobtronAvatar
-								:image="topUser.avatar"
-								:title="`${topUser.name} ${topUser.lastName}`"
-							/>
-							<div class="RefStat-userName">
-								{{ topUser.name }}
+						<template v-for="topUser in tops">
+							<div
+								v-if="topUser.accepted"
+								:key="topUser.id"
+								class="RefStat-user RefStat-user_top"
+							>
+								<JobtronAvatar
+									:image="topUser.avatar"
+									:title="`${topUser.name} ${topUser.lastName}`"
+								/>
+								<div class="RefStat-userName">
+									{{ topUser.name }}
+								</div>
+								<div class="RefStat-userLeads">
+									Принято: {{ topUser.accepted }}
+								</div>
 							</div>
-							<div class="RefStat-userLeads">
-								Принято: {{ topUser.accepted }}
-							</div>
-						</div>
+						</template>
 					</div>
 				</div>
 			</div>
