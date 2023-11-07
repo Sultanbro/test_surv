@@ -75,7 +75,7 @@ import { mapGetters } from 'vuex'
 import { mapState } from 'pinia'
 import { useReferralStore } from '@/stores/Referral'
 import {
-	tableFields,
+	tableFieldsProfile,
 	// getFakeReferer,
 } from '@/components/pages/Analytics/helper'
 
@@ -90,7 +90,7 @@ export default {
 	},
 	data(){
 		return {
-			tableFields,
+			tableFields: tableFieldsProfile,
 			// uncollapsed: [],
 
 			sortSubCol: 'title',

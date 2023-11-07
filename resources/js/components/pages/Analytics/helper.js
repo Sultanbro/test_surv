@@ -64,6 +64,68 @@ export const tableFields = [
 	},
 ]
 
+export const tableFieldsProfile = [
+	{
+		key: 'title',
+		label: 'Реферер',
+		tdClass: 'text-left RefStatsTable-title',
+		thClass: 'text-left RefStatsTable-title',
+	},
+	{
+		key: 'status',
+		label: 'Статус',
+		thClass: 'RefStatsTable-status',
+		tdClass: 'RefStatsTable-status',
+	},
+	{
+		key: 'leads',
+		label: 'Кандидатов',
+		thClass: 'RefStatsTable-profileLeads',
+		hint: 'Оставили заявок по вашей реферальной ссылке',
+	},
+	{
+		key: 'deals',
+		label: 'На обучении',
+		thClass: 'RefStatsTable-profileDeals',
+		hint: 'Приступили к обучению из тех кто оставил заявку',
+	},
+	{
+		key: 'leadsToDealPercent',
+		label: 'CV кандидат/стажер',
+		thClass: 'RefStatsTable-profileCV1',
+	},
+	{
+		key: 'accepted',
+		label: 'Принято',
+		thClass: 'RefStatsTable-accepted',
+	},
+	{
+		key: 'dealToUserPercent',
+		label: 'CV стажер/принят',
+		thClass: 'RefStatsTable-cv2',
+	},
+	{
+		key: 'total',
+		label: 'Абсолютно ₸',
+		thClass: 'RefStatsTable-total',
+	},
+	{
+		key: 'month',
+		label: 'За месяц',
+		thClass: 'RefStatsTable-month',
+	},
+	{
+		key: 'monthRef',
+		label: 'От рефералов',
+		thClass: 'RefStatsTable-monthRef',
+	},
+	{
+		key: 'monthPaid',
+		label: 'Выплачено',
+		thClass: 'RefStatsTable-paid',
+	},
+]
+
 export const subTableFields = [
 	{
 		key: 'title',

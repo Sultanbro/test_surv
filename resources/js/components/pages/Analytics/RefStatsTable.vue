@@ -12,6 +12,13 @@
 					@click="setSort(field.key)"
 				>
 					{{ field.label }}
+					<img
+						v-if="field.hint"
+						v-b-popover.hover="field.hint"
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+					>
 				</div>
 			</template>
 			<template #cell(switch)="{item}">
@@ -271,14 +278,29 @@ export default {
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
+	&-profileLeads{
+		width: 130px;
+		.img-info{
+			vertical-align: middle;
+		}
+	}
 	&-leads{
 		width: 80px;
 	}
+	&-profileDeals{
+		width: 130px;
+		.img-info{
+			vertical-align: middle;
+		}
+	}
 	&-deals{
 		width: 80px;
 	}
 	&-deals{
 		width: 80px;
+	}
+	&-profileCV1{
+		width: 130px;
 	}
 	&-cv1{
 		width: 90px;
