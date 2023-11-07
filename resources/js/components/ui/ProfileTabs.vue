@@ -115,6 +115,7 @@ export default {
 	&-tab{
 		padding-top: 1.5rem;
 		margin-top: 0.1rem;
+		border-top: 4px solid transparent;
 
 		color: #8D8D8D;
 		font-size: 1.7rem;
@@ -122,7 +123,7 @@ export default {
 		line-height: 1.1em;
 		font-weight: 600;
 
-		transition: color 0.3s;
+		transition: color 0.5s, border-color 0.5s;
 		cursor: pointer;
 
 		&_active{
@@ -152,6 +153,8 @@ export default {
 			&-tab{
 				padding-top: 0;
 				padding-bottom: 1.5rem;
+				border-top: none;
+				border-bottom: 4px solid transparent;
 				&_active{
 					border-top: none;
 					border-bottom: 4px solid #ED2353;
