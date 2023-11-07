@@ -17,6 +17,6 @@ class PollVote extends Model
     ];
 
     protected $casts = [
-        'answer_ids' => 'array'
+//        'answers_ids' => 'array'
     ];
 }

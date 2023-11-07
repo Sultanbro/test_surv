@@ -144,14 +144,16 @@ class ArticleController extends Controller
         $article = $request->getArticle();
         /** @var User $user */
         $user = Auth::user();
-        foreach ($data as $vote) {
-            if (!$user->votes()->where('question_id', $vote['question_id'])->exists()) {
-                PollVote::query()->create([
-                    'article_id' => $article->id,
-                    'question_id' => $vote['question_id'],
-                    'answer_id' => $vote['answer_id'],
-                    'user_id' => $user->id
-                ]);
+        foreach ($data as $votes) {
+            foreach ($votes as $vote) {
+                foreach ($vote['answers_ids'] as $answer_id) {
+                    PollVote::query()->create([
+                        'article_id' => $article->id,
+                        'question_id' => $vote['question_id'],
+                        'answer_id' => $answer_id,
+                        'user_id' => $user->id
+                    ]);
+                }
             }
         }
 

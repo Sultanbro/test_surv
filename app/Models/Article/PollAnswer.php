@@ -31,4 +31,12 @@ class PollAnswer extends Model
     {
         return $this->belongsToMany(User::class, 'poll_votes', 'answer_id', 'user_id')->withTrashed();
     }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::deleting(function ($answer) {
+            $answer->votes()->delete();
+        });
+    }
 }

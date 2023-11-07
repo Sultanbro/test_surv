@@ -37,4 +37,14 @@ class PollQuestion extends Model
     {
         return $this->hasMany(PollAnswer::class, 'question_id');
     }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::deleting(function ($question) {
+            $question->answers()->each(function ($answer) {
+                $answer->delete();
+            });
+        });
+    }
 }

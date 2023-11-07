@@ -11,18 +11,6 @@ use Illuminate\Validation\Rule;
 
 class ArticleVoteRequest extends ArticleRequest
 {
-    public function prepareForValidation()
-    {
-        if ($this->input('votes') != null) {
-            $votesArray = json_decode($this->input('votes'), 1);
-        } else {
-            $votesArray = [];
-        }
-
-        $this->merge([
-            'votes' => $votesArray
-        ]);
-    }
 
     public function rules(): array
     {
@@ -30,7 +18,7 @@ class ArticleVoteRequest extends ArticleRequest
             'votes' => ['required', 'array'],
             'votes.*' => ['required', 'array'],
             'votes.*.question_id' => ['required', 'int'],
-            'votes.*.answer_id' => ['required', 'array']
+            'votes.*.answers_ids' => ['required', 'array']
         ];
     }
 }
