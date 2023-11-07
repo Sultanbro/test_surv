@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 class ArticleStoreRequest extends ArticleRequest
 {
     protected ?array $availableFor = null;
+    protected ?array $questions = [];
 
     public function prepareForValidation()
     {
@@ -32,9 +33,16 @@ class ArticleStoreRequest extends ArticleRequest
             $availableArray = null;
         }
 
+        if ($this->input('questions') != null) {
+            $questionsArray = json_decode($this->input('questions'), 1);
+        } else {
+            $questionsArray = [];
+        }
+
         $this->merge([
             'files' => $filesArray,
             'available_for' => $availableArray,
+            'questions' => $questionsArray
         ]);
     }
 
@@ -47,6 +55,21 @@ class ArticleStoreRequest extends ArticleRequest
         return [
             'title' => ['required', 'string', 'max:125',],
             'content' => ['required', 'string', 'max:10000',],
+
+            # Poll attributes
+            'questions' => ['nullable', 'array'],
+            'questions.*' => ['required', 'array'],
+            'questions.*.id' => [],
+            'questions.*.multi_answer' => ['required'],
+            'questions.*.question' => ['required', 'string'],
+            'questions.*.order' => ['required', 'int'],
+
+            'questions.*.answers' => ['required', 'array'],
+            'questions.*.answers.*' => ['required', 'array'],
+            'questions.*.answers.*.id' => [],
+            'questions.*.answers.*.answer' => ['required', 'string'],
+            'questions.*.answers.*.order' => ['required', 'int'],
+            #
 
             'available_for' => ['nullable', 'array'],
             'available_for.*' => [
@@ -107,12 +130,12 @@ class ArticleStoreRequest extends ArticleRequest
     public function getData(): ArticleStoreDTO
     {
         $validated = parent::validated();
-
         return new ArticleStoreDTO(
             Auth::id(),
             $validated['title'],
             $validated['content'],
             $this->availableFor,
+            $validated['questions'],
             $validated['files'],
         );
     }

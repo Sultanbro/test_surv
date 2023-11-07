@@ -9,10 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\ArticleIndexRequest;
 use App\Http\Requests\Article\ArticleRequest;
 use App\Http\Requests\Article\ArticleStoreRequest;
+use App\Http\Requests\Article\ArticleVoteRequest;
 use App\Http\Resources\Articles\ArticleResource;
 use App\Http\Resources\Pagination\PaginationResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Models\Article\Article;
+use App\Models\Article\PollVote;
 use App\Service\Article\ArticleService;
 use App\Service\PaginationService;
 use App\User;
@@ -29,10 +31,11 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $articles = Article::with("views")->availableFor($user)->filter($filter)
-             ->where('created_at', '>', $user->created_at)
-             ->orderByDesc('created_at');
-
+        $articles = Article::with("views")
+            ->with(["questions" => fn($query) => $query->with(['answers' => fn($query) => $query->with("votes")])])
+            ->availableFor($user)->filter($filter)
+            ->where('created_at', '>', $user->created_at)
+            ->orderByDesc('created_at');
 
         $pinArticles = (clone $articles)
             ->whereHas('pins', function ($q) use ($user) {
@@ -132,16 +135,41 @@ class ArticleController extends Controller
     }
 
     /**
+     * @param ArticleVoteRequest $request
      * @return JsonResponse
      */
-    public function makeViewedArticles():JsonResponse
+    public function voteForArticle(ArticleVoteRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $article = $request->getArticle();
+        /** @var User $user */
+        $user = Auth::user();
+        foreach ($data as $votes) {
+            foreach ($votes as $vote) {
+                foreach ($vote['answers_ids'] as $answer_id) {
+                    PollVote::query()->create([
+                        'article_id' => $article->id,
+                        'question_id' => $vote['question_id'],
+                        'answer_id' => $answer_id,
+                        'user_id' => $user->id
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['message' => "Success"]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function makeViewedArticles(): JsonResponse
     {
         $user = Auth::user();
 
         $unviewedArticles = Article::getUnviewedArticle($user->id);
 
-        foreach($unviewedArticles as $item)
-        {
+        foreach ($unviewedArticles as $item) {
             $item->views()->attach($user->id);
         }
 

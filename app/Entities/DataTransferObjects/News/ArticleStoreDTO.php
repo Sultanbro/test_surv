@@ -11,6 +11,7 @@ class ArticleStoreDTO implements Arrayable
      * @param string $title
      * @param string $content
      * @param ?array $availableFor
+     * @param array $questions
      * @param array $files
      */
     public function __construct(
@@ -18,6 +19,7 @@ class ArticleStoreDTO implements Arrayable
         protected string $title,
         protected string $content,
         protected ?array  $availableFor,
+        protected array  $questions,
         protected array  $files,
     )
     {
@@ -51,6 +53,11 @@ class ArticleStoreDTO implements Arrayable
     public function getAvailableFor(): ?array
     {
         return $this->availableFor;
+    }
+
+    public function getQuestions(): array
+    {
+        return $this->questions;
     }
 
     public function getFiles(): array

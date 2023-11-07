@@ -1,5 +1,11 @@
 <template>
-	<div class="d-flex flex-column">
+	<div class="NewsCreate d-flex flex-column">
+		<ProfileTabs
+			v-model="editorType"
+			:tabs="['Опубликовать новость', 'Провести опрос']"
+			bottom
+			head-only
+		/>
 		<div
 			:class="'news-create ' + (editorOpen ? 'news-create--column' : '')"
 			@click="toggleInput(true, null)"
@@ -30,7 +36,7 @@
 				ref="newsCreateInput"
 				v-model="postTitle"
 				type="text"
-				placeholder="Заголовок новости"
+				:placeholder="['Напишите тут заголовок вашей новости', 'Напишите тут заголовок вашего опроса'][editorType]"
 				class="news-create__title"
 			>
 
@@ -105,6 +111,13 @@
 			</span>
 		</div>
 
+		<NewsCreateQNA
+			v-if="editorOpen && editorType === 1"
+			v-model="QNA"
+			@add-question="onAddQuestion"
+			@remove-question="onRemoveQuestion"
+		/>
+
 		<div
 			v-show="editorOpen"
 			:class="'news-create__bottom-menu ' + (fileInputOpen == true ? 'without-border-radius' : '')"
@@ -155,11 +168,15 @@ import {
 	mapActions,
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
+import { getEmptyQuestion } from './helper.js'
+import * as API from '@/stores/api/news.js'
 
 import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
 import DropZone from '@/pages/News/DropZone'
 import JobtronOverlay from '@ui/Overlay.vue'
 import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import ProfileTabs from '@ui/ProfileTabs.vue'
+import NewsCreateQNA from './NewsCreateQNA.vue'
 
 class UploadAdapter {
 	constructor(loader) {
@@ -234,6 +251,8 @@ export default {
 		DropZone,
 		JobtronOverlay,
 		AccessSelect,
+		ProfileTabs,
+		NewsCreateQNA,
 	},
 	props: {
 		me: {
@@ -255,6 +274,7 @@ export default {
 				allowedContent: true
 			},
 
+			editorType: 0,
 			editorOpen: false,
 			fileInputOpen: false,
 
@@ -277,6 +297,8 @@ export default {
 			titleError: false,
 			contentError: false,
 			availableError: false,
+
+			QNA: [getEmptyQuestion()],
 		}
 	},
 	computed: {
@@ -309,9 +331,7 @@ export default {
 				this.$refs.dropZone.fakeClick()
 			}
 
-			if (fileInputOpen) {
-				this.fileInputOpen = fileInputOpen
-			}
+			this.fileInputOpen = fileInputOpen || !!this.postFiles.length
 		},
 
 		updateFileList(data) {
@@ -395,6 +415,8 @@ export default {
 			this.editableId = data.id
 			this.postTitle = data.title
 			this.editorData = data.content
+			this.QNA = data.questions
+			if(data.questions.length) this.editorType = 1
 
 			this.$refs.dropZone.manualyAddFiles(data.files)
 
@@ -424,28 +446,51 @@ export default {
 			formData.append('title', this.postTitle)
 			formData.append('content', this.editorData)
 
+			if(this.editorType) formData.append('questions', JSON.stringify(this.QNA2Request()))
+
 			try {
-				await this.axios.post('/news', formData, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
-				})
-				this.$emit('update-news-list')
-				this.postFiles = []
-				this.postTitle = ''
-				this.editorData = ''
-				this.clearAccessList()
-				this.$refs.dropZone.removeAllFiles()
-				this.toggleInput(false, false)
-				this.$toast.success('Новость сохранена')
-				this.isEdit = false
+				await API.newsCreate(formData)
 			}
 			catch (error) {
 				console.error(error)
 				this.$toast.error('Не удалось сохранить новость')
 				window.onerror && window.onerror(error)
+				return
 			}
+
+			this.$emit('update-news-list')
+			this.postFiles = []
+			this.postTitle = ''
+			this.editorData = ''
+			this.clearAccessList()
+			this.$refs.dropZone.removeAllFiles()
+			this.toggleInput(false, false)
+			this.$toast.success('Новость сохранена')
+			this.isEdit = false
+		},
+
+		QNA2Request(){
+			/* eslint-disable camelcase */
+			return this.QNA.map((q, index) => {
+				const question = {
+					multi_answer: q.multiAnswer,
+					question: q.question,
+					order: index,
+					answers: q.answers.reduce((result, a, index) => {
+						if(!a.answer) return result
+						const answer = {
+							answer: a.answer,
+							order: index
+						}
+						if(a.id) answer.id = a.id
+						result.push(answer)
+						return result
+					}, []),
+				}
+				if(q.id) question.id = q.id
+				return question
+			})
+			/* eslint-enable camelcase */
 		},
 
 		async updatePost() {
@@ -461,7 +506,6 @@ export default {
 
 			formData.append('available_for', this.availableToEveryone || allChecked ? '' : JSON.stringify(this.accessList))
 
-
 			if (this.postFiles.length != 0) {
 				const fileIds = []
 
@@ -471,32 +515,71 @@ export default {
 
 			formData.append('title', this.postTitle)
 			formData.append('content', this.editorData)
-			formData.append('_method', 'put')
+
+			if(this.editorType) formData.append('questions', JSON.stringify(this.QNA2Request()))
 
 			try {
-				await this.axios.post('/news/' + this.editableId, formData, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
-				})
-				this.$emit('update-news-list')
-				this.postFiles = []
-				this.postTitle = ''
-				this.editorData = ''
-				this.editableId = null
-				this.clearAccessList()
-				this.$refs.dropZone.removeAllFiles()
-				this.toggleInput(false, false)
-				this.$toast.success('Новость сохранена')
-				this.isEdit = false
+				await API.newsUpdate(this.editableId, formData)
 			}
 			catch (error) {
 				console.error(error)
 				this.$toast.error('Не удалось сохранить новость')
 				window.onerror && window.onerror(error)
+				return
 			}
+
+			this.$emit('update-news-list')
+			this.postFiles = []
+			this.postTitle = ''
+			this.editorData = ''
+			this.editableId = null
+			this.clearAccessList()
+			this.$refs.dropZone.removeAllFiles()
+			this.toggleInput(false, false)
+			this.$toast.success('Новость сохранена')
+			this.isEdit = false
+		},
+
+		// QWRTRT
+		onAddQuestion(){
+			const empty = getEmptyQuestion()
+			if(this.editableId) empty.articleId = this.editableId
+			this.QNA.push(empty)
+		},
+		onRemoveQuestion(index){
+			if(!confirm('Удалить вопрос?')) return
+			this.QNA.splice(index, 1)
 		},
 	}
 }
 </script>
+
+<style lang="scss">
+.NewsCreate{
+	.ProfileTabs{
+		padding-top: 20px;
+		padding-bottom: 0;
+		margin-left: 20px;
+		margin-right: 20px;
+		&-tab{
+			&_active{
+				border-top: 4px solid #156AE8;
+				color: #156AE8;
+			}
+			&:hover{
+				color: #156AE8;
+			}
+		}
+		&_bottom{
+			.ProfileTabs{
+				&-tab{
+					&_active{
+						border-top: none;
+						border-bottom: 4px solid #156AE8;
+					}
+				}
+			}
+		}
+	}
+}
+</style>

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Articles;
 
 use App\Helpers\DateHelper;
+use App\Http\Resources\Articles\Poll\ArticlePollQuestionResource;
 use App\Http\Resources\Files\FileResource;
 use App\Http\Resources\Likes\LikeResource;
 use App\Http\Resources\Users\UserResource;
@@ -42,6 +43,7 @@ class ArticleResource extends JsonResource
             'is_pinned' => $this->repository->isPinned($this->resource, Auth::user()),
             'viewers' => UserResource::collection($this->resource->views)->toArray($request),
             'views_count' => $this->repository->viewsCount($this->resource),
+            'questions' => ArticlePollQuestionResource::collection($this->resource->questions),
             'files' => FileResource::collection($this->resource->files)->toArray($request),
         ];
     }

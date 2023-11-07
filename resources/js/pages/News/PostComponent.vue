@@ -169,6 +169,13 @@
 			>
 				{{ showFullContent ? 'Скрыть подробности' : 'Показать полностью' }}
 			</span>
+
+			<NewsQNA
+				v-if="currentPost.questions && currentPost.questions.length"
+				:qna="currentPost.questions"
+				@vote="onVote"
+			/>
+
 			<div class="news-item__footer">
 				<div class="news-item__footer-actions">
 					<div class="news-item__footer-action">
@@ -215,7 +222,10 @@
 					@mouseover="mouseEnterViews"
 					@mouseleave="mouseLeaveViews"
 				>
-					<img src="/icon/news/some-icons/view.svg">
+					<img
+						class="news-icon2"
+						src="/icon/news/some-icons/view.svg"
+					>
 					<span class="news-item__footer-count">{{ currentPost.views_count }}</span>
 					<PopupMenu
 						v-click-outside="closeViews"
@@ -309,11 +319,13 @@
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronAvatar from '@ui/Avatar'
+import NewsQNA from './NewsQNA'
 
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { usePortalStore } from '@/stores/Portal'
 import { mapState, mapActions } from 'pinia'
 import { pluralForm } from '@/composables/pluralForm.js'
+import * as API from '@/stores/api/news.js'
 
 const imageTypes = {
 	png: 'image/png',
@@ -332,6 +344,7 @@ export default {
 		CommentsComponent,
 		PopupMenu,
 		JobtronAvatar,
+		NewsQNA,
 	},
 	props: {
 		post: {
@@ -479,7 +492,7 @@ export default {
 
 		async likePost(id) {
 			try {
-				await this.axios.post('/news/' + id + '/like')
+				await API.newsLike(id)
 				if (this.currentPost.is_liked) {
 					this.currentPost.likes_count--
 				}
@@ -495,8 +508,8 @@ export default {
 
 		async viewsChanged() {
 			try {
-				const {data} = await this.axios.post('news/' + this.currentPost.id + '/views')
-				this.currentPost.views_count = data.data.views_count;
+				const {views_count} = await API.newsViews(this.currentPost.id)
+				this.currentPost.views_count = views_count
 			}
 			catch (error) {
 				console.error(error)
@@ -506,7 +519,7 @@ export default {
 
 		async favouritePost(id) {
 			try {
-				await this.axios.post('news/' + id + '/favourite')
+				await API.newsFavourite(id)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}
@@ -517,8 +530,8 @@ export default {
 
 		async pinPost(id) {
 			try {
-				const data = await this.axios.post('/news/' + id + '/pin')
-				this.post.is_pinned = data.data.is_pinned
+				const {is_pinned} = await API.newsPin(id)
+				this.post.is_pinned = is_pinned
 				this.showFullContent = false
 			}
 			catch (error) {
@@ -529,20 +542,21 @@ export default {
 		async sendComment(postId) {
 			if (this.commentText == '') return
 
-			const formData = new FormData;
+			const formData = new FormData
 			formData.set('content', this.commentText)
-			this.commentText = ''
 			formData.append('parent_id', this.parentId == null ? '' : this.parentId)
-			this.parentId = null
 
 			try {
-				await this.axios.post('/news/' + postId + '/comments', formData)
+				await API.newsComment(postId, formData)
 				this.currentPost.comments_count = this.currentPost.comments_count + 1
 				this.getPostComments(postId)
 			}
 			catch (error) {
 				console.error(error)
 			}
+
+			this.commentText = ''
+			this.parentId = null
 		},
 
 		editPost() {
@@ -558,12 +572,13 @@ export default {
 				title: this.currentPost.title,
 				content: this.currentPost.content,
 				files: this.currentPost.files,
+				questions: JSON.parse(JSON.stringify(this.currentPost.questions)),
 			})
 		},
 
 		async deletePost(postId) {
 			try {
-				await this.axios.delete('/news/' + postId)
+				await API.newsDelete(postId)
 				this.toggleShowPopup()
 				this.$emit('update-news-list')
 			}
@@ -582,11 +597,36 @@ export default {
 			this.isViewsPopup = !this.isViewsPopup
 		},
 		mouseEnterViews(){
-			this.viewsPopupTimeout = setTimeout(this.openViews, 1000)
+			// this.viewsPopupTimeout = setTimeout(this.openViews, 1000)
 		},
 		mouseLeaveViews(){
-			clearTimeout(this.viewsPopupTimeout)
+			// clearTimeout(this.viewsPopupTimeout)
 		},
+		async onVote(data){
+			const votes = Object.entries(data)
+			try {
+				await API.newsVote(this.currentPost.id, {
+					votes: votes.map(([key, value]) => {
+						return {
+							question_id: key,
+							answers_ids: Array.isArray(value) ? value : [value]
+						}
+					})
+				})
+				votes.forEach(([key, value]) => {
+					const question = this.currentPost.questions.find(question => question.id === parseInt(key))
+					const answers = question.answers.filter(answer => Array.isArray(value) ? value.includes(answer.id) : value === answer.id)
+					answers.forEach(answer => {
+						if(!answer.votes) answer.votes = []
+						answer.votes.push(this.me)
+					})
+				})
+			}
+			catch (error) {
+				console.error(error)
+			}
+
+		}
 	}
 }
 </script>

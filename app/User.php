@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
+use App\Models\Article\PollVote;
 use App\Models\Award\Award;
 use App\Models\Bitrix\Lead;
 use App\Models\CentralUser;
@@ -249,6 +250,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             'user_id',
             'article_id'
         );
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(PollVote::class);
     }
 
     /**

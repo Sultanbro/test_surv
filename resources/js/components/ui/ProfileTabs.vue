@@ -3,7 +3,8 @@
 		v-if="tabs && tabs.length"
 		class="ProfileTabs"
 		:class="{
-			'custom-scroll': scroll
+			'custom-scroll': scroll,
+			'ProfileTabs_bottom': bottom,
 		}"
 	>
 		<!-- tabs -->
@@ -68,6 +69,14 @@ export default {
 		value: {
 			type: Number,
 			default: 0
+		},
+		headOnly: {
+			type: Boolean,
+			default: false
+		},
+		bottom: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){
@@ -130,6 +139,25 @@ export default {
 		display: none;
 		&_active{
 			display: block;
+		}
+	}
+
+
+	&_bottom{
+		.ProfileTabs{
+			&-wrapper{
+				border-top: none;
+				border-bottom: 1px solid #ededed;
+			}
+			&-tab{
+				padding-top: 0;
+				padding-bottom: 1.5rem;
+				&_active{
+					border-top: none;
+					border-bottom: 4px solid #ED2353;
+					color: #ED2353;
+				}
+			}
 		}
 	}
 }
