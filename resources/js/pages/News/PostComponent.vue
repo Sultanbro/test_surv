@@ -572,7 +572,7 @@ export default {
 				title: this.currentPost.title,
 				content: this.currentPost.content,
 				files: this.currentPost.files,
-				questions: this.currentPost.questions,
+				questions: JSON.parse(JSON.stringify(this.currentPost.questions)),
 			})
 		},
 
@@ -605,12 +605,14 @@ export default {
 		async onVote(data){
 			const votes = Object.entries(data)
 			try {
-				await API.newsVote(this.currentPost.id, votes.map(([key, value]) => {
-					return {
-						question_id: key,
-						answers_ids: Array.isArray(value) ? value : [value]
-					}
-				}))
+				await API.newsVote(this.currentPost.id, {
+					votes: votes.map(([key, value]) => {
+						return {
+							question_id: key,
+							answers_ids: Array.isArray(value) ? value : [value]
+						}
+					})
+				})
 				votes.forEach(([key, value]) => {
 					const question = this.currentPost.questions.find(question => question.id === parseInt(key))
 					const answers = question.answers.filter(answer => Array.isArray(value) ? value.includes(answer.id) : value === answer.id)
