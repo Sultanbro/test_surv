@@ -73,7 +73,18 @@ export default {
 		onChange(item, values){
 			this.votes[item.id] = values
 		},
-		onSend(){},
+		onSend(){
+			if(!this.validate) return this.$toast.warning('Выберите варианты ответов')
+			this.$emit('vote', this.votes)
+		},
+		validate(){
+			return this.qna.every(item => {
+				const vote = this.votes[item.id]
+				return Array.isArray(vote)
+					? !!vote.length
+					: !!vote
+			})
+		}
 	}
 }
 </script>

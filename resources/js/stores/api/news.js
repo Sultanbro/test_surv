@@ -78,6 +78,11 @@ export async function newsPin(id){
 	return data.data
 }
 
+export async function newsVote(id, request){
+	const { data } = await axios.post(`/news/${id}/vote`, request)
+	return data.data
+}
+
 // переделать на request
 export async function newsComment(id, formData){
 	const { data } = await axios.post(`/news/${id}/comments`, formData)
