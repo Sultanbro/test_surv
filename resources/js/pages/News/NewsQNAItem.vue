@@ -71,8 +71,8 @@
 											class="NewsQNAItem-user"
 										>
 											<JobtronAvatar
-												:title="`${vote.name} ${vote.last_name}`"
-												:image="`/users_img/${vote.img_url}`"
+												:title="vote.name"
+												:image="vote.avatar"
 												:size="24"
 											/>
 											{{ vote.name }} {{ vote.last_name }}

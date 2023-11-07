@@ -173,6 +173,7 @@
 			<NewsQNA
 				v-if="currentPost.questions && currentPost.questions.length"
 				:qna="currentPost.questions"
+				@vote="onVote"
 			/>
 
 			<div class="news-item__footer">
@@ -601,6 +602,29 @@ export default {
 		mouseLeaveViews(){
 			// clearTimeout(this.viewsPopupTimeout)
 		},
+		async onVote(data){
+			const votes = Object.entries(data)
+			try {
+				await API.newsVote(this.currentPost.id, votes.map(([key, value]) => {
+					return {
+						question_id: key,
+						answers_ids: Array.isArray(value) ? value : [value]
+					}
+				}))
+				votes.forEach(([key, value]) => {
+					const question = this.currentPost.questions.find(question => question.id === parseInt(key))
+					const answers = question.answers.filter(answer => Array.isArray(value) ? value.includes(answer.id) : value === answer.id)
+					answers.forEach(answer => {
+						if(!answer.votes) answer.votes = []
+						answer.votes.push(this.me)
+					})
+				})
+			}
+			catch (error) {
+				console.error(error)
+			}
+
+		}
 	}
 }
 </script>
