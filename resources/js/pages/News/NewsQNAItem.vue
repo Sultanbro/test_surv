@@ -286,6 +286,15 @@ export default {
 	}
 	&-radio{
 		order: 1;
+		position: relative;
+		.custom-control-label{
+			position: absolute;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
 		&:hover{
 			.custom-control-label:before{
 				border-color: #000 !important;
