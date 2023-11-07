@@ -67,7 +67,14 @@
 				class="RefStatsReferalsTable-switchCell pointer"
 				@click="toggleAfter(item.id)"
 			>
-				{{ uncollapsed.includes(item.id) ? '-' : '+' }}
+				<i
+					v-if="uncollapsed.includes(item.id)"
+					class="fa fa-minus-circle"
+				/>
+				<i
+					v-else
+					class="fa fa-plus-circle"
+				/>
 			</div>
 		</template>
 		<template #cell(title)="{value}">
@@ -94,18 +101,20 @@
 			v-if="layer < 3"
 			#afterRow="secondLayerData"
 		>
-			<div
-				v-if="secondLayerData.value.users.length && uncollapsed.includes(secondLayerData.value.id)"
-				class="RefStatsReferalsTable-subtable"
-			>
-				<RefStatsReferalsTable
-					:user-id="secondLayerData.value.id"
-					:sorted-subs="sortedSubs"
-					:layer="layer + 1"
-					@sub-sort="$emit('sub-sort', $event)"
-					@payment-click="$emit('payment-click', $event)"
-				/>
-			</div>
+			<transition name="RefStatsReferalsTable-scale">
+				<div
+					v-if="secondLayerData.value.users.length && uncollapsed.includes(secondLayerData.value.id)"
+					class="RefStatsReferalsTable-subtable"
+				>
+					<RefStatsReferalsTable
+						:user-id="secondLayerData.value.id"
+						:sorted-subs="sortedSubs"
+						:layer="layer + 1"
+						@sub-sort="$emit('sub-sort', $event)"
+						@payment-click="$emit('payment-click', $event)"
+					/>
+				</div>
+			</transition>
 		</template>
 	</JobtronTable>
 </template>
@@ -198,7 +207,7 @@ export default {
 	table-layout: fixed;
 
 	&-subtable{
-		padding-left: 8px;
+		// padding-left: 8px;
 		margin: $bgmargin;
 		position: relative;
 	}
@@ -207,7 +216,7 @@ export default {
 		user-select: none;
 	}
 	&-switch{
-		width: 48px;
+		width: 32px;
 
 		position: sticky;
 		z-index: 1;
@@ -219,14 +228,14 @@ export default {
 				min-width: 250px;
 				max-width: 250px;
 
-				left: 48px;
+				left: 32px;
 			}
 		}
 	}
 	&-title{
-		width: 298px;
-		min-width: 298px;
-		max-width: 298px;
+		width: 282px;
+		min-width: 282px;
+		max-width: 282px;
 
 		position: sticky;
 		z-index: 1;
@@ -246,7 +255,7 @@ export default {
 
 		position: sticky;
 		z-index: 1;
-		left: 298px;
+		left: 282px;
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -277,8 +286,9 @@ export default {
 		}
 	}
 	&-switchCell{
-		padding: $cellpadding;
+		// padding: $cellpadding;
 		margin: $bgmargin;
+		font-size: 16px;
 	}
 
 	&_firstLayer{
@@ -301,22 +311,20 @@ export default {
 	&_secondLayer{
 		.RefStatsReferalsTable{
 			&-switch{
-				width: 40px;
-				left: 8px;
+				width: 32px;
 				~ .RefStatsReferalsTable{
 					&-title{
 						width: 250px;
 						min-width: 250px;
 						max-width: 250px;
-						left: 48px;
+						left: 32px;
 					}
 				}
 			}
 			&-title{
-				width: 290px;
-				min-width: 290px;
-				max-width: 290px;
-				left: 8px;
+				width: 282px;
+				min-width: 282px;
+				max-width: 282px;
 			}
 		}
 		> .JobtronTable-head,
@@ -339,13 +347,12 @@ export default {
 		.RefStatsReferalsTable{
 			&-switch{
 				width: 32px;
-				left: 16px;
 				~ .RefStatsReferalsTable{
 					&-title{
 						width: 250px;
 						min-width: 250px;
 						max-width: 250px;
-						left: 48px;
+						left: 32px;
 					}
 				}
 			}
@@ -353,7 +360,6 @@ export default {
 				width: 282px;
 				min-width: 282px;
 				max-width: 282px;
-				left: 16px;
 			}
 		}
 		> .JobtronTable-head,
@@ -370,6 +376,21 @@ export default {
 					background-color: darken(#dde9ff, 10);
 				}
 			}
+		}
+	}
+	&-scale{
+		&-enter-active,
+		&-leave-active{
+			transition: all 0.5s;
+			transform: scale(1);
+			transform-origin: top center;
+		}
+		&-enter,
+		&-leave,
+		&-leave-to,
+		&-leave-active{
+			transform: scale(1, 0);
+			opacity: 0;
 		}
 	}
 }
