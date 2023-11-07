@@ -219,7 +219,7 @@ class Lead extends Model
             ->paginate($date['limit']);
 
         $groups = ProfileGroup::get();
-        $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray())->first();
+        $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray());
 
         foreach ($leads as $lead) {
 
