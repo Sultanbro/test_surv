@@ -275,7 +275,7 @@ export default {
 		align-items: center;
 		gap: 5px;
 
-		padding: 2px 4px;
+		padding: 2px 18px;
 		white-space: nowrap;
 	}
 	&-percent{
