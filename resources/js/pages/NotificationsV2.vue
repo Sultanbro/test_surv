@@ -27,6 +27,9 @@
 					<b-tr>
 						<b-th>№</b-th>
 						<b-th>
+							Название
+						</b-th>
+						<b-th>
 							Текст уведомления
 						</b-th>
 						<b-th class="text-center">
@@ -54,6 +57,12 @@
 					>
 						<b-td @click="openEditSidebar(notification)">
 							{{ key + 1 }}
+						</b-td>
+						<b-td
+							class=""
+							@click="openEditSidebar(notification)"
+						>
+							{{ notification.name }}
 						</b-td>
 						<b-td
 							class="NotificationsV2-text"
