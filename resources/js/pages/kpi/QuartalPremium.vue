@@ -855,6 +855,7 @@ export default {
 	methods: {
 		changeStatus(item, e){
 			if(this.statusRequest) return
+			if(item.is_active === e) return
 			this.statusRequest = true
 			this.axios.post('/quartal-premiums/set/status', {
 				premium_id: item.id,
