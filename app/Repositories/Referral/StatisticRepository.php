@@ -151,7 +151,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals()->count()) {
+                if ($referral->referrals()->withTrashed()->count()) {
 
                     if ($step <= 3) {
                         $referral->users = $this->schedule($referral, $step + 1);
@@ -199,6 +199,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         $total = 0;
         /** @var Collection<User> $referrers */
         $referrers = $user->referrals()
+            ->withTrashed()
             ->whereHas('referralLeads')
             ->get();
         foreach ($referrers as $referrer) {
