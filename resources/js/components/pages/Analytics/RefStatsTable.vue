@@ -64,6 +64,7 @@
 						<RefStatsReferals
 							:user-id="firstLayerData.value.id"
 							:sorted-subs="sortedSubs"
+							:hint-comments="hintComments"
 							@sub-sort="setSubSort"
 							@payment-click="$emit('payment-click', $event)"
 						/>
@@ -99,7 +100,10 @@ export default {
 		},
 		single: {
 			type: Boolean
-		}
+		},
+		hintComments: {
+			type: Boolean
+		},
 	},
 	data(){
 		return {

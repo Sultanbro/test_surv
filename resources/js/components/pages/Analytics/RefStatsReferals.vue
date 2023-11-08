@@ -4,6 +4,7 @@
 			:user-id="userId"
 			:sorted-subs="sortedSubs"
 			:layer="1"
+			:hint-comments="hintComments"
 			@sub-sort="$emit('sub-sort', $event)"
 			@payment-click="$emit('payment-click', $event)"
 		/>
@@ -26,6 +27,9 @@ export default {
 		sortedSubs: {
 			type: Object,
 			default: () => ({}),
+		},
+		hintComments: {
+			type: Boolean
 		},
 	},
 	data(){
