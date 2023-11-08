@@ -99,16 +99,17 @@
 					'RefStatsReferalsTable-money_paid': value.sum > 0 && value.paid,
 					'pointer usn': $can('referal_edit'),
 				}"
-				:title="value.comment"
+				:title="hintComments ? '' : value.comment"
 				@click="$emit('payment-click', {item, field})"
 			>
 				{{ value.sum || '' }}
 				<img
 					v-if="hintComments && value.comment && value.sum > 0"
-					v-b-popover.html.hover="value.comment.replaceAll('\n', '<br>')"
+					v-b-popover.click.blur.html="value.comment.replaceAll('\n', '<br>')"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
+					tabindex="-1"
 				>
 			</div>
 		</template>
