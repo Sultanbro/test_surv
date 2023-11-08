@@ -97,9 +97,10 @@ class AwardController extends Controller
 
     public function addPreviewSecond(Request $request,CertificateAwardService $service)
     {
-        $award = \DB::table('award_user')
+        $award = \DB::table('award_course')
             ->where('user_id',$request->user_id)
             ->where('award_id',$request->award_id)
+            ->where('course_id',$request->course_id)
             ->where('path',$request->path);
         if ($request->has('preview')) {
             $preview = $service->saveAwardPreview($request);
