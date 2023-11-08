@@ -57,15 +57,9 @@ final class Analytics
 
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
 
-        $columns = AnalyticColumn::query()
-            ->where('date', $date)
-            ->where('group_id', $dto->groupId)
-            ->orderBy('order')
-            ->get();
-        $stats = AnalyticStat::with('activity')
-            ->where('date', $date)
-            ->where('group_id', $dto->groupId)
-            ->get();
+        $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
+
+        $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = Activity::withTrashed()->where('group_id', $dto->groupId)->get();
 
