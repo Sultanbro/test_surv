@@ -723,6 +723,8 @@ class Messenger {
 
         $message->deletedMessage()->attach($promote->id);
 
+        if($message->chat_id == 0) $message->chat = self::getGeneralChat();
+
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_DELETE, [
             'message_id' => $messageId,
         ] );
