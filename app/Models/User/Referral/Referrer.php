@@ -25,7 +25,9 @@ trait Referrer
             __CLASS__
             , 'referrer_id'
             , 'id'
-        )->whereRelation('description', 'is_trainee', 0);
+        )
+            ->withTrashed()
+            ->whereRelation('description', 'is_trainee', 0);
     }
 
     public function referrer(): BelongsTo
