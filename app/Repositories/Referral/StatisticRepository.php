@@ -88,22 +88,24 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $this->baseQuery()
             ->get()
             ->map(function (User $user) {
-                $applies = $this->getAppliedReferrals($user);
-                $user->month_paid = $user->referralSalaries()
+                $user->month_paid = $user->referralSalaries
                     ->where('is_paid', true)
-                    ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
-                    ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
+                    ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
+                    ->where('date', '<=', $this->dateEnd()->format("Y-m-d"))
                     ->sum("amount");
+
                 $user->absolute_earned = $user->referralSalaries
                     ->sum("amount");
-                $user->month_earned = $user->referralSalaries()
-                    ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
-                    ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
+
+                $user->month_earned = $user->referralSalaries
+                    ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
+                    ->where('date', '<=', $this->dateEnd()->format("Y-m-d"))
                     ->sum("amount");
+
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
-                $user->appiled_deal_conversion_ratio = $this->getRatio($applies->count(), $user->deals);
-                $user->applieds = $applies->count();
+                $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
+
                 $user->users = $this->schedule($user);
                 return $user;
             })
@@ -112,9 +114,10 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function baseQuery(): Builder
     {
-        return User::withTrashed()
+        return User::query()
             ->WhereHas('referralLeads')
             ->with(['referralSalaries'])
+            ->withCount('appliedReferrals as applieds')
             ->withCount(['referralLeads as deals' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)
                 ->where('deal_id', '>', 0)])
@@ -126,6 +129,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
+            ->withTrashed()
             ->with(['user_description', 'referrals', 'referralSalaries'])
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
@@ -140,7 +144,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $working = $this->salaryFilter->filter(PaidType::WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
 
-                $referral->is_trainee = $referral->user_description->is_trainee;
+                $referral->is_trainee = $referral->user_description?->is_trainee;
                 $referral->datetypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
@@ -287,13 +291,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereMonth('enter', '=', $date->month)
             ->whereYear('enter', $date->year)
             ->orderBy('id', 'ASC')
-            ->get();
-    }
-
-    private function getAppliedReferrals(User $user): Collection
-    {
-        return $user->referrals()
-            ->whereRelation('description', 'is_trainee', 0)
             ->get();
     }
 

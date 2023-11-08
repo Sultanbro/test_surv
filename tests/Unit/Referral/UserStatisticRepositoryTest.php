@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Referral;
 
+use App\Models\Bitrix\Lead;
 use App\Repositories\Referral\UserStatisticRepository;
 use App\User;
 use Illuminate\Support\Collection;
@@ -27,6 +28,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
         $this->seedData($user);
         $repo = app(UserStatisticRepository::class);
         $result = $repo->statistic([]);
+        dd($result);
         DB::rollBack();
     }
 
@@ -46,6 +48,10 @@ class UserStatisticRepositoryTest extends TenantTestCase
         ]);
 
         foreach ($referrals as $referral) {
+            Lead::factory()->create([
+                'referrer_id' => $referrer->getKey(),
+                'user_id' => $referral->getKey(),
+            ]);
             $referral->description()->create([
                 'is_trainee' => false,
             ]);

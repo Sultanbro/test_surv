@@ -19,6 +19,15 @@ trait Referrer
         );
     }
 
+    public function appliedReferrals(): hasMany
+    {
+        return $this->hasMany(
+            __CLASS__
+            , 'referrer_id'
+            , 'id'
+        )->whereRelation('description', 'is_trainee', 0);
+    }
+
     public function referrer(): BelongsTo
     {
         return $this->belongsTo(
