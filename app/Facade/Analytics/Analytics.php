@@ -10,32 +10,62 @@ use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
-use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\TopValue as ValueModel;
 use App\Models\Analytics\UserStat;
-use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
+use App\Repositories\Analytics\AnalyticColumnRepository;
+use App\Repositories\Analytics\AnalyticRowRepository;
+use App\Repositories\Analytics\AnalyticStatRepository;
 use App\Timetracking;
 use App\Traits\AnalyticTrait;
-use App\WorkingDay;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 final class Analytics
 {
-    const VALUE_PLAN = 'plan';
-    const VALUE_IMPL = 'Impl';
-
     use AnalyticTrait;
+
+    public function __construct(
+        private readonly AnalyticRowRepository    $rowRepository,
+        private readonly AnalyticColumnRepository $columnRepository,
+        private readonly AnalyticStatRepository   $statRepository,
+    )
+    {
+    }
+
+    public static function getClass(string $name, ?AnalyticRow $depending_from_row, array $weekdays): string
+    {
+        if (!in_array((int)$name, $weekdays) && !in_array($name, ['plan', 'sum', 'avg', 'name'])) { // weekday coloring
+            $add_class = ' weekday';
+        } else {
+            $add_class = '';
+        }
+
+        if (!in_array($name, ['sum', 'avg', 'name'])) {
+            $add_class .= ' text-center';
+        }
+
+        if ($depending_from_row) {
+            $add_class .= ' bg-violet';
+        }
+        return $add_class;
+    }
 
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $rows = AnalyticRow::query()->where('date', $date)->where('group_id', $dto->groupId)->orderByDesc('order')->get();
-        $columns = AnalyticColumn::query()->where('date', $date)->where('group_id', $dto->groupId)->orderBy('order', 'asc')->get();
-        $stats = AnalyticStat::with('activity')->where('date', $date)->where('group_id', $dto->groupId)->get();
+
+        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
+
+        $columns = AnalyticColumn::query()
+            ->where('date', $date)
+            ->where('group_id', $dto->groupId)
+            ->orderBy('order')
+            ->get();
+        $stats = AnalyticStat::with('activity')
+            ->where('date', $date)
+            ->where('group_id', $dto->groupId)
+            ->get();
 
         $activities = Activity::withTrashed()->where('group_id', $dto->groupId)->get();
 
@@ -52,19 +82,8 @@ final class Analytics
 
 
             foreach ($columns as $columnIndex => $column) {
-                if (!in_array((int)$column->name, $weekdays) && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                    $addClass = ' weekday';
-                } else {
-                    $addClass = '';
-                }
 
-                if (!in_array($column->name, ['sum', 'avg', 'name'])) {
-                    $addClass .= ' text-center';
-                }
-
-                if ($dependingFromRow) {
-                    $addClass .= ' bg-violet';
-                }
+                $addClass = self::getClass($column->name, $dependingFromRow, $weekdays);
 
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
 
@@ -215,11 +234,6 @@ final class Analytics
         return $table;
     }
 
-    /**
-     * @param Activity $activity
-     * @param $date
-     * @return int|float
-     */
     private function totalForDay(Activity $activity, $date): int|float
     {
         $method = ($activity->plan_unit === 'minutes' || $activity->plan_unit === 'less_sum') ? 'sum' : 'avg';
@@ -236,18 +250,11 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection $columns
-     * @param \Illuminate\Database\Eloquent\Collection $stats
-     * @param int $rowId
-     * @param array $days
-     * @return float|int
-     */
     public function daysSum(
-        \Illuminate\Database\Eloquent\Collection $columns,
-        \Illuminate\Database\Eloquent\Collection $stats,
-        int                                      $rowId,
-        array                                    $days = []
+        Collection $columns,
+        Collection $stats,
+        int        $rowId,
+        array      $days = []
     ): float|int
     {
 
@@ -268,18 +275,11 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection $columns
-     * @param \Illuminate\Database\Eloquent\Collection $stats
-     * @param int $rowId
-     * @param array $days
-     * @return float|int
-     */
     public function daysAvg(
-        \Illuminate\Database\Eloquent\Collection $columns,
-        \Illuminate\Database\Eloquent\Collection $stats,
-        int                                      $rowId,
-        array                                    $days = []
+        Collection $columns,
+        Collection $stats,
+        int        $rowId,
+        array      $days = []
     ): float|int
     {
         $days = empty($days) ? range(1, 31) : $days;
@@ -307,75 +307,7 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param Activity $activity
-     * @param string $date
-     * @param int|null $groupId
-     * @return Collection
-     */
-    public function userStatisticFormTable(
-        Activity $activity,
-        string   $date,
-        int      $groupId = null
-    ): Collection
-    {
-        $group = ProfileGroup::query()->where('id', $groupId)->first();
-        $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
-        $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
-        $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
-
-        return $employees
-            ->with('statistics', fn($statistic) => $statistic->select([
-                DB::raw('DAY(date) as day'),
-                'user_id',
-                'value',
-                'date'
-            ])->where('activity_id', $activity->id)->where('date', '>=', $firstOfMonth)->where('date', '<=', $dateFrom))
-            ->get()
-            ->map(function ($employee) use ($date, $activity) {
-                $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
-                $appliedFrom = $employee->workdays_from_applied($date, $workDay);
-                $workDays = WorkChartModel::workdaysPerMonth($employee);
-
-
-                $employee->fullname = $employee->full_name;
-                $employee->fired = $employee->deleted_at != null ? 1 : 0;
-                $employee->applied_from = $appliedFrom;
-                $employee->is_trainee = 1;
-                $employee->plan = $activity->daily_plan * $workDays;
-
-
-                return $employee;
-            });;
-    }
-
-    /**
-     * @param GetAnalyticDto $dto
-     * @return array
-     */
-    public function decompositionTable(
-        GetAnalyticDto $dto
-    ): array
-    {
-        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $decompositions = DecompositionValue::query()->where([
-            'group_id' => $dto->groupId,
-            'date' => $date,
-        ])->get();
-
-
-        return [
-            'group_id' => $dto->groupId,
-            'records' => $decompositions
-        ];
-    }
-
-    /**
-     * @param UtilityDto $dto
-     * @return array
-     */
     public function utility(
         UtilityDto $dto
     ): array
@@ -418,245 +350,7 @@ final class Analytics
         return $gauges;
     }
 
-    public function rentability(
-        UtilityDto $dto
-    ): array
-    {
-        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $group = ProfileGroup::whereIn('id', $dto->groupIds)->first();
-
-        $topValue = new ValueModel;
-        $options = $topValue->getOptions('[]');
-        $options['staticZones'] = $this->getStaticZones($group);
-
-        $options['staticLabels']['labels'] = $this->labels($group);
-
-        return [
-            'name' => $group->name ?? 'Рентабельность',
-            'value' => (float)$this->getRentabilityValue($group->id, $date),
-            'group_id' => $group->id,
-            'place' => 1,
-            'unit' => '%',
-            'editable' => false,
-            'edit_value' => false,
-            'activity_id' => 0,
-            'key' => 999 * 1000,
-            'min_value' => 0,
-            'max_value' => $group->rentability_max,
-            'round' => 2,
-            'cell' => '',
-            'is_main' => 0,
-            'fixed' => 0,
-            'value_type' => 'sum',
-            'sections' => $options['staticLabels']['labels'],
-            'options' => $options,
-            'diff' => $this->rentabilityDiff($group->id, $date)
-        ];
-    }
-
-    /**
-     * @param int $groupId
-     * @param array $views
-     * @return Collection
-     */
-    public function activitiesViews(
-        int   $groupId,
-        array $views
-    ): Collection
-    {
-        return Activity::query()
-            ->where('group_id', $groupId)
-            ->whereIn('view', $views)
-            ->orderByDesc('order')->get();
-    }
-
-    /**
-     * @param Collection $rowsData
-     * @param Collection $columnsData
-     * @return array[]
-     */
-    private function analyticTableValue(
-        Collection $rowsData,
-        Collection $columnsData
-    ): array
-    {
-        $rows = [];
-        $columns = [];
-
-        foreach ($rowsData as $index => $row) {
-            $rows[$row->id] = $index + 1;
-        }
-
-        foreach ($columnsData as $index => $column) {
-            $columns[$column->id] = $index != 0 ? AnalyticStat::getLetter($index - 1) : 'A';
-        }
-
-        return [
-            'rows' => $rows,
-            'columns' => $columns
-        ];
-    }
-
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return float|int
-     */
-    private function rentabilityDiff(
-        int    $groupId,
-        string $date
-    ): float|int
-    {
-        $currentMonthImpl = $this->rentabilityByDay($groupId, $date);
-        $prevMonthImpl = $this->rentabilityByDay($groupId, $date);
-
-        return round($currentMonthImpl - $prevMonthImpl, 2);
-    }
-
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return float|int
-     */
-    private function rentabilityByDay(
-        int    $groupId,
-        string $date
-    ): float|int
-    {
-        $impl = 0;
-        $days = $this->getDaysPerMonth($date);
-        $stat = $this->implStat($groupId, $date) ?? null;
-
-        return $stat ? AnalyticStat::calcFormula($stat, $date, 2, $days) : $impl;
-    }
-
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return Model|null
-     */
-    private function implStat(
-        int    $groupId,
-        string $date
-    ): Model|null
-    {
-        $implStat = null;
-
-        $column = AnalyticColumn::query()
-            ->where('date', $date)
-            ->where('name', self::VALUE_PLAN)->first() ?? null;
-
-        $row = AnalyticRow::query()
-            ->where('date', $date)
-            ->where('name', self::VALUE_IMPL)->first() ?? null;
-
-        if ($row && $column) {
-            $implStat = AnalyticStat::query()
-                ->where('column_id', $column->id)
-                ->where('row_id', $row->id)->first();
-        }
-
-        return $implStat;
-    }
-
-    /**
-     * @param string $date
-     * @return array
-     */
-    private function getDaysPerMonth(
-        string $date
-    ): array
-    {
-        $date = Carbon::createFromDate($date)->daysInMonth;
-        $days = [];
-
-        for ($day = 1; $day <= $date; $day++) {
-            $days[] = $day;
-        }
-
-        return $days;
-    }
-
-    /**
-     * @param $group_id
-     * @param $date
-     * @return float|int
-     */
-    private function getRentabilityValue($group_id, $date): float|int
-    {
-        $val = 0;
-
-        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
-        $row = $this->getGroupImplRows($group_id, $date)->first() ?? [];
-
-        if ($row && $column) {
-            $stat = AnalyticStat::query()->where('column_id', $column->id)
-                ->where('row_id', $row->id)
-                ->where('date', $date)
-                ->first();
-            if ($stat) {
-                $val = AnalyticStat::calcFormula($stat, $date, 2);
-                $stat->show_value = $val;
-                $stat->save();
-            }
-        }
-
-        return $val;
-    }
-
-    /**
-     * @param $group_id
-     * @param $date
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function getGroupPlanColumns($group_id, $date): \Illuminate\Database\Eloquent\Builder
-    {
-        return AnalyticColumn::query()
-            ->where('date', $date)
-            ->where('name', 'plan');
-    }
-
-    /**
-     * @param $group_id
-     * @param $date
-     * @return \Illuminate\Database\Eloquent\Builder|null
-     */
-    private function getGroupImplRows($group_id, $date): \Illuminate\Database\Eloquent\Builder|null
-    {
-        return AnalyticRow::query()
-            ->where('date', $date)
-            ->where('name', 'Impl');
-    }
-
-    /**
-     * @param ProfileGroup|null $group
-     * @return array[]
-     */
-    private function getStaticZones(?ProfileGroup $group): array
-    {
-        return [
-            ['strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49], // Red
-            ['strokeStyle' => "#fd7e14", 'min' => 50, 'max' => 74], // Orange
-            ['strokeStyle' => "#FFDD00", 'min' => 75, 'max' => 99], // Yellow
-            ['strokeStyle' => "#30B32D", 'min' => 100, 'max' => $group->rentability_max], // Green
-        ];
-    }
-
-    /**
-     * @param ProfileGroup|null $group
-     * @return array
-     */
-    private function labels(?ProfileGroup $group): array
-    {
-        return [0, 50, 100, $group->rentability_max];
-    }
-
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection|array $rows
-     * @param \Illuminate\Database\Eloquent\Collection|array $columns
-     * @return array
-     */
-    public function getKeys(\Illuminate\Database\Eloquent\Collection|array $rows, \Illuminate\Database\Eloquent\Collection|array $columns): array
+    public function getKeys(Collection|array $rows, Collection|array $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
             return [$index + 1 => $row->id];

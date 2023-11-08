@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Facade\Analytics\Analytics;
 use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
@@ -106,20 +107,8 @@ class AnalyticStat extends Model
                 ->first();
 
             foreach ($columns as $c_index => $column) {
+                $add_class = Analytics::getClass($column->name, $depending_from_row, $weekdays);
 
-                if (!in_array((int)$column->name, $weekdays) && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) { // weekday coloring
-                    $add_class = ' weekday';
-                } else {
-                    $add_class = '';
-                }
-
-                if (!in_array($column->name, ['sum', 'avg', 'name'])) {
-                    $add_class .= ' text-center';
-                }
-
-                if ($depending_from_row) {
-                    $add_class .= ' bg-violet';
-                }
 
                 $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
                 $cell_letter = $l;
