@@ -49,6 +49,9 @@
 				Оплачено
 			</div>
 			<div class="d-flex flex-column gap-4 mb-4">
+				<div class="RefStats-oldComment">
+					{{ paymentDialog.oldComment }}
+				</div>
 				<b-form-textarea
 					v-model="paymentDialog.comment"
 					placeholder="комментарий..."
@@ -185,17 +188,18 @@ export default {
 			this.paymentDialog.key = field.key
 			this.paymentDialog.paid = item[field.key].paid
 			this.paymentDialog.transactionId = item[field.key].id
-			this.paymentDialog.comment = item[field.key].comment
+			this.paymentDialog.oldComment = item[field.key].comment
+			this.paymentDialog.comment = ''
 			this.paymentDialog.open = true
 		},
 		async paymentSave(){
-			if(!this.paymentDialog.comment.trim()) return this.$toast.error('Добавьте комментарий')
+			if(!this.paymentDialog.comment.trim() && this.paymentDialog.oldComment.trim()) return this.$toast.error('Добавьте комментарий')
 			try {
 				await API.referralStatPay(this.paymentDialog.id, {
 					id: this.paymentDialog.transactionId,
 					type: this.field2type('' + this.paymentDialog.key),
 					paid: this.paymentDialog.paid,
-					commnet: this.paymentDialog.comment,
+					comment: [this.paymentDialog.oldComment.trim(), this.paymentDialog.comment.trim()].join('\n'),
 				})
 				this.paymentDialog.open = false
 				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = this.paymentDialog.paid
@@ -225,6 +229,10 @@ export default {
 
 	&-switch{
 		width: 32px;
+	}
+	&-oldComment{
+		font-style: italic;
+		color: #777;
 	}
 }
 </style>
