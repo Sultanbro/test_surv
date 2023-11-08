@@ -30,6 +30,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
             ->groupBy('users.id')
+            ->having('applied_count', '>', 0)
             ->take(5)
             ->orderBy('applied_count', 'desc')
             ->get()
@@ -43,22 +44,5 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $query = parent::baseQuery();
         $query->where('id', $user->getKey());
         return $query;
-    }
-
-    private function getSubReferrers(User $referrer, int $level = 3)
-    {
-        if ($level === 0) {
-            return collect();
-        }
-        $referrals = $referrer->referrals()
-            ->where(function (Builder $query) {
-                $query->whereRelation('description', 'is_trainee', 0);
-            })
-            ->get();
-
-        foreach ($referrals as $referral) {
-            $referrals = $referrals->merge($this->getSubReferrers($referral, $level - 1));
-        }
-        return $referrals;
     }
 }

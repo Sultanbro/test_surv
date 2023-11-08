@@ -54,7 +54,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
         $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
 
-        $accepted = User::query()
+        $accepted = User::withTrashed()
             ->whereRelation('description', 'is_trainee', 0)
             ->whereNotNull('referrer_id')
             ->count();
@@ -112,7 +112,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function baseQuery(): Builder
     {
-        return User::query()
+        return User::withTrashed()
             ->WhereHas('referralLeads')
             ->with(['referralSalaries'])
             ->withCount(['referralLeads as deals' => fn($query) => $query

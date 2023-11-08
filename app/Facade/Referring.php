@@ -28,11 +28,11 @@ class Referring extends Facade
 
     public static function touchReferrerStatus(User $user): void
     {
-        if ($user->referrer_id) {
-            /** @var StatusServiceInterface $service */
-            $service = app(StatusServiceInterface::class);
-            $service->touch($user->referrer);
-        }
+        $referrer = $user->referrer;
+        if (!$referrer) return; // if a user doesn't have a referrer, then just return;
+        /** @var StatusServiceInterface $service */
+        $service = app(StatusServiceInterface::class);
+        $service->touch($user->referrer);
     }
 
     public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
@@ -44,9 +44,7 @@ class Referring extends Facade
 
         $referrer = $referral?->referrer;
 
-        if (!$referrer) {
-            return;
-        }
+        if (!$referrer) return; // if a user doesn't have a referrer, then just return;
 
         $salary = $referrer->referralSalaries()
             ->where(fn($query) => $query
@@ -70,9 +68,7 @@ class Referring extends Facade
             'referrer'
         ]);
 
-        if (!$user->referrer) {
-            return;
-        }
+        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $service->touch($user, PaidType::ATTESTATION);
     }
 
@@ -86,12 +82,9 @@ class Referring extends Facade
             'description',
             'referrer'
         ]);
+        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
 
-        if (!$user->referrer) {
-            return;
-        }
-
-        $service->useDate($date); // this can be used, when date is not now
+        $service->useDate($date); // this can be used when the date is not current
         $service->touch($user, PaidType::TRAINEE);
     }
 }
