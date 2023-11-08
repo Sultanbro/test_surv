@@ -10,7 +10,7 @@ class ActivityRepository extends CoreRepository implements ActivityInterface
     /**
      * @return string
      */
-    protected function getModelClass()
+    protected function getModelClass(): string
     {
         return Model::class;
     }
@@ -24,17 +24,11 @@ class ActivityRepository extends CoreRepository implements ActivityInterface
         return $this->model()->find($id);
     }
 
-    /**
-     * @param Model $activity
-     * @param int $year
-     * @param int $month
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\HasMany|object|null
-     */
     public function getDailyPlan(
         Model $activity,
-        int $year,
-        int $month
-    )
+        int   $year,
+        int   $month
+    ): ?Model
     {
         return $activity->plans()->where([
             'year' => $year,
