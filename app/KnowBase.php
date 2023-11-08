@@ -152,6 +152,7 @@ class KnowBase extends Model implements CourseInterface
 
             if($item->model_type == 'App\\Position') {
                 $users = \App\User::where('position_id', $item->model_id)->get('id')->pluck('id')->toArray();
+                if(!$users) continue;
                 $arr = array_merge($arr, $users);
             }
 
