@@ -9,7 +9,7 @@ import UserEditAdaptation from '@/components/pages/UserEdit/UserEditAdaptation'
 import UserEditPhones from '@/components/pages/UserEdit/UserEditPhones'
 import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
 import UserEditMisc from '@/components/pages/UserEdit/UserEditMisc'
-import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
+// import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
 import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageData'
 import { loadMapsApi } from '@/composables/ymapsLoader'
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
@@ -40,7 +40,7 @@ export default {
 		UserEditPhones,
 		UserEditSalary,
 		UserEditMisc,
-		UserEditBitrix,
+		// UserEditBitrix,
 		UModal,
 		AwardUserSidebar,
 	},
@@ -961,10 +961,10 @@ export default {
 								:user="user"
 							/>
 
-							<UserEditBitrix
+							<!-- <UserEditBitrix
 								v-show="showBlocks.bitrix"
 								:user="user"
-							/>
+							/> -->
 						</div>
 					</div>
 					<UModal
