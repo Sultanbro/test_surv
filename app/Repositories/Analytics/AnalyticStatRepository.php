@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Collection;
  */
 class AnalyticStatRepository extends CoreRepository
 {
-    public function getByGroupId(int $groupId, string $date): Collection|array
+    /**
+     * @return Collection<AnalyticStat>
+     */
+    public function getByGroupId(int $groupId, string $date): Collection
     {
         return AnalyticStat::with('activity')
             ->where('date', $date)

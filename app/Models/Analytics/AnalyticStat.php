@@ -26,6 +26,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property  string $class
  * @property  string $decimals
  * @property  string $comment
+ * relations
+ * @property Activity $activity
+ * @property AnalyticRow $analyticRow
+ * @property AnalyticColumn $analyticColumn
  */
 class AnalyticStat extends Model
 {
@@ -118,21 +122,8 @@ class AnalyticStat extends Model
                     ->first();
 
                 if ($stat) { // if exist
-                    $arr = [
-                        'value' => $stat->value,
-                        'show_value' => $stat->show_value,
-                        'context' => false,
-                        'type' => $stat->type,
-                        'row_id' => $row->id,
-                        'column_id' => $column->id,
-                        'cell' => $cell_letter . $cell_number,
-                        'class' => $stat->class . $add_class,
-                        'editable' => $r_index == 0 ? 0 : $stat->editable,
-                        'depend_id' => $row->depend_id,
-                        'decimals' => $stat->decimals,
-                        'comment' => $stat->comment,
-                        'sign' => ''
-                    ];
+
+                    $arr = Analytics::getArr($stat, $row, $column, $cell_letter, $cell_number, $add_class, $r_index);
 
                     if ($stat->activity_id != null) {
                         $act = $all_activities->where('id', $stat->activity_id)->first();

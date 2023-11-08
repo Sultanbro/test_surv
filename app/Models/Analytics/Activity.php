@@ -9,11 +9,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property int $group_id
+ * @property string $daily_plan
+ * @property string $plan_unit
+ * @property string $unit
+ * @property string $ud_ves
+ * @property string $share
+ * @property string $method
+ * @property string $view
+ * @property string $source
+ * @property string $editable
+ * @property int $order
+ * @property string $type
+ * @property string $weekdays
+ * @property string $data
+ * @property int $created_by
+ * @property int $updated_by
+ * @property string $common
+ */
 class Activity extends Model
 {
     use SoftDeletes, WithCreatorAndUpdater, HasFactory;
-
-    const ACTIVITY_UCHET_TIME = 21;
 
     protected $table = 'activities';
 
@@ -25,11 +44,10 @@ class Activity extends Model
         'updated_at' => 'date:d.m.Y H:i',
     ];
 
-
     protected $fillable = [
         'name',
         'group_id',
-        'daily_plan', // plan , потом переименовать
+        'daily_plan', // plan, потом переименовать
         'plan_unit', // метод расчета
         'unit', // ед изм 
         'ud_ves',
