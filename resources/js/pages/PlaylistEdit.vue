@@ -317,8 +317,7 @@ export default {
 		},
 
 		scrollToTop() {
-			document.getElementsByClassName('content')[0].scrollTo(0,0);
-
+			document.querySelector('.content, .rp-content').scrollTo(0,0);
 		},
 
 		nextElement() {
