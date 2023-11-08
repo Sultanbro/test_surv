@@ -4,8 +4,8 @@ namespace Tests;
 
 use Database\Seeders\AdaptedTenantDatabaseForTesting;
 use Drfraker\SnipeMigrations\SnipeMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 abstract class TenantTestCase extends BaseTestCase
