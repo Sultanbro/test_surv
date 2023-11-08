@@ -57,6 +57,7 @@
 					placeholder="комментарий..."
 					rows="3"
 					max-rows="6"
+					class="RefStats-comment"
 				/>
 			</div>
 		</b-modal>
@@ -188,7 +189,7 @@ export default {
 			this.paymentDialog.key = field.key
 			this.paymentDialog.paid = item[field.key].paid
 			this.paymentDialog.transactionId = item[field.key].id
-			this.paymentDialog.oldComment = item[field.key].comment
+			this.paymentDialog.oldComment = item[field.key].comment || ''
 			this.paymentDialog.comment = ''
 			this.paymentDialog.open = true
 		},
@@ -233,6 +234,9 @@ export default {
 	&-oldComment{
 		font-style: italic;
 		color: #777;
+	}
+	&-comment{
+		border-radius: 4px;
 	}
 }
 </style>

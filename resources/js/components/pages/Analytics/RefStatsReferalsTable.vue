@@ -100,6 +100,13 @@
 				@click="$emit('payment-click', {item, field})"
 			>
 				{{ value.sum || '' }}
+				<img
+					v-if="hintComments && value.comment && value.sum > 0"
+					v-b-popover.hover="value.comment"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					alt="info icon"
+				>
 			</div>
 		</template>
 		<template
@@ -115,6 +122,7 @@
 						:user-id="secondLayerData.value.id"
 						:sorted-subs="sortedSubs"
 						:layer="layer + 1"
+						:hint-comments="hintComments"
 						@sub-sort="$emit('sub-sort', $event)"
 						@payment-click="$emit('payment-click', $event)"
 					/>
@@ -148,6 +156,9 @@ export default {
 		layer: {
 			type: Number,
 			default: 1,
+		},
+		hintComments: {
+			type: Boolean
 		},
 	},
 	data(){
@@ -284,17 +295,17 @@ $bgtd: #dde9ff;
 		text-overflow: ellipsis;
 	}
 	&-referalValue{
-		width: 48px;
-		min-width: 48px;
+		width: 75px;
+		min-width: 75px;
 	}
 	&-attest{
 		width: 100px;
 	}
 	&-weeks{
-		width: 420px;
+		width: 560px;
 	}
 	&-week{
-		width: 60px;
+		width: 80px;
 	}
 	&-week1{
 		width: 120px;
@@ -305,6 +316,10 @@ $bgtd: #dde9ff;
 		background-color: #fdd;
 		&_paid{
 			background-color: #dfd;
+		}
+		.img-info{
+			width: 16px;
+			margin-top: -2px;
 		}
 	}
 	&-switchCell{

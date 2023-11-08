@@ -66,6 +66,7 @@
 					:fields="tableFields"
 					:items="[refUser]"
 					single
+					hint-comments
 				/>
 			</div>
 		</div>
