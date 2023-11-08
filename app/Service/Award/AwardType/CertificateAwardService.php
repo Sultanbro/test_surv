@@ -286,7 +286,7 @@ class CertificateAwardService implements AwardInterface
                 'format' => $award->format,
                 'course_id' => $item->id,
                 'course_name' => $item->name,
-                'previewPath' => FileHelper::getUrl($this->path, $award->pivot->preview_path),
+                'previewPath' => FileHelper::getUrl($this->path, $award->preview_path),
                 'tempPath' => FileHelper::getUrl($this->path, $award->path),
             ];
 
