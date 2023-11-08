@@ -26,6 +26,22 @@
 				</PopupMenu>
 			</span>
 			<span
+				v-else-if="status === 'activist'"
+				class="underdot ml-2 relative"
+				@mouseenter="isHoverStatus = true"
+				@mouseleave="isHoverStatus = false"
+			>
+				{{ status }}
+				<PopupMenu
+					v-if="isHoverStatus"
+					position="topLeft"
+					class="px-3"
+					style="width: 200px;"
+				>
+					Следующий статус - Ambassador (главный приз каждые 3 месяца 200 000₸ лучшему сотруднику - Амбассадору за наибольшее количество оставшихся после 1 месяца)
+				</PopupMenu>
+			</span>
+			<span
 				v-else
 				class="ml-2"
 			>{{ status }}</span>
