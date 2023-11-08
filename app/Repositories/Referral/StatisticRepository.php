@@ -131,6 +131,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $referrer->referrals()
             ->withTrashed()
             ->with(['user_description', 'referrals', 'referralSalaries'])
+            ->orderByDesc("created_at")
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
