@@ -36,7 +36,7 @@
 				>
 			</template>
 			<a
-				href="https://www.youtube.com/watch?v=amIRBHrUjSg"
+				href="https://www.youtube.com/watch?v=d-GstpURTig"
 				target="_blank"
 				class="RefWidget-play ml-a"
 			>
@@ -53,6 +53,18 @@
 			<router-link :to="'/profile/referral-prsentation'">
 				«Как заработать миллион»
 			</router-link>
+			<a
+				href="https://www.youtube.com/watch?v=amIRBHrUjSg"
+				target="_blank"
+				class="RefWidget-play ml-a"
+			>
+				<img
+					src="/images/ref-play.png"
+					alt=""
+					class="RefWidget-playImage"
+				>
+				Play
+			</a>
 		</div>
 
 		<div
@@ -210,6 +222,8 @@ export default {
 
 		background-color: rgb(253, 66, 100);
 		border-radius: 8px;
+		transform-origin: center right;
+		transform: scale(0.9);
 	}
 	&-playImage{
 		width: 20px;
