@@ -233,6 +233,7 @@ export default {
 	}
 	&-oldComment{
 		font-style: italic;
+		white-space: pre-line;
 		color: #777;
 	}
 	&-comment{

@@ -238,9 +238,9 @@ export const secondLayersFields = [
 let fakeId = 0;
 
 export const status = [
-	'Promoter',
-	'Activist',
-	'Ambassador',
+	'promoter',
+	'activist',
+	'ambassador',
 ]
 
 export const referalStatus = [
@@ -251,7 +251,8 @@ export const referalStatus = [
 
 export const comments = [
 	'',
-	'test comment'
+	'test comment',
+	'test comment\nsecond line',
 ]
 
 const maxDepth = 3

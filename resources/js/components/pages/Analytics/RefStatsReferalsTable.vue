@@ -31,6 +31,9 @@
 								@click="$emit('sub-sort', '' + field.key)"
 							>
 								{{ field.label }}
+								<template v-if="field.key === 'title'">
+									{{ layer + 1 }} уровень
+								</template>
 							</div>
 						</th>
 					</template>
@@ -102,7 +105,7 @@
 				{{ value.sum || '' }}
 				<img
 					v-if="hintComments && value.comment && value.sum > 0"
-					v-b-popover.hover="value.comment"
+					v-b-popover.html.hover="value.comment.replace('\n', '<br>')"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
