@@ -189,6 +189,7 @@ export default {
 			this.paymentDialog.open = true
 		},
 		async paymentSave(){
+			if(!this.paymentDialog.comment.trim()) return this.$toast.error('Добавьте комментарий')
 			try {
 				await API.referralStatPay(this.paymentDialog.id, {
 					id: this.paymentDialog.transactionId,
@@ -197,7 +198,7 @@ export default {
 					commnet: this.paymentDialog.comment,
 				})
 				this.paymentDialog.open = false
-				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = true
+				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].paid = this.paymentDialog.paid
 				this.allReferals[this.paymentDialog.id][this.paymentDialog.key].comment = this.paymentDialog.comment
 				this.$toast.success('Сохранено')
 			}

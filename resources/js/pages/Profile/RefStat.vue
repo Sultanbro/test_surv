@@ -15,51 +15,53 @@
 			v-if="refUser"
 			class="RefStat-table index__table"
 		>
-			<div class="RefStat-diff">
-				<div class="RefStat-self">
-					<div class="RefStat-subtitle">
-						Вы
-					</div>
-					<div class="RefStat-users">
-						<div class="RefStat-user RefStat-user_self">
-							<JobtronAvatar
-								:image="`users_img/${user.img_url}`"
-								:title="`${user.name} ${user.last_name}`"
-							/>
-							<div class="RefStat-userName">
-								{{ user.name }}
-							</div>
-							<div class="RefStat-userLeads">
-								Принято: {{ accepted }}
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="RefStat-tops">
-					<div class="RefStat-subtitle">
-						Топчики
-					</div>
-					<div class="RefStat-users">
-						<div
-							v-for="topUser in tops"
-							:key="topUser.id"
-							class="RefStat-user RefStat-user_top"
-						>
-							<JobtronAvatar
-								:image="topUser.avatar"
-								:title="`${topUser.name} ${topUser.lastName}`"
-							/>
-							<div class="RefStat-userName">
-								{{ topUser.name }}
-							</div>
-							<div class="RefStat-userLeads">
-								Принято: {{ topUser.accepted }}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
 			<div class="ovx">
+				<div class="RefStat-diff">
+					<div class="RefStat-self">
+						<div class="RefStat-subtitle">
+							Вы
+						</div>
+						<div class="RefStat-users">
+							<div class="RefStat-user RefStat-user_self">
+								<JobtronAvatar
+									:image="`users_img/${user.img_url}`"
+									:title="`${user.name} ${user.last_name}`"
+								/>
+								<div class="RefStat-userName">
+									{{ user.name }}
+								</div>
+								<div class="RefStat-userLeads">
+									Принято: {{ accepted }}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="RefStat-tops">
+						<div class="RefStat-subtitle">
+							Топчики
+						</div>
+						<div class="RefStat-users">
+							<template v-for="topUser in tops">
+								<div
+									v-if="topUser.accepted"
+									:key="topUser.id"
+									class="RefStat-user RefStat-user_top"
+								>
+									<JobtronAvatar
+										:image="topUser.avatar"
+										:title="`${topUser.name} ${topUser.lastName}`"
+									/>
+									<div class="RefStat-userName">
+										{{ topUser.name }}
+									</div>
+									<div class="RefStat-userLeads">
+										Принято: {{ topUser.accepted }}
+									</div>
+								</div>
+							</template>
+						</div>
+					</div>
+				</div>
 				<RefStatsTable
 					:fields="tableFields"
 					:items="[refUser]"
@@ -134,6 +136,9 @@ export default {
 </script>
 
 <style lang="scss">
+.ovx{
+	overflow-x: auto;
+}
 .RefStat{
 	$cellpadding: 8px 10px;
 	$bgmargin: -8px -10px;
@@ -184,8 +189,12 @@ export default {
 	}
 	// &-self,
 	// &-tops{}
+	&-self{
+		flex: 0 0 150px;
+	}
 	&-tops{
-		flex: 1;
+		flex: 1 0 auto;
+		margin-left: 30px;
 	}
 	&-subtitle{
 		margin-bottom: 20px;
@@ -197,7 +206,7 @@ export default {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		// gap: 20px;
 	}
 	&-user{
@@ -206,9 +215,6 @@ export default {
 		flex-flow: column nowrap;
 		align-items: center;
 		gap: 10px;
-		&_self{
-			margin-right: 30px;
-		}
 	}
 	.RefStatsTable-title{
 		width: 298px;
@@ -218,6 +224,13 @@ export default {
 
 	.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child::before{
 		display: none;
+	}
+	@media (min-width: 1480px) {
+		.RefStat{
+			&-users{
+				justify-content: center;
+			}
+		}
 	}
 }
 </style>
