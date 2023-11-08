@@ -26,7 +26,6 @@ trait Referrer
             , 'referrer_id'
             , 'id'
         )
-            ->withTrashed()
             ->whereRelation('description', 'is_trainee', 0);
     }
 
