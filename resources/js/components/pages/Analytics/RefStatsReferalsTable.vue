@@ -105,7 +105,7 @@
 				{{ value.sum || '' }}
 				<img
 					v-if="hintComments && value.comment && value.sum > 0"
-					v-b-popover.html.hover="value.comment.replace('\n', '<br>')"
+					v-b-popover.html.hover="value.comment.replaceAll('\n', '<br>')"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
@@ -259,7 +259,7 @@ $bgtd: #dde9ff;
 
 				&.JobtronTable-td,
 				&.JobtronTable-th{
-					padding-left: 10px;
+					padding-left: 10px !important;
 				}
 			}
 		}
@@ -280,7 +280,7 @@ $bgtd: #dde9ff;
 
 		&.JobtronTable-td,
 		&.JobtronTable-th{
-			padding-left: 42px;
+			padding-left: 42px !important;
 		}
 	}
 	&-status{
