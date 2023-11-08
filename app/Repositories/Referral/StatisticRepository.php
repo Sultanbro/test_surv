@@ -126,7 +126,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->with('user_description')
+            ->with(['user_description', 'referrals', 'referralSalaries'])
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
@@ -139,6 +139,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 $working = $this->salaryFilter->filter(PaidType::WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
+
                 $referral->is_trainee = $referral->user_description->is_trainee;
                 $referral->datetypes = array_merge(
                     $this->traineesDaily($days, $training),
@@ -147,6 +148,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 );
 
                 if ($referral->referrals()->count()) {
+
                     if ($step <= 3) {
                         $referral->users = $this->schedule($referral, $step + 1);
                     }
