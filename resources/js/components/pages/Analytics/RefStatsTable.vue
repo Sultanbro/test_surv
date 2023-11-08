@@ -170,6 +170,7 @@ export default {
 				this.uncollapsed.splice(index, 1)
 			}
 			else{
+				this.uncollapsed = []
 				this.uncollapsed.push(id)
 			}
 		},
