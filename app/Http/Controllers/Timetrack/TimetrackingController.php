@@ -2025,6 +2025,7 @@ class TimetrackingController extends Controller
                 }
 
             }
+            Referring::touchReferrerStatus($targetUser);
         }
 
         /////////
