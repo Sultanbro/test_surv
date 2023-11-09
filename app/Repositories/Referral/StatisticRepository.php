@@ -136,7 +136,9 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->orderBy("created_at")
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
-                Referring::touchReferrerStatus($referral);
+
+                Referring::touchReferrerStatus($referral); // before get
+
                 $days = $this->getReferralDayTypes($referral);
 
                 $salaries = $this->getReferralSalaries($referrer, $referral);
