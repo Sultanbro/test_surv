@@ -317,6 +317,7 @@ $bgtd: #dde9ff;
 	&-money{
 		padding: $cellpadding;
 		margin: $bgmargin;
+		position: relative;
 		background-color: #fdd;
 		&_paid{
 			background-color: #dfd;
@@ -324,6 +325,7 @@ $bgtd: #dde9ff;
 		.img-info{
 			width: 16px;
 			margin-top: -2px;
+			position: absolute;
 		}
 	}
 	&-switchCell{
