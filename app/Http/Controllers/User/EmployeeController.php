@@ -1086,7 +1086,7 @@ class EmployeeController extends Controller
     public function deleteUser(Request $request)
     {
         DB::transaction(function () use ($request) {
-            $user = User::where([
+            $user = User::query()->where([
                 'id' => $request->id,
             ])->first();
 
@@ -1103,7 +1103,7 @@ class EmployeeController extends Controller
                     $downloads->resignation = $resignation;
                     $downloads->save();
                 } else {
-                    $downloads = Downloads::create([
+                    Downloads::query()->create([
                         'user_id' => $user->id,
                         'ud_lich' => null,
                         'dog_okaz_usl' => null,
@@ -1121,7 +1121,7 @@ class EmployeeController extends Controller
 
             if ($request->delay == 1) { // Удалить через 2 недели
 
-                $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
+                $delete_plan = UserDeletePlan::query()->where('user_id', $request->id)->orderBy('id', 'desc')->first();
 
                 if ($delete_plan) $delete_plan->delete();
 
@@ -1213,6 +1213,7 @@ class EmployeeController extends Controller
 
         if ($user) {
             $user->deleted_at = null;
+            $user->save();
             $user->restore();
 
             $bitrix = new Bitrix();
@@ -1227,10 +1228,9 @@ class EmployeeController extends Controller
             //add restored_at to users_restored
 
             UserRestored::query()
-                ->where('user_id', $request->id)
-                ->whereNull('restored_at')
-                ->firstOrFail()
-                ->update([
+                ->updateOrCreate([
+                    'user_id' => $request->id,
+                ], [
                     "restored_at" => Carbon::now()->format('Y-m-d')
                 ]);
             Referring::touchReferrerStatus($user);
