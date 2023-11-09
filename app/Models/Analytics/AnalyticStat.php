@@ -417,18 +417,15 @@ class AnalyticStat extends Model
     {
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
         foreach ($matches[0] as $match) {
-            $match = str_replace("[", "", $match);
-            $match = str_replace("]", "", $match);
+            $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
         }
-
         return $text;
     }
 
@@ -558,19 +555,15 @@ class AnalyticStat extends Model
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
         $text = $stat->value;
-
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
         foreach ($matches[0] as $match) {
-            $match = str_replace("[", "", $match);
-            $match = str_replace("]", "", $match);
+            $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
-
             $column_id = $exp[0];
             $row_id = $exp[1];
 
-
+            /** @var AnalyticStat $cell */
             $cell = AnalyticStat::query()
                 ->where('column_id', $column_id)
                 ->where('row_id', $row_id)
@@ -579,10 +572,8 @@ class AnalyticStat extends Model
 
             if ($cell) {
                 if ($cell->type == 'formula') {
-
-                    if ($cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id) {
-                        return 0;
-                    }
+                    $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
+                    if ($sameStat) return 0;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
@@ -595,9 +586,6 @@ class AnalyticStat extends Model
                     // dump('value ' . $cell->show_value);
                     $text = str_replace("[" . $match . "]", (float)$cell->show_value, $text);
                 }
-            } else {
-                //dd($exp);
-                //$text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
             }
         }
 
@@ -633,7 +621,6 @@ class AnalyticStat extends Model
         } catch (\Throwable $e) {
             $res = 0;
         }
-
         return round($res, $round);
     }
 

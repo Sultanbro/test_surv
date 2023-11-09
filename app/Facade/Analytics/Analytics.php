@@ -100,7 +100,6 @@ final class Analytics
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
 
-
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
 
@@ -133,12 +132,10 @@ final class Analytics
                             $arr['sign'] = $act->unit;
                         }
                     }
-
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
                         $statistic->show_value = $val;
                         $statistic->save();
-                        dd($val);
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
@@ -256,7 +253,6 @@ final class Analytics
             }
             $table[] = $item;
         }
-
         return $table;
     }
 
@@ -336,11 +332,11 @@ final class Analytics
     public function getKeys(Collection|array $rows, Collection|array $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
-            return [$index + 1 => $row->id];
+            return [$row->id => $index + 1];
         })->toArray();
 
         $columnKeys = $columns->mapWithKeys(function ($column, $index) {
-            return [$index + 1 => $column->id];
+            return [$column->id => $index + 1];
         })->toArray();
 
 

@@ -22,27 +22,40 @@ class AnalyticTest extends TenantTestCase
     public function test_it_can_get_analytics()
     {
         $group = ProfileGroup::factory()->create();
-        $rows = AnalyticRow::factory(2)->create([
-            'date' => now()->firstOfMonth()->format("Y-m-d"),
-            'group_id' => $group->getKey()
-        ]);
-        $cols = AnalyticColumn::factory(2)->create([
+        $rows = AnalyticRow::factory(5)->create([
             'date' => now()->firstOfMonth()->format("Y-m-d"),
             'group_id' => $group->getKey()
         ]);
 
-        $activities = Activity::factory(2)->create([
+        $cols = AnalyticColumn::factory(5)->create([
+            'date' => now()->firstOfMonth()->format("Y-m-d"),
             'group_id' => $group->getKey()
         ]);
 
-        foreach ($cols as $col) {
+        $activity = Activity::factory()->create([
+            'group_id' => $group->getKey()
+        ]);
+
+        $types = [
+            'stat',
+            'formula',
+            'avg',
+            'sum',
+            'salary',
+            'salary_day',
+            'time',
+        ];
+
+        foreach ($cols as $key => $col) {
             foreach ($rows as $row) {
-                AnalyticStat::factory(30)->create([
+                AnalyticStat::factory()->create([
+                    'type' => $types[$key],
                     'date' => now()->firstOfMonth()->format("Y-m-d"),
                     'group_id' => $group->getKey(),
                     'row_id' => $row->getKey(),
                     'column_id' => $col->getKey(),
-                    'activity_id' => $activities->random()->getKey(),
+                    'activity_id' => $activity->getKey(),
+                    'value' => "[{$cols->random()->getKey()}:{$rows->random()->getKey()}] / [{$cols->random()->getKey()}:{$rows->random()->getKey()}] * 100",
                 ]);
             }
         }
@@ -52,6 +65,7 @@ class AnalyticTest extends TenantTestCase
             now()->year,
             now()->month
         );
+
         /** @var Analytics $service */
         $service = app(Analytics::class);
         $service->analytics($dto);

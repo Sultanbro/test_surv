@@ -29,13 +29,12 @@ class AnalyticStatFactory extends Factory
             'group_id' => $group->getKey()
         ]);
         $types = [
-            'formula',
             'stat',
             'avg',
             'sum',
+            'formula',
             'salary',
             'salary_day',
-            'time',
             'time',
         ];
         return [
