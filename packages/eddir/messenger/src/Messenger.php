@@ -409,7 +409,7 @@ class Messenger {
         }
         if ( $last_message->id == $chat->getLastMessage()->id ) {
             // send pusher event
-            $this->createEvent( $last_message->chat, $user, MessengerEvent::TYPE_READ, [
+            $this->createEvent( $chat, $user, MessengerEvent::TYPE_READ, [
                 'message_id' => $last_message->id,
             ] );
         }
