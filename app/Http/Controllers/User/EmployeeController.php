@@ -1115,20 +1115,28 @@ class EmployeeController extends Controller
                     ]);
                 }
             }
+            // Причина увольенения
+            $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
+            $fire_date = now();
+
+                UserDescription::query()->updateOrCreate([
+                    'user_id' => $request->id
+                ],[
+                    'fire_cause' => $cause,
+                    'fire_date' => $fire_date
+                ]);
 
 
             ///////  УВолить с отработкой или без
 
             if ($request->delay == 1) { // Удалить через 2 недели
 
-                $delete_plan = UserDeletePlan::query()->where('user_id', $request->id)->orderBy('id', 'desc')->first();
-
-                if ($delete_plan) $delete_plan->delete();
 
                 $fire_date = Carbon::now()->addHours(24 * 14);
 
-                UserDeletePlan::create([
-                    'user_id' => $user->id,
+                UserDeletePlan::query()->updateOrCreate([
+                    'user_id' => $user->id
+                ],[
                     'executed' => 0,
                     'delete_time' => $fire_date,
                 ]);
@@ -1172,26 +1180,9 @@ class EmployeeController extends Controller
                 $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if ($delete_plan) $delete_plan->delete();
 
-                $fire_date = now();
                 (new CabinetService)->remove(tenant('id'), $user);
                 User::deleteUser($request);
 
-            }
-
-            // Причина увольенения
-            $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
-            $ud = UserDescription::where('user_id', $request->id)->first();
-
-            if ($ud) {
-                $ud->fire_cause = $cause;
-                $ud->fire_date = $fire_date;
-                $ud->save();
-            } else {
-                UserDescription::create([
-                    'user_id' => $request->id,
-                    'fire_cause' => $cause,
-                    'fire_date' => $fire_date
-                ]);
             }
         });
 
@@ -1228,9 +1219,10 @@ class EmployeeController extends Controller
             //add restored_at to users_restored
 
             UserRestored::query()
-                ->updateOrCreate([
-                    'user_id' => $request->id,
-                ], [
+                ->where('user_id', $request->id)
+                ->whereNull('restored_at')
+                ->firstOrFail()
+                ->update([
                     "restored_at" => Carbon::now()->format('Y-m-d')
                 ]);
             Referring::touchReferrerStatus($user);
