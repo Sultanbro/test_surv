@@ -3,21 +3,27 @@
 namespace App\Repositories\Analytics;
 
 
-use App\Enums\ErrorCode;
-use App\Repositories\CoreRepository;
+use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\AnalyticStat as Model;
-use App\Support\Core\CustomException;
+use App\Repositories\CoreRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
-* Класс для работы с Repository.
-*/
+ * Класс для работы с Repository.
+ */
 class AnalyticStatRepository extends CoreRepository
 {
     /**
-     * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
-     *
-     * @return string
+     * @return Collection<AnalyticStat>
      */
+    public function getByGroupId(int $groupId, string $date): Collection
+    {
+        return AnalyticStat::with('activity')
+            ->where('date', $date)
+            ->where('group_id', $groupId)
+            ->get();
+    }
+
     protected function getModelClass(): string
     {
         return Model::class;
@@ -33,8 +39,8 @@ class AnalyticStatRepository extends CoreRepository
      */
     public function getStatisticOrNull(
         string $firstDayOfMonth,
-        int $rowId,
-        int $columnId
+        int    $rowId,
+        int    $columnId
     ): object|null
     {
         return $this->model()->where('date', $firstDayOfMonth)

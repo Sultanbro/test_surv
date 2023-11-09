@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Facade\Analytics\Analytics;
 use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
@@ -25,6 +26,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property  string $class
  * @property  string $decimals
  * @property  string $comment
+ * relations
+ * @property Activity $activity
+ * @property AnalyticRow $analyticRow
+ * @property AnalyticColumn $analyticColumn
  */
 class AnalyticStat extends Model
 {
@@ -106,20 +111,8 @@ class AnalyticStat extends Model
                 ->first();
 
             foreach ($columns as $c_index => $column) {
+                $add_class = Analytics::getClass($column->name, $weekdays, $depending_from_row);
 
-                if (!in_array((int)$column->name, $weekdays) && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) { // weekday coloring
-                    $add_class = ' weekday';
-                } else {
-                    $add_class = '';
-                }
-
-                if (!in_array($column->name, ['sum', 'avg', 'name'])) {
-                    $add_class .= ' text-center';
-                }
-
-                if ($depending_from_row) {
-                    $add_class .= ' bg-violet';
-                }
 
                 $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
                 $cell_letter = $l;
@@ -129,21 +122,8 @@ class AnalyticStat extends Model
                     ->first();
 
                 if ($stat) { // if exist
-                    $arr = [
-                        'value' => $stat->value,
-                        'show_value' => $stat->show_value,
-                        'context' => false,
-                        'type' => $stat->type,
-                        'row_id' => $row->id,
-                        'column_id' => $column->id,
-                        'cell' => $cell_letter . $cell_number,
-                        'class' => $stat->class . $add_class,
-                        'editable' => $r_index == 0 ? 0 : $stat->editable,
-                        'depend_id' => $row->depend_id,
-                        'decimals' => $stat->decimals,
-                        'comment' => $stat->comment,
-                        'sign' => ''
-                    ];
+
+                    $arr = Analytics::getArr($stat, $row, $column, $cell_letter, $cell_number, $add_class, $r_index);
 
                     if ($stat->activity_id != null) {
                         $act = $all_activities->where('id', $stat->activity_id)->first();
@@ -437,18 +417,15 @@ class AnalyticStat extends Model
     {
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
         foreach ($matches[0] as $match) {
-            $match = str_replace("[", "", $match);
-            $match = str_replace("]", "", $match);
+            $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
         }
-
         return $text;
     }
 
@@ -578,19 +555,15 @@ class AnalyticStat extends Model
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
         $text = $stat->value;
-
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
         foreach ($matches[0] as $match) {
-            $match = str_replace("[", "", $match);
-            $match = str_replace("]", "", $match);
+            $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
-
             $column_id = $exp[0];
             $row_id = $exp[1];
 
-
+            /** @var AnalyticStat $cell */
             $cell = AnalyticStat::query()
                 ->where('column_id', $column_id)
                 ->where('row_id', $row_id)
@@ -599,10 +572,8 @@ class AnalyticStat extends Model
 
             if ($cell) {
                 if ($cell->type == 'formula') {
-
-                    if ($cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id) {
-                        return 0;
-                    }
+                    $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
+                    if ($sameStat) return 0;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
@@ -615,9 +586,6 @@ class AnalyticStat extends Model
                     // dump('value ' . $cell->show_value);
                     $text = str_replace("[" . $match . "]", (float)$cell->show_value, $text);
                 }
-            } else {
-                //dd($exp);
-                //$text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
             }
         }
 
@@ -653,7 +621,6 @@ class AnalyticStat extends Model
         } catch (\Throwable $e) {
             $res = 0;
         }
-
         return round($res, $round);
     }
 

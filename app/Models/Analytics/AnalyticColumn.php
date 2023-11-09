@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $group_id
+ * @property string $name
+ * @property string $date
+ * @property string $order
+ */
 class AnalyticColumn extends Model
 {
     use HasFactory;

@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Facade\Analytics\Analytics;
-use App\Models\Mailing\Mailing;
 use Illuminate\Support\ServiceProvider;
 
 class RegisterFacadeProvider extends ServiceProvider
@@ -16,7 +15,7 @@ class RegisterFacadeProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('top_values', function () {
-            return new Analytics();
+            return app(Analytics::class);
         });
     }
 
@@ -25,7 +24,7 @@ class RegisterFacadeProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot():void
+    public function boot(): void
     {
         //
     }
