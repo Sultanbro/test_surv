@@ -406,6 +406,21 @@ class UserService
     }
 
     /**
+     * @param int $userId
+     * @return void
+     */
+    public function restoredUser(int $userId):void
+    {
+        GroupUser::where('user_id', $userId)
+            ->whereNotNull('to')
+            ->where('status','fired')
+            ->update([
+                'to' => null,
+                'status' => 'active',
+            ]);
+    }
+
+    /**
      * Get all users in Department
      *
      * @param int $group_d
