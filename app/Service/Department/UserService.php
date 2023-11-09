@@ -413,6 +413,7 @@ class UserService
     {
         GroupUser::where('user_id', $userId)
             ->whereNotNull('to')
+            ->where('status','fired')
             ->update([
                 'to' => null,
                 'status' => 'active',
