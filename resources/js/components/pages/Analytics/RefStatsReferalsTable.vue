@@ -69,6 +69,9 @@
 				</tr>
 			</thead>
 		</template>
+		<template #header(title)="{field}">
+			{{ field.label }} {{ layer + 1 }} уровень
+		</template>
 		<template #cell(switch)="{item}">
 			<div
 				v-if="item.users.length"
@@ -325,6 +328,7 @@ $bgtd: #dde9ff;
 		.img-info{
 			width: 16px;
 			margin-top: -2px;
+			margin-left: 4px;
 			position: absolute;
 		}
 	}
@@ -487,6 +491,28 @@ $bgtd: #dde9ff;
 							> .JobtronTable-row:not(.JobtronTable-afterRow){
 								> .JobtronTable-td{
 									background-color: darken($bgtd, 5);
+								}
+							}
+						}
+					}
+				}
+			}
+			.RefStatsReferalsTable{
+				&-activeRow{
+					> .JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td{
+						background-color: darken($bgtd, 10);
+					}
+					~ .RefStats-afterRowActive{
+						> .JobtronTable-td{
+							> .RefStatsReferalsTable-subtable{
+								> .RefStatsReferalsTable{
+									> .JobtronTable-body{
+										> .JobtronTable-row:not(.JobtronTable-afterRow){
+											> .JobtronTable-td{
+												background-color: darken($bgtd, 10);
+											}
+										}
+									}
 								}
 							}
 						}
