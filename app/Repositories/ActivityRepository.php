@@ -28,7 +28,7 @@ class ActivityRepository extends CoreRepository implements ActivityInterface
         Model $activity,
         int   $year,
         int   $month
-    ): ?Model
+    )
     {
         return $activity->plans()->where([
             'year' => $year,
