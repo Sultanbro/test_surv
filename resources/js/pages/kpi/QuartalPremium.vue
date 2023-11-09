@@ -776,7 +776,7 @@ export default {
 			newPremiumArray: [],
 			active: 1,
 			activeItem: null,
-			uri: 'quartal-premiums',
+			uri: '/quartal-premiums',
 			showSidebar: false,
 			show_fields: [],
 			fields: [],

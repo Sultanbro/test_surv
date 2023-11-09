@@ -31,7 +31,6 @@ export default {
 		<div class="old__content">
 			<KpiPages
 				v-if="access"
-				:page="page"
 				:access="access"
 			/>
 		</div>

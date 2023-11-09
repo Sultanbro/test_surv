@@ -218,6 +218,15 @@ const router = new VueRouter({
 		},
 		// kpi.blade.php
 		{
+			path: '/kpi/:page',
+			name: 'KPIView',
+			component: KPIView,
+			meta: {
+				title: 'KPI - показателей',
+				menuItem: 'kpi',
+			},
+		},
+		{
 			path: '/kpi',
 			name: 'KPIView',
 			component: KPIView,
