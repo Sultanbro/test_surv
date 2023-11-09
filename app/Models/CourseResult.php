@@ -569,6 +569,38 @@ class CourseResult extends Model
     }
 
     /**
+     * active courses of User
+     */
+    public static function activeAwardCourses($user_id = null)
+    {
+        $user_id = $user_id ?? auth()->id();
+
+        $courseIds = self::notFinishedCourses($user_id);
+
+        /**
+         * Has active courses
+         */
+        $active_courses = [];
+        $disk = \Storage::disk('s3');
+
+        if(count($courseIds) > 0) {
+            $active_courses = Course::whereIn('id', $courseIds)
+                ->orderBy('order', 'asc')
+                ->get()->each(function ($course) use ($disk){
+                    $course->text = $course->text != '' || $course->text != null ? trim($course->text) : 'Нет описания';
+
+                    if($course->img != null/*  && $disk->exists($course->img) */) {
+                        $course->img = $disk->temporaryUrl(
+                            $course->img, now()->addMinutes(360)
+                        );
+                    }
+                });
+        }
+
+        return $active_courses;
+    }
+
+    /**
      * not finished courses' IDs of user
      * @param int $user_id
      * @return array
