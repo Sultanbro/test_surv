@@ -2,47 +2,43 @@
 
 namespace App\Http\Controllers\User;
 
+use App\AdaptationTalk;
+use App\Api\BitrixOld as Bitrix;
+use App\Downloads;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
+use App\Facade\Referring;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
+use App\Models\Bitrix\Lead;
+use App\Models\Bitrix\Segment;
+use App\Models\GroupUser;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
 use App\Models\UserRestored;
+use App\Photo;
+use App\Position;
+use App\ProfileGroup;
+use App\Service\Admin\UserService as AdminUserService;
 use App\Service\Department\UserService;
-use App\Service\TaxService;
-use App\Traits\CurrencyTrait;
+use App\Service\Tenancy\CabinetService;
+use App\Setting;
+use App\User;
+use App\UserContact;
+use App\UserDeletePlan;
+use App\UserDescription;
+use App\UserNotification;
+use App\WorkingDay;
+use App\WorkingTime;
+use App\Zarplata;
+use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Downloads;
-use App\Account;
-use App\UserNotification;
-use App\Position;
-use App\WorkingDay;
-use App\WorkingTime;
-use App\ProfileGroup;
-use App\Setting;
-use App\DayType;
-use App\User;
-use App\UserDescription;
-use App\UserDeletePlan;
-use App\UserContact;
-use App\Zarplata;
-use App\TimetrackingHistory;
-use App\Photo;
-use App\Api\BitrixOld as Bitrix;
-use App\Models\Bitrix\Lead;
-use App\Models\Bitrix\Segment;
 use Maatwebsite\Excel\Facades\Excel;
-use App\AdaptationTalk;
-use App\Models\GroupUser;
-use \App\Service\Admin\UserService as AdminUserService;
-use App\Service\Tenancy\CabinetService;
 
 class EmployeeController extends Controller
 {
@@ -72,7 +68,7 @@ class EmployeeController extends Controller
 
             if ($request['job'] != 0) {
                 $users = \DB::table('users')
-                    ->where('position_id',$request['job'])
+                    ->where('position_id', $request['job'])
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
@@ -93,8 +89,7 @@ class EmployeeController extends Controller
             if ($request['segment'] != []) $users = $users->whereIn('users.segment', $request['segment']);
 
 
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
 
             $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
@@ -108,7 +103,7 @@ class EmployeeController extends Controller
 
             if ($request['job'] != 0) {
                 $users = \DB::table('users')
-                    ->where('position_id',$request['job'])
+                    ->where('position_id', $request['job'])
                     ->whereNotNull('deleted_at')
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
@@ -124,8 +119,7 @@ class EmployeeController extends Controller
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != []) $users = $users->whereIn('users.segment', $request['segment']);
 
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -160,15 +154,14 @@ class EmployeeController extends Controller
                 })
                 ->orWhere('is_trainee', 0)
                 ->whereIn('users.id', array_values($users_1));
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
                     $q->on('bl.phone', '=', 'users.phone')
-                      ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
+                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
@@ -191,9 +184,7 @@ class EmployeeController extends Controller
             if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'reactivated')
-        {
+        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             $users = \DB::table('users')
                 ->join('users_restored as ur', function ($join) {
                     $join->on('users.id', '=', 'ur.user_id')
@@ -208,7 +199,7 @@ class EmployeeController extends Controller
                 })
                 ->where('is_trainee', 0);
 
-                 if ($request['job'] != 0) {
+            if ($request['job'] != 0) {
                 $users = \DB::table('users')
                     ->join('users_restored as ur', function ($join) {
                         $join->on('users.id', '=', 'ur.user_id')
@@ -234,8 +225,7 @@ class EmployeeController extends Controller
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
 
-        }
-        else {
+        } else {
 
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -293,22 +283,22 @@ class EmployeeController extends Controller
             'ud.applied',
         ];
         if (isset($request['filter']) && $request['filter'] == 'reactivated') {
-            if ($request['start_date_reapplied'] and $request['end_date_reapplied']){
-                $users->distinct()->join('users_restored as urs', function ($join) use ($request){
+            if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
+                $users->distinct()->join('users_restored as urs', function ($join) use ($request) {
                     $join->on('users.id', '=', 'urs.user_id')
                         ->whereBetween('urs.restored_at', [$request['start_date_reapplied'], $request['end_date_reapplied']]);
                 });
-                array_push($columns,'urs.destroyed_at', 'urs.restored_at');
-            }else{
-                array_push($columns,'ur.destroyed_at', 'ur.restored_at');
+                array_push($columns, 'urs.destroyed_at', 'urs.restored_at');
+            } else {
+                array_push($columns, 'ur.destroyed_at', 'ur.restored_at');
             }
         }
         if ($request['start_date_reapplied'] and $request['end_date_reapplied'] and $request['filter'] != 'reactivated') {
-            $users->distinct()->join('users_restored as urst', function ($join) use ($request){
+            $users->distinct()->join('users_restored as urst', function ($join) use ($request) {
                 $join->on('users.id', '=', 'urst.user_id')
                     ->whereBetween('urst.restored_at', [$request['start_date_reapplied'], $request['end_date_reapplied']]);
             });
-            array_push($columns,'urst.destroyed_at', 'urst.restored_at');
+            array_push($columns, 'urst.destroyed_at', 'urst.restored_at');
         }
         $users = $users->get($columns);
 
@@ -476,7 +466,7 @@ class EmployeeController extends Controller
         if ($id != 0) {
             $user = User::withTrashed()
                 ->where('id', $id)
-                ->with(['zarplata', 'downloads', 'user_description', 'coordinate','restoredData'])
+                ->with(['zarplata', 'downloads', 'user_description', 'coordinate', 'restoredData'])
                 ->first();
 
             if ($user->weekdays == '' || $user->weekdays == null) {
@@ -1218,6 +1208,7 @@ class EmployeeController extends Controller
     {
         if (!Auth::user()) return redirect('/');
 
+        /** @var User $user */
         $user = User::withTrashed()->where('id', $request->id)->first();
 
         if ($user) {
@@ -1236,12 +1227,13 @@ class EmployeeController extends Controller
             //add restored_at to users_restored
 
             UserRestored::query()
-                ->where('user_id',$request->id)
+                ->where('user_id', $request->id)
                 ->whereNull('restored_at')
                 ->firstOrFail()
                 ->update([
                     "restored_at" => Carbon::now()->format('Y-m-d')
                 ]);
+            Referring::touchReferrerStatus($user);
         }
 
         View::share('title', 'Сотрудник восстановлен');
