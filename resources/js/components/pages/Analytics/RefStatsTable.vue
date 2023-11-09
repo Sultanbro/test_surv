@@ -42,7 +42,7 @@
 				<template v-if="hintComments">
 					<img
 						v-if="value === 'promoter'"
-						v-b-popover.hover="'Следующий статус - Activist (+10% к&nbsp;начислениям)'"
+						v-b-popover.html.hover="'Следующий статус - Activist (+10% к&nbsp;начислениям)'"
 						src="/images/dist/profit-info.svg"
 						class="RefStatsTable-info"
 						alt="info icon"
