@@ -35,20 +35,18 @@ class AnalyticTest extends TenantTestCase
             'group_id' => $group->getKey()
         ]);
 
-        $stats = AnalyticStat::factory(30)->create([
-            'date' => now()->firstOfMonth()->format("Y-m-d"),
-            'group_id' => $group->getKey()
-        ])->each(function (AnalyticStat $stat) use ($rows, $cols, $activities) {
-            foreach ($cols as $col) {
-                foreach ($rows as $row) {
-                    $stat->update([
-                        'row_id' => $row->getKey(),
-                        'column_id' => $col->getKey(),
-                        'activity_id' => $activities->random()->getKey(),
-                    ]);
-                }
+        foreach ($cols as $col) {
+            foreach ($rows as $row) {
+                AnalyticStat::factory(30)->create([
+                    'date' => now()->firstOfMonth()->format("Y-m-d"),
+                    'group_id' => $group->getKey(),
+                    'row_id' => $row->getKey(),
+                    'column_id' => $col->getKey(),
+                    'activity_id' => $activities->random()->getKey(),
+                ]);
             }
-        });
+        }
+
         $dto = new  GetAnalyticDto(
             $group->getKey(),
             now()->year,

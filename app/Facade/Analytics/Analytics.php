@@ -119,7 +119,6 @@ final class Analytics
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
-                dd($statistic);
                 $arr = [
                     'row_id' => $row->id,
                     'column_id' => $column->id,
@@ -139,7 +138,7 @@ final class Analytics
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
                         $statistic->show_value = $val;
                         $statistic->save();
-
+                        dd($val);
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
