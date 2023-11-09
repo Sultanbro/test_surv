@@ -336,7 +336,7 @@ final class Analytics
         })->toArray();
 
         $columnKeys = $columns->mapWithKeys(function ($column, $index) {
-            return [$column->id => $index + 1];
+            return [$column->id => $index - 1];
         })->toArray();
 
 
