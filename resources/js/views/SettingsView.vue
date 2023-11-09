@@ -49,14 +49,6 @@ export default {
 					title: 'Депремирования',
 					access: ['fines_view', 'settings_view']
 				},
-				// {
-				// 	id: '5',
-				// 	htmlId: 'nav-notifications',
-				// 	path: '/timetracking/settings?tab=5',
-				// 	title: 'Уведомления',
-				// 	access: ['notifications_view', 'settings_view'],
-				// 	domain: 'bp'
-				// },
 				{
 					id: '10',
 					htmlId: 'nav-notifications-v2',

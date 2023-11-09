@@ -143,9 +143,10 @@
 		<LeftSidebarItem
 			v-if="showSettings"
 			name="Настройка"
-			class="last"
+			class="last header__nav-link-settings"
 			icon="icon-nd-settings"
 			to="/timetracking/settings"
+			:menu="settingsSubmenu"
 			:highlight="routeMenuItem === 'settings'"
 		/>
 	</div>
@@ -157,6 +158,7 @@ import { bus } from '../../bus'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'
 import { mapGetters } from 'vuex'
+import { settingsSubmenu } from './helper.js'
 
 import LeftSidebarItem from './LeftSidebarItem'
 
@@ -391,7 +393,14 @@ export default {
 		},
 		isOwner(){
 			return this.tenants && this.tenants.includes(this.project)
-		}
+		},
+		settingsSubmenu(){
+			return settingsSubmenu.reduce((result, item) => {
+				if(item.access && !this.can(item.access)) return result
+				result.push(item)
+				return result
+			}, [])
+		},
 	},
 	mounted(){
 		this.onResize()
@@ -454,7 +463,13 @@ export default {
 			this.axios.post('/logout', formData).then(() => {
 				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
 			})
-		}
+		},
+		can(access){
+			if(!access) return true
+			if(access === 'is_admin') return this.isAdmin
+			if(typeof access === 'string') return this.$can(access)
+			return access.some(item => this.$can(item))
+		},
 	},
 };
 </script>
@@ -609,7 +624,7 @@ export default {
 		flex-direction: column;
 		flex: 0 1 100%;
 		gap:.3rem;
-		overflow-y: auto;
+		overflow-y: visible;
 		&::-webkit-scrollbar {
 			width: 0; /* высота для горизонтального скролла */
 			height: 0;
@@ -758,6 +773,7 @@ export default {
 		color: #A6B7D4;
 	}
 
+	.header__nav-link-settings,
 	.header__nav-link-more{
 		.header__menu{
 			transform: translateY(calc(-100% + 5rem));
