@@ -28,7 +28,7 @@ class StatusService implements StatusServiceInterface
         return $user->referrals()
             ->whereRelation('description', fn(UserDescription|Builder $query) => $query
                 ->where(fn(UserDescription|Builder $query) => $query
-                    ->whereNull('fired')
+//                    ->whereNull('fired')
                     ->where('is_trainee', 0)
                 )
             )
