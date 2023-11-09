@@ -104,6 +104,11 @@ const router = new VueRouter({
 		// admin/playlists/index.blade.php
 		{
 			path: '/video_playlists',
+			alias: [
+				'/video_playlists/:category',
+				'/video_playlists/:category/:playlist',
+				'/video_playlists/:category/:playlist/:video',
+			],
 			name: 'PlaylistsView',
 			component: PlaylistsView,
 			meta: {
