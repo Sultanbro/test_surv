@@ -1883,7 +1883,7 @@ class TimetrackingController extends Controller
                 }
 
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-                Referring::touchReferrerSalaryForTrain($targetUser->id, $date);
+                Referring::touchReferrerSalaryForTrain($targetUser, $date);
             }
         }
 
