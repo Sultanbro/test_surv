@@ -51,8 +51,6 @@ export default {
 		async sendStatus(){
 			if(this.sendStatusTimer) return (this.sendStatusDelayed = true)
 			updateOnlineStatus()
-			// const newVerion = await checkVersion()
-			// if(newVerion) this.$toast.info('Достуна новая версия сайта, обновите страницу')
 			this.sendStatusTimer = setTimeout(() => {
 				this.sendStatusTimer = null
 				if(this.sendStatusDelayed) this.sendStatus()

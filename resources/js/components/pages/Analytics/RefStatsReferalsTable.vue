@@ -69,6 +69,9 @@
 				</tr>
 			</thead>
 		</template>
+		<template #header(title)="{field}">
+			{{ field.label }} {{ layer + 1 }} уровень
+		</template>
 		<template #cell(switch)="{item}">
 			<div
 				v-if="item.users.length"
@@ -99,16 +102,17 @@
 					'RefStatsReferalsTable-money_paid': value.sum > 0 && value.paid,
 					'pointer usn': $can('referal_edit'),
 				}"
-				:title="value.comment"
+				:title="hintComments ? '' : value.comment"
 				@click="$emit('payment-click', {item, field})"
 			>
 				{{ value.sum || '' }}
 				<img
 					v-if="hintComments && value.comment && value.sum > 0"
-					v-b-popover.html.hover="value.comment.replaceAll('\n', '<br>')"
+					v-b-popover.click.blur.html="value.comment.replaceAll('\n', '<br>')"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
+					tabindex="-1"
 				>
 			</div>
 		</template>
@@ -316,6 +320,7 @@ $bgtd: #dde9ff;
 	&-money{
 		padding: $cellpadding;
 		margin: $bgmargin;
+		position: relative;
 		background-color: #fdd;
 		&_paid{
 			background-color: #dfd;
@@ -323,6 +328,8 @@ $bgtd: #dde9ff;
 		.img-info{
 			width: 16px;
 			margin-top: -2px;
+			margin-left: 4px;
+			position: absolute;
 		}
 	}
 	&-switchCell{
@@ -484,6 +491,28 @@ $bgtd: #dde9ff;
 							> .JobtronTable-row:not(.JobtronTable-afterRow){
 								> .JobtronTable-td{
 									background-color: darken($bgtd, 5);
+								}
+							}
+						}
+					}
+				}
+			}
+			.RefStatsReferalsTable{
+				&-activeRow{
+					> .JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td{
+						background-color: darken($bgtd, 10);
+					}
+					~ .RefStats-afterRowActive{
+						> .JobtronTable-td{
+							> .RefStatsReferalsTable-subtable{
+								> .RefStatsReferalsTable{
+									> .JobtronTable-body{
+										> .JobtronTable-row:not(.JobtronTable-afterRow){
+											> .JobtronTable-td{
+												background-color: darken($bgtd, 10);
+											}
+										}
+									}
 								}
 							}
 						}
