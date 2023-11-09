@@ -1207,6 +1207,7 @@ class EmployeeController extends Controller
             $user->save();
             $user->restore();
 
+            (new UserService)->restoredUser($user->id);
             $bitrix = new Bitrix();
 
             $bitrixUser = $bitrix->searchUser($user->email);
