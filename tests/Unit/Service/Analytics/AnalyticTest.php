@@ -22,6 +22,7 @@ class AnalyticTest extends TenantTestCase
     public function test_it_can_get_analytics()
     {
         $group = ProfileGroup::factory()->create();
+
         $rows = AnalyticRow::factory(5)->create([
             'date' => now()->firstOfMonth()->format("Y-m-d"),
             'group_id' => $group->getKey()

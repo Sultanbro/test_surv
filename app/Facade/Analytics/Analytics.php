@@ -98,6 +98,7 @@ final class Analytics
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
         $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
+
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
 
         $keys = $this->getKeys($rows, $columns);
@@ -118,14 +119,16 @@ final class Analytics
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
-                $arr = [
-                    'row_id' => $row->id,
-                    'column_id' => $column->id,
-                    'context' => false,
-                    'cell' => $cellLetter . $cellNumber,
-                    'depend_id' => $row->depend_id,
-                ];
+//                $arr = [
+//                    'row_id' => $row->id,
+//                    'column_id' => $column->id,
+//                    'context' => false,
+//                    'cell' => $cellLetter . $cellNumber,
+//                    'depend_id' => $row->depend_id,
+//                ];
+
                 if ($statistic) {
+                    $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
                     if ($statistic->activity_id != null) {
                         $act = $activities->where('id', $statistic->activity_id)->first();
                         if ($act && $act->unit) {
@@ -206,10 +209,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-
-                    $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
-
-                } else {
+                }
+                else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -248,7 +249,6 @@ final class Analytics
                         'sign' => '',
                     ];
                 }
-
                 $item[$column->name] = $arr;
             }
             $table[] = $item;
