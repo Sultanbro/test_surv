@@ -111,7 +111,7 @@ class AnalyticStat extends Model
                 ->first();
 
             foreach ($columns as $c_index => $column) {
-                $add_class = Analytics::getClass($column->name, $depending_from_row, $weekdays);
+                $add_class = Analytics::getClass($column->name, $weekdays, $depending_from_row);
 
 
                 $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';

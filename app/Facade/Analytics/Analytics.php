@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 final class Analytics
 {
     use AnalyticTrait;
+
     const VALUE_PLAN = 'plan';
     const VALUE_IMPL = 'Impl';
 
@@ -71,8 +72,8 @@ final class Analytics
 
     public static function getClass(
         string       $name,
-        ?AnalyticRow $depending_from_row,
-        array        $weekdays
+        array        $weekdays,
+        ?AnalyticRow $depending_from_row
     ): string
     {
         if (!in_array((int)$name, $weekdays) && !in_array($name, ['plan', 'sum', 'avg', 'name'])) { // weekday coloring
@@ -94,11 +95,11 @@ final class Analytics
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
         $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
+
 
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
@@ -111,16 +112,14 @@ final class Analytics
 
             foreach ($columns as $columnIndex => $column) {
 
-                $addClass = self::getClass($column->name, $dependingFromRow, $weekdays);
-
+                $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
-
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
-
+                dd($statistic);
                 $arr = [
                     'row_id' => $row->id,
                     'column_id' => $column->id,
