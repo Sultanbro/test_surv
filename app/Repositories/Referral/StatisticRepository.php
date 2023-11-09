@@ -3,6 +3,7 @@
 namespace App\Repositories\Referral;
 
 use App\DayType;
+use App\Facade\Referring;
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
@@ -135,7 +136,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->orderBy("created_at")
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
-
+                Referring::touchReferrerStatus($referral);
                 $days = $this->getReferralDayTypes($referral);
 
                 $salaries = $this->getReferralSalaries($referrer, $referral);
