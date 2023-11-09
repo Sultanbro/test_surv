@@ -539,7 +539,7 @@ class CourseResult extends Model
     /**
      * active courses of User
      */
-    public static function activeCourses($user_id = null) : array
+    public static function activeCourses($user_id = null)
     {
         $user_id = $user_id ?? auth()->id();
 
@@ -565,9 +565,8 @@ class CourseResult extends Model
                 });
         }
 
-        return $active_courses->toArray();
+        return $active_courses;
     }
-
     /**
      * not finished courses' IDs of user
      * @param int $user_id
