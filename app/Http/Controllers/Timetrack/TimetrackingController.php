@@ -46,6 +46,7 @@ use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;
 use App\UserAbsenceCause;
+use App\UserDeletePlan;
 use App\UserDescription;
 use App\UserFine;
 use App\UserNotification;
@@ -1950,14 +1951,20 @@ class TimetrackingController extends Controller
                 UserDescription::make([
                     'user_id' => $request->user_id,
                     'fired' => now(),
+                    'fire_cause' => $request->comment
                 ]);
 
                 ////////////
                 User::deleteUser($request);
             } else {
-
+                UserDescription::make([
+                    'user_id' => $request->user_id,
+                    'fired' => now(),
+                    'fire_cause' => $request->comment
+                ]);
                 if ($request->fire_type == 1) { // Без отработки
-
+                    $delete_plan = UserDeletePlan::where('user_id', $request->user_id)->orderBy('id', 'desc')->first();
+                    if ($delete_plan) $delete_plan->delete();
                     User::deleteUser($request);
                 } else { // C отработкой
                     if ($request->hasFile('file')) { // Заявление об увольнении
@@ -1982,7 +1989,16 @@ class TimetrackingController extends Controller
                             ]);
                         }
                     }
-                    User::deleteUser($request);
+
+                    $fire_date = Carbon::now()->addHours(24 * 14); // fire after 2 week
+
+                    UserDeletePlan::query()->updateOrCreate(
+                        [
+                        'user_id' => $request->user_id
+                        ],[
+                        'executed' => 0,
+                        'delete_time' => $fire_date,
+                    ]);
                 }
             }
 
@@ -2008,19 +2024,6 @@ class TimetrackingController extends Controller
                         'date' => $date->day(1)->format('Y-m-d'),
                         'type' => $type,
                         'text' => $request->comment,
-                    ]);
-                }
-
-                $ud = UserDescription::where('user_id', $request->user_id)->first();
-                if ($ud) {
-                    $ud->fire_cause = $request->comment;
-                    $ud->fire_date = now();
-                    $ud->save();
-                } else {
-                    UserDescription::create([
-                        'user_id' => $request->user_id,
-                        'fire_cause' => $request->comment,
-                        'fire_date' => now(),
                     ]);
                 }
 
