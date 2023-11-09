@@ -26,6 +26,7 @@ class StatusService implements StatusServiceInterface
     private function countReferrals(User $user): int
     {
         return $user->referrals()
+            ->withTrashed()
             ->whereRelation('description', fn(UserDescription|Builder $query) => $query
                 ->where(fn(UserDescription|Builder $query) => $query
 //                    ->whereNull('fired')
