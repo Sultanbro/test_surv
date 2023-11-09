@@ -1120,7 +1120,7 @@ export default {
 			const comment = this.commentFiring || this.commentFiring2;
 			if(!comment) this.errors.push('Причина увольнения обязательна')
 
-			if(this.errors.length) return
+			if(this.errors.length) return this.$toast.error(this.errors.join('\n'))
 
 			let formData = new FormData();
 			formData.append('month', this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'));
@@ -1142,6 +1142,8 @@ export default {
 
 				this.items[this.sidebarContent.data.index]['_cellVariants'] = v
 
+				this.$toast.success('Сотрудник успешно уволен!')
+
 				this.fetchData()
 
 				this.openSidebar = false
@@ -1156,6 +1158,7 @@ export default {
 					this.errors = []
 				}
 			}).catch(error => {
+				this.$toast.error('Не удалось уволить сотрудника')
 				alert(error)
 			});
 		},
@@ -1587,7 +1590,7 @@ export default {
 				group_id: this.currentGroup,
 				comment: this.commentAbsent
 			}).then(response => {
-
+				this.$toast.success('Сотрудник отмечен отсутсвующим')
 				triggerAbsentInternship(this.sidebarContent.user_id)
 
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
@@ -1609,6 +1612,7 @@ export default {
 
 				loader.hide();
 			}).catch(error => {
+				this.$toast.error('Не удалось отметить сотрудника отсутствующим')
 				alert(error)
 			});
 		},
