@@ -588,7 +588,7 @@ export default {
 				this.fetchAnalytics(request),
 			])
 
-			this.dataLoaded = true
+			this.dataLoaded = !!this.table.length
 			this.noan = false
 			this.firstEnter = false
 			this.hasPremission = true
