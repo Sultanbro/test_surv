@@ -777,7 +777,7 @@ export default {
 			addNewBonus: false,
 			active: 1,
 			activeItem: null,
-			uri: 'bonus',
+			uri: '/bonus',
 			showSidebar: false,
 			show_fields: [],
 			fields: [],

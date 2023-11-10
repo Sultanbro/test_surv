@@ -586,6 +586,10 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
+        Route::get('/bonus', [Kpi\KpiController::class, 'index'])->name('indexBonus');
+        Route::get('/premium', [Kpi\KpiController::class, 'index'])->name('indexPremium');
+        Route::get('/statistics', [Kpi\KpiController::class, 'index'])->name('indexStatistics');
+        Route::get('/indicators', [Kpi\KpiController::class, 'index'])->name('indexIndicators');
         Route::post('/set/status', [Kpi\KpiStatusController::class, 'setActive']);
     });
 
