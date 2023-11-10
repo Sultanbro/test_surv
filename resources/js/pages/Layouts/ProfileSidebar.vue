@@ -204,6 +204,7 @@
 			hide-footer
 			hide-header
 			no-close-on-backdrop
+			:no-close-on-esc="!isDeveloper"
 			scrollable
 		>
 			<div
@@ -247,7 +248,7 @@
 			hide-footer
 			hide-header
 			no-close-on-backdrop
-			no-close-on-esc
+			:no-close-on-esc="!isDeveloper"
 		>
 			<Questions
 				v-if="corp_book"
@@ -420,6 +421,10 @@ export default {
 		selectedMonth(){
 			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('MM.YYYY')
 		},
+		isDeveloper(){
+			if(!this.position) return false
+			return this.isBP && [31, 105].includes(this.position.id)
+		}
 	},
 	watch: {
 		/* eslint-disable-next-line camelcase */
