@@ -5,6 +5,7 @@
 			...subFields
 		] : subFields"
 		:items="sortedSubs[userId]"
+		:tr-class-fn="rowClass"
 		:tr-after-class-fn="rowAfterClass"
 		:tr-after-colspan="rowAfterColspan"
 		class="RefStatsReferalsTable"
@@ -18,7 +19,7 @@
 				<tr class="JobtronTable-row">
 					<template v-for="field in fields">
 						<th
-							v-if="field.key.slice(-4) !== 'Week'"
+							v-if="field.key.slice(-4) !== 'Week' && field.key !== 'spacer'"
 							:key="field.key"
 							class="JobtronTable-th"
 							:class="field.thClass"
@@ -30,6 +31,9 @@
 								@click="$emit('sub-sort', '' + field.key)"
 							>
 								{{ field.label }}
+								<template v-if="field.key === 'title'">
+									{{ layer + 1 }} уровень
+								</template>
 							</div>
 						</th>
 					</template>
@@ -39,11 +43,15 @@
 					>
 						Отработал недель
 					</th>
+					<th
+						class="JobtronTable-th RefStatsReferalsTable-spacer"
+						rowspan="2"
+					/>
 				</tr>
 				<tr class="JobtronTable-row">
 					<template v-for="field in fields">
 						<th
-							v-if="field.key.slice(-4) === 'Week'"
+							v-if="field.key.slice(-4) === 'Week' && field.key !== 'spacer'"
 							:key="field.key"
 							class="JobtronTable-th"
 							:class="field.thClass"
@@ -60,6 +68,9 @@
 					</template>
 				</tr>
 			</thead>
+		</template>
+		<template #header(title)="{field}">
+			{{ field.label }} {{ layer + 1 }} уровень
 		</template>
 		<template #cell(switch)="{item}">
 			<div
@@ -91,10 +102,18 @@
 					'RefStatsReferalsTable-money_paid': value.sum > 0 && value.paid,
 					'pointer usn': $can('referal_edit'),
 				}"
-				:title="value.comment"
+				:title="hintComments ? '' : value.comment"
 				@click="$emit('payment-click', {item, field})"
 			>
 				{{ value.sum || '' }}
+				<img
+					v-if="hintComments && value.comment && value.sum > 0"
+					v-b-popover.click.blur.html="value.comment.replaceAll('\n', '<br>')"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					alt="info icon"
+					tabindex="-1"
+				>
 			</div>
 		</template>
 		<template
@@ -110,6 +129,7 @@
 						:user-id="secondLayerData.value.id"
 						:sorted-subs="sortedSubs"
 						:layer="layer + 1"
+						:hint-comments="hintComments"
 						@sub-sort="$emit('sub-sort', $event)"
 						@payment-click="$emit('payment-click', $event)"
 					/>
@@ -144,6 +164,9 @@ export default {
 			type: Number,
 			default: 1,
 		},
+		hintComments: {
+			type: Boolean
+		},
 	},
 	data(){
 		return {
@@ -172,7 +195,7 @@ export default {
 			})
 		},
 		rowAfterColspan(){
-			return this.layer > 1 ? 4 : 11 + this.maxWorkedDays
+			return this.layer > 1 ? 6 : 12 + this.maxWorkedDays
 		},
 		subFields(){
 			return this.layer > 1 ? secondLayersFields : this.subTableFields
@@ -189,20 +212,28 @@ export default {
 				this.uncollapsed.splice(index, 1)
 			}
 			else{
+				this.uncollapsed = []
 				this.uncollapsed.push(id)
 			}
 		},
 		rowAfterClass(row){
 			return this.uncollapsed.includes(row.id) ? 'RefStats-afterRowActive' : ''
 		},
+		rowClass(row){
+			return this.uncollapsed.includes(row.id) ? 'RefStatsReferalsTable-activeRow' : ''
+		}
 	},
 }
 </script>
 
 <style lang="scss">
+$cellpadding: 8px 10px;
+$bgmargin: -8px -10px;
+$colorborder: #E7EAEA;
+$bgth: #f8f9fd;
+$bgtd: #dde9ff;
+
 .RefStatsReferalsTable{
-	$cellpadding: 8px 10px;
-	$bgmargin: -8px -10px;
 
 	table-layout: fixed;
 
@@ -229,6 +260,11 @@ export default {
 				max-width: 250px;
 
 				left: 32px;
+
+				&.JobtronTable-td,
+				&.JobtronTable-th{
+					padding-left: 10px !important;
+				}
 			}
 		}
 	}
@@ -245,6 +281,11 @@ export default {
 
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
+		&.JobtronTable-td,
+		&.JobtronTable-th{
+			padding-left: 42px !important;
+		}
 	}
 	&-status{
 		width: 100px;
@@ -261,34 +302,70 @@ export default {
 		text-overflow: ellipsis;
 	}
 	&-referalValue{
-		width: 48px;
-		min-width: 48px;
+		width: 75px;
+		min-width: 75px;
 	}
 	&-attest{
-		min-width: 100px;
-		// width: 100px;
+		width: 100px;
 	}
 	&-weeks{
-		width: 420px;
+		width: 560px;
 	}
 	&-week{
-		width: 60px;
+		width: 80px;
 	}
 	&-week1{
-		min-width: 120px;
+		width: 120px;
 	}
 	&-money{
 		padding: $cellpadding;
 		margin: $bgmargin;
+		position: relative;
 		background-color: #fdd;
 		&_paid{
 			background-color: #dfd;
+		}
+		.img-info{
+			width: 16px;
+			margin-top: -2px;
+			margin-left: 4px;
+			position: absolute;
 		}
 	}
 	&-switchCell{
 		// padding: $cellpadding;
 		margin: $bgmargin;
 		font-size: 16px;
+	}
+	&-spacer{
+		width: 100%;
+		padding: 0 !important;
+		margin: 0 !important;
+		border-left: none;
+	}
+	&-spacer2{
+		width: 100%;
+		padding: 0 !important;
+		margin: 0 !important;
+		border-left: none;
+	}
+
+	.JobtronTable-th,
+	.JobtronTable-td{
+		border-color: darken($colorborder, 5);
+	}
+	.JobtronTable-th{
+		background-color: darken($bgth, 5);
+	}
+	.JobtronTable-td{
+		background-color: $bgtd;
+	}
+	.JobtronTable-row{
+		&:last-child{
+			.JobtronTable-td{
+				border-bottom: none;
+			}
+		}
 	}
 
 	&_firstLayer{
@@ -297,13 +374,13 @@ export default {
 			> tr:not(.JobtronTable-afterRow){
 				.JobtronTable-th,
 				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 5);
+					// border-color: darken(#E7EAEA, 5);
 				}
 				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 5);
+					// background-color: darken(#f8f9fd, 5);
 				}
 				.JobtronTable-td{
-					background-color: #dde9ff;
+					// background-color: #dde9ff;
 				}
 			}
 		}
@@ -318,6 +395,10 @@ export default {
 						min-width: 250px;
 						max-width: 250px;
 						left: 32px;
+						&.JobtronTable-td,
+						&.JobtronTable-th{
+							padding-left: 10px;
+						}
 					}
 				}
 			}
@@ -325,6 +406,10 @@ export default {
 				width: 282px;
 				min-width: 282px;
 				max-width: 282px;
+				&.JobtronTable-td,
+				&.JobtronTable-th{
+					padding-left: 42px;
+				}
 			}
 		}
 		> .JobtronTable-head,
@@ -332,13 +417,13 @@ export default {
 			> tr:not(.JobtronTable-afterRow){
 				.JobtronTable-th,
 				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 10);
+					// border-color: darken(#E7EAEA, 10);
 				}
 				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 10);
+					// background-color: darken(#f8f9fd, 10);
 				}
 				.JobtronTable-td{
-					background-color: darken(#dde9ff, 5);
+					// background-color: darken(#dde9ff, 5);
 				}
 			}
 		}
@@ -353,6 +438,10 @@ export default {
 						min-width: 250px;
 						max-width: 250px;
 						left: 32px;
+						&.JobtronTable-td,
+						&.JobtronTable-th{
+							padding-left: 10px;
+						}
 					}
 				}
 			}
@@ -360,6 +449,10 @@ export default {
 				width: 282px;
 				min-width: 282px;
 				max-width: 282px;
+				&.JobtronTable-td,
+				&.JobtronTable-th{
+					padding-left: 42px;
+				}
 			}
 		}
 		> .JobtronTable-head,
@@ -367,13 +460,13 @@ export default {
 			> tr:not(.JobtronTable-afterRow){
 				.JobtronTable-th,
 				.JobtronTable-td{
-					border-color: darken(#E7EAEA, 15);
+					// border-color: darken(#E7EAEA, 15);
 				}
 				.JobtronTable-th{
-					background-color: darken(#f8f9fd, 15);
+					// background-color: darken(#f8f9fd, 15);
 				}
 				.JobtronTable-td{
-					background-color: darken(#dde9ff, 10);
+					// background-color: darken(#dde9ff, 10);
 				}
 			}
 		}
@@ -391,6 +484,48 @@ export default {
 		&-leave-active{
 			transform: scale(1, 0);
 			opacity: 0;
+		}
+	}
+	&-activeRow{
+		.JobtronTable-td{
+			background-color: darken($bgtd, 5);
+		}
+		~ .RefStats-afterRowActive{
+			> .JobtronTable-td{
+				> .RefStatsReferalsTable-subtable{
+					> .RefStatsReferalsTable{
+						> .JobtronTable-body{
+							> .JobtronTable-row:not(.JobtronTable-afterRow){
+								> .JobtronTable-td{
+									background-color: darken($bgtd, 5);
+								}
+							}
+						}
+					}
+				}
+			}
+			.RefStatsReferalsTable{
+				&-activeRow{
+					> .JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td.JobtronTable-td{
+						background-color: darken($bgtd, 10);
+					}
+					~ .RefStats-afterRowActive{
+						> .JobtronTable-td{
+							> .RefStatsReferalsTable-subtable{
+								> .RefStatsReferalsTable{
+									> .JobtronTable-body{
+										> .JobtronTable-row:not(.JobtronTable-afterRow){
+											> .JobtronTable-td{
+												background-color: darken($bgtd, 10);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

@@ -66,6 +66,7 @@
 					:fields="tableFields"
 					:items="[refUser]"
 					single
+					hint-comments
 				/>
 			</div>
 		</div>
@@ -136,9 +137,9 @@ export default {
 </script>
 
 <style lang="scss">
-.ovx{
-	overflow-x: auto;
-}
+// .ovx{
+// 	overflow-x: auto;
+// }
 .RefStat{
 	$cellpadding: 8px 10px;
 	$bgmargin: -8px -10px;
@@ -146,40 +147,12 @@ export default {
 	font-size: 14px;
 
 	&-table{
-		// overflow-x: auto;
 		overflow-x: auto;
 		> .JobtronTable{
 			width: auto;
 		}
 	}
-	&-header{
-		user-select: none;
-	}
 
-
-
-	&-title{
-		width: 200px;
-		min-width: 200px;
-		max-width: 250px;
-
-		overflow: hidden;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	&-money{
-		padding: $cellpadding;
-		margin: $bgmargin;
-		background-color: #fdd;
-		&_paid{
-			background-color: #dfd;
-		}
-	}
-	&-switch{
-		padding: $cellpadding;
-		margin: $bgmargin;
-	}
 	&-diff{
 		display: flex;
 		flex-flow: row nowrap;
@@ -217,9 +190,10 @@ export default {
 		gap: 10px;
 	}
 	.RefStatsTable-title{
-		width: 298px;
-		min-width: 298px;
-		max-width: 298px;
+		width: 282px;
+		min-width: 282px;
+		max-width: 282px;
+		padding-left: 42px;
 	}
 
 	.JobtronTable-head .JobtronTable-row:first-child .JobtronTable-th:first-child::before{

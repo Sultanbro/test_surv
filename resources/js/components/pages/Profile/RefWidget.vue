@@ -26,6 +26,22 @@
 				</PopupMenu>
 			</span>
 			<span
+				v-else-if="status === 'activist'"
+				class="underdot ml-2 relative"
+				@mouseenter="isHoverStatus = true"
+				@mouseleave="isHoverStatus = false"
+			>
+				{{ status }}
+				<PopupMenu
+					v-if="isHoverStatus"
+					position="topLeft"
+					class="px-3"
+					style="width: 200px;"
+				>
+					Следующий статус - Ambassador (главный приз каждые 3 месяца 200 000₸ лучшему сотруднику - Амбассадору за наибольшее количество оставшихся после 1 месяца)
+				</PopupMenu>
+			</span>
+			<span
 				v-else
 				class="ml-2"
 			>{{ status }}</span>
@@ -36,7 +52,7 @@
 				>
 			</template>
 			<a
-				href="https://www.youtube.com/watch?v=amIRBHrUjSg"
+				href="https://www.youtube.com/watch?v=d-GstpURTig"
 				target="_blank"
 				class="RefWidget-play ml-a"
 			>
@@ -53,6 +69,18 @@
 			<router-link :to="'/profile/referral-prsentation'">
 				«Как заработать миллион»
 			</router-link>
+			<a
+				href="https://www.youtube.com/watch?v=amIRBHrUjSg"
+				target="_blank"
+				class="RefWidget-play ml-a"
+			>
+				<img
+					src="/images/ref-play.png"
+					alt=""
+					class="RefWidget-playImage"
+				>
+				Play
+			</a>
 		</div>
 
 		<div
@@ -210,6 +238,8 @@ export default {
 
 		background-color: rgb(253, 66, 100);
 		border-radius: 8px;
+		transform-origin: center right;
+		transform: scale(0.9);
 	}
 	&-playImage{
 		width: 20px;

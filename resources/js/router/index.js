@@ -1,4 +1,7 @@
 import VueRouter from 'vue-router'
+import {
+	checkVersion
+} from '@/stores/api.js'
 
 import ProfileView from '@/views/ProfileView'
 import CabinetView from '@/views/CabinetView'
@@ -101,6 +104,11 @@ const router = new VueRouter({
 		// admin/playlists/index.blade.php
 		{
 			path: '/video_playlists',
+			alias: [
+				'/video_playlists/:category',
+				'/video_playlists/:category/:playlist',
+				'/video_playlists/:category/:playlist/:video',
+			],
 			name: 'PlaylistsView',
 			component: PlaylistsView,
 			meta: {
@@ -210,6 +218,15 @@ const router = new VueRouter({
 		},
 		// kpi.blade.php
 		{
+			path: '/kpi/:page',
+			name: 'KPIView',
+			component: KPIView,
+			meta: {
+				title: 'KPI - показателей',
+				menuItem: 'kpi',
+			},
+		},
+		{
 			path: '/kpi',
 			name: 'KPIView',
 			component: KPIView,
@@ -299,6 +316,9 @@ const router = new VueRouter({
 
 const viewport = document.querySelector('meta[name="viewport"]');
 router.beforeEach((to, from, next) => {
+	checkVersion().then(newVersion => {
+		if(newVersion) location.assign(to.fullPath || to.path)
+	})
 	viewport.content = ' ';
 	if(to.meta.viewport){
 		viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no';

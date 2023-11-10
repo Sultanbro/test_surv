@@ -27,7 +27,6 @@ class CertificateAwardService implements AwardInterface
     {
         $user = User::query()->findOrFail($params['user_id']);
         $result = [];
-
         try {
             $type = AwardTypeEnum::TYPES[$params['key']];
 

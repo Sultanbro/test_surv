@@ -2,14 +2,16 @@
 
 namespace App\Facade\Analytics;
 
+use App\DTO\Analytics\V2\GetAnalyticDto;
+use App\DTO\Analytics\V2\UtilityDto;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static utility(\App\DTO\Analytics\V2\UtilityDto $utilityDto)
- * @method static rentability(\App\DTO\Analytics\V2\UtilityDto $utilityDto)
- * @method static decompositionTable(\App\DTO\Analytics\V2\GetAnalyticDto $dto)
+ * @method static utility(UtilityDto $utilityDto)
+ * @method static rentability(UtilityDto $utilityDto)
+ * @method static decompositionTable(GetAnalyticDto $dto)
  * @method static activitiesViews(int $groupId, array $array)
- * @method static analytics(\App\DTO\Analytics\V2\GetAnalyticDto $dto)
+ * @method static analytics(GetAnalyticDto $dto)
  */
 class AnalyticsFacade extends Facade
 {

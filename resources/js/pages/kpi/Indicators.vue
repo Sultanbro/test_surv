@@ -177,7 +177,7 @@ export default {
 		return {
 			active: 1,
 			activeItem: null,
-			uri: 'activities',
+			uri: '/activities',
 			show_fields: [],
 			fields: [],
 			all_fields: fields,

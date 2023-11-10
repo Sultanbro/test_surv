@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property int $group_id
+ * @property string $order
+ * @property string $date
+ * @property int $depend_id
+ */
 class AnalyticRow extends Model
 {
     use HasFactory;

@@ -15,6 +15,10 @@ use App\Models\Analytics\TopValue as ValueModel;
 use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup;
+use App\Repositories\ActivityRepository;
+use App\Repositories\Analytics\AnalyticColumnRepository;
+use App\Repositories\Analytics\AnalyticRowRepository;
+use App\Repositories\Analytics\AnalyticStatRepository;
 use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
@@ -25,77 +29,123 @@ use Illuminate\Support\Facades\DB;
 
 final class Analytics
 {
+    use AnalyticTrait;
+
     const VALUE_PLAN = 'plan';
     const VALUE_IMPL = 'Impl';
 
-    use AnalyticTrait;
+    public function __construct(
+        private readonly AnalyticRowRepository    $rowRepository,
+        private readonly AnalyticColumnRepository $columnRepository,
+        private readonly AnalyticStatRepository   $statRepository,
+        private readonly ActivityRepository       $activityRepository,
+    )
+    {
+    }
+
+    public static function getArr(
+        AnalyticStat    $statistic,
+        AnalyticRow     $row,
+        AnalyticColumn  $column,
+        string          $cellLetter,
+        int|string|null $cellNumber,
+        string          $addClass,
+        int             $editable
+    ): array
+    {
+        return [
+            'value' => $statistic->value,
+            'show_value' => $statistic->show_value,
+            'context' => false,
+            'type' => $statistic->type,
+            'row_id' => $row->id,
+            'column_id' => $column->id,
+            'cell' => $cellLetter . $cellNumber,
+            'class' => $statistic->class . $addClass,
+            'editable' => $editable == 0 ? 0 : $statistic->editable,
+            'depend_id' => $row->depend_id,
+            'decimals' => $statistic->decimals,
+            'comment' => $statistic->comment,
+            'sign' => ''
+        ];
+    }
+
+    public static function getClass(
+        string       $name,
+        array        $weekdays,
+        ?AnalyticRow $depending_from_row
+    ): string
+    {
+        if (!in_array((int)$name, $weekdays) && !in_array($name, ['plan', 'sum', 'avg', 'name'])) { // weekday coloring
+            $add_class = ' weekday';
+        } else {
+            $add_class = '';
+        }
+
+        if (!in_array($name, ['sum', 'avg', 'name'])) {
+            $add_class .= ' text-center';
+        }
+
+        if ($depending_from_row) {
+            $add_class .= ' bg-violet';
+        }
+        return $add_class;
+    }
 
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $rows = AnalyticRow::query()->where('date', $date)->where('group_id', $dto->groupId)->orderByDesc('order')->get();
-        $columns = AnalyticColumn::query()->where('date', $date)->where('group_id', $dto->groupId)->orderBy('order', 'asc')->get();
-        $stats = AnalyticStat::with('activity')->where('date', $date)->where('group_id', $dto->groupId)->get();
+        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
+        $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
+        $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
-        $activities = Activity::withTrashed()->where('group_id', $dto->groupId)->get();
+        $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
 
         $keys = $this->getKeys($rows, $columns);
-
-
         $weekdays = AnalyticStat::getWeekdays($date);
-        $table = [];
 
+        $table = [];
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
 
-
             foreach ($columns as $columnIndex => $column) {
-                if (!in_array((int)$column->name, $weekdays) && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                    $addClass = ' weekday';
-                } else {
-                    $addClass = '';
-                }
 
-                if (!in_array($column->name, ['sum', 'avg', 'name'])) {
-                    $addClass .= ' text-center';
-                }
-
-                if ($dependingFromRow) {
-                    $addClass .= ' bg-violet';
-                }
-
+                $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
+                /** @var AnalyticStat $statistic */
+                $statistic = $stats
+                    ->where('row_id', $row->id)
+                    ->where('column_id', $column->id)
+                    ->first();
+//                $arr = [
+//                    'row_id' => $row->id,
+//                    'column_id' => $column->id,
+//                    'context' => false,
+//                    'cell' => $cellLetter . $cellNumber,
+//                    'depend_id' => $row->depend_id,
+//                ];
 
-                $statistic = $stats->where('row_id', $row->id)->where('column_id', $column->id)->first();
-
-                $arr = [
-                    'row_id' => $row->id,
-                    'column_id' => $column->id,
-                    'context' => false,
-                    'cell' => $cellLetter . $cellNumber,
-                    'depend_id' => $row->depend_id,
-                ];
                 if ($statistic) {
+                    $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
                     if ($statistic->activity_id != null) {
                         $act = $activities->where('id', $statistic->activity_id)->first();
                         if ($act && $act->unit) {
                             $arr['sign'] = $act->unit;
                         }
                     }
-
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
                         $statistic->show_value = $val;
                         $statistic->save();
-
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
 
                     if ($statistic->type == 'stat') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
+                        $val = '';
                         if ($statistic->activity) {
                             // TODO: here should be condition, $statistic->activity can be null
                             $val = $this->totalForDay($statistic->activity, $day);
@@ -126,7 +176,11 @@ final class Analytics
                     }
 
                     if ($statistic->type == 'salary') {
-                        $groupSalary = GroupSalary::where('group_id', $dto->groupId)->where('date', $date)->get()->sum('total');
+                        $groupSalary = GroupSalary::query()
+                            ->where('group_id', $dto->groupId)
+                            ->where('date', $date)
+                            ->get()
+                            ->sum('total');
                         $val = floor($groupSalary);
                         $statistic->show_value = $val;
                         $statistic->save();
@@ -135,7 +189,6 @@ final class Analytics
                     }
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        //$groupSalary = 0;
                         $val = 0;
                         $statistic->show_value = $val;
                         $statistic->save();
@@ -156,26 +209,17 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
+                }
+                else {
+                    $type = 'initial';
 
-                    $arr = [
-                        'value' => $statistic->value,
-                        'show_value' => $statistic->show_value,
-                        'context' => false,
-                        'type' => $statistic->type,
-                        'row_id' => $row->id,
-                        'column_id' => $column->id,
-                        'cell' => $cellLetter . $cellNumber,
-                        'class' => $statistic->class . $addClass,
-                        'editable' => $rowIndex == 0 ? 0 : $statistic->editable,
-                        'depend_id' => $row->depend_id,
-                        'decimals' => $statistic->decimals,
-                        'comment' => $statistic->comment,
-                        'sign' => ''
-                    ];
+                    if ($column->name == 'sum' && $rowIndex > 3) {
+                        $type = 'sum';
+                    }
 
-                } else {
-                    $type = $column->name == 'sum' && $rowIndex > 3 ? 'sum' : 'initial';
-                    $type = $column->name == 'avg' && $rowIndex > 3 ? 'avg' : 'initial';
+                    if ($column->name == 'avg' && $rowIndex > 3) {
+                        $type = 'avg';
+                    }
 
                     AnalyticStat::query()->create([
                         'group_id' => $dto->groupId,
@@ -205,21 +249,13 @@ final class Analytics
                         'sign' => '',
                     ];
                 }
-
                 $item[$column->name] = $arr;
             }
-
             $table[] = $item;
         }
-
         return $table;
     }
 
-    /**
-     * @param Activity $activity
-     * @param $date
-     * @return int|float
-     */
     private function totalForDay(Activity $activity, $date): int|float
     {
         $method = ($activity->plan_unit === 'minutes' || $activity->plan_unit === 'less_sum') ? 'sum' : 'avg';
@@ -236,16 +272,9 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection $columns
-     * @param \Illuminate\Database\Eloquent\Collection $stats
-     * @param int $rowId
-     * @param array $days
-     * @return float|int
-     */
     public function daysSum(
         \Illuminate\Database\Eloquent\Collection $columns,
-        \Illuminate\Database\Eloquent\Collection $stats,
+        Collection                               $stats,
         int                                      $rowId,
         array                                    $days = []
     ): float|int
@@ -268,18 +297,11 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection $columns
-     * @param \Illuminate\Database\Eloquent\Collection $stats
-     * @param int $rowId
-     * @param array $days
-     * @return float|int
-     */
     public function daysAvg(
-        \Illuminate\Database\Eloquent\Collection $columns,
-        \Illuminate\Database\Eloquent\Collection $stats,
-        int                                      $rowId,
-        array                                    $days = []
+        Collection $columns,
+        Collection $stats,
+        int        $rowId,
+        array      $days = []
     ): float|int
     {
         $days = empty($days) ? range(1, 31) : $days;
@@ -307,12 +329,23 @@ final class Analytics
         return $total;
     }
 
-    /**
-     * @param Activity $activity
-     * @param string $date
-     * @param int|null $groupId
-     * @return Collection
-     */
+    public function getKeys(Collection|array $rows, Collection|array $columns): array
+    {
+        $rowKeys = $rows->mapWithKeys(function ($row, $index) {
+            return [$row->id => $index + 1];
+        })->toArray();
+
+        $columnKeys = $columns->mapWithKeys(function ($column, $index) {
+            return [$column->id => $index - 1];
+        })->toArray();
+
+
+        return [
+            'rows' => $rowKeys,
+            'columns' => $columnKeys
+        ];
+    }
+
     public function userStatisticFormTable(
         Activity $activity,
         string   $date,
@@ -348,13 +381,9 @@ final class Analytics
 
 
                 return $employee;
-            });;
+            });
     }
 
-    /**
-     * @param GetAnalyticDto $dto
-     * @return array
-     */
     public function decompositionTable(
         GetAnalyticDto $dto
     ): array
@@ -372,10 +401,6 @@ final class Analytics
         ];
     }
 
-    /**
-     * @param UtilityDto $dto
-     * @return array
-     */
     public function utility(
         UtilityDto $dto
     ): array
@@ -454,11 +479,6 @@ final class Analytics
         ];
     }
 
-    /**
-     * @param int $groupId
-     * @param array $views
-     * @return Collection
-     */
     public function activitiesViews(
         int   $groupId,
         array $views
@@ -470,11 +490,6 @@ final class Analytics
             ->orderByDesc('order')->get();
     }
 
-    /**
-     * @param Collection $rowsData
-     * @param Collection $columnsData
-     * @return array[]
-     */
     private function analyticTableValue(
         Collection $rowsData,
         Collection $columnsData
@@ -497,11 +512,6 @@ final class Analytics
         ];
     }
 
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return float|int
-     */
     private function rentabilityDiff(
         int    $groupId,
         string $date
@@ -513,11 +523,6 @@ final class Analytics
         return round($currentMonthImpl - $prevMonthImpl, 2);
     }
 
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return float|int
-     */
     private function rentabilityByDay(
         int    $groupId,
         string $date
@@ -530,11 +535,6 @@ final class Analytics
         return $stat ? AnalyticStat::calcFormula($stat, $date, 2, $days) : $impl;
     }
 
-    /**
-     * @param int $groupId
-     * @param string $date
-     * @return Model|null
-     */
     private function implStat(
         int    $groupId,
         string $date
@@ -559,10 +559,6 @@ final class Analytics
         return $implStat;
     }
 
-    /**
-     * @param string $date
-     * @return array
-     */
     private function getDaysPerMonth(
         string $date
     ): array
@@ -577,11 +573,6 @@ final class Analytics
         return $days;
     }
 
-    /**
-     * @param $group_id
-     * @param $date
-     * @return float|int
-     */
     private function getRentabilityValue($group_id, $date): float|int
     {
         $val = 0;
@@ -604,11 +595,6 @@ final class Analytics
         return $val;
     }
 
-    /**
-     * @param $group_id
-     * @param $date
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
     private function getGroupPlanColumns($group_id, $date): \Illuminate\Database\Eloquent\Builder
     {
         return AnalyticColumn::query()
@@ -616,11 +602,6 @@ final class Analytics
             ->where('name', 'plan');
     }
 
-    /**
-     * @param $group_id
-     * @param $date
-     * @return \Illuminate\Database\Eloquent\Builder|null
-     */
     private function getGroupImplRows($group_id, $date): \Illuminate\Database\Eloquent\Builder|null
     {
         return AnalyticRow::query()
@@ -628,10 +609,6 @@ final class Analytics
             ->where('name', 'Impl');
     }
 
-    /**
-     * @param ProfileGroup|null $group
-     * @return array[]
-     */
     private function getStaticZones(?ProfileGroup $group): array
     {
         return [
@@ -642,34 +619,8 @@ final class Analytics
         ];
     }
 
-    /**
-     * @param ProfileGroup|null $group
-     * @return array
-     */
     private function labels(?ProfileGroup $group): array
     {
         return [0, 50, 100, $group->rentability_max];
-    }
-
-    /**
-     * @param \Illuminate\Database\Eloquent\Collection|array $rows
-     * @param \Illuminate\Database\Eloquent\Collection|array $columns
-     * @return array
-     */
-    public function getKeys(\Illuminate\Database\Eloquent\Collection|array $rows, \Illuminate\Database\Eloquent\Collection|array $columns): array
-    {
-        $rowKeys = $rows->mapWithKeys(function ($row, $index) {
-            return [$index + 1 => $row->id];
-        })->toArray();
-
-        $columnKeys = $columns->mapWithKeys(function ($column, $index) {
-            return [$index + 1 => $column->id];
-        })->toArray();
-
-
-        return [
-            'rows' => $rowKeys,
-            'columns' => $columnKeys
-        ];
     }
 }

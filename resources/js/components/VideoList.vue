@@ -185,7 +185,8 @@ export default {
 			default: 0
 		},
 		active: {
-			type: Boolean,
+			type: Number,
+			default: 0
 		},
 		is_course: {
 			type: Boolean,

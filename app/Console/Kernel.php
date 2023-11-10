@@ -85,6 +85,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command('tenants:run usernotification:foreigner --tenants=bp')->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
         $schedule->command('tenants:run start_day:it_department --tenants=bp')->daily(); // Запускается каждый день начинает день для IT отдела
+        $schedule->command('tenants:run logs:access --tenants=bp')->daily()->at('01:00'); // Запускается каждый день начинает день для IT отдела
         /**
          * BITRIX24 crons
          */

@@ -8,6 +8,7 @@ use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\ProfileGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 
 /**
  * @extends Factory<AnalyticStat>
@@ -27,7 +28,15 @@ class AnalyticStatFactory extends Factory
         $activity = Activity::factory()->create([
             'group_id' => $group->getKey()
         ]);
-
+        $types = [
+            'stat',
+            'avg',
+            'sum',
+            'formula',
+            'salary',
+            'salary_day',
+            'time',
+        ];
         return [
             'row_id' => $row->getKey(),
             'column_id' => $col->getKey(),
@@ -36,7 +45,7 @@ class AnalyticStatFactory extends Factory
             'value' => 'some value',
             'show_value' => 'some show value',
             'activity_id' => $activity->getKey(),
-            'type' => 'some type',
+            'type' => Arr::random($types),
         ];
     }
 }

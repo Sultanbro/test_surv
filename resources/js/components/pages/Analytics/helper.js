@@ -126,6 +126,20 @@ export const tableFieldsProfile = [
 	},
 ]
 
+function getDaysFields(){
+	const result = []
+	for(let i = 0; i < 15; ++i){
+		result.push({
+			key: `${i + 1}`,
+			label: `${i + 1}`,
+			thClass: 'RefStatsReferalsTable-referalValue',
+			rowspan: 2,
+			days: true,
+		})
+	}
+	return result
+}
+
 export const subTableFields = [
 	{
 		key: 'title',
@@ -140,60 +154,58 @@ export const subTableFields = [
 		rowspan: 2,
 		thClass: 'RefStatsReferalsTable-status',
 		tdClass: 'RefStatsReferalsTable-status',
-	}
-]
-
-for(let i = 0; i < 15; ++i){
-	subTableFields.push({
-		key: `${i + 1}`,
-		label: `${i + 1}`,
-		thClass: 'RefStatsReferalsTable-referalValue',
+	},
+	...getDaysFields(),
+	{
+		key: 'attest',
+		label: 'Сдал аттестацию',
+		thClass: 'RefStatsReferalsTable-attest',
+		tdClass: 'RefStatsReferalsTable-attest',
 		rowspan: 2,
-		days: true,
-	})
-}
-subTableFields.push({
-	key: 'attest',
-	label: 'Сдал аттестацию',
-	thClass: 'RefStatsReferalsTable-attest',
-	tdClass: 'RefStatsReferalsTable-attest',
-	rowspan: 2,
-})
-subTableFields.push({
-	key: 'firstWeek',
-	label: '1',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'secondWeek',
-	label: '2',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'thirdWeek',
-	label: '3',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'fourthWeek',
-	label: '4',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'sixthWeek',
-	label: '6',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'eighthWeek',
-	label: '8',
-	thClass: 'RefStatsReferalsTable-week',
-})
-subTableFields.push({
-	key: 'twelfthWeek',
-	label: '12',
-	thClass: 'RefStatsReferalsTable-week',
-})
+	},
+	{
+		key: 'firstWeek',
+		label: '1',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'secondWeek',
+		label: '2',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'thirdWeek',
+		label: '3',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'fourthWeek',
+		label: '4',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'sixthWeek',
+		label: '6',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'eighthWeek',
+		label: '8',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'twelfthWeek',
+		label: '12',
+		thClass: 'RefStatsReferalsTable-week',
+	},
+	{
+		key: 'spacer',
+		label: '',
+		thClass: 'RefStatsReferalsTable-spacer',
+		tdClass: 'RefStatsReferalsTable-spacer',
+		rowspan: 2,
+	},
+]
 
 export const secondLayersFields = [
 	{
@@ -214,15 +226,21 @@ export const secondLayersFields = [
 		key: 'firstWeek',
 		label: 'Отработал 1 неделю',
 		thClass: 'RefStatsReferalsTable-week1',
-	}
+	},
+	{
+		key: 'spacer2',
+		label: '',
+		thClass: 'RefStatsReferalsTable-spacer2',
+		tdClass: 'RefStatsReferalsTable-spacer2',
+	},
 ]
 
 let fakeId = 0;
 
 export const status = [
-	'Promoter',
-	'Activist',
-	'Ambassador',
+	'promoter',
+	'activist',
+	'ambassador',
 ]
 
 export const referalStatus = [
@@ -233,7 +251,8 @@ export const referalStatus = [
 
 export const comments = [
 	'',
-	'test comment'
+	'test comment',
+	'test comment\nsecond line',
 ]
 
 const maxDepth = 3
@@ -287,7 +306,8 @@ export function getFakeReferal(depth = 0){
 		},
 		users: [],
 	}
-	for(let i = 0; i < 15; ++i){
+	const days = getRandomInt(0, 15)
+	for(let i = 0; i < days; ++i){
 		referal[i+1] = {
 			sum: Math.random() < 0.5 ? 1000 : 0,
 			paid: Math.random() < 0.5,

@@ -28,24 +28,29 @@
 
 			<div class="profile__col">
 				<ProfileInfo :data="userInfo" />
+
+				<RefWidget v-if="isBP" />
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import ProfileInfo from '@/pages/Widgets/ProfileInfo'
-import StartDayBtn from '@/pages/Widgets/StartDayBtn'
+import { mapState, mapActions } from 'pinia'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
-import { mapState, mapActions } from 'pinia'
+
+import ProfileInfo from '@/pages/Widgets/ProfileInfo'
+import StartDayBtn from '@/pages/Widgets/StartDayBtn'
+import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 export default {
 	name: 'MobileProfileSidebar',
 	components: {
 		ProfileInfo,
 		StartDayBtn,
+		RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -53,6 +58,7 @@ export default {
 			loading: false,
 			hide: false,
 			inViewport: false,
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		};
 	},
 	computed: {

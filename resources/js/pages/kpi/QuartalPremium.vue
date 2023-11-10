@@ -776,7 +776,7 @@ export default {
 			newPremiumArray: [],
 			active: 1,
 			activeItem: null,
-			uri: 'quartal-premiums',
+			uri: '/quartal-premiums',
 			showSidebar: false,
 			show_fields: [],
 			fields: [],
@@ -855,6 +855,7 @@ export default {
 	methods: {
 		changeStatus(item, e){
 			if(this.statusRequest) return
+			if(item.is_active === e) return
 			this.statusRequest = true
 			this.axios.post('/quartal-premiums/set/status', {
 				premium_id: item.id,

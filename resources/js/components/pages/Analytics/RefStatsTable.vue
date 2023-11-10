@@ -37,6 +37,25 @@
 					/>
 				</div>
 			</template>
+			<template #cell(status)="{value}">
+				{{ value }}
+				<template v-if="hintComments">
+					<img
+						v-if="value === 'promoter'"
+						v-b-popover.html.hover="'Следующий статус - Activist (+10% к&nbsp;начислениям)'"
+						src="/images/dist/profit-info.svg"
+						class="RefStatsTable-info"
+						alt="info icon"
+					>
+					<img
+						v-if="value === 'activist'"
+						v-b-popover.hover="'Следующий статус - Ambassador (главный приз каждые 3 месяца 200 000₸ лучшему сотруднику - Амбассадору за наибольшее количество оставшихся после 1 месяца)'"
+						src="/images/dist/profit-info.svg"
+						class="RefStatsTable-info"
+						alt="info icon"
+					>
+				</template>
+			</template>
 			<template #cell(leadsToDealPercent)="{value}">
 				{{ value }}%
 			</template>
@@ -64,6 +83,7 @@
 						<RefStatsReferals
 							:user-id="firstLayerData.value.id"
 							:sorted-subs="sortedSubs"
+							:hint-comments="hintComments"
 							@sub-sort="setSubSort"
 							@payment-click="$emit('payment-click', $event)"
 						/>
@@ -99,7 +119,10 @@ export default {
 		},
 		single: {
 			type: Boolean
-		}
+		},
+		hintComments: {
+			type: Boolean
+		},
 	},
 	data(){
 		return {
@@ -170,6 +193,7 @@ export default {
 				this.uncollapsed.splice(index, 1)
 			}
 			else{
+				this.uncollapsed = []
 				this.uncollapsed.push(id)
 			}
 		},
@@ -354,6 +378,10 @@ export default {
 			transform: scale(1, 0);
 			opacity: 0;
 		}
+	}
+	&-info{
+		width: 16px;
+		margin-top: -2px;
 	}
 }
 </style>

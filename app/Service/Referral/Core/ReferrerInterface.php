@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 interface ReferrerInterface
 {
     public function referrals(): HasMany;
+    public function appliedReferrals(): HasMany;
 
     public function referrer(): BelongsTo;
     public function hasParent(): bool;

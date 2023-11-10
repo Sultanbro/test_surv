@@ -286,7 +286,7 @@ export default {
 			show_fields: [],
 			all_fields: kpi_fields,
 			fields: [],
-			uri: 'kpi',
+			uri: '/kpi',
 			groups: [],
 			searchText: '',
 			modalAdjustVisibleFields: false,

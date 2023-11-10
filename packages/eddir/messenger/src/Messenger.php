@@ -409,7 +409,7 @@ class Messenger {
         }
         if ( $last_message->id == $chat->getLastMessage()->id ) {
             // send pusher event
-            $this->createEvent( $last_message->chat, $user, MessengerEvent::TYPE_READ, [
+            $this->createEvent( $chat, $user, MessengerEvent::TYPE_READ, [
                 'message_id' => $last_message->id,
             ] );
         }
@@ -454,7 +454,14 @@ class Messenger {
             ] );
         }
 
-        $this->createEvent( $message->chat, $user, MessengerEvent::TYPE_REACTION, [
+        if($message->chat_id == 0){
+            $chat = $this->getGeneralChat();
+        }
+        else{
+            $chat = $message->chat;
+        }
+
+        $this->createEvent( $chat, $user, MessengerEvent::TYPE_REACTION, [
             'message_id' => $message->id,
             'reaction'   => $emoji,
         ] );
@@ -475,10 +482,18 @@ class Messenger {
      */
     public function setMessageAsRead( MessengerMessage $message, User $user ): MessengerMessage {
         $message->readers()->syncWithoutDetaching( $user );
+
+        if($message->chat_id == 0){
+            $chat = $this->getGeneralChat();
+        }
+        else{
+            $chat = $message->chat;
+        }
+
         // check if the highest message is really the last message
-        if ( $message->id == $message->chat->getLastMessage()->id ) {
+        if ( $message->id == $chat->getLastMessage()->id ) {
             // send pusher event
-            $this->createEvent( $message->chat, $user, MessengerEvent::TYPE_READ );
+            $this->createEvent( $chat, $user, MessengerEvent::TYPE_READ );
         }
 
         return $message;
@@ -688,12 +703,22 @@ class Messenger {
      */
     public function editMessage( int $messageId, string $body ): MessengerMessage {
         /** @var MessengerMessage $message */
-        $message       = MessengerMessage::find( $messageId );
+        $message = MessengerMessage::find( $messageId );
         $message->body = $body;
+
+        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
         $message->files;
+        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
 
-        $this->createEvent( $message->chat, $message->sender, MessengerEvent::TYPE_EDIT, [
+        if($message->chat_id == 0){
+            $chat = $this->getGeneralChat();
+        }
+        else{
+            $chat = $message->chat;
+        }
+
+        $this->createEvent( $chat, $message->sender, MessengerEvent::TYPE_EDIT, [
             'message' => $message->toArray(),
         ] );
 
@@ -723,6 +748,8 @@ class Messenger {
 
         $message->deletedMessage()->attach($promote->id);
 
+        if($message->chat_id == 0) $message->chat = self::getGeneralChat();
+
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_DELETE, [
             'message_id' => $messageId,
         ] );
@@ -745,7 +772,11 @@ class Messenger {
         /** @var MessengerMessage $message */
         $message         = MessengerMessage::find( $messageId );
         $message->pinned = true;
+        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
+        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
+
+        if($message->chat_id == 0) $message->chat = self::getGeneralChat();
 
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_PIN, [
             'message' => $message
@@ -769,7 +800,9 @@ class Messenger {
         /** @var MessengerMessage $message */
         $message         = MessengerMessage::find( $messageId );
         $message->pinned = false;
+        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
+        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
 
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_UNPIN, [
             'message_id' => $message->id,
@@ -966,7 +999,7 @@ class Messenger {
      * @throws PusherException
      */
     public function updateChat( int $chatId, string $title, string $description, User $user ): MessengerChat {
-
+        if($chatId == 0) return $this->getGeneralChat();
         /* @var MessengerChat $chat */
         $chat              = MessengerChat::find( $chatId );
         $oldChat           = $chat->toArray();
@@ -995,7 +1028,8 @@ class Messenger {
      * @throws PusherException
      */
     public function uploadChatAvatar( int $chatId, string $path ): MessengerChat {
-        $chat        = MessengerChat::find( $chatId );
+        if($chatId == 0) return $this->getGeneralChat();
+        $chat = MessengerChat::find( $chatId );
         $chat->image = $path;
         $chat->save();
 

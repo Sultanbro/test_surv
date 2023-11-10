@@ -317,8 +317,7 @@ export default {
 		},
 
 		scrollToTop() {
-			document.getElementsByClassName('content')[0].scrollTo(0,0);
-
+			document.querySelector('.content, .rp-content').scrollTo(0,0);
 		},
 
 		nextElement() {
@@ -350,9 +349,14 @@ export default {
 					id: this.ids[index + 1].id,
 				});
 
-			} else {
+			}
+			else {
 				// move to next course item
-				this.$parent.after_click_next_element();
+				this.$parent.after_click_next_element
+					? this.$parent.after_click_next_element()
+					: this.$parent.back
+						? this.$parent.back()
+						: this.$router.push('/video_playlists')
 			}
 		},
 
