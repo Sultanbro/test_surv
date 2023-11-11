@@ -423,7 +423,7 @@ export default {
 		},
 		isDeveloper(){
 			if(!this.position) return false
-			return this.isBP && [31, 105].includes(this.position.id)
+			return this.isBP && ([31, 105].includes(this.position.id) || [28546].includes(this.user.id))
 		}
 	},
 	watch: {
