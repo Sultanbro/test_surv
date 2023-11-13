@@ -511,7 +511,7 @@
 				</div>
 			</div>
 
-			<div
+			<!-- <div
 				v-if="tableFilter != 'trainees'"
 				class="row mt-2"
 			>
@@ -525,7 +525,7 @@
 						Не стажер
 					</label>
 				</div>
-			</div>
+			</div> -->
 
 			<div class="row mt-2">
 				<div class="col-md-3 mb-2">
