@@ -367,10 +367,7 @@
 				</div>
 			</div>
 
-			<div
-				v-if="tableFilter != 'active'"
-				class="row mt-2"
-			>
+			<div class="row mt-2">
 				<div class="col-md-6 mb-2">
 					<div class="d-flex align-items-center">
 						<input
@@ -867,7 +864,7 @@ export default {
 				filter.end_date = this.filter.end_date
 			}
 
-			if(this.active.date_deactivate && this.tableFilter != 'active') {
+			if(this.active.date_deactivate/*  && this.tableFilter != 'active' */) {
 				filter.start_date_deactivate = this.filter.start_date_deactivate
 				filter.end_date_deactivate = this.filter.end_date_deactivate
 			}
