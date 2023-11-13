@@ -128,6 +128,8 @@ export default {
 			return this.profileGroups.slice().filter(group => ~group.users?.findIndex(user => user.id === this.user.id))
 		},
 		canEdit(){
+			/* global Laravel */
+			if(Laravel.is_admin) return true
 			return ~this.access.findIndex(access => {
 				switch(access.type){
 				case 1:
