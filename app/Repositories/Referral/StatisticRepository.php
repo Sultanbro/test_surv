@@ -312,8 +312,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     private function isAbsence(?DayType $day): bool
     {
-        return is_null($day)//            || $day->type == DayType::DAY_TYPES['ABCENSE']
-            ;
+        return is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE'];
     }
 
     private function isTrainee(?DayType $day): bool
