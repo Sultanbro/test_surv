@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\DTO\Settings\StoreUserDTO;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
+use App\Models\Bitrix\Segment;
 use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use App\User;
@@ -183,6 +184,7 @@ final class UserRepository extends CoreRepository
     {
         $centralUser = CentralUser::where('email', $dto->email)->first();
 
+        $segment = Segment::query()->where('name', 'Принят через Jobtron')->first();
         $password = str_random(8);
 
         $user = User::query()->updateOrCreate(
@@ -211,6 +213,7 @@ final class UserRepository extends CoreRepository
                 'is_admin' => $dto->is_admin ?? 0,
                 'img_url' => $dto->fileName,
                 'coordinate_id' => isset($dto->coordinates) ? $this->setCoordinate($dto->coordinates) : null,
+                'segment' => $segment ? $segment->id : 57,
             ]
         );
 
@@ -223,7 +226,7 @@ final class UserRepository extends CoreRepository
             ];
         }
 
-        EmailNotificationEvent::dispatch($dto->name, $dto->email, $authData);
+//        EmailNotificationEvent::dispatch($dto->name, $dto->email, $authData);
 
         return $user;
 
