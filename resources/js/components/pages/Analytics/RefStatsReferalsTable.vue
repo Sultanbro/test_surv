@@ -360,6 +360,13 @@ $bgtd: #dde9ff;
 	.JobtronTable-td{
 		background-color: $bgtd;
 	}
+	.JobtronTable-row{
+		&:last-child{
+			.JobtronTable-td{
+				border-bottom: none;
+			}
+		}
+	}
 
 	&_firstLayer{
 		> .JobtronTable-head,
