@@ -1099,7 +1099,6 @@ class EmployeeController extends Controller
                 $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
                 File::ensureDirectoryExists("static/profiles/" . $user->id . "/resignation");
                 $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
-
                 $downloads = Downloads::where('user_id', $user->id)->first();
                 if ($downloads) {
                     $downloads->resignation = $resignation;
