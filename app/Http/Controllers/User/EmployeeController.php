@@ -63,7 +63,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 });
 
@@ -73,7 +73,7 @@ class EmployeeController extends Controller
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                        $q->on('bl.phone', '=', 'users.phone')
+                        $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                             ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                     });
             }
@@ -97,7 +97,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 0);
@@ -109,7 +109,7 @@ class EmployeeController extends Controller
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                        $q->on('bl.phone', '=', 'users.phone')
+                        $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                             ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                     })
                     ->where('is_trainee', 0);
@@ -142,7 +142,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 0)
@@ -161,7 +161,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 1)
@@ -174,7 +174,7 @@ class EmployeeController extends Controller
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                        $q->on('bl.phone', '=', 'users.phone')
+                        $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                             ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                     })
                     ->where('is_trainee', 1)
@@ -195,7 +195,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 0);
@@ -211,7 +211,7 @@ class EmployeeController extends Controller
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                        $q->on('bl.phone', '=', 'users.phone')
+                        $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                             ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                     })
                     ->where('is_trainee', 0);
@@ -233,7 +233,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', function ($q) {
                     // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', 'users.phone')
+                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                         ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                 })
                 ->where('is_trainee', 0);
@@ -245,7 +245,7 @@ class EmployeeController extends Controller
                     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->leftJoin('bitrix_leads as bl', function ($q) {
                         // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                        $q->on('bl.phone', '=', 'users.phone')
+                        $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
                             ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
                     })
                     ->where('is_trainee', 0);
@@ -1219,13 +1219,36 @@ class EmployeeController extends Controller
 
             //add restored_at to users_restored
 
-            UserRestored::query()
+            $userDesc = UserDescription::query()
+                ->where('user_id',$request->id)
+                ->whereNotNull('fire_date')
+                ->first();
+           $userRestor = UserRestored::query()
                 ->where('user_id', $request->id)
                 ->whereNull('restored_at')
-                ->firstOrFail()
-                ->update([
-                    "restored_at" => Carbon::now()->format('Y-m-d')
+                ->first();
+           if ($userRestor){
+            $userRestor->update([
+                "restored_at" => Carbon::now()->format('Y-m-d')
+            ]);
+           }else
+           {
+               UserRestored::query()->create([
+                   'user_id'=>$request->id,
+                   'restored_at' => Carbon::now()->format('Y-m-d'),
+                   'destroyed_at' => $userDesc->fire_date,
+                   'cause' => $userDesc->fire_cause
+               ]);
+           }
+            if($userDesc)
+            {
+                $userDesc->update([
+                    'fire_date' => null,
+                    'fire_cause' => null,
+                    'fired' => null
                 ]);
+            }
+
             Referring::touchReferrerStatus($user);
         }
 
