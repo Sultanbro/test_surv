@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -31,7 +31,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-       // $this->configureRateLimiting();
+        // $this->configureRateLimiting();
 
         $this->mapWebRoutes();
         $this->mapApiRoutes();
@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function map()
+    public function map(): void
     {
         $this->mapApiRoutes();
 
@@ -51,17 +51,19 @@ class RouteServiceProvider extends ServiceProvider
     }
 
 
-    protected function mapWebRoutes()
+    protected function mapWebRoutes(): void
     {
         foreach ($this->centralDomains() as $domain) {
-            Route::middleware('web')
-                ->domain($domain)
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+            $route = Route::middleware('web');
+
+            if (!app()->environment('testing')) $route->domain($domain);
+
+            $route->namespace($this->namespace);
+            $route->group(base_path('routes/web.php'));
         }
     }
 
-    protected function mapApiRoutes()
+    protected function mapApiRoutes(): void
     {
         foreach ($this->centralDomains() as $domain) {
             Route::prefix('api')

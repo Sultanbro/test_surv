@@ -6,37 +6,23 @@ use App\Mail\PortalCreatedMail;
 use App\Models\CentralUser;
 use App\Models\Portal\Portal;
 use App\Models\Tenant;
-use App\Service\Tenancy\CabinetService;
 use App\User;
-use Exception;
+use DB;
+use Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
+use Throwable;
 
 trait CreateTenant
 {
-    /**
-     * @throws Exception
-     */
-    public function createTenant(User $user): Tenant
+    public function createTenant(CentralUser $centralUser): Tenant
     {
-        $tenant = $this->createTenantWithDomain($user);
-
-        $this->createTenantUser($tenant, $user);
-
-        return $tenant;
+        return $this->createTenantWithDomain($centralUser);
     }
 
-    /**
-     * @throws Exception
-     */
-    protected function createTenantWithDomain(User $user): Tenant
+    protected function createTenantWithDomain(CentralUser $centralUser): Tenant
     {
-        /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()
-            ->where('email', $user->email)
-            ->firstOrFail();
-
         $domain = $this->generateRandomName();
 
         /** @var Tenant $tenant */
@@ -47,45 +33,62 @@ trait CreateTenant
 
         $centralUser->tenants()->attach($tenant);
 
-        (new CabinetService)->add($tenant->id, $user, true);
-
         Portal::query()
             ->create([
                 'tenant_id' => $tenant->id,
-                'owner_id' => $user->id,
+                'owner_id' => $centralUser->getKey(),
             ]);
 
         $mail = new PortalCreatedMail([
             'name' => $centralUser->name,
         ]);
-        Mail::to($centralUser->email)->send($mail);
+
+        if (!app()->environment('testing')) {
+            Mail::to($centralUser->email)->send($mail);
+        }
 
         return $tenant;
     }
 
-    /**
-     * @throws TenantCouldNotBeIdentifiedById
-     */
-    protected function createTenantUser(Tenant $tenant, User $user): User
+    protected function createTenantUser(Tenant $tenant, array $data): User
     {
-        tenancy()->initialize($tenant);
+        try {
+            DB::beginTransaction();
+            tenancy()->initialize($tenant);
+            /** @var User $user */
+            $user = User::query()->create([
+                'name' => $data['name'],
+                'last_name' => $data['last_name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+                'currency' => $data['currency'],
+                'password' => Hash::make($data['password']),
+                'position_id' => 1,
+                'program_id' => 1,
+                'is_admin' => 1
+            ]);
+            $user->description()->create([
+                'is_trainee' => 0,
+            ]);
+            DB::commit();
+            return $user;
+        } catch (TenantCouldNotBeIdentifiedById|Throwable $e) {
+            DB::rollBack();
+            die($e->getMessage());
+        }
+    }
 
-        /** @var User $user */
-        $user = User::query()->create([
-            'name' => $user->name,
-            'last_name' => $user->last_name,
-            'email' => $user['email'],
-            'phone' => $user['phone'],
-            'currency' => $user['currency'],
-            'password' => $user['password'],
-            'position_id' => 1,
-            'program_id' => 1,
-            'is_admin' => 1
+    protected function createCentralUser(array $data): CentralUser
+    {
+        /** @var CentralUser */
+        return CentralUser::query()->create([
+            'name' => $data['name'],
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'currency' => $data['currency'],
+            'password' => Hash::make($data['password']),
         ]);
-        $user->description()->create([
-            'is_trainee' => 0,
-        ]);
-        return $user;
     }
 
     protected function generateRandomName(): string
@@ -100,4 +103,5 @@ trait CreateTenant
 
         return $this->generateRandomName();
     }
+
 }

@@ -8,11 +8,12 @@ use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\RegisterRequest;
 use App\Providers\RouteServiceProvider;
+use App\Service\Tenancy\CabinetService;
 use App\User;
 use Exception;
-use Hash;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,18 +22,37 @@ class RegisterController extends Controller
 {
     use RedirectsUsers, LoginToSubDomain, CreateTenant;
 
-
     protected string $redirectTo = RouteServiceProvider::HOME;
 
-    protected function createCentralUser(array $data): Model|User
+    public function __construct(
+        private readonly CabinetService $cabinetService
+    )
     {
-        return User::query()->create([
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'currency' => $data['currency'],
-            'password' => Hash::make($data['password']),
+    }
+
+    public function showForm(): Factory|View|Application
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function register(RegisterRequest $request): JsonResponse|RedirectResponse
+    {
+        $data = $request->validated();
+        $centralUser = $this->createCentralUser($data);
+
+        $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
+
+        $user = $this->createTenantUser($tenant, $data);
+
+        $this->cabinetService->add($tenant->id, $user, true);
+
+        $this->createRegistrationLead($user);
+
+        return response()->json([
+            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
     }
 
@@ -45,27 +65,5 @@ class RegisterController extends Controller
         } catch (Exception) {
             return;
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function register(RegisterRequest $request): JsonResponse|RedirectResponse
-    {
-        if (request()->getHost() !== config('app.domain')) {
-            return redirect()->back();
-        }
-
-        $data = $request->validated();
-
-        event(new Registered($user = $this->createCentralUser($data)));
-
-        $tenant = $user->tenants()->first() ?? $this->createTenant($user);
-
-        $this->createRegistrationLead($user);
-
-        return response()->json([
-            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
-        ]);
     }
 }

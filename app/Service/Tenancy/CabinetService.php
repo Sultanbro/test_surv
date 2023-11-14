@@ -5,11 +5,10 @@ namespace App\Service\Tenancy;
 use App\Models\CentralUser;
 use App\Models\Tenancy\TenantPivot;
 use App\User;
-use DB;
 
 final class CabinetService
 {
-    public function add(String $tenantId, User $user, bool $is_owner): void
+    public function add(string $tenantId, User $user, bool $is_owner): void
     {
         $centralUser = $this->getCentralUser($user);
 
@@ -19,12 +18,14 @@ final class CabinetService
             'owner' => $is_owner ? 1 : 0,
         ];
 
-        $tp = TenantPivot::where($data)->first();
+        $tp = TenantPivot::query()
+            ->where($data)->first();
 
-        if(!$tp) TenantPivot::create($data);
+        if (!$tp) TenantPivot::query()
+            ->create($data);
     }
 
-    public function remove(String $tenantId, User $user): void
+    public function remove(string $tenantId, User $user): void
     {
         $centralUser = $this->getCentralUser($user);
 
@@ -51,7 +52,7 @@ final class CabinetService
         ]);
     }
 
-    public function getOwnerByTenantId(String $tenantId): CentralUser
+    public function getOwnerByTenantId(string $tenantId): CentralUser
     {
         $tenantPivot = TenantPivot::where([
             'tenant_id' => $tenantId,

@@ -7,6 +7,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\Settings\OtherSettingController;
 use App\Http\Controllers\User\ProjectController;
+use App\Http\Middleware\OnlyCentralDomain;
 
 //--------------------/login routs/--------------------------//
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('_login');
@@ -18,8 +19,11 @@ Route::get('login/{subdomain}', [ProjectController::class, 'login']);
 /*******************************************************************************************/
 
 //--------------------/registration routs/--------------------------//
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('register', [RegisterController::class, 'register']);
+Route::middleware(OnlyCentralDomain::class)
+    ->group(function () {
+        Route::get('register', [RegisterController::class, 'showForm'])->name('register');
+        Route::post('register', [RegisterController::class, 'register']);
+    });
 //--------------------/registration routs/--------------------------//
 
 /*******************************************************************************************/
