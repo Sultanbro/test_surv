@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Auth\Traits;
 
+use App\Mail\PortalCreatedMail;
 use App\Models\CentralUser;
 use App\Models\Portal\Portal;
 use App\Models\Tenant;
 use App\Service\Tenancy\CabinetService;
 use App\User;
-use App\UserDescription;
+use Exception;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 trait CreateTenant
 {
     /**
-     * Login to subdomain through UserImpersonate
-     *
-     * @param  \App\User $user "users" table from Central app 
-     * 
-     * @return \App\Models\Tenant
+     * @throws Exception
      */
-    public function createTenant(User $user)
-    {   
+    public function createTenant(User $user): Tenant
+    {
         $tenant = $this->createTenantWithDomain($user);
 
         $this->createTenantUser($tenant, $user);
@@ -28,56 +28,50 @@ trait CreateTenant
     }
 
     /**
-     * Create tenant and attach it to owner
-     *
-     * @param  User $user
-     * @return Tenant
+     * @throws Exception
      */
-    protected function createTenantWithDomain(User $user)
+    protected function createTenantWithDomain(User $user): Tenant
     {
-        // attach to cabinet as owner
-        $centralUser = CentralUser::where('email', $user->email)->first();
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::query()
+            ->where('email', $user->email)
+            ->firstOrFail();
 
-        if(!$centralUser) {
-            throw new \Exception();
-        }
         $domain = $this->generateRandomName();
-        
-        // create tenant
-        $tenant = Tenant::create(['id' => $domain]);
 
-        // create domain
+        /** @var Tenant $tenant */
+        $tenant = Tenant::query()
+            ->create(['id' => $domain]);
+
         $tenant->createDomain($domain);
 
         $centralUser->tenants()->attach($tenant);
 
         (new CabinetService)->add($tenant->id, $user, true);
 
-        Portal::create([
-            'tenant_id' => $tenant->id,
-            'owner_id' => $user->id,
-        ]);
+        Portal::query()
+            ->create([
+                'tenant_id' => $tenant->id,
+                'owner_id' => $user->id,
+            ]);
 
-        $mail = new \App\Mail\PortalCreatedMail([
+        $mail = new PortalCreatedMail([
             'name' => $centralUser->name,
         ]);
-        \Mail::to($centralUser->email)->send($mail);
-     
+        Mail::to($centralUser->email)->send($mail);
+
         return $tenant;
     }
 
     /**
-     * Create a new user in tenant
-     *
-     * @param Tenant $tenant
-     * @param User $user
-     * @return User
+     * @throws TenantCouldNotBeIdentifiedById
      */
-    protected function createTenantUser(Tenant $tenant, User $user)
+    protected function createTenantUser(Tenant $tenant, User $user): User
     {
         tenancy()->initialize($tenant);
 
-        $user = User::create([
+        /** @var User $user */
+        $user = User::query()->create([
             'name' => $user->name,
             'last_name' => $user->last_name,
             'email' => $user['email'],
@@ -88,51 +82,22 @@ trait CreateTenant
             'program_id' => 1,
             'is_admin' => 1
         ]);
-        
-        $ud = UserDescription::create([
+        $user->description()->create([
             'is_trainee' => 0,
-            'user_id'    => $user->id
         ]);
-
         return $user;
     }
 
-    /**
-     * Generate unique subdomain name
-     *
-     * @return String $domain
-     */
-    protected function generateRandomName()
-    {   
-        $nameFound = false;
-
-        do {
-
-            $domain = $this->generateRandomString(6);
-
-            if(Tenant::where('id', $domain)->doesntExist()) {
-                $nameFound = true;
-            }
-
-        } while($nameFound == false);
-
-        return $domain;
-    }
-
-    /**
-     * Generate random string
-     *
-     * @param int $length
-     * @return String
-     */
-    protected function generateRandomString(int $length = 10)
+    protected function generateRandomName(): string
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
+        $domain = Str::random(10);
+
+        $exists = Tenant::query()
+            ->where('id', $domain)
+            ->exists();
+
+        if (!$exists) return $domain; // this is what actually we need
+
+        return $this->generateRandomName();
     }
 }

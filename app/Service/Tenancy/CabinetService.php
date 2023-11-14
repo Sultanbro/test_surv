@@ -61,5 +61,4 @@ final class CabinetService
 
         return CentralUser::where('id', $tenantPivot->user_id)->firstOrFail();
     }
-
 }

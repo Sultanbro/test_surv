@@ -1,42 +1,50 @@
 <?php
 
-/*
-| Central app routes of Jobtron.org
-| Subdomain routes is located in tenant.php, like dev.jobtron.org
- */
-
-// Authentication Routes...
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Lead\LeadController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\Settings\OtherSettingController;
+use App\Http\Controllers\User\ProjectController;
 
-Route::get('login', 'Auth\LoginController@showLoginForm')->name('_login');
-Route::post('login', 'Auth\LoginController@login');
-Route::post('logout', 'Auth\LoginController@logout')->name('_logout');
+//--------------------/login routs/--------------------------//
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('_login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout'])->name('_logout');
+Route::get('login/{subdomain}', [ProjectController::class, 'login']);
+//--------------------/login routs/--------------------------//
 
-Route::get('login/{subdomain}', 'User\ProjectController@login');
+/*******************************************************************************************/
 
-// Registration Routes...
-Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-Route::post('register', 'Auth\RegisterController@register');
+//--------------------/registration routs/--------------------------//
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [RegisterController::class, 'register']);
+//--------------------/registration routs/--------------------------//
 
-// Password Reset Routes...
-// Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.reqest');
-// Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-// Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-// Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+/*******************************************************************************************/
+
+//--------------------/reset routs/--------------------------//
 Route::post('/setting/reset', [OtherSettingController::class, 'reset']);
+//--------------------/reset routs/--------------------------//
 
-// Central App routes
-Route::get('/', [\App\Http\Controllers\PageController::class, 'home']);
-Route::get('/contacts', [\App\Http\Controllers\PageController::class, 'home'])->name('contacts');
-Route::get('/payments', [\App\Http\Controllers\PageController::class, 'home'])->name('payments');
-Route::get('/contract-offer', [\App\Http\Controllers\PageController::class, 'home'])->name('contract-offer');
-Route::get('/site-use-agreement', [\App\Http\Controllers\PageController::class, 'home'])->name('site-use-agreement');
-Route::get('/personal-data', [\App\Http\Controllers\PageController::class, 'home'])->name('personal-data');
-Route::get('/privacy-policy', [\App\Http\Controllers\PageController::class, 'home'])->name('privacy-policy');
+/*******************************************************************************************/
 
-// Company documents
-Route::get('/aggreement', [\App\Http\Controllers\PrivacyController::class, 'aggreement']);
-Route::get('/offer', [\App\Http\Controllers\PrivacyController::class, 'offer']);
-Route::get('/terms', [\App\Http\Controllers\PrivacyController::class, 'terms']);
+//--------------------/central app routs/--------------------------//
+Route::get('/', [PageController::class, 'home']);
+Route::get('/contacts', [PageController::class, 'home'])->name('contacts');
+Route::get('/payments', [PageController::class, 'home'])->name('payments');
+Route::get('/contract-offer', [PageController::class, 'home'])->name('contract-offer');
+Route::get('/site-use-agreement', [PageController::class, 'home'])->name('site-use-agreement');
+Route::get('/personal-data', [PageController::class, 'home'])->name('personal-data');
+Route::get('/privacy-policy', [PageController::class, 'home'])->name('privacy-policy');
+//--------------------/central app routs/--------------------------//
 
-Route::post('/create_lead', [App\Http\Controllers\Lead\LeadController::class, 'createLead']);
+/*******************************************************************************************/
+
+//--------------------/company routs/--------------------------//
+Route::get('/aggreement', [PrivacyController::class, 'aggreement']);
+Route::get('/offer', [PrivacyController::class, 'offer']);
+Route::get('/terms', [PrivacyController::class, 'terms']);
+Route::post('/create_lead', [LeadController::class, 'createLead']);
+//--------------------/company routs/--------------------------//
