@@ -80,10 +80,17 @@
 									:image="'/users_img/' + member.img_url"
 									:size="27"
 									:class="{
-										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id) && chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
+										'messenger__chat-name_member-admin': isUserAdmin(member.id)
 									}"
 									tooltip
-								/>
+								>
+									<template
+										v-if="isUserAdmin(member.id)"
+										#after
+									>
+										<IconCog class="ConversationHeader-adminIcon" />
+									</template>
+								</JobtronAvatar>
 								<template v-if="showMembersNames">
 									{{ member.name }}
 								</template>
@@ -97,7 +104,7 @@
 										class="PopupMenu-item wsnw ChatIcon-parent"
 										@click="userPopup === 0; changeAdmin(member)"
 									>
-										{{ (chat.users.find(u => u.id === member.id) && chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+										{{ isUserAdmin(member.id) ? 'Забрать права админа' : 'Сделать админом' }}
 									</div>
 									<div
 										class="PopupMenu-item wsnw ChatIcon-parent"
@@ -132,9 +139,16 @@
 												:image="'/users_img/' + user.img_url"
 												:size="24"
 												:class="{
-													'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id) && chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false
+													'messenger__chat-name_member-admin': isUserAdmin(user.id)
 												}"
-											/>
+											>
+												<template
+													v-if="isUserAdmin(user.id)"
+													#after
+												>
+													<IconCog class="ConversationHeader-adminIcon" />
+												</template>
+											</JobtronAvatar>
 											{{ `${user.name} ${user.last_name}` }}
 										</span>
 									</div>
@@ -150,7 +164,7 @@
 												class="PopupMenu-item wsnw ChatIcon-parent"
 												@click="userPopup === 0; changeAdmin(user)"
 											>
-												{{ (chat.users.find(u => u.id === user.id) && chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+												{{ isUserAdmin(user.id) ? 'Забрать права админа' : 'Сделать админом' }}
 											</div>
 											<div
 												class="PopupMenu-item wsnw ChatIcon-parent"
@@ -275,6 +289,7 @@ import {
 	ChatIconMuteChat,
 	ChatIconDeleteChat,
 	ChatIconHistoryBack,
+	IconCog,
 } from '@icons'
 import JobtronAvatar from '@ui/Avatar'
 import JobtronOverlay from '@ui/Overlay'
@@ -295,6 +310,7 @@ export default {
 		ChatIconMuteChat,
 		ChatIconDeleteChat,
 		ChatIconHistoryBack,
+		IconCog,
 		JobtronOverlay,
 		JobtronButton,
 	},
@@ -567,7 +583,11 @@ export default {
 			this.removeMembers([
 				user
 			])
-		}
+		},
+		isUserAdmin(userId){
+			const chatUser = this.chat.users.find(u => u.id === userId)
+			return !!chatUser?.pivot?.is_admin
+		},
 	}
 }
 </script>
@@ -687,6 +707,9 @@ export default {
 	display: block;
 	margin-right: -10px;
 	position: relative;
+}
+.messenger__chat-name_members:hover{
+	margin-right: 5px;
 }
 .messenger__chat-name_members
 .JobtronAvatar{
@@ -824,6 +847,17 @@ export default {
 		border-radius: 16px;
 		transform: translate(-50%, -50%);
 		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+	}
+	&-adminIcon{
+		width: 75%;
+		height: 75%;
+
+		position: absolute;
+		right: -10%;
+		bottom: -10%;
+
+		stroke: #fff;
+		stroke-width: 3;
 	}
 }
 </style>
