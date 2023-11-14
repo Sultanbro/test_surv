@@ -1219,13 +1219,36 @@ class EmployeeController extends Controller
 
             //add restored_at to users_restored
 
-            UserRestored::query()
+            $userDesc = UserDescription::query()
+                ->where('user_id',$request->id)
+                ->whereNotNull('fire_date')
+                ->first();
+           $userRestor = UserRestored::query()
                 ->where('user_id', $request->id)
                 ->whereNull('restored_at')
-                ->firstOrFail()
-                ->update([
-                    "restored_at" => Carbon::now()->format('Y-m-d')
+                ->first();
+           if ($userRestor){
+            $userRestor->update([
+                "restored_at" => Carbon::now()->format('Y-m-d')
+            ]);
+           }else
+           {
+               UserRestored::query()->create([
+                   'user_id'=>$request->id,
+                   'restored_at' => Carbon::now()->format('Y-m-d'),
+                   'destroyed_at' => $userDesc->fire_date,
+                   'cause' => $userDesc->fire_cause
+               ]);
+           }
+            if($userDesc)
+            {
+                $userDesc->update([
+                    'fire_date' => null,
+                    'fire_cause' => null,
+                    'fired' => null
                 ]);
+            }
+
             Referring::touchReferrerStatus($user);
         }
 
