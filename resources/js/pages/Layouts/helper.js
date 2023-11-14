@@ -6,7 +6,7 @@ export const settingsSubmenu = [
 	},
 	{
 		name: 'Компания',
-		icon: 'icon-nd-struct',
+		icon: 'far fa-building ml-2',
 		to: '/timetracking/settings?tab=2#nav-home',
 		access: ['positions_view', 'groups_view'],
 	},
