@@ -81,7 +81,7 @@ class BitrixOld
          *
          * */
         if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house'];
-        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018, 1462, 1666, 1604, 2012, 1442, 2436, 2362, 2426, 2446, 2448, 2536, 2538];
+        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018,1462,3452,2436,2362,2426,3460,1666,1604,3878,2012,1442,3480,3482,3548];
 
         if ($search_by == 'hh') $filter['UF_CRM_1498210379'] = [1462];
         if ($search_by == 'insta') $filter['UF_CRM_1498210379'] = [1018, 2436];
