@@ -137,7 +137,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
-                Referring::touchReferrerStatus($referral); // before get
+                Referring::touchReferrerStatus($referral); // before get statistic, we check the user referrer status
 
                 $days = $this->getReferralDayTypes($referral);
 

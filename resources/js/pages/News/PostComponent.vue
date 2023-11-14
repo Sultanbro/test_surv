@@ -450,9 +450,10 @@ export default {
 			this.showFiles = !this.showFiles
 		},
 
-		toggleShowComments() {
+		async toggleShowComments() {
 			if (!this.showComments) {
-				this.getPostComments(this.currentPost.id)
+				await this.getPostComments(this.currentPost.id)
+				this.showComments = true
 			}
 			else {
 				this.showComments = false
@@ -471,8 +472,8 @@ export default {
 			return '/images/some-files/img.png'
 		},
 
-		getPostComments(postId) {
-			this.$refs.comments.getComments(postId)
+		async getPostComments(postId) {
+			await this.$refs.comments.getComments(postId)
 		},
 
 		getData(data) {

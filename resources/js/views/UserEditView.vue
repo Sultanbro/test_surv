@@ -139,6 +139,10 @@ export default {
 			if(this.user) return `${this.user.last_name} ${this.user.name}`
 			return 'Новый сотрудник'
 		},
+		lead(){
+			if(!this.user) return null
+			return this.user.lead
+		},
 		userPosition(){
 			if(!this.user) return 'Новый пользователь'
 			if(!this.user.position_id) return 'Пользователь CP.U_MARKETING.ORG'
@@ -163,8 +167,9 @@ export default {
 			return this.old_birthday
 		},
 		userCreated(){
-			if(this.user) return this.$moment(this.user.created_at).format(DATE_DMY)
-			return ''
+			if(!this.user) ''
+			if(this.lead && this.lead.created_at) return this.$moment(this.lead.created_at).format(DATE_DMY)
+			return this.$moment(this.user.created_at).format(DATE_DMY)
 		},
 		userApplied(){
 			if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)

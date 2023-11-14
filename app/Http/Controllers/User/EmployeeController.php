@@ -37,6 +37,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -1096,8 +1097,8 @@ class EmployeeController extends Controller
             if ($request->hasFile('file8')) { // Заявление об увольнении
                 $file = $request->file('file8');
                 $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                File::ensureDirectoryExists("static/profiles/" . $user->id . "/resignation");
                 $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
-
                 $downloads = Downloads::where('user_id', $user->id)->first();
                 if ($downloads) {
                     $downloads->resignation = $resignation;
@@ -1119,12 +1120,12 @@ class EmployeeController extends Controller
             $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
             $fire_date = now();
 
-                UserDescription::query()->updateOrCreate([
-                    'user_id' => $request->id
-                ],[
-                    'fire_cause' => $cause,
-                    'fire_date' => $fire_date
-                ]);
+            UserDescription::query()->updateOrCreate([
+                'user_id' => $request->id
+            ], [
+                'fire_cause' => $cause,
+                'fire_date' => $fire_date
+            ]);
 
 
             ///////  УВолить с отработкой или без
@@ -1136,7 +1137,7 @@ class EmployeeController extends Controller
 
                 UserDeletePlan::query()->updateOrCreate([
                     'user_id' => $user->id
-                ],[
+                ], [
                     'executed' => 0,
                     'delete_time' => $fire_date,
                 ]);
@@ -1182,7 +1183,6 @@ class EmployeeController extends Controller
 
                 (new CabinetService)->remove(tenant('id'), $user);
                 User::deleteUser($request);
-
             }
         });
 
