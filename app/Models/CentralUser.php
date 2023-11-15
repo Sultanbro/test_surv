@@ -4,11 +4,29 @@ namespace App\Models;
 
 use App\Enums\ErrorCode;
 use App\Support\Core\CustomException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property string name
+ * @property string last_name
+ * @property string email
+ * @property string phone
+ * @property string deleted_at
+ * @property string password
+ * @property string birthday
+ * @property string login_at
+ * @property string lead
+ * @property string country
+ * @property string city
+ * @property string balance
+ * relations
+ * @property Collection $cabinets
+ * @property Collection $tenants
+*/
 class CentralUser extends Model
 {
     use HasFactory;
@@ -85,9 +103,6 @@ class CentralUser extends Model
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
 
-    /**
-     * Кабинеты user-a 
-     */
     public function cabinets(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id')

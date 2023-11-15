@@ -5,132 +5,122 @@ namespace App\Http\Controllers\Auth\Traits;
 use App\Models\CentralUser;
 use App\Models\Tenant;
 use App\User;
+use Exception;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 trait LoginToSubDomain
-{   
+{
     /**
-     * Login to subdomain through UserImpersonate
-     * or get
-     *
-     * @param  \App\Models\Tenant $tenant null
-     * @param  String $email null
-     * @return \Illuminate\Http\RedirectResponse
+     * @throws Exception
      */
-    public function loginToSubDomain(Tenant $tenant = null, String $email = null)
-    {   
-        if($tenant) return $this->loginLinkToSubDomain( $tenant, $email );
+    public function loginToSubDomain(Tenant $tenant = null, string $email = null)
+    {
+        if ($tenant) return $this->loginLinkToSubDomain($tenant, $email);
 
         $links = $this->loginLinks($email);
 
-        if($links == 0) throw new \Exception('User has not tenants to login');
+        if ($links == 0) throw new Exception('User has not tenants to login');
 
         return $links[0]['link'];
     }
 
     /**
-     * Login links to subdomain through UserImpersonate
-     *
-     * @param  \App\Models\Tenant $tenant null
-     * @return String
+     * @throws TenantCouldNotBeIdentifiedById
+     * @throws Exception
      */
-    public function loginLinks(String $email = null)
-    {   
-        $email = $email ?? auth()->user()->email;
+    public function loginLinks(string $email = null): array
+    {
+        /** @var User $authUser */
+        $authUser = auth()->user();
+        $email = $email ?? $authUser->email;
 
-        // find owner in central app
-        $centralUser = $this->getCentralUser( $email );
+        $centralUser = $this->getCentralUser($email);
 
-        // create links array
         $links = [];
-        foreach($centralUser->cabinets as $cabinet) {
+        foreach ($centralUser->cabinets as $cabinet) {
 
-            // $tenant = 
             $links[] = [
                 'id' => $cabinet->id,
-                'link' => $this->getSubDomainLink( $cabinet, $email )
+                'link' => $this->getSubDomainLink($cabinet, $email)
             ];
-        } 
+        }
 
         return $links;
     }
 
     /**
-     * Login link to subdomain through UserImpersonate
-     *
-     * @param  \App\Models\Tenant $tenant null
-     * @param  String $email null
-     * @return String
+     * @throws Exception
      */
-    public function loginLinkToSubDomain(Tenant $tenant = null, String $email = null)
-    {   
-        $email = $email ?? auth()->user()->email;
+    public function loginLinkToSubDomain(Tenant $tenant = null, string $email = null): string
+    {
+        /** @var User $authUser */
+        $authUser = auth()->user();
+        $email = $email ?? $authUser->email;
 
-        // find owner in central app
-        $centralUser = $this->getCentralUser( $email );
+        $centralUser = $this->getCentralUser($email);
 
-        // choose tenant
         $tenant = $tenant ?? $centralUser->tenants->first();
-     
-        // redirect to subdomain login link
-        return $this->getSubDomainLink( $tenant, $email );
+
+        return $this->getSubDomainLink($tenant, $email);
     }
 
     /**
-     * Get owner account in central app (jobtron DB)
-     *
-     * @param  String $email
-     * @return \App\Models\CentralUser|null
+     * @throws Exception
      */
-    protected function getCentralUser(String $email)
+    protected function getCentralUser(string $email): CentralUser
     {
+        /** @var User $authUser */
+        $authUser = auth()->user();
+
+        /** @var CentralUser $centralUser */
         $centralUser = CentralUser::with(['tenants', 'cabinets'])
             ->where('email', $email)
             ->first();
 
-        if( !$centralUser ) {
-            throw new \Exception('Can\'t login '. auth()->user()->email . '. Owner account was not found in central app (Jobtron DB)');
+        if (!$centralUser) {
+            throw new Exception('Can\'t login ' . $authUser->email . '. Owner account was not found in central app (Jobtron DB)');
         }
 
         return $centralUser;
     }
 
     /**
-     * Get link for redirect to subdomain
-     *
-     * @param  \App\Models\Tenant $tenant
-     * @param  String $email
-     * @return String
+     * @throws TenantCouldNotBeIdentifiedById
+     * @throws Exception
      */
-    protected function getSubDomainLink(Tenant $tenant, String $email)
-    {   
+    protected function getSubDomainLink(Tenant $tenant, string $email): string
+    {
         // target
-        $subdomain = $tenant->id .".". config('app.domain');
+        $subdomain = $tenant->id . "." . config('app.domain');
 
         // initialize tenant
-        tenancy()->initialize( $tenant );
+        tenancy()->initialize($tenant);
 
         // find user in tenant app
-        $tenantUser = User::where('email', $email)->first();
+        $tenantUser = User::query()
+            ->where('email', $email)
+            ->first();
 
-        if( !$tenantUser ) {
+        if (!$tenantUser) {
 
-            $centralUser = $this->getCentralUser( $email );
+            $centralUser = $this->getCentralUser($email);
 
-            $tenantUser = User::create([
-                'email' => $centralUser->email,
-                'phone' => $centralUser->phone,
-                'name' => $centralUser->name,
-                'last_name' => $centralUser->last_name,
-                'working_country' => $centralUser->country,
-                'working_city' => $centralUser->city,
-                'birthday' => $centralUser->birthday,
-                'is_admin' => 0
-            ]);
+            $tenantUser = User::query()
+                ->create([
+                    'email' => $centralUser->email,
+                    'phone' => $centralUser->phone,
+                    'name' => $centralUser->name,
+                    'last_name' => $centralUser->last_name,
+                    'working_country' => $centralUser->country,
+                    'working_city' => $centralUser->city,
+                    'birthday' => $centralUser->birthday,
+                    'is_admin' => 0
+                ]);
         }
 
         // redirect link to subdomain  
-        $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
+        $token = tenancy()->impersonate($tenant, $tenantUser->getKey(), '/profile');
 
-        return "https://{$subdomain}/impersonate/{$token->token}";
+        return "https://$subdomain/impersonate/$token->token";
     }
 }

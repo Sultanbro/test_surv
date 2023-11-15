@@ -2,63 +2,68 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Api\BitrixOld\Lead\RegistrationLead;
+use App\Http\Controllers\Auth\Traits\CreateTenant;
+use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\RegisterRequest;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Auth\Traits\RegistersUsers;
-use Illuminate\Validation\Rule;
+use App\Service\Tenancy\CabinetService;
+use App\User;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\RedirectsUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    | Register new tenants
-    | Login through UserImpersonation to subdomain
-    |
-    */
-    use RegistersUsers;
+    use RedirectsUsers, LoginToSubDomain, CreateTenant;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected string $redirectTo = RouteServiceProvider::HOME;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function __construct(
+        private readonly CabinetService $cabinetService
+    )
     {
-        $this->middleware('guest');
+    }
+
+    public function showRegistrationForm(): Factory|View|Application
+    {
+        return view('auth.register');
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @throws Exception
      */
-    protected function validator(array $data)
+    public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:190'],
-            'last_name' => ['string', 'max:190', 'nullable'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone' => ['required', 'string', 'min:11', 'max:30', 'unique:users'],
-            'g-recaptcha-response' => 'required|recaptcha',
-            'currency' => [
-                'required', Rule::in([
-                    'kzt',
-                    'rub',
-                    'usd',
-                ]),
-            ],
+        $data = $request->validated();
+        $centralUser = $this->createCentralUser($data);
+
+        $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
+
+        $user = $this->createTenantUser($tenant, $data);
+
+        $this->cabinetService->add($tenant->id, $user, true);
+
+        $this->createRegistrationLead($user);
+
+        return response()->json([
+            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
+    }
+
+    private function createRegistrationLead(User $user): void
+    {
+        try {
+            (new RegistrationLead($user, null))
+                ->setNeedCallback(false)
+                ->publish();
+        } catch (Exception) {
+            return;
+        }
     }
 }
