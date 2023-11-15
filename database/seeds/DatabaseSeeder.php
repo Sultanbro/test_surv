@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(WorkChartTypeRbSeeder::class);
         // this for job tron
 //        $this->call([
 //            JobtronSeeder::class
