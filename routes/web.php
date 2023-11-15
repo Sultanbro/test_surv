@@ -21,7 +21,7 @@ Route::get('login/{subdomain}', [ProjectController::class, 'login']);
 //--------------------/registration routs/--------------------------//
 Route::middleware(OnlyCentralDomain::class)
     ->group(function () {
-        Route::get('register', [RegisterController::class, 'showForm'])->name('register');
+        Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
         Route::post('register', [RegisterController::class, 'register']);
     });
 //--------------------/registration routs/--------------------------//

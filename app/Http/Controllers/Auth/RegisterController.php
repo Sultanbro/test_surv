@@ -30,7 +30,7 @@ class RegisterController extends Controller
     {
     }
 
-    public function showForm(): Factory|View|Application
+    public function showRegistrationForm(): Factory|View|Application
     {
         return view('auth.register');
     }
