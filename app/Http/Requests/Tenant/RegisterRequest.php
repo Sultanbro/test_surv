@@ -9,13 +9,12 @@ class RegisterRequest extends FormRequest
 {
     public function rules(): array
     {
-        dd(tenant());
         return [
             'name' => ['required', 'string', 'max:190'],
             'last_name' => ['string', 'max:190', 'nullable'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users','email')],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone' => ['required', 'string', 'min:11', 'max:30', Rule::unique('users','phone')],
+            'phone' => ['required', 'string', 'min:11', 'max:30'],
             'g-recaptcha-response' => [Rule::requiredIf(!app()->environment('testing')), 'recaptcha'],
             'currency' => [
                 'required', Rule::in([
