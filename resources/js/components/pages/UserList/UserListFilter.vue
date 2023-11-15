@@ -7,6 +7,7 @@
 			v-model="localSearch"
 			small
 			primary
+			placeholder="Поиск"
 			@focus="onFocusSearch"
 			@blur="onBlurSearch"
 			@click="onClickSearch"
