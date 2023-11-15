@@ -63,7 +63,7 @@ class ProjectController extends Controller
     {
         $user = auth()->user();
 
-        $centralUser = CentralUser::query()->where('email', $user->email);
+        $centralUser = CentralUser::query()->where('email', $user->email)->first();
 
         $tenant = $this->createTenant($centralUser);
 
