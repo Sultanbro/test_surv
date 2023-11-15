@@ -148,14 +148,14 @@ class RecruiterStats extends Command
             $hourly_calls = $this->bitrix->getCallsAlt($this->bitrix_user, [1] ,'ASC', [200], 10, $start_hour. '+06:00', $end_hour. '+06:00'); // Успешные исх и вх от 10 сек
             usleep(3000000); // 1 sec
 
-            $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00'); //
+            $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00','DATE_CREATE','all'); //
             usleep(3000000); // 1 sec
             
             $carbon_date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
             $start_date = $carbon_date->startOfDay()->toIso8601String();
             $end_date = $carbon_date->endOfDay()->toIso8601String();
 
-            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'ALL', 'ASC', $start_date, $end_date, 'DATE_CREATE', 0, 'segment');
+            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'ALL', 'ASC',$start_date, $end_date, 'DATE_CREATE', 0,'segment');
             usleep(3000000); // 1 sec
             
             $this->saveRecruiterStats($admin_user, $hourly_dials, $hourly_calls , $hourly_converted, $hourly_leads);
@@ -180,7 +180,7 @@ class RecruiterStats extends Command
         $start_hour = $date->startOfDay()->toIso8601String();
         $end_hour = $date->endOfDay()->toIso8601String();
 
-        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour , $end_hour, 'DATE_CREATE', 0, 'segment');
+        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour , $end_hour, 'DATE_CREATE', 0, '');
         usleep(3000000);
         $leads = 0;
 
@@ -240,7 +240,6 @@ class RecruiterStats extends Command
             // $leads = count(array_filter($hourly_leads['result'], fn($l) => Carbon::parse($l['DATE_CREATE'])->isSameDay($this->date)));
 		}
 
-        if($total !==0){
             $last_rs = RecruiterStat::where('user_id', $admin_user->id)->orderBy('date', 'desc')->first();
             $profile = $last_rs ? $last_rs->profile : 0;
             RecruiterStat::query()->updateOrCreate([
@@ -255,7 +254,6 @@ class RecruiterStats extends Command
                 'leads' => $leads,
                 'profile' => $profile,
             ]);
-        }
 
         $this->saveMinutes($admin_user->id);
 

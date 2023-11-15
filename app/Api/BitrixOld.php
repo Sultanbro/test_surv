@@ -453,7 +453,7 @@ class BitrixOld
         }
 
         if ($type == 'all') {
-            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house'];
+            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
         }
 
         if ($type == 'hh') $filter['UF_CRM_1498210393'] = [1466];
