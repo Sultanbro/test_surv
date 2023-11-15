@@ -9,7 +9,7 @@ import {
 
 function initialState(){
 	const tenant = location.hostname.split('.')[0]
-	const tenants = Laravel.tenants || []
+	const tenants = (Laravel.tenants || []).map(tenant => tenant.toLowerCase())
 	if(tenants.includes('bp')) tenants.push('test')
 
 	const isOwner = tenants.includes(tenant)

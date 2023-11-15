@@ -175,7 +175,7 @@ export default {
 			isAdmin: this.$laravel.is_admin,
 			project: window.location.hostname.split('.')[0],
 			cabinets: Laravel.cabinets,
-			tenants: Laravel.tenants,
+			tenants: (Laravel.tenants || []).map(tenant => tenant.toLowerCase()),
 			isCreatingProject: false,
 			resizeObserver: null,
 		};
