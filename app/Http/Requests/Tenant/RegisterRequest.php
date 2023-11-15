@@ -9,6 +9,7 @@ class RegisterRequest extends FormRequest
 {
     public function rules(): array
     {
+        dd(tenant());
         return [
             'name' => ['required', 'string', 'max:190'],
             'last_name' => ['string', 'max:190', 'nullable'],
