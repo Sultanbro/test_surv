@@ -80,7 +80,7 @@ class BitrixOld
          * getLeads($user_id = 0, $fields = [])
          *
          * */
-        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house'];
+        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
         if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018,1462,3452,2436,2362,2426,3460,1666,1604,3878,2012,1442,3480,3482,3548];
 
         if ($search_by == 'hh') $filter['UF_CRM_1498210379'] = [1462];

@@ -26,6 +26,7 @@ use App\Zarplata;
 use Carbon\Carbon;
 use Closure;
 use DB;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use View;
@@ -969,5 +970,57 @@ class HrController extends Controller
 
     }
 
+    public function createDeal(Request $request)
+    {
+        $bitrixUrl =  'https://infinitys.bitrix24.kz/rest/158504/';
+        $dealId = $request->deal_id;
+
+        $client = new Client();
+
+        $response = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/' . 'crm.deal.get', [
+            'query' => [
+                'id' => $dealId,
+            ],
+        ]);
+
+        $deal = json_decode($response->getBody()->getContents(), true);
+
+        $lead = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/'.'crm.lead.get',[
+            'query' => [
+                'id' => $deal['result']['LEAD_ID']
+            ]
+        ]);
+        $assignedUserId = $deal['result']['ASSIGNED_BY_ID'];
+        $userResponse = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/' . 'user.get', [
+            'query' => [
+                'ID' => $assignedUserId,
+            ],
+        ]);
+
+        $user = json_decode($userResponse->getBody()->getContents(), true);
+
+        $hash = md5(uniqid() . mt_rand());
+        $lead = json_decode($lead->getBody()->getContents(),true);
+        $phone = Phone::normalize($lead['result']['PHONE'][0]['VALUE']);
+        Lead::query()->updateOrCreate(
+            [
+                'lead_id' => $deal['result']['LEAD_ID'],
+                'deal_id' => $deal['result']['ID'],
+            ],
+            [
+                'name' => $lead['result']['NAME'],
+                'skyped' => $deal['result']['MOVED_TIME'],
+                'user_type' => 'remote',
+                'net' => 'у меня Домашний Wi-Fi интернет в квартире',
+                'hash' => $hash,
+                'phone' => $phone,
+                'resp_id' =>$user['result'][0]['EMAIL'],
+                'segment' => Lead::getSegmentAlt($lead['result']['UF_CRM_1498210379'])
+            ]);
+
+
+        return response()->json(['deal'=>$deal,'lead'=>$lead]);
+
+    }
 }
 
