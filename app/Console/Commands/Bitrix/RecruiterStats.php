@@ -102,11 +102,10 @@ class RecruiterStats extends Command
         $users = $users->pluck('id')->toArray();
     
         if($this->argument('user')) $users = [(int)$this->argument('user')];
-        
         foreach ($users as $user_id) {
             if(in_array($user_id, [5,18,5032,4192])) continue;
             
-            $admin_user = User::find($user_id);
+            $admin_user = User::query()->find($user_id);
 
             if(!$admin_user) {
                 $admin_user = User::withTrashed()->find($user_id);
@@ -116,26 +115,20 @@ class RecruiterStats extends Command
             }
 
             $ud = UserDescription::where('bitrix_id', '!=', 0)->where('user_id', $user_id)->first();
-            if($ud) {
+            if($ud !== null) {
                 $this->bitrix_user = $ud->bitrix_id;
             } else {
                 $bitrix_user = $this->bitrix->searchUser($admin_user->email);
                 if(!$bitrix_user) continue;
 
                 $this->bitrix_user = $bitrix_user['ID'];
-                $ud = UserDescription::where('user_id', $user_id)->first();
-                if($ud) {
-                    
-                    $ud->bitrix_id = $this->bitrix_user;
-                    $ud->save();
-                } else {
-                    UserDescription::create([
+                    UserDescription::query()->updateOrCreate([
                         'user_id' => $user_id,
+                    ],[
                         'bitrix' => 1,
                         'bitrix_id' => $this->bitrix_user
                     ]);
                 }
-            }
 
             /// Requests to Infinitys.Bitrix.com 
 
@@ -145,26 +138,25 @@ class RecruiterStats extends Command
             dump($start_hour);
             dump($end_hour);
             dump($user_id);
-           
-            
-            $hourly_dials = $this->bitrix->getCallsAlt($this->bitrix_user, [1,2] ,'ASC',  [200, 486, 603, '603-S'], 0, $start_hour . '+06:00', $end_hour .'+06:00'); // Наборы
-            usleep(1000000); // 1 sec
+
+            $hourly_dials = $this->bitrix->getCallsAlt($this->bitrix_user, [1] ,'ASC',  [], 0, $start_hour . '+06:00', $end_hour .'+06:00'); // Наборы
+            usleep(3000000); // 1 sec
 
             // dump($start_hour); 
             // dump($end_hour);
 
-            $hourly_calls = $this->bitrix->getCallsAlt($this->bitrix_user, [1,2] ,'ASC', [200, 486, 603, '603-S'], 10, $start_hour. '+06:00', $end_hour. '+06:00'); // Успешные исх и вх от 10 сек
-            usleep(1000000); // 1 sec
+            $hourly_calls = $this->bitrix->getCallsAlt($this->bitrix_user, [1] ,'ASC', [200], 10, $start_hour. '+06:00', $end_hour. '+06:00'); // Успешные исх и вх от 10 сек
+            usleep(3000000); // 1 sec
 
-            $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE'); // 
-            usleep(1000000); // 1 sec
+            $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00','DATE_CREATE','all'); //
+            usleep(3000000); // 1 sec
             
             $carbon_date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
             $start_date = $carbon_date->startOfDay()->toIso8601String();
             $end_date = $carbon_date->endOfDay()->toIso8601String();
 
-            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'ALL', 'ASC', $start_date, $end_date, 'DATE_CREATE', 0, 'segment');
-            usleep(1000000); // 1 sec
+            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'ALL', 'ASC',$start_date, $end_date, 'DATE_CREATE', 0,'segment');
+            usleep(3000000); // 1 sec
             
             $this->saveRecruiterStats($admin_user, $hourly_dials, $hourly_calls , $hourly_converted, $hourly_leads);
 
@@ -188,30 +180,23 @@ class RecruiterStats extends Command
         $start_hour = $date->startOfDay()->toIso8601String();
         $end_hour = $date->endOfDay()->toIso8601String();
 
-        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour , $end_hour, 'DATE_CREATE', 0, 'segment');
-        usleep(1000000);
-
-        $rs = RecruiterStat::where('user_id', 0)
-                ->where('date', $this->date)
-                ->first();
-
-        if($rs) {
-            $rs->delete();
-        }
-
+        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour , $end_hour, 'DATE_CREATE', 0, '');
+        usleep(3000000);
         $leads = 0;
+
 		if(array_key_exists('result', $hourly_leads_all)) {
 			$leads = (int)$hourly_leads_all['total'];
 		} 
 
-        RecruiterStat::create([
+        RecruiterStat::query()->updateOrCreate([
             'user_id' => 0,
+            'date' => $this->date,
+        ],[
             'calls' => 0,
             'minutes' => 0,
             'converts' => 0,
-            'leads' => (int)$leads,
+            'leads' => $leads,
             'hour' => 0,
-            'date' => $this->date,
             'profile' => 0
         ]);
 
@@ -253,40 +238,22 @@ class RecruiterStats extends Command
 		if(array_key_exists('result', $hourly_leads)) {
 			$leads = (int)$hourly_leads['total']; 
             // $leads = count(array_filter($hourly_leads['result'], fn($l) => Carbon::parse($l['DATE_CREATE'])->isSameDay($this->date)));
-		} 
+		}
 
-        $rs = RecruiterStat::where('user_id', $admin_user->id)
-            ->where('hour', (int)$this->hour)
-            ->where('date', $this->date)
-            ->first();
-
-        if($rs) {
-            $rs->delete();
-        }
-
-        if($total == 0 && (int)$total_minutes == 0 && $leads == 0 && $dials == 0) {
-            
-        } else {
             $last_rs = RecruiterStat::where('user_id', $admin_user->id)->orderBy('date', 'desc')->first();
             $profile = $last_rs ? $last_rs->profile : 0;
-            RecruiterStat::create([
+            RecruiterStat::query()->updateOrCreate([
                 'user_id' => $admin_user->id,
+                'hour' => (int)$this->hour,
+                'date' => $this->date,
+            ], [
                 'dials' => $dials,
                 'calls' => $total,
                 'minutes' => $total_minutes,
                 'converts' => $converted,
-                'leads' => (int)$leads,
-                'hour' => (int)$this->hour,
-                'date' => $this->date,
+                'leads' => $leads,
                 'profile' => $profile,
             ]);
-
-           
-           
-
-
-
-        }
 
         $this->saveMinutes($admin_user->id);
 
