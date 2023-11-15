@@ -549,7 +549,7 @@ export default {
 
 		async fetchAnalytics(request){
 			try{
-				const {columns, table } = await API.fetchAnalyticsV2(request)
+				const {columns, table} = await API.fetchAnalyticsV2(request)
 				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
 				this.table = Array.isArray(table) ? table : Object.values(table)
 				this.ready.analytics = true
