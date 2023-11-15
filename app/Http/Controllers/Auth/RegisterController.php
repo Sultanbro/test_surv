@@ -44,7 +44,7 @@ class RegisterController extends Controller
 
         $centralUser = $this->createCentralUser($data);
 
-        $tenant = $this->createTenant($centralUser);
+        $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
 
         $user = $this->createTenantUser($tenant, $data);
 

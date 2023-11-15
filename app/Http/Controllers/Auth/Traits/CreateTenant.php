@@ -95,6 +95,8 @@ trait CreateTenant
     {
         $domain = Str::random(10);
 
+        $domain = Str::lower($domain);
+
         $exists = Tenant::query()
             ->where('id', $domain)
             ->exists();
