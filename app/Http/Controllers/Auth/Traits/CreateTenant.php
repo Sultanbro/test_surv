@@ -7,7 +7,6 @@ use App\Models\CentralUser;
 use App\Models\Portal\Portal;
 use App\Models\Tenant;
 use App\User;
-use DB;
 use Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -53,7 +52,7 @@ trait CreateTenant
     protected function createTenantUser(Tenant $tenant, array $data): User
     {
         try {
-            DB::beginTransaction();
+//            DB::beginTransaction();
             tenancy()->initialize($tenant);
             /** @var User $user */
             $user = User::query()->create([
@@ -70,10 +69,10 @@ trait CreateTenant
             $user->description()->create([
                 'is_trainee' => 0,
             ]);
-            DB::commit();
+//            DB::commit();
             return $user;
         } catch (TenantCouldNotBeIdentifiedById|Throwable $e) {
-            DB::rollBack();
+//            DB::rollBack();
             die($e->getMessage());
         }
     }

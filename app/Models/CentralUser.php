@@ -103,6 +103,7 @@ class CentralUser extends Model
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
 
+
     public function cabinets(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id')

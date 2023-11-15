@@ -41,9 +41,10 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
+
         $centralUser = $this->createCentralUser($data);
 
-        $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
+        $tenant = $this->createTenant($centralUser);
 
         $user = $this->createTenantUser($tenant, $data);
 

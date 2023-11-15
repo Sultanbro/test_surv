@@ -34,10 +34,8 @@ class CreateS3Bucket implements ShouldQueue
      */
     public function handle(): void
     {
-        if (app()->environment() === 'testing') {
-            //skip...
-            return;
-        }
+        if (app()->environment() === 'testing') return;
+
         $process = new Process([
             'sudo',
             '/root/s3-curl/s3curl.pl',
@@ -47,13 +45,13 @@ class CreateS3Bucket implements ShouldQueue
             config('filesystems.disks.s3.endpoint') . '/tenant' . $this->tenant->id
         ]);
 
-        $process->mustRun();
+        $process->run();
 
-        $process->getExitCode();
-        $output = $process->getOutput();
-
-        if ($output !== '') {
-            throw new Exception($output);
-        }
+//        $process->getExitCode();
+//        $output = $process->getOutput();
+//
+//        if ($output !== '') {
+//            throw new Exception($output);
+//        }
     }
 }
