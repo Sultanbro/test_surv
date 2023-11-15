@@ -973,6 +973,9 @@ export default {
 				link += '&end_date_reapplied=' + this.DMY2YMD(this.filter.restore[1])
 			}
 
+			if(this.filter.type) link += '&type=' + this.filter.type
+			if(this.filter.part) link += '&part=' + this.filter.part
+
 			link += '&segment=' + this.filter.segment
 			link += '&excel=1'
 			window.location.href = link
