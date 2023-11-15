@@ -9,8 +9,16 @@ class RegisterTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_tenant_can_visit_register_page()
+    {
+        $response = $this->get('/register');
+        $response->assertOk();
+        $response->assertSeeText('Включайся в работу и наслаждайся');
+    }
+
     public function test_tenant_can_register()
     {
+        // spy
         $data = [
             'name' => 'John',
             'last_name' => 'Doe',
@@ -21,18 +29,19 @@ class RegisterTest extends TestCase
             'currency' => 'usd',
         ];
 
+        //request
         $response = $this->json('post', '/register', $data);
+        $tenantId = tenant('id');
+
+        // assertions
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'link'
         ]);
-
-        $tenantId = tenant('id');
-
         $this->assertDatabaseHas('users', [
             'name' => 'John',
             'email' => 'john.doe@example.com',
-        ]);
+        ]); // tenants database
         $this->assertDatabaseHas('tenants', [
             'id' => $tenantId
         ], 'mysql');
@@ -42,6 +51,6 @@ class RegisterTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'John',
             'email' => 'john.doe@example.com',
-        ], 'mysql');
+        ], 'mysql'); // central database
     }
 }

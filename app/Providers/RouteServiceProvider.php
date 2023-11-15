@@ -56,7 +56,8 @@ class RouteServiceProvider extends ServiceProvider
         foreach ($this->centralDomains() as $domain) {
             $route = Route::middleware('web');
 
-            if (!app()->environment('testing')) $route->domain($domain);
+//            if (!app()->environment('testing'))
+            $route->domain($domain);
 
             $route->namespace($this->namespace);
             $route->group(base_path('routes/web.php'));
