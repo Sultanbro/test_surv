@@ -90,17 +90,17 @@ class Kernel extends ConsoleKernel
          * BITRIX24 crons
          */
         //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
-//         $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
-//	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса
+         $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
+	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(20); // Данные почасовой таблицы рекрутинга из битрикса
 //	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса
-//	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(44); // Данные почасовой таблицы рекрутинга из битрикса
+	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(40); // Данные почасовой таблицы рекрутинга из битрикса
 //        $schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
 
         $schedule->command('tenants:run restart-queue --tenants=bp')->dailyAt('00:10');
-        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
+//        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
+//        $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
+//        $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
 
         /*
         |--------------------------------------------------------------------------
