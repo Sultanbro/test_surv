@@ -58,11 +58,18 @@ class ProjectController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function create(Request $request)
     {
         $user = auth()->user();
 
+        if (!$user->working_country) {
+            // App/User cannot be null while creating new tenant
+            return response()->json([
+                'error' => 'Для создания нового кабинета заполните город в настройках профиля'
+            ], 400);
+        }
         $centralUser = CentralUser::query()->where('email', $user->email)->first();
 
         $tenant = $this->createTenant($centralUser);
