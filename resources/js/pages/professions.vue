@@ -14,6 +14,7 @@
 						placeholder="Выберите должность"
 						track-by="position"
 						label="position"
+						:show-no-options="false"
 						@select="selectPosition"
 					>
 						<template #afterList>

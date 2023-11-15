@@ -24,6 +24,7 @@
 						placeholder="Выберите отдел из списка"
 						track-by="group"
 						label="group"
+						:show-no-options="false"
 						@select="selectGroup"
 					>
 						<template #afterList>
@@ -386,6 +387,7 @@
 						label="email"
 						track-by="email"
 						:taggable="true"
+						:show-no-options="false"
 						@tag="addExceptionTag"
 					/>
 				</div>

@@ -2,7 +2,10 @@
 	<div v-if="positions">
 		<div class="row mb-2">
 			<div class="col-3 text-left">
-				<b-input-group size="sm">
+				<b-input-group
+					v-if="false"
+					size="sm"
+				>
 					<b-form-input
 						id="filterInput"
 						v-model="filter.email"
@@ -13,9 +16,20 @@
 					<!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
 					</b-input-group-append>
 				</b-input-group>
+				<UserListFilter
+					v-model="filter"
+					:search="search"
+					:groups="groupOptions"
+					:positions="(jobFilters || []).map(pos => ({value: pos.value, title: pos.text}))"
+					:user-types="userOptions"
+					:segments="activeSegments"
+					class="mb-2"
+					@search="search = $event"
+				/>
 			</div>
 			<div class="col-2">
 				<b-form-select
+					v-if="false"
 					v-model="filter.group"
 					:options="groups"
 					size="sm"
@@ -23,6 +37,7 @@
 			</div>
 			<div class="col-2  d-flex align-items-center">
 				<b-form-select
+					v-if="false"
 					v-model="tableFilter"
 					:options="tableFilters"
 					size="sm"
@@ -31,6 +46,7 @@
 			</div>
 			<div class="col-2  d-flex align-items-center">
 				<b-form-select
+					v-if="false"
 					v-model="position"
 					:options="jobFilters"
 					size="sm"
@@ -53,6 +69,7 @@
 					/>
 				</b-button>
 				<b-button
+					v-if="false"
 					class="btn-primary rounded ml-1"
 					title="Дополнительные фильтры таблицы"
 					@click="showFilterModal = !showFilterModal"
@@ -555,8 +572,13 @@
 <script>
 /* eslint-disable camelcase */
 
+import UserListFilter from '@/components/pages/UserList/UserListFilter.vue'
+
 export default {
 	name: 'PageUserlist',
+	components: {
+		UserListFilter,
+	},
 	props: {
 		// eslint-disable-next-line vue/prop-name-casing
 		is_admin: {
@@ -677,9 +699,20 @@ export default {
 			sortDirection: 'desc',
 			can_login_users: [],
 			currentUser: null,
+			search: '',
 			filter: {
 				email: '',
 				group: 0,
+				position: 0,
+				userType: 'active',
+				register: ['', ''],
+				restore: ['', ''],
+				fire: ['', ''],
+				applied: ['', ''],
+				segment: [],
+				type: '',
+				fullpart: '',
+
 				start_date: null,
 				end_date: '2030-01-01',
 				start_date_deactivate: '2015-01-01',
@@ -688,7 +721,6 @@ export default {
 				end_date_applied: '2030-01-01',
 				start_date_reapplied: '2015-01-01',
 				end_date_reapplied: '2030-01-01',
-				segment: [],
 				notrainees: false,
 			},
 			active: {
@@ -706,6 +738,7 @@ export default {
 				content: ''
 			},
 			isRestored: false,
+			loading: false,
 		}
 	},
 	computed: {
@@ -720,7 +753,7 @@ export default {
 				})
 		},
 		searchText(){
-			return this.filter.email.toLowerCase()
+			return this.search.toLowerCase()
 		},
 
 		filtered() {
@@ -733,27 +766,16 @@ export default {
 				if (el.last_name == null)  el.last_name = ''
 				if (el.name == null)  el.name = ''
 
-				if(Number(this.filter.group) !== 0) {
-					return el.groups.includes(Number(this.filter.group))
-						&& (el.email.toLowerCase().indexOf(this.searchText) > -1
-						|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
-						|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
-						|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
-						|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
-						|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
-						|| el.name.toLowerCase().indexOf(this.searchText) > -1
-						|| el.id.toString().indexOf(this.searchText) > -1)
-				}
-				else {
-					return el.email.toLowerCase().indexOf(this.searchText) > -1
-						|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
-						|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
-						|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
-						|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
-						|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
-						|| el.name.toLowerCase().indexOf(this.searchText) > -1
-						|| el.id.toString().indexOf(this.searchText) > -1
-				}
+				const isOK = el.email.toLowerCase().indexOf(this.searchText) > -1
+					|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
+					|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
+					|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
+					|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
+					|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
+					|| el.name.toLowerCase().indexOf(this.searchText) > -1
+					|| el.id.toString().indexOf(this.searchText) > -1
+
+				return Number(this.filter.group) ? el.groups.includes(Number(this.filter.group)) && isOK : isOK
 			})
 		},
 		staff_res(){
@@ -786,6 +808,12 @@ export default {
 		activeSegments(){
 			return this.segments.slice().filter(segment => segment.active)
 		},
+		groupOptions(){
+			return Object.keys(this.groups).map(key => ({value: key, title: this.groups[key]}))
+		},
+		userOptions(){
+			return Object.keys(this.tableFilters).map(key => ({value: key, title: this.tableFilters[key]}))
+		}
 	},
 	watch: {
 		showFields: {
@@ -796,6 +824,9 @@ export default {
 		},
 		positions(){
 			this.init()
+		},
+		filter(){
+			this.getUsers()
 		}
 	},
 	created() {
@@ -849,37 +880,41 @@ export default {
 		},
 
 		getUsers() {
+			if(this.loading) return
+			this.loading = true
 			const loader = this.$loading.show();
 			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
 			//if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
-			let filter = {
-				filter: this.tableFilter,
+			const filter = {
+				filter: this.filter.userType,
 				segment: this.filter.segment.map(segment => segment.id),
-				job: this.position,
+				job: this.filter.position,
 				notrainees: this.filter.notrainees,
+				type: this.filter.type,
+				part: this.filter.fullpart,
 			}
 
-			if(this.active.date) {
-				filter.start_date = this.filter.start_date
-				filter.end_date = this.filter.end_date
+			if(this.filter.register[0] && this.filter.register[1]) {
+				filter.start_date = this.DMY2YMD(this.filter.register[0])
+				filter.end_date = this.DMY2YMD(this.filter.register[1])
 			}
 
-			if(this.active.date_deactivate/*  && this.tableFilter != 'active' */) {
-				filter.start_date_deactivate = this.filter.start_date_deactivate
-				filter.end_date_deactivate = this.filter.end_date_deactivate
+			if(this.filter.fire[0] && this.filter.fire[1]/*  && this.filter.userType != 'active' */) {
+				filter.start_date_deactivate = this.DMY2YMD(this.filter.fire[0])
+				filter.end_date_deactivate = this.DMY2YMD(this.filter.fire[1])
 			}
 
-			if(this.active.date_applied && this.tableFilter != 'trainees') {
-				filter.start_date_applied = this.filter.start_date_applied
-				filter.end_date_applied = this.filter.end_date_applied
+			if(this.filter.applied[0] && this.filter.applied[1] && this.tableFilter != 'trainees') {
+				filter.start_date_applied = this.DMY2YMD(this.filter.applied[0])
+				filter.end_date_applied = this.DMY2YMD(this.filter.applied[1])
 			}
 
-			if(this.active.date_reapplied && this.tableFilter != 'trainees') {
-				filter.start_date_reapplied = this.filter.start_date_reapplied
-				filter.end_date_reapplied = this.filter.end_date_reapplied
+			if(this.filter.restore[0]  && this.filter.restore[1] && this.tableFilter != 'trainees') {
+				filter.start_date_reapplied = this.DMY2YMD(this.filter.restore[0])
+				filter.end_date_reapplied = this.DMY2YMD(this.filter.restore[1])
 			}
 
-			this.isRestored = this.tableFilter === 'reactivated'
+			this.isRestored = this.filter.userType === 'reactivated'
 
 			this.axios.post('/timetracking/get-persons', filter).then(response => {
 				const users = []
@@ -896,42 +931,46 @@ export default {
 				this.can_login_users = response.data.can_login_users
 				this.auth_token = response.data.auth_token
 				this.currentUser = response.data.currentUser
-				if(this.filter.start_date == null) {
-					this.filter.start_date = response.data.start_date
-					this.filter.end_date = response.data.end_date
-					this.filter.start_date_deactivate = response.data.start_date
-					this.filter.end_date_deactivate = response.data.end_date
-					this.filter.start_date_applied = response.data.start_date
-					this.filter.end_date_applied = response.data.end_date
-					this.filter.start_date_reapplied = response.data.start_date
-					this.filter.end_date_reapplied = response.data.end_date
-				}
+				// if(this.filter.start_date == null) {
+				// 	this.filter.start_date = response.data.start_date
+				// 	this.filter.end_date = response.data.end_date
+				// 	this.filter.start_date_deactivate = response.data.start_date
+				// 	this.filter.end_date_deactivate = response.data.end_date
+				// 	this.filter.start_date_applied = response.data.start_date
+				// 	this.filter.end_date_applied = response.data.end_date
+				// 	this.filter.start_date_reapplied = response.data.start_date
+				// 	this.filter.end_date_reapplied = response.data.end_date
+				// }
 				loader.hide()
-			}).catch(loader.hide)
+				this.loading = false
+			}).catch(() => {
+				loader.hide()
+				this.loading = false
+			})
 		},
 
 		exportData() {
 			var link = '/timetracking/get-persons'
-			link += '?filter=' + this.tableFilter
+			link += '?filter=' + this.filter.userType
 
-			if(this.active.date) {
-				link += '&start_date=' + this.filter.start_date
-				link += '&end_date=' + this.filter.end_date
+			if(this.filter.register[0] && this.filter.register[1]) {
+				link += '&start_date=' + this.DMY2YMD(this.filter.register[0])
+				link += '&end_date=' + this.DMY2YMD(this.filter.register[1])
 			}
 
-			if(this.active.date_deactivate && this.tableFilter != 'active') {
-				link += '&start_date_deactivate=' + this.filter.start_date_deactivate
-				link += '&end_date_deactivate=' + this.filter.end_date_deactivate
+			if(this.filter.fire[0] && this.filter.fire[1]/*  && this.filter.userType != 'active' */) {
+				link += '&start_date_deactivate=' + this.DMY2YMD(this.filter.fire[0])
+				link += '&end_date_deactivate=' + this.DMY2YMD(this.filter.fire[1])
 			}
 
-			if(this.active.date_applied && this.tableFilter != 'trainees') {
-				link += '&start_date_applied=' + this.filter.start_date_applied
-				link += '&end_date_applied=' + this.filter.end_date_applied
+			if(this.filter.applied[0] && this.filter.applied[1] && this.filter.userType != 'trainees') {
+				link += '&start_date_applied=' + this.DMY2YMD(this.filter.applied[0])
+				link += '&end_date_applied=' + this.DMY2YMD(this.filter.applied[1])
 			}
 
-			if(this.active.date_reapplied && this.tableFilter != 'trainees') {
-				link += '&start_date_reapplied=' + this.filter.start_date_reapplied
-				link += '&end_date_reapplied=' + this.filter.end_date_reapplied
+			if(this.filter.restore[0]  && this.filter.restore[1] && this.filter.userType != 'trainees') {
+				link += '&start_date_reapplied=' + this.DMY2YMD(this.filter.restore[0])
+				link += '&end_date_reapplied=' + this.DMY2YMD(this.filter.restore[1])
 			}
 
 			link += '&segment=' + this.filter.segment
@@ -952,7 +991,11 @@ export default {
 			const testhost = location.host.split('.')
 			testhost[0] = 'test'
 			return `${location.protocol}//${testhost.join('.')}/login-as-employee/${user.id}?auth=${this.auth_token}`
-		}
+		},
+
+		DMY2YMD(dmy){
+			return this.$moment(dmy, 'DD.MM.YYYY').format('YYYY-MM-DD')
+		},
 	}
 }
 </script>

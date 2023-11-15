@@ -166,7 +166,7 @@ export default {
 			this.tsValue.push(value)
 			this.tsValue.splice(0, this.tsValue.length - (this.range ? 2 : 1))
 			// this.tsValue.sort((a, b) => a - b)
-			if(!this.submit) this.$emit('input', this.tsValue.map(el => this.$moment(el).format(this.format)))
+			if(!this.submit) this.$emit('input', this.tsValue.slice().sort((a, b) => a - b).map(el => this.$moment(el).format(this.format)))
 		},
 		setMonth(month, year){
 			// валидацию бы какую-нибудь
@@ -241,7 +241,7 @@ export default {
 			this.$emit('custom-tab', tab)
 		},
 		onSubmit(){
-			this.$emit('input', this.tsValue.map(el => this.$moment(el).format(this.format)))
+			this.$emit('input', this.tsValue.slice().sort((a, b) => a - b).map(el => this.$moment(el).format(this.format)))
 		}
 	}
 }
