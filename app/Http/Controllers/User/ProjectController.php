@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
 use App\Models\CentralUser;
 use App\Models\Tenant;
+use App\Service\Tenancy\CabinetService;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -24,7 +25,7 @@ class ProjectController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(private readonly CabinetService $cabinetService)
     {
         $this->middleware('auth');
     }
@@ -73,6 +74,10 @@ class ProjectController extends Controller
         $centralUser = CentralUser::query()->where('email', $user->email)->first();
 
         $tenant = $this->createTenant($centralUser);
+
+        $user = $this->createTenantUser($tenant, $user->toArray());
+
+        $this->cabinetService->add($tenant->id, $user, true);
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)

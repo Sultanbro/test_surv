@@ -12,6 +12,7 @@
 				<InputText
 					v-model="item.question"
 					placeholder="Введите вопрос"
+					clear
 				/>
 				<b-button
 					v-if="value.length > 1"
@@ -34,6 +35,8 @@
 					<InputText
 						v-model="item.answers[aIndex].answer"
 						placeholder="Введите вариант ответа"
+						clear
+						small
 						@focus="onFocusAnswer(index, aIndex)"
 					/>
 					<div class="NewsCreateQNA-move">

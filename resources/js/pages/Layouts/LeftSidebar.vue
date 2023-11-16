@@ -443,7 +443,7 @@ export default {
 			}).catch(error => {
 				loader.hide()
 				this.isCreatingProject = false
-				this.$toast.error('Ошибка при создании кабинета')
+				this.$toast.error(error.error || error.message || 'Ошибка при создании кабинета')
 				console.error(error)
 			})
 		},
