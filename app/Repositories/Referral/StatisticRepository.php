@@ -112,6 +112,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
 
         return User::query()
+            ->select(['id', 'referrer_status', 'referrer_id'])
             ->WhereHas('referralLeads')
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
