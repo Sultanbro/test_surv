@@ -93,7 +93,16 @@
 							:open="isOpenRegister"
 							range
 							popup
-						/>
+						>
+							<template #footerAfter>
+								<JobtronButton
+									class="ml-a"
+									@click="onClickOutsideRegister"
+								>
+									ок
+								</JobtronButton>
+							</template>
+						</CalendarInput>
 					</div>
 				</b-col>
 			</b-row>
@@ -131,7 +140,16 @@
 							:open="isOpenRestore"
 							range
 							popup
-						/>
+						>
+							<template #footerAfter>
+								<JobtronButton
+									class="ml-a"
+									@click="onClickOutsideRestore"
+								>
+									ок
+								</JobtronButton>
+							</template>
+						</CalendarInput>
 					</div>
 				</b-col>
 			</b-row>
@@ -166,7 +184,16 @@
 							:open="isOpenFire"
 							range
 							popup
-						/>
+						>
+							<template #footerAfter>
+								<JobtronButton
+									class="ml-a"
+									@click="onClickOutsideFire"
+								>
+									ок
+								</JobtronButton>
+							</template>
+						</CalendarInput>
 					</div>
 				</b-col>
 			</b-row>
@@ -204,7 +231,16 @@
 							:open="isOpenApplied"
 							range
 							popup
-						/>
+						>
+							<template #footerAfter>
+								<JobtronButton
+									class="ml-a"
+									@click="onClickOutsideApplied"
+								>
+									ок
+								</JobtronButton>
+							</template>
+						</CalendarInput>
 					</div>
 				</b-col>
 			</b-row>
@@ -337,16 +373,24 @@ export default {
 	},
 	computed: {
 		textRegister(){
-			return (this.filters.register[0] || this.filters.register[1] ? `Дата регистрации: ${this.filters.register[0]} - ${this.filters.register[1]}` : '')
+			if(!(this.filters.register[0] || this.filters.register[1])) return ''
+			if(this.filters.register[0] === this.filters.register[1]) return `Дата регистрации: ${this.filters.register[0]}`
+			return `Дата регистрации: ${this.filters.register[0]} - ${this.filters.register[1]}`
 		},
 		textRestore(){
-			return (this.filters.restore[0] || this.filters.restore[1] ? `Дата восстановления: ${this.filters.restore[0]} - ${this.filters.restore[1]}` : '')
+			if(!(this.filters.restore[0] || this.filters.restore[1])) return ''
+			if(this.filters.restore[0] === this.filters.restore[1]) return `Дата восстановления: ${this.filters.restore[0]}`
+			return `Дата восстановления: ${this.filters.restore[0]} - ${this.filters.restore[1]}`
 		},
 		textFire(){
-			return (this.filters.fire[0] || this.filters.fire[1] ? `Дата увольнения: ${this.filters.fire[0]} - ${this.filters.fire[1]}` : '')
+			if(!(this.filters.fire[0] || this.filters.fire[1])) return ''
+			if(this.filters.fire[0] === this.filters.fire[1]) return `Дата увольнения: ${this.filters.fire[0]}`
+			return `Дата увольнения: ${this.filters.fire[0]} - ${this.filters.fire[1]}`
 		},
 		textApplied(){
-			return (this.filters.applied[0] || this.filters.applied[1] ? `Дата принятия: ${this.filters.applied[0]} - ${this.filters.applied[1]}` : '')
+			if(!(this.filters.applied[0] || this.filters.applied[1])) return ''
+			if(this.filters.applied[0] === this.filters.applied[1]) return `Дата принятия: ${this.filters.applied[0]}`
+			return `Дата принятия: ${this.filters.applied[0]} - ${this.filters.applied[1]}`
 		},
 	},
 	watch: {
