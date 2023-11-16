@@ -8,24 +8,31 @@ use Illuminate\Database\Eloquent\Builder;
 class UserStatisticRepository extends StatisticRepository implements UserStatisticRepositoryInterface
 {
     protected array $filter = [];
+    private User $user;
+
+    public function __construct(
+        private readonly ScheduleRepositoryInterface $scheduleRepository
+    )
+    {
+    }
 
     public function statistic(array $filter, ?User $user = null): array
     {
         $this->filter = $filter;
-        /** @var User $user */
-        $user = $user ?? auth()->user();
+        $this->user = $user ?? auth()->user();
         return [
             'tops' => $this->tops(),
-            'referrals' => $this->table(true),
-            'mine' => $this->getUserEarned($user, $this->dateStart(), $this->dateEnd()),
-            'from_referrals' => $this->getReferralsEarned($user),
-            'absolute' => $this->getUserEarned($user),
+            'referrals' => $this->described(),
+            'mine' => $this->getUserEarned($this->user, $this->dateStart(), $this->dateEnd()),
+            'from_referrals' => $this->getReferralsEarned($this->user),
+            'absolute' => $this->getUserEarned($this->user),
         ];
     }
 
     private function tops(): array
     {
         return User::query()
+            ->select(['id', 'referrer_status', 'referrer_id', 'name', 'last_name'])
             ->withCount(['referrals as applied_count' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
@@ -44,5 +51,16 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $query = parent::baseQuery();
         $query->where('id', $user->getKey());
         return $query;
+    }
+
+    protected function described(): array
+    {
+        $this->scheduleRepository->setStartDate($this->dateStart());
+        $this->scheduleRepository->setStartDate($this->dateEnd());
+        $list = parent::described();
+        foreach ($list as $item) {
+            $item['users'] = $this->scheduleRepository->schedule($this->user);
+        }
+        return $list;
     }
 }
