@@ -16,7 +16,7 @@ trait Referrer
             __CLASS__
             , 'referrer_id'
             , 'id'
-        );
+        )->withTrashed();
     }
 
     public function appliedReferrals(): hasMany
