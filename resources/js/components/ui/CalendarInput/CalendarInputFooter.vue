@@ -1,27 +1,31 @@
 <template>
 	<div class="CalendarInputFooter">
-		<input
-			type="text"
-			readonly
-			:value="minDateText"
-			size="10"
-			class="CalendarInputFooter-input"
-		>
-		&mdash;
-		<input
-			type="text"
-			readonly
-			:value="maxDateText"
-			size="10"
-			class="CalendarInputFooter-input"
-		>
+		<slot name="before" />
+		<slot name="body">
+			<input
+				type="text"
+				readonly
+				:value="minDateText"
+				size="10"
+				class="CalendarInputFooter-input"
+			>
+			&mdash;
+			<input
+				type="text"
+				readonly
+				:value="maxDateText"
+				size="10"
+				class="CalendarInputFooter-input"
+			>
+		</slot>
+		<slot name="after" />
 	</div>
 </template>
 
 <script>
 export default {
 	name: 'CalendarInputFooter',
-	inject: ['getTSValue', 'getFormat'],
+	inject: ['getTSValue', 'getFormat', 'close'],
 	computed: {
 		format(){
 			return this.getFormat()
@@ -36,9 +40,11 @@ export default {
 			return Math.max(...this.tsValue)
 		},
 		minDateText(){
+			if(!this.minDate) return ''
 			return this.$moment(this.minDate).format(this.format)
 		},
 		maxDateText(){
+			if(!this.maxDate) return ''
 			return this.$moment(this.maxDate).format(this.format)
 		}
 	}
