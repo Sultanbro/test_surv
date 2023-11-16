@@ -13,7 +13,17 @@
 			class="CalendarInput-content"
 			:class="{'CalendarInput-content_popup': popup}"
 		>
-			<CalendarInputBody />
+			<CalendarInputBody>
+				<template #footerBefore>
+					<slot name="footerBefore" />
+				</template>
+				<template #footerBody>
+					<slot name="footerBody" />
+				</template>
+				<template #footerAfter>
+					<slot name="footerAfter" />
+				</template>
+			</CalendarInputBody>
 			<CalendarInputNav
 				v-if="hasTabs"
 				:tabs="tabs"
@@ -63,6 +73,7 @@ export default {
 			getStartYear: () => this.startYear,
 			getSeparateMonthYear: () => this.separateMonthYear,
 			getOnlyMonth: () => this.onlyMonth,
+
 			setValue: this.setValue,
 			setMonth: this.setMonth,
 			prevMonth: this.prevMonth,
@@ -76,6 +87,7 @@ export default {
 			onTabAllTime: this.onTabAllTime,
 			onTabCustom: this.onTabCustom,
 			onSubmit: this.onSubmit,
+			close: this.close,
 		}
 	},
 	props: {
@@ -115,6 +127,10 @@ export default {
 			type: Boolean,
 			default: false
 		},
+		popupClose: {
+			type: Boolean,
+			default: false
+		},
 		startYear: {
 			type: Number,
 			default: 2020
@@ -136,7 +152,8 @@ export default {
 			currentDay: now.getDate(),
 			currentMonth: now.getMonth(),
 			currentYear: now.getFullYear(),
-			tsValue: this.value.map(el => this.$moment(el, this.format).valueOf() || 0)
+			tsValue: this.value.map(el => this.$moment(el, this.format).valueOf() || 0),
+			cursor: 1,
 		}
 		if(data.tsValue.length && data.tsValue[data.tsValue.length - 1]){
 			const selected = new Date(data.tsValue[data.tsValue.length - 1])
@@ -162,11 +179,30 @@ export default {
 		onClickOutside(e){
 			this.$emit('close', e)
 		},
+		close(){
+			this.$emit('close')
+		},
 		setValue(value){
-			this.tsValue.push(value)
+			if(this.range){
+				this.tsValue[this.cursor] = value
+				this.cursor = this.cursor ? 0 : 1
+				if(!this.tsValue[this.cursor]) this.tsValue[this.cursor] = value
+			}
+			else{
+				this.tsValue[0] = value
+			}
 			this.tsValue.splice(0, this.tsValue.length - (this.range ? 2 : 1))
-			// this.tsValue.sort((a, b) => a - b)
-			if(!this.submit) this.$emit('input', this.tsValue.slice().sort((a, b) => a - b).map(el => this.$moment(el).format(this.format)))
+			this.tsValue.sort((a, b) => a - b)
+
+
+			if(this.range){
+				this.cursor = this.tsValue[0] === value ? 1 : 0
+			}
+
+
+			if(!this.submit) {
+				this.$emit('input', this.tsValue.map(el => this.$moment(el).format(this.format)))
+			}
 		},
 		setMonth(month, year){
 			// валидацию бы какую-нибудь

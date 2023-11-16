@@ -2,7 +2,17 @@
 	<div class="CalendarInputBody">
 		<CalendarInputHeader />
 		<CalendarInputMain v-if="!onlyMonth" />
-		<CalendarInputFooter v-if="range" />
+		<CalendarInputFooter v-if="range">
+			<template #before>
+				<slot name="footerBefore" />
+			</template>
+			<template #body>
+				<slot name="footerBody" />
+			</template>
+			<template #after>
+				<slot name="footerAfter" />
+			</template>
+		</CalendarInputFooter>
 	</div>
 </template>
 
