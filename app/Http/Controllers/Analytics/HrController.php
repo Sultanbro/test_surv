@@ -465,8 +465,6 @@ class HrController extends Controller
         foreach ($leads as $lead) {
 
             // Проверить существует ли user
-
-
             $original_password = User::generateRandomString();
             $salt = User::randString(8);
             $user_password = $salt . md5($salt . $original_password);
@@ -643,26 +641,26 @@ class HrController extends Controller
 
                 if ($daytype) $daytype->delete();
             }
-
-            $daytype = DayType::where([
-                'user_id' => $user->id,
-                'date' => $date,
-            ])->first();
-
-            if ($daytype) {
-                $daytype->admin_id = 1;
-                $daytype->type = DayType::DAY_TYPES['TRAINEE'];
-                $daytype->save();
-            } else {
-                $daytype = DayType::query()
-                    ->create([
-                        'user_id' => $user->id,
-                        'type' => DayType::DAY_TYPES['TRAINEE'],
-                        'email' => '',
-                        'date' => $date,
-                        'admin_id' => 1,
-                    ]);
-            }
+// TODO:now we dont put day as trainee
+//            $daytype = DayType::where([
+//                'user_id' => $user->id,
+//                'date' => $date,
+//            ])->first();
+//
+//            if ($daytype) {
+//                $daytype->admin_id = 1;
+//                $daytype->type = DayType::DAY_TYPES['TRAINEE'];
+//                $daytype->save();
+//            } else {
+//                DayType::query()
+//                    ->create([
+//                        'user_id' => $user->id,
+//                        'type' => DayType::DAY_TYPES['TRAINEE'],
+//                        'email' => '',
+//                        'date' => $date,
+//                        'admin_id' => 1,
+//                    ]);
+//            }
 
             /*========================= Обновление webhook-ом время собеседование =====================================*/
 
