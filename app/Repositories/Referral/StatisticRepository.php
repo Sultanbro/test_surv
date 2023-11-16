@@ -382,6 +382,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             'sum' => $current['amount'] ?? null,
             'comment' => $current['comment'] ?? null,
             'id' => $current['id'] ?? null,
+            'date' => $current['date'] ?? null,
         ];
     }
 }
