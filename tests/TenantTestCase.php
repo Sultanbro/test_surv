@@ -2,50 +2,10 @@
 
 namespace Tests;
 
-use Database\Seeders\AdaptedTenantDatabaseForTesting;
-use Drfraker\SnipeMigrations\SnipeMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Throwable;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-abstract class TenantTestCase extends BaseTestCase
+class TenantTestCase extends TestCase
 {
-    use CreatesApplication, SnipeMigrations;
-
-    protected string $defaultConnection = 'testing';
-
-    /**
-     * @throws Throwable
-     */
-
-    public function initializeTenancy($class = AdaptedTenantDatabaseForTesting::class): void
-    {
-        $this->seed($class);
-        $this->defaultConnection = config('database.default');
-        config([
-            'database.default' => 'tenant'
-        ]);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->initializeTenancy();
-    }
-
-    /**
-     * @throws Throwable
-     */
-    protected function tearDown(): void
-    {
-        tenancy()->end();
-        config([
-            'database.default' => $this->defaultConnection
-        ]);
-        parent::tearDown();
-    }
+    use WithTenancy;
+    use DatabaseTransactions;
 }
-

@@ -27,7 +27,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     public function statistic(array $filter): array
     {
         $this->filter = $filter;
-        $described = $this->described();
+        $described = $this->table();
         return [
             'pivot' => $this->pivot($described),
             'referrers' => $described
@@ -52,8 +52,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             }
         }
 
-        $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
-        $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
+        $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
+        $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
 
         $accepted = User::withTrashed()
             ->whereRelation('description', 'is_trainee', 0)
@@ -84,11 +84,11 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    protected function described(): array
+    protected function table(bool $schedule = false): array
     {
         return $this->baseQuery()
             ->get()
-            ->map(function (User $user) {
+            ->map(function (User $user) use ($schedule) {
                 $user->month_paid = $user->referralSalaries
                     ->where('is_paid', true)
                     ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
@@ -107,7 +107,10 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
 
-                $user->users = $this->schedule($user);
+                if ($schedule) {
+                    $user->users = $this->schedule($user);
+                }
+
                 return $user;
             })
             ->toArray();
@@ -128,7 +131,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->orderBy('leads', 'desc');
     }
 
-    private function schedule(User $referrer, int $step = 1)
+    public function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
             ->withTrashed()

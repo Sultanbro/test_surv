@@ -18,7 +18,7 @@ Route::group([
         Route::get('/url', [ReferralController::class, 'url']);
         Route::post('/request/{user}', [ReferralController::class, 'request'])
             ->withoutMiddleware('auth.basic');
-        Route::get('user/statistics', UserStatisticsController::class);
+        Route::get('statistics/user/{user?}', UserStatisticsController::class);
         Route::post('paid/{user}', MarkAsPaidController::class);
-        Route::get('/statistics', StatisticsController::class);
+        Route::get('/statistics', [StatisticsController::class, 'list']);
     });
