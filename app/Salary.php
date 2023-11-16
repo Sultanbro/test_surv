@@ -18,6 +18,20 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string note
+ * @property int user_id
+ * @property string date
+ * @property string amount
+ * @property string paid
+ * @property string bonus
+ * @property string award
+ * @property string comment_paid
+ * @property string comment_bonus
+ * @property string comment_award
+ * @property string resource
+ * @property bool is_paid
+*/
 class Salary extends Model
 {
     use HasFactory;

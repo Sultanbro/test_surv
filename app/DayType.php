@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $date
  * @property string $type
  * @property string $email
-*/
+ */
 class DayType extends Model
 {
     protected $table = 'employee_day_types';
@@ -25,7 +25,7 @@ class DayType extends Model
     protected $fillable = [
         'user_id',
         'admin_id',
-		'date',
+        'date',
         'type',
         'email'
     ];
@@ -34,8 +34,8 @@ class DayType extends Model
         'DEFAULT' => 0,
         'HOLIDAY' => 1,
         'ABCENSE' => 2,
-        'SICK'    => 3,
-        'FIRED'   => 4,
+        'SICK' => 3,
+        'FIRED' => 4,
         'TRAINEE' => 5,
         'RETRAIN' => 6,
         'RETURNED' => 7,
@@ -62,10 +62,23 @@ class DayType extends Model
         'C4:21' => self::DAY_TYPES['ABCENSE'],
     ];
 
-    public static function getDayTypeWithDay($userId, $date){
+    public static function getDayTypeWithDay($userId, $date)
+    {
         return self::where('user_id', $userId)
             ->whereDate('date', $date)
             ->first();
     }
-    
+
+    public static function markDayAsTrainee(User $user, string|Carbon $date): DayType
+    {
+        $date = is_string($date) ? $date : $date->format("Y-m-d");
+        /** @var DayType */
+        return self::query()->firstOrCreate([
+            'user_id' => $user->getKey(),
+            'type' => DayType::DAY_TYPES['TRAINEE'], // Стажировка
+            'email' => '.',
+            'date' => $date,
+            'admin_id' => 5,
+        ]);
+    }
 }

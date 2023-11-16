@@ -2,15 +2,19 @@
 
 namespace App;
 
-use App\Fine;
 use App\Repositories\UserFineRepository;
-use App\UserNotification;
-use App\TimetrackingHistory;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 
+/**
+ * @property int id
+ * @property int user_id
+ * @property int fine_id
+ * @property int day
+ * @property string note
+ * @property string status
+ */
 class UserFine extends Model
 {
     const SATURDAY = "6";
@@ -38,7 +42,7 @@ class UserFine extends Model
         $userFine->note = $data['note'];
         $userFine->save();
 
-        $title = 'Добавлен штраф на '. Carbon::parse($data['day'])->format('d.m.Y');
+        $title = 'Добавлен штраф на ' . Carbon::parse($data['day'])->format('d.m.Y');
         self::setNotificationAboutFine($data['user_id'], $data['fine_id'], $title);
 
         return $userFine->id;
@@ -68,27 +72,27 @@ class UserFine extends Model
         $correctFines = 0;
         foreach ($userFines as $fine) {
 
-                $day = date("Y-m-d", strtotime($fine->day));
-                $dayOfWeek = date("w", strtotime($fine->day));
+            $day = date("Y-m-d", strtotime($fine->day));
+            $dayOfWeek = date("w", strtotime($fine->day));
 
-                if ($fine->fine_id == Fine::TYPE_LATE_MORE_5 || $fine->fine_id == Fine::TYPE_LATE_LESS_5) {
-                    // сначала проверяем выходной ли это день
-                    if ($dayOfWeek != self::SATURDAY && $dayOfWeek != self::SUNDAY) {
-                        // а теперь проверяем, работал ли сотрудник вообще в этот день
-                        if (in_array($day, $onlyDaysWorking)) {
-                            $fines[] = $fine;
-                            if ($fine->fine_id == Fine::TYPE_LATE_MORE_5) {
+            if ($fine->fine_id == Fine::TYPE_LATE_MORE_5 || $fine->fine_id == Fine::TYPE_LATE_LESS_5) {
+                // сначала проверяем выходной ли это день
+                if ($dayOfWeek != self::SATURDAY && $dayOfWeek != self::SUNDAY) {
+                    // а теперь проверяем, работал ли сотрудник вообще в этот день
+                    if (in_array($day, $onlyDaysWorking)) {
+                        $fines[] = $fine;
+                        if ($fine->fine_id == Fine::TYPE_LATE_MORE_5) {
 
-                            } elseif ($fine->fine_id == Fine::TYPE_LATE_LESS_5) {
-                                
-                            }
+                        } elseif ($fine->fine_id == Fine::TYPE_LATE_LESS_5) {
 
-                            $correctFines++;
                         }
+
+                        $correctFines++;
                     }
-                } else {
-                    $fines[] = $fine;
                 }
+            } else {
+                $fines[] = $fine;
+            }
 
         }
 //        if ($correctFines > 1) {
@@ -127,7 +131,7 @@ class UserFine extends Model
             $fine->status = UserFine::STATUS_INACTIVE;
             $fine->save();
 
-            $title = 'Удален штраф на '. Carbon::parse($date)->format('d.m.Y');
+            $title = 'Удален штраф на ' . Carbon::parse($date)->format('d.m.Y');
             self::setNotificationAboutFine($userId, $fineId, $title);
         }
     }
@@ -149,7 +153,7 @@ class UserFine extends Model
             $fine->save();
             UserFine::updateTimetracking($userId, $date);
 
-            $title = 'Добавлен штраф на '. Carbon::parse($date)->format('d.m.Y');
+            $title = 'Добавлен штраф на ' . Carbon::parse($date)->format('d.m.Y');
             self::setNotificationAboutFine($userId, $fineId, $title);
         }
     }
@@ -175,7 +179,7 @@ class UserFine extends Model
             ->orderBy('id', 'ASC')
             ->first();
 
-        if(is_null($timeTrackingDay)) {
+        if (is_null($timeTrackingDay)) {
             return 'Нельзя редактировать день с пустым значением!';
         }
         $timeTrackingDay->updated = 1;
@@ -183,12 +187,12 @@ class UserFine extends Model
     }
 
     public static function setNotificationAboutFine($userId, $fineId, $title, $data = [])
-    {   
+    {
         $message = self::getFineDescription($fineId);
-        
-        if($fineId == 53 && array_key_exists("date", $data))  {
+
+        if ($fineId == 53 && array_key_exists("date", $data)) {
             $title = $message;
-        	$message = self::getTemplate('2500', $data['date']);
+            $message = self::getTemplate('2500', $data['date']);
         }
 
         UserNotification::create([
@@ -196,8 +200,8 @@ class UserFine extends Model
             'title' => $title,
             'message' => $message,
         ]);
-        
-        if(array_key_exists("date", $data)) {
+
+        if (array_key_exists("date", $data)) {
             TimetrackingHistory::create([
                 'user_id' => $userId,
                 'author_id' => 5,
@@ -206,35 +210,35 @@ class UserFine extends Model
                 'description' => $message,
             ]);
         }
-        
+
     }
 
     private static function getFineDescription($fineId)
-    {   
+    {
         $fine = Fine::find($fineId);
-        if($fine) {
+        if ($fine) {
             $description = $fine->name;
         } else {
-            $description = 'Штраф id = '.$fineId.' не найден';
+            $description = 'Штраф id = ' . $fineId . ' не найден';
         }
-        
+
         return $description;
     }
 
     public static function getTemplate($sum, $date)
-    {   
-        
+    {
+
         $fineId = 53; // штраф за невыход на работу
         $notification_template = DB::table('notification_templates')
-		    ->find(1); // шаблон штрафа 
+            ->find(1); // шаблон штрафа
 
-        if($notification_template) {
+        if ($notification_template) {
             $message = $notification_template->message;
             $message = str_replace("#sum", $sum, $message);  // замена суммы в сообщении
             $message = str_replace("#date", $date, $message); // замена даты в сообщении
             return $message;
         } else {
-            return 'Вам назначен штраф за невыход на работу в рабочий день! '. $date;
+            return 'Вам назначен штраф за невыход на работу в рабочий день! ' . $date;
         }
 
 

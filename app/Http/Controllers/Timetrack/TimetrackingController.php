@@ -1611,33 +1611,38 @@ class TimetrackingController extends Controller
         );
     }
 
-    public function setDay(Request $request)
+    public function setDay(Request $request): array
     {
+        /** @var User $user */
         $user = auth()->user();
-        $targetUser = User::withTrashed()->find($request->user_id);
 
-        if ($targetUser == null) {
-            return ['success' => 1, 'history' => null];
-        }
+        /** @var User $targetUser */
+        $targetUser = User::withTrashed()->find($request->get('user_id'));
+
+        if ($targetUser == null) return ['success' => 1, 'history' => null];
 
         $year = date('Y');
-        $date = Carbon::parse($year . '-' . $request->month . '-' . $request->day);
-        $daytype = DayType::where('user_id', $request->user_id)->where('date', $date->format('Y-m-d'))->first();
+        $date = Carbon::parse($year . '-' . $request->get("month") . '-' . $request->get('day'));
+
+        /** @var DayType $daytype */
+        $daytype = DayType::query()
+            ->where('user_id', $request->get("user_id"))
+            ->where('date', $date->format('Y-m-d'))
+            ->first();
 
         if (!$daytype) {
-            $daytype = DayType::create([
-                'user_id' => $request->user_id,
-                'type' => $request->type,
-                'email' => $targetUser->email,
-                'date' => $date,
-                'admin_id' => $user->id,
-            ]);
-            $description = 'с обычного на ' . DayType::DAY_TYPES_RU[$request->type];
+            $daytype = DayType::query()
+                ->create([
+                    'user_id' => $request->get("user_id"),
+                    'type' => $request->get("type"),
+                    'email' => $targetUser->email,
+                    'date' => $date,
+                    'admin_id' => $user->id,
+                ]);
+            $description = 'с обычного на ' . DayType::DAY_TYPES_RU[$request->get("type")];
         } else {
-
-
-            $description = 'с ' . DayType::DAY_TYPES_RU[$daytype->type] . ' на ' . DayType::DAY_TYPES_RU[$request->type];
-            $daytype->type = $request->type;
+            $description = 'с ' . DayType::DAY_TYPES_RU[$daytype->type] . ' на ' . DayType::DAY_TYPES_RU[$request->get("type")];
+            $daytype->type = $request->get("type");
             $daytype->admin_id = $user->id;
             $daytype->save();
         }
@@ -1645,17 +1650,19 @@ class TimetrackingController extends Controller
         $authorName = $user->name . ' ' . $user->last_name;
         $desc = isset($request['comment']) ? $description . '. Причина: ' . $request['comment'] : $description;
 
-        $history = TimetrackingHistory::create([
-            'user_id' => $request->user_id,
-            'author_id' => $user->id,
-            'author' => $authorName,
-            'date' => $date,
-            'description' => $desc,
-        ]);
+        $history = TimetrackingHistory::query()
+            ->create([
+                'user_id' => $request->get("user_id"),
+                'author_id' => $user->id,
+                'author' => $authorName,
+                'date' => $date,
+                'description' => $desc,
+            ]);
 
 
-        if ($request->type == 1) { // Выходной
-            $fines = UserFine::where('day', $date)
+        if ($request->get("type") == DayType::DAY_TYPES['HOLIDAY']) { // Выходной
+            $fines = UserFine::query()
+                ->where('day', $date)
                 ->where('user_id', '=', $targetUser->id)
                 ->get();
 
@@ -1664,27 +1671,31 @@ class TimetrackingController extends Controller
                 $fine->save();
             }
 
-            $salary = Salary::where('date', $date)->where('user_id', $targetUser->id)->first();
+            /** @var Salary $salary */
+            $salary = Salary::query()
+                ->where('date', $date)->where('user_id', $targetUser->id)->first();
             if ($salary) {
                 $salary->amount = 0;
                 $salary->save();
             }
         }
-        /**
-         * TODO Тут нет условия если не стажер
-         */
-        if ($request->type == 2) { // Отсутсвует
 
-            $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
+        if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
+
+            /** @var UserDescription $trainee */
+            $trainee = UserDescription::query()
+                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
-                $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
 
                 // Поиск ID лида или сделки
                 if ($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
                 } else {
-                    $lead = Lead::where('phone', Phone::normalize($targetUser->phone))->orderBy('id', 'desc')->first();
+                    /** @var Lead $lead */
+                    $lead = Lead::query()
+                        ->where('phone', Phone::normalize($targetUser->phone))->orderBy('id', 'desc')->first();
                     if ($lead) {
                         $lead_id = $lead->lead_id;
                     } else {
@@ -1692,51 +1703,56 @@ class TimetrackingController extends Controller
                     }
                 }
 
-                $lead = Lead::where('user_id', $request->user_id)->first();
+                /** @var Lead $lead */
+                $lead = Lead::query()
+                    ->where('user_id', $request->get("user_id"))->first();
                 if ($lead) {
                     $lead->status = 'ABSENT';
                     $lead->save();
                 }
                 // Пропал с обучения
 
-                $typex = UserAbsenceCause::THIRD_DAY;
+                $types = UserAbsenceCause::THIRD_DAY;
                 $title_lost = 'Пропал с обучения';
                 $notification_temp_id = 2;
-                if (array_key_exists('1', $request->enable_comment) && array_key_exists('2', $request->enable_comment)) {
-                    if ($request->day == $request->enable_comment['1']) {
+                if (array_key_exists('1', $request->get("enable_comment")) && array_key_exists('2', $request->get("enable_comment"))) {
+                    if ($request->get("day") == $request->get("enable_comment")['1']) {
                         $title_lost = 'Пропал с обучения: 1 день';
                         $notification_temp_id = 4;
-                        $typex = UserAbsenceCause::FIRST_DAY;
-                    } else if ($request->day == $request->enable_comment['2']) {
+                        $types = UserAbsenceCause::FIRST_DAY;
+                    } else if ($request->get("day") == $request->get("enable_comment")['2']) {
                         $title_lost = 'Пропал с обучения: 2 день';
                         $notification_temp_id = 5;
-                        $typex = UserAbsenceCause::SECOND_DAY;
+                        $types = UserAbsenceCause::SECOND_DAY;
                     }
                 }
 
 
                 // Причина отсутствия 1 2 3 дни
-                UserAbsenceCause::createOrUpdate([
-                    'user_id' => $request->user_id,
-                    'date' => $date->day(1)->format('Y-m-d'),
-                    'type' => $typex,
-                    'text' => $request->comment,
-                ]);
+                UserAbsenceCause::query()
+                    ->updateOrCreate([
+                        'user_id' => $request->get("user_id"),
+                        'date' => $date->day(1)->format('Y-m-d'),
+                        'type' => $types,
+                        'text' => $request->get("comment"),
+                    ]);
 
 
                 //
-                $nootis = UserNotification::where([
-                    'title' => $title_lost,
-                    'about_id' => $targetUser->id,
-                ])->get();
+                $notions = UserNotification::query()
+                    ->where([
+                        'title' => $title_lost,
+                        'about_id' => $targetUser->id,
+                    ])->get();
 
-                foreach ($nootis as $noti) {
-                    $noti->read_at = now();
-                    $noti->save();
+                foreach ($notions as $not) {
+                    $not->read_at = now();
+                    $not->save();
                 }
 
                 ////////// notify
-                $g = ProfileGroup::find($request->group_id);
+                /** @var ProfileGroup $g */
+                $g = ProfileGroup::query()->find($request->get("group_id"));
                 $group_name = $g ? '(' . $g->name . ')' : '';
 
                 $abs_msg = $authorName . ': ' . $group_name . '  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
@@ -1751,27 +1767,29 @@ class TimetrackingController extends Controller
                 foreach ($notification_receivers as $user_id) {
                     if ($user_id == 3460) {
                         if ($g->id == 42 || $g->id == 88) {
-                            UserNotification::create([
+                            UserNotification::query()
+                                ->create([
+                                    'user_id' => $user_id,
+                                    'about_id' => $targetUser->id,
+                                    'title' => $title_lost,
+                                    'message' => $abs_msg,
+                                    'group' => $timestamp
+                                ]);
+                        }
+                    } else {
+                        UserNotification::query()
+                            ->create([
                                 'user_id' => $user_id,
                                 'about_id' => $targetUser->id,
                                 'title' => $title_lost,
                                 'message' => $abs_msg,
                                 'group' => $timestamp
                             ]);
-                        }
-                    } else {
-                        UserNotification::create([
-                            'user_id' => $user_id,
-                            'about_id' => $targetUser->id,
-                            'title' => $title_lost,
-                            'message' => $abs_msg,
-                            'group' => $timestamp
-                        ]);
                     }
 
                 }
 
-                ///////// // перенос сделки с Обучается на Пропал с обучения в БИТРИКС
+                ///////// // перенос сделки Обучается на Пропал с обучения в БИТРИКС
 
                 $bitrix = new Bitrix();
 
@@ -1794,13 +1812,15 @@ class TimetrackingController extends Controller
             }
 
 
-            if (in_array((int)$date->dayOfWeek, [0, 1])) {
-                $kaspi35 = json_decode(ProfileGroup::find(35)->users);
-                $kaspi42 = json_decode(ProfileGroup::find(42)->users);
+            if (in_array($date->dayOfWeek, [0, 1])) {
+                $kaspi35 = json_decode(ProfileGroup::query()->find(35)->users);
+                $kaspi42 = json_decode(ProfileGroup::query()->find(42)->users);
                 $kaspi = array_merge($kaspi35, $kaspi42);
 
-                if (in_array($request->user_id, $kaspi)) {
-                    $fine = UserFine::where('user_id', $request->user_id)
+                if (in_array($request->get("user_id"), $kaspi)) {
+                    /** @var UserFine $fine */
+                    $fine = UserFine::query()
+                        ->where('user_id', $request->get("user_id"))
                         ->whereDate('day', $date->format('Y-m-d'))
                         ->where('fine_id', 53)
                         ->first();
@@ -1810,7 +1830,7 @@ class TimetrackingController extends Controller
                         $fine->save();
                     } else {
                         $userFine = new UserFine;
-                        $userFine->user_id = $request->user_id;
+                        $userFine->user_id = $request->get("user_id");
                         $userFine->fine_id = 53;
                         $userFine->status = 1;
                         $userFine->day = $date;
@@ -1820,96 +1840,31 @@ class TimetrackingController extends Controller
                 }
 
             }
-        }
-
-
-        /**
-         *  // Подключился позже
-         */
-        if ($request->type == 7) {
-
-            $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
-
-            if ($trainee) {
-
-                $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
-                $recruiters = User::where('position_id', 46)->get();
-
-                // Поиск ID лида или сделки
-                if ($trainee->lead_id != 0) {
-                    $lead_id = $trainee->lead_id;
-                } else {
-                    $lead = Lead::where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
-                    if ($lead) {
-                        $lead_id = $lead->lead_id;
-                    } else {
-                        $lead_id = 0;
-                    }
-                }
-
-                $lead = Lead::where('user_id', $request->user_id)->first();
-                if ($lead) {
-                    $lead->status = 'TRAINING';
-                    $lead->save();
-                }
-                //
-                $nootis = UserNotification::where([
-                    'title' => 'Пропал с обучения',
-                    'about_id' => $targetUser->id,
-                ])->get();
-
-                foreach ($nootis as $noti) {
-                    $noti->read_at = now();
-                    $noti->save();
-                }
-
-
-                ///////// // перенос сделки с  Пропал с обучения на Обучается в БИТРИКС
-
-                $bitrix = new Bitrix();
-
-                if ($trainee->deal_id != 0) {
-                    $deal_id = $trainee->deal_id;
-                } else if ($lead_id != 0) {
-                    $deal_id = $bitrix->findDeal($lead_id, false);
-                    usleep(1000000); // 1 sec
-                } else {
-                    $deal_id = 0;
-                }
-
-                if ($deal_id != 0) {
-                    $bitrix->changeDeal($deal_id, [
-                        'STAGE_ID' => 'C4:18'
-                    ]);
-                }
-
-                /////-*-*-*-----------*-*-*-*-*-*-*//
-                Referring::touchReferrerSalaryForTrain($targetUser, $date);
-            }
-        }
-
-        if ($request->type == 7) {
-            $up = UserPresence::where('date', $date)
-                ->where('user_id', $request->user_id)
+            $up = UserPresence::query()
+                ->where('date', $date)
+                ->where('user_id', $request->get("user_id"))
                 ->first();
-            if ($up) $up->delete();
-            UserPresence::create(['user_id' => $request->user_id, 'date' => $date]);
+            $up?->delete();
         }
 
-        if ($request->type == 2) {
-            $up = UserPresence::where('date', $date)
-                ->where('user_id', $request->user_id)
-                ->first();
-            if ($up) $up->delete();
+        if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
+            DayType::markDayAsTrainee($targetUser, $date);
+            UserPresence::query()
+                ->where([
+                    'date' => $date,
+                    'user_id' => $request->get("user_id")
+                ])
+                ->firstOrCreate([
+                    'date' => $date,
+                    'user_id' => $request->get("user_id")
+                ]);
+            Referring::touchReferrerSalaryForTrain($targetUser, $date);
         }
 
-
-        /**
-         * Тип уволить с отработкой и без
-         */
-
-        if ($request->type == 4) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
-            $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
+        if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
+            /** @var UserDescription $trainee */
+            $trainee = UserDescription::query()
+                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
 
@@ -1917,7 +1872,9 @@ class TimetrackingController extends Controller
                 if ($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
                 } else {
-                    $lead = Lead::where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
+                    /** @var Lead $lead */
+                    $lead = Lead::query()
+                        ->where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if ($lead) {
                         $lead_id = $lead->lead_id;
                     } else {
@@ -1948,54 +1905,58 @@ class TimetrackingController extends Controller
                 $trainee->fired = now();
                 $trainee->save();
 
-                UserDescription::make([
-                    'user_id' => $request->user_id,
+                UserDescription::query()->make([
+                    'user_id' => $request->get("user_id"),
                     'fired' => now(),
-                    'fire_cause' => $request->comment
+                    'fire_cause' => $request->get("comment")
                 ]);
 
                 ////////////
                 User::deleteUser($request);
             } else {
-                UserDescription::make([
-                    'user_id' => $request->user_id,
+                UserDescription::query()->make([
+                    'user_id' => $request->get("user_id"),
                     'fired' => now(),
-                    'fire_cause' => $request->comment
+                    'fire_cause' => $request->get("comment")
                 ]);
-                if ($request->fire_type == 1) { // Без отработки
-                    $delete_plan = UserDeletePlan::where('user_id', $request->user_id)->orderBy('id', 'desc')->first();
-                    if ($delete_plan) $delete_plan->delete();
+
+                if ($request->get("fire_type") == 1) { // Без отработки
+                    $delete_plan = UserDeletePlan::query()
+                        ->where('user_id', $request->get("user_id"))->orderBy('id', 'desc')->first();
+                    $delete_plan?->delete();
                     User::deleteUser($request);
-                } else { // C отработкой
+                } else { //отработкой
                     if ($request->hasFile('file')) { // Заявление об увольнении
                         $file = $request->file('file');
                         $resignation = $targetUser->id . '_' . time() . '.' . $file->getClientOriginalExtension();
                         $file->move("static/profiles/" . $targetUser->id . "/resignation", $resignation);
 
-                        $downloads = Downloads::where('user_id', $targetUser->id)->first();
+                        $downloads = Downloads::query()
+                            ->where('user_id', $targetUser->id)->first();
                         if ($downloads) {
                             $downloads->resignation = $resignation;
                             $downloads->save();
                         } else {
-                            $downloads = Downloads::create([
-                                'user_id' => $targetUser->id,
-                                'ud_lich' => null,
-                                'dog_okaz_usl' => null,
-                                'sohr_kom_tainy' => null,
-                                'dog_o_nekonk' => null,
-                                'trud_dog' => null,
-                                'archive' => null,
-                                'resignation' => $resignation,
-                            ]);
+                            Downloads::query()
+                                ->create([
+                                    'user_id' => $targetUser->id,
+                                    'ud_lich' => null,
+                                    'dog_okaz_usl' => null,
+                                    'sohr_kom_tainy' => null,
+                                    'dog_o_nekonk' => null,
+                                    'trud_dog' => null,
+                                    'archive' => null,
+                                    'resignation' => $resignation,
+                                ]);
                         }
                     }
 
-                    $fire_date = Carbon::now()->addHours(24 * 14); // fire after 2 week
+                    $fire_date = Carbon::now()->addHours(24 * 14); // fire after week 2
 
                     UserDeletePlan::query()->updateOrCreate(
                         [
-                        'user_id' => $request->user_id
-                        ],[
+                            'user_id' => $request->get("user_id")
+                        ], [
                         'executed' => 0,
                         'delete_time' => $fire_date,
                     ]);
@@ -2003,13 +1964,14 @@ class TimetrackingController extends Controller
             }
 
 
-            if (isset($request->comment)) {
+            if ($request->get("comment")) {
 
                 if ($trainee) {
                     // Причина отсутствия 1 2 3 дни
                     $type = UserAbsenceCause::THIRD_DAY;
-
-                    $lead = Lead::where('user_id', $request->user_id)->first();
+                    /** @var Lead $lead */
+                    $lead = Lead::query()
+                        ->where('user_id', $request->get("user_id"))->first();
 
                     if ($lead) {
                         if ($date->format('Y-m-d') == Carbon::parse($lead->invite_at)->format('Y-m-d')) {
@@ -2019,19 +1981,19 @@ class TimetrackingController extends Controller
                         }
                     }
 
-                    UserAbsenceCause::createOrUpdate([
-                        'user_id' => $request->user_id,
-                        'date' => $date->day(1)->format('Y-m-d'),
-                        'type' => $type,
-                        'text' => $request->comment,
-                    ]);
+                    UserAbsenceCause::query()
+                        ->updateOrCreate([
+                            'user_id' => $request->get("user_id"),
+                            'date' => $date->day(1)->format('Y-m-d'),
+                            'type' => $type,
+                            'text' => $request->get("comment"),
+                        ]);
                 }
 
             }
             Referring::touchReferrerStatus($targetUser);
         }
 
-        /////////
         return ['success' => 1, 'history' => $history, 'type' => $daytype ? $daytype->type : 0];
     }
 
