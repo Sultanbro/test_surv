@@ -338,6 +338,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 'is_head'
             ])->withTimestamps();
     }
+
+    /**
+     * @return HasMany
+     */
+    public function group_users(): HasMany
+    {
+        return $this->hasMany(GroupUser::class);
+    }
+
     /**
      * Mutator's
      */
