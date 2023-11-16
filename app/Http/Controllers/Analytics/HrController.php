@@ -985,7 +985,7 @@ class HrController extends Controller
 
         $deal = json_decode($response->getBody()->getContents(), true);
 
-        $lead = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/'.'crm.lead.get',[
+        $lead = $client->get($bitrixUrl.'lyg5ejdqbyjc1js8/'.'crm.lead.get',[
             'query' => [
                 'id' => $deal['result']['LEAD_ID']
             ]
