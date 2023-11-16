@@ -34,6 +34,7 @@
 				{key: 'switch', label: '', thClass: 'RefStats-switch'},
 				...tableFields,
 			]"
+			@load-user="loadUser"
 			@payment-click="showPaymentDialog"
 		/>
 
@@ -218,6 +219,15 @@ export default {
 			if(field === 'attest') return 3
 			if(field.substring(field.length - 4) === 'Week') return 2
 			return 1
+		},
+		async loadUser(userId){
+			const {users} = await API.referralUserStat(userId)
+			const user = this.users.find(user => user.id === userId)
+
+			if(!users?.length) return
+			if(!user) return
+
+			user.users = users[0].users || []
 		}
 	},
 }

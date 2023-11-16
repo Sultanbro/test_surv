@@ -59,8 +59,8 @@ function referrerToUser(user){
 	}
 }
 
-export async function referralUserStat(){
-	const {data} = await axios.get('/referrals/user/statistics')
+export async function referralUserStat(userId = 0){
+	const {data} = await axios.get('/referrals/statistics/user' + (userId ? '/' + userId : ''))
 	return {
 		month: Number(data.data?.mine || 0),
 		monthRef: Number(data.data?.from_referrals || 0),
