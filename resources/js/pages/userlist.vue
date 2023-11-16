@@ -1,26 +1,15 @@
 <template>
-	<div v-if="positions">
+	<div
+		v-if="positions"
+		class="UserList"
+	>
 		<div class="row mb-2">
 			<div class="col-3 text-left">
-				<b-input-group
-					v-if="false"
-					size="sm"
-				>
-					<b-form-input
-						id="filterInput"
-						v-model="filter.email"
-						type="search"
-						placeholder="Поиск"
-					/>
-					<b-input-group-append>
-					<!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
-					</b-input-group-append>
-				</b-input-group>
 				<UserListFilter
 					v-model="filter"
 					:search="search"
 					:groups="groupOptions"
-					:positions="(jobFilters || []).map(pos => ({value: pos.value, title: pos.text}))"
+					:positions="positionOptions"
 					:user-types="userOptions"
 					:segments="activeSegments"
 					class="mb-2"
@@ -28,57 +17,24 @@
 				/>
 			</div>
 			<div class="col-2">
-				<b-form-select
-					v-if="false"
-					v-model="filter.group"
-					:options="groups"
-					size="sm"
-				/>
-			</div>
-			<div class="col-2  d-flex align-items-center">
-				<b-form-select
-					v-if="false"
-					v-model="tableFilter"
-					:options="tableFilters"
-					size="sm"
-					@change="getUsers()"
-				/>
-			</div>
-			<div class="col-2  d-flex align-items-center">
-				<b-form-select
-					v-if="false"
-					v-model="position"
-					:options="jobFilters"
-					size="sm"
-					@change="getUsers()"
-				/>
-			</div>
-			<div class="col-3 justify-content-end d-flex align-items-start">
-				<a
-					href="/timetracking/create-person"
-					class="btn btn-success rounded"
-				>Пригласить</a>
 				<b-button
 					class="btn-primary rounded ml-1"
 					title="Показывать поля"
 					@click="showModal = !showModal"
 				>
 					<i
-						class="fa fa-eye"
+						class="fa fa-cog"
 						aria-hidden="true"
 					/>
 				</b-button>
-				<b-button
-					v-if="false"
-					class="btn-primary rounded ml-1"
-					title="Дополнительные фильтры таблицы"
-					@click="showFilterModal = !showFilterModal"
-				>
-					<i
-						class="fa fa-filter"
-						aria-hidden="true"
-					/>
-				</b-button>
+			</div>
+			<div class="col-2  d-flex align-items-center" />
+			<div class="col-2  d-flex align-items-center" />
+			<div class="col-3 justify-content-end d-flex align-items-start">
+				<a
+					href="/timetracking/create-person"
+					class="btn btn-success rounded"
+				>Пригласить</a>
 			</div>
 			<div class="col-12">
 				<p class="mt-2 mr-2 fz14 mb-0">
@@ -107,21 +63,6 @@
 				:sort-direction="sortDirection"
 				empty-filtered-text="Еще не найдено ни одной записи"
 				empty-text="Не найдено ни одной записи"
-				:class="{
-					'hide-1': !showFields.number,
-					'hide-2': !showFields.id,
-					'hide-3': !showFields.email,
-					'hide-4': !showFields.name,
-					'hide-5': !showFields.last_name,
-					'hide-6': !showFields.groups,
-					'hide-7': !showFields.register_date,
-					'hide-8': !showFields.fire_date,
-					'hide-9': !showFields.fire_cause,
-					'hide-10': !showFields.user_type,
-					'hide-11': !showFields.segment,
-					'hide-12': !showFields.applied,
-					'hide-13': !showFields.full_time,
-				}"
 				@filtered="onFiltered"
 			>
 				<template #cell(index)="row">
@@ -163,6 +104,9 @@
 						{{ groups[group_id] }}
 					</b-badge>
 				</template>
+				<template #cell(position)="data">
+					{{ data.value }}
+				</template>
 				<template #cell(created_at)="row">
 					{{ row.value ? $moment(row.value).format('DD.MM.YYYY') : '' }}
 				</template>
@@ -181,7 +125,7 @@
 					</div>
 				</template>
 				<template #cell(fire_cause)="data">
-					<div v-if="tableFilter != 'active'">
+					<div v-if="filter.userType != 'active'">
 						{{ data.value }}
 					</div>
 				</template>
@@ -219,16 +163,6 @@
 			size="lg"
 			@ok="showModal = !showModal"
 		>
-			<template v-for="error in errors">
-				<b-alert
-					:key="error"
-					show
-					variant="danger"
-				>
-					{{ error }}
-				</b-alert>
-			</template>
-
 			<div class="row">
 				<div class="col-md-4 mb-2">
 					<b-form-checkbox
@@ -283,6 +217,13 @@
 						Отделы
 					</b-form-checkbox>
 					<b-form-checkbox
+						v-model="showFields.position"
+						:value="true"
+						:unchecked-value="false"
+					>
+						Должность
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.register_date"
 						:value="true"
 						:unchecked-value="false"
@@ -296,6 +237,9 @@
 					>
 						Дата увольнения
 					</b-form-checkbox>
+				</div>
+
+				<div class="col-md-4 mb-2">
 					<b-form-checkbox
 						v-model="showFields.fire_cause"
 						:value="true"
@@ -303,9 +247,6 @@
 					>
 						Причина увольнения
 					</b-form-checkbox>
-				</div>
-
-				<div class="col-md-4 mb-2">
 					<b-form-checkbox
 						v-model="showFields.user_type"
 						:value="true"
@@ -327,242 +268,6 @@
 					>
 						Дата принятия
 					</b-form-checkbox>
-				</div>
-			</div>
-		</b-modal>
-
-		<b-modal
-			v-model="showFilterModal"
-			title="Фильтр «Сотрудники»"
-			ok-text="Применить"
-			size="md"
-			@ok="applyFilter"
-		>
-			<div class="row">
-				<div class="col-md-6 mb-2">
-					<div class="d-flex align-items-center">
-						<input
-							v-model="active.date"
-							type="checkbox"
-							class="mr-3"
-						>
-						<p
-							class="mb-0 pointer"
-							@click="toggleActive('date')"
-						>
-							Дата регистрации
-						</p>
-					</div>
-				</div>
-
-				<div class="col-6">
-					<div
-						class="relative ooooo"
-						:class="{'active': active.date}"
-					>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>От</label> <input
-								v-model="filter.start_date"
-								class="form-control mb-1 form-control-sm"
-								type="date"
-							>
-						</div>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>До</label> <input
-								v-model="filter.end_date"
-								class="form-control form-control-sm"
-								type="date"
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="row mt-2">
-				<div class="col-md-6 mb-2">
-					<div class="d-flex align-items-center">
-						<input
-							v-model="active.date_deactivate"
-							type="checkbox"
-							class="mr-3"
-						>
-						<p
-							class="mb-0 pointer"
-							@click="toggleActive('date_deactivate')"
-						>
-							Дата увольнения
-						</p>
-					</div>
-				</div>
-
-				<div class="col-6">
-					<div
-						class="relative ooooo"
-						:class="{'active': active.date_deactivate}"
-					>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>От</label> <input
-								v-model="filter.start_date_deactivate"
-								class="form-control mb-1 form-control-sm"
-								type="date"
-							>
-						</div>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>До</label> <input
-								v-model="filter.end_date_deactivate"
-								class="form-control form-control-sm"
-								type="date"
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div
-				v-if="tableFilter != 'trainees'"
-				class="row mt-2"
-			>
-				<div class="col-md-6 mb-2">
-					<div class="d-flex align-items-center">
-						<input
-							v-model="active.date_applied"
-							type="checkbox"
-							class="mr-3"
-						>
-						<p
-							class="mb-0 pointer"
-							@click="toggleActive('date_applied')"
-						>
-							Дата принятия
-						</p>
-					</div>
-				</div>
-
-				<div class="col-6">
-					<div
-						class="relative ooooo"
-						:class="{'active': active.date_applied}"
-					>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>От</label> <input
-								v-model="filter.start_date_applied"
-								class="form-control mb-1 form-control-sm"
-								type="date"
-							>
-						</div>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>До</label> <input
-								v-model="filter.end_date_applied"
-								class="form-control form-control-sm"
-								type="date"
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div
-				v-if="tableFilter != 'trainees'"
-				class="row mt-2"
-			>
-				<div class="col-md-6 mb-2">
-					<div class="d-flex align-items-center">
-						<input
-							v-model="active.date_reapplied"
-							type="checkbox"
-							class="mr-3"
-						>
-						<p
-							class="mb-0 pointer"
-							@click="toggleActive('date_reapplied')"
-						>
-							Дата восстановления
-						</p>
-					</div>
-				</div>
-
-				<div class="col-6">
-					<div
-						class="relative ooooo"
-						:class="{'active': active.date_reapplied}"
-					>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>От</label> <input
-								v-model="filter.start_date_reapplied"
-								class="form-control mb-1 form-control-sm"
-								type="date"
-							>
-						</div>
-						<div class="d-flex align-items-center">
-							<label
-								for=""
-								class=" mr-2 mb-0"
-							>До</label> <input
-								v-model="filter.end_date_reapplied"
-								class="form-control form-control-sm"
-								type="date"
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- <div
-				v-if="tableFilter != 'trainees'"
-				class="row mt-2"
-			>
-				<div class="col-md-12 mb-2">
-					<label>
-						<input
-							v-model="filter.notrainees"
-							type="checkbox"
-							class="mr-3"
-						>
-						Не стажер
-					</label>
-				</div>
-			</div> -->
-
-			<div class="row mt-2">
-				<div class="col-md-3 mb-2">
-					<p>Сегмент</p>
-				</div>
-
-				<div class="col-9">
-					<div class="d-flex align-items-center">
-						<multiselect
-							v-model="filter.segment"
-							:options="activeSegments"
-							:multiple="true"
-							:preserve-search="true"
-							:hide-selected="true"
-							:close-on-select="false"
-							placeholder="Все сегменты"
-							label="name"
-							track-by="id"
-						/>
-					</div>
 				</div>
 			</div>
 		</b-modal>
@@ -596,22 +301,9 @@ export default {
 	},
 	data() {
 		return {
-			myPositions: [],
-			position: 0,
-			jobFilters: [{ text: 'Должность', value: 0 }],
-			sel: false,
-			newtime: '',
 			auth_token: '',
-			showFilterModal: false, /// Фильтры
 			showModal: false, /// Какие поля показывать
 			showFields: {},
-			errors: [],
-			useractive: {
-				name: '',
-				day: '',
-				time: '',
-			},
-			tableFilter: 'active',
 			segments: [],
 			tableFilters: {
 				'all': 'Все',
@@ -621,87 +313,19 @@ export default {
 				'trainees': 'Стажеры',
 				'nonfilled': 'Незаполненные',
 			},
-			mount: 'Январь',
 			items: [],
-			fields: [
-				{
-					key: 'index',
-					label: '№'
-				},
-				{
-					key: 'id',
-					label: 'id'
-				},
-				{
-					key: 'email',
-					label: 'Email'
-				},
-				{
-					key: 'last_name',
-					label: 'Фамилия',
-					sortable: true
-				},
-				{
-					key: 'name',
-					label: 'Имя',
-					sortable: true
-				},
-				{
-					key: 'groups',
-					label: 'Отделы',
-					sortable: true
-				},
-				{
-					key: 'created_at',
-					label: 'Дата регистрации (сделка)',
-					sortable: true,
-				},
-				{
-					key: 'deleted_at',
-					label: 'Дата увольнения',
-					sortable: true,
-				},
-				{
-					key: 'fire_cause',
-					label: 'Причина увольнения',
-					sortable: true
-				},
-				{
-					key: 'user_type',
-					label: 'Тип',
-					sortable: true
-				},
-				{
-					key: 'segment',
-					label: 'Сегмент',
-					sortable: true
-				},
-				{
-					key: 'applied',
-					label: 'Дата принятия',
-					sortable: true,
-				},
-				{
-					key: 'full_time',
-					label: 'Full/Part',
-					sortable: true
-				},
-			],
 			groups: {
 				0: 'Выберите отдел'
 			},
-			currentGroup: 0,
 			currentPage: 1,
 			perPage: 20,
 			pageOptions: [5, 10, 15],
 			sortBy: 'created_at',
 			sortDesc: true,
 			sortDirection: 'desc',
-			can_login_users: [],
 			currentUser: null,
 			search: '',
 			filter: {
-				email: '',
 				group: 0,
 				position: 0,
 				userType: 'active',
@@ -712,46 +336,14 @@ export default {
 				segment: [],
 				type: '',
 				fullpart: '',
-
-				start_date: null,
-				end_date: '2030-01-01',
-				start_date_deactivate: '2015-01-01',
-				end_date_deactivate: '2030-01-01',
-				start_date_applied: '2015-01-01',
-				end_date_applied: '2030-01-01',
-				start_date_reapplied: '2015-01-01',
-				end_date_reapplied: '2030-01-01',
 				notrainees: false,
 			},
-			active: {
-				date: false,
-				date_deactivate: false,
-				date_applied: false,
-				date_reapplied: false,
-			},
 			filterOn: [],
-			value: [],
-			options: [],
-			infoModal: {
-				id: 'info-modal',
-				title: '',
-				content: ''
-			},
 			isRestored: false,
 			loading: false,
 		}
 	},
 	computed: {
-		sortOptions() {
-			return this.fields
-				.filter(f => f.sortable)
-				.map(f => {
-					return {
-						text: f.label,
-						value: f.key
-					}
-				})
-		},
 		searchText(){
 			return this.search.toLowerCase()
 		},
@@ -774,6 +366,7 @@ export default {
 					|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
 					|| el.name.toLowerCase().indexOf(this.searchText) > -1
 					|| el.id.toString().indexOf(this.searchText) > -1
+					|| el.position.toLowerCase().indexOf(this.searchText) > -1
 
 				return Number(this.filter.group) ? el.groups.includes(Number(this.filter.group)) && isOK : isOK
 			})
@@ -797,13 +390,85 @@ export default {
 			return ['test', 'bp'].includes(location.hostname.split('.')[0])
 		},
 		fields2(){
-			return this.isRestored ? [
-				...this.fields,
-				{
-					key: 'restored_at',
-					label: 'Восстановлен'
-				}
-			] : this.fields
+			const fields = []
+			if(this.showFields.number) fields.push({
+				key: 'index',
+				label: '№'
+			})
+			if(this.showFields.id) fields.push({
+				key: 'id',
+				label: 'id'
+			})
+			if(this.showFields.email) fields.push({
+				key: 'email',
+				label: 'Email'
+			})
+			if(this.showFields.last_name) fields.push({
+				key: 'last_name',
+				label: 'Фамилия',
+				sortable: true
+			})
+			if(this.showFields.name) fields.push({
+				key: 'name',
+				label: 'Имя',
+				sortable: true
+			})
+			if(this.showFields.groups) fields.push({
+				key: 'groups',
+				label: 'Отделы',
+				sortable: true
+			})
+			if(this.showFields.position) fields.push({
+				key: 'position',
+				label: 'Должность',
+				sortable: true
+			})
+			if(this.showFields.register_date) fields.push({
+				key: 'created_at',
+				label: 'Дата регистрации (сделка)',
+				sortable: true,
+			})
+			if(this.showFields.fire_date) fields.push({
+				key: 'deleted_at',
+				label: 'Дата увольнения',
+				sortable: true,
+			})
+			if(this.showFields.fire_cause) fields.push({
+				key: 'fire_cause',
+				label: 'Причина увольнения',
+				sortable: true
+			})
+			if(this.showFields.user_type) fields.push({
+				key: 'user_type',
+				label: 'Тип',
+				sortable: true
+			})
+			if(this.showFields.segment) fields.push({
+				key: 'segment',
+				label: 'Сегмент',
+				sortable: true
+			})
+			if(this.showFields.segment) fields.push({
+				key: 'segment',
+				label: 'Сегмент',
+				sortable: true
+			})
+			if(this.showFields.applied) fields.push({
+				key: 'applied',
+				label: 'Дата принятия',
+				sortable: true,
+			})
+			if(this.showFields.full_time) fields.push({
+				key: 'full_time',
+				label: 'Full/Part',
+				sortable: true
+			})
+			if(this.isRestored) fields.push({
+				key: 'restored_at',
+				label: 'Восстановлен'
+			})
+
+			return fields
 		},
 		activeSegments(){
 			return this.segments.slice().filter(segment => segment.active)
@@ -813,6 +478,24 @@ export default {
 		},
 		userOptions(){
 			return Object.keys(this.tableFilters).map(key => ({value: key, title: this.tableFilters[key]}))
+		},
+		positionsMap(){
+			const map = {}
+			const positions = this.positions || []
+			positions.forEach(pos => {
+				map[pos.id] = pos
+			})
+			return map
+		},
+		positionOptions(){
+			const positions = this.positions || []
+			return [
+				{ title: 'Должность', value: 0 },
+				...positions.map(pos => ({
+					value: pos.id,
+					title: pos.position
+				}))
+			]
 		}
 	},
 	watch: {
@@ -837,10 +520,6 @@ export default {
 	mounted() {},
 	methods: {
 		init(){
-			this.myPositions = this.positions
-			this.myPositions.forEach(value => {
-				this.jobFilters.push({ text: value.position, value: value.id })
-			})
 			this.getUsers()
 			this.setDefaultShowFields()
 		},
@@ -857,6 +536,7 @@ export default {
 					name: true,
 					last_name: true,
 					groups: true,
+					position: true,
 					register_date: true,
 					fire_date: true,
 					fire_cause: false,
@@ -866,17 +546,6 @@ export default {
 					full_time: false,
 				}
 			}
-		},
-
-		resetInfoModal() {
-			this.infoModal.title = ''
-			this.infoModal.content = ''
-		},
-
-		applyFilter() {
-			this.showFilterModal = !this.showFilterModal
-			//this.$refs.table.refresh()
-			this.getUsers()
 		},
 
 		getUsers() {
@@ -904,12 +573,12 @@ export default {
 				filter.end_date_deactivate = this.DMY2YMD(this.filter.fire[1])
 			}
 
-			if(this.filter.applied[0] && this.filter.applied[1] && this.tableFilter != 'trainees') {
+			if(this.filter.applied[0] && this.filter.applied[1] && this.filter.userType != 'trainees') {
 				filter.start_date_applied = this.DMY2YMD(this.filter.applied[0])
 				filter.end_date_applied = this.DMY2YMD(this.filter.applied[1])
 			}
 
-			if(this.filter.restore[0]  && this.filter.restore[1] && this.tableFilter != 'trainees') {
+			if(this.filter.restore[0]  && this.filter.restore[1] && this.filter.userType != 'trainees') {
 				filter.start_date_reapplied = this.DMY2YMD(this.filter.restore[0])
 				filter.end_date_reapplied = this.DMY2YMD(this.filter.restore[1])
 			}
@@ -924,11 +593,13 @@ export default {
 						users.push(user)
 					}
 				})
-				this.items = users.reverse()
+				this.items = users.reverse().map(user => {
+					const pos = this.positionsMap[user.position_id]
+					return { ...user, position: pos ? pos.position : '' }
+				})
 				this.groups = response.data.groups
 				this.segments = response.data.segments
 
-				this.can_login_users = response.data.can_login_users
 				this.auth_token = response.data.auth_token
 				this.currentUser = response.data.currentUser
 				// if(this.filter.start_date == null) {
@@ -979,10 +650,6 @@ export default {
 			link += '&segment=' + this.filter.segment
 			link += '&excel=1'
 			window.location.href = link
-		},
-
-		toggleActive(item) {
-			this.active[item] = !this.active[item]
 		},
 
 		onFiltered() {
@@ -1037,6 +704,11 @@ export default {
 	&.active {
 		height: auto;
 		overflow: initial;
+	}
+}
+.UserList{
+	.fa-cog{
+		color: #fff;
 	}
 }
 </style>
