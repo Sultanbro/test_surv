@@ -20,11 +20,6 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
     {
         $this->filter = $filter;
         $this->user = $user ?? auth()->user();
-        if ($user) {
-            return [
-                'referrals' => $this->described()
-            ];
-        }
         return [
             'tops' => $this->tops(),
             'referrals' => $this->described(),
