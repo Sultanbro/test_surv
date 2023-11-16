@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 class ReferralController extends Controller
 {
     public function __construct(
-        private LeadServiceInterface $leadService
+        private readonly LeadServiceInterface $leadService
     )
     {
     }
