@@ -987,7 +987,7 @@ class HrController extends Controller
 
         $lead = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/'.'crm.lead.get',[
             'query' => [
-                'id' => $deal['result']['LEAD_ID']
+                'id' => 936082
             ]
         ]);
         $assignedUserId = $deal['result']['ASSIGNED_BY_ID'];
@@ -1004,7 +1004,7 @@ class HrController extends Controller
         $phone = Phone::normalize($lead['result']['PHONE'][0]['VALUE']);
         Lead::query()->updateOrCreate(
             [
-                'lead_id' => $deal['result']['LEAD_ID'],
+                'lead_id' => 936082,
                 'deal_id' => $deal['result']['ID'],
             ],
             [
