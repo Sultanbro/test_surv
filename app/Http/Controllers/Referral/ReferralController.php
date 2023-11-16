@@ -12,6 +12,12 @@ use Illuminate\Http\JsonResponse;
 
 class ReferralController extends Controller
 {
+    public function __construct(
+        private LeadServiceInterface $leadService
+    )
+    {
+    }
+
     public function url(): ReferralUrlResource
     {
         /** @var User $user */
@@ -22,8 +28,7 @@ class ReferralController extends Controller
     public function request(Request $request, User $user): JsonResponse
     {
 
-        $leadService = app(LeadServiceInterface::class);
-        $leadService->create($user, $request->toDto());
+        $this->leadService->create($user, $request->toDto());
 //        ProcessCreateLead::dispatch($user, $request->toDto());
         return response()->json([
             'message' => 'successfully processed!'

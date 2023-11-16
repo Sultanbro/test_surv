@@ -23,7 +23,6 @@
 			</template>
 			<template #cell(switch)="{item}">
 				<div
-					v-if="item.users.length"
 					class="RefStatsTable-switch pointer"
 					@click="toggleAfter(item.id)"
 				>
@@ -74,20 +73,28 @@
 			</template>
 			<template #afterRow="firstLayerData">
 				<transition name="RefStatsTable-scale">
-					<div
-						v-if="firstLayerData && firstLayerData.value.users.length && (uncollapsed.includes(firstLayerData.value.id) || single)"
-						:key="firstLayerData.value.id"
-						class="RefStatsTable-subtable"
-						data-max="10"
-					>
-						<RefStatsReferals
-							:user-id="firstLayerData.value.id"
-							:sorted-subs="sortedSubs"
-							:hint-comments="hintComments"
-							@sub-sort="setSubSort"
-							@payment-click="$emit('payment-click', $event)"
-						/>
-					</div>
+					<template v-if="uncollapsed.includes(firstLayerData.value.id) || single">
+						<div
+							v-if="firstLayerData && firstLayerData.value.users.length"
+							:key="firstLayerData.value.id"
+							class="RefStatsTable-subtable"
+							data-max="10"
+						>
+							<RefStatsReferals
+								:user-id="firstLayerData.value.id"
+								:sorted-subs="sortedSubs"
+								:hint-comments="hintComments"
+								@sub-sort="setSubSort"
+								@payment-click="$emit('payment-click', $event)"
+							/>
+						</div>
+						<div
+							v-else
+							class="RefStatsTable-subtable"
+						>
+							Загрузка...
+						</div>
+					</template>
 				</transition>
 			</template>
 		</JobtronTable>
@@ -196,6 +203,8 @@ export default {
 				this.uncollapsed = []
 				this.uncollapsed.push(id)
 			}
+			if(this.sortedSubs[id] && this.sortedSubs[id].length) return
+			this.$emit('load-user', id)
 		},
 		rowAfterClass(row){
 			return this.uncollapsed.includes(row.id) || this.single ? 'RefStats-afterRowActive' : ''

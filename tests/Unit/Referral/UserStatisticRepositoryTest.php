@@ -24,6 +24,10 @@ class UserStatisticRepositoryTest extends TenantTestCase
         $user = User::factory()->create([
             'referrer_id' => null
         ]);
+
+        $anotherUser = User::factory()->create([
+            'name' => 'check this'
+        ]);
         $this->actingAs($user);
         $this->seedData($user);
         $repo = app(UserStatisticRepository::class);
