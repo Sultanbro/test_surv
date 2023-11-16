@@ -90,7 +90,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $this->baseQuery()
             ->get()
-            ->map(function (User $user) use ($schedule) {
+            ->each(function (User $user) use ($schedule) {
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
@@ -98,8 +98,6 @@ class StatisticRepository implements StatisticRepositoryInterface
                 if ($schedule) {
                     $user->users = $this->schedule($user);
                 }
-
-                return $user;
             })
             ->toArray();
     }
@@ -112,7 +110,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
 
         return User::query()
-            ->select(['id', 'referrer_status', 'referrer_id'])
+            ->select(['id', 'referrer_status', 'referrer_id', 'name', 'last_name'])
             ->WhereHas('referralLeads')
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
