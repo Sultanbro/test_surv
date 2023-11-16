@@ -1850,10 +1850,6 @@ class TimetrackingController extends Controller
         if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
             DayType::markDayAsTrainee($targetUser, $date);
             UserPresence::query()
-                ->where([
-                    'date' => $date,
-                    'user_id' => $request->get("user_id")
-                ])
                 ->firstOrCreate([
                     'date' => $date,
                     'user_id' => $request->get("user_id")
