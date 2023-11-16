@@ -2,7 +2,8 @@
 	<div
 		class="JobtronSelect"
 		:class="{
-			'JobtronSelect_compact': compact
+			'JobtronSelect_compact': compact,
+			'JobtronSelect_small': small,
 		}"
 	>
 		<select
@@ -39,6 +40,9 @@ export default {
 			type: Boolean,
 			default: false
 		},
+		small: {
+			type: Boolean,
+		},
 	}
 }
 </script>
@@ -61,7 +65,7 @@ export default {
     font-family: "Inter", sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 20px;
 
     color: #8DA0C1;
@@ -105,6 +109,17 @@ export default {
 			&-select{
 				padding: 5px 15px 5px 10px;
 				line-height: 18px;
+			}
+		}
+		&:after{
+			right: 0.5rem;
+		}
+	}
+	&_small{
+		.JobtronSelect{
+			&-select{
+				padding: 8px 26px 8px 16px;
+				line-height: 20px;
 			}
 		}
 		&:after{

@@ -14,6 +14,7 @@
 						placeholder="Выберите должность"
 						track-by="position"
 						label="position"
+						:show-no-options="false"
 						@select="selectPosition"
 					>
 						<template #afterList>
@@ -342,7 +343,7 @@ export default {
 				is_head: this.isHead,
 				is_spec: this.isSpec,
 			})
-			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует');
 
 			const data = responseAdd.data.data;
 			const dataPush = {
@@ -373,7 +374,7 @@ export default {
 					is_spec: this.isSpec,
 				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
-				this.$toast.success(this.addNew ? 'Новая должность создана!' : 'Изменения сохранены');
+				this.$toast.success(this.addNew ? 'Новая должность создана' : 'Изменения сохранены');
 				this.addNew = false
 
 				localStorage.setItem('event.updatePositions', JSON.stringify({command: 'savePosition'}))
