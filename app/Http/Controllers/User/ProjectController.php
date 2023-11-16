@@ -25,7 +25,7 @@ class ProjectController extends Controller
      *
      * @return void
      */
-    public function __construct(private readonly CabinetService $cabinetService)
+    public function __construct(protected CabinetService $cabinetService)
     {
         $this->middleware('auth');
     }
@@ -74,9 +74,10 @@ class ProjectController extends Controller
         $centralUser = CentralUser::query()->where('email', $user->email)->first();
 
         $tenant = $this->createTenant($centralUser);
-
-        $user = $this->createTenantUser($tenant, $user->toArray());
-
+        $password = CentralUser::query()->selectRaw('password')->where('id', $centralUser->id)->first()?->password;
+        $data = $user->toArray();
+        $data['password'] = $password;
+        $user = $this->createTenantUser($tenant, $data, true);
         $this->cabinetService->add($tenant->id, $user, true);
 
         return response()->json([

@@ -50,7 +50,7 @@ trait CreateTenant
         return $tenant;
     }
 
-    protected function createTenantUser(Tenant $tenant, array $data): User
+    protected function createTenantUser(Tenant $tenant, array $data, $passwordHashed = false): User
     {
         try {
             DB::beginTransaction();
@@ -62,7 +62,7 @@ trait CreateTenant
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => Hash::make($data['password']),
+                'password' => $passwordHashed ? $data['password'] : Hash::make($data['password']),
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
