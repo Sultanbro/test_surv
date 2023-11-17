@@ -87,20 +87,6 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $this->baseQuery()
             ->get()
             ->map(function (User $user) use ($schedule) {
-                $user->month_paid = $user->referralSalaries
-                    ->where('is_paid', true)
-                    ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
-                    ->where('date', '<=', $this->dateEnd()->format("Y-m-d"))
-                    ->sum("amount");
-
-                $user->absolute_earned = $user->referralSalaries
-                    ->sum("amount");
-
-                $user->month_earned = $user->referralSalaries
-                    ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
-                    ->where('date', '<=', $this->dateEnd()->format("Y-m-d"))
-                    ->sum("amount");
-
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
@@ -114,8 +100,12 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function baseQuery(): Builder
     {
+        $bindings = [
+            $this->dateStart()->format("Y-m-d"),
+            $this->dateEnd()->format("Y-m-d"),
+        ];
+
         return User::query()
-            ->select(['id', 'name', 'last_name', 'referrer_status'])
             ->WhereHas('referralLeads')
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
@@ -124,8 +114,27 @@ class StatisticRepository implements StatisticRepositoryInterface
                 ->where('deal_id', '>', 0)])
             ->withCount(['referralLeads as leads' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.user_id
+                AND is_paid = true
+                AND date BETWEEN ? AND ?
+        ) AS month_paid', $bindings)
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.user_id
+        ) AS absolute_earned')
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.user_id
+                AND date BETWEEN ? AND ?
+        ) AS month_earned', $bindings)
             ->orderBy('leads', 'desc');
     }
+
 
     private function schedule(User $referrer, int $step = 1)
     {
