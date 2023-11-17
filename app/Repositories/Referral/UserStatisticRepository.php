@@ -28,6 +28,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
     {
         return User::query()
             ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
+            ->whereHas('referrals')
             ->withCount(['referrals as applied_count' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
