@@ -16,11 +16,42 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Query\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property bool $archive_utility
+ * @property $name
+ * @property $users
+ * @property $work_start
+ * @property $work_end
+ * @property $workdays
+ * @property $editors_id
+ * @property $required
+ * @property $provided
+ * @property $head_id
+ * @property $bp_link
+ * @property $zoom_link
+ * @property $checktime
+ * @property $checktime_users
+ * @property $salary_approved
+ * @property $salary_approved_by
+ * @property $salary_approved_date
+ * @property $active
+ * @property $payment_terms
+ * @property $has_analytics
+ * @property $quality
+ * @property $editable_time
+ * @property $time_address
+ * @property $time_exceptions
+ * @property $paid_internship
+ * @property $rentability_max
+ * @property $show_payment_terms
+ * @property $archived_date
+ * @property $work_chart_id
+ * @property $switch_utility
+ * @property $switch_proceeds
+ * @property $switch_rentability
+ * @property $id
  */
 class ProfileGroup extends Model
 {

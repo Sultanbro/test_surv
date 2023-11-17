@@ -10,6 +10,42 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string lead_id
+ * @property string deal_id
+ * @property string user_id
+ * @property string referrer_id
+ * @property string resp_id
+ * @property string segment
+ * @property string phone
+ * @property string phone_2
+ * @property string phone_3
+ * @property string skype
+ * @property string project
+ * @property string status
+ * @property string name
+ * @property string house
+ * @property string lang
+ * @property string net
+ * @property string files
+ * @property string hash
+ * @property string signed
+ * @property string time
+ * @property string email
+ * @property string invited
+ * @property string invite_at
+ * @property string day_second
+ * @property string invite_group_id
+ * @property string rating
+ * @property string rating_date
+ * @property string rating2
+ * @property string rating2_date
+ * @property string skyped
+ * @property string inhouse
+ * @property string wishtime
+ * @property string received_assessment
+ * @property string received_fd
+ */
 class Lead extends Model
 {
     use HasFactory;
@@ -219,13 +255,12 @@ class Lead extends Model
             ->paginate($date['limit']);
 
         $groups = ProfileGroup::get();
-        $respUsersArray = User::withTrashed()->whereIn('email', $leads->unique('resp_id')->where("resp_id","!=",0)->pluck('resp_id')->toArray())->select('name','last_name','email')->get()->unique('email')->toArray();
+        $respUsersArray = User::withTrashed()->whereIn('email', $leads->unique('resp_id')->where("resp_id", "!=", 0)->pluck('resp_id')->toArray())->select('name', 'last_name', 'email')->get()->unique('email')->toArray();
         $respUsers = [];
-        foreach ($respUsersArray as $item)
-        {
+        foreach ($respUsersArray as $item) {
             $respUsers[$item['email']] = [
-                "name"=>$item['name'],
-                "last_name"=>$item['last_name']
+                "name" => $item['name'],
+                "last_name" => $item['last_name']
             ];
         }
         foreach ($leads as $lead) {
