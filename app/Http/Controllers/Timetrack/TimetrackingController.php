@@ -626,27 +626,27 @@ class TimetrackingController extends Controller
         ];
     }
 
-    public function applyPerson(Request $request)
+    public function applyPerson(Request $request): JsonResponse
     {
-
-        UserDescription::query()->updateOrCreate([
-            'user_id' => $request->get('user_id'),
-        ], [
-            'is_trainee' => 0,
-            'applied' => now(),
-        ]);
-
         /** @var User $user */
         $user = User::query()->find($request->get('user_id'));
+        /** @var User $authUser */
+        $authUser = auth()->user();
+        $date = now();
+        if (!$user) return response()->json(['message' => 'user not found']);
+
+        $user->user_description()->updateOrCreate([
+            'is_trainee' => 0,
+            'applied' => $date->format("Y-m-d"),
+        ]);
 
         ///////////////////////////////////////////
-        $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
-        $recruiters = User::where('position_id', 46)->get();
+        $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
 
-        $timestamp = now();
+        $timestamp = $date;
 
         $msg = '<a href="' . $editPersonLink . '" target="_blank">' . $user->last_name . ' ' . $user->name . ' </a><br> ';
-        $msg .= 'Рабочий график: ' . $request->schedule;
+        $msg .= 'Рабочий график: ' . $request->get("schedule");
 
         $notification_receivers = NotificationTemplate::getReceivers(7);
 
@@ -675,18 +675,22 @@ class TimetrackingController extends Controller
 
 
         /////////////////////////////////////
-        TimetrackingHistory::create([
-            'author_id' => auth()->user()->id,
-            'author' => auth()->user()->name . ' ' . auth()->user()->last_name,
-            'user_id' => $request->user_id,
-            'description' => 'Заявка на принятие на работу стажера',
-            'date' => date('Y-m-d')
-        ]);
+        TimetrackingHistory::query()
+            ->create([
+                'author_id' => auth()->id(),
+                'author' => $authUser->name . ' ' . $authUser->last_name,
+                'user_id' => $request->get("user_id"),
+                'description' => 'Заявка на принятие на работу стажера',
+                'date' => date('Y-m-d')
+            ]);
 
 
         // убрать отметку стажера в этот день
 
-        $daytypes = DayType::where('user_id', $request->user_id)->whereDate('date', date('Y-m-d'))->get();
+        $daytypes = DayType::query()
+            ->where('user_id', $request->get("user_id"))
+            ->whereDate('date', now()->format("Y-m-d"))
+            ->get();
 
         foreach ($daytypes as $dt) {
             $dt->delete();
@@ -694,14 +698,21 @@ class TimetrackingController extends Controller
 
         // group provided increment
 
-        $group = ProfileGroup::find($request->group_id);
+        /** @var ProfileGroup $group */
+        $group = ProfileGroup::query()
+            ->find($request->get("group_id"));
+
         if ($group) {
             $group->provided = $group->provided + 1;
             $group->save();
         }
 
-        // Приглашение в битрикс
-        $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+        // Приглашение в беатрис
+        /** @var Lead $lead */
+        $lead = Lead::query()
+            ->where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->first();
         if ($lead && $lead->deal_id != 0) {
             $bitrix = new Bitrix();
 
@@ -713,9 +724,9 @@ class TimetrackingController extends Controller
         Referring::touchReferrerStatus($user);
         Referring::touchReferrerSalaryForCertificate($user);
 
-        return [
+        return response()->json([
             'msg' => 'Заявка отправлена рекрутерам'
-        ];
+        ]);
     }
 
     public function reports(Request $request)
