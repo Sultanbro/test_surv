@@ -3,7 +3,6 @@
 namespace App\Repositories\Referral;
 
 use App\DayType;
-use App\Facade\Referring;
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
@@ -43,13 +42,9 @@ class StatisticRepository implements StatisticRepositoryInterface
 
         foreach ($described as $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
-            if ($referer['leads'] > 0) {
-                ++$countForDeals;
-            }
+            $countForDeals += ($referer['leads'] > 0) ? 1 : 0;
             $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
-            if ($referer['deals'] > 0) {
-                ++$countForApplied;
-            }
+            $countForApplied += ($referer['deals'] > 0) ? 1 : 0;
         }
 
         $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
@@ -60,19 +55,22 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereNotNull('referrer_id')
             ->count();
 
-        $paidTotal = ReferralSalary::query()
-            ->where('is_paid', 1) // this means that salary was accepted!
+        $dateStart = $this->dateStart()->format("Y-m-d");
+        $dateEnd = $this->dateEnd()->format("Y-m-d");
+
+        $salaries = ReferralSalary::query()->get();
+
+        $paidTotal = $salaries
+            ->where('is_paid', 1)
             ->sum('amount');
 
-        $paidTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
-            ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
-            ->where('is_paid', 1) // this means that salary was accepted!
+        $earnedTotalForMonth = $salaries
+            ->whereBetween('date', [$dateStart, $dateEnd])
             ->sum('amount');
 
-        $earnedTotalForMonth = ReferralSalary::query()
-            ->whereDate('date', '>=', $this->dateStart()->format("Y-m-d"))
-            ->whereDate('date', '<=', $this->dateEnd()->format("Y-m-d"))
+        $paidTotalForMonth = $salaries
+            ->whereBetween('date', [$dateStart, $dateEnd])
+            ->where('is_paid', 1)
             ->sum('amount');
 
         return [
@@ -117,8 +115,8 @@ class StatisticRepository implements StatisticRepositoryInterface
     protected function baseQuery(): Builder
     {
         return User::query()
+            ->select(['id', 'name', 'last_name', 'referrer_status'])
             ->WhereHas('referralLeads')
-            ->with(['referralSalaries'])
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
             ->withCount(['referralLeads as deals' => fn($query) => $query
@@ -132,12 +130,11 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
+            ->with('referrals')
             ->with(['user_description', 'referrals', 'referralSalaries'])
             ->orderBy("created_at")
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
-
-                Referring::touchReferrerStatus($referral); // before get statistic, we check the user referrer status
 
                 $days = $this->getReferralDayTypes($referral);
 
@@ -156,7 +153,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals()->count()) {
+                if ($referral->referrals->count()) {
                     if ($step <= 3) {
                         $referral->users = $this->schedule($referral, $step + 1);
                     }
@@ -184,9 +181,9 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function getUserEarned(User $user, ?Carbon $dateStart = null, ?Carbon $dateEnd = null): float
     {
-        return $user->referralSalaries()
-            ->when($dateStart, fn($query) => $query->whereDate('date', '>=', $dateStart->format("Y-m-d")))
-            ->when($dateEnd, fn($query) => $query->whereDate('date', '<=', $dateEnd->format("Y-m-d")))
+        return $user->referralSalaries
+            ->when($dateStart, fn($query) => $query->where('date', '>=', $dateStart->format("Y-m-d")))
+            ->when($dateEnd, fn($query) => $query->where('date', '<=', $dateEnd->format("Y-m-d")))
             ->sum('amount');
     }
 
