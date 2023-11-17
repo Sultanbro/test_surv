@@ -241,6 +241,7 @@ Vue.prototype.$can = function (permission/* , authorId = false */) {
 	return false
 }
 
+// development | production
 if(process.env.NODE_ENV === 'production') {
 	(() => import(/* webpackChunkName: "Firebase" */ './firebase.js'))()
 }

@@ -84,8 +84,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command('tenants:run usernotification:foreigner --tenants=bp')->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
-        $schedule->command('tenants:run start_day:it_department --tenants=bp')->daily(); // Запускается каждый день начинает день для IT отдела
-        $schedule->command('tenants:run logs:access --tenants=bp')->daily()->at('01:00'); // Запускается каждый день начинает день для IT отдела
+        $schedule->command('tenants:run start_day:it_department --tenants=bp')->daily(); // Запускается каждый день, начинает день для IT отдела
+        $schedule->command('tenants:run logs:access --tenants=bp')->daily()->at('01:00'); // Запускается каждый день, начинает день для IT отдела
         /**
          * BITRIX24 crons
          */
@@ -120,7 +120,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
-        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
+//        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
         $schedule->command('tenants:run referrer:daily --tenants=bp')->dailyAt('00:00');
         $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         $schedule->command('tenants:run usernotification:adaptation')->dailyAt('02:40'); // Уведомление о заполнении адаптации

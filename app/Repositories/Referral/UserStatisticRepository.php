@@ -16,7 +16,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $user = $user ?? auth()->user();
         return [
             'tops' => $this->tops(),
-            'referrals' => $this->table(true),
+            'referrals' => $this->described(true),
             'mine' => $this->getUserEarned($user, $this->dateStart(), $this->dateEnd()),
             'from_referrals' => $this->getReferralsEarned($user),
             'absolute' => $this->getUserEarned($user),
@@ -26,6 +26,8 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
     private function tops(): array
     {
         return User::query()
+            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
+            ->whereHas('referrals')
             ->withCount(['referrals as applied_count' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])

@@ -19,7 +19,7 @@ function referalToUser(ref){
 		if(datetypes[i + 1]){
 			days.push({
 				...datetypes[i + 1],
-				day: i + 1
+				day: i + 2
 			})
 		}
 	}
@@ -34,7 +34,7 @@ function referalToUser(ref){
 	user.sixthWeek = datetypes['6_week']
 	user.eighthWeek = datetypes['8_week']
 	user.twelfthWeek = datetypes['12_week']
-	user.users = ref.users?.map(referalToUser) || []
+	user.users = ref.users?.map(referalToUser) || ref.referrals?.map(referalToUser) || []
 	return user
 }
 

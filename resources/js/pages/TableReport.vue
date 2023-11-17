@@ -378,23 +378,16 @@
 								<template v-else>
 									<div class="temari">
 										<button
-											class="btn btn-warning btn-block"
+											class="TableReport-statusBtn_internship btn btn-warning btn-block"
+											@click="setDayWithoutComment(5)"
+										>
+											Был на стажировке
+										</button>
+										<button
+											class="TableReport-statusBtn_internshipAbsent btn btn-warning btn-block"
 											@click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})"
 										>
 											Отсутствовал на стажировке
-										</button>
-										<button
-											v-if="sidebarContent.data.item.requested == null"
-											class="btn btn-primary btn-block"
-											@click="openModalApply({type: 8, label:'Принят на работу' })"
-										>
-											Принять на работу
-										</button>
-										<button
-											class="btn btn-info btn-block"
-											@click="setDayWithoutComment(7)"
-										>
-											Подключился позже
 										</button>
 
 										<div
@@ -412,8 +405,17 @@
 											Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
 										</div>
 
+										<div class="mt-auto" />
+
 										<button
-											class="btn btn-danger btn-block mt-auto"
+											v-if="sidebarContent.data.item.requested == null"
+											class="TableReport-statusBtn_internshipAccept btn btn-primary btn-block"
+											@click="openModalApply({type: 8, label:'Принят на работу' })"
+										>
+											Принять на работу
+										</button>
+										<button
+											class="TableReport-statusBtn_internshipFire btn btn-danger btn-block"
 											@click="openFiringModal({
 												label: 'Уволить',
 												color: '#c8a2c8',
@@ -1320,7 +1322,6 @@ export default {
 
 		//Загрузка данных для таблицы
 		fetchData(url = null) {
-
 			if (url === null) {
 				if (this.url_page === '') {
 					url = '/timetracking/reports';
@@ -1663,6 +1664,13 @@ export default {
 </script>
 
 <style lang="scss">
+$bgFirst: #b7e100;
+$bgPresent: #ffc107;
+$bgAbsent: #f58c94;
+$bgSick: aqua;
+$bgFired: rgb(200, 162, 200);
+$bgAccept: #156AE8;
+
 .table-report-sidebar{
 	position: fixed;
 	top: 0;
@@ -1779,7 +1787,7 @@ export default {
 
 	.table-day-2 {
 		color: #333;
-		background-color: #f58c94;
+		background-color: $bgAbsent !important;
 
 		input {
 			color: #333;
@@ -1793,12 +1801,12 @@ export default {
 
 	.table-day-4 {
 		color: rgb(0, 0, 0);
-		background-color: rgb(200, 162, 200) !important;
+		background-color: $bgFired !important;
 	}
 
 	.table-day-5 {
 		color: rgb(0, 0, 0);
-		background-color: #ffd76d !important;
+		background-color: $bgPresent !important;
 	}
 
 	.table-day-6 {
@@ -1808,7 +1816,12 @@ export default {
 
 	.table-day-7 {
 		color: #fff;
-		background-color: #ffc107 !important;
+		background-color: $bgPresent !important;
+	}
+
+	.table-day-10 {
+		color: #fff;
+		background-color: $bgFirst !important;
 	}
 
 	.cell-border {
@@ -2032,6 +2045,43 @@ hr {
 		}
 		&.td-lightgreen {
 			background-color: #B7E100;
+		}
+	}
+}
+
+.TableReport{
+	&-statusBtn{
+		&_internship{
+			background-color: $bgPresent !important;
+			&:hover{
+				background-color: darken($bgPresent, 5) !important;
+			}
+		}
+		&_internshipAbsent{
+			background-color: $bgAbsent !important;
+			&:hover{
+				background-color: darken($bgAbsent, 5) !important;
+			}
+		}
+		&_internshipSick{
+			background-color: $bgSick !important;
+			&:hover{
+				background-color: darken($bgSick, 5) !important;
+			}
+		}
+		&_internshipFire{
+			background-color: $bgFired !important;
+			border: none;
+			&:hover{
+				background-color: darken($bgFired, 5) !important;
+			}
+		}
+		&_internshipAccept{
+			background-color: $bgAccept !important;
+			border: none;
+			&:hover{
+				background-color: darken($bgAccept, 5) !important;
+			}
 		}
 	}
 }
