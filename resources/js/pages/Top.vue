@@ -644,7 +644,7 @@ export default {
 				plan: prognozGroup.plan,
 			}).then(() => {
 				this.$toast.success('Успешно сохранено!')
-				prognozGroup.left_to_apply = Number(prognozGroup.plan || 0) - Number(prognozGroup.fired || 0);
+				prognozGroup.left_to_apply = Number(prognozGroup.plan || 0) - Number(prognozGroup.applied || 0);
 				loader.hide()
 			}).catch(error => {
 				alert(error)
