@@ -113,6 +113,8 @@ export default {
 			users: [],
 			tableFields,
 
+			loading: false,
+
 			paymentDialog: {
 				open: false,
 				title: '',
@@ -162,6 +164,8 @@ export default {
 	methods: {
 		separateNumber,
 		async fetchData(){
+			if(this.loading) return
+			this.loading = true
 			const loader = this.$loading.show()
 
 			try {
@@ -176,14 +180,14 @@ export default {
 				// 	getFakeReferer(),
 				// 	getFakeReferer(),
 				// ]
-				loader.hide()
 			}
 			catch (error) {
-				loader.hide()
 				console.error(error)
 				this.$toast.error('Не удалось получить статистику реферальной программы')
 				window.onerror && window.onerror(error)
 			}
+			loader.hide()
+			this.loading = false
 			// this.users = [
 			// 	getFakeReferer(),
 			// 	getFakeReferer(),
