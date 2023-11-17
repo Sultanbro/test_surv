@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\User;
 
-use Auth;
+use App\DayType;
 use App\Http\Controllers\Controller;
+use App\Models\Timetrack\UserPresence;
 use App\ProfileGroup;
+use App\Service\Department\UserService;
+use App\TimetrackingHistory;
 use App\User;
 use App\UserNotification;
-use App\TimetrackingHistory;
-use App\DayType;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Service\Department\UserService;
-use App\Models\Timetrack\UserPresence;
 
 class TraineeController extends Controller
 {
@@ -28,12 +28,12 @@ class TraineeController extends Controller
     public function autochecker()
     {
         $this->middleware('auth');
-        $user = Auth::user(); 
+        $user = Auth::user();
 
         $groups = $user->headInGroups();
 
-        foreach($groups as $group) {
-            if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
+        foreach ($groups as $group) {
+            if (Carbon::parse($group->checktime)->timestamp - time() >= 0) {
                 $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
             } else {
                 $group->checktime = null;
@@ -42,7 +42,7 @@ class TraineeController extends Controller
 
         return view('admin.autocheck.autochecker')->with([
             'groups' => $groups
-        ]);  
+        ]);
     }
 
     /**
@@ -54,11 +54,11 @@ class TraineeController extends Controller
 
         if ($request->isMethod('post')) {
             $group = ProfileGroup::find($id);
-            if($group && Carbon::parse($group->checktime)->timestamp - time() <= 0) {
+            if ($group && Carbon::parse($group->checktime)->timestamp - time() <= 0) {
                 $group->checktime = Carbon::now()->addMinutes(30);
                 $group->save();
             }
-        } 
+        }
 
         return [
             'code' => 200,
@@ -72,8 +72,8 @@ class TraineeController extends Controller
     public function autocheck($id)
     {
         $group = ProfileGroup::find($id);
-        if(!$group) abort(404);
-        
+        if (!$group) abort(404);
+
         $trainees = (new UserService)->getTrainees($group->id, date('Y-m-d'));
         $user_ids = collect($trainees)->pluck('id')->toArray();
 
@@ -87,14 +87,14 @@ class TraineeController extends Controller
             ->sortBy('name')
             ->toArray();
 
-        foreach($users as $key => $user) { 
+        foreach ($users as $key => $user) {
             $users[$key]['id'] = $this->numhash($user['id']);
         }
 
-		return view('admin.autocheck.index')->with([
+        return view('admin.autocheck.index')->with([
             'users' => $users
         ]);
-	}
+    }
 
     /**
      * Trainee marked
@@ -110,7 +110,7 @@ class TraineeController extends Controller
         $user = User::find($user_id);
         $user = $user ? $user->last_name . ' ' . $user->name : '';
 
-        if(
+        if (
             $group
             && $group->checktime
             && Carbon::parse($group->checktime)->timestamp - time() >= 0
@@ -121,24 +121,24 @@ class TraineeController extends Controller
             $marked_user = UserPresence::where('date', date('Y-m-d'))
                 ->where('user_id', $user_id)
                 ->first();
-            if(!$marked_user) {
+            if (!$marked_user) {
                 UserPresence::create(['user_id' => $user_id, 'date' => date('Y-m-d')]);
             }
 
-            /** 
-             * Проверить daytype на отсутствие 
+            /**
+             * Проверить daytype на отсутствие
              */
             $daytype = DayType::where([
                 'user_id' => $user_id,
                 'date' => date('Y-m-d'),
             ])->first();
-            
+
             /** DANGER  ODD function */
-            $notifications = UserNotification::where('about_id',$user_id)
+            $notifications = UserNotification::where('about_id', $user_id)
                 ->where('title', 'like', 'Пропал с обучения%')
                 ->whereDate('group', date('Y-m-d'))
                 ->delete();
-            
+
             // on tabel history
             $th = TimetrackingHistory::where([
                 'user_id' => $user_id,
@@ -148,23 +148,23 @@ class TraineeController extends Controller
             ])->delete();
 
             //
-            if($daytype) $daytype->update([
-                            'type' => 5,
-                        ]);
+            if ($daytype) $daytype->update([
+                'type' => 5,
+            ]);
 
             // сообщение 
             $message = 'Вы успешно отметились! Можете возвращаться на стажировку';
         } else {
-            $message = $group 
+            $message = $group
                 ? 'Не получилось отметиться. Видимо ссылка уже устарела...'
                 : 'Ошибка системы. Отдел не найден';
         }
 
-		return view('admin.autocheck.save')->with([
-            'message' =>  $message,
-            'user' =>  $user,
+        return view('admin.autocheck.save')->with([
+            'message' => $message,
+            'user' => $user,
         ]);
-	}
+    }
 
     /**
      * cipher user_id
@@ -173,6 +173,6 @@ class TraineeController extends Controller
     {
         return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
     }
-    
-  
+
+
 }

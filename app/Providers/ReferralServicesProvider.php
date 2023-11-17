@@ -4,8 +4,6 @@ namespace App\Providers;
 
 use App\Api\Bitrix\LeadApi;
 use App\Api\Bitrix\LeadApiInterface;
-use App\Repositories\Referral\ScheduleRepository;
-use App\Repositories\Referral\ScheduleRepositoryInterface;
 use App\Repositories\Referral\StatisticRepository;
 use App\Repositories\Referral\StatisticRepositoryInterface;
 use App\Repositories\Referral\UserStatisticRepository;
@@ -32,7 +30,6 @@ class ReferralServicesProvider extends ServiceProvider
         $this->app->bind(StatusServiceInterface::class, StatusService::class);
         $this->app->bind(StatisticRepositoryInterface::class, StatisticRepository::class);
         $this->app->bind(UserStatisticRepositoryInterface::class, UserStatisticRepository::class);
-        $this->app->bind(ScheduleRepositoryInterface::class, ScheduleRepository::class);
         $this->app->bind(TransactionInterface::class, Transaction::class);
         $this->app->bind(CalculateInterface::class, CalculatorService::class);
     }

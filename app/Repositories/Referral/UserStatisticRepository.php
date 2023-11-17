@@ -16,7 +16,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
         $user = $user ?? auth()->user();
         return [
             'tops' => $this->tops(),
-            'referrals' => $this->table(true),
+            'referrals' => $this->described(true),
             'mine' => $this->getUserEarned($user, $this->dateStart(), $this->dateEnd()),
             'from_referrals' => $this->getReferralsEarned($user),
             'absolute' => $this->getUserEarned($user),
