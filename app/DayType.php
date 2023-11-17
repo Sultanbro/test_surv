@@ -41,6 +41,7 @@ class DayType extends Model
         'RETURNED' => 7,
         'APPLIED' => 8,
         'ABCENSE_ON_TRAINING' => 9,
+        'TRAINEE_PLANNED' => 10,
     ];
 
     // 7 Подключился позже
@@ -55,6 +56,7 @@ class DayType extends Model
         7 => 'подключился позже',
         8 => 'принят на работу',
         9 => 'отсутствовал на обучении',
+        10 => 'день стажировки планирован',
     ];
 
     const STAGE_TO_STATUS = [

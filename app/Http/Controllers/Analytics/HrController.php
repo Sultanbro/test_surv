@@ -642,25 +642,25 @@ class HrController extends Controller
                 if ($daytype) $daytype->delete();
             }
 // TODO:now we dont put day as trainee
-//            $daytype = DayType::where([
-//                'user_id' => $user->id,
-//                'date' => $date,
-//            ])->first();
-//
-//            if ($daytype) {
-//                $daytype->admin_id = 1;
-//                $daytype->type = DayType::DAY_TYPES['TRAINEE'];
-//                $daytype->save();
-//            } else {
-//                DayType::query()
-//                    ->create([
-//                        'user_id' => $user->id,
-//                        'type' => DayType::DAY_TYPES['TRAINEE'],
-//                        'email' => '',
-//                        'date' => $date,
-//                        'admin_id' => 1,
-//                    ]);
-//            }
+            $daytype = DayType::query()->where([
+                'user_id' => $user->id,
+                'date' => $date,
+            ])->first();
+
+            if ($daytype) {
+                $daytype->admin_id = 1;
+                $daytype->type = DayType::DAY_TYPES['TRAINEE_PLANNED'];
+                $daytype->save();
+            } else {
+                DayType::query()
+                    ->create([
+                        'user_id' => $user->id,
+                        'type' => DayType::DAY_TYPES['TRAINEE_PLANNED'],
+                        'email' => '',
+                        'date' => $date,
+                        'admin_id' => 1,
+                    ]);
+            }
 
             /*========================= Обновление webhook-ом время собеседование =====================================*/
 
