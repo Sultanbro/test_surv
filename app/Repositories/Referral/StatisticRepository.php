@@ -52,8 +52,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             }
         }
 
-        $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
-        $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
+        $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
+        $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
 
         $accepted = User::withTrashed()
             ->whereRelation('description', 'is_trainee', 0)
@@ -132,7 +132,6 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->withTrashed()
             ->with(['user_description', 'referrals', 'referralSalaries'])
             ->orderBy("created_at")
             ->get()
@@ -157,8 +156,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals()->withTrashed()->count()) {
-
+                if ($referral->referrals()->count()) {
                     if ($step <= 3) {
                         $referral->users = $this->schedule($referral, $step + 1);
                     }
@@ -205,7 +203,6 @@ class StatisticRepository implements StatisticRepositoryInterface
         $total = 0;
         /** @var Collection<User> $referrers */
         $referrers = $user->referrals()
-            ->withTrashed()
             ->whereHas('referralLeads')
             ->get();
         foreach ($referrers as $referrer) {

@@ -5,7 +5,7 @@ namespace App\Http\Requests\Referral;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StatisticRequest extends FormRequest
+class FilterRequest extends FormRequest
 {
     public function rules(): array
     {
