@@ -19,7 +19,7 @@ function referalToUser(ref){
 		if(datetypes[i + 1]){
 			days.push({
 				...datetypes[i + 1],
-				day: i + 1
+				day: i + 2
 			})
 		}
 	}

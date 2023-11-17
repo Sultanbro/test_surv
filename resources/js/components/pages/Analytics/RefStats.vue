@@ -49,6 +49,12 @@
 				Оплачено
 			</div>
 			<div class="d-flex flex-column gap-4 mb-4">
+				<div
+					v-if="paymentDialog.date"
+					class="RefStats-oldComment"
+				>
+					{{ paymentDialog.date }}
+				</div>
 				<div class="RefStats-oldComment">
 					{{ paymentDialog.oldComment }}
 				</div>
@@ -114,6 +120,7 @@ export default {
 				key: '',
 				paid: false,
 				comment: '',
+				date: '',
 				sum: 0,
 			},
 		}
@@ -191,6 +198,7 @@ export default {
 			this.paymentDialog.transactionId = item[field.key].id
 			this.paymentDialog.oldComment = item[field.key].comment || ''
 			this.paymentDialog.comment = ''
+			this.paymentDialog.date = item[field.key].day ? `за день стажировки ${this.$moment.utc([this.filters.year, this.filters.month, item[field.key].day]).format('DD.MM.YYYY')}` : ''
 			this.paymentDialog.open = true
 		},
 		async paymentSave(){

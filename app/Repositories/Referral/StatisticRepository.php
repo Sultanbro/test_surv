@@ -52,8 +52,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             }
         }
 
-        $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
-        $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
+        if($countForDeals) $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
+        if($countForApplied) $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
 
         $accepted = User::withTrashed()
             ->whereRelation('description', 'is_trainee', 0)
