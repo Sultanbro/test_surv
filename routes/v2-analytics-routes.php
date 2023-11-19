@@ -2,6 +2,9 @@
 
 
 use App\Http\Controllers\V2\Analytics\V2AnalyticController;
+use App\Http\Controllers\V2\Analytics\V2AnalyticInfoController;
+use App\Http\Controllers\V2\Analytics\V2AnalyticGroupController;
+use App\Http\Controllers\V2\Analytics\V2AnalyticUserInfoController;
 
 Route::group([
     'middleware'    => ['analytics_permission'],
@@ -10,31 +13,36 @@ Route::group([
     /**
      * Info about group and Fired users.
      */
-    Route::get('/fired-info', [V2AnalyticController::class, 'firedInfo'])->name('fired-info');
-    Route::get('/groups', [V2AnalyticController::class, 'getGroups'])->name('get-groups')
+    Route::get('/fired-info', [V2AnalyticUserInfoController::class, 'firedInfo'])->name('fired-info');
+    Route::get('/groups', [V2AnalyticGroupController::class, 'getGroups'])->name('get-groups')
         ->middleware(['groups_activities_cached']);
 
     /**
      * Analytics pages.
      */
-    Route::get('/analytics', [V2AnalyticController::class, 'getAnalytics'])->name('analytics')
+    Route::get('/analytics', [V2AnalyticInfoController::class, 'getAnalytics'])->name('analytics')
         ->middleware(['analytics_cached', 'groups_activities_cached']);
 
     /**
      * Полезность и рентабельность.
      */
-    Route::get('/performances', [V2AnalyticController::class, 'getPerformances'])->name('performances')
+    Route::get('/performances', [V2AnalyticInfoController::class, 'getPerformances'])->name('performances')
         ->middleware(['groups_activities_cached', 'analytics_cached']);
 
     /**
      * Декпомпозиция.
      */
-    Route::get('/decompositions', [V2AnalyticController::class, 'getDecompositions'])->name('decompositions')
+    Route::get('/decompositions', [V2AnalyticInfoController::class, 'getDecompositions'])->name('decompositions')
         ->middleware(['decomposition_cached']);
 
     /**
      * Показатели.
      */
-    Route::get('/activities', [V2AnalyticController::class, 'getActivities'])->name('activities')
+    Route::get('/activities', [V2AnalyticInfoController::class, 'getActivities'])->name('activities')
         ->middleware(['groups_activities_cached']);
+
+    /**
+     * Создание аналитики для группы.
+     */
+    Route::post('/create', [V2AnalyticController::class, 'create'])->name('create');
 });

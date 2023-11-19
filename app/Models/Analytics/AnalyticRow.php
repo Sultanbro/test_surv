@@ -2,11 +2,16 @@
 
 namespace App\Models\Analytics;
 
+use App\DTO\Analytics\V2\CreateAnalyticDto;
+use App\Helpers\DateHelper;
 use App\ProfileGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * @property int $id
@@ -265,6 +270,76 @@ class AnalyticRow extends Model
 
                 AnalyticStat::create($arr); // C4
             }
+        }
+    }
+
+    /**
+     * @param CreateAnalyticDto $dto
+     * @return void
+     * @throws Throwable
+     */
+    public static function createAnalyticsRows(CreateAnalyticDto $dto): void
+    {
+        try {
+            DB::beginTransaction();
+
+            $date   = Carbon::createFromDate($dto->year, $dto->month);
+            $firstDayOfMonth = $date->firstOfMonth()->toDateString();
+
+            $fields = ['name', 'plan', 'sum', 'avg'];
+            $columns = AnalyticColumn::query()->where([
+                'group_id'  => $dto->groupId,
+                'date'      => $firstDayOfMonth
+            ])->get();
+
+            $row = self::query()->create([
+                'group_id'  => $dto->groupId,
+                'name'      => $dto->name,
+                'date'      => $firstDayOfMonth,
+                'order'     => 1,
+            ]);
+            /**
+             * Создаем в таблице аналитики данные.
+             */
+            $stats = $columns->whereIn('name', $fields)->map(function ($column) use (
+                $row,
+                $dto,
+                $date
+            ) {
+                return [
+                    'group_id'  => $dto->groupId,
+                    'date'      => $date->firstOfMonth()->toDateString(),
+                    'row_id'    => $row->id,
+                    'column_id' => $column->id,
+                    'value'     => $column->name,
+                    'show_value' => $column->name,
+                    'editable'  => 1,
+                    'class'     => 'text-center font-bold bg-grey',
+                    'type'      => AnalyticStat::INITIAL,
+                ];
+            })->toArray();
+
+            for ($day = 1; $day <= $date->daysInMonth; $day++)
+            {
+                $col = $columns->where('name', $day)->first();
+                $stats[] = [
+                    'group_id' => $dto->groupId,
+                    'date' => $firstDayOfMonth,
+                    'row_id' => $row->id,
+                    'column_id' => $col->id,
+                    'value' => $day,
+                    'show_value' => $day,
+                    'class' => 'text-center font-bold bg-grey',
+                    'editable' => 1,
+                    'type' => AnalyticStat::INITIAL,
+                ];
+            }
+
+            AnalyticStat::query()->insert($stats);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw new Exception($e->getMessage());
         }
     }
 }

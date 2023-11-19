@@ -56,4 +56,25 @@ class DateHelper
     {
         return Carbon::createFromDate($year, $month)->lastOfMonth()->format('Y-m-d');
     }
+
+    /**
+     * @param int $year
+     * @param int $month
+     * @return array
+     */
+    public static function daysInMonthToArray(
+        int $year,
+        int $month
+    ): array
+    {
+        $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
+        $days = [];
+
+        for ($day = 1; $day <= $daysInMonth; $day++)
+        {
+            $days[] = $day;
+        }
+
+        return $days;
+    }
 }
