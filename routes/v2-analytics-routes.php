@@ -45,4 +45,9 @@ Route::group([
      * Создание аналитики для группы.
      */
     Route::post('/create', [V2AnalyticController::class, 'create'])->name('create');
+
+    /**
+     * Добавлить строку.
+     */
+    Route::post('/add-row', [V2AnalyticController::class, 'addRow'])->name('add.row');
 });
