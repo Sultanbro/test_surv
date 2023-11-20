@@ -636,9 +636,11 @@ class TimetrackingController extends Controller
         if (!$user) return response()->json(['message' => 'user not found']);
 
         $user->user_description()->updateOrCreate([
-            'is_trainee' => 0,
-            'applied' => $date->format("Y-m-d"),
-        ]);
+            'user_id' => $user->getKey()],
+            [
+                'is_trainee' => 0,
+                'applied' => $date->format("Y-m-d"),
+            ]);
 
         ///////////////////////////////////////////
         $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
