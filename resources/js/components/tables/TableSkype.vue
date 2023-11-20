@@ -1058,8 +1058,8 @@ export default {
 			// item: the row's item data
 			// rowType: a string describing the `<tr>` type
 
-
-			if (item.invited == 0) return 'bg-red'
+			if (item.status === 'LOSE') return 'bg-red'
+			// if (item.invited == 0) return 'bg-red'
 			if (item.invited == 1) return 'bg-green'
 			if (item.invited == 2) return 'bg-green-2'
 			if (item.invited == 3) {
@@ -1151,6 +1151,9 @@ export default {
 				padding: 0;
 			}
 		}
+	}
+	.bg-red{
+		background-color: #f58c94 !important;
 	}
 }
 </style>
