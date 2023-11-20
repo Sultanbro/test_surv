@@ -88,14 +88,13 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $this->baseQuery()
             ->get()
-            ->map(function (User $user) use ($schedule) {
+            ->each(function (User $user) use ($schedule) {
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
                 if ($schedule) {
-                    $user->referrers = $this->schedule($user);
+                    $user->referrals = $this->schedule($user);
                 }
-                return $user;
             })
             ->toArray();
     }
@@ -110,18 +109,6 @@ class StatisticRepository implements StatisticRepositoryInterface
         return User::query()
             ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
             ->WhereHas('referralLeads')
-//            ->with(['referrals' => function (HasMany $query) {
-//                $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-//                $query->with(['referrals' => function (HasMany $query) {
-//                    $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-//                    $query->with(['referrals' => function (HasMany $query) {
-//                        $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-//                        $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-//                    }]);
-//                    $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-//                }]);
-//                $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-//            }])
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
             ->withCount(['referralLeads as deals' => fn($query) => $query
@@ -129,6 +116,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                 ->where('deal_id', '>', 0)])
             ->withCount(['referralLeads as leads' => fn($query) => $query
                 ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->selectRaw('(
             SELECT SUM(amount)
             FROM referral_salaries
@@ -153,19 +141,33 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     private function schedule(User $referrer, int $step = 1): array
     {
-        return $referrer->referrals
-            ->sortBy("created_at")
+        return $referrer->referrals()
+            ->select(['id', 'referrer_id', 'referrer_status'])
+            ->with(['daytypes' => function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $this->dateStart()->month)
+                    ->whereYear('date', $this->dateStart()->year);
+            }])
+            ->with('referralSalaries')
+            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+            ->withCount('referrals')
+            ->orderBy("created_at")
+            ->get()
             ->each(function (User $referral) use ($referrer, $step) {
 
-                $days = $this->getReferralDayTypes($referral);
+                $attestation = [];
+                $training = [];
 
-                $salaries = $this->getReferralSalaries($referrer, $referral);
+                $days = $referrer->daytypes;
+
+                $salaries = $referrer->referralSalaries->where('referral_id', $referral->getKey());
 
                 $this->salaryFilter->forThisCollection($salaries);
-
-                $training = $this->salaryFilter->filter(PaidType::TRAINEE);
+                if ($step = 1) {
+                    $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
+                    $training = $this->salaryFilter->filter(PaidType::TRAINEE);
+                }
                 $working = $this->salaryFilter->filter(PaidType::WORK);
-                $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
 
                 $referral->is_trainee = $referral->user_description?->is_trainee;
                 $referral->datetypes = array_merge(
@@ -174,12 +176,13 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals->count()) {
+                if ($referral->referrals_count) {
                     if ($step <= 3) {
-                        $referral->referrers = $this->schedule($referral, $step + 1);
+                        $referral->referrals = $this->schedule($referral, $step + 1);
                     }
                 }
-            })->toArray();
+            })
+            ->toArray();
     }
 
     protected function dateStart(): Carbon
@@ -231,15 +234,6 @@ class StatisticRepository implements StatisticRepositoryInterface
                 ->sum("amount");
         }
         return $total;
-    }
-
-    private function getReferralSalaries(User $referrer, User $referral): Collection
-    {
-        return $referrer->referralSalaries()
-            ->where([
-                'referral_id' => $referral->getKey(),
-                'referrer_id' => $referrer->getKey()
-            ])->get();
     }
 
     private function traineesDaily(Collection $days, $training): array
@@ -311,16 +305,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->whereMonth('enter', '=', $date->month)
             ->whereYear('enter', $date->year)
             ->orderBy('id', 'ASC')
-            ->get();
-    }
-
-    private function getReferralDayTypes(User $referral): Collection
-    {
-        return DayType::query()
-            ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-            ->where('user_id', $referral->getKey())
-            ->whereMonth('date', '=', $this->dateStart()->month)
-            ->whereYear('date', $this->dateStart()->year)
             ->get();
     }
 
