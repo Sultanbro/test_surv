@@ -151,7 +151,7 @@ export default {
 
 			let data
 			try {
-				data = await API.newsCommentsFetch()
+				data = await API.newsCommentsFetch(postId)
 			}
 			catch (error) {
 				console.error(error)
