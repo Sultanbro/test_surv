@@ -513,8 +513,8 @@ class EmployeeController extends Controller
         }
 
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
-        if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
-        if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
+        if ($request['start_date']) $users = $users->where(DB::raw("bl.skyped"), '>=', $request['start_date']);
+        if ($request['end_date']) $users = $users->where(DB::raw("bl.skyped"), '<=', $request['end_date']);
         if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
         if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
         if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
@@ -534,7 +534,7 @@ class EmployeeController extends Controller
             'users.full_time',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
+            DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
             'users.deleted_at',
             'users.position_id',
             'users.phone',
@@ -586,16 +586,17 @@ class EmployeeController extends Controller
             $users[$key]['groups'] = $new_groups;
 
             if (is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
-                $user->deleted_at = '';
+                $user->deleted_at = null;
             } else {
                 $user->deleted_at = $user->deleted_at->addHours(6)->format('Y-m-d H:i:s');
                 if ($user->deleted_at == '30.11.-0001 00:00:00') {
-                    $user->deleted_at = '';
+                    $user->deleted_at = null;
                 }
             }
 
-
-            $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            if (!is_null($user->created_at)) {
+                $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            }
 
             if ($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
