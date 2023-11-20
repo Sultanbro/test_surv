@@ -534,7 +534,7 @@ class EmployeeController extends Controller
             'users.full_time',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
+            DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
             'users.deleted_at',
             'users.position_id',
             'users.phone',
