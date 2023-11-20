@@ -170,7 +170,8 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $working = $this->salaryFilter->filter(PaidType::WORK);
 
                 $referral->is_trainee = $referral->user_description?->is_trainee;
-                $referral->datetypes = array_merge(
+
+                $referral->daytypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
                     $this->employeeWeekly($referral, $working)
