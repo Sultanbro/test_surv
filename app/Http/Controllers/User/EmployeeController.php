@@ -404,11 +404,7 @@ class EmployeeController extends Controller
             }
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->with(['group_users']);
         }
         elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
@@ -421,11 +417,7 @@ class EmployeeController extends Controller
             $users = $users
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
@@ -451,11 +443,7 @@ class EmployeeController extends Controller
             $users = User::withTrashed()
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -480,11 +468,7 @@ class EmployeeController extends Controller
             $users = $users
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date')
                 ->with(['group_users' => function ($query) {
@@ -505,11 +489,7 @@ class EmployeeController extends Controller
                 })
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
@@ -525,11 +505,7 @@ class EmployeeController extends Controller
             $users = $users
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
