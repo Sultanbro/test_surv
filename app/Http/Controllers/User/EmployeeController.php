@@ -513,8 +513,8 @@ class EmployeeController extends Controller
         }
 
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
-        if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
-        if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
+        if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.skyped, users.created_at)"), '>=', $request['start_date']);
+        if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.skyped, users.created_at)"), '<=', $request['end_date']);
         if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
         if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
         if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
