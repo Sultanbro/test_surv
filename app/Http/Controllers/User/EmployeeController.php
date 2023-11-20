@@ -586,16 +586,17 @@ class EmployeeController extends Controller
             $users[$key]['groups'] = $new_groups;
 
             if (is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
-                $user->deleted_at = '';
+                $user->deleted_at = null;
             } else {
                 $user->deleted_at = $user->deleted_at->addHours(6)->format('Y-m-d H:i:s');
                 if ($user->deleted_at == '30.11.-0001 00:00:00') {
-                    $user->deleted_at = '';
+                    $user->deleted_at = null;
                 }
             }
 
-
-            $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            if (!is_null($user->created_at)) {
+                $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            }
 
             if ($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
