@@ -221,6 +221,10 @@ class RecruiterStats extends Command
 				if($call['CALL_DURATION']) $total_seconds += (int)$call['CALL_DURATION'];
 			}
 			$total_minutes = (int)number_format($total_seconds / 60, 0);
+            if(floor($total_minutes)<0.01)
+            {
+                $total_minutes = 0;
+            }
 		}
 
         $dials = 0;
