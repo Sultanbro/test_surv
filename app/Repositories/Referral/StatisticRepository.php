@@ -110,18 +110,18 @@ class StatisticRepository implements StatisticRepositoryInterface
         return User::query()
             ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
             ->WhereHas('referralLeads')
-            ->with(['referrals' => function (HasMany $query) {
-                $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-                $query->with(['referrals' => function (HasMany $query) {
-                    $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-                    $query->with(['referrals' => function (HasMany $query) {
-                        $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
-                        $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-                    }]);
-                    $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-                }]);
-                $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
-            }])
+//            ->with(['referrals' => function (HasMany $query) {
+//                $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
+//                $query->with(['referrals' => function (HasMany $query) {
+//                    $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
+//                    $query->with(['referrals' => function (HasMany $query) {
+//                        $query->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at']);
+//                        $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
+//                    }]);
+//                    $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
+//                }]);
+//                $query->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
+//            }])
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
             ->withCount(['referralLeads as deals' => fn($query) => $query
