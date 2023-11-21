@@ -157,7 +157,10 @@
 			</table>
 		</div>
 
-		<div class="border shadow p-3 rounded">
+		<div
+			v-if="false"
+			class="border shadow p-3 rounded"
+		>
 			<div class="d-flex justify-content-between">
 				<h3 class="mb-0">
 					Результаты остальных сотрудников
