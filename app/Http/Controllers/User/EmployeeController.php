@@ -538,13 +538,6 @@ class EmployeeController extends Controller
             'users.deleted_at',
             'users.position_id',
             'users.phone',
-            'users.birthday',
-            'users.description',
-            'users.working_day_id',
-            'users.working_time_id',
-            'users.work_start',
-            'users.work_end',
-            'users.program_id',
             'ud.fire_cause',
             'ud.applied'
         ];
@@ -567,7 +560,7 @@ class EmployeeController extends Controller
             array_push($columns, 'urst.destroyed_at', 'urst.restored_at');
         }
 
-        $users = $users->get($columns);
+        $users = $users->select($columns)->paginate(20);
 //        dd($users);
         foreach ($users as $key => $user) {
             if (isset($request['filter']) && $request['filter'] == 'all') {
@@ -615,7 +608,7 @@ class EmployeeController extends Controller
             return Excel::download($export, $title);
         }
 
-        $users = $users->values();
+//        $users = $users->values();
 
 
         ////////////////////
