@@ -294,7 +294,7 @@ class AnalyticRow extends Model
 
             $row = self::query()->create([
                 'group_id'  => $dto->groupId,
-                'name'      => $dto->name,
+                'name'      => $dto->rows['name'],
                 'date'      => $firstDayOfMonth,
                 'order'     => 1,
             ]);
