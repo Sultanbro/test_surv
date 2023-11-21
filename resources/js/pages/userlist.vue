@@ -561,6 +561,7 @@ export default {
 				notrainees: this.filter.notrainees,
 				type: this.filter.type,
 				part: this.filter.fullpart,
+				search: this.searchText,
 			}
 
 			if(this.filter.register[0] && this.filter.register[1]) {
@@ -587,7 +588,7 @@ export default {
 
 			this.axios.post('/timetracking/get-persons', filter).then(response => {
 				const users = []
-				response.data.users.slice().reverse().forEach(user => {
+				response.data.users.data.slice().reverse().forEach(user => {
 					const exists = users.find(u => u.id === user.id)
 					if(!exists) {
 						users.push(user)
