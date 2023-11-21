@@ -15,10 +15,10 @@ class CreateAnalyticsService
 {
     /**
      * @param CreateAnalyticDto $dto
-     * @return void
+     * @return bool
      * @throws Throwable
      */
-    public function handle(CreateAnalyticDto $dto): void
+    public function handle(CreateAnalyticDto $dto): bool
     {
         try {
             DB::beginTransaction();
@@ -27,6 +27,8 @@ class CreateAnalyticsService
             AnalyticRow::createAnalyticsRows($dto);
 
             DB::commit();
+
+            return true;
         } catch (Throwable $exception) {
             DB::rollBack();
             throw new Exception($exception->getMessage());
