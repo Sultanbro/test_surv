@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests\V2\Analytics;
 
+use App\DTO\Analytics\V2\AddRowAnalyticsDto;
 use App\DTO\Analytics\V2\CreateAnalyticDto;
-use App\DTO\BaseDTO;
-use App\Http\Requests\BaseFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateAnalyticsRequest extends FormRequest
@@ -28,12 +27,16 @@ class CreateAnalyticsRequest extends FormRequest
     {
         return [
             'group_id'  => 'required|integer|exists:profile_groups,id',
-            'name'      => 'required|string',
+            'rows'      => 'required|array',
+            'rows.name'   => 'required|string',
             'year'      => 'required|integer',
             'month'     => 'required|integer'
         ];
     }
 
+    /**
+     * @return CreateAnalyticDto
+     */
     public function toDto(): CreateAnalyticDto
     {
         return CreateAnalyticDto::fromArray($this->validated());

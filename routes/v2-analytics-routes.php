@@ -42,12 +42,7 @@ Route::group([
         ->middleware(['groups_activities_cached']);
 
     /**
-     * Создание аналитики для группы.
-     */
-    Route::post('/create', [V2AnalyticController::class, 'create'])->name('create');
-
-    /**
      * Добавлить строку.
      */
-    Route::post('/add-row', [V2AnalyticController::class, 'addRow'])->name('add.row');
+    Route::post('/create', [V2AnalyticController::class, 'create'])->name('create');
 });
