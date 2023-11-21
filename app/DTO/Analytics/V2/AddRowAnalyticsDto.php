@@ -8,15 +8,13 @@ class AddRowAnalyticsDto
 {
     /**
      * @param int $groupId
-     * @param array $rows
-     * @param int $year
-     * @param int $month
+     * @param int $afterRowId
+     * @param string $date
      */
     public function __construct(
         public readonly int $groupId,
-        public readonly array $rows,
-        public readonly int $year,
-        public readonly int $month,
+        public readonly int $afterRowId,
+        public readonly string $date,
     )
     {}
 
@@ -29,15 +27,13 @@ class AddRowAnalyticsDto
     ): self
     {
         Assert::keyExists($data, 'group_id');
-        Assert::keyExists($data, 'rows');
-        Assert::keyExists($data, 'year');
-        Assert::keyExists($data, 'month');
+        Assert::keyExists($data, 'after_row_id');
+        Assert::keyExists($data, 'date');
 
         return new self(
             (int)$data['group_id'],
-            $data['rows'],
-            (int)$data['year'],
-            (int)$data['month']
+            (int)$data['after_row_id'],
+            (string)$data['date'],
         );
     }
 }
