@@ -1861,6 +1861,8 @@ class TimetrackingController extends Controller
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
+            $trainee = UserDescription::query()
+                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
             DayType::markDayAsTrainee($targetUser, $date);
             UserPresence::query()
                 ->firstOrCreate([
@@ -1868,6 +1870,27 @@ class TimetrackingController extends Controller
                     'user_id' => $request->get("user_id")
                 ]);
             Referring::touchReferrerSalaryForTrain($targetUser, $date);
+
+
+            if ($trainee){
+            $bitrix = new Bitrix();
+
+            if ($trainee->deal_id != 0) {
+                $deal_id = $trainee->deal_id;
+            } else if ($lead_id != 0) {
+                $deal_id = $bitrix->findDeal($lead_id, false);
+                usleep(1000000); // 1 sec
+            } else {
+                $deal_id = 0;
+            }
+
+            if ($deal_id != 0) {
+                $bitrix->changeDeal($deal_id, [
+                    'STAGE_ID' => 'C4:18'
+                ]);
+            }
+          }
+
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
@@ -1886,6 +1909,7 @@ class TimetrackingController extends Controller
                         ->where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if ($lead) {
                         $lead_id = $lead->lead_id;
+                        $lead->update(['status'=>'LOSE']);
                     } else {
                         $lead_id = 0;
                     }
