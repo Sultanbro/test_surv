@@ -93,11 +93,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                                 $query->select(['id', 'name', 'referrer_status', 'referrer_id', 'deleted_at'])
                                     ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
                             }]);
-                    }])
-                    ->with(['daytypes' => function (HasMany $query) {
-                        $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                            ->whereMonth('date', '=', $this->dateStart()->month)
-                            ->whereYear('date', $this->dateStart()->year);
                     }]);
             }])
             ->selectRaw('(

@@ -7,6 +7,7 @@ use App\Service\Referral\Core\PaidType;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 class Scheduler
@@ -43,7 +44,11 @@ class Scheduler
     public function schedule(User $referrer, int $step = 1): void
     {
         $referrer->referrals->map(function (User $referral) use ($step, $referrer) {
-            $days = $referral->daytypes;
+            $days = $referral->daytypes()->where(function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $this->dateStart()->month)
+                    ->whereYear('date', $this->dateStart()->year);
+            })->get();
 
             $attestation = [];
             $training = [];
