@@ -524,6 +524,14 @@ class EmployeeController extends Controller
         if ($request['part'] && $request['part'] == 'full') $users = $users->where('full_time', 1);
         if ($request['part'] && $request['part'] == 'part') $users = $users->where('full_time', 0);
 
+        if ($request['search']) {
+            $users = $users
+                ->where('users.email', 'like', $request['search'] . '%')
+                ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', $request['search'] . '%')
+                ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', $request['search'] . '%')
+                ->orWhere('working_country', 'like', $request['search'] . '%');
+        }
+
         $columns = [
             'users.id',
             'users.email',
@@ -532,6 +540,7 @@ class EmployeeController extends Controller
             'users.last_name',
             'users.name',
             'users.full_time',
+            'users.working_country',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
             DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
@@ -560,8 +569,23 @@ class EmployeeController extends Controller
             array_push($columns, 'urst.destroyed_at', 'urst.restored_at');
         }
 
-        $users = $users->select($columns)->paginate(20);
-//        dd($users);
+        $users = $users->select($columns);
+
+        //////
+        ///
+        /// Sort by column and direction
+        ///
+        //////
+
+        $sortDirection = 'asc';
+        if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
+
+        if ($request['sortBy'] && in_array($request['sortBy'], ['name', 'last_name', 'group', 'created_at', 'deleted_at', 'fire_cause'])) {
+            $users = $users->orderBy($request['sortBy'], $sortDirection);
+        }
+
+        $users = $users->paginate($request['perPage'] ?? 20);
+
         foreach ($users as $key => $user) {
             if (isset($request['filter']) && $request['filter'] == 'all') {
                 $status = 'active';
@@ -607,8 +631,6 @@ class EmployeeController extends Controller
             $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
             return Excel::download($export, $title);
         }
-
-//        $users = $users->values();
 
 
         ////////////////////
