@@ -28,14 +28,6 @@ class Scheduler
             ->copy();
     }
 
-    protected function dateEnd(): Carbon
-    {
-        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
-        return Carbon::parse($this->filter['date'])
-            ->endOfMonth()
-            ->copy();
-    }
-
     public function setFilter(array $filter = []): void
     {
         $this->filter = $filter;
@@ -57,13 +49,13 @@ class Scheduler
             $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION)->first();
             $training = $this->salaryFilter->filter(PaidType::TRAINEE);
             $working = $this->salaryFilter->filter(PaidType::WORK);
-
-            $referral->daytypes = array_merge(
-                $this->traineesDaily($days, $training),
-                $this->attestation($attestation),
-                $this->employeeWeekly($referral, $working)
-            );
-
+            $datetypes = [
+                ...$this->traineesDaily($days, $training),
+                ...$this->attestation($attestation),
+                ...$this->employeeWeekly($referral, $working)
+            ];
+            unset($datetypes['0']);
+            $referral->datetypes = $datetypes;
             if ($referral->referrals_count) {
                 if ($step <= 3) {
                     $this->schedule($referral, $step + 1);
@@ -97,20 +89,34 @@ class Scheduler
     private function employeeWeekly(User $referral, Collection $salaries): array
     {
         $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
-        $template = $this->createWeekTemplate($weeksToTrack);
+        $weekTemplate = $this->createWeekTemplate($weeksToTrack);
         $timeTracking = $this->getReferralTimeTracking($referral, $this->dateStart());
-        foreach ($timeTracking as $workedDay) {
-            foreach ($salaries as $salary) {
-                foreach ($weeksToTrack as $week) {
-                    if ($this->isSameDate($salary->date, $workedDay->exit)) {
-                        $template[$week . '_week'] = $salary->toArray();
-                        break;
+
+        foreach ($timeTracking as $tracker) {
+            for ($week = 1; $week <= $weeksToTrack; $week++) {
+                // If the week is beyond 12, exit the loop
+                if ($week > 12) {
+                    break;
+                }
+
+                // Check if the current week is in the weeks to track
+                if (in_array($week, $weeksToTrack)) {
+                    $current = [];
+
+                    // Find the working item with the same date as the exit date
+                    foreach ($salaries as $item) {
+                        if ($this->isSameDate(Carbon::parse($item['date']), $tracker->exit)) {
+                            $current = $item->toArray();
+                            break; // Exit the loop once found
+                        }
                     }
+
+                    // Store the parsed salary in the result array
+                    $weekTemplate[$week . '_week'] = $current;
                 }
             }
         }
-
-        return $template;
+        return $weekTemplate;
     }
 
     private function getReferralTimeTracking(User $referral, Carbon $date): Collection
@@ -122,19 +128,6 @@ class Scheduler
             ->whereYear('enter', $date->year)
             ->orderBy('id', 'ASC')
             ->get();
-    }
-
-    private function isAbsence(?DayType $day): bool
-    {
-        return is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE'];
-    }
-
-    private function isTrainee(?DayType $day): bool
-    {
-        if (!$day) {
-            return false;
-        }
-        return in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
     }
 
     private function getDay($days, string $day): ?DayType
