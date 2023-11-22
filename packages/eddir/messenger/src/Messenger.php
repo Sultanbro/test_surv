@@ -762,6 +762,10 @@ class Messenger
             $message->update([
                 'deleted' => true
             ]);
+
+            $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_DELETE, [
+                'message_id' => $messageId,
+            ]);
         }
         else {
             if (self::isAlreadyDeleted($message, $promote->id)) {
@@ -773,10 +777,6 @@ class Messenger
 
 
         if ($message->chat_id == 0) $message->chat = self::getGeneralChat();
-
-        $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_DELETE, [
-            'message_id' => $messageId,
-        ]);
 
         return true;
     }
