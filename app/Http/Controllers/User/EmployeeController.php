@@ -405,7 +405,7 @@ class EmployeeController extends Controller
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->with(['group_users']);
         }
         elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
@@ -419,7 +419,7 @@ class EmployeeController extends Controller
                 ->whereNotNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
@@ -445,7 +445,7 @@ class EmployeeController extends Controller
             $users = User::query()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -470,7 +470,7 @@ class EmployeeController extends Controller
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date')
                 ->with(['group_users' => function ($query) {
@@ -492,7 +492,7 @@ class EmployeeController extends Controller
                 ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
@@ -508,13 +508,31 @@ class EmployeeController extends Controller
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
-                ->join('position', 'users.position_id', '=', 'position.id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
         }
-
+        return$users->select([
+            'users.id',
+            'users.email',
+            'users.user_type',
+            'users.segment as segment',
+            'users.last_name',
+            'users.name',
+            'users.full_time',
+            'users.working_country',
+            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
+            DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
+            DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
+            'users.deleted_at',
+            'users.position_id',
+            'users.phone',
+            'ud.fire_cause',
+            'ud.applied',
+            'position.position'
+        ])->count();
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
         if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
         if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
