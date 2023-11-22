@@ -574,6 +574,10 @@ class EmployeeController extends Controller
             array_push($columns, 'urst.destroyed_at', 'urst.restored_at');
         }
 
+        $part_time = clone $users;
+        $full_time = clone $users;
+        $part_time_count = $part_time->distinct('users.id')->where('full_time', 0)->count();
+        $full_time_count = $full_time->distinct('users.id')->where('full_time', 1)->count();
         $users = $users->select($columns);
 
         //////
@@ -646,6 +650,8 @@ class EmployeeController extends Controller
 
         return [
             'users' => $users,
+            'users_part_time' => $part_time_count,
+            'users_full_time' => $full_time_count,
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
