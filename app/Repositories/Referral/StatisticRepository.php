@@ -155,18 +155,21 @@ class StatisticRepository implements StatisticRepositoryInterface
                         ->whereYear('date', $this->dateStart()->year);
                 }]);
 
+                $days = $referral->daytypes;
+
                 $attestation = [];
                 $training = [];
 
-                $days = $referral->daytypes;
 
                 $salaries = $referrer->referralSalaries->where('referral_id', $referral->getKey());
 
                 $this->salaryFilter->forThisCollection($salaries);
-                if ($step = 1) {
+
+                if ($step === 1) {
                     $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
                     $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 }
+
                 $working = $this->salaryFilter->filter(PaidType::WORK);
 
                 $referral->is_trainee = $referral->user_description?->is_trainee;
