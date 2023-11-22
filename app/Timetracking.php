@@ -29,7 +29,9 @@ class Timetracking extends Model
         'exit',
         'total_hours',
         'program_id',
-
+        'updated',
+        'status',
+        'times',
         /**
          * updated
          * 0 не редактировано
@@ -37,10 +39,6 @@ class Timetracking extends Model
          * 2 аналитика изменила время. План выполнился и поставились фиксированные часы
          * 3 ucalls изменила время. Отработанные часы
          */
-        'updated',
-
-        'status',
-        'times',
     ];
 
     protected $dates = [

@@ -47,8 +47,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             $countForApplied += (bool)$referer['deals'];
             $accepted += (int)$referer['applieds'];
             $paidTotal += (float)$referer['paid_total'];
-            $paidTotalForMonth += (float)$referer['month_earned'];
-            $earnedTotalForMonth += (float)$referer['month_paid'];
+            $paidTotalForMonth += (float)$referer['month_paid'];
+            $earnedTotalForMonth += (float)$referer['month_earned'];
         }
 
         $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;

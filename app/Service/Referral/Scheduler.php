@@ -8,7 +8,6 @@ use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 class Scheduler
@@ -29,14 +28,6 @@ class Scheduler
             ->copy();
     }
 
-    protected function dateEnd(): Carbon
-    {
-        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
-        return Carbon::parse($this->filter['date'])
-            ->endOfMonth()
-            ->copy();
-    }
-
     public function setFilter(array $filter = []): void
     {
         $this->filter = $filter;
@@ -44,73 +35,58 @@ class Scheduler
 
     public function schedule(User $referrer, int $step = 1): void
     {
-        $referrer->referrals->map(function (User $referral) use ($step, $referrer) {
+        $referrer->referrals->each(function (User $referral) use ($step, $referrer) {
             $days = $referral->daytypes()->where(function (Builder $query) {
-                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                    ->whereMonth('date', '=', $this->dateStart()->month)
-                    ->whereYear('date', $this->dateStart()->year);
+                $query->where('type', DayType::DAY_TYPES['TRAINEE']);
+                $query->whereMonth('date', '=', $this->dateStart()->month);
+                $query->whereYear('date', $this->dateStart()->year);
             })->get();
 
-            $attestation = [];
-            $training = [];
-
+            $referral->is_trainee = $referral->user_description?->is_trainee;
             $salaries = $referrer->referralSalaries->where('referral_id', $referral->getKey());
-
             $this->salaryFilter->forThisCollection($salaries);
 
-            if (1 === $step) {
-                $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
-                $training = $this->salaryFilter->filter(PaidType::TRAINEE);
-            }
-
+            $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION)->first();
+            $training = $this->salaryFilter->filter(PaidType::TRAINEE);
             $working = $this->salaryFilter->filter(PaidType::WORK);
-
-            $referral->is_trainee = $referral->user_description?->is_trainee;
-
-            $referral->daytypes = array_merge(
-                $this->traineesDaily($days, $training),
-                $this->attestation($attestation),
-                $this->employeeWeekly($referral, $working)
-            );
-
+            $datetypes = [
+                ...$this->traineesDaily($days, $training),
+                ...$this->attestation($attestation),
+                ...$this->employeeWeekly($referral, $working)
+            ];
+            unset($datetypes['0']);
+            $referral->datetypes = $datetypes;
             if ($referral->referrals_count) {
                 if ($step <= 3) {
                     $this->schedule($referral, $step + 1);
                 }
             }
-
-            return $referral;
         });
     }
 
     private function traineesDaily($days, $training): array
     {
         $types = [];
-        for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
-            $day = $this->getDay($days, $i);
-            if ($this->isAbsence($day)) {
-                $types[$i] = null;
-            } elseif ($this->isTrainee($day)) {
-                $types[$i] = $this->countTrainingDays($training, $day);
-            }
+        for ($i = 1; $i <= $this->dateStart()->daysInMonth + 1; $i++) {
+            $day = $this->getDay($days, $this->dateStart()->setDay($i));
+            if (!$day) $types[$i] = null;
+            if ($day) $types[$i] = $this->countTrainingDays($training, $day);
         }
         return $types;
     }
 
     private function attestation($attestation): array
     {
-        $appliedSalary = current($attestation);
-
-        if (!$appliedSalary) {
+        if (!$attestation) {
             return [];
         }
 
         return [
-            'pass_certification' => $this->parseSalary($appliedSalary)
+            'pass_certification' => $attestation->toArray()
         ];
     }
 
-    private function employeeWeekly(User $referral, Collection $working): array
+    private function employeeWeekly(User $referral, Collection $salaries): array
     {
         $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
         $weekTemplate = $this->createWeekTemplate($weeksToTrack);
@@ -128,7 +104,7 @@ class Scheduler
                     $current = [];
 
                     // Find the working item with the same date as the exit date
-                    foreach ($working as $item) {
+                    foreach ($salaries as $item) {
                         if ($this->isSameDate(Carbon::parse($item['date']), $tracker->exit)) {
                             $current = $item->toArray();
                             break; // Exit the loop once found
@@ -136,11 +112,10 @@ class Scheduler
                     }
 
                     // Store the parsed salary in the result array
-                    $weekTemplate[$week . '_week'] = $this->parseSalary($current);
+                    $weekTemplate[$week . '_week'] = $current;
                 }
             }
         }
-
         return $weekTemplate;
     }
 
@@ -155,24 +130,11 @@ class Scheduler
             ->get();
     }
 
-    private function isAbsence(?DayType $day): bool
-    {
-        return is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE'];
-    }
-
-    private function isTrainee(?DayType $day): bool
-    {
-        if (!$day) {
-            return false;
-        }
-        return in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
-    }
-
-    private function getDay($days, int $day): ?DayType
+    private function getDay($days, string $day): ?DayType
     {
         /** @var DayType $day */
         return $days
-            ->where('day', $day)
+            ->where('date', $day)
             ->first();
     }
 
@@ -189,7 +151,7 @@ class Scheduler
             return null;
         }
 
-        return $this->parseSalary($salary);
+        return $salary;
     }
 
     private function isSameDate(Carbon $first, Carbon $second): bool
@@ -205,16 +167,5 @@ class Scheduler
             $types[$week . '_week'] = null;
         }
         return $types;
-    }
-
-    private function parseSalary(?array $current): array
-    {
-        return [
-            'paid' => (bool)($current['is_paid'] ?? null),
-            'sum' => $current['amount'] ?? null,
-            'comment' => $current['comment'] ?? null,
-            'id' => $current['id'] ?? null,
-            'date' => $current['date'] ?? null,
-        ];
     }
 }
