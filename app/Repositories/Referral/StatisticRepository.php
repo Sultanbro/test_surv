@@ -84,11 +84,11 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    protected function described(): array
+    protected function described(bool $schedule = false): array
     {
         return $this->baseQuery()
             ->get()
-            ->map(function (User $user) {
+            ->map(function (User $user) use ($schedule) {
                 $user->month_paid = $user->referralSalaries
                     ->where('is_paid', true)
                     ->where('date', '>=', $this->dateStart()->format("Y-m-d"))
@@ -106,8 +106,9 @@ class StatisticRepository implements StatisticRepositoryInterface
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);
                 $user->appiled_deal_conversion_ratio = $this->getRatio($user->applieds, $user->deals);
                 $user->referrers_earned = $this->getReferralsEarned($user);
-
-                $user->referrals = $this->schedule($user);
+                if ($schedule) {
+                    $user->referrals = $this->schedule($user);
+                }
                 return $user;
             })
             ->toArray();
@@ -131,7 +132,6 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->withTrashed()
             ->with(['user_description', 'referrals', 'referralSalaries'])
             ->orderBy("created_at")
             ->get()
@@ -156,7 +156,7 @@ class StatisticRepository implements StatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals()->withTrashed()->count()) {
+                if ($referral->referrals()->count()) {
 
                     if ($step <= 3) {
                         $referral->referrals = $this->schedule($referral, $step + 1);

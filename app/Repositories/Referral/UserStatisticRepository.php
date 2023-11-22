@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Builder;
 class UserStatisticRepository extends StatisticRepository implements UserStatisticRepositoryInterface
 {
     protected array $filter = [];
+    private User $user;
 
     public function statistic(array $filter, ?User $user = null): array
     {
         $this->filter = $filter;
         /** @var User $user */
-        $user = auth()->user();
+        $this->user = $user ?? auth()->user();
         return [
             'tops' => $this->tops(),
-            'referrals' => $this->described(),
-            'mine' => $this->getUserEarned($user, $this->dateStart(), $this->dateEnd()),
-            'from_referrals' => $this->getReferralsEarned($user),
-            'absolute' => $this->getUserEarned($user),
+            'referrals' => $this->described(true),
+            'mine' => $this->getUserEarned($this->user, $this->dateStart(), $this->dateEnd()),
+            'from_referrals' => $this->getReferralsEarned($this->user),
+            'absolute' => $this->getUserEarned($this->user),
         ];
     }
 
@@ -39,8 +40,7 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
 
     protected function baseQuery(): Builder
     {
-        /** @var User $user */
-        $user = auth()->user();
+        $user = $this->user;
         $query = parent::baseQuery();
         $query->where('id', $user->getKey());
         return $query;
