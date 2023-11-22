@@ -56,6 +56,7 @@ class Scheduler
             ];
             unset($datetypes['0']);
             $referral->datetypes = $datetypes;
+
             if ($referral->referrals_count) {
                 if ($step <= 3) {
                     $this->schedule($referral, $step + 1);
