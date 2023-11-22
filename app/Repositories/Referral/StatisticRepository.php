@@ -142,7 +142,7 @@ class StatisticRepository implements StatisticRepositoryInterface
     private function schedule(User $referrer, int $step = 1): array
     {
         return $referrer->referrals()
-            ->select(['id', 'referrer_id', 'referrer_status'])
+            ->select(['id', 'referrer_id', 'referrer_status','name','las_name'])
             ->with('referralSalaries')
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->withCount('referrals')
