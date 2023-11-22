@@ -445,7 +445,8 @@ class TopValue extends Model
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
-        $groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
+        //$groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
+        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)->pluck('id')->toArray();
 
         if (!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
@@ -534,15 +535,17 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year, $month, 1);
 
-        $groups = ProfileGroup::query()
-            ->whereNotIn('id', [34, 58, 26])
-            ->where('has_analytics', '=', 1)
-            ->where('active', '=', 1)
-            ->whereDate('created_at','<=',$date)
-            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
-                ->whereMonth('archived_date', '>=', $date->month)
-            ))
-            ->get();
+//        $groups = ProfileGroup::query()
+//            ->whereNotIn('id', [34, 58, 26])
+//            ->where('has_analytics', '=', 1)
+//            ->where('active', '=', 1)
+//            ->whereDate('created_at','<=',$date)
+//            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
+//                ->whereMonth('archived_date', '>=', $date->month)
+//            ))
+//            ->get();
+
+        $groups = ProfileGroup::withRentability($year, $month);
 
         $r_counts = []; // for count avg rentability on every monht
         $total_row = []; // first row
