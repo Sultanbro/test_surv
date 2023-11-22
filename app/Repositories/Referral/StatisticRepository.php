@@ -322,7 +322,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
     }
 
-    private function getDay(Collection $days, int $day): ?DayType
+    private function getDay($days, int $day): ?DayType
     {
         /** @var DayType $day */
         return $days
