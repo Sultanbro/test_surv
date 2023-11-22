@@ -406,8 +406,7 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->with(['group_users']);
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -422,8 +421,7 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
                 }]);
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -457,8 +455,7 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -474,8 +471,7 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -494,8 +490,7 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        }
-        else {
+        } else {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -513,8 +508,8 @@ class EmployeeController extends Controller
         }
 
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
-        if ($request['start_date']) $users = $users->whereDate("skyped", '>=', $request['start_date']);
-        if ($request['end_date']) $users = $users->whereDate("skyped", '<=', $request['end_date']);
+        if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
+        if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
         if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
         if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
         if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
@@ -580,7 +575,10 @@ class EmployeeController extends Controller
         $sortDirection = 'asc';
         if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
 
-        if ($request['sortBy'] && in_array($request['sortBy'], ['name', 'last_name', 'group', 'created_at', 'deleted_at', 'fire_cause'])) {
+        if ($request['sortBy'] && in_array($request['sortBy'], [
+                'name', 'last_name', 'group', 'created_at', 'deleted_at', 'fire_cause', 'user_type', 'segment', 'applied', 'full_time'
+            ])
+        ) {
             $users = $users->orderBy($request['sortBy'], $sortDirection);
         }
 
