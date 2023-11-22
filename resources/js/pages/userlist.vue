@@ -262,6 +262,13 @@
 					>
 						Дата принятия
 					</b-form-checkbox>
+					<b-form-checkbox
+						v-model="showFields.city"
+						:value="true"
+						:unchecked-value="false"
+					>
+						Город
+					</b-form-checkbox>
 				</div>
 			</div>
 		</b-modal>
@@ -429,6 +436,10 @@ export default {
 				label: 'Full/Part',
 				sortable: true
 			})
+			if(this.showFields.city) fields.push({
+				key: 'working_country',
+				label: 'Город',
+			})
 			if(this.isRestored) fields.push({
 				key: 'restored_at',
 				label: 'Восстановлен'
@@ -528,6 +539,7 @@ export default {
 					segment: false,
 					applied: false,
 					full_time: false,
+					city: false,
 				}
 			}
 		},
