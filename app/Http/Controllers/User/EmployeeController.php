@@ -405,8 +405,10 @@ class EmployeeController extends Controller
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->with(['group_users']);
-        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -417,11 +419,13 @@ class EmployeeController extends Controller
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
                 }]);
-        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = \DB::table('users')
                 ->whereNull('deleted_at')
@@ -442,6 +446,7 @@ class EmployeeController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -455,7 +460,8 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -466,12 +472,14 @@ class EmployeeController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date')
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -486,11 +494,13 @@ class EmployeeController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-        } else {
+        }
+        else {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -501,6 +511,7 @@ class EmployeeController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->join('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
@@ -543,7 +554,8 @@ class EmployeeController extends Controller
             'users.position_id',
             'users.phone',
             'ud.fire_cause',
-            'ud.applied'
+            'ud.applied',
+            'position.position'
         ];
         if (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
@@ -576,7 +588,8 @@ class EmployeeController extends Controller
         if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
 
         if ($request['sortBy'] && in_array($request['sortBy'], [
-                'name', 'last_name', 'group', 'created_at', 'deleted_at', 'fire_cause', 'user_type', 'segment', 'applied', 'full_time'
+                'name', 'last_name', 'group', 'created_at', 'deleted_at',
+                'fire_cause', 'user_type', 'segment', 'applied', 'full_time', 'position'
             ])
         ) {
             $users = $users->orderBy($request['sortBy'], $sortDirection);
