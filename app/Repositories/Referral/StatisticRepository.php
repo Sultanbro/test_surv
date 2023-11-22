@@ -237,7 +237,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         return $total;
     }
 
-    private function traineesDaily(array $days, $training): array
+    private function traineesDaily($days, $training): array
     {
         $types = [];
         for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
