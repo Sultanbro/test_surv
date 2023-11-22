@@ -759,7 +759,9 @@ class Messenger
 
 
         if ($message->sender_id == $promote->id) {
-            $message->delete();
+            $message->update([
+                'deleted' => true
+            ]);
         }
         else {
             if (self::isAlreadyDeleted($message, $promote->id)) {
