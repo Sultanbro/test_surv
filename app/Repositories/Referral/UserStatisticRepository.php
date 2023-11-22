@@ -35,14 +35,14 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         $this->scheduler->schedule($this->user);
 
         $return = [
-            'mine' => $this->user->month_earned,
-            'from_referrals' => $this->user->from_referrals,
-            'absolute' => $this->user->absolute_earned,
             'referrals' => $this->user->referrals,
         ];
 
         if (!$this->onlyReferralsStatistics) {
             $return['tops'] = $this->tops();
+            $return['mine'] = $this->user->month_earned;
+            $return['from_referrals'] = $this->user->from_referrals;
+            $return['absolute'] = $this->user->absolute_earned;
 
         }
 
