@@ -16,7 +16,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     /**
      * @var true
      */
-    private bool $onlyReferralsStatistics = false;
+    private bool $onlyReferralStatistics = false;
 
     public function __construct(
         private readonly Scheduler $scheduler
@@ -26,7 +26,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     public function statistic(array $filter, ?User $user = null): array
     {
-        if ($user) $this->onlyReferralsStatistics = true;
+        if ($user) $this->onlyReferralStatistics = true;
 
         $this->filter = $filter;
         /** @var User $user */
@@ -38,7 +38,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             'referrals' => $this->user->referrals,
         ];
 
-        if (!$this->onlyReferralsStatistics) {
+        if (!$this->onlyReferralStatistics) {
             $return['tops'] = $this->tops();
             $return['mine'] = $this->user->month_earned;
             $return['from_referrals'] = $this->user->from_referrals;

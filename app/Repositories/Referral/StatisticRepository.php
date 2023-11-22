@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Referral;
 
-use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Scheduler;
@@ -31,46 +30,29 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    protected function pivot(Collection $described): array
+    protected function pivot(Collection $referrers): array
     {
         $deal_lead_conversion = 0;
         $applied_deal_conversion = 0;
         $countForDeals = 0;
         $countForApplied = 0;
-
-        foreach ($described as $referer) {
+        $accepted = 0;
+        $paidTotal = 0;
+        $paidTotalForMonth = 0;
+        $earnedTotalForMonth = 0;
+        foreach ($referrers as $referer) {
             $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
             $countForDeals += ($referer['leads'] > 0) ? 1 : 0;
             $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
             $countForApplied += ($referer['deals'] > 0) ? 1 : 0;
+            $accepted += (int)$referer['applieds'];
+            $paidTotal += (float)$referer['paid_total'];
+            $paidTotalForMonth += (float)$referer['month_earned'];
+            $earnedTotalForMonth += (float)$referer['month_paid'];
         }
 
         $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
         $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
-
-        $accepted = User::withTrashed()
-            ->select('id', 'referrer_id')
-            ->whereRelation('description', 'is_trainee', 0)
-            ->whereNotNull('referrer_id')
-            ->count();
-
-        $dateStart = $this->dateStart()->format("Y-m-d");
-        $dateEnd = $this->dateEnd()->format("Y-m-d");
-
-        $salaries = ReferralSalary::query()->get();
-
-        $paidTotal = $salaries
-            ->where('is_paid', 1)
-            ->sum('amount');
-
-        $earnedTotalForMonth = $salaries
-            ->whereBetween('date', [$dateStart, $dateEnd])
-            ->sum('amount');
-
-        $paidTotalForMonth = $salaries
-            ->whereBetween('date', [$dateStart, $dateEnd])
-            ->where('is_paid', 1)
-            ->sum('amount');
 
         return [
             'employee_price' => $accepted ? $paidTotal / $accepted : 0,
@@ -155,6 +137,12 @@ class StatisticRepository implements StatisticRepositoryInterface
                 ...$bindings,
                 PaidType::WORK->name
             ])
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.referrer_id
+                AND is_paid != 1 
+        ) AS paid_total')
             ->orderBy('leads', 'desc')
             ->get();
     }
