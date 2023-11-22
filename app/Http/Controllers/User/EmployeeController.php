@@ -502,13 +502,12 @@ class EmployeeController extends Controller
         }
         else {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = User::query()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = User::query();
             }
             $users = $users
-                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
