@@ -143,22 +143,22 @@ class StatisticRepository implements StatisticRepositoryInterface
     {
         return $referrer->referrals()
             ->select(['id', 'referrer_id', 'referrer_status'])
-            ->with(['daytypes' => function (HasMany $query) {
-                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                    ->whereMonth('date', '=', $this->dateStart()->month)
-                    ->whereYear('date', $this->dateStart()->year);
-            }])
             ->with('referralSalaries')
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->withCount('referrals')
             ->orderBy("created_at")
             ->get()
             ->each(function (User $referral) use ($referrer, $step) {
+                $referral->load(['daytypes' => function (HasMany $query) {
+                    $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                        ->whereMonth('date', '=', $this->dateStart()->month)
+                        ->whereYear('date', $this->dateStart()->year);
+                }]);
 
                 $attestation = [];
                 $training = [];
 
-                $days = $referrer->daytypes;
+                $days = $referral->daytypes;
 
                 $salaries = $referrer->referralSalaries->where('referral_id', $referral->getKey());
 
