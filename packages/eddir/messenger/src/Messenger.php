@@ -27,7 +27,8 @@ use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
 
-class Messenger {
+class Messenger
+{
     public Pusher $pusher;
     public $generalChat = [
         'owner_id' => 0,
@@ -42,8 +43,9 @@ class Messenger {
      *
      * @return float|int
      */
-    public function getMaxUploadSize(): float|int {
-        return config( 'messenger.attachments.max_upload_size' ) * 1048576;
+    public function getMaxUploadSize(): float|int
+    {
+        return config('messenger.attachments.max_upload_size') * 1048576;
     }
 
     /**
@@ -51,16 +53,18 @@ class Messenger {
      *
      * @throws PusherException
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->pusher = new Pusher(
-            config( 'messenger.pusher.key' ),
-            config( 'messenger.pusher.secret' ),
-            config( 'messenger.pusher.app_id' ),
-            config( 'messenger.pusher.options' ),
+            config('messenger.pusher.key'),
+            config('messenger.pusher.secret'),
+            config('messenger.pusher.app_id'),
+            config('messenger.pusher.options'),
         );
     }
 
-    public function getGeneralChat(): MessengerChat{
+    public function getGeneralChat(): MessengerChat
+    {
         $generalChat = new MessengerChat($this->generalChat);
         $generalChat->id = 0;
         return $generalChat;
@@ -75,16 +79,17 @@ class Messenger {
      *
      * @return Collection
      */
-    public function fetchChatsWithLastMessages( User $user ): Collection {
+    public function fetchChatsWithLastMessages(User $user): Collection
+    {
         $chats = new Collection();
 
         MessengerChat::query()
-            ->whereHas( 'members', function ( Builder $query ) use ( $user ) {
-                $query->whereNull('deleted_at')->where( 'user_id', $user->id );
-            } )
+            ->whereHas('members', function (Builder $query) use ($user) {
+                $query->whereNull('deleted_at')->where('user_id', $user->id);
+            })
             ->get()
-            ->each(function ( MessengerChat $chat ) use ( $user, $chats ) {
-                $chat = $this->getChatAttributesForUser( $chat, $user );
+            ->each(function (MessengerChat $chat) use ($user, $chats) {
+                $chat = $this->getChatAttributesForUser($chat, $user);
                 if ($chat) {
                     $chats->add($chat);
                 }
@@ -105,41 +110,42 @@ class Messenger {
      *
      * @return ?MessengerChat
      */
-    public function getChatAttributesForUser( MessengerChat $chat, User $user ): ?MessengerChat {
-        $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
+    public function getChatAttributesForUser(MessengerChat $chat, User $user): ?MessengerChat
+    {
+        $chat->unread_messages_count = $chat->getUnreadMessagesCount($user);
         // last message with sender
         $chat->last_message = $chat->getLastMessage();
-        if ( $chat->last_message ) {
+        if ($chat->last_message) {
             $chat->last_message->sender = $chat->last_message->sender;
-            if ( $chat->last_message->event ) {
+            if ($chat->last_message->event) {
                 $chat->last_message->body = "";
             }
         }
-        $chat->pinned = $chat->isPinned( $user );
+        $chat->pinned = $chat->isPinned($user);
         $chat->is_mute = $chat->mute()?->where('user_id', $user->id)->exists();
 
-        if ( $chat->private ) {
+        if ($chat->private) {
             // get second user in private chat
-            $users =  $chat->recipients;
+            $users = $chat->recipients;
 
             $second_user = $users->count() >= 2 ? $users->firstWhere('id', '!=', $user->id) :
                 ($users->wherePivot('is_yourself_chat', true)->exists() ? $users->firstWhere('id', '=', $user->id) : []);
 
-            if ( $second_user && !$second_user->deleted_at) {
+            if ($second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
-                $chat->title       = $second_user->name . " " . $second_user->last_name;
-                $chat->image       = $second_user->img_url;
-                $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
-                $chat->last_seen   = $second_user->last_seen;
+                $chat->title = $second_user->name . " " . $second_user->last_name;
+                $chat->image = $second_user->img_url;
+                $chat->isOnline = MessengerUserOnline::query()->where('user_id', $second_user->id)->exists();
+                $chat->last_seen = $second_user->last_seen;
             } else {
                 return null;
             }
         }
-        $chat->users = $chat->users->map( function ( $user ) {
-            return collect( $user->toArray() )
-                ->only( [ 'id', 'name', 'last_name' ] )
+        $chat->users = $chat->users->map(function ($user) {
+            return collect($user->toArray())
+                ->only(['id', 'name', 'last_name'])
                 ->all();
-        } );
+        });
 
 
         return $chat;
@@ -154,15 +160,16 @@ class Messenger {
      *
      * @return Collection
      */
-    public function searchChats( string $name, int $userId, int $limit = 100 ): Collection {
+    public function searchChats(string $name, int $userId, int $limit = 100): Collection
+    {
         return MessengerChat::query()
-                            ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
-                                $query->where( 'user_id', $userId );
-                            } )
-                            ->where( 'title', 'like', "%$name%" )
-                            ->where( 'private', false )
-                            ->limit( $limit )
-                            ->get();
+            ->whereHas('members', function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->where('title', 'like', "%$name%")
+            ->where('private', false)
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -173,15 +180,16 @@ class Messenger {
      *
      * @return Collection
      */
-    public function searchUsers( string $name, int $limit = 100 ): Collection {
+    public function searchUsers(string $name, int $limit = 100): Collection
+    {
         return User::query()
-                   ->whereNull( 'deleted_at' )
-                   ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere( 'last_name', 'like', "%$name%" ))
-                   ->limit( $limit )
-                   ->get()->map(function($item) {
-                    $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;
-                    return $item;
-               });
+            ->whereNull('deleted_at')
+            ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere('last_name', 'like', "%$name%"))
+            ->limit($limit)
+            ->get()->map(function ($item) {
+                $item->image = 'https://' . \request()->getHost() . '/users_img/' . $item->img_url;
+                return $item;
+            });
     }
 
     /**
@@ -191,13 +199,14 @@ class Messenger {
      *
      * @return Builder|Model
      */
-    public function getChat( int $chatId ): Builder|Model {
-        if($chatId == 0){
+    public function getChat(int $chatId): Builder|Model
+    {
+        if ($chatId == 0) {
             return $this->getGeneralChat();
         }
         return MessengerChat::query()
-                            ->where( 'id', $chatId )
-                            ->first();
+            ->where('id', $chatId)
+            ->first();
     }
 
     /**
@@ -210,17 +219,16 @@ class Messenger {
     {
         $user = Auth::user();
 
-        if($chat->id == 0) Schema::disableForeignKeyConstraints();
+        if ($chat->id == 0) Schema::disableForeignKeyConstraints();
 
-        if ($chat->mute->contains($user->id))
-        {
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
-            return response()->json(['message' => 'You are already muted this chat'],400);
+        if ($chat->mute->contains($user->id)) {
+            if ($chat->id == 0) Schema::enableForeignKeyConstraints();
+            return response()->json(['message' => 'You are already muted this chat'], 400);
         }
 
         $chat->mute()->attach($user->id);
 
-        if($chat->id == 0) Schema::enableForeignKeyConstraints();
+        if ($chat->id == 0) Schema::enableForeignKeyConstraints();
         return true;
     }
 
@@ -234,17 +242,16 @@ class Messenger {
     {
         $user = Auth::user();
 
-        if($chat->id == 0) Schema::disableForeignKeyConstraints();
+        if ($chat->id == 0) Schema::disableForeignKeyConstraints();
 
-        if (!$chat->mute->contains($user->id))
-        {
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
-            return response()->json(['message' => 'Before unmute chat you should mute!'],400);
+        if (!$chat->mute->contains($user->id)) {
+            if ($chat->id == 0) Schema::enableForeignKeyConstraints();
+            return response()->json(['message' => 'Before unmute chat you should mute!'], 400);
         }
 
         $chat->mute()->detach($user->id);
 
-        if($chat->id == 0) Schema::enableForeignKeyConstraints();
+        if ($chat->id == 0) Schema::enableForeignKeyConstraints();
         return true;
     }
 
@@ -255,10 +262,11 @@ class Messenger {
      *
      * @return Builder|Model
      */
-    public function getChatByMessageId( int $messageId ): Builder|Model {
+    public function getChatByMessageId(int $messageId): Builder|Model
+    {
         return MessengerMessage::query()
-                               ->where( 'id', $messageId )
-                               ->first()
+            ->where('id', $messageId)
+            ->first()
             ->chat;
     }
 
@@ -271,46 +279,46 @@ class Messenger {
      *
      * @return Builder|Model|null
      */
-    public function getPrivateChat( int $userId, int $otherUserId, bool $create = true ): Builder|Model|null {
+    public function getPrivateChat(int $userId, int $otherUserId, bool $create = true): Builder|Model|null
+    {
 
         // get chat when has user userId
         $chat = MessengerChat::query()
-            ->where( 'private', true )
+            ->where('private', true)
             ->when($userId != $otherUserId, function ($query) use ($userId, $otherUserId) {
-                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
-                    $query->where( 'user_id', $userId );
-                } )
-                    ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
-                        $query->where( 'user_id', $otherUserId );
-                    } );
+                $query->withWhereHas('members', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                    ->withWhereHas('members', function ($query) use ($otherUserId) {
+                        $query->where('user_id', $otherUserId);
+                    });
             })
             ->when($userId == $otherUserId, function ($query) use ($userId) {
-                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
-                    $query->where( 'user_id', $userId )->where('is_yourself_chat', true);
-                } );
+                $query->withWhereHas('members', function ($query) use ($userId) {
+                    $query->where('user_id', $userId)->where('is_yourself_chat', true);
+                });
             })
             ->first();
 
-        if ( $chat ) {
+        if ($chat) {
             return $chat;
-        } else if ( ! $create ) {
+        } else if (!$create) {
             return null;
         }
         // create new chat if it doesn't exist
         $chat = MessengerChat::query()
-                             ->create( [
-                                 'owner_id' => $userId,
-                                 'title'    => '',
-                                 'private'  => true,
-                             ] );
+            ->create([
+                'owner_id' => $userId,
+                'title' => '',
+                'private' => true,
+            ]);
 
         // attach each user
 
-        $chat->members()->attach( $userId, [ 'is_admin' => true , 'is_yourself_chat' => $userId == $otherUserId] );
+        $chat->members()->attach($userId, ['is_admin' => true, 'is_yourself_chat' => $userId == $otherUserId]);
 
-        if ($userId != $otherUserId)
-        {
-            $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+        if ($userId != $otherUserId) {
+            $chat->members()->attach($otherUserId, ['is_admin' => true]);
         }
 
         $chat->save();
@@ -330,45 +338,46 @@ class Messenger {
      *
      * @return Collection
      */
-    public function fetchMessages( int $chatId, int $count, int $year, int $month, int $start_message_id = 0, bool $including = false ): Collection {
+    public function fetchMessages(int $chatId, int $count, int $year, int $month, int $start_message_id = 0, bool $including = false): Collection
+    {
 
         $user = Auth::user();
 
         $messages = MessengerMessage::query()
-                                    ->with( 'sender' )
-                                    ->with( 'event' )
-                                    ->with( 'files' )
-                                    ->with( 'readers' )
-                                    ->with( 'parent' )
-                                    ->whereDoesntHave('deletedMessage', fn($query) => $query->where('user_id', $user->id))
-                                    ->with('deletedMessage')
-                                    ->where( 'chat_id', $chatId )
-                                    ->where( 'deleted', false );
+            ->with('sender')
+            ->with('event')
+            ->with('files')
+            ->with('readers')
+            ->with('parent')
+            ->whereDoesntHave('deletedMessage', fn($query) => $query->where('user_id', $user->id))
+            ->with('deletedMessage')
+            ->where('chat_id', $chatId)
+            ->where('deleted', false);
 
         // if start_message_id is 0, get last messages
-        if ( $start_message_id != 0 ) {
-            if ( $count > 0 ) {
-                $messages = $messages->orderBy( 'id', 'desc' );
-                if ( $including ) {
-                    $messages = $messages->where( 'id', '<=', $start_message_id );
+        if ($start_message_id != 0) {
+            if ($count > 0) {
+                $messages = $messages->orderBy('id', 'desc');
+                if ($including) {
+                    $messages = $messages->where('id', '<=', $start_message_id);
                 } else {
-                    $messages = $messages->where( 'id', '<', $start_message_id );
+                    $messages = $messages->where('id', '<', $start_message_id);
                 }
             } else {
-                $messages = $messages->orderBy( 'id', 'asc' );
-                if ( $including ) {
-                    $messages = $messages->where( 'id', '>=', $start_message_id );
+                $messages = $messages->orderBy('id', 'asc');
+                if ($including) {
+                    $messages = $messages->where('id', '>=', $start_message_id);
                 } else {
-                    $messages = $messages->where( 'id', '>', $start_message_id );
+                    $messages = $messages->where('id', '>', $start_message_id);
                 }
             }
         } else {
-            $messages = $messages->orderBy( 'id', 'desc' );
+            $messages = $messages->orderBy('id', 'desc');
         }
 
         $messages = $messages->when($year && $month, fn($query) => $query->whereYear('created_at', $year)->whereMonth('created_at', $month));
 
-        return $messages->limit( abs( $count ) )->get();
+        return $messages->limit(abs($count))->get();
     }
 
     /**
@@ -393,25 +402,25 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function setMessagesAsRead( Collection $messages, User $user ): Collection {
-        $messages->each( function ( MessengerMessage $message ) use ( $user ) {
+    public function setMessagesAsRead(Collection $messages, User $user): Collection
+    {
+        $messages->each(function (MessengerMessage $message) use ($user) {
             // add user to read users
-            $message->readers()->syncWithoutDetaching( $user );
-        } );
+            $message->readers()->syncWithoutDetaching($user);
+        });
 
         // check if the highest message is really the last message
         $last_message = $messages->last();
-        if($last_message->chat_id == 0){
+        if ($last_message->chat_id == 0) {
             $chat = $this->getGeneralChat();
-        }
-        else{
+        } else {
             $chat = $last_message->chat;
         }
-        if ( $last_message->id == $chat->getLastMessage()->id ) {
+        if ($last_message->id == $chat->getLastMessage()->id) {
             // send pusher event
-            $this->createEvent( $chat, $user, MessengerEvent::TYPE_READ, [
+            $this->createEvent($chat, $user, MessengerEvent::TYPE_READ, [
                 'message_id' => $last_message->id,
-            ] );
+            ]);
         }
 
         return $messages;
@@ -429,42 +438,42 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function setReaction( int $messageId, User $user, int $emoji ): MessengerMessage {
-        $message = MessengerMessage::query()->find( $messageId );
+    public function setReaction(int $messageId, User $user, int $emoji): MessengerMessage
+    {
+        $message = MessengerMessage::query()->find($messageId);
 
         // if user already reacted to message with some reaction, remove reaction
         $reaction = null;
-        $reader   = $message->readers()->wherePivot( 'user_id', $user->id )->first();
-        if ( $reader ) {
+        $reader = $message->readers()->wherePivot('user_id', $user->id)->first();
+        if ($reader) {
             $reaction = $reader->pivot->reaction;
         }
-        if ( $reaction == $emoji ) {
+        if ($reaction == $emoji) {
             // set null on pivot table
-            $message->readers()->updateExistingPivot( $user, [
+            $message->readers()->updateExistingPivot($user, [
                 'reaction' => null,
-            ] );
+            ]);
             $emoji = null;
         } else {
 
             // add reader with reaction or update reaction
-            $message->readers()->syncWithoutDetaching( [
+            $message->readers()->syncWithoutDetaching([
                 $user->id => [
                     'reaction' => $emoji,
                 ],
-            ] );
+            ]);
         }
 
-        if($message->chat_id == 0){
+        if ($message->chat_id == 0) {
             $chat = $this->getGeneralChat();
-        }
-        else{
+        } else {
             $chat = $message->chat;
         }
 
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_REACTION, [
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_REACTION, [
             'message_id' => $message->id,
-            'reaction'   => $emoji,
-        ] );
+            'reaction' => $emoji,
+        ]);
 
         return $message;
     }
@@ -480,20 +489,20 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function setMessageAsRead( MessengerMessage $message, User $user ): MessengerMessage {
-        $message->readers()->syncWithoutDetaching( $user );
+    public function setMessageAsRead(MessengerMessage $message, User $user): MessengerMessage
+    {
+        $message->readers()->syncWithoutDetaching($user);
 
-        if($message->chat_id == 0){
+        if ($message->chat_id == 0) {
             $chat = $this->getGeneralChat();
-        }
-        else{
+        } else {
             $chat = $message->chat;
         }
 
         // check if the highest message is really the last message
-        if ( $message->id == $chat->getLastMessage()->id ) {
+        if ($message->id == $chat->getLastMessage()->id) {
             // send pusher event
-            $this->createEvent( $chat, $user, MessengerEvent::TYPE_READ );
+            $this->createEvent($chat, $user, MessengerEvent::TYPE_READ);
         }
 
         return $message;
@@ -507,14 +516,15 @@ class Messenger {
      *
      * @return bool
      */
-    public function isMember( int $chatId, int $userId ): bool {
-        if($chatId == 0) return true;
+    public function isMember(int $chatId, int $userId): bool
+    {
+        if ($chatId == 0) return true;
         return MessengerChat::query()
-                            ->where( 'id', $chatId )
-                            ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
-                                $query->where( 'user_id', $userId );
-                            } )
-                            ->exists();
+            ->where('id', $chatId)
+            ->whereHas('members', function (Builder $query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->exists();
     }
 
     /**
@@ -526,7 +536,7 @@ class Messenger {
      */
     public function isAlreadyDeleted(
         MessengerMessage $message,
-        int $userId
+        int              $userId
     ): bool
     {
         return $message->deletedMessage()->get()->contains($userId);
@@ -540,14 +550,14 @@ class Messenger {
      *
      * @return bool
      */
-    public function isAdmin( int $chatId, int $userId ): bool {
+    public function isAdmin(int $chatId, int $userId): bool
+    {
         // check pivot is_admin in chat_user table
-        return MessengerChat::query()
-                            ->where( 'id', $chatId )
-                            ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
-                                $query->where( 'user_id', $userId )->where( 'users.is_admin', true );
-                            } )
-                            ->exists();
+        return DB::table('messenger_chat_users')
+            ->where('chat_id', $chatId)
+            ->where('user_id', $userId)
+            ->where('is_admin', 1)
+            ->exists();
     }
 
     /**
@@ -561,11 +571,12 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function setAdmin( MessengerChat $chat, User $user ): bool {
-        $chat->members()->updateExistingPivot( $user, [
+    public function setAdmin(MessengerChat $chat, User $user): bool
+    {
+        $chat->members()->updateExistingPivot($user, [
             'is_admin' => true,
-        ] );
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_ADMIN );
+        ]);
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_CHAT_ADMIN);
 
         return true;
     }
@@ -581,11 +592,12 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function removeAdmin( MessengerChat $chat, User $user ): bool {
-        $chat->members()->updateExistingPivot( $user, [
+    public function removeAdmin(MessengerChat $chat, User $user): bool
+    {
+        $chat->members()->updateExistingPivot($user, [
             'is_admin' => false,
-        ] );
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_ADMIN );
+        ]);
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_CHAT_ADMIN);
 
         return true;
     }
@@ -597,8 +609,9 @@ class Messenger {
      *
      * @return Collection
      */
-    public function getMessages( int $chat_id ): Collection {
-        return MessengerMessage::where( 'chat_id', $chat_id )->where( 'deleted', false )->get();
+    public function getMessages(int $chat_id): Collection
+    {
+        return MessengerMessage::where('chat_id', $chat_id)->where('deleted', false)->get();
     }
 
     /**
@@ -608,10 +621,11 @@ class Messenger {
      *
      * @return Collection
      */
-    public function getChats( int $user_id ): Collection {
-        return MessengerChat::whereHas( 'members', function ( Builder $query ) use ( $user_id ) {
-            $query->where( 'user_id', $user_id );
-        } )->get();
+    public function getChats(int $user_id): Collection
+    {
+        return MessengerChat::whereHas('members', function (Builder $query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        })->get();
     }
 
     /**
@@ -628,30 +642,31 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function sendMessage( int $chatId, int $userId, string $body, $files = [], $parentId = null ): MessengerMessage {
-        if($chatId != 0) {
+    public function sendMessage(int $chatId, int $userId, string $body, $files = [], $parentId = null): MessengerMessage
+    {
+        if ($chatId != 0) {
             // for every user in chat send message to pusher
-            $chat = MessengerChat::find( $chatId );
+            $chat = MessengerChat::find($chatId);
 
             // check if user is member of chat
-            if ( ! $chat->hasMember( User::find( $userId ) ) ) {
-                throw new Exception( 'User is not member of chat ' . $chatId );
+            if (!$chat->hasMember(User::find($userId))) {
+                throw new Exception('User is not member of chat ' . $chatId);
             }
         }
 
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
+        if ($chatId == 0) Schema::disableForeignKeyConstraints();
 
-        $message            = new MessengerMessage();
-        $message->chat_id   = $chatId;
+        $message = new MessengerMessage();
+        $message->chat_id = $chatId;
         $message->sender_id = $userId;
         $message->parent_id = $parentId;
-        $message->body      = $body;
+        $message->body = $body;
         $message->save();
 
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
+        if ($chatId == 0) Schema::enableForeignKeyConstraints();
 
-        if ( count( $files ) > 0 ) {
-            foreach ( $files as $file ) {
+        if (count($files) > 0) {
+            foreach ($files as $file) {
                 $file->message_id = $message->id;
                 $file->save();
             }
@@ -661,17 +676,16 @@ class Messenger {
         $message->parent;
         $message->sender;
 
-        if($chatId == 0) {
+        if ($chatId == 0) {
             $users = MessengerUserOnline::all();
+        } else {
+            $users = MessengerUserOnline::getOnlineMembers($chatId);
         }
-        else{
-            $users = MessengerUserOnline::getOnlineMembers( $chatId );
-        }
-        $users->each( function ( $user ) use ( $message ) {
-            $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
+        $users->each(function ($user) use ($message) {
+            $this->push('messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $message->toArray(),
-            ] );
-        } );
+            ]);
+        });
         return $message;
     }
 
@@ -683,11 +697,12 @@ class Messenger {
      *
      * @return bool
      */
-    public function isSender( int $messageId, int $userId ): bool {
+    public function isSender(int $messageId, int $userId): bool
+    {
         return MessengerMessage::query()
-                               ->where( 'id', $messageId )
-                               ->where( 'sender_id', $userId )
-                               ->exists();
+            ->where('id', $messageId)
+            ->where('sender_id', $userId)
+            ->exists();
     }
 
     /**
@@ -701,26 +716,26 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function editMessage( int $messageId, string $body ): MessengerMessage {
+    public function editMessage(int $messageId, string $body): MessengerMessage
+    {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message = MessengerMessage::find($messageId);
         $message->body = $body;
 
-        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
         $message->files;
-        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::enableForeignKeyConstraints();
 
-        if($message->chat_id == 0){
+        if ($message->chat_id == 0) {
             $chat = $this->getGeneralChat();
-        }
-        else{
+        } else {
             $chat = $message->chat;
         }
 
-        $this->createEvent( $chat, $message->sender, MessengerEvent::TYPE_EDIT, [
+        $this->createEvent($chat, $message->sender, MessengerEvent::TYPE_EDIT, [
             'message' => $message->toArray(),
-        ] );
+        ]);
 
         return $message;
     }
@@ -736,23 +751,30 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function deleteMessage( int $messageId, User $promote ): bool|JsonResponse {
+    public function deleteMessage(int $messageId, User $promote): bool|JsonResponse
+    {
 
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message = MessengerMessage::find($messageId);
 
-        if (self::isAlreadyDeleted($message, $promote->id))
-        {
-            return response()->json([ 'message' => 'You are already delete this message.' ], 400);
+
+        if ($message->sender_id == $promote->id) {
+            $message->delete();
+        }
+        else {
+            if (self::isAlreadyDeleted($message, $promote->id)) {
+                return response()->json(['message' => 'You are already delete this message.'], 400);
+            }
+            $message->deletedMessage()->attach($promote->id);
         }
 
-        $message->deletedMessage()->attach($promote->id);
 
-        if($message->chat_id == 0) $message->chat = self::getGeneralChat();
 
-        $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_DELETE, [
+        if ($message->chat_id == 0) $message->chat = self::getGeneralChat();
+
+        $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_DELETE, [
             'message_id' => $messageId,
-        ] );
+        ]);
 
         return true;
     }
@@ -768,19 +790,20 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function pinMessage( int $messageId, User $promote ): MessengerMessage {
+    public function pinMessage(int $messageId, User $promote): MessengerMessage
+    {
         /** @var MessengerMessage $message */
-        $message         = MessengerMessage::find( $messageId );
+        $message = MessengerMessage::find($messageId);
         $message->pinned = true;
-        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
-        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::enableForeignKeyConstraints();
 
-        if($message->chat_id == 0) $message->chat = self::getGeneralChat();
+        if ($message->chat_id == 0) $message->chat = self::getGeneralChat();
 
-        $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_PIN, [
+        $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_PIN, [
             'message' => $message
-        ] );
+        ]);
 
         return $message;
     }
@@ -796,17 +819,18 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function unpinMessage( int $messageId, User $promote ): MessengerMessage {
+    public function unpinMessage(int $messageId, User $promote): MessengerMessage
+    {
         /** @var MessengerMessage $message */
-        $message         = MessengerMessage::find( $messageId );
+        $message = MessengerMessage::find($messageId);
         $message->pinned = false;
-        if($message->chat_id == 0) Schema::disableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::disableForeignKeyConstraints();
         $message->save();
-        if($message->chat_id == 0) Schema::enableForeignKeyConstraints();
+        if ($message->chat_id == 0) Schema::enableForeignKeyConstraints();
 
-        $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_UNPIN, [
+        $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_UNPIN, [
             'message_id' => $message->id,
-        ] );
+        ]);
 
         return $message;
     }
@@ -819,15 +843,16 @@ class Messenger {
      *
      * @return bool
      */
-    public function pinChat( int $chatId, User $promote ): bool {
-        if($chatId == 0) return true;
+    public function pinChat(int $chatId, User $promote): bool
+    {
+        if ($chatId == 0) return true;
         // update chat_users table
-        DB::table( 'messenger_chat_users' )
-          ->where( 'chat_id', $chatId )
-          ->where( 'user_id', $promote->id )
-          ->update( [
-              'pinned' => true,
-          ] );
+        DB::table('messenger_chat_users')
+            ->where('chat_id', $chatId)
+            ->where('user_id', $promote->id)
+            ->update([
+                'pinned' => true,
+            ]);
 
         return true;
     }
@@ -840,15 +865,16 @@ class Messenger {
      *
      * @return bool
      */
-    public function unpinChat( int $chatId, User $promote ): bool {
-        if($chatId == 0) return true;
+    public function unpinChat(int $chatId, User $promote): bool
+    {
+        if ($chatId == 0) return true;
         // update chat_users table
-        DB::table( 'messenger_chat_users' )
-          ->where( 'chat_id', $chatId )
-          ->where( 'user_id', $promote->id )
-          ->update( [
-              'pinned' => false,
-          ] );
+        DB::table('messenger_chat_users')
+            ->where('chat_id', $chatId)
+            ->where('user_id', $promote->id)
+            ->update([
+                'pinned' => false,
+            ]);
 
         return true;
     }
@@ -866,24 +892,25 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function createChat( User $user, string $title, string $description, array $members ): MessengerChat {
-        $chat              = new MessengerChat();
-        $chat->title       = $title;
+    public function createChat(User $user, string $title, string $description, array $members): MessengerChat
+    {
+        $chat = new MessengerChat();
+        $chat->title = $title;
         $chat->description = $description;
-        $chat->owner()->associate( $user );
+        $chat->owner()->associate($user);
         $chat->save();
 
-        $chat->members()->syncWithoutDetaching( collect($members)->pluck('id') );
-        $chat->members()->syncWithoutDetaching( $user->id, [ 'is_admin' => true ] );
+        $chat->members()->syncWithoutDetaching(collect($members)->pluck('id'));
+        $chat->members()->syncWithoutDetaching($user->id, ['is_admin' => true]);
         DB::table('messenger_chat_users')
             ->where('chat_id', $chat->id)
             ->where('user_id', $user->id)
-            ->update([ 'is_admin' => true ]);
+            ->update(['is_admin' => true]);
 
 
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_CREATED, [
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_CHAT_CREATED, [
             'chat' => $chat->toArray(),
-        ] );
+        ]);
 
         return $chat;
     }
@@ -900,33 +927,31 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function addUserToChat( int $chatId, int | array $userId, User $promote ): MessengerChat {
-        if($chatId == 0){
+    public function addUserToChat(int $chatId, int|array $userId, User $promote): MessengerChat
+    {
+        if ($chatId == 0) {
             $chat = $this->getGeneralChat();
-        }
-        else{
-            $chat = MessengerChat::find( $chatId );
+        } else {
+            $chat = MessengerChat::find($chatId);
         }
 
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
-        $chat->members()->syncWithoutDetaching( $userId );
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
+        if ($chatId == 0) Schema::disableForeignKeyConstraints();
+        $chat->members()->syncWithoutDetaching($userId);
+        if ($chatId == 0) Schema::enableForeignKeyConstraints();
 
-        if($chatId == 0) return $chat;
+        if ($chatId == 0) return $chat;
 
-        if(is_int($userId)){
-            $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
-                'user' => User::find( $userId )->toArray(),
-            ] );
-        }
-        else if(is_array($userId)){
-            foreach($_userId as $user => $userId){
-                $this->createEvent( $chat, $promote, MessengerEvent::TYPE_JOIN, [
-                    'user' => User::find( $user )->toArray(),
-                ] );
+        if (is_int($userId)) {
+            $this->createEvent($chat, $promote, MessengerEvent::TYPE_JOIN, [
+                'user' => User::find($userId)->toArray(),
+            ]);
+        } else if (is_array($userId)) {
+            foreach ($_userId as $user => $userId) {
+                $this->createEvent($chat, $promote, MessengerEvent::TYPE_JOIN, [
+                    'user' => User::find($user)->toArray(),
+                ]);
             }
-        }
-        else{
+        } else {
             dd($userId);
         }
 
@@ -945,23 +970,23 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function removeUserFromChat( int $chatId, int $userId, User $promote ): MessengerChat {
-        if($chatId == 0){
+    public function removeUserFromChat(int $chatId, int $userId, User $promote): MessengerChat
+    {
+        if ($chatId == 0) {
             $chat = $this->getGeneralChat();
+        } else {
+            $chat = MessengerChat::find($chatId);
         }
-        else{
-            $chat = MessengerChat::find( $chatId );
-        }
 
-        if($chatId == 0) Schema::disableForeignKeyConstraints();
-        $chat->members()->detach( $userId );
-        if($chatId == 0) Schema::enableForeignKeyConstraints();
+        if ($chatId == 0) Schema::disableForeignKeyConstraints();
+        $chat->members()->detach($userId);
+        if ($chatId == 0) Schema::enableForeignKeyConstraints();
 
-        if($chatId == 0) return $chat;
+        if ($chatId == 0) return $chat;
 
-        $this->createEvent( $chat, $promote, MessengerEvent::TYPE_LEAVE, [
+        $this->createEvent($chat, $promote, MessengerEvent::TYPE_LEAVE, [
             'user_id' => $userId,
-        ] );
+        ]);
 
         return $chat;
     }
@@ -977,11 +1002,12 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function deleteChat( int $chatId, User $user ): MessengerChat {
-        $chat = MessengerChat::find( $chatId );
+    public function deleteChat(int $chatId, User $user): MessengerChat
+    {
+        $chat = MessengerChat::find($chatId);
         $chat->members()->detach();
 
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_DELETE_CHAT );
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_DELETE_CHAT);
         return $chat;
     }
 
@@ -998,20 +1024,21 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function updateChat( int $chatId, string $title, string $description, User $user ): MessengerChat {
-        if($chatId == 0) return $this->getGeneralChat();
+    public function updateChat(int $chatId, string $title, string $description, User $user): MessengerChat
+    {
+        if ($chatId == 0) return $this->getGeneralChat();
         /* @var MessengerChat $chat */
-        $chat              = MessengerChat::find( $chatId );
-        $oldChat           = $chat->toArray();
-        $chat->title       = $title;
+        $chat = MessengerChat::find($chatId);
+        $oldChat = $chat->toArray();
+        $chat->title = $title;
         $chat->description = $description;
         $chat->save();
 
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_RENAME, [
-            'chat'            => MessengerChat::find( $chat->id )->toArray(),
-            'old_title'       => $oldChat['title'],
+        $this->createEvent($chat, $user, MessengerEvent::TYPE_RENAME, [
+            'chat' => MessengerChat::find($chat->id)->toArray(),
+            'old_title' => $oldChat['title'],
             'old_description' => $oldChat['description'],
-        ] );
+        ]);
 
         return $chat;
     }
@@ -1027,13 +1054,14 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function uploadChatAvatar( int $chatId, string $path ): MessengerChat {
-        if($chatId == 0) return $this->getGeneralChat();
-        $chat = MessengerChat::find( $chatId );
+    public function uploadChatAvatar(int $chatId, string $path): MessengerChat
+    {
+        if ($chatId == 0) return $this->getGeneralChat();
+        $chat = MessengerChat::find($chatId);
         $chat->image = $path;
         $chat->save();
 
-        $this->createEvent( $chat, $chat->owner, MessengerEvent::TYPE_CHAT_PHOTO );
+        $this->createEvent($chat, $chat->owner, MessengerEvent::TYPE_CHAT_PHOTO);
 
         return $chat;
     }
@@ -1051,51 +1079,50 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function createEvent( MessengerChat $chat, User $user, string $type, array $payload = null ): MessengerEvent {
+    public function createEvent(MessengerChat $chat, User $user, string $type, array $payload = null): MessengerEvent
+    {
         $message = new MessengerMessage();
-        if($chat->id == 0){
+        if ($chat->id == 0) {
             $message->chat_id = 0;
+        } else {
+            $message->chat()->associate($chat);
         }
-        else{
-            $message->chat()->associate( $chat );
-        }
-        $message->sender()->associate( $user );
+        $message->sender()->associate($user);
         $message->body = 'Event';
 
-        $event       = new MessengerEvent();
+        $event = new MessengerEvent();
         $event->type = $type;
-        $event->message()->associate( $message );
-        $event->setPayloadAttribute( $payload );
+        $event->message()->associate($message);
+        $event->setPayloadAttribute($payload);
 
 
-        if ( in_array( $type, MessengerEvent::$save_events ) ) {
-            if($chat->id == 0) Schema::disableForeignKeyConstraints();
+        if (in_array($type, MessengerEvent::$save_events)) {
+            if ($chat->id == 0) Schema::disableForeignKeyConstraints();
             $message->save();
-            $event->message()->associate( $message );
+            $event->message()->associate($message);
             $event->save();
-            if($chat->id == 0) Schema::enableForeignKeyConstraints();
+            if ($chat->id == 0) Schema::enableForeignKeyConstraints();
             /** @noinspection PhpExpressionResultUnusedInspection */
             $message->event;
             $messageData = $message->toArray();
         } else {
-            $messageData          = $message->toArray();
+            $messageData = $message->toArray();
             $messageData['event'] = $event->toArray();
-            $messageData['chat']  = $chat->toArray();
+            $messageData['chat'] = $chat->toArray();
         }
         $messageData['chat']['users'] = $chat->users->toArray();
 
-        if($chat->id == 0) {
+        if ($chat->id == 0) {
             $users = MessengerUserOnline::all();
-        }
-        else{
-            $users = MessengerUserOnline::getOnlineMembers( $chat->id );
+        } else {
+            $users = MessengerUserOnline::getOnlineMembers($chat->id);
         }
 
-        $users->each( function ( $user ) use ( $messageData ) {
-            $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
+        $users->each(function ($user) use ($messageData) {
+            $this->push('messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $messageData,
-            ] );
-        } );
+            ]);
+        });
 
         return $event;
     }
@@ -1112,8 +1139,9 @@ class Messenger {
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function push( string $channel, string $event, array $data ): object {
-        return $this->pusher->trigger( "private-" . $channel, $event, $data );
+    public function push(string $channel, string $event, array $data): object
+    {
+        return $this->pusher->trigger("private-" . $channel, $event, $data);
     }
 
     /**
@@ -1125,25 +1153,26 @@ class Messenger {
      * @return string
      * @throws GuzzleException
      */
-    public function pusherAuth( string $channel_name, string $socket_id, string $data = null, int $user_id = null, string $domain = null ): string {
+    public function pusherAuth(string $channel_name, string $socket_id, string $data = null, int $user_id = null, string $domain = null): string
+    {
         try {
-            $response = $this->pusher->socketAuth( $channel_name, $socket_id, $data );
-            if ( $user_id ) {
+            $response = $this->pusher->socketAuth($channel_name, $socket_id, $data);
+            if ($user_id) {
                 // create MessengerUserOnline if not exists or update last_seen
                 // this is used to show online status
-                $user = MessengerUserOnline::where( 'socket_id', $socket_id )->first();
-                if ( $user ) {
+                $user = MessengerUserOnline::where('socket_id', $socket_id)->first();
+                if ($user) {
                     $user->user_id = $user_id;
                     $user->touch();
                 } else {
-                    MessengerUserOnline::create( [
-                        'user_id'   => $user_id,
+                    MessengerUserOnline::create([
+                        'user_id' => $user_id,
                         'socket_id' => $socket_id,
                         'domain' => $domain,
-                    ] );
+                    ]);
                 }
 
-                $users = DB::select( "
+                $users = DB::select("
 SELECT DISTINCT t2.user_id
 FROM `messenger_chat_users` t1
          INNER JOIN `messenger_chat_users` t2
@@ -1151,25 +1180,25 @@ FROM `messenger_chat_users` t1
                         AND t1.user_id != t2.user_id
          INNER JOIN `messenger_users_online` o
                     ON o.user_id = t2.user_id
-WHERE t1.user_id = {$user_id}" );
+WHERE t1.user_id = {$user_id}");
 
                 // for each user trigger event
-                foreach ( $users as $user ) {
-                    $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
+                foreach ($users as $user) {
+                    $this->push('messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                         'message' => [
-                            'event'  => [
+                            'event' => [
                                 'type' => MessengerEvent::TYPE_ONLINE,
                             ],
                             'sender' => [
                                 'id' => $user_id
                             ]
                         ]
-                    ] );
+                    ]);
                 }
             }
 
             return $response;
-        } catch ( PusherException $e ) {
+        } catch (PusherException $e) {
             return $e->getMessage();
         }
     }

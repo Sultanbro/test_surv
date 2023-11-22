@@ -65,7 +65,7 @@ export async function referralUserStat(userId = 0){
 		month: Number(data.data?.mine || 0),
 		monthRef: Number(data.data?.from_referrals || 0),
 		total: Number(data.data?.absolute || 0),
-		tops: data.data?.tops.map(referrerToUser) || [],
+		tops: data.data?.tops?.map(referrerToUser) || [],
 		users: data.data?.referrals?.map(referrerToUser) || [],
 	}
 }
