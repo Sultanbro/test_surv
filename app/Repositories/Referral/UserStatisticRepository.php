@@ -2,29 +2,49 @@
 
 namespace App\Repositories\Referral;
 
+use App\Service\Referral\Core\LeadTemplate;
+use App\Service\Referral\Core\PaidType;
+use App\Service\Referral\Scheduler;
 use App\User;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class UserStatisticRepository extends StatisticRepository implements UserStatisticRepositoryInterface
+class UserStatisticRepository implements UserStatisticRepositoryInterface
 {
     protected array $filter = [];
-    private User $user;
+    /**
+     * @var true
+     */
+    private bool $onlyReferralStatistics = false;
+
+    public function __construct(
+        private readonly Scheduler $scheduler
+    )
+    {
+    }
 
     public function statistic(array $filter, ?User $user = null): array
     {
+        if ($user) $this->onlyReferralStatistics = true;
+
         $this->filter = $filter;
         /** @var User $user */
-        $this->user = $user ?? auth()->user();
-        if($user) return [
-            'referrals' => $this->described(true),
+        $referrer = $this->referrer($user ?? auth()->user());
+        $this->scheduler->setFilter($filter);
+        $this->scheduler->schedule($referrer);
+
+        $return = [
+            'referrals' => $referrer->referrals,
         ];
-        return [
-            'tops' => $this->tops(),
-            'referrals' => $this->described(true),
-            'mine' => $this->getUserEarned($this->user, $this->dateStart(), $this->dateEnd()),
-            'from_referrals' => $this->getReferralsEarned($this->user),
-            'absolute' => $this->getUserEarned($this->user),
-        ];
+
+        if (!$this->onlyReferralStatistics) {
+            $return['tops'] = $this->tops();
+            $return['mine'] = $referrer->month_earned;
+            $return['from_referrals'] = $referrer->from_referrals;
+            $return['absolute'] = $referrer->absolute_earned;
+        }
+
+        return $return;
     }
 
     private function tops(): array
@@ -43,10 +63,82 @@ class UserStatisticRepository extends StatisticRepository implements UserStatist
             ->toArray();
     }
 
-    protected function baseQuery(): Builder
+    protected function referrer(User $user): User
     {
-        $query = parent::baseQuery();
-        $query->where('id', $this->user->getKey());
-        return $query;
+        $bindings = [
+            $this->dateStart()->format("Y-m-d"),
+            $this->dateEnd()->format("Y-m-d"),
+        ];
+
+        /** @var User */
+        return User::query()
+            ->where('id', $user->getKey())
+            ->select(['id', 'name', 'referrer_status', 'referrer_id', 'deleted_at'])
+            ->withCount(['appliedReferrals as applieds' => fn($query) => $query
+                ->whereRelation('description', 'is_trainee', 0)])
+            ->withCount(['referralLeads as deals' => fn($query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)
+                ->where('deal_id', '>', 0)])
+            ->withCount(['referralLeads as leads' => fn($query) => $query
+                ->where('segment', LeadTemplate::SEGMENT_ID)])
+            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+            ->with(['referralSalaries'])
+            ->with(['referrals' => function (HasMany $query) {
+                $query->select(['id', 'name', 'referrer_status', 'referrer_id', 'deleted_at'])
+                    ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+                    ->with(['referrals' => function (HasMany $query) {
+                        $query->select(['id', 'name', 'referrer_status', 'referrer_id', 'deleted_at'])
+                            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+                            ->with(['referrals' => function (HasMany $query) {
+                                $query->select(['id', 'name', 'referrer_status', 'referrer_id', 'deleted_at'])
+                                    ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])]);
+                            }]);
+                    }]);
+            }])
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.referrer_id
+                AND is_paid = true
+                AND date BETWEEN ? AND ?
+        ) AS month_paid', $bindings)
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.referrer_id
+        ) AS absolute_earned')
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.referrer_id
+                AND date BETWEEN ? AND ?
+        ) AS month_earned', $bindings)
+            ->selectRaw('(
+            SELECT SUM(amount)
+            FROM referral_salaries
+            WHERE users.id = referral_salaries.referrer_id
+                AND date BETWEEN ? AND ?
+                AND type != ? 
+        ) AS from_referrals', [
+                ...$bindings,
+                PaidType::WORK->name
+            ])
+            ->first();
+    }
+
+    protected function dateStart(): Carbon
+    {
+        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
+        return Carbon::parse($this->filter['date'])
+            ->startOfMonth()
+            ->copy();
+    }
+
+    protected function dateEnd(): Carbon
+    {
+        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
+        return Carbon::parse($this->filter['date'])
+            ->endOfMonth()
+            ->copy();
     }
 }
