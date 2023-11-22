@@ -66,7 +66,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             $this->dateStart()->format("Y-m-d"),
             $this->dateEnd()->format("Y-m-d"),
         ];
-
         return User::query()
             ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
             ->WhereHas('referralLeads')

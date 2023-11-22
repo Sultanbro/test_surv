@@ -30,16 +30,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
         $this->actingAs($user);
         $this->seedData($user, 20);
         $repo = app(UserStatisticRepository::class);
-        $startTime = now()->format("i:s");
         $result = $repo->statistic([]);
-        $endTime = now()->format("i:s");
-
-        dd([
-            'start' => $startTime,
-            'end' => $endTime,
-            'result' => $result,
-        ]);
-
         DB::rollBack();
     }
 
