@@ -165,7 +165,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
                 $this->salaryFilter->forThisCollection($salaries);
 
-                if ($step === 1) {
+                if (1 === $step) {
                     $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
                     $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 }
@@ -256,7 +256,7 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     private function attestation($attestation): array
     {
-        $appliedSalary = current($attestation->toArray());
+        $appliedSalary = current($attestation);
 
         if (!$appliedSalary) {
             return [];
