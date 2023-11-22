@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\V2\Analytics\TopController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticInfoController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticGroupController;
@@ -54,4 +55,6 @@ Route::group([
      * Добавлить строку.
      */
     Route::post('/create', [V2AnalyticController::class, 'create'])->name('.create');
+
+    Route::get('/get-rentability', [TopController::class, 'getRentability'])->name('.rentability');
 });

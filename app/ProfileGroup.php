@@ -11,6 +11,7 @@ use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,6 +54,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property $switch_proceeds
  * @property $switch_rentability
  * @property $id
+ * @method static hasAnalytics()
+ * @method static isActive()
  */
 class ProfileGroup extends Model
 {
@@ -116,6 +119,7 @@ class ProfileGroup extends Model
     const NOWHERE = 0;
 
     const IT_DEPARTMENT_ID = 26;
+    const BUSINESS_CENTER_ID = 34;
 
     const SWITCH_UTILITY = 'switch_utility';
     const SWITCH_PROCEEDS = 'switch_proceeds';
@@ -128,7 +132,6 @@ class ProfileGroup extends Model
     const IS_FIRED = 'fired';
 
     const IS_TRANSFER = 'drop';
-
     /**
      * @param int $id
      * @return Model
@@ -539,9 +542,18 @@ class ProfileGroup extends Model
         return $query->whereIn('has_analytics', [self::HAS_ANALYTICS, self::NOT_ANALYTICS]);
     }
 
-    public function scopeIsActive($query)
+    /**
+     * @param Builder $query
+     * @return void
+     */
+    public function scopeHasAnalytics(Builder $query): void
     {
-        return $query->where('active', self::IS_ACTIVE);
+        $query->where('has_analytics', self::HAS_ANALYTICS);
+    }
+
+    public function scopeIsActive(Builder $query): void
+    {
+        $query->where('active', self::IS_ACTIVE);
     }
 
     public function scopeIsArchived($query)
@@ -602,5 +614,34 @@ class ProfileGroup extends Model
             ])
             ->orderBy('last_name')
             ->orderBy('name');
+    }
+
+    /**
+     * @param Builder $query
+     * @param array $groups
+     * @return void
+     */
+    public function scopeIgnore(Builder $query, array $groups): void
+    {
+        $query->whereNotIn('id', $groups);
+    }
+
+    /**
+     * @param string $year
+     * @param string $month
+     * @return Collection
+     */
+    public static function withRentability(
+        string $year,
+        string $month
+    ): Collection
+    {
+        return self::hasAnalytics()
+            ->ignore([ProfileGroup::IT_DEPARTMENT_ID, ProfileGroup::BUSINESS_CENTER_ID])
+            ->isActive()
+            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
+                ->whereMonth('archived_date', '>=', $month)
+            ))
+            ->get();
     }
 }
