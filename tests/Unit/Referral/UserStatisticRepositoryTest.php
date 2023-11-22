@@ -27,15 +27,23 @@ class UserStatisticRepositoryTest extends TenantTestCase
         $this->actingAs($user);
         $this->seedData($user);
         $repo = app(UserStatisticRepository::class);
+        $startTime = now()->format("i:s");
         $result = $repo->statistic([]);
-        dd($result);
+        $endTime = now()->format("i:s");
+
+        dd([
+            'start' => $startTime,
+            'end' => $endTime,
+            'result' => $result,
+        ]);
+
         DB::rollBack();
     }
 
     private function seedData($referrer): void
     {
         /** @var Collection<User> $referrals */
-        $referrals = User::factory(5)->create([
+        $referrals = User::factory(50)->create([
             'referrer_id' => $referrer->getKey()
         ]);
 
