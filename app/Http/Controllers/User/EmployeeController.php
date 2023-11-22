@@ -416,7 +416,7 @@ class EmployeeController extends Controller
                 $users = User::withTrashed();
             }
             $users = $users
-                ->whereNotNull('deleted_at')
+                ->whereNotNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
@@ -443,7 +443,7 @@ class EmployeeController extends Controller
             $users_1 = array_diff($users_1, array_unique($downloads));
 
             $users = User::withTrashed()
-                ->whereNull('deleted_at')
+                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
@@ -469,7 +469,7 @@ class EmployeeController extends Controller
                 $users = User::withTrashed();
             }
             $users = $users
-                ->whereNull('deleted_at')
+                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
@@ -491,7 +491,7 @@ class EmployeeController extends Controller
                     $join->on('users.id', '=', 'ur.user_id')
                         ->whereRaw('ur.created_at = (SELECT MAX(created_at) FROM users_restored WHERE user_id = users.id)');
                 })
-                ->whereNull('deleted_at')
+                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
@@ -508,7 +508,7 @@ class EmployeeController extends Controller
                 $users = User::withTrashed();
             }
             $users = $users
-                ->whereNull('deleted_at')
+                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->join('position', 'users.position_id', '=', 'position.id')
@@ -521,8 +521,8 @@ class EmployeeController extends Controller
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
         if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
         if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
-        if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
-        if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
+        if ($request['start_date_deactivate']) $users = $users->whereDate('users.deleted_at', '>=', $request['start_date_deactivate']);
+        if ($request['end_date_deactivate']) $users = $users->whereDate('users.deleted_at', '<=', $request['end_date_deactivate']);
         if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
         if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
         if ($request['segment']) $users = $users->whereIn('users.segment', $request['segment']);
@@ -588,7 +588,7 @@ class EmployeeController extends Controller
         if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
 
         if ($request['sortBy'] && in_array($request['sortBy'], [
-                'name', 'last_name', 'group', 'created_at', 'deleted_at',
+                'name', 'last_name', 'group', 'created_at', 'users.deleted_at',
                 'fire_cause', 'user_type', 'segment', 'applied', 'full_time', 'position'
             ])
         ) {
