@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class UserStatisticRepository implements UserStatisticRepositoryInterface
 {
     protected array $filter = [];
-    private User $user;
     /**
      * @var true
      */
@@ -30,20 +29,19 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
         $this->filter = $filter;
         /** @var User $user */
-        $this->user = $this->baseQuery($user ?? auth()->user());
+        $referrer = $this->referrer($user ?? auth()->user());
         $this->scheduler->setFilter($filter);
-        $this->scheduler->schedule($this->user);
+        $this->scheduler->schedule($referrer);
 
         $return = [
-            'referrals' => $this->user->referrals,
+            'referrals' => $referrer->referrals,
         ];
 
         if (!$this->onlyReferralStatistics) {
             $return['tops'] = $this->tops();
-            $return['mine'] = $this->user->month_earned;
-            $return['from_referrals'] = $this->user->from_referrals;
-            $return['absolute'] = $this->user->absolute_earned;
-
+            $return['mine'] = $referrer->month_earned;
+            $return['from_referrals'] = $referrer->from_referrals;
+            $return['absolute'] = $referrer->absolute_earned;
         }
 
         return $return;
@@ -65,7 +63,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->toArray();
     }
 
-    protected function baseQuery(User $user): User
+    protected function referrer(User $user): User
     {
         $bindings = [
             $this->dateStart()->format("Y-m-d"),
