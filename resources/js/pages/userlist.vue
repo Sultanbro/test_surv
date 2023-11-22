@@ -38,7 +38,7 @@
 			</div>
 			<div class="col-12">
 				<p class="mt-2 mr-2 fz14 mb-0">
-					<b> Все:</b> {{ items.length }}  <b>Рес:</b> {{ staff_res }}
+					<b> Все:</b> {{ totalRows }}  <b>Рес:</b> {{ staffRes }}
 				</p>
 			</div>
 		</div>
@@ -323,7 +323,6 @@ export default {
 			pageOptions: [5, 10, 15],
 			sortBy: 'created_at',
 			sortDesc: true,
-			totalRows: 0,
 			currentUser: null,
 			search: '',
 			seatchTimeout: null,
@@ -342,23 +341,19 @@ export default {
 			},
 			isRestored: false,
 			loading: false,
+			totalPart: 0,
+			totalFull: 0,
 		}
 	},
 	computed: {
 		searchText(){
 			return this.search.toLowerCase().trim()
 		},
-		staff_res(){
-			let res = 0
-			this.items.forEach(user => {
-				if(user.full_time == 1) {
-					res += 1
-				}
-				else {
-					res += 0.5
-				}
-			})
-			return res
+		totalRows(){
+			return this.totalPart + this.totalFull
+		},
+		staffRes(){
+			return this.totalFull + (this.totalPart * 0.5)
 		},
 		isBP(){
 			return ['test', 'bp'].includes(location.hostname.split('.')[0])
@@ -595,7 +590,8 @@ export default {
 						users.push(user)
 					}
 				})
-				this.totalRows = data.users.total
+				this.totalPart = data.users_part_time
+				this.totalFull = data.users_full_time
 				this.items = users.reverse().map(user => {
 					const pos = this.positionsMap[user.position_id]
 					return { ...user, position: pos ? pos.position : '' }
