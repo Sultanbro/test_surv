@@ -28,7 +28,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
             'referrer_id' => null
         ]);
         $this->actingAs($user);
-        $this->seedData($user, 3);
+        $this->seedData($user, 20);
         $repo = app(UserStatisticRepository::class);
         $startTime = now()->format("i:s");
         $result = $repo->statistic([]);

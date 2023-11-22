@@ -43,7 +43,7 @@ class StatisticRepositoryTest extends TenantTestCase
         ]);
 
         /** @var Collection<User> $referrals */
-        $referrals = User::factory(5)->create([
+        $referrals = User::factory(15)->create([
             'referrer_id' => $referrer->getKey()
         ]);
 

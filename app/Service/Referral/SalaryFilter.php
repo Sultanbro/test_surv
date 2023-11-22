@@ -4,7 +4,7 @@ namespace App\Service\Referral;
 
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\PaidType;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class SalaryFilter
 {
