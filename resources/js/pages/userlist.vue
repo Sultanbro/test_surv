@@ -705,5 +705,10 @@ export default {
 	.fa-cog{
 		color: #fff;
 	}
+	.pagination .page-item .page-link{
+		width: auto;
+		min-width: 30px;
+		padding: 0 4px !important;
+	}
 }
 </style>
