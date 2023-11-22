@@ -514,25 +514,7 @@ class EmployeeController extends Controller
                     $query->where('status', 'active');
                 }]);
         }
-        return$users->select([
-            'users.id',
-            'users.email',
-            'users.user_type',
-            'users.segment as segment',
-            'users.last_name',
-            'users.name',
-            'users.full_time',
-            'users.working_country',
-            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
-            DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
-            'users.deleted_at',
-            'users.position_id',
-            'users.phone',
-            'ud.fire_cause',
-            'ud.applied',
-            'position.position'
-        ])->count();
+
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
         if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
         if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
