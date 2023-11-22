@@ -383,7 +383,6 @@ export default {
 			if(this.showFields.groups) fields.push({
 				key: 'groups',
 				label: 'Отделы',
-				sortable: true
 			})
 			if(this.showFields.position) fields.push({
 				key: 'position',
