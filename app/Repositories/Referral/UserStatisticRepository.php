@@ -123,7 +123,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->select(['name', 'last_name', 'referrer_id', 'id'])
             ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
-                $query->selectRaw("id, user_id, type ,DATE_FORMAT(date, '%e') as day")
+                $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', '=', $this->dateStart()->month)
                     ->whereYear('date', $this->dateStart()->year);
             }])
@@ -132,7 +132,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     ->whereMonth('enter', '=', $this->dateStart()->month)
                     ->whereYear('enter', $this->dateStart()->year);
             }])
-            ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
+            ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
                 $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id']);
             }])
@@ -141,10 +141,9 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
-                $days = $this->getReferralDayTypes($referral);
+                $days = $referral->daytypes;
 
-                $salaries = $this->getReferralSalaries($referrer, $referral);
-
+                $salaries = $referral->referrerSalaries;
                 $this->salaryFilter->forThisCollection($salaries);
 
                 $training = $this->salaryFilter->filter(PaidType::TRAINEE);
@@ -177,7 +176,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ]);
     }
 
-    private function traineesDaily(Collection $days, $training): array
+    private function traineesDaily($days, $training): array
     {
         $types = [];
         for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
@@ -244,11 +243,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->where('user_id', $referral->getKey());
     }
 
-    private function getReferralDayTypes(User $referral): Collection
-    {
-        return $referral->daytypes
-            ->where('user_id', $referral->getKey());
-    }
 
     private function isAbsence(?DayType $day): bool
     {

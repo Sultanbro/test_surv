@@ -982,6 +982,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         );
     }
 
+    public function referrerSalaries(): HasMany
+    {
+        return $this->hasMany(
+            ReferralSalary::class,
+            'referral_id',
+            'id',
+        );
+    }
+
     public function profileContacts()
     {
         return $this->hasMany(UserContact::class, 'user_id');

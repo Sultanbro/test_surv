@@ -6,7 +6,7 @@ use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
 use App\User;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class StatisticRepository implements StatisticRepositoryInterface
 {
@@ -62,62 +62,28 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function referrers(): array
     {
-        $bindings = [
-            $this->dateStart()->format("Y-m-d"),
-            $this->dateEnd()->format("Y-m-d"),
-        ];
         return User::query()
-            ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
             ->WhereHas('referralLeads')
-            ->withCount(['appliedReferrals as applieds' => fn($query) => $query
-                ->whereRelation('description', 'is_trainee', 0)])
-            ->withCount(['referralLeads as deals' => fn($query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID)
-                ->where('deal_id', '>', 0)])
-            ->withCount(['referralLeads as leads' => fn($query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID)])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-        ) AS month_paid', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-        ) AS absolute_earned')
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-            AND is_paid = 1
-        ) AS absolute_paid')
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND date BETWEEN ? AND ?
-        ) AS month_earned', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-        ) AS month_paid', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-                AND type = ?
-        ) AS referrers_earned', [
-            ...$bindings,
-                PaidType::FIRST_WORK->name
+            ->select([
+                'id',
+                'referrer_id',
+                'name',
+                'last_name',
+                'referrer_status',
+                'deleted_at',
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id) AS absolute_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1) AS absolute_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND type = "' . PaidType::FIRST_WORK->name . '") AS referrers_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine'),
+                DB::raw('(SELECT COUNT(*) FROM users ref
+                                INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
+                                WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ' AND deal_id > 0) AS leads'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id IS NOT NULL AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
             ])
             ->orderBy('leads', 'desc')
             ->get()
@@ -143,7 +109,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->endOfMonth()
             ->copy();
     }
-
 
     protected function getRatio($convertible, $to): float
     {

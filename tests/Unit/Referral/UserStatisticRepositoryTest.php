@@ -28,7 +28,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
             'referrer_id' => null
         ]);
         $this->actingAs($user);
-        $this->seedData($user, 20);
+        $this->seedData($user, 5);
         $repo = app(UserStatisticRepository::class);
         $result = $repo->statistic([]);
         dd($result);
@@ -37,6 +37,21 @@ class UserStatisticRepositoryTest extends TenantTestCase
 
     private function seedData(User $referrer, int $count = 4): void
     {
+        // trainees
+        User::factory($count / 2)->create([
+            'referrer_id' => $referrer->getKey()
+        ])->each(function (User $referral) use ($referrer) {
+            /** @var UserDescription $desc */
+            $referral->user_description()->create(
+                [
+                    'is_trainee' => true
+                ]
+            );
+            $this->createDayTypes($referral, $referrer, 6);
+            $this->createSalary($referrer, $referral, PaidType::TRAINEE, 6);
+            $this->createLead($referrer, $referral);
+        });
+
         // employees
         User::factory($count / 2)->create([
             'referrer_id' => $referrer->getKey()
@@ -54,22 +69,6 @@ class UserStatisticRepositoryTest extends TenantTestCase
                 $this->createLead($referrer, $referral);
                 $this->timeTracking($referral);
             });
-
-        // trainees
-        User::factory($count / 2)->create([
-            'referrer_id' => $referrer->getKey()
-        ])->each(function (User $referral) use ($referrer) {
-            /** @var UserDescription $desc */
-            $referral->user_description()->create(
-                [
-                    'is_trainee' => true
-                ]
-            );
-            $this->createDayTypes($referral, $referrer, 6);
-            $this->createSalary($referrer, $referral, PaidType::TRAINEE, 6);
-            $this->createLead($referrer, $referral);
-
-        });
     }
 
     private function createDayTypes(User $referral, User $referrer, int $count = 5): void
