@@ -1046,18 +1046,23 @@ export default {
 				window.onerror && window.onerror(error)
 			}
 		},
-		async savePageOrder(event){
-			const id = +event.item.getAttribute('data-id')
-			const parentId = +event.to.getAttribute('data-id')
+		async savePageOrder({item, to, newIndex}){
+			// console.log('savePageOrder', {item, to, newIndex})
+			const id = +item.getAttribute('data-id')
+			const parentId = +to.getAttribute('data-id')
 			try {
 				await API.updateKBOrder({
 					id,
-					order: event.newIndex,
+					order: newIndex,
 					parent_id: parentId,
 				})
 				const page = this.pagesMap[id]
-				const prevParent = this.pagesMap[page.parentId]
+				const prevParent = this.pagesMap[page.parent_id]
 				const parent = this.pagesMap[parentId]
+				// console.log('savePageOrder', {
+				// 	prevParent,
+				// 	parent,
+				// })
 				if(prevParent){
 					const index = prevParent.children.findIndex(children => children.id === id)
 					if(~index) prevParent.children.splice(index, 1)
@@ -1069,10 +1074,10 @@ export default {
 
 				if(parent){
 					if(!parent.children) parent.children = []
-					parent.children.splice(event.newIndex, 0, page)
+					parent.children.splice(newIndex, 0, page)
 				}
 				else{
-					this.pages.splice(event.newIndex, 0, page)
+					this.pages.splice(newIndex, 0, page)
 				}
 				this.$toast.success('Очередь сохранена')
 			}
