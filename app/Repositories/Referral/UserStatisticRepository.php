@@ -56,6 +56,11 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     protected function referrer(User $user): User
     {
         /** @var User $referrer */
+        $startDate = $this->dateStart()->format("Y-m-d");
+        $endDate = $this->dateEnd()->format("Y-m-d");
+        $segmentId = LeadTemplate::SEGMENT_ID;
+        $paidTypeFirstWork = PaidType::FIRST_WORK->name;
+
         $referrer = User::query()
             ->where('id', $user->getKey())
             ->with([
@@ -70,18 +75,17 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 'last_name',
                 'referrer_status',
                 'deleted_at',
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id) AS absolute_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1) AS absolute_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND type = "' . PaidType::FIRST_WORK->name . '") AS referrers_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine'),
-                DB::raw('(SELECT COUNT(*) FROM users ref
-                                INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
-                                WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS leads'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND AND deal_id > 0 AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id) AS absolute_earned"),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1) AS absolute_paid"),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN '{$startDate}' AND '{$endDate}') AS month_earned"),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN '{$startDate}' AND '{$endDate}') AS month_paid"),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN '{$startDate}' AND '{$endDate}' AND type = '{$paidTypeFirstWork}') AS referrers_earned"),
+                DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN '{$startDate}' AND '{$endDate}' AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine"),
+                DB::raw("(SELECT COUNT(*) FROM users ref
+                        INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
+                        WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds"),
+                DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = {$segmentId}) AS leads"),
+                DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id > 0 AND segment = {$segmentId}) AS deals"),
             ])
             ->first();
 
