@@ -367,7 +367,7 @@ export default {
 			try {
 				const data = await API.searchKBBook({
 					text: this.search.input,
-					id: this.rootBook?.id
+					id: this.rootBook?.id || null
 				})
 				this.search.items = data.items.map(item => {
 					const regExp = new RegExp(this.search.input,'gi')

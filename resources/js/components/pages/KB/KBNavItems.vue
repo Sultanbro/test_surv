@@ -6,7 +6,7 @@
 		:handle="'.fa-bars'"
 		:group="{ name: 'g1' }"
 		:data-id="parentId"
-		@end="$emit('page-order')"
+		@end="onDrop"
 	>
 		<template v-for="item in sorted">
 			<KBNavItem
@@ -102,6 +102,12 @@ const KBNavItems = {
 		addPage(item) {
 			this.$emit('add-page', item)
 		},
+		onDrop(event){
+			this.$emit('page-order', event)
+			this.$nextTick(() => {
+				this.$forceUpdate()
+			})
+		}
 	},
 }
 
