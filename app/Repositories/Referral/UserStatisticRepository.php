@@ -63,27 +63,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         $referrer = User::query()
             ->where('id', $user->getKey())
             ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
-            ->with(['referrals' => function (HasMany $query) use ($user) {
-                $query->with('timetracking')
-                    ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
-                    ->with(['daytypes' => function (HasMany $query) use ($user) {
-                        $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                            ->whereMonth('date', '=', $this->dateStart()->month)
-                            ->whereYear('date', $this->dateStart()->year);
-                    }])
-                    ->with(['timetracking' => function (HasMany $query) use ($user) {
-                        $query->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-                            ->whereMonth('enter', '=', $this->dateStart()->month)
-                            ->whereYear('enter', $this->dateStart()->year)
-                            ->orderBy('id', 'ASC');
-                    }])
-                    ->with(['referralSalaries' => function (HasMany $query) use ($user) {
-                        $query->where("referrer_id", $user->getKey());
-                    }])
-                    ->select(['name', 'last_name', 'referrer_id', 'id'])
-                    ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
-                    ->orderBy("created_at");
-            }])
             ->withCount(['appliedReferrals as applieds' => fn($query) => $query
                 ->whereRelation('description', 'is_trainee', 0)])
             ->withCount(['referralLeads as deals' => fn($query) => $query
@@ -178,7 +157,26 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     private function referrals(User $referrer, int $step = 1)
     {
-        return $referrer->referrals
+        return $referrer->referrals()
+            ->with('timetracking')
+            ->with(['daytypes' => function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $this->dateStart()->month)
+                    ->whereYear('date', $this->dateStart()->year);
+            }])
+            ->with(['timetracking' => function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                    ->whereMonth('enter', '=', $this->dateStart()->month)
+                    ->whereYear('enter', $this->dateStart()->year)
+                    ->orderBy('id', 'ASC');
+            }])
+            ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
+                $query->where("referrer_id", $referrer->getKey());
+            }])
+            ->select(['name', 'last_name', 'referrer_id', 'id'])
+            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+            ->orderBy("created_at")
+            ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
                 $days = $this->getReferralDayTypes($referral);
@@ -198,7 +196,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals->count()) {
+                if ($referral->referrals()->count()) {
 
                     if ($step <= 3) {
                         $referral->referrals = $this->referrals($referral, $step + 1);
@@ -351,9 +349,5 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             'id' => $current['id'] ?? null,
             'date' => $current['date'] ?? null,
         ];
-    }
-
-    private function loadReferrals(HasMany $query, User $user)
-    {
     }
 }
