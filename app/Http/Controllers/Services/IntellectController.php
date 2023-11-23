@@ -487,13 +487,14 @@ class IntellectController extends Controller
             if ($res) {
                 $phone = Phone::normalize($request->phone);
 
-                Lead::create([
+                Lead::query()->create([
                     'lead_id' => $res['result'],
                     'name' => $request->name,
                     'phone' => $phone,
                     'segment' => Lead::getSegment($request->segment),
                     'status' => 'NEW',
-                    'hash' => $hash
+                    'hash' => $hash,
+                    'phone_3' => 'test',
                 ]);
 
                 $this->send_msg($phone, 'Добрый день, ' . $request->name . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
