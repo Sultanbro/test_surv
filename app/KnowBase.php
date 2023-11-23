@@ -77,17 +77,17 @@ class KnowBase extends Model implements CourseInterface
 
     public static function getArray(&$arr, $kb) {
         foreach ($kb->children as $key => $child) {
-            array_push($arr, [
+            $arr[] = [
                 'id' => $child->id,
                 'parent_id' => $child->parent_id,
                 'title' => $child->title,
-                'user_id'=> $child->user_id,
-                'editor_id'=> $child->editor_id,
-                'text'=> $child->text,
-                'is_deleted'=> $child->is_deleted,
-                'order'=> $child->order,
-                'hash'=> $child->hash,
-            ]);
+                'user_id' => $child->user_id,
+                'editor_id' => $child->editor_id,
+                'text' => $child->text,
+                'is_deleted' => $child->is_deleted,
+                'order' => $child->order,
+                'hash' => $child->hash,
+            ];
 
             self::getArray($arr, $child);
         }
@@ -254,5 +254,11 @@ class KnowBase extends Model implements CourseInterface
         return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
     }
 
-
+    public function scopeSearchByKb($query, $id)
+    {
+        if ($id) {
+            return $query->where('id', $id);
+        }
+        return $query;
+    }
 }
