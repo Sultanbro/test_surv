@@ -36,6 +36,18 @@
 					/>
 				</div>
 			</template>
+			<template #cell(title)="{item, value}">
+				<a
+					v-if="userLink && canSettings"
+					:href="`/timetracking/edit-person?id=${item.id}`"
+					target="_blank"
+				>
+					{{ value }}
+				</a>
+				<template v-else>
+					{{ value }}
+				</template>
+			</template>
 			<template #cell(status)="{value}">
 				{{ value }}
 				<template v-if="hintComments">
@@ -130,6 +142,9 @@ export default {
 		hintComments: {
 			type: Boolean
 		},
+		userLink: {
+			type: Boolean
+		},
 	},
 	data(){
 		return {
@@ -192,6 +207,17 @@ export default {
 			})
 			return sorted
 		},
+		canSettings(){
+			return this.$can('settings_view')
+				|| this.$can('users_view')
+				|| this.$can('positions_view')
+				|| this.$can('groups_view')
+				|| this.$can('fines_view')
+				|| this.$can('notifications_view')
+				|| this.$can('permissions_view')
+				|| this.$can('checklists_view')
+				|| this.$can('awards_view')
+		}
 	},
 	methods: {
 		toggleAfter(id){
