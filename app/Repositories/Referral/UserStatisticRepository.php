@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class UserStatisticRepository implements UserStatisticRepositoryInterface
 {
@@ -40,95 +41,56 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function tops(): array
     {
         return User::query()
-            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
             ->withCount(['referrals as applied_count' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
+            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
+            ->has('referrals', '>', 0)
             ->groupBy('users.id')
-            ->having('applied_count', '>', 0)
             ->take(5)
-            ->orderBy('applied_count', 'desc')
             ->get()
             ->toArray();
     }
 
+
     protected function referrer(User $user): User
     {
-        $bindings = [
-            $this->dateStart()->format("Y-m-d"),
-            $this->dateEnd()->format("Y-m-d"),
-        ];
-
         /** @var User $referrer */
         $referrer = User::query()
             ->where('id', $user->getKey())
-            ->select(['id', 'referrer_id', 'name', 'last_name', 'referrer_status', 'deleted_at'])
-            ->withCount(['appliedReferrals as applieds' => fn($query) => $query
-                ->whereRelation('description', 'is_trainee', 0)])
-            ->withCount(['referralLeads as deals' => fn($query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID)
-                ->where('deal_id', '>', 0)])
-            ->withCount(['referralLeads as leads' => fn($query) => $query
-                ->where('segment', LeadTemplate::SEGMENT_ID)])
-            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-        ) AS month_paid', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-        ) AS absolute_earned')
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-            AND is_paid = 1
-        ) AS absolute_paid')
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND date BETWEEN ? AND ?
-        ) AS month_earned', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-        ) AS month_paid', $bindings)
-            ->selectRaw('(
-            SELECT SUM(amount)
-            FROM referral_salaries
-            WHERE users.id = referral_salaries.referrer_id
-                AND is_paid = 1
-                AND date BETWEEN ? AND ?
-                AND type = ?
-        ) AS referrers_earned', [
-                ...$bindings,
-                PaidType::FIRST_WORK->name
+            ->with([
+                'user_description' => function ($query) {
+                    $query->select(['id', 'user_id', 'is_trainee']);
+                }
             ])
-            ->selectRaw('(
-    SELECT SUM(amount)
-    FROM referral_salaries
-    WHERE users.id = referral_salaries.referrer_id
-        AND date BETWEEN ? AND ?
-        AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)
-) AS mine',
-                $bindings
-            )
-            ->orderBy('leads', 'desc')
+            ->select([
+                'id',
+                'referrer_id',
+                'name',
+                'last_name',
+                'referrer_status',
+                'deleted_at',
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id) AS absolute_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1) AS absolute_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND type = "' . PaidType::FIRST_WORK->name . '") AS referrers_earned'),
+                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine'),
+                DB::raw('(SELECT COUNT(*) FROM users ref
+                                INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
+                                WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ' AND deal_id > 0) AS leads'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id IS NOT NULL AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
+            ])
             ->first();
 
-        $referrer->deal_lead_conversion_ratio = $this->getRatio($referrer->deals, $referrer->leads);
-        $referrer->appiled_deal_conversion_ratio = $this->getRatio($referrer->applieds, $referrer->deals);
+        $referrer->deal_lead_conversion_ratio = $this->getRatio($referrer->referralLeads_count, $referrer->leads_count);
+        $referrer->applied_deal_conversion_ratio = $this->getRatio($referrer->appliedReferrals_count, $referrer->referralLeads_count);
+
         return $referrer;
     }
+
 
     protected function dateStart(): Carbon
     {
@@ -158,22 +120,22 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function referrals(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->with('timetracking')
+            ->select(['name', 'last_name', 'referrer_id', 'id'])
+            ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
-                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                $query->selectRaw("id, user_id, type ,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', '=', $this->dateStart()->month)
                     ->whereYear('date', $this->dateStart()->year);
             }])
             ->with(['timetracking' => function (HasMany $query) {
-                $query->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                $query->select(["enter", "exit", "id", "user_id"])
                     ->whereMonth('enter', '=', $this->dateStart()->month)
-                    ->whereYear('enter', $this->dateStart()->year)
-                    ->orderBy('id', 'ASC');
+                    ->whereYear('enter', $this->dateStart()->year);
             }])
             ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
+                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id']);
             }])
-            ->select(['name', 'last_name', 'referrer_id', 'id'])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
             ->get()
@@ -196,7 +158,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     $this->employeeWeekly($referral, $working)
                 );
 
-                if ($referral->referrals()->count()) {
+                if ($referral->referrals_count) {
 
                     if ($step <= 3) {
                         $referral->referrals = $this->referrals($referral, $step + 1);
