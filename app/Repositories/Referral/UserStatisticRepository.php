@@ -170,6 +170,9 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     ->whereYear('enter', $this->dateStart()->year)
                     ->orderBy('id', 'ASC');
             }])
+            ->with(['salariesReferrals' => function (HasMany $query) use ($referrer) {
+                $query->where("referrer_id", $referrer->getKey());
+            }])
             ->select(['name', 'last_name', 'referrer_id', 'id'])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
@@ -206,11 +209,10 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     private function getReferralSalaries(User $referrer, User $referral): Collection
     {
-        return $referrer->referralSalaries()
+        return $referrer->referralSalaries
             ->where([
                 'referral_id' => $referral->getKey(),
-                'referrer_id' => $referrer->getKey()
-            ])->get();
+            ]);
     }
 
     private function traineesDaily(Collection $days, $training): array
