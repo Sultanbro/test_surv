@@ -230,11 +230,24 @@ class Timetracking extends Model
             ->paginate($perPage);
     }
 
-    public static function totalHours($date, $group_id)
+    /**
+     * @param string $date
+     * @param int $group_id
+     * @param ?array $positions
+     * @return float|int
+     */
+    public static function totalHours(
+        string $date,
+        int $group_id,
+        ?array $positions = []
+    ): float|int
     {
         $users = \App\ProfileGroup::employees($group_id);
 
-        $users = User::withTrashed()->whereIn('id', $users)->where('position_id', 32)->get(['id'])->toArray();
+        $users = User::withTrashed()
+            ->when(empty($positions), fn ($users) => $users->where('position_id', Position::OPERATOR_ID), fn ($users) => $users->whereIn('position_id', $positions))
+            ->whereIn('id', $users)->get(['id'])->toArray();
+
         $total_hours =  self::select(
                 DB::raw('SUM(total_hours) as total_hours')
             )

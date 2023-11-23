@@ -5,8 +5,10 @@ namespace App\Http\Controllers\V2\Analytics;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V2\Analytics\AddRowRequest;
 use App\Http\Requests\V2\Analytics\CreateAnalyticsRequest;
+use App\Http\Requests\V2\Analytics\ReportCardRequest;
 use App\Service\V2\Analytics\AddRowAnalyticsService;
 use App\Service\V2\Analytics\CreateAnalyticsService;
+use App\Service\V2\Analytics\ReportCardService;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 
@@ -43,5 +45,16 @@ class V2AnalyticController extends Controller
             message: self::SUCCESS_MESSAGE,
             data: $service->handle($request->toDto())
         );
+    }
+
+
+    /**
+     * @param ReportCardRequest $request
+     * @param ReportCardService $service
+     * @return JsonResponse
+     */
+    public function reportCard(ReportCardRequest $request, ReportCardService $service): JsonResponse
+    {
+        return $this->response(message: self::SUCCESS_MESSAGE, data: $service->handle($request->toDto()));
     }
 }

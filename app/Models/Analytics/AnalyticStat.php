@@ -31,6 +31,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property AnalyticRow $analyticRow
  * @property AnalyticColumn $analyticColumn
  */
+
+/**
+ * @property string $value
+ * @property string $show_value
+ */
 class AnalyticStat extends Model
 {
     use HasFactory;
