@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\V2\Analytics\PositionController;
 use App\Http\Controllers\V2\Analytics\TopController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticInfoController;
@@ -66,4 +67,6 @@ Route::group([
      * Часы из табеля.
      */
     Route::post('/report-card', [V2AnalyticController::class, 'reportCard'])->name('.report-card');
+
+    Route::get('/positions', [PositionController::class, 'get'])->name('.positions');
 });
