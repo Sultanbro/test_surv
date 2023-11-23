@@ -131,13 +131,12 @@ class KnowBaseController extends Controller
 
         $phrase = '%' . $request->text . '%';
         $items = KnowBase::query()
-            ->searchByKb($request->id)
             ->where('title', 'like', $phrase)
             ->orWhere('text', 'like', $phrase)
+            ->searchByChildKbs($request->id)
             ->orderBy('order')
             ->limit(10)
             ->get();
-
 
 
 
