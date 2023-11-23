@@ -368,6 +368,7 @@ class KnowBaseController extends Controller
             $page->title = $request->title;
             $page->editor_id = Auth::user()->id;
             $page->parent_id = $request->parent_id ?? null;
+            $page->is_category = 1;
             $page->save();
 
 
@@ -586,6 +587,7 @@ class KnowBaseController extends Controller
             'editor_id' => Auth::user()->id,
             'order' => $kb ? $kb->order + 1 : 0,
             'parent_id' => $request->parent_id ?? null,
+            'is_category' => 1,
             'hash' => 'cat',
             'is_deleted' => 0,
         ]);

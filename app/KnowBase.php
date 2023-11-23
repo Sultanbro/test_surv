@@ -34,7 +34,8 @@ class KnowBase extends Model implements CourseInterface
         'hash', // уникальная ссылка чтобы поделиться
         'access', // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию,
         'read_pairs',
-        'edit_pairs'
+        'edit_pairs',
+        'is_category'
     ];
 
 
