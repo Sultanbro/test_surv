@@ -102,6 +102,7 @@ class StatisticRepository implements StatisticRepositoryInterface
         // Main query with optimized joins
 
         return User::query()
+            ->whereHas('referralLeads')
             ->leftJoinSub($appliedsSubQuery, 'applieds', 'users.id', '=', 'applieds.referrer_id')
             ->leftJoinSub($leadsSubQuery, 'leads', 'users.id', '=', 'leads.referrer_id')
             ->leftJoinSub($dealsSubQuery, 'deals', 'users.id', '=', 'deals.referrer_id')
