@@ -25,15 +25,16 @@ export async function restoreKBBook(id){
 	return data
 }
 
-export async function searchKBBook(text){
-	const {data} = await axios.post('kb/search', {text})
+export async function searchKBBook(request){
+	const {data} = await axios.post('kb/search', request)
 	return data
 }
 
-export async function createKBBook(name){
-	const {data} = await axios.post('/kb/page/add-section', {name})
+export async function createKBBook(request){
+	const {data} = await axios.post('/kb/page/add-section', request)
 	return data
 }
+
 export async function updateKBBook(request){
 	const {data} = await axios.post('/kb/page/update-section', request)
 	return data
@@ -46,6 +47,16 @@ export async function updateKBOrder(request){
 
 export async function fetchKBAccess(id){
 	const {data} = await axios.post('/kb/page/get-access', {id})
+	return data
+}
+
+export async function addKBPage(id){
+	const {data} = await axios.post('/kb/page/create', {id})
+	return data
+}
+
+export async function toggleKBPageFavorite(id, request){
+	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)
 	return data
 }
 

@@ -1,273 +1,67 @@
 <template>
-	<div v-if="auth_user_id">
-		<!-- PAGE -->
-		<div
-			v-if="activeBook === null"
-			class="kb-sections d-flex"
-		>
-			<!-- Левая часть -->
-			<aside
-				id="left-panel"
-				class="lp"
-			>
-				<div class="form-search-kb">
-					<i class="fa fa-search" />
-					<input
-						v-model="search.input"
-						type="text"
-						placeholder="Искать в базе..."
-						class="form-control"
-						@input="searchInput"
-						@blur="searchCheck"
-					>
-					<i
-						v-if="search.input.length"
-						class="search-clear"
-						@click="clearSearch"
-					>x</i>
-				</div>
-
-				<div
-					v-if="activeBook === null"
-					class="d-flex aic gap-1"
-				>
-					<div
-						class="btn btn-grey btn-block mb-3"
-						@click="openGlossary"
-					>
-						<span>Глоссарий</span>
-					</div>
-
-					<div
-						v-if="isOwner && mode === 'edit'"
-						class="btn btn-grey mb-3 px-3"
-						@click="isGlossaryAccessDialog = true"
-					>
-						<i class="fa fa-cog" />
-					</div>
-				</div>
-
-				<div
-					v-if="showArchive"
-					class="btn btn-grey mb-3"
-					@click="showArchive = false"
-				>
-					<i class="fa fa-arrow-left" />
-					<span>Выйти из архива</span>
-				</div>
-
-				<!-- Существующие разделы -->
-				<div
-					v-if="!showArchive"
-					class="sections-wrap noscrollbar"
-					:class="{ 'expand' : mode == 'read'}"
-				>
-					<div class="search-content">
-						<template v-if="search.items.length">
-							<div
-								v-for="item in search.items"
-								:key="item.id"
-								class="search-item"
-								@click="selectSection(item.book, item.id)"
-							>
-								<p
-									v-if="item.book"
-									class="search-item-book"
-								>
-									{{ item.book.title }}
-								</p>
-								<p class="search-item-title">
-									{{ item.title }}
-								</p>
-								<!-- eslint-disable -->
-								<div
-									class="search-item-text"
-									v-html="item.text"
-								/>
-								<!-- eslint-enable -->
-							</div>
-						</template>
-
-						<div
-							v-else-if="search.input.length <= 2 && search.input.length !== 0"
-							class="text-muted"
-						>
-							Введите минимум 3 символа
-						</div>
-
-						<div
-							v-else-if="search.input.length > 2"
-							class="text-muted"
-						>
-							Ничего не найдено
-						</div>
-					</div>
-					<Draggable
-						v-if="!search.items.length && !search.input.length"
-						:id="null"
-						class="dragArea ml-0"
-						tag="div"
-						handle=".fa-bars"
-						:list="books"
-						:group="{ name: 'g1' }"
-						@start="startChangeOrder"
-						@end="saveOrder"
-					>
-						<template v-for="(book, b_index) in books">
-							<div
-								:id="book.id"
-								:key="book.id"
-								class="section d-flex aic jcsb"
-								@click.stop="selectSection(book)"
-							>
-								<div class="d-flex aic">
-									<i
-										v-if="mode == 'edit'"
-										class="fa fa-bars mover mr-2"
-									/>
-									<p>{{ book.title }}</p>
-								</div>
-
-								<div
-									v-if="mode == 'edit'"
-									class="section-btns"
-								>
-									<i
-										class="fa fa-trash mr-1"
-										@click.stop="deleteSection(b_index)"
-									/>
-									<i
-										class="fa fa-cog "
-										@click.stop="editAccess(book)"
-									/>
-								</div>
-							</div>
-						</template>
-					</Draggable>
-				</div>
-
-				<!-- Архивные разделы -->
-				<div
-					v-else
-					class="sections-wrap noscrollbar"
-				>
-					<template v-for="(book, b_index) in archived_books">
-						<div
-							v-if="can_edit"
-							:key="b_index"
-							class="section d-flex aic jcsb"
-							@click.stop="selectSection(book)"
-						>
-							<p>{{ book.title }}</p>
-							<div class="section-btns">
-								<i
-									class="fa fa-trash-restore mr-1"
-									@click.stop="restoreSection(b_index)"
-								/>
-							</div>
-						</div>
-					</template>
-				</div>
-
-				<!-- Кнопки внизу сайдбара -->
-				<div v-if="mode == 'edit'">
-					<div
-						v-if="!showArchive"
-						class="d-flex jscb"
-					>
-						<div
-							v-if="can_edit"
-							class="btn btn-grey w-full mr-1"
-							@click="showCreate = true"
-						>
-							<i class="fa fa-plus" />
-							<span>Добавить</span>
-						</div>
-						<div
-							v-if="can_edit"
-							class="btn btn-grey"
-							title="Архив"
-							@click="getArchivedBooks"
-						>
-							<i class="fa fa-box" />
-						</div>
-					</div>
-				</div>
-			</aside>
-
-			<!-- Правая часть -->
-			<div
-				class="rp"
-				style="flex: 1 1 0%; padding-bottom: 50px;"
-			>
-				<div class="hat">
-					<div class="d-flex jsutify-content-between hat-top">
-						<div class="bc">
-							<a href="#">База знаний</a>
-							<!---->
-						</div>
-
-						<!-- Кнопки на правом верхнем углу -->
-						<div class="control-btns d-flex">
-							<div
-								v-if="can_edit"
-								class="mode_changer mr-2"
-							>
-								<i
-									v-b-popover.hover.top="'Включить редактирование Базы знаний'"
-									class="fa fa-pen"
-									:class="{'active': mode == 'edit'}"
-									@click="toggleMode"
-								/>
-							</div>
-							<div
-								v-if="can_edit"
-								class="mode_changer"
-							>
-								<i
-									class="icon-nd-settings"
-									@click="get_settings()"
-								/>
-							</div>
-						</div>
-					</div>
-					<div />
-				</div>
-
-				<!-- Глоссарий -->
-				<div class="content mt-3">
-					<GlossaryComponent
-						v-if="show_glossary"
-						:mode="mode"
-						:terms="glossary"
-						:access="glossaryEditAccess"
-						@addTerm="addTerm"
-						@saveTerm="saveTerm"
-						@deleteTerm="deleteTerm"
-					/>
-				</div>
-			</div>
-		</div>
-
-		<!-- PAGE -->
-		<div v-if="activeBook">
-			<Booklist
-				ref="booklist"
-				:trees="trees"
-				:can_edit="!!(activeBook.access == 2 || isAdmin || canEditBook)"
-				:parent_name="activeBook.title"
-				:parent_id="activeBook.id"
-				:show_page_id="show_page_id"
-				:course_item_id="0"
+	<div class="KBPageV2">
+		<KBNav
+			:mode="mode"
+			:active-book="activeBook"
+			:books="books"
+			:pages="pages"
+			:root-id="rootId"
+			:root-book="rootBook"
+			class="KBPageV2-nav"
+			@glossary-open="showGlossary = true"
+			@glossary-settings="isGlossaryAccessDialog = true"
+			@back="back"
+			@book="fetchBook($event.id)"
+			@page="onPage"
+			@add-page="addPage"
+			@page-order="savePageOrder"
+			@create="onCreate"
+			@settings="editAccess"
+			@archive="archive"
+			@unarchive="unarchive"
+		/>
+		<section class="KBPageV2-main">
+			<KBToolbar
 				:mode="mode"
-				:enable_url_manipulation="true"
-				:auth_user_id="auth_user_id"
-				:glossary="glossary"
-				@back="back"
-				@toggleMode="toggleMode"
-				@page-add="fetchData"
+				:active-book="activeBook"
+				:breadcrumbs="breadcrumbs"
+				:can-edit="!!(activeBook ? canEditBook : isAdmin)"
+				:edit-book="editBook"
+				class="KBPageV2-toolbar"
+				@mode="mode = $event"
+				@upload-image="isUploadImage = true"
+				@upload-audio="isUploadAudio = true"
+				@delete-page="onDeletePage"
+				@save-page="onSavePage"
+				@edit-page="editBook = true"
+				@settings="activeBook ? editAccess(activeBook) : getSettings()"
 			/>
-		</div>
+			<div class="KBPageV2-body">
+				<GlossaryComponent
+					v-if="showGlossary"
+					:mode="mode"
+					:terms="glossary"
+					:access="glossaryEditAccess"
+					@addTerm="addTerm"
+					@saveTerm="saveTerm"
+					@deleteTerm="deleteTerm"
+				/>
+				<KBArticle
+					v-else-if="activeBook && !isActiveCategory && !editBook"
+					:mode="mode"
+					:active-book="activeBook"
+					:glossary="glossary"
+					@favorite="onFavorite"
+				/>
+				<KBEditor
+					v-else-if="activeBook && !isActiveCategory && editBook"
+					:active-book="activeBook"
+					:upload-image="isUploadImage"
+					:upload-audio="isUploadAudio"
+					@update="bookForm = $event"
+				/>
+			</div>
+		</section>
 
 		<!-- Новый раздел -->
 		<b-modal
@@ -278,11 +72,97 @@
 			hide-footer
 		>
 			<input
-				v-model="section_name"
+				v-model="sectionName"
 				type="text"
 				placeholder="Название раздела..."
 				class="form-control mb-2"
 			>
+			<div>
+				<p class="mb-2">
+					Кто может видеть (чтение)
+				</p>
+				<AccessSelectFormControl
+					:items="whoCanReadActual"
+					class="mb-2"
+					@click="isReadSelect = true"
+				/>
+				<b-row>
+					<b-col>
+						<AccessSelectFormControl
+							:items="whoCanReadPosition"
+							class="mb-4"
+							@click="isReadPositionSelect = true"
+						>
+							<template #placeholder>
+								Укажите должность
+								<img
+									v-b-popover.hover.right="'Сотрудники с этой должностью будут видеть этот раздел'"
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+								>
+							</template>
+						</AccessSelectFormControl>
+					</b-col>
+					<b-col>
+						<AccessSelectFormControl
+							:items="whoCanReadGroup"
+							class="mb-4"
+							@click="isReadGroupSelect = true"
+						>
+							<template #placeholder>
+								Укажите отдел
+								<img
+									v-b-popover.hover.right="'Сотрудники из этого отдела будут видеть этот раздел'"
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+								>
+							</template>
+						</AccessSelectFormControl>
+					</b-col>
+				</b-row>
+				<p class="mb-2">
+					Кто может редактировать
+				</p>
+				<AccessSelectFormControl
+					:items="whoCanEditActual"
+					class="mb-2"
+					@click="isEditSelect = true"
+				/>
+				<b-row>
+					<b-col>
+						<AccessSelectFormControl
+							:items="whoCanEditPosition"
+							class="mb-4"
+							@click="isEditPositionSelect = true"
+						>
+							<template #placeholder>
+								Укажите должность
+								<img
+									v-b-popover.hover.right="'Сотрудники с этой должностью будут редактировать этот раздел'"
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+								>
+							</template>
+						</AccessSelectFormControl>
+					</b-col>
+					<b-col>
+						<AccessSelectFormControl
+							:items="whoCanEditGroup"
+							class="mb-4"
+							@click="isEditGroupSelect = true"
+						>
+							<template #placeholder>
+								Укажите отдел
+								<img
+									v-b-popover.hover.right="'Сотрудники из этого отдела будут редактировать этот раздел'"
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+								>
+							</template>
+						</AccessSelectFormControl>
+					</b-col>
+				</b-row>
+			</div>
 			<button
 				class="btn btn-primary rounded m-auto"
 				@click="addSection"
@@ -290,7 +170,6 @@
 				<span>Сохранить</span>
 			</button>
 		</b-modal>
-
 
 		<!-- Настройки раздела -->
 		<SimpleSidebar
@@ -328,7 +207,7 @@
 			<template #footer>
 				<button
 					class="btn btn-primary rounded m-auto"
-					@click="save_settings()"
+					@click="saveSettings()"
 				>
 					Сохранить
 				</button>
@@ -344,9 +223,9 @@
 			hide-footer
 			no-enforce-focus
 		>
-			<div v-if="update_book != null">
+			<div v-if="updateBook != null">
 				<input
-					v-model="update_book.title"
+					v-model="updateBook.title"
 					type="text"
 					placeholder="Название раздела..."
 					class="form-control mb-4"
@@ -606,11 +485,12 @@ import { mapGetters, mapActions } from 'vuex'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 
-import Draggable from 'vuedraggable'
+import KBNav from '@/components/pages/KB/KBNav.vue'
+import KBToolbar from '@/components/pages/KB/KBToolbar.vue'
+import KBArticle from '@/components/pages/KB/KBArticle.vue'
+import KBEditor from '@/components/pages/KB/KBEditor.vue'
 import GlossaryComponent from '../components/Glossary.vue'
-const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
 import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
-// import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 import JobtronOverlay from '@ui/Overlay.vue'
 import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
 import AccessSelectFormControl from '@ui/AccessSelect/AccessSelectFormControl.vue'
@@ -636,32 +516,27 @@ const types = [
 ]
 
 export default {
-	name: 'KBPage',
+	name: 'KBPageV2',
 	components: {
-		Draggable,
+		KBNav,
+		KBToolbar,
+		KBArticle,
+		KBEditor,
 		GlossaryComponent,
-		Booklist,
 		SimpleSidebar,
-		// SuperSelect,
 		JobtronOverlay,
 		AccessSelect,
 		AccessSelectFormControl,
 	},
-	props: {
-		auth_user_id: {
-			type:Number,
-			default: 0
-		},
-		can_edit: {
-			type: Boolean,
-			default: false
-		},
-	},
+	props: {},
 	data() {
 		return {
 			mode: 'read',
 			books: [],
+			pages: [],
+			allBooks: [],
 			archived_books: [],
+			itemModels: [],
 
 			trees: [],
 			settings: null,
@@ -677,8 +552,8 @@ export default {
 
 			showEdit: false,
 			show_page_id: 0,
-			section_name: '',
-			update_book: null,
+			sectionName: '',
+			updateBook: null,
 
 			search: {
 				input: '',
@@ -686,7 +561,7 @@ export default {
 				timeout: null,
 			},
 
-			show_glossary: false,
+			showGlossary: false,
 			newGlossaryId: 0,
 			glossary: [],
 			isGlossaryAccess: false,
@@ -708,6 +583,15 @@ export default {
 			isEditGroupSelect: false,
 			whoCanEditPosition: [],
 			whoCanEditGroup: [],
+
+			isUploadImage: false,
+			isUploadAudio: false,
+			editBook: false,
+			rootId: null,
+			rootBook: null,
+			bookForm: null,
+			pagesMap: {},
+			createParentId: null,
 		};
 	},
 	computed: {
@@ -740,6 +624,7 @@ export default {
 		},
 		canEditBook(){
 			if(!this.activeBook) return false
+			if(this.isAdmin) return true
 			return ~this.whoCanEditActual.findIndex(access => {
 				switch(access.type){
 				case 1:
@@ -750,59 +635,101 @@ export default {
 					return access.id === this.user?.position_id
 				}
 			})
-		}
+		},
+		allBooksMap(){
+			const map = {}
+			this.allBooks.forEach(book => {
+				map[book.id] = book
+			})
+			return map
+		},
+		booksMap(){
+			const map = {}
+			this.books.forEach(book => {
+				map[book.id] = book
+			})
+			return map
+		},
+		breadcrumbs(){
+			if(!this.activeBook) return []
+			const breadcrumbs = []
+			let currentId = this.activeBook.id
+			while(currentId){
+				const book = this.allBooksMap[currentId] || this.pagesMap[currentId]
+				breadcrumbs.push({
+					title: book.title,
+					link: `/kb?s=${this.rootId}${book.parent_id ? '&b=' + currentId  : ''}`
+				})
+				currentId = book.parent_id
+			}
+			return breadcrumbs.reverse()
+		},
+		isActiveCategory(){
+			if(!this.activeBook) return false
+			return !this.activeBook.parent_id || this.activeBook.is_category
+		},
 	},
 	watch: {
-		auth_user_id(){
-			this.init()
+		pages: {
+			// computed сделать не получилось
+			deep: true,
+			handler(){
+				this.pagesMap = this.pages.reduce((result, page) => {
+					result[page.id] = page
+					if(page.children && page.children.length) this.getPages(result, page.children)
+					return result
+				}, {})
+			}
 		}
 	},
 
 	created() {
 		if(!this.users.length) this.loadCompany()
-		if(this.auth_user_id) this.init()
+		this.init()
 	},
 
 	methods: {
 		...mapActions(['loadCompany']),
-		searchCheck() {
-			if (this.search.input.length === 0) this.clearSearch()
-		},
-		clearSearch() {
-			clearTimeout(this.search.timeout)
-			this.search = {
-				input: '',
-				items: [],
-				timeout: null,
-			}
-		},
+
+		/* === HELPERS === */
 		init(){
-			this.fetchData()
+			const urlParams = new URLSearchParams(window.location.search)
+			const section = urlParams.get('s') || null
+
+			this.fetchData(section)
 			this.fetchGlossary()
 			this.fetchGlossaryAccess()
-
-			const urlParams = new URLSearchParams(window.location.search)
-			// const search = urlParams.get('search')
-			// if(search){
-			// 	this.search.input = search
-			// }
-
-			// бывор группы
-			const section = urlParams.get('s')
-			if(section) this.selectSection({id: section})
 		},
-		async fetchData() {
-			try {
-				this.books = await API.fetchKBBooks()
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось получить список разделов')
-				window.onerror && window.onerror(error)
-			}
+		getPages(map, pages){
+			pages.map(page => {
+				map[page.id] = page
+				if(page.children && page.children.length) this.getPages(map, page.children)
+			})
 		},
+		back() {
+			if(!this.isAdmin) {
+				this.mode = 'read'
+			}
+			this.activeBook = null
+			this.pages = []
+			this.books = this.allBooks
+			this.rootBook = null
+			this.rootId =  null
+			this.fetchData()
+			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
+		},
+		setTargetBlank(book){
+			const div = document.createElement('div')
+			div.innerHTML = book.text
+			const links = div.querySelectorAll('a')
+			links.forEach(link => link.setAttribute('target', '_blank'))
+			book.text = div.innerHTML
+			return book
+		},
+		/* === HELPERS === */
 
-		async get_settings() {
+		/* === SETTINGS === */
+		async getSettings() {
 			try {
 				const {settings} = await API.fetchSettings('kb')
 				this.send_notification_after_edit = settings.send_notification_after_edit
@@ -817,7 +744,7 @@ export default {
 			}
 		},
 
-		async save_settings() {
+		async saveSettings() {
 			try {
 				await API.updateSettings({
 					type: 'kb',
@@ -833,101 +760,331 @@ export default {
 				window.onerror && window.onerror(error)
 			}
 		},
+		/* === SETTINGS === */
 
-		async selectSection(book, page_id = 0) {
+		/* === BOOKS === */
+		async fetchData(id) {
+			if(id) return await this.fetchBook()
+
+			if(this.allBooks.length){
+				this.books = this.allBooks
+				this.itemModels = []
+				this.activeBook = null
+				return
+			}
+
 			try {
-				this.fetchAccess(book)
-				const data = await API.fetchKBBook(book.id)
-
-				if(data.error) return this.$toast.info('Раздел не найден')
-
-				// change URL
-				const urlParams = new URLSearchParams(window.location.search)
-				const b = urlParams.get('b')
-				let uri = '/kb?s=' + book.id
-				if(this.search.input) uri += '&hl=' + this.search.input
-				if(b || page_id) uri += '&b=' + (b || page_id)
-				window.history.replaceState({}, 'База знаний', uri)
-
-				this.trees = data.trees
-				this.activeBook = data.book
-				this.show_page_id = page_id
-				this.showSearch = false
-				this.clearSearch()
+				this.books = await API.fetchKBBooks()
+				this.allBooks = this.books
+				this.itemModels = []
+				this.activeBook = null
 			}
 			catch (error) {
 				console.error(error)
-				this.$toast.error('Не удалось получить раздел')
+				this.$toast.error('Не удалось получить список разделов')
 				window.onerror && window.onerror(error)
 			}
 		},
 
-		async deleteSection(i) {
-			if (!confirm('Вы уверены что хотите архивировать раздел?')) return
-			try {
-				await API.deleteKBBook(this.books[i].id)
-				this.books.splice(i, 1)
-				this.$toast.success('Раздел удален')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось удалить раздел')
-				window.onerror && window.onerror(error)
-			}
-		},
-
-		async restoreSection(i) {
-			if (!confirm('Вы уверены что хотите восстановить раздел?')) return
-			try {
-				await API.restoreKBBook(this.archived_books[i].id)
-				this.books.push(this.archived_books[i])
-				this.archived_books.splice(i, 1)
-				this.$toast.success('Раздел восстановлен')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось восстановить раздел')
-				window.onerror && window.onerror(error)
-			}
-		},
-
-		back() {
-			if(!this.can_edit) {
-				this.mode = 'read'
-				this.clearSearch()
-			}
-			this.activeBook = null
-			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
-		},
-
-		searchInput() {
-			clearTimeout(this.search.timeout)
-			this.search.timeout = setTimeout(this.runSearch, 500)
-		},
-
-		async runSearch(){
-			if(this.search.input.length <= 2) return null
-			try {
-				const data = await API.searchKBBook({
-					text: this.search.input,
-					id: null
+		async fetchBook(id){
+			try{
+				const {trees, item_models, book, can_save} = await API.fetchKBBook(id)
+				this.books = []
+				this.pages = trees.map(page => {
+					return {
+						...page,
+						parent_id: +id
+					}
 				})
-				this.search.items = data.items
-				this.emphasizeTexts()
+				this.rootId = id
+				this.rootBook = book
+				this.itemModels = item_models
+				this.activeBook = book
+				this.canSave = can_save
 			}
 			catch (error) {
 				console.error(error)
-				this.$toast.error('Поиск не удался')
+				this.$toast.error('Не удалось получить список разделов')
 				window.onerror && window.onerror(error)
 			}
 		},
 
-		emphasizeTexts() {
-			this.search.items.forEach(item => {
-				item.text = item.text.replace(new RegExp(this.search.input,'gi'), '<b>' + this.search.input +  '</b>')
-			})
+		async addSection() {
+			if (this.sectionName.length <= 2) return this.$toast.error('Слишком короткое название!')
+
+			const loader = this.$loading.show()
+
+			try {
+				const book = await API.createKBBook({
+					name: this.sectionName,
+					parent_id: this.createParentId,
+				})
+				this.showCreate = false
+				this.sectionName = ''
+
+				if(this.createParentId){
+					const parent = this.pagesMap[this.createParentId] || this.booksMap[this.createParentId]
+					if(!parent.children) parent.children = []
+					parent.children.push(book)
+				}
+				else{
+					this.books.push(book)
+				}
+
+				this.updateBook = book
+				await this.updateSection(true)
+
+				this.createParentId = null
+
+				this.$toast.success('Раздел успешно создан!')
+			}
+			catch (error) {
+				console.error(error)
+				this.$toast.error('Не создать раздел')
+				window.onerror && window.onerror(error)
+			}
+			loader.hide()
 		},
 
+		async updateSection(silent) {
+			if (this.updateBook.title.length <= 2) return this.$toast.error('Слишком короткое название!')
+			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
+
+			const loader = this.$loading.show()
+			const pairs = []
+			for(let i = 0, l = this.whoCanReadGroup.length; i < l; ++i){
+				pairs.push({
+					position_id: this.whoCanReadPosition[i].id,
+					group_id: this.whoCanReadGroup[i].id
+				})
+			}
+			const editPairs = []
+			for(let i = 0, l = this.whoCanEditGroup.length; i < l; ++i){
+				editPairs.push({
+					position_id: this.whoCanEditPosition[i].id,
+					group_id: this.whoCanEditGroup[i].id
+				})
+			}
+
+			try {
+				await API.updateKBBook({
+					id: this.updateBook.id,
+					title: this.updateBook.title,
+					who_can_read: this.whoCanReadActual,
+					who_can_edit: this.whoCanEditActual,
+					who_can_read_pairs: pairs,
+					who_can_edit_pairs: editPairs,
+					parent_id: this.updateBook.parent_id,
+				})
+
+				this.showEdit = false
+				const index = this.books.findIndex(b => b.id == this.updateBook.id)
+
+				if(index != -1) this.books[index].title = this.updateBook.title
+
+				this.updateBook = null
+				this.who_can_read = []
+				this.who_can_edit = []
+				this.whoCanReadPosition = []
+				this.whoCanReadGroup = []
+				this.whoCanEditPosition = []
+				this.whoCanEditGroup = []
+
+				if(!silent) this.$toast.success('Изменения сохранены')
+				loader.hide()
+			}
+			catch (error) {
+				loader.hide()
+				console.error(error)
+				if(!silent) this.$toast.error('Не удалось созранить изменения')
+				window.onerror && window.onerror(error)
+			}
+		},
+
+		async addPage(parent){
+			try {
+				const data = await API.addKBPage(parent.id)
+				this.addPageHandler(data, parent)
+			}
+			catch (error) {
+				console.error(error)
+				this.$toast.error('Не удалось создать страницу')
+				window.onerror && window.onerror(error)
+			}
+		},
+
+		addPageHandler(book, parent){
+			book.created = this.$moment.utc(book.created_at).local().format('DD.MM.YYYY HH:mm')
+			book.edited_at = this.$moment.utc(book.updated_at).local().format('DD.MM.YYYY HH:mm')
+			book.editor_avatar = this.$laravel.avatar
+			const name = `${this.user.last_name} ${this.user.name}`
+			book.author = name
+			book.editor = name
+			book.parent_id = parent.id
+
+			if(parent.id === this.rootId){
+				this.pages.push(book)
+			}
+			else{
+				if(!parent.children) parent.children = []
+				parent.children.push(book)
+			}
+
+			this.$nextTick(() => {
+				this.activeBook = book
+				this.editBook = true
+			})
+
+			this.$toast.info('Добавлена страница')
+		},
+
+		onCreate(parent){
+			this.clearAccess()
+			this.showCreate = true
+			this.createParentId = parent?.id || null
+		},
+
+		async onPage(page){
+			const loader = this.$loading.show()
+
+			try {
+				const {data} = await this.axios.post('/kb/get', {
+					id: page.id,
+					course_item_id: 0,
+					refresh: false
+				})
+				this.activeBook = this.setTargetBlank(data.book)
+				this.editBook = false
+				// clear search
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
+		},
+
+		async onSavePage(){
+			if(!this.bookForm.questions.length && !this.canSave) return this.$toast.error('Нельзя вносить изменения без тестов')
+
+			const loader = this.$loading.show()
+			try {
+				this.axios.post('/kb/page/update', {
+					id: this.bookForm.id,
+					title: this.bookForm.title,
+					text: this.bookForm.text,
+					pass_grade: this.bookForm.pass_grade,
+				})
+				this.editBook = false
+				this.pagesMap[this.bookForm.id].title = this.bookForm.title
+				this.activeBook = this.bookForm
+				this.activeBook.editor_id = this.user.id
+				this.activeBook.editor = `${this.user.last_name} ${this.user.name}`
+				this.activeBook.editor_avatar = `users_img/${this.user.img_url}`
+				this.activeBook.edited_at = this.$moment().format('DD.MM.YYYY HH:mm')
+				this.$toast.info('Сохранено')
+			}
+			catch (error) {
+				console.error(error)
+				this.$toast.error('Не удалось сохранить страницу')
+				window.onerror && window.onerror(error)
+			}
+			loader.hide()
+		},
+		async onDeletePage(){
+			if(!confirm('Вы уверены?')) return
+
+			const id = this.activeBook.id
+			const parent = this.pagesMap[this.activeBook.parent_id] || this.booksMap[this.activeBook.parent_id]
+			try {
+				await this.axios.post('/kb/page/delete', { id })
+				if(parent){
+					const index = parent.children.findIndex(page => page.id === id)
+					if(~index) parent.children.splice(index, 1)
+				}
+				else{
+					const index = this.pages.findIndex(page => page.id === id)
+					if(~index) this.pages.splice(index, 1)
+				}
+				this.activeBook = this.allBooksMap[this.rootId]
+				this.$toast.success('Удалено')
+			}
+			catch (error) {
+				console.error(error)
+				this.$toast.error('Не удалось удалить страницу')
+				window.onerror && window.onerror(error)
+			}
+		},
+		archive(book){
+			const parent = this.pagesMap[book.parent_id] || this.booksMap[book.parent_id]
+
+			if(parent){
+				const index = parent.children.findIndex(children => children.id === book.id)
+				if(~index) parent.children.splice(index, 1)
+			}
+			else if(this.pages.length){
+				const index = this.pages.findIndex(children => children.id === book.id)
+				if(~index) this.pages.splice(index, 1)
+			}
+			else{
+				const index = this.allBooks.findIndex(children => children.id === book.id)
+				if(~index) this.allBooks.splice(index, 1)
+			}
+		},
+		unarchive(book){
+			const parent = this.booksMap[book.parent_id]
+			if(!parent) return
+			parent.children.push(book)
+		},
+		async onFavorite(page){
+			try {
+				await API.toggleKBPageFavorite(page.id, {toggle: !page.isFavorite})
+				page.isFavorite = !page.isFavorite
+			}
+			catch (error) {
+				console.error(error)
+				this.$toast.error('Не удалось добавить в избранное')
+				window.onerror && window.onerror(error)
+			}
+		},
+		async savePageOrder(event){
+			const id = +event.item.getAttribute('data-id')
+			const parentId = +event.to.getAttribute('data-id')
+			try {
+				await API.updateKBOrder({
+					id,
+					order: event.newIndex,
+					parent_id: parentId,
+				})
+				const page = this.pagesMap[id]
+				const prevParent = this.pagesMap[page.parentId]
+				const parent = this.pagesMap[parentId]
+				if(prevParent){
+					const index = prevParent.children.findIndex(children => children.id === id)
+					if(~index) prevParent.children.splice(index, 1)
+				}
+				else{
+					const index = this.pages.findIndex(p => p.id === id)
+					if(~index) this.pages.splice(index, 1)
+				}
+
+				if(parent){
+					if(!parent.children) parent.children = []
+					parent.children.splice(event.newIndex, 0, page)
+				}
+				else{
+					this.pages.splice(event.newIndex, 0, page)
+				}
+				this.$toast.success('Очередь сохранена')
+			}
+			catch (error) {
+				console.error(error)
+				window.onerror && window.onerror(error)
+				this.$toast.error('Не удалось сохранить очередь')
+			}
+		},
+		/* === BOOKS === */
+
+		/* === ACCESS === */
 		async fetchAccess(book){
 			try {
 				const {
@@ -951,7 +1108,7 @@ export default {
 		async editAccess(book) {
 			this.clearAccess()
 			this.showEdit = true
-			this.update_book = book
+			this.updateBook = book
 			this.fetchAccess(book)
 		},
 
@@ -1019,126 +1176,9 @@ export default {
 				type: 2
 			}]
 		},
+		/* === ACCESS === */
 
-		async addSection() {
-			if (this.section_name.length <= 2) return this.$toast.error('Слишком короткое название!')
-
-			const loader = this.$loading.show()
-
-			try {
-				const book = await API.createKBBook(this.section_name)
-				this.showCreate = false
-				this.section_name = ''
-
-				this.books.push(book)
-
-				this.$toast.success('Раздел успешно создан!')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не создать раздел')
-				window.onerror && window.onerror(error)
-			}
-			loader.hide()
-		},
-
-		async getArchivedBooks() {
-			const loader = this.$loading.show()
-
-			try {
-				const books = await API.fetchKBArchived()
-				this.archived_books = books
-				this.showArchive = true
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось получить архивные разделы')
-				window.onerror && window.onerror(error)
-			}
-			loader.hide()
-		},
-
-		async updateSection(silent) {
-			if (this.update_book.title.length <= 2) return this.$toast.error('Слишком короткое название!')
-			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
-
-			const loader = this.$loading.show()
-			const pairs = []
-			for(let i = 0, l = this.whoCanReadGroup.length; i < l; ++i){
-				pairs.push({
-					position_id: this.whoCanReadPosition[i].id,
-					group_id: this.whoCanReadGroup[i].id
-				})
-			}
-			const editPairs = []
-			for(let i = 0, l = this.whoCanEditGroup.length; i < l; ++i){
-				editPairs.push({
-					position_id: this.whoCanEditPosition[i].id,
-					group_id: this.whoCanEditGroup[i].id
-				})
-			}
-
-			try {
-				await API.updateKBBook({
-					id: this.update_book.id,
-					title: this.update_book.title,
-					who_can_read: this.whoCanReadActual,
-					who_can_edit: this.whoCanEditActual,
-					who_can_read_pairs: pairs,
-					who_can_edit_pairs: editPairs,
-				})
-
-				this.showEdit = false
-				const index = this.books.findIndex(b => b.id == this.update_book.id)
-
-				if(index != -1) this.books[index].title = this.update_book.title
-
-				this.update_book = null
-				this.who_can_read = []
-				this.who_can_edit = []
-				this.whoCanReadPosition = []
-				this.whoCanReadGroup = []
-				this.whoCanEditPosition = []
-				this.whoCanEditGroup = []
-
-				if(!silent) this.$toast.success('Изменения сохранены')
-				loader.hide()
-			}
-			catch (error) {
-				loader.hide()
-				console.error(error)
-				if(!silent) this.$toast.error('Не удалось созранить изменения')
-				window.onerror && window.onerror(error)
-			}
-		},
-
-		async saveOrder(event) {
-			try {
-				await API.updateKBOrder({
-					id: event.item.id,
-					order: event.newIndex,
-					parent_id: null
-				})
-				this.$toast.success('Очередь сохранена')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось сохранить порядок')
-				window.onerror && window.onerror(error)
-			}
-		},
-
-
-		toggleMode() {
-			this.mode = (this.mode == 'read') ? 'edit' : 'read'
-			this.clearSearch()
-		},
-
-		startChangeOrder() {},
-
-		openGlossary() {
-			this.show_glossary = true
-		},
+		/* === GLOSSARY === */
 		async fetchGlossary(){
 			try {
 				this.glossary = await API.fetchGlossary()
@@ -1197,65 +1237,48 @@ export default {
 			}
 			catch (error) {
 				console.error(error)
-				this.$toast.error('Не удалось созранить изменения')
+				this.$toast.error('Не удалось сохранить изменения')
 				window.onerror && window.onerror(error)
 			}
 		},
+		/* === GLOSSARY === */
 	},
 };
 </script>
 
 <style lang="scss">
-	.form-search-kb{
+.KBPageV2{
+	display: flex;
+	align-items: stretch;
+
+	height: 100vh;
+
+	&-nav{
+		width: 290px;
+		flex: 0 0 290px;
+	}
+	&-main{
+		flex: 1;
+		display: flex;
+		flex-flow: column nowrap;
+
 		position: relative;
-		margin-bottom: 10px;
-		.fa-search{
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			color: #bdcadf;
-		}
-		input{
-			padding: 0 35px !important;
-		}
-		.search-clear{
-			position: absolute;
-			top: 8px;
-			right: 12px;
-			font-style: normal;
-			font-size: 16px;
-			line-height: 1;
-			color: red;
-			cursor: pointer;
-		}
 	}
-	.search-content{
-		.search-item{
-			margin-bottom: 10px;
-			border-bottom: 1px solid #ddd;
-			padding: 3px 5px 10px 5px;
-			font-size: 14px;
-			cursor: pointer;
-			&:hover{
-				background-color: #f2f2f2;
-			}
-			&-book{
-				color: #1272aa;
-			}
-			&-title{
-				font-size: 16px;
-				color: #666;
-				font-weight: 700;
-			}
-			&-text{
-				font-size: 12px;
-				color: #999;
-				margin-top: 5px;
-			}
-			b{
-				color: #333;
-				background-color: yellow;
-			}
-		}
+	&-toolbar{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+
+		min-height: 35px;
+		padding: 5px 15px;
+		border-bottom: 1px solid #dfdfdf;
+
+		background-color: #f8f8f8;
 	}
+	&-body{
+		flex: 1;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+}
 </style>
