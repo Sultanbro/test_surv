@@ -3,14 +3,13 @@
 namespace App\Repositories\Referral;
 
 use App\DayType;
-use App\Facade\Referring;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\SalaryFilter;
-use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserStatisticRepository implements UserStatisticRepositoryInterface
 {
@@ -25,7 +24,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     public function statistic(array $filter, ?User $user = null): array
     {
         $this->filter = $filter;
-        $referrer = $this->referrer(auth()->user());
+        $referrer = $this->referrer($user ?? auth()->user());
         $referrerToArray = $referrer->toArray();
 
         return [
@@ -159,13 +158,23 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function referrals(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
+            ->with('timetracking')
+            ->with(['daytypes' => function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $this->dateStart()->month)
+                    ->whereYear('date', $this->dateStart()->year);
+            }])
+            ->with(['timetracking' => function (HasMany $query) {
+                $query->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                    ->whereMonth('enter', '=', $this->dateStart()->month)
+                    ->whereYear('enter', $this->dateStart()->year)
+                    ->orderBy('id', 'ASC');
+            }])
             ->select(['name', 'last_name', 'referrer_id', 'id'])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
-
-                Referring::touchReferrerStatus($referral); // before get
 
                 $days = $this->getReferralDayTypes($referral);
 
@@ -235,7 +244,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     {
         $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
         $weekTemplate = $this->createWeekTemplate($weeksToTrack);
-        $timeTracking = $this->getReferralTimeTracking($referral, $this->dateStart());
+        $timeTracking = $this->getReferralTimeTracking($referral);
 
         foreach ($timeTracking as $tracker) {
             for ($week = 1; $week <= $weeksToTrack; $week++) {
@@ -265,25 +274,16 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return $weekTemplate;
     }
 
-    private function getReferralTimeTracking(User $referral, Carbon $date): Collection
+    private function getReferralTimeTracking(User $referral): Collection
     {
-        return Timetracking::query()
-            ->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-            ->where('user_id', $referral->getKey())
-            ->whereMonth('enter', '=', $date->month)
-            ->whereYear('enter', $date->year)
-            ->orderBy('id', 'ASC')
-            ->get();
+        return $referral->timetracking
+            ->where('user_id', $referral->getKey());
     }
 
     private function getReferralDayTypes(User $referral): Collection
     {
-        return DayType::query()
-            ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-            ->where('user_id', $referral->getKey())
-            ->whereMonth('date', '=', $this->dateStart()->month)
-            ->whereYear('date', $this->dateStart()->year)
-            ->get();
+        return $referral->daytypes
+            ->where('user_id', $referral->getKey());
     }
 
     private function isAbsence(?DayType $day): bool

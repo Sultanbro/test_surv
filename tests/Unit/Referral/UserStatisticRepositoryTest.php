@@ -31,6 +31,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
         $this->seedData($user, 20);
         $repo = app(UserStatisticRepository::class);
         $result = $repo->statistic([]);
+        dd($result);
         DB::rollBack();
     }
 

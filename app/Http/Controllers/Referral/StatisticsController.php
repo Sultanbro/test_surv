@@ -27,7 +27,7 @@ class StatisticsController extends Controller
         return StatisticResource::make($statistic);
     }
 
-    public function referrer(FilterRequest $request, ?User $user): StatisticResource
+    public function referrer(FilterRequest $request, ?User $user = null): StatisticResource
     {
         $statistic = new StatisticDto(
             $this->userStatisticRepository->statistic($request->validated(), $user)
