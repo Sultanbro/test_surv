@@ -208,7 +208,7 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
-				&& this.refReady
+				// && this.refReady
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
