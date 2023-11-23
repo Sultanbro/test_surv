@@ -25,7 +25,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     public function statistic(array $filter, ?User $user = null): array
     {
         $this->filter = $filter;
-        $referrer = $this->referrer($user ?? auth()->user());
+        $referrer = $this->referrer(auth()->user());
         $referrerToArray = $referrer->toArray();
 
         return [
