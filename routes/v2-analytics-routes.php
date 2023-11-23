@@ -56,5 +56,14 @@ Route::group([
      */
     Route::post('/create', [V2AnalyticController::class, 'create'])->name('.create');
 
+    /**
+     * Получить маржу.
+     */
     Route::get('/get-rentability', [TopController::class, 'getRentability'])->name('.rentability');
+
+
+    /**
+     * Часы из табеля.
+     */
+    Route::post('/report-card', [V2AnalyticController::class, 'reportCard'])->name('.report-card');
 });
