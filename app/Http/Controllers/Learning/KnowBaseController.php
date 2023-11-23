@@ -171,7 +171,7 @@ class KnowBaseController extends Controller
     public function getArchived(Request $request) : array
     {
         if(auth()->user()->can('kb_edit')) {
-            $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray();
+            $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orWhere('is_category', 1)->orderBy('order')->get()->toArray();
         } else {
             $books = [];
         }
@@ -250,6 +250,7 @@ class KnowBaseController extends Controller
         $course_item_id = $request->course_item_id;
         $user_id = auth()->id();
 
+        /** @var KnowBase $page */
         $page = KnowBase::withTrashed()
             //->with('questions')
 			->with('questions.result', function ($query) use ($course_item_id, $user_id) {
@@ -366,6 +367,7 @@ class KnowBaseController extends Controller
         if ($page) {
             $page->title = $request->title;
             $page->editor_id = Auth::user()->id;
+            $page->parent_id = $request->parent_id ?? null;
             $page->save();
 
 
@@ -400,6 +402,23 @@ class KnowBaseController extends Controller
 
         }
 
+    }
+
+    /**
+     * Update access to knowbase
+     * update knowbase
+     */
+    public function toggleFavourite(Request $request, KnowBase $kb)
+    {
+        $favourite = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->first();
+        if ($favourite && $request->toggle != 1) {
+            $favourite->delete();
+        } elseif (!$favourite && $request->toggle == 1) {
+            \DB::table('user_starred_kbs')->insert([
+                'user_id' => Auth::id(),
+                'kb_id' => $kb->id
+            ]);
+        }
     }
 
     /**
@@ -554,6 +573,10 @@ class KnowBaseController extends Controller
      */
     public function addSection(Request $request) : KnowBase
     {
+        $request->validate([
+            'parent_id' => 'nullable|int'
+        ]);
+
         $kb = KnowBase::whereNull('parent_id')->orderBy('order', 'desc')->first();
 
         return KnowBase::create([
@@ -562,7 +585,7 @@ class KnowBaseController extends Controller
             'user_id' => Auth::user()->id,
             'editor_id' => Auth::user()->id,
             'order' => $kb ? $kb->order + 1 : 0,
-            'parent_id' => null,
+            'parent_id' => $request->parent_id ?? null,
             'hash' => 'cat',
             'is_deleted' => 0,
         ]);
