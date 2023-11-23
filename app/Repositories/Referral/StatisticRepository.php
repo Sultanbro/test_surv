@@ -62,30 +62,69 @@ class StatisticRepository implements StatisticRepositoryInterface
 
     protected function referrers(): array
     {
+        $startDate = $this->dateStart()->format("Y-m-d");
+        $endDate = $this->dateEnd()->format("Y-m-d");
+        $paidTypeFirstWork = PaidType::FIRST_WORK->name;
+
+        // Aggregate subqueries prepared as joins
+        $referralSalariesSubQuery = DB::table('referral_salaries')
+            ->select('referrer_id',
+                DB::raw("SUM(amount) AS absolute_earned"),
+                DB::raw("SUM(CASE WHEN is_paid = 1 THEN amount ELSE 0 END) AS absolute_paid"),
+                DB::raw("SUM(CASE WHEN date BETWEEN '{$startDate}' AND '{$endDate}' THEN amount ELSE 0 END) AS month_earned"),
+                DB::raw("SUM(CASE WHEN is_paid = 1 AND date BETWEEN '{$startDate}' AND '{$endDate}' THEN amount ELSE 0 END) AS month_paid"),
+                DB::raw("SUM(CASE WHEN is_paid = 1 AND date BETWEEN '{$startDate}' AND '{$endDate}' AND type = '{$paidTypeFirstWork}' THEN amount ELSE 0 END) AS referrers_earned")
+            )
+            ->groupBy('referrer_id');
+
+        $segmentId = LeadTemplate::SEGMENT_ID;
+
+        // SubQuery for counting applieds
+        $appliedsSubQuery = DB::table('users as ref')
+            ->join('user_descriptions', 'ref.id', '=', 'user_descriptions.user_id')
+            ->select('ref.referrer_id', DB::raw('COUNT(*) as total_applieds'))
+            ->where('user_descriptions.is_trainee', 0)
+            ->groupBy('ref.referrer_id');
+
+        // SubQuery for counting leads
+        $leadsSubQuery = DB::table('bitrix_leads')
+            ->select('referrer_id', DB::raw('COUNT(*) as total_leads'))
+            ->where('segment', $segmentId)
+            ->groupBy('referrer_id');
+
+        // SubQuery for counting deals
+        $dealsSubQuery = DB::table('bitrix_leads')
+            ->select('referrer_id', DB::raw('COUNT(*) as total_deals'))
+            ->where('segment', $segmentId)
+            ->where('deal_id', '>', 0)
+            ->groupBy('referrer_id');
+
+        // Main query with optimized joins
+
         return User::query()
-            ->WhereHas('referralLeads')
-            ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+            ->leftJoinSub($appliedsSubQuery, 'applieds', 'users.id', '=', 'applieds.referrer_id')
+            ->leftJoinSub($leadsSubQuery, 'leads', 'users.id', '=', 'leads.referrer_id')
+            ->leftJoinSub($dealsSubQuery, 'deals', 'users.id', '=', 'deals.referrer_id')
+            ->leftJoinSub($referralSalariesSubQuery, 'referral_salaries', 'users.id', '=', 'referral_salaries.referrer_id')
+            ->with(['user_description' => function ($query) {
+                $query->select(['id', 'user_id', 'is_trainee']);
+            }])
             ->select([
-                'id',
-                'referrer_id',
-                'name',
-                'last_name',
-                'referrer_status',
-                'deleted_at',
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id) AS absolute_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1) AS absolute_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '") AS month_paid'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND is_paid = 1 AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND type = "' . PaidType::FIRST_WORK->name . '") AS referrers_earned'),
-                DB::raw('(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND date BETWEEN "' . $this->dateStart()->format("Y-m-d") . '" AND "' . $this->dateEnd()->format("Y-m-d") . '" AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine'),
-                DB::raw('(SELECT COUNT(*) FROM users ref
-                                INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
-                                WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ' AND deal_id > 0) AS leads'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id IS NOT NULL AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
+                'users.id',
+                'users.referrer_id',
+                'users.name',
+                'users.last_name',
+                'users.referrer_status',
+                'users.deleted_at',
+                'referral_salaries.absolute_earned',
+                'referral_salaries.absolute_paid',
+                'referral_salaries.month_earned',
+                'referral_salaries.month_paid',
+                'referral_salaries.referrers_earned',
+                'applieds.total_applieds as applieds',
+                'leads.total_leads as leads',
+                'deals.total_deals as deals',
             ])
-            ->orderBy('leads', 'desc')
             ->get()
             ->each(function (User $user) {
                 $user->deal_lead_conversion_ratio = $this->getRatio($user->deals, $user->leads);

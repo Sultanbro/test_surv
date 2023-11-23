@@ -80,8 +80,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 DB::raw('(SELECT COUNT(*) FROM users ref
                                 INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
                                 WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0) AS applieds'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ' AND deal_id > 0) AS leads'),
-                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id IS NOT NULL AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS leads'),
+                DB::raw('(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND AND deal_id > 0 AND segment = ' . LeadTemplate::SEGMENT_ID . ') AS deals'),
             ])
             ->first();
 
@@ -134,7 +134,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
-                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id','is_paid']);
+                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
@@ -166,14 +166,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
                 return $referral;
             });
-    }
-
-    private function getReferralSalaries(User $referrer, User $referral): Collection
-    {
-        return $referrer->referralSalaries
-            ->where([
-                'referral_id' => $referral->getKey(),
-            ]);
     }
 
     private function traineesDaily($days, $training): array
