@@ -34,6 +34,7 @@
 				{key: 'switch', label: '', thClass: 'RefStats-switch'},
 				...tableFields,
 			]"
+			:user-link="true"
 			@load-user="loadUser"
 			@payment-click="showPaymentDialog"
 		/>
