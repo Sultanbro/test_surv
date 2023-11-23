@@ -61,12 +61,15 @@ function referrerToUser(user){
 
 export async function referralUserStat(userId = 0){
 	const {data} = await axios.get('/referrals/statistics/user' + (userId ? '/' + userId : ''))
+	const referrer = data.data?.referrer ? referrerToUser(data.data?.referrer) : null;
+	if(referrer) referrer.users = data.data?.referrals?.map(referalToUser)
 	return {
 		month: Number(data.data?.mine || 0),
 		monthRef: Number(data.data?.from_referrals || 0),
 		total: Number(data.data?.absolute || 0),
 		tops: data.data?.tops?.map(referrerToUser) || [],
-		users: data.data?.referrals?.map(referrerToUser) || [],
+		// users: data.data?.referrals?.map(referrerToUser) || [],
+		users: referrer ? [referrer] : []
 	}
 }
 
