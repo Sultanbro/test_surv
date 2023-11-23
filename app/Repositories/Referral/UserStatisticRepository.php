@@ -170,7 +170,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     ->whereYear('enter', $this->dateStart()->year)
                     ->orderBy('id', 'ASC');
             }])
-            ->with(['salariesReferrals' => function (HasMany $query) use ($referrer) {
+            ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
             }])
             ->select(['name', 'last_name', 'referrer_id', 'id'])
