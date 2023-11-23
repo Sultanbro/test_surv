@@ -134,7 +134,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
-                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id']);
+                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id','is_paid']);
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
