@@ -251,6 +251,15 @@ class IntellectController extends Controller
     {
         History::bitrix('Смена ответственного', $request->all());
 
+        $bitrix = new Bitrix();
+
+        $bitrixLead = $bitrix->findLead($request->lead_id);
+
+        if (preg_match('/\b(?:r=)(\d+)\b/', $bitrixLead['UF_CRM_1658163204'], $matches)) {
+            $referrer_id = $matches[1];
+        } else {
+            $referrer_id = null;
+        }
         if ($request->lead_id) {
            $lead = Lead::query()->where('lead_id', $request->lead_id)->latest()->first();
            if ($lead !== null)
@@ -278,7 +287,8 @@ class IntellectController extends Controller
                    'deal_id' => $request->deal_id,
                    'project' => $request->project ?? null,
                    'net' => $request->net ?? null,
-                   'skyped' => now()
+                   'skyped' => now(),
+                   'referrer_id' => $referrer_id
                ]);
            }
         }
