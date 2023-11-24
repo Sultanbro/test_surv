@@ -210,7 +210,8 @@ class KnowBaseController extends Controller
 
             $children_ids = KnowBase::query()->searchChildrenIdsByKbId($request->id)->pluck('id')->toArray();
             $children_ids[] = $request->id;
-            \DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $request->id)->exists();
+            $favouriteIds = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->whereIn('kb_id', $children_ids)->pluck('kb_id')->toArray();
+
             foreach ($trees as $tree) {
                 $tree->parent_id = null;
             }
@@ -240,6 +241,7 @@ class KnowBaseController extends Controller
 
         return [
             'trees' => $trees,
+            'favourite_ids' => $favouriteIds,
             'book' => $book,
             'item_models' => $item_models,
             'can_save' => $this->canSaveWithoutTest()
