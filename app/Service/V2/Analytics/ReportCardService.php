@@ -38,7 +38,7 @@ class ReportCardService
                 if ($stat)
                 {
                     $dayTotal = Timetracking::totalHours($date, $dto->groupId, $dto->positions);
-                    $dayTotal = floor($dayTotal / 9 * 10) / 10;
+                    $dayTotal = floor($dayTotal / 9 * 10) / $dto->divide;
 
                     $stat->value        = $dayTotal;
                     $stat->show_value   = $dayTotal;
