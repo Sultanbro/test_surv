@@ -24,6 +24,8 @@ import {
 } from '@/composables/fire_causes'
 
 import axios from 'axios'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 
 const DATE_YMD = 'YYYY-MM-DD';
 const DATE_DMY = 'DD.MM.YYYY';
@@ -48,7 +50,6 @@ export default {
 		return {
 			activeUserId: this.$route.query.id || '',
 			csrf: '',
-			tenant: window.location.hostname.split('.')[0],
 			workChartId: null,
 			user: null,
 			groups: [],
@@ -128,6 +129,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(usePortalStore, ['isMain']),
 		isTrainee(){
 			return this.user?.user_description?.is_trainee === 1
 		},
@@ -861,7 +863,7 @@ export default {
 							<span>Оплата</span>
 						</li>
 						<li
-							v-if="user && tenant === 'bp'"
+							v-if="user && isMain"
 							id="bg-this-7"
 							:class="{'active': showBlocks.adaptation}"
 							@click="showBlock(7)"
