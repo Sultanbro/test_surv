@@ -205,20 +205,14 @@ class KnowBaseController extends Controller
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
                 ->with('questions')
-                ->whereHas('user_starred', fn($q) => $q->where(''))
                 ->orderBy('order')
                 ->get();
 
             $children_ids = KnowBase::query()->searchChildrenIdsByKbId($request->id)->pluck('id')->toArray();
-
+            $children_ids[] = $request->id;
+            \DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $request->id)->exists();
             foreach ($trees as $tree) {
                 $tree->parent_id = null;
-                if (\DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $tree->id)->exists()) {
-                    $tree->setAttribute('is_favourite', 1);
-                }
-                $children_ids = $tree->children->pluck('id')->toArray();
-                $found_ids = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $tree->id)
-                $tree->setAttribute('is_favourite', 0);
             }
 
             $trees->toArray();
