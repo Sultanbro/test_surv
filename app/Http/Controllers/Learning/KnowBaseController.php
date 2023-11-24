@@ -210,6 +210,10 @@ class KnowBaseController extends Controller
 
             foreach ($trees as $tree) {
                 $tree->parent_id = null;
+                if (\DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $tree->id)->exists()) {
+                    $tree->setAttribute('is_favourite', 1);
+                }
+                $tree->setAttribute('is_favourite', 0);
             }
 
             $trees->toArray();
