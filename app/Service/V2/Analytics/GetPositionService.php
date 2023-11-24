@@ -20,9 +20,8 @@ class GetPositionService
      */
     public function handle(GetAnalyticPositionsDto $dto): Collection
     {
-        $users = \App\ProfileGroup::employees($dto->groupId);
+        $users = ProfileGroup::employees($dto->groupId);
 
-        $positions = Position::query()->withWhereHas('users', fn ($users) => $users->select('id')->whereIn('id', $users))->get();
-        return $positions;
-    }
+        return Position::query()->leftJoin('users as u', 'position.id', '=', 'u.position_id')
+            ->whereIn('u.id', $users)->groupBy('position_id')->get(['position_id as id', 'position as name']);}
 }
