@@ -1,10 +1,13 @@
 <template>
 	<div class="KBArticle">
-		<div class="KBArticle-favorite">
+		<div
+			class="KBArticle-favorite"
+			@click="$emit('favorite', activeBook)"
+		>
 			<i
 				class="fa-heart"
 				:class="[
-					activeBook.isFavorite ? 'far' : 'fas',
+					activeBook.isFavorite ? 'fas' : 'far',
 				]"
 			/>
 		</div>
@@ -125,8 +128,7 @@ export default {
 	watch: {
 		activeBook: {
 			handler(){
-				const urlParams = new URLSearchParams(window.location.search)
-				const hl = urlParams.get('hl')
+				const hl = this.$route.query.hl
 				this.$nextTick(() => {
 					const instance = new Mark(document.querySelector('.KBArticle-body'))
 					instance.unmark({
@@ -136,6 +138,7 @@ export default {
 							if(hl){
 								instance.mark(hl, {
 									...markOptions,
+									accuracy: 'partially',
 									each: el => {
 										this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
 									}
@@ -214,6 +217,7 @@ export default {
 		border-radius: 4px;
 		cursor: pointer;
 
+		&.fas,
 		&:hover{
 			color: #007bff;
 		}

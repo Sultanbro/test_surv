@@ -5,13 +5,13 @@
 			:active-book="activeBook"
 			:books="books"
 			:pages="pages"
-			:root-id="rootId"
 			:root-book="rootBook"
 			class="KBPageV2-nav"
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
 			@back="back"
-			@book="fetchBook($event.id)"
+			@book="fetchBook"
+			@search="onSearch"
 			@page="onPage"
 			@add-page="addPage"
 			@page-order="savePageOrder"
@@ -25,8 +25,10 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(activeBook ? canEditBook : isAdmin)"
+				:can-edit="!!(parentBook && parentBook.canEdit)"
 				:edit-book="editBook"
+				:root-book="rootBook"
+				:parent-book="parentBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
 				@upload-image="isUploadImage = true"
@@ -668,6 +670,15 @@ export default {
 			if(!this.activeBook) return false
 			return !this.activeBook.parent_id || this.activeBook.is_category
 		},
+		parentBook(){
+			if(!this.activeBook) return null
+			let book = this.activeBook
+			while(book){
+				if(book.is_category || !book.parent_id) return book
+				book = this.pagesMap[book.parent_id] || this.allBooksMap[book.parent_id]
+			}
+			return null
+		}
 	},
 	watch: {
 		pages: {
@@ -692,13 +703,18 @@ export default {
 		...mapActions(['loadCompany']),
 
 		/* === HELPERS === */
-		init(){
-			const urlParams = new URLSearchParams(window.location.search)
-			const section = urlParams.get('s') || null
-
-			this.fetchData(section)
+		async init(){
 			this.fetchGlossary()
 			this.fetchGlossaryAccess()
+
+			await this.fetchData()
+			if(this.$route.query.s) {
+				this.books = []
+				await this.fetchBook(this.allBooksMap[+this.$route.query.s], true)
+			}
+			if(this.$route.query.b){
+				this.onPage(this.pagesMap[+this.$route.query.b], true)
+			}
 		},
 		getPages(map, pages){
 			pages.map(page => {
@@ -716,7 +732,7 @@ export default {
 			this.rootBook = null
 			this.rootId =  null
 			this.fetchData()
-			window.history.replaceState({ id: '100' }, 'База знаний', '/kb')
+			this.$router.push('/kb')
 		},
 		setTargetBlank(book){
 			const div = document.createElement('div')
@@ -763,9 +779,7 @@ export default {
 		/* === SETTINGS === */
 
 		/* === BOOKS === */
-		async fetchData(id) {
-			if(id) return await this.fetchBook()
-
+		async fetchData() {
 			if(this.allBooks.length){
 				this.books = this.allBooks
 				this.itemModels = []
@@ -786,21 +800,34 @@ export default {
 			}
 		},
 
-		async fetchBook(id){
+		async fetchBook(root, init){
+			function setRootRights(root, page){
+				page.canEdit = root.canEdit
+				page.canRead = root.canRead
+				if(page.children) page.children.forEach(child => setRootRights(root, child))
+			}
+
 			try{
-				const {trees, item_models, book, can_save} = await API.fetchKBBook(id)
+				await this.bookAccess(root)
+				const {trees, item_models, book, can_save} = await API.fetchKBBook(root.id)
 				this.books = []
-				this.pages = trees.map(page => {
-					return {
-						...page,
-						parent_id: +id
-					}
-				})
-				this.rootId = id
+				this.pages = []
+				const pages = []
+
+				for(const page of trees){
+					page.parent_id = +root.id
+					if(page.is_category) await this.bookAccess(page)
+					else setRootRights(root, page)
+					pages.push(page)
+				}
+				this.pages = pages
+				this.rootId = root.id
 				this.rootBook = book
 				this.itemModels = item_models
 				this.activeBook = book
 				this.canSave = can_save
+
+				if(!init) this.$router.push('/kb?s=' + root.id)
 			}
 			catch (error) {
 				console.error(error)
@@ -944,7 +971,7 @@ export default {
 			this.createParentId = parent?.id || null
 		},
 
-		async onPage(page){
+		async onPage(page, init){
 			const loader = this.$loading.show()
 
 			try {
@@ -953,9 +980,32 @@ export default {
 					course_item_id: 0,
 					refresh: false
 				})
+				if(!page.canEdit) this.mode = 'read'
 				this.activeBook = this.setTargetBlank(data.book)
 				this.editBook = false
-				// clear search
+				// TODO: clear search
+				if(!init) this.$router.push(`/kb?s=${this.rootBook.id}&b=${page.id}`)
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
+		},
+
+		async onSearch(page, search){
+			const loader = this.$loading.show()
+
+			try {
+				const {data} = await this.axios.post('/kb/get', {
+					id: page.id,
+					course_item_id: 0,
+					refresh: false
+				})
+				if(!page.canEdit) this.mode = 'read'
+				this.activeBook = this.setTargetBlank(data.book)
+				this.editBook = false
+				// TODO: clear search
+				this.$router.push(`/kb?s=${this.rootBook.id}&b=${page.id}&hl=${search}`)
 			}
 			catch (error) {
 				console.error(error)
@@ -1047,7 +1097,6 @@ export default {
 			}
 		},
 		async savePageOrder({item, to, newIndex}){
-			// console.log('savePageOrder', {item, to, newIndex})
 			const id = +item.getAttribute('data-id')
 			const parentId = +to.getAttribute('data-id')
 			try {
@@ -1059,10 +1108,6 @@ export default {
 				const page = this.pagesMap[id]
 				const prevParent = this.pagesMap[page.parent_id]
 				const parent = this.pagesMap[parentId]
-				// console.log('savePageOrder', {
-				// 	prevParent,
-				// 	parent,
-				// })
 				if(prevParent){
 					const index = prevParent.children.findIndex(children => children.id === id)
 					if(~index) prevParent.children.splice(index, 1)
@@ -1079,6 +1124,7 @@ export default {
 				else{
 					this.pages.splice(newIndex, 0, page)
 				}
+				page.parent_id = parentId
 				this.$toast.success('Очередь сохранена')
 			}
 			catch (error) {
@@ -1093,15 +1139,15 @@ export default {
 		async fetchAccess(book){
 			try {
 				const {
-					who_can_edit,
-					who_can_read,
-					who_can_read_pairs,
-					who_can_edit_pairs,
+					whoCanEdit,
+					whoCanRead,
+					whoCanReadPairs,
+					whoCanEditPairs,
 				} = await API.fetchKBAccess(book.id)
-				this.who_can_edit = who_can_edit
-				this.who_can_read = who_can_read
-				this.parseAccessPairs(who_can_read_pairs)
-				this.parseEditPairs(who_can_edit_pairs)
+				this.who_can_edit = whoCanEdit
+				this.who_can_read = whoCanRead
+				this.parseAccessPairs(whoCanReadPairs)
+				this.parseEditPairs(whoCanEditPairs)
 			}
 			catch (error) {
 				console.error(error)
@@ -1180,6 +1226,63 @@ export default {
 				name: group.name,
 				type: 2
 			}]
+		},
+
+		async bookAccess(book){
+			const {
+				whoCanEdit,
+				whoCanRead,
+				whoCanReadPairs,
+				whoCanEditPairs,
+			} = await API.fetchKBAccess(book.id)
+
+			const canRead = ~whoCanRead.findIndex(access => {
+				switch(access.type){
+				case 0:
+					return true
+				case 1:
+					return access.id === this.user?.id
+				case 2:
+					return ~this.currentUserGroups.findIndex(group => group.id === access.id)
+				case 3:
+					return access.id === this.user?.position_id
+				}
+			})
+			const canEdit = ~whoCanEdit.findIndex(access => {
+				switch(access.type){
+				case 1:
+					return access.id === this.user?.id
+				case 2:
+					return ~this.currentUserGroups.findIndex(group => group.id === access.id)
+				case 3:
+					return access.id === this.user?.position_id
+				}
+			})
+			const canReadPair = ~whoCanReadPairs.findIndex(pair => {
+				const inGroup = ~this.currentUserGroups.findIndex(group => group.id === pair.group_id)
+				return inGroup && (pair.position_id === this.user?.position_id)
+			})
+
+			const canEditPair = ~whoCanEditPairs.findIndex(pair => {
+				const inGroup = ~this.currentUserGroups.findIndex(group => group.id === pair.group_id)
+				return inGroup && (pair.position_id === this.user?.position_id)
+			})
+
+			/* eslint-disable require-atomic-updates */
+			book.canRead = this.isAdmin || canRead || canReadPair || (!whoCanRead.length && !whoCanReadPairs.length)
+			book.canEdit = this.isAdmin || canEdit || canEditPair
+			/* eslint-enable require-atomic-updates */
+
+			if(book.children && book.children.length){
+				for(const child of book.children){
+					if(!child.is_category) {
+						child.canRead = book.canRead
+						child.canEdit = book.canEdit
+						continue
+					}
+					await this.bookAccess(child)
+				}
+			}
 		},
 		/* === ACCESS === */
 

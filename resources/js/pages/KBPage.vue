@@ -931,15 +931,15 @@ export default {
 		async fetchAccess(book){
 			try {
 				const {
-					who_can_edit,
-					who_can_read,
-					who_can_read_pairs,
-					who_can_edit_pairs,
+					whoCanEdit,
+					whoCanRead,
+					whoCanReadPairs,
+					whoCanEditPairs,
 				} = await API.fetchKBAccess(book.id)
-				this.who_can_edit = who_can_edit
-				this.who_can_read = who_can_read
-				this.parseAccessPairs(who_can_read_pairs)
-				this.parseEditPairs(who_can_edit_pairs)
+				this.who_can_edit = whoCanEdit
+				this.who_can_read = whoCanRead
+				this.parseAccessPairs(whoCanReadPairs)
+				this.parseEditPairs(whoCanEditPairs)
 			}
 			catch (error) {
 				console.error(error)

@@ -47,7 +47,12 @@ export async function updateKBOrder(request){
 
 export async function fetchKBAccess(id){
 	const {data} = await axios.post('/kb/page/get-access', {id})
-	return data
+	return {
+		whoCanRead: data.who_can_read || [],
+		whoCanEdit: data.who_can_edit || [],
+		whoCanReadPairs: data.who_can_read_pairs || [],
+		whoCanEditPairs: data.who_can_edit_pairs || [],
+	}
 }
 
 export async function addKBPage(id){

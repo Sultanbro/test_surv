@@ -11,14 +11,14 @@
 			<div class="d-flex aic gap-2">
 				<template v-if="type === 'book'">
 					<i
-						v-if="isEditMode"
+						v-if="isEditMode && parent.canEdit"
 						class="KBNavItem-mover fa fa-bars"
 					/>
 				</template>
 				<template v-else>
 					<div class="KBNavItem-handler">
 						<i
-							v-if="isEditMode"
+							v-if="isEditMode && parent.canEdit"
 							class="KBNavItem-mover fa fa-bars"
 						/>
 						<i
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 			<div
-				v-if="isEditMode"
+				v-if="isEditMode && item.canEdit"
 				class="KBNavItem-actions"
 			>
 				<i
@@ -48,12 +48,12 @@
 					@click.stop="$emit('add-book', item)"
 				/>
 				<i
-					v-if="type === 'book'"
+					v-if="type === 'book' && parent.canEdit"
 					class="KBNavItem-action fa fa-trash"
 					@click.stop="$emit('remove-book', item)"
 				/>
 				<i
-					v-if="type === 'book'"
+					v-if="type === 'book' && parent.canEdit"
 					class="KBNavItem-action fa fa-cog"
 					@click.stop="$emit('settings', item)"
 				/>
@@ -71,6 +71,10 @@ export default {
 		item: {
 			type: Object,
 			required: true
+		},
+		parent: {
+			type: Object,
+			required: true,
 		},
 		mode: {
 			type: String,

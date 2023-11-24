@@ -87,7 +87,7 @@
 					v-for="item in search.items"
 					:key="item.id"
 					class="KBNav-searchItem"
-					@click="$emit('book', item)"
+					@click="$emit('search', item, search.input)"
 				>
 					<p
 						v-if="item.book"
@@ -159,7 +159,7 @@
 				]"
 				:opened="true"
 				:mode="mode"
-				:parent-id="rootId"
+				:parent="rootBook"
 				:active="activeBook.id"
 				@show-page="$emit('page', $event)"
 				@add-page="$emit('add-page', $event)"
@@ -300,10 +300,6 @@ export default {
 		pages: {
 			type: Array,
 			default: () => []
-		},
-		rootId: {
-			type: Number,
-			default: null
 		},
 		rootBook: {
 			type: Object,

@@ -48,6 +48,11 @@ export type AccessItem = {
 	type: number // 1 - сотрудник, 2 - отдел, 3 - должность
 }
 
+export type AccessPair = {
+	position_id: number
+	group_id: number
+}
+
 export type GlossaryTerm = {
 	id: number // id
 	word: string // термин
@@ -82,8 +87,10 @@ export declare function updateKBOrder(request: {
 	parent_id: number | null
 }): Promise<unknown>
 export declare function fetchKBAccess(id: number): Promise<{
-	who_can_read: Array<AccessItem>
-	who_can_edit: Array<AccessItem>
+	whoCanRead: Array<AccessItem>
+	whoCanEdit: Array<AccessItem>
+	whoCanReadPair: Array<AccessPair>
+	whoCanEditPair: Array<AccessPair>
 }>
 export declare function fetchGlossary(): Promise<Array<GlossaryTerm>>
 export declare function saveGlossaryTerm(word: GlossaryTerm): Promise<number>
