@@ -129,6 +129,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->with(['daytypes' => function (HasMany $query) {
                 $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', '=', $this->dateStart()->month)
+                    ->where('type', DayType::DAY_TYPES['TRAINEE'])
                     ->whereYear('date', $this->dateStart()->year);
             }])
             ->with(['timetracking' => function (HasMany $query) {
@@ -176,10 +177,9 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     {
         $types = [];
         for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
+            $types[$i] = null;
             $day = $this->getDay($days, $i);
-            if ($this->isAbsence($day)) {
-                $types[$i] = null;
-            } elseif ($this->isTrainee($day)) {
+            if ($day) {
                 $types[$i] = $this->countTrainingDays($training, $day);
             }
         }
