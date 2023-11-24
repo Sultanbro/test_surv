@@ -65,7 +65,7 @@ class Pusher extends Command
 
         foreach ($mailingSystems as $mailingSystem)
         {
-            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $notification->recipients->map->notificationable);
         }
     }
 
@@ -86,7 +86,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $notification->recipients->map->notificationable);
             }
         }
     }
@@ -108,7 +108,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $notification->recipients->map->notificationable);
             }
         }
 
