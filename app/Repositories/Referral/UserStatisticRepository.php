@@ -239,20 +239,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->where('user_id', $referral->getKey());
     }
 
-
-    private function isAbsence(?DayType $day): bool
-    {
-        return is_null($day) || $day->type == DayType::DAY_TYPES['ABCENSE'];
-    }
-
-    private function isTrainee(?DayType $day): bool
-    {
-        if (!$day) {
-            return false;
-        }
-        return in_array($day->type, [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
-    }
-
     private function getDay(Collection $days, int $day): ?DayType
     {
         /** @var DayType $day */
