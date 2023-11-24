@@ -1872,24 +1872,25 @@ class TimetrackingController extends Controller
             Referring::touchReferrerSalaryForTrain($targetUser, $date);
 
 
-            if ($trainee){
-            $bitrix = new Bitrix();
+            if ($trainee) {
+                $bitrix = new Bitrix();
 
-            if ($trainee->deal_id != 0) {
-                $deal_id = $trainee->deal_id;
-            } else if ($lead_id != 0) {
-                $deal_id = $bitrix->findDeal($lead_id, false);
-                usleep(1000000); // 1 sec
-            } else {
                 $deal_id = 0;
-            }
 
-            if ($deal_id != 0) {
-                $bitrix->changeDeal($deal_id, [
-                    'STAGE_ID' => 'C4:18'
-                ]);
+
+                if ($trainee->deal_id != 0) {
+                    $deal_id = $trainee->deal_id;
+                } else if ($trainee->lead_id != 0) {
+                    $deal_id = $bitrix->findDeal($trainee->lead_id, false);
+                    usleep(1000000); // 1 sec
+                }
+
+                if ($deal_id != 0) {
+                    $bitrix->changeDeal($deal_id, [
+                        'STAGE_ID' => 'C4:18'
+                    ]);
+                }
             }
-          }
 
         }
 
@@ -1909,7 +1910,7 @@ class TimetrackingController extends Controller
                         ->where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if ($lead) {
                         $lead_id = $lead->lead_id;
-                        $lead->update(['status'=>'LOSE']);
+                        $lead->update(['status' => 'LOSE']);
                     } else {
                         $lead_id = 0;
                     }
