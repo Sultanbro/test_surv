@@ -256,7 +256,7 @@ class KnowBase extends Model implements CourseInterface
         return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
     }
 
-    public function scopeSearchByChildKbs($query, $id)
+    public function scopeSearchChildrenIdsByKbId($query, $id)
     {
         if ($id) {
             $descendantIds = DB::select("
