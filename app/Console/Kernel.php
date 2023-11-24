@@ -92,7 +92,6 @@ class Kernel extends ConsoleKernel
         //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
          $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
 	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(20); // Данные почасовой таблицы рекрутинга из битрикса
-//	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса
 	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(40); // Данные почасовой таблицы рекрутинга из битрикса
 //        $schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике

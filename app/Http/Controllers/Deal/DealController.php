@@ -6,6 +6,7 @@ use App\DayType;
 use App\Http\Controllers\Controller;
 use App\Jobs\Bitrix\UpdateDealJob;
 use App\Service\Department\UserService;
+use App\Service\TestService;
 use Illuminate\Http\Request;
 use App\Api\BitrixOld as Bitrix;
 use Exception;
@@ -15,8 +16,6 @@ class DealController extends Controller
 {
     public function dealUpdatedWebhook(Request $request, BitrixIntegrationService $bitrix, UserService $user_service): void
     {
-        info('Test228Test', $request->all());
-
         $deal_id = $request->input('data')['FIELDS']['ID'];
         $deal = $bitrix->getDeal($deal_id);
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Api;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
 /**
@@ -525,5 +526,18 @@ class BitrixOld
         $query = http_build_query($fields);
 
         return $this->curl_post($this->link . 'crm.deal.update.json', $query);
+    }
+
+    public function findLead(int $id)
+    {
+
+        $client = new Client();
+        $lead = $client->get($this->link.'crm.lead.get',[
+            'query' => [
+                'id' => $id
+            ]
+        ]);
+        $lead = json_decode($lead->getBody()->getContents(),true);
+        return $lead['result'];
     }
 }
