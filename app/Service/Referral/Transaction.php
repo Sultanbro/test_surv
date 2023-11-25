@@ -23,23 +23,32 @@ class Transaction implements TransactionInterface
 
     public function touch(User $referral, PaidType $type): void
     {
+
         $this->referral = $referral;
         $this->paidType = $type;
-        $this->date = $this->date ?: now();
+        $this->ensureNeedDate();
+
+        if ($this->alreadyPaid()) return; // already has
+
         $this->calculateAmount();
         $this->addSalary();
     }
 
     private function addSalary(): void
     {
+        $data = [
+            'amount' => $this->amount,
+            'type' => $this->paidType->name,
+            'referral_id' => $this->referral->getKey(),
+        ];
+
+        if ($this->date) {
+            $data['date'] = $this->date->format("Y-m-d");
+        }
+
         $referrer = $this->referral->referrer;
         $referrer->referralSalaries()
-            ->updateOrCreate([
-                'date' => $this->date->format("Y-m-d"),
-                'amount' => $this->amount,
-                'type' => $this->paidType->name,
-                'referral_id' => $this->referral->getKey(),
-            ], [
+            ->updateOrCreate($data, [
                 'is_paid' => 0,
             ]);
     }
@@ -52,5 +61,15 @@ class Transaction implements TransactionInterface
     private function calculateAmount(): void
     {
         $this->amount = $this->calculator->calculate($this->referral->referrer, $this->paidType);
+    }
+
+    private function alreadyPaid(): bool
+    {
+        return $this->referral->referrerSalaries()?->where('type', $this->paidType->name)->exists();
+    }
+
+    private function ensureNeedDate(): void
+    {
+        if ($this->paidType != PaidType::ATTESTATION->name) $this->date ?: now();
     }
 }
