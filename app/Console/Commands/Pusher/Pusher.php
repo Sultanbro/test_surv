@@ -68,7 +68,7 @@ class Pusher extends Command
 
         foreach ($mailingSystems as $mailingSystem)
         {
-            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $recipients);
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
         }
     }
 
@@ -91,7 +91,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $recipients);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
     }
@@ -115,7 +115,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $recipients);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
 
@@ -143,7 +143,6 @@ class Pusher extends Command
             }
 
         }
-
         return array_unique($employeeIds);
     }
 }
