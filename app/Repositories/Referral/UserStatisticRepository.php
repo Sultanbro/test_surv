@@ -128,19 +128,16 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
                 $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
-                    ->whereMonth('date', '=', $this->dateStart()->month)
-                    ->where('type', DayType::DAY_TYPES['TRAINEE'])
-                    ->whereYear('date', $this->dateStart()->year);
+                    ->where('type', DayType::DAY_TYPES['TRAINEE']);
             }])
             ->with(['timetracking' => function (HasMany $query) {
-                $query->selectRaw("enter,exit,id,user_id,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
-                    ->where("minutes", ">=", 60 * 3)
-                    ->whereMonth('enter', '=', $this->dateStart()->month)
-                    ->whereYear('enter', $this->dateStart()->year);
+                $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
+                    ->havingRaw("work_total >= ?", [60 * 3]);
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
                 $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
+                $query->orderBy('date');
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
@@ -150,22 +147,18 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $days = $referral->daytypes;
 
                 $salaries = $referral->referrerSalaries;
-                $this->salaryFilter->forThisCollection($salaries);
 
+                $this->salaryFilter->forThisCollection($salaries);
                 $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 $working = $this->salaryFilter->filter(PaidType::WORK);
                 $firstWork = $this->salaryFilter->filter(PaidType::FIRST_WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
-
-                if ($firstWork->count()) {
-                    $working->add($firstWork->first());
-                }
-
                 $referral->is_trainee = $referral->user_description?->is_trainee;
                 $referral->datetypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
-                    $this->employeeWeekly($referral, $working)
+                    $this->employeeFirstWeek($firstWork),
+                    $this->employeeWeekly($working)
                 );
 
                 if ($referral->referrals_count) {
@@ -205,44 +198,22 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         ];
     }
 
-    private function employeeWeekly(User $referral, Collection $working): array
+    private function employeeWeekly(Collection $working): array
     {
-        $weeksToTrack = [1, 2, 3, 4, 6, 8, 12];
-        $weekTemplate = $this->createWeekTemplate($weeksToTrack);
-        $timeTracking = $this->getReferralTimeTracking($referral);
+        $weekTemplate = $this->createWeekTemplate();
+        $salaryWeeks = [2, 3, 4, 6, 8, 12]; // Define the weeks at which salaries are given
+        $salaryIndex = 0; // Index to track the current salary
 
-        foreach ($timeTracking as $tracker) {
-            for ($week = 1; $week <= $weeksToTrack; $week++) {
-                // If the week is beyond 12, exit the loop
-                if ($week > 12) {
-                    break;
-                }
-
-                // Check if the current week is in the weeks to track
-                if (in_array($week, $weeksToTrack)) {
-                    $current = [];
-
-                    // Find the working item with the same date as the exit date
-                    foreach ($working as $item) {
-                        if ($this->isSameDate(Carbon::parse($item['date']), $tracker->exit)) {
-                            $current = $item->toArray();
-                            break; // Exit the loop once found
-                        }
-                    }
-
-                    // Store the parsed salary in the result array
-                    $weekTemplate[$week . '_week'] = $this->parseSalary($current);
-                }
-            }
+        foreach ($working as $salary) {
+            // Ensure there's another salary week to process
+            if (isset($salaryWeeks[$salaryIndex])) {
+                $weekLabel = $salaryWeeks[$salaryIndex] . '_week';
+                $weekTemplate[$weekLabel] = $this->parseSalary($salary->toArray());
+                $salaryIndex++;
+            };
         }
 
         return $weekTemplate;
-    }
-
-    private function getReferralTimeTracking(User $referral): Collection
-    {
-        return $referral->timetracking
-            ->where('user_id', $referral->getKey());
     }
 
     private function getDay(Collection $days, int $day): ?DayType
@@ -253,7 +224,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->first();
     }
 
-    private function countTrainingDays($training, DayType $day): ?array
+    private
+    function countTrainingDays($training, DayType $day): ?array
     {
         $salary = [];
         foreach ($training as $item) {
@@ -269,22 +241,25 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return $this->parseSalary($salary);
     }
 
-    private function isSameDate(Carbon $first, Carbon $second): bool
+    private
+    function isSameDate(Carbon $first, Carbon $second): bool
     {
         return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
     }
 
-    private function createWeekTemplate(array $weeks): array
+    private function createWeekTemplate(): array
     {
         $types = [];
 
+        $weeks = [2, 3, 4, 6, 8, 12];
         foreach ($weeks as $week) {
             $types[$week . '_week'] = null;
         }
         return $types;
     }
 
-    private function parseSalary(?array $current): array
+    private
+    function parseSalary(?array $current): array
     {
         return [
             'paid' => (bool)($current['is_paid'] ?? null),
@@ -292,6 +267,19 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             'comment' => $current['comment'] ?? null,
             'id' => $current['id'] ?? null,
             'date' => $current['date'] ?? null,
+        ];
+    }
+
+    private function employeeFirstWeek(Collection $firstWork): array
+    {
+        $appliedSalary = current($firstWork->toArray());
+
+        if (!$appliedSalary) {
+            return [];
+        }
+
+        return [
+            '1_week' => $this->parseSalary($appliedSalary)
         ];
     }
 }
