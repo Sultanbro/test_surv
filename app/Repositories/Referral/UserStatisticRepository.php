@@ -133,7 +133,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     ->whereYear('date', $this->dateStart()->year);
             }])
             ->with(['timetracking' => function (HasMany $query) {
-                $query->select(["enter", "exit", "id", "user_id"])
+                $query->selectRaw("enter,exit,id,user_id,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
+                    ->where("minutes", ">=", 60 * 3)
                     ->whereMonth('enter', '=', $this->dateStart()->month)
                     ->whereYear('enter', $this->dateStart()->year);
             }])
@@ -153,7 +154,12 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
                 $training = $this->salaryFilter->filter(PaidType::TRAINEE);
                 $working = $this->salaryFilter->filter(PaidType::WORK);
+                $firstWork = $this->salaryFilter->filter(PaidType::FIRST_WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
+
+                if ($firstWork->count()) {
+                    $working->add($firstWork->first());
+                }
 
                 $referral->is_trainee = $referral->user_description?->is_trainee;
                 $referral->datetypes = array_merge(
