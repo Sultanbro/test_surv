@@ -54,6 +54,7 @@ class TopValue extends Model
         'fixed', // некоторые поля не редактируются
         'value_type', // avg  или sum с активности
         'reversed', //
+        'type'
     ];
 
     public function getOptions($options = null): array
@@ -754,5 +755,13 @@ class TopValue extends Model
     )
     {
         return $query->where('group_id', $groupId)->where('date', $date);
+    }
+
+    /**
+     * @return bool
+     */
+    public function issetActivities(): bool
+    {
+        return $this->activity_id != 0 && $this->activity_id != -1;
     }
 }

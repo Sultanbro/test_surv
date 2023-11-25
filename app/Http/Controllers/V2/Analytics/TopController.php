@@ -4,7 +4,9 @@ namespace App\Http\Controllers\V2\Analytics;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V2\Analytics\GetRentabilityRequest;
+use App\Http\Requests\V2\Analytics\SpeedometersRequest;
 use App\Service\V2\Analytics\GetRentabilityService;
+use App\Service\V2\Analytics\RentabilitySpeedometerService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +26,19 @@ class TopController extends Controller
         return $this->response(
             message: self::SUCCESS_MESSAGE,
             data: $rentabilityService->handle($request->toDto())
+        );
+    }
+
+    /**
+     * @param SpeedometersRequest $request
+     * @param RentabilitySpeedometerService $service
+     * @return JsonResponse
+     */
+    public function rentabilitySpeedometers(SpeedometersRequest $request, RentabilitySpeedometerService $service): JsonResponse
+    {
+        return $this->response(
+          message: self::SUCCESS_MESSAGE,
+          data: $service->handle($request->toDto())
         );
     }
 }
