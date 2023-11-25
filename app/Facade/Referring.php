@@ -53,9 +53,7 @@ class Referring extends Facade
                 ->where('type', PaidType::TRAINEE)
             )
             ->first();
-        $salary?->update([
-            'amount' => 0
-        ]);
+        $salary?->delete();
     }
 
     public static function touchReferrerSalaryForCertificate(User $user): void

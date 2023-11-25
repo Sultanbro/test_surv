@@ -120,7 +120,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
 //        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
-        $schedule->command('tenants:run referrer:daily --tenants=bp')->dailyAt('00:00');
         $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         $schedule->command('tenants:run usernotification:adaptation')->dailyAt('02:40'); // Уведомление о заполнении адаптации
         $schedule->command('tenants:run salary:indexation')->dailyAt('17:02'); // Индексация зарплаты

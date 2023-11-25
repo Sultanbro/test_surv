@@ -27,11 +27,11 @@ class ForReferrerDaily
             ->get();
 
         foreach ($trainers as $trainer) {
-            $count = $trainer->daytypes()
+            $exists = $trainer->daytypes()
                 ->where('date', $date)
                 ->where('type', DayType::DAY_TYPES['TRAINEE'])
-                ->count();
-            if ($count) {
+                ->exists();
+            if ($exists) {
                 $trainer->referrer
                     ->referralSalaries()
                     ->updateOrCreate([
