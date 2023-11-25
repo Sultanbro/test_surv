@@ -70,6 +70,6 @@ class Transaction implements TransactionInterface
 
     private function ensureNeedDate(): void
     {
-        if ($this->paidType != PaidType::ATTESTATION->name) $this->date ?: now();
+        if (!in_array($this->paidType, [PaidType::ATTESTATION->name, PaidType::FIRST_WORK->name])) $this->date ?: now();
     }
 }
