@@ -68,5 +68,13 @@ Route::group([
      */
     Route::post('/report-card', [V2AnalyticController::class, 'reportCard'])->name('.report-card');
 
+    /**
+     * Должности отдела.
+     */
     Route::get('/positions', [PositionController::class, 'get'])->name('.positions');
+
+    /**
+     * Спидометры в марже.
+     */
+    Route::post('rentability/speedometers', [TopController::class, 'rentabilitySpeedometers'])->name('.speedometers');
 });

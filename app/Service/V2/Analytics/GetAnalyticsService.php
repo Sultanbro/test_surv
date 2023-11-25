@@ -12,7 +12,7 @@ class GetAnalyticsService
 {
     use AnalyticTrait;
 
-    /**
+    /**T
      * @param GetAnalyticDto $dto
      * @return array
      */
