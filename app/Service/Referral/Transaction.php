@@ -7,13 +7,16 @@ use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\TransactionInterface;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Transaction implements TransactionInterface
 {
     private PaidType $paidType;
     private ?Carbon $date = null;
-    private User $referral;
-    private int|float $amount;
+    private ?User $referral=null;
+    private int|float $amount=0;
+    private int $level=1;
+    private ?User $referrer=null;
 
     public function __construct(
         private readonly CalculateInterface $calculator
@@ -21,35 +24,35 @@ class Transaction implements TransactionInterface
     {
     }
 
-    public function touch(User $referral, PaidType $type): void
+    public function touch(User $referral, PaidType $type, int $level = 1): void
     {
-
         $this->referral = $referral;
+        $this->referrer = $referral->referrer;
         $this->paidType = $type;
-        $this->ensureNeedDate();
+        $this->level = $level;
+        $this->date = $this->date ?: now();
 
         if ($this->alreadyPaid()) return; // already has
 
         $this->calculateAmount();
         $this->addSalary();
+
+        if ($this->paidType->name != PaidType::FIRST_WORK) return;
+        if (!$this->referrer) return;
+
+        $this->touch($this->referrer, $type, $level + 1);
+        $this->addSalary();
     }
 
     private function addSalary(): void
     {
-        $data = [
-            'amount' => $this->amount,
-            'type' => $this->paidType->name,
-            'referral_id' => $this->referral->getKey(),
-        ];
-
-        if ($this->date) {
-            $data['date'] = $this->date->format("Y-m-d");
-        }
-
-        $referrer = $this->referral->referrer;
-        $referrer->referralSalaries()
-            ->updateOrCreate($data, [
+        $this->referrer->referralSalaries()
+            ->create([
+                'type' => $this->paidType->name,
+                'referral_id' => $this->referral->getKey(),
+                'date' => $this->date->format("Y-m-d"),
                 'is_paid' => 0,
+                'amount' => $this->amount,
             ]);
     }
 
@@ -60,16 +63,17 @@ class Transaction implements TransactionInterface
 
     private function calculateAmount(): void
     {
-        $this->amount = $this->calculator->calculate($this->referral->referrer, $this->paidType);
+        $this->amount = $this->calculator->calculate(
+            $this->referrer,
+            $this->paidType,
+            $this->level
+        );
     }
 
     private function alreadyPaid(): bool
     {
-        return $this->referral->referrerSalaries()?->where('type', $this->paidType->name)->exists();
-    }
-
-    private function ensureNeedDate(): void
-    {
-        if (!in_array($this->paidType, [PaidType::ATTESTATION->name, PaidType::FIRST_WORK->name])) $this->date ?: now();
+        return $this->referral->referrerSalaries()
+            ->when(!in_array($this->paidType->name, [PaidType::ATTESTATION->name, PaidType::FIRST_WORK->name]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
+            ->where('type', $this->paidType->name)->exists();
     }
 }

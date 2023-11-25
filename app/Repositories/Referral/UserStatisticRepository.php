@@ -210,7 +210,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $weekLabel = $salaryWeeks[$salaryIndex] . '_week';
                 $weekTemplate[$weekLabel] = $this->parseSalary($salary->toArray());
                 $salaryIndex++;
-            };
+            }
         }
 
         return $weekTemplate;

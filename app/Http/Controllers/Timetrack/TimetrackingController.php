@@ -348,6 +348,8 @@ class TimetrackingController extends Controller
             ->addTime($exit, $user->timezone())
             ->save();
 
+        Referring::touchReferrerSalaryWeekly($user, $exit);
+
         return 'stopped';
     }
 
@@ -726,6 +728,7 @@ class TimetrackingController extends Controller
         Referring::touchReferrerStatus($user);
         Referring::touchReferrerSalaryForCertificate($user);
         Referring::deleteReferrerDailySalary($user->getKey(), $date);
+
 
         return response()->json([
             'msg' => 'Заявка отправлена рекрутерам'
