@@ -44,7 +44,7 @@
 		<!-- eslint-disable -->
 		<div
 			class="KBArticle-body"
-			v-html="activeBook.text"
+			v-html="markedText"
 		/>
 		<!-- eslint-enable -->
 
@@ -125,45 +125,46 @@ export default {
 	data(){
 		return {}
 	},
-	watch: {
-		activeBook: {
-			handler(){
-				const hl = this.$route.query.hl
-				this.$nextTick(() => {
-					const instance = new Mark(document.querySelector('.KBArticle-body'))
-					instance.unmark({
-						element: 'span',
-						className: 'KBArticle-mark',
-						done: () => {
-							if(hl){
-								instance.mark(hl, {
-									...markOptions,
-									accuracy: 'partially',
-									each: el => {
-										this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
-									}
-								})
-							}
-							if(!this.glossary) return
-							this.glossary.forEach(term => {
-								instance.mark(term.word, {
-									...markOptions,
-									each: el => {
-										this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
-									}
-								})
-								getSynonims(term.word).forEach(word => {
-									instance.mark(word, {
-										...markOptions,
-										each: el => {
-											this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
-										}
-									})
-								})
-							})
+	computed: {
+		markedText(){
+			if(!this.activeBook) return ''
+			const div = document.createElement('div')
+			const hl = this.$route.query.hl
+			div.innerHTML = this.activeBook.text
+			const instance = new Mark(div.querySelector('.KBArticle-body'))
+			if(hl){
+				instance.mark(hl, {
+					...markOptions,
+					accuracy: 'partially',
+					each: el => {
+						this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
+					}
+				})
+			}
+			if(!this.glossary) return div.innerHTML
+			this.glossary.forEach(term => {
+				instance.mark(term.word, {
+					...markOptions,
+					each: el => {
+						this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+					}
+				})
+				getSynonims(term.word).forEach(word => {
+					instance.mark(word, {
+						...markOptions,
+						each: el => {
+							this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
 						}
 					})
 				})
+			})
+			return div.innerHTML
+		}
+	},
+	watch: {
+		activeBook: {
+			handler(){
+				this.updateMarks()
 			},
 			deep: true
 		}
@@ -191,6 +192,9 @@ export default {
 			/* eslint-enable camelcase */
 		},
 		onChangePassGrade(){},
+		updateMarks(){
+
+		}
 	},
 }
 </script>

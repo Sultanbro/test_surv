@@ -1,5 +1,13 @@
 import axios from 'axios'
 
+function addFavorites(items, favorites){
+	items.forEach(item => {
+		if(favorites.includes(item.id)) item.isFavorite = true
+		if(item.children) addFavorites(item.children, favorites)
+	})
+	return items
+}
+
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
 	return data.books
@@ -12,7 +20,10 @@ export async function fetchKBArchived(){
 
 export async function fetchKBBook(id){
 	const {data} = await axios.post('/kb/tree', {id})
-	return data
+	return {
+		...data,
+		trees: addFavorites(data.trees, data.favourite_ids)
+	}
 }
 
 export async function deleteKBBook(id){

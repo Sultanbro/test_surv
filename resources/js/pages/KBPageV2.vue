@@ -517,6 +517,12 @@ const types = [
 	'positions',
 ]
 
+function routerPush(path){
+	const currentPath = decodeURIComponent(this.$route.fullPath)
+	if(path === currentPath) return
+	this.$router.push(path)
+}
+
 export default {
 	name: 'KBPageV2',
 	components: {
@@ -658,6 +664,7 @@ export default {
 			let currentId = this.activeBook.id
 			while(currentId){
 				const book = this.allBooksMap[currentId] || this.pagesMap[currentId]
+				if(!book) return breadcrumbs.reverse()
 				breadcrumbs.push({
 					title: book.title,
 					link: `/kb?s=${this.rootId}${book.parent_id ? '&b=' + currentId  : ''}`
@@ -701,6 +708,7 @@ export default {
 
 	methods: {
 		...mapActions(['loadCompany']),
+		routerPush,
 
 		/* === HELPERS === */
 		async init(){
@@ -731,8 +739,9 @@ export default {
 			this.books = this.allBooks
 			this.rootBook = null
 			this.rootId =  null
+			this.showGlossary = false
 			this.fetchData()
-			this.$router.push('/kb')
+			this.routerPush('/kb')
 		},
 		setTargetBlank(book){
 			const div = document.createElement('div')
@@ -807,6 +816,8 @@ export default {
 				if(page.children) page.children.forEach(child => setRootRights(root, child))
 			}
 
+			this.showGlossary = false
+
 			try{
 				await this.bookAccess(root)
 				const {trees, item_models, book, can_save} = await API.fetchKBBook(root.id)
@@ -827,7 +838,7 @@ export default {
 				this.activeBook = book
 				this.canSave = can_save
 
-				if(!init) this.$router.push('/kb?s=' + root.id)
+				if(!init) this.routerPush('/kb?s=' + root.id)
 			}
 			catch (error) {
 				console.error(error)
@@ -973,18 +984,19 @@ export default {
 
 		async onPage(page, init){
 			const loader = this.$loading.show()
-
+			this.showGlossary = false
 			try {
 				const {data} = await this.axios.post('/kb/get', {
 					id: page.id,
 					course_item_id: 0,
 					refresh: false
 				})
+				data.book.isFavorite = page.isFavorite
 				if(!page.canEdit) this.mode = 'read'
 				this.activeBook = this.setTargetBlank(data.book)
 				this.editBook = false
 				// TODO: clear search
-				if(!init) this.$router.push(`/kb?s=${this.rootBook.id}&b=${page.id}`)
+				if(!init) this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}`)
 			}
 			catch (error) {
 				console.error(error)
@@ -993,24 +1005,13 @@ export default {
 		},
 
 		async onSearch(page, search){
-			const loader = this.$loading.show()
-
-			try {
-				const {data} = await this.axios.post('/kb/get', {
-					id: page.id,
-					course_item_id: 0,
-					refresh: false
-				})
-				if(!page.canEdit) this.mode = 'read'
-				this.activeBook = this.setTargetBlank(data.book)
-				this.editBook = false
-				// TODO: clear search
-				this.$router.push(`/kb?s=${this.rootBook.id}&b=${page.id}&hl=${search}`)
+			if(!this.root || this.root.id !== page.book.id){
+				await this.fetchBook(page.book)
 			}
-			catch (error) {
-				console.error(error)
-			}
-			loader.hide()
+			this.$nextTick(async () => {
+				await this.onPage(page, true)
+				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}&hl=${search}`)
+			})
 		},
 
 		async onSavePage(){
