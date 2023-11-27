@@ -1,13 +1,14 @@
 <script>
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
-const KBPage = () => import(/* webpackChunkName: "KBPage" */ '@/pages/KBPage.vue')
+// const KBPage = () => import(/* webpackChunkName: "KBPage" */ '@/pages/KBPage.vue')
+const KBPageV2 = () => import(/* webpackChunkName: "KBPage" */ '@/pages/KBPageV2.vue')
 
 export default {
 	name: 'KnowledgeBaseView',
 	components: {
 		DefaultLayout,
-		KBPage,
+		KBPageV2,
 	},
 	data(){
 		return {
@@ -32,10 +33,7 @@ export default {
 			v-show="authUserId"
 			class="old__content"
 		>
-			<KBPage
-				:auth_user_id="authUserId"
-				:can_edit="canEdit"
-			/>
+			<KBPageV2 />
 		</div>
 	</DefaultLayout>
 </template>

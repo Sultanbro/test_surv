@@ -232,6 +232,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/kb/page/get-access', [Learning\KnowBaseController::class, 'getAccess']);
     Route::get('/kb/get-settings', [Learning\KnowBaseController::class, 'getSettings']);
     Route::post('/kb/save-settings', [Learning\KnowBaseController::class, 'saveSettings']);
+    Route::post('/kb/toggle-favorite/{kb}', [Learning\KnowBaseController::class, 'toggleFavourite']);
 
     // Settings
     Route::post('/setting/reset', [Settings\OtherSettingController::class, 'reset']);
