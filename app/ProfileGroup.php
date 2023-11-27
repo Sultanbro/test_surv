@@ -10,6 +10,7 @@ use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -559,17 +560,19 @@ class ProfileGroup extends Model
     ): BelongsToMany
     {
         return $this->usersWithTrashed()
-            ->select('id', 'name', 'last_name', 'full_time', 'email','users.deleted_at')
+            ->select('id', 'name', 'last_name', 'full_time', 'email', 'users.deleted_at')
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo))
             )
             ->when($dateFrom, function ($query) use ($dateFrom) {
-                $query->where(function (\Illuminate\Database\Eloquent\Builder $query) use ($dateFrom) {
+                $query->where(function (Builder $query) use ($dateFrom) {
                     $query->where('users.deleted_at', '>', $dateFrom)
                         ->orWhereNull('users.deleted_at');
                 });
-            });
+            })
+            ->orderBy('last_name')
+            ->orderBy('name');
     }
 }
