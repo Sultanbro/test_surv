@@ -568,7 +568,7 @@ class ProfileGroup extends Model
             )
             ->when($dateFrom, function ($query) use ($dateFrom) {
                 $query->where(function (Builder $query) use ($dateFrom) {
-                    $query->whereRaw('', '>', $dateFrom)
+                    $query->whereRaw('users.deleted_at', '>', $dateFrom)
                         ->orWhereNull('users.deleted_at');
                 });
             })
