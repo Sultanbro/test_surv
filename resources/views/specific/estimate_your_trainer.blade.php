@@ -340,10 +340,19 @@
         }
     });
 
+    function isAllChecked($parent){
+        let checked = true
+        $parent.find('.rating').each(function(){
+            const size = $(this).find('.checked').size()
+            if(!size) checked = false
+        })
+        return checked
+    }
+
 
 
     $('#submit').click(function(e) {
-        if(rooks > 0 && checked_somebody == false) {
+        if(rooks > 0 && !isAllChecked($('#form-1'))) {
             e.preventDefault();
             $('.error').text('Вы не поставили оценку!');
         }
@@ -358,7 +367,7 @@
     });
     $('#submit2').click(function(e) {
 
-        if(stars > 0 && checked_somebody == false) {
+        if(stars > 0 && !isAllChecked($('#form-2')) {
             e.preventDefault();
             $('.error').text('Вы не поставили оценку!');
         } else {
