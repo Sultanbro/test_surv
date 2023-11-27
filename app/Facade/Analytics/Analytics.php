@@ -357,7 +357,7 @@ final class Analytics
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $employees = $group->actualAndFiredEmployees($firstOfMonth, $dateTo);
+        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
 
         return $employees
             ->with('statistics', fn($statistic) => $statistic->select([
@@ -375,13 +375,11 @@ final class Analytics
                 $appliedFrom = $employee->workdays_from_applied($date, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
-
                 $employee->fullname = $employee->full_name;
                 $employee->fired = $employee->deleted_at != null ? 1 : 0;
                 $employee->applied_from = $appliedFrom;
                 $employee->is_trainee = 1;
                 $employee->plan = $activity->daily_plan * $workDays;
-
 
                 return $employee;
             });
