@@ -537,6 +537,7 @@ class BitrixOld
                 'id' => $id
             ]
         ]);
+        usleep(2000000);
         $lead = json_decode($lead->getBody()->getContents(),true);
         return $lead['result'];
     }
