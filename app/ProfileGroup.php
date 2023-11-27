@@ -179,11 +179,17 @@ class ProfileGroup extends Model
         return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
             ->withPivot(['from', 'to'])
             ->withTimestamps();
+    }
+
+    public function usersWithTrashed(): BelongsToMany
+    {
+        return $this->users()
+            ->withTrashed();
     }
 
     /**
@@ -552,9 +558,8 @@ class ProfileGroup extends Model
         string $dateTo
     ): BelongsToMany
     {
-        return $this->users()
+        return $this->usersWithTrashed()
             ->select('id', 'name', 'last_name', 'full_time', 'email')
-            ->withTrashed()
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
