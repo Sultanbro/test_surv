@@ -130,6 +130,17 @@
                 padding-left: 0;
             }
         }
+
+        .fast-anon{
+            font-size: 14px;
+            display: inline-block;
+            text-align: center;
+            margin: 0 auto;
+            padding: 3px 15px;
+            background: #fff2f3;
+            border-radius: 5px;
+            border: 1px solid #ff9fa7;
+        }
     </style>
 </head>
 <body>
@@ -173,17 +184,10 @@
             <div class="col-12 col-md-6 ramka">
 
                 <p class="text-center font-medium">Оцените пожалуйста, Руководителя Вашей группы и Старшего специалиста Вашей группы за "месяц оценки"</p>
-                <p class="text-center" style="    font-size: 14px;
-    display: inline-block;
-    text-align: center;
-    margin: 0 auto;
-    padding: 3px 15px;
-    background: #fff2f3;
-    border-radius: 5px;
-    border: 1px solid #ff9fa7;">Быстро. Анонимно. Для дела.</p>
+                <p class="text-center fast-anon">Быстро. Анонимно. Для дела.</p>
 
 
-                <form  method="post" id="form">
+                <form  method="post" id="form" action="/estimate_your_trainer">
                     <div  id="form-1" >
 
                         <div class="block">
@@ -252,46 +256,50 @@
                             </div>
                             <div class="mb-2">
                                 @foreach($stars as $index => $user)
-                                    <div class="frame">
-                                        <div class="d-flex drb justify-content-between">
-                                            <label class="d-flex justify-content-start aic">
-                                                <div>{{ $user['name'] }}</div>
-                                            </label>
-                                            <div class="d-flex justify-content-start aic">
-                                                <input class="form-control" name="stars[{{$index}}][id]" type="hidden" value="{{ $user['id']}}">
-                                                <input class="form-control" name="stars[{{$index}}][grade]" type="hidden" value="0">
+                                    @if($user['id'])
+                                        <div class="frame EYT-spec">
+                                            <div class="d-flex drb justify-content-between">
+                                                <label class="d-flex justify-content-start aic">
+                                                    <div>{{ $user['name'] }}</div>
+                                                </label>
+                                                <div class="d-flex justify-content-start aic">
+                                                    <input class="form-control" name="stars[{{$index}}][id]" type="hidden" value="{{ $user['id']}}">
+                                                    <input class="form-control" name="stars[{{$index}}][grade]" type="hidden" value="0">
 
-                                                <div class="mb-2 rating rating-star-{{ $index }}">
-                                                    <span class="fa fa-star" data-id="1" title="1" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="2" title="2" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="3" title="3" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="4" title="4" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="5" title="5" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="6" title="6" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="7" title="7" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="8" title="8" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="9" title="9" data-type="star" data-index="{{ $index }}"></span>
-                                                    <span class="fa fa-star" data-id="10" title="10" data-type="star" data-index="{{ $index }}"></span>
+                                                    <div class="mb-2 rating rating-star-{{ $index }}">
+                                                        <span class="fa fa-star" data-id="1" title="1" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="2" title="2" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="3" title="3" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="4" title="4" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="5" title="5" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="6" title="6" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="7" title="7" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="8" title="8" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="9" title="9" data-type="star" data-index="{{ $index }}"></span>
+                                                        <span class="fa fa-star" data-id="10" title="10" data-type="star" data-index="{{ $index }}"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="block justify-content-between plus-minus pm-star-{{ $index }}" style="display:none;">
+                                            <div class="block justify-content-between plus-minus pm-star-{{ $index }}" style="display:none;">
 
-                                            <div class="justify-content-start aic mb-2 w-50 mr-2">
-                                                <p class="mr-3 mb-0"><b>Плюсы</b></p>
-                                                <p class="description">Что он делает хорошо</p>
-                                                <textarea class="form-control" name="stars[{{$index}}][plus]"></textarea>
+                                                <div class="justify-content-start aic mb-2 w-50 mr-2">
+                                                    <p class="mr-3 mb-0"><b>Плюсы</b></p>
+                                                    <p class="description">Что он делает хорошо</p>
+                                                    <textarea class="form-control" name="stars[{{$index}}][plus]"></textarea>
+                                                </div>
+                                                <div class="justify-content-start aic w-50">
+                                                    <p class="mr-2 mb-0"><b>Минусы</b></p>
+                                                    <p class="description">Что он делает плохо</p>
+                                                    <textarea class="form-control" name="stars[{{$index}}][minus]"></textarea>
+                                                </div>
+
                                             </div>
-                                            <div class="justify-content-start aic w-50">
-                                                <p class="mr-2 mb-0"><b>Минусы</b></p>
-                                                <p class="description">Что он делает плохо</p>
-                                                <textarea class="form-control" name="stars[{{$index}}][minus]"></textarea>
-                                            </div>
-
                                         </div>
-                                    </div>
-
+                                    @else
+                                        <input type="hidden" name="stars[{{$index}}][id]" value="0">
+                                        <input type="hidden" name="stars[{{$index}}][grade]" value="0">
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -330,26 +338,25 @@
         for(let i=Number(id);i>0;i--) {
             $('.rating-' + type + '-' + index + ' span[data-id="' + i + '"]').addClass('checked');
         }
-
     });
 
 
 
     $('#submit').click(function(e) {
-        e.preventDefault();
-
         if(rooks > 0 && checked_somebody == false) {
+            e.preventDefault();
             $('.error').text('Вы не поставили оценку!');
-        } else {
+        }
+        else {
+            if(!$('.EYT-spec').size()) return
+            e.preventDefault();
             checked_somebody = false;
             $('.error').text('');
             $('#form-1').hide();
             $('#form-2').fadeIn(700);
         }
-
     });
     $('#submit2').click(function(e) {
-
 
         if(stars > 0 && checked_somebody == false) {
             e.preventDefault();
@@ -357,7 +364,6 @@
         } else {
             $('#submit2').submit();
         }
-
     });
 
 </script>
@@ -369,6 +375,9 @@
     body {
         background: #f5f5f5;
     }
+
+
+
     .particle {
         position: absolute;
         border-radius: 50%;
