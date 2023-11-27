@@ -7,14 +7,16 @@ use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use App\Models\Kpi\Bonus;
 use App\QualityRecordWeeklyStat;
 use App\Repositories\ActivityRepository;
 use App\Traits\AnalyticTrait;
+use Carbon\Carbon;
 
 /**
- * Класс для работы с Service.
- */
+* Класс для работы с Service.
+*/
 final class GetActivitiesService
 {
     use AnalyticTrait;
@@ -38,35 +40,34 @@ final class GetActivitiesService
     {
         return AnalyticsFacade::activitiesViews(
             $dto->groupId,
-            [
-                Activity::VIEW_DEFAULT,
-                Activity::VIEW_COLLECTION,
-                Activity::VIEW_QUALITY
-            ]
-        )->map(function ($activity) use ($dto) {
-            $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-            $workdays = $this->workdays($activity->weekdays, $dto->year, $dto->month);
-            $plan = (new ActivityRepository)->getDailyPlan($activity, $dto->year, $dto->month) ?? null;
+            [Activity::VIEW_DEFAULT, Activity::VIEW_COLLECTION, Activity::VIEW_QUALITY]
+        )->map(function ($activity) use ($dto){
+            $date           = DateHelper::firstOfMonth($dto->year, $dto->month);
+            $workdays       = $this->workdays($activity->weekdays, $dto->year, $dto->month);
+            $plan           = (new ActivityRepository)->getDailyPlan($activity, $dto->year, $dto->month) ?? null;
             $activity->plan = $plan->plan ?? $activity->daily_plan;
             $activity->workdays = $workdays;
 
             /**
              * Types of activities.
              */
-            if ($activity->type == self::COLLECTION) {
-                $collection = $this->collection($activity, $date, $dto->groupId);
-                $activity->price = $collection['price'];
-                $activity->records = $collection['records'];
+            if ($activity->type == self::COLLECTION)
+            {
+                $collection         = $this->collection($activity, $date, $dto->groupId);
+                $activity->price    = $collection['price'];
+                $activity->records  = $collection['records'];
             }
 
-            if ($activity->type == self::DEFAULT) {
+            if ($activity->type == self::DEFAULT)
+            {
                 $activity->records = AnalyticsFacade::userStatisticFormTable($activity, $date, $dto->groupId);
             }
 
-            if ($activity->type == self::QUALITY) {
+            if ($activity->type == self::QUALITY)
+            {
                 $quality = $this->quality($dto);
-                $activity->records = $quality['records'];
-                $activity->weeks = $quality['weeks'];
+                $activity->records  = $quality['records'];
+                $activity->weeks    = $quality['weeks'];
             }
 
             return $activity;
@@ -81,13 +82,13 @@ final class GetActivitiesService
         GetAnalyticDto $dto
     ): array
     {
-        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $employees = $this->employees($dto->groupId, $date)->withWhereHas('weekQualities',
+        $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
+        $employees  = $this->employees($dto->groupId, $date)->withWhereHas('weekQualities',
             fn($quality) => $quality->where('month', $dto->month)->where('year', $dto->year)->select('day', 'total', 'user_id'))->get();
 
         return [
-            'records' => $employees,
-            'weeks' => QualityRecordWeeklyStat::weeksArray($dto->month, $dto->year)
+            'records'   => $employees,
+            'weeks'     => QualityRecordWeeklyStat::weeksArray($dto->month, $dto->year)
         ];
     }
 
@@ -99,15 +100,15 @@ final class GetActivitiesService
      */
     private function collection(
         Activity $activity,
-        string   $date,
-        int      $groupId
+        string $date,
+        int $groupId
     ): array
     {
         $bonus = Bonus::where('activity_id', $activity->id)->first();
 
         return [
-            'price' => $bonus?->sum ?? 0,
-            'records' => AnalyticsFacade::userStatisticFormTable($activity, $date, $groupId)
+            'price'     => $bonus?->sum ?? 0,
+            'records'   => AnalyticsFacade::userStatisticFormTable($activity, $date, $groupId)
         ];
     }
 
@@ -123,8 +124,8 @@ final class GetActivitiesService
         int $month
     ): int
     {
-        $weekdays = [0, 6, 5, 4, 3, 2, 1];
-        $ignore = array_slice($weekdays, 0, -$workdays);
+        $weekdays   = [0, 6, 5, 4, 3, 2, 1];
+        $ignore     = array_slice($weekdays, 0, -$workdays);
 
         return workdays($year, $month, $ignore);
     }
