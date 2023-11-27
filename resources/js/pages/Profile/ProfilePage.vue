@@ -3,7 +3,7 @@
 		v-if="isVisible"
 		id="page-profile"
 	>
-		<div class="intro content">
+		<div class="intro">
 			<IntroTop
 				:courses="intro['courses']"
 				:profit="intro['profit']"

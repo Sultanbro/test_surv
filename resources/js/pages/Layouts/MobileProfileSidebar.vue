@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="header__profile _anim _anim-no-hide custom-scroll-y"
+		class="header__profile _anim _anim-no-hide custom-scroll-y mt-3"
 		:class="{
 			'v-loading': loading,
 			hidden: hide,
