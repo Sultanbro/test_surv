@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\V2\Analytics\ActivityController;
 use App\Http\Controllers\V2\Analytics\PositionController;
 use App\Http\Controllers\V2\Analytics\TopController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticController;
@@ -77,4 +78,6 @@ Route::group([
      * Спидометры в марже.
      */
     Route::post('rentability/speedometers', [TopController::class, 'rentabilitySpeedometers'])->name('.speedometers');
+
+    Route::post('activity/edit', [ActivityController::class, 'edit'])->name('.activity.edit');
 });
