@@ -5,8 +5,6 @@ namespace App\Service\Tenancy;
 use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use App\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 final class UserSyncService
 {
