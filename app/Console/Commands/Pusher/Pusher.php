@@ -4,6 +4,7 @@ namespace App\Console\Commands\Pusher;
 
 use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
+use App\ProfileGroup;
 use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
 use Exception;
@@ -68,7 +69,7 @@ class Pusher extends Command
 
         foreach ($mailingSystems as $mailingSystem)
         {
-            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
         }
     }
 
@@ -91,7 +92,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
             }
         }
     }
@@ -115,7 +116,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
             }
         }
 
@@ -134,7 +135,8 @@ class Pusher extends Command
                 $employeeIds[] = $item->notificationable_id;
             }
             elseif($item->notificationable_type == 'App\\ProfileGroup') {
-                $userIds = DB::table('group_user', $item->notificationable_id)->pluck('user_id')->toArray();
+                $employeeIds = [];
+                $userIds = ProfileGroup::getById(26)->activeUsers()->pluck('user_id')->toArray();
                 $employeeIds = array_merge($employeeIds, $userIds);
             }
             elseif($item->notificationable_type == 'App\\Position') {
