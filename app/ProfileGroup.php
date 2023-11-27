@@ -577,7 +577,16 @@ class ProfileGroup extends Model
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo))
             )
-            ->select('users.name as name', 'users.last_name as last_name', 'users.full_time as full_time', 'users.email as email', 'users.id as id', 'g.id as group_id', 'users.deleted_at as deleted_at')
+            ->select(
+                'users.name as name',
+                'users.last_name as last_name',
+                'users.last_name as check_this',
+                'users.full_time as full_time',
+                'users.email as email',
+                'users.id as id',
+                'g.id as group_id',
+                'users.deleted_at as deleted_at'
+            )
             ->orderBy('last_name')
             ->orderBy('name');
     }
