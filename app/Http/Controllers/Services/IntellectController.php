@@ -285,7 +285,7 @@ class IntellectController extends Controller
                    'deal_id' => $request->deal_id,
                    'project' => $request->project ?? null,
                    'net' => $request->net ?? null,
-                   'skyped' => $bitrixLead['MOVED_TIME'],
+                   'skyped' => now(),
                    'referrer_id' => $referrer_id
                ]);
            }
