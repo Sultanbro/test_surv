@@ -370,16 +370,18 @@ final class Analytics
                 ->where('date', '>=', $firstOfMonth)
                 ->where('date', '<=', $dateFrom))
             ->get()
-            ->each(function ($employee) use ($date, $activity) {
+            ->map(function ($employee) use ($date, $activity) {
                 $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
                 $appliedFrom = $employee->workdays_from_applied($date, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
                 $employee->fullname = $employee->full_name;
-                $employee->fired = (bool)$employee->deleted_at;
+                $employee->fired = $employee->deleted_at != null ? 1 : 0;
                 $employee->applied_from = $appliedFrom;
                 $employee->is_trainee = 1;
                 $employee->plan = $activity->daily_plan * $workDays;
+
+                return $employee;
             });
     }
 
