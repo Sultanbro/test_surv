@@ -1,5 +1,13 @@
 import axios from 'axios'
 
+function addFavorites(items, favorites){
+	items.forEach(item => {
+		if(favorites.includes(item.id)) item.isFavorite = true
+		if(item.children) addFavorites(item.children, favorites)
+	})
+	return items
+}
+
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
 	return data.books
@@ -12,7 +20,10 @@ export async function fetchKBArchived(){
 
 export async function fetchKBBook(id){
 	const {data} = await axios.post('/kb/tree', {id})
-	return data
+	return {
+		...data,
+		trees: addFavorites(data.trees, data.favourite_ids)
+	}
 }
 
 export async function deleteKBBook(id){
@@ -25,15 +36,16 @@ export async function restoreKBBook(id){
 	return data
 }
 
-export async function searchKBBook(text){
-	const {data} = await axios.post('kb/search', {text})
+export async function searchKBBook(request){
+	const {data} = await axios.post('kb/search', request)
 	return data
 }
 
-export async function createKBBook(name){
-	const {data} = await axios.post('/kb/page/add-section', {name})
+export async function createKBBook(request){
+	const {data} = await axios.post('/kb/page/add-section', request)
 	return data
 }
+
 export async function updateKBBook(request){
 	const {data} = await axios.post('/kb/page/update-section', request)
 	return data
@@ -46,6 +58,21 @@ export async function updateKBOrder(request){
 
 export async function fetchKBAccess(id){
 	const {data} = await axios.post('/kb/page/get-access', {id})
+	return {
+		whoCanRead: data.who_can_read || [],
+		whoCanEdit: data.who_can_edit || [],
+		whoCanReadPairs: data.who_can_read_pairs || [],
+		whoCanEditPairs: data.who_can_edit_pairs || [],
+	}
+}
+
+export async function addKBPage(id){
+	const {data} = await axios.post('/kb/page/create', {id})
+	return data
+}
+
+export async function toggleKBPageFavorite(id, request){
+	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)
 	return data
 }
 

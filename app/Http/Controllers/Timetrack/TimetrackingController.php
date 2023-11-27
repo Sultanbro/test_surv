@@ -348,6 +348,8 @@ class TimetrackingController extends Controller
             ->addTime($exit, $user->timezone())
             ->save();
 
+        Referring::touchReferrerSalaryWeekly($user, $exit);
+
         return 'stopped';
     }
 
@@ -725,6 +727,8 @@ class TimetrackingController extends Controller
 
         Referring::touchReferrerStatus($user);
         Referring::touchReferrerSalaryForCertificate($user);
+        Referring::deleteReferrerDailySalary($user->getKey(), $date);
+
 
         return response()->json([
             'msg' => 'Заявка отправлена рекрутерам'
@@ -1694,12 +1698,14 @@ class TimetrackingController extends Controller
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
-
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
+
+                Referring::deleteReferrerDailySalary($targetUser->id, $date);
+
                 $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
 
                 // Поиск ID лида или сделки
@@ -1821,7 +1827,6 @@ class TimetrackingController extends Controller
                     ]);
                 }
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-                Referring::deleteReferrerDailySalary($targetUser->id, $date);
             }
 
 
@@ -1871,7 +1876,6 @@ class TimetrackingController extends Controller
                 ]);
             Referring::touchReferrerSalaryForTrain($targetUser, $date);
 
-
             if ($trainee) {
                 $bitrix = new Bitrix();
 
@@ -1891,7 +1895,6 @@ class TimetrackingController extends Controller
                     ]);
                 }
             }
-
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
@@ -1900,6 +1903,7 @@ class TimetrackingController extends Controller
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
+                Referring::deleteReferrerDailySalary($targetUser->getKey(), $date);
 
                 // Поиск ID лида или сделки
                 if ($trainee->lead_id != 0) {

@@ -10,6 +10,8 @@ use App\Service\Referral\Core\TransactionInterface;
 use App\Service\Referral\UrlGeneratorService;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -53,13 +55,12 @@ class Referring extends Facade
                 ->where('type', PaidType::TRAINEE)
             )
             ->first();
-        $salary?->update([
-            'amount' => 0
-        ]);
+        $salary?->delete();
     }
 
     public static function touchReferrerSalaryForCertificate(User $user): void
     {
+
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
         /** @var User $user */
@@ -82,9 +83,43 @@ class Referring extends Facade
             'description',
             'referrer'
         ]);
+
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
 
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($user, PaidType::TRAINEE);
+    }
+
+    public static function touchReferrerSalaryWeekly(User|Authenticatable $user, Carbon $date): void
+    {
+        /** @var TransactionInterface $service */
+        $service = app(TransactionInterface::class);
+
+        /** @var User $user */
+        $user = $user->load([
+            'description',
+            'referrer',
+            'timetracking' => function (HasMany $query) {
+                $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
+                    ->havingRaw("work_total >= ?", [60 * 3]);
+            }
+        ]);
+
+        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
+
+        $workedWeeksCount = (int)$user->timetracking?->count() / 6;
+
+        if ($workedWeeksCount === 0) return;
+
+        if ($workedWeeksCount === 1) {
+            $service->touch($user, PaidType::FIRST_WORK);
+            return;
+        }
+
+        foreach ([2, 3, 4, 6, 8, 12] as $week) {
+            if ($workedWeeksCount !== $week) continue;
+            $service->useDate($date);
+            $service->touch($user, PaidType::WORK);
+        }
     }
 }

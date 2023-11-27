@@ -71,9 +71,9 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->select('referrer_id',
                 DB::raw("SUM(amount) AS absolute_earned"),
                 DB::raw("SUM(CASE WHEN is_paid = 1 THEN amount ELSE 0 END) AS absolute_paid"),
-                DB::raw("SUM(CASE WHEN date BETWEEN '$startDate' AND '$endDate' THEN amount ELSE 0 END) AS month_earned"),
-                DB::raw("SUM(CASE WHEN is_paid = 1 AND date BETWEEN '$startDate' AND '$endDate' THEN amount ELSE 0 END) AS month_paid"),
-                DB::raw("SUM(CASE WHEN is_paid = 1 AND date BETWEEN '$startDate' AND '$endDate' AND type = '$paidTypeFirstWork' THEN amount ELSE 0 END) AS referrers_earned")
+                DB::raw("SUM(CASE WHEN STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '$startDate' AND '$endDate' THEN amount ELSE 0 END) AS month_earned"),
+                DB::raw("SUM(CASE WHEN is_paid = 1 AND STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '$startDate' AND '$endDate' THEN amount ELSE 0 END) AS month_paid"),
+                DB::raw("SUM(CASE WHEN is_paid = 1 AND STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '$startDate' AND '$endDate' AND type = '$paidTypeFirstWork' THEN amount ELSE 0 END) AS referrers_earned")
             )
             ->groupBy('referrer_id');
 

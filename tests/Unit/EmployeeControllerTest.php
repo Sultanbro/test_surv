@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\App;
 use App\User;
 use Tests\TestCase;
 
