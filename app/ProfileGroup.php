@@ -563,24 +563,21 @@ class ProfileGroup extends Model
             ->join('group_user as gu', 'users.id', '=', 'gu.user_id')
             ->join('profile_groups as g', 'gu.group_id', '=', 'g.id')
             ->where('g.id', $this->getKey())
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereNotNull('users.deleted_at')
-                    ->whereYear('users.deleted_at', '>=', Carbon::parse($dateFrom)->year)
-                    ->whereMonth('users.deleted_at', '>=', Carbon::parse($dateFrom)->month)
-                    ->orWhereNull('users.deleted_at');
-            })
-            ->whereHas('user_description', function ($description) {
-                $description->where('is_trainee', 0);
+            ->where(function (Builder $query) use ($dateFrom) {
+                $query->where(function (Builder $query) use ($dateFrom) {
+                    $query->whereNotNull('users.deleted_at')
+                        ->whereYear('users.deleted_at', '>=', Carbon::parse($dateFrom)->year)
+                        ->whereMonth('users.deleted_at', '>=', Carbon::parse($dateFrom)->month);
+                });
+                $query->orWhereNull('users.deleted_at');
             })
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
-                fn($query) => $query->whereDate('to', '>=', $dateTo))
-            )
+                fn($query) => $query->whereDate('to', '>=', $dateTo)))
             ->select(
                 'users.name as name',
                 'users.last_name as last_name',
-                'users.last_name as check_this',
                 'users.full_time as full_time',
                 'users.email as email',
                 'users.id as id',
