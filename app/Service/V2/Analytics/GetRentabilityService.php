@@ -26,11 +26,13 @@ class GetRentabilityService
      */
     public function handle(GetRentabilityDto $dto): array
     {
-        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
+        $gauges = ProfileGroup::withRentability($dto->year, $dto->month)
+            ->map(fn ($group) => TopValue::query()->where('group_id', $group->id)->where('type', TopValue::RENTABILITY)->get())
+            ->filter(fn ($group) => $group->count() > 0)->toArray();
 
         return [
             'table'         => TopValue::getPivotRentability($dto->year, $dto->month),
-            'speedometers'  => TopValue::getRentabilityGauges($date),
+            'speedometers'  => $gauges
         ];
     }
 }

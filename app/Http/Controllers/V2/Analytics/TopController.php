@@ -10,6 +10,7 @@ use App\Service\V2\Analytics\RentabilitySpeedometerService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class TopController extends Controller
 {
@@ -33,6 +34,7 @@ class TopController extends Controller
      * @param SpeedometersRequest $request
      * @param RentabilitySpeedometerService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function rentabilitySpeedometers(SpeedometersRequest $request, RentabilitySpeedometerService $service): JsonResponse
     {
