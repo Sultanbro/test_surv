@@ -407,6 +407,10 @@ class EmployeeController extends Controller
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->with(['group_users']);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
@@ -424,6 +428,10 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'fired')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
@@ -459,6 +467,9 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
@@ -476,6 +487,10 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
@@ -497,6 +512,10 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         else {
             if ($request['job'] != 0) {
@@ -513,6 +532,10 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
 
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
