@@ -119,6 +119,13 @@ final class Analytics
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
+//                $arr = [
+//                    'row_id' => $row->id,
+//                    'column_id' => $column->id,
+//                    'context' => false,
+//                    'cell' => $cellLetter . $cellNumber,
+//                    'depend_id' => $row->depend_id,
+//                ];
 
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
@@ -202,7 +209,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -344,17 +352,12 @@ final class Analytics
         int      $groupId = null
     ): Collection
     {
-        /**
-         * @var ProfileGroup $group
-         */
         $group = ProfileGroup::query()->where('id', $groupId)->first();
         $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo)
-            ->orderBy('last_name')
-            ->orderBy('name');
+        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
 
         return $employees
             ->with('statistics', fn($statistic) => $statistic->select([
@@ -369,11 +372,14 @@ final class Analytics
                 $appliedFrom = $employee->workdays_from_applied($date, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
+
                 $employee->fullname = $employee->full_name;
                 $employee->fired = $employee->deleted_at != null ? 1 : 0;
                 $employee->applied_from = $appliedFrom;
                 $employee->is_trainee = 1;
                 $employee->plan = $activity->daily_plan * $workDays;
+
+
                 return $employee;
             });
     }
