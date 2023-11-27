@@ -552,40 +552,26 @@ class ProfileGroup extends Model
     /**
      * @param string $dateFrom
      * @param string $dateTo
-     * @return Builder
+     * @return BelongsToMany
      */
     public function actualAndFiredEmployees(
         string $dateFrom,
         string $dateTo
-    ): Builder
+    ): BelongsToMany
     {
-        return User::query()
-            ->join('group_user as gu', 'users.id', '=', 'gu.user_id')
-            ->join('profile_groups as g', 'gu.group_id', '=', 'g.id')
-            ->where('g.id', $this->getKey())
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereNotNull('users.deleted_at')
-                    ->whereYear('users.deleted_at', '>=', Carbon::parse($dateFrom)->year)
-                    ->whereMonth('users.deleted_at', '>=', Carbon::parse($dateFrom)->month)
-                    ->orWhereNull('users.deleted_at');
-            })
-            ->whereHas('user_description', function ($description) {
-                $description->where('is_trainee', 0);
-            })
+        return $this->usersWithTrashed()
+            ->select('id', 'name', 'last_name', 'full_time', 'email', 'users.deleted_at')
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo))
             )
-            ->select(
-                'users.name as name',
-                'users.last_name as last_name',
-                'users.full_time as full_time',
-                'users.email as email',
-                'users.id as id',
-                'g.id as group_id',
-                'users.deleted_at as deleted_at'
-            )
+            ->when($dateFrom, function ($query) use ($dateFrom) {
+                $query->where(function (Builder $query) use ($dateFrom) {
+                    $query->whereRaw('', '>', $dateFrom)
+                        ->orWhereNull('users.deleted_at');
+                });
+            })
             ->orderBy('last_name')
             ->orderBy('name');
     }
