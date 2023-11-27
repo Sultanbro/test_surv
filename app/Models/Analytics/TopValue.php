@@ -57,6 +57,9 @@ class TopValue extends Model
         'type'
     ];
 
+    const UTILITY = 1;
+    const RENTABILITY = 2;
+
     public function getOptions($options = null): array
     {
 
