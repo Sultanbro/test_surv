@@ -354,7 +354,7 @@ final class Analytics
 
         $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo)
             ->orderBy('last_name')
-            ->orderBy('first_name');
+            ->orderBy('name');
 
         return $employees
             ->with('statistics', fn($statistic) => $statistic->select([
