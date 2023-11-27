@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 
 final class UserSyncService
-{   
+{
     private $syncFields = [
         'password',
         'name',
@@ -18,23 +18,23 @@ final class UserSyncService
     ];
 
     public function update(String $email, array $data)
-    {       
+    {
         $currentTenant = tenant('id');
 
         $owner = CentralUser::with('tenants')->where('email', $email)->first();
-        
+
         if(!$owner) {
             return false;
         }
- 
+
         foreach ($owner->tenants as $tenant) {
 
-            
+
             tenancy()->initialize($tenant);
 
             $users = User::withTrashed()->where('email', $email)->first();
-            
-            $users->update( $data );
+
+            $users?->update($data);
         }
         $user = User::withTrashed()
             ->where('email',$email)
