@@ -9,6 +9,7 @@ use App\Service\Referral\SalaryFilter;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
@@ -138,6 +139,9 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $query->where("referrer_id", $referrer->getKey());
                 $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
                 $query->orderBy('date');
+            }])
+            ->with(['groups' => function (BelongsToMany $query) use ($referrer) {
+                $query->select(["id", 'name']);
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")

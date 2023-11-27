@@ -4,6 +4,7 @@ namespace Tests\Unit\Referral;
 
 use App\DayType;
 use App\Models\Bitrix\Lead;
+use App\ProfileGroup;
 use App\Repositories\Referral\UserStatisticRepository;
 use App\Service\Referral\Core\PaidType;
 use App\User;
@@ -51,6 +52,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
                     ]
                 );
                 $this->createLead($referrer, $referral);
+                $this->createGroup($referral);
                 $this->timeTracking($referral, 6);
                 $date = now();
                 $this->createSalary($referrer, $referral, PaidType::ATTESTATION, $date);
@@ -68,6 +70,7 @@ class UserStatisticRepositoryTest extends TenantTestCase
                     'is_trainee' => true
                 ]
             );
+            $this->createGroup($referral);
             $this->createDayTypes($referral, $referrer, 6);
             $this->createSalary($referrer, $referral, PaidType::TRAINEE, now(), 6);
             $this->createLead($referrer, $referral);
@@ -125,5 +128,11 @@ class UserStatisticRepositoryTest extends TenantTestCase
 
             --$count;
         }
+    }
+
+    private function createGroup(User $referral): void
+    {
+        $group = ProfileGroup::factory()->create();
+        $referral->groups()->attach($group);
     }
 }

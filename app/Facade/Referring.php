@@ -83,6 +83,7 @@ class Referring extends Facade
             'description',
             'referrer'
         ]);
+
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
 
         $service->useDate($date); // this can be used when the date is not current
