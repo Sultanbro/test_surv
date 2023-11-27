@@ -6,12 +6,16 @@ function referalToUser(ref){
 		name: ref.name,
 		lastName: ref.last_name,
 		title: `${ref.last_name} ${ref.name}`,
+		groups: ref.groups || [],
 		status: ref.deleted_at
 			? 'Уволен'
 			: ref.is_trainee
 				? 'Стажер'
 				: 'Работающий',
 	}
+
+	const lastGroup = user.groups.slice(-1)
+	user.lastGroup = lastGroup[0] || null
 
 	const datetypes = ref.datetypes || {}
 	const days = []

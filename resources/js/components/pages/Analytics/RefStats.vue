@@ -35,6 +35,7 @@
 				...tableFields,
 			]"
 			:user-link="true"
+			:show-goups="true"
 			@load-user="loadUser"
 			@payment-click="showPaymentDialog"
 		/>

@@ -88,8 +88,13 @@
 				/>
 			</div>
 		</template>
-		<template #cell(title)="{value}">
+		<template #cell(title)="{item, value}">
 			{{ value }}
+			<template v-if="showGoups && item.lastGroup">
+				<b-badge>
+					{{ item.lastGroup.name }}
+				</b-badge>
+			</template>
 		</template>
 		<template #cell(status)="{value}">
 			{{ value }}
@@ -165,6 +170,9 @@ export default {
 			default: 1,
 		},
 		hintComments: {
+			type: Boolean
+		},
+		showGoups: {
 			type: Boolean
 		},
 	},

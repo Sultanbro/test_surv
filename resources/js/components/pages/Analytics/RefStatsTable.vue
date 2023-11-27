@@ -96,6 +96,7 @@
 								:user-id="firstLayerData.value.id"
 								:sorted-subs="sortedSubs"
 								:hint-comments="hintComments"
+								:show-goups="showGoups"
 								@sub-sort="setSubSort"
 								@payment-click="$emit('payment-click', $event)"
 							/>
@@ -143,6 +144,9 @@ export default {
 			type: Boolean
 		},
 		userLink: {
+			type: Boolean
+		},
+		showGoups: {
 			type: Boolean
 		},
 	},
