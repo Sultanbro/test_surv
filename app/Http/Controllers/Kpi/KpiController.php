@@ -8,15 +8,8 @@ use App\Http\Requests\KpiUpdateRequest;
 use App\Service\KpiService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
-use DB;
-use Carbon\Carbon;
-use App\User;
-use App\ProfileGroup;
-use App\Position;
-use App\Models\Analytics\Activity;
-use App\Service\GroupUserService;
+use Illuminate\Support\Facades\View;
 
 // use App\Models\Kpi\Kpi;
 
@@ -40,22 +33,13 @@ class KpiController extends Controller
         ]);
     }
 
-    public function getKpis(Request $request)
+    public function getKpis(Request $request): JsonResponse
     {
-       // $response = $kpiService->get($request->input('id'));
-     
         $response = $this->kpiService->fetch($request->filters);
 
         return response()->json($response);
     }
 
-    /**
-     * Сохранение.
-     * @param KpiSaveRequest $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     * @throws Exception
-     */
     public function save(KpiSaveRequest $request): JsonResponse
     {
         $response = $this->kpiService->save($request);
@@ -63,31 +47,18 @@ class KpiController extends Controller
         return response()->json($response);
     }
 
-    /**
-     * Обновление.
-     * @param KpiUpdateRequest $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     * @throws Exception
-     */
     public function update(KpiUpdateRequest $request): JsonResponse
     {
-       
+
         $response = $this->kpiService->update($request);
-      
+
         return response()->json($response);
     }
 
-    /**
-     * Удаление.
-     * @param Request $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     */
     public function delete(Request $request, int $id): JsonResponse
     {
-        $response = $this->kpiService->delete($request);
+        $this->kpiService->delete($request);
 
-        return response()->json($response);
+        return response()->json($id);
     }
 }
