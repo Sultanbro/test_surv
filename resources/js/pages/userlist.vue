@@ -550,6 +550,7 @@ export default {
 				filter: this.filter.userType,
 				segment: this.filter.segment.map(segment => segment.id),
 				job: this.filter.position,
+				group_id: +this.filter.group,
 				notrainees: this.filter.notrainees,
 				type: this.filter.type,
 				part: this.filter.fullpart,
