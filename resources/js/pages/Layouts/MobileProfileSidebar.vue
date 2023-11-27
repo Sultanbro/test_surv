@@ -62,8 +62,8 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'message']),
+		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'message', 'buttonStatus']),
 		...mapState(useProfileSalaryStore, ['user_earnings']),
 		...mapState(useProfileSalaryStore, {isSalaryReady: 'isReady'}),
 		totalBalance(){
@@ -82,7 +82,6 @@ export default {
 			}
 		},
 		showButton(){
-			if(this.$viewportSize.width < 768) return false
 			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
 			return this.status === 'started' || (this.user && this.user.user_type === 'remote')
 		}
