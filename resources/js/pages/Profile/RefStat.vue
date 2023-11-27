@@ -1,6 +1,6 @@
 <template>
 	<div
-		v-if="users.length"
+		v-if="isReady"
 		id="RefStat"
 		class="RefStat index block _anim _anim-no-hide"
 		:class="{

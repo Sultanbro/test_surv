@@ -63,7 +63,6 @@
 					:tasks="el.children"
 					:parent_id="el.id"
 					:active="active"
-					:auth_user_id="auth_user_id"
 					:opened="el.opened"
 					:mode="mode"
 					@showPage="showPage"
@@ -90,9 +89,6 @@ const NestedDraggable = {
 		},
 		opened: {
 			default: false
-		},
-		auth_user_id: {
-			type: Number
 		},
 		mode: {
 			type: String
@@ -129,10 +125,9 @@ const NestedDraggable = {
 				id: event.item.id,
 				order: event.newIndex, // oldIndex
 				parent_id: event.to.id
+			}).then(() => {
+				this.$toast.success('Очередь сохранена');
 			})
-				.then(() => {
-					this.$toast.success('Очередь сохранена');
-				})
 		},
 	},
 };

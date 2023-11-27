@@ -846,7 +846,7 @@ export default {
 				const b = urlParams.get('b')
 				let uri = '/kb?s=' + book.id
 				if(this.search.input) uri += '&hl=' + this.search.input
-				if(b) uri += '&b=' + b
+				if(b || page_id) uri += '&b=' + (b || page_id)
 				window.history.replaceState({}, 'База знаний', uri)
 
 				this.trees = data.trees
@@ -908,7 +908,10 @@ export default {
 		async runSearch(){
 			if(this.search.input.length <= 2) return null
 			try {
-				const data = await API.searchKBBook(this.search.input)
+				const data = await API.searchKBBook({
+					text: this.search.input,
+					id: null
+				})
 				this.search.items = data.items
 				this.emphasizeTexts()
 			}
@@ -928,15 +931,15 @@ export default {
 		async fetchAccess(book){
 			try {
 				const {
-					who_can_edit,
-					who_can_read,
-					who_can_read_pairs,
-					who_can_edit_pairs,
+					whoCanEdit,
+					whoCanRead,
+					whoCanReadPairs,
+					whoCanEditPairs,
 				} = await API.fetchKBAccess(book.id)
-				this.who_can_edit = who_can_edit
-				this.who_can_read = who_can_read
-				this.parseAccessPairs(who_can_read_pairs)
-				this.parseEditPairs(who_can_edit_pairs)
+				this.who_can_edit = whoCanEdit
+				this.who_can_read = whoCanRead
+				this.parseAccessPairs(whoCanReadPairs)
+				this.parseEditPairs(whoCanEditPairs)
 			}
 			catch (error) {
 				console.error(error)
