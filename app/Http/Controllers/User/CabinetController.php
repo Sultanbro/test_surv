@@ -89,7 +89,7 @@ class CabinetController extends Controller
             'birthday' => $request->birthday,
             'name' => $request['query']['name'],
             'last_name' =>  $request['query']['last_name'],
-            'coordinate_id' =>  isset($request->coordinates) ? $this->setCoordinate($request->coordinates) : null,
+            'coordinates' =>  isset($request->coordinates) ? $request->coordinates : null,
         ]);
 
         if (isset($request->cards)){
