@@ -2,8 +2,8 @@
 
 return [
 
-//    'token' => '98e14b401079436d9f48805cd4a12b1b',
-//    'channel_id' => 'd0886b24-63a5-4139-8a60-0a6032b81859'
+    'token' => '98e14b401079436d9f48805cd4a12b1b',
+    'channel_id' => 'd0886b24-63a5-4139-8a60-0a6032b81859'
 
 
 //     original token
