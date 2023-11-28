@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit)"
+				:can-edit="!!(parentBook && parentBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				:root-book="rootBook"
 				:parent-book="parentBook"
