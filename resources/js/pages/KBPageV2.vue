@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit)"
+				:can-edit="!!(parentBook && parentBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				:root-book="rootBook"
 				:parent-book="parentBook"
@@ -857,16 +857,23 @@ export default {
 					name: this.sectionName,
 					parent_id: this.createParentId,
 				})
+				book.canRead = true
+				book.canEdit = true
 				this.showCreate = false
 				this.sectionName = ''
 
 				if(this.createParentId){
 					const parent = this.pagesMap[this.createParentId] || this.booksMap[this.createParentId]
-					if(!parent.children) parent.children = []
-					parent.children.push(book)
+					if(parent){
+						if(!parent.children) parent.children = []
+						parent.children.push(book)
+					}
+					else{
+						this.pages.push(book)
+					}
 				}
 				else{
-					this.books.push(book)
+					this.pages.push(book)
 				}
 
 				this.updateBook = book
