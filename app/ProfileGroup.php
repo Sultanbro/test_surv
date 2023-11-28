@@ -10,6 +10,7 @@ use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -551,24 +552,38 @@ class ProfileGroup extends Model
     /**
      * @param string $dateFrom
      * @param string $dateTo
-     * @return BelongsToMany
+     * @return Builder
      */
     public function actualAndFiredEmployees(
         string $dateFrom,
         string $dateTo
-    ): BelongsToMany
+    ): Builder
     {
-        return $this->users()
-            ->select('id', 'name', 'last_name', 'full_time', 'email', 'users.deleted_at')
-            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-            ->whereDate('from', '<=', $dateFrom)
-            ->where(fn($query) => $query->whereNull('to')->orWhere(
-                fn($query) => $query->whereDate('to', '>=', $dateTo))
+        return User::query()
+            ->join('group_user as p', fn($join) => $join->on('p.user_id', '=', 'users.id'))
+            ->join('profile_groups as g', fn($join) => $join->on('p.group_id', '=', 'g.id'))
+            ->join('user_descriptions as d', fn($join) => $join->on('d.user_id', '=', 'users.id'))
+            ->select([
+                'users.id as id',
+                'users.name as name',
+                'users.last_name as last_name',
+                'users.full_time as full_time',
+                'users.email as email',
+                'users.deleted_at as deleted_at',
+                'd.is_trainee as is_trainee',
+                'g.id as group_id',
+                'g.name as group_name'
+            ])
+            ->where(fn($query) => $query
+                ->whereDate('users.deleted_at', '>=', $dateFrom)
+                ->orWhereNull('users.deleted_at')
             )
-            ->withTrashed()
-            ->where(fn($query) => $query->whereNull('users.deleted_at')->orWhere(
-                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)
-            ))
+            ->whereDate('p.from', '>=', $dateFrom)
+            ->where(fn($query) => $query
+                ->whereDate('p.to', '<=', $dateTo)
+                ->orWhereNull('p.to')
+            )
+            ->where('d.is_trainee', 0)
             ->orderBy('last_name')
             ->orderBy('name');
     }
