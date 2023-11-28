@@ -29,6 +29,9 @@ import ReferralPrsentationView from '@/views/ReferralPrsentationView'
 import SettingsView from '@/views/SettingsView'
 // import StructureView from '@/views/StructureView'
 
+const VIEWPORT_DEFAULT = 'width=1360, initial-scale=1'
+const VIEWPORT_ADAPTIVE = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'
+
 const router = new VueRouter({
 	mode: 'history',
 	routes: [
@@ -40,7 +43,7 @@ const router = new VueRouter({
 			component: ProfileView,
 			meta: {
 				title: 'Мой профиль',
-				viewport: true,
+				viewport: VIEWPORT_ADAPTIVE,
 				bodyClass: 'profile-page',
 				menuItem: 'profile',
 			},
@@ -77,7 +80,7 @@ const router = new VueRouter({
 			component: NewsView,
 			meta: {
 				title: 'Новости',
-				viewport: true,
+				viewport: VIEWPORT_ADAPTIVE,
 				menuItem: 'news',
 			},
 		},
@@ -319,10 +322,7 @@ router.beforeEach((to, from, next) => {
 	checkVersion().then(newVersion => {
 		if(newVersion) location.assign(to.fullPath || to.path)
 	})
-	viewport.content = ' ';
-	if(to.meta.viewport){
-		viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no';
-	}
+	viewport.content = to.meta.viewport || VIEWPORT_DEFAULT
 	next();
 });
 export default router
