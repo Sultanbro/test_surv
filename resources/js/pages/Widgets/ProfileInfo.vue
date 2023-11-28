@@ -73,6 +73,7 @@
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useWorkChartStore } from '@/stores/WorkChart.js'
+
 export default {
 	name: 'ProfileInfo',
 	props: {

@@ -29,7 +29,7 @@
 			<div class="profile__col">
 				<ProfileInfo :data="userInfo" />
 
-				<RefWidget v-if="isBP" />
+				<!-- <RefWidget v-if="isBP" /> -->
 			</div>
 		</div>
 	</div>
@@ -43,14 +43,14 @@ import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 
 import ProfileInfo from '@/pages/Widgets/ProfileInfo'
 import StartDayBtn from '@/pages/Widgets/StartDayBtn'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 export default {
 	name: 'MobileProfileSidebar',
 	components: {
 		ProfileInfo,
 		StartDayBtn,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -84,7 +84,10 @@ export default {
 		showButton(){
 			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
 			return this.status === 'started' || (this.user && this.user.user_type === 'remote')
-		}
+		},
+		isProfileVisible(){
+			return this.$viewportSize.width < 1360
+		},
 	},
 	mounted(){
 		const scrollObserver = new IntersectionObserver(() => {

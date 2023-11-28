@@ -7,7 +7,7 @@ export const usePersonalInfoStore = defineStore('personalInfo', {
 		isLoading: false,
 		user: {},
 		position: {},
-		groups: '',
+		groups: [],
 		salary: '',
 		workingDay: '',
 		workingTime: '',
@@ -21,15 +21,15 @@ export const usePersonalInfoStore = defineStore('personalInfo', {
 			this.isLoading = true
 			try{
 				const data = await fetchProfilePersonalInfo()
-				this.user = data.user
-				this.position = data.position
-				this.groups = data.groups
-				this.salary = data.salary
-				this.workingDay = data.workingDay
-				this.workingTime = data.workingTime
-				this.schedule = data.schedule
-				this.currency = data.currency
-				this.currencies = data.currencies
+				this.user = data.user || {}
+				this.position = data.position || {}
+				this.groups = data.groups || []
+				this.salary = data.salary || ''
+				this.workingDay = data.workingDay || ''
+				this.workingTime = data.workingTime || ''
+				this.schedule = data.schedule || ''
+				this.currency = data.currency || ''
+				this.currencies = data.currencies || {}
 				this.isReady = true
 			}
 			catch(error){
