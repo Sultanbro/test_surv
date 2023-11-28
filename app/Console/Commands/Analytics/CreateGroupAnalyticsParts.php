@@ -91,11 +91,6 @@ class CreateGroupAnalyticsParts extends Command
             ->get();
 
         foreach ($tops as $top) {
-//            $cloned = $top->replicate(); why dont use this
-//            $cloned->date = $currentDate;
-//            $cloned->value = 0;
-//            $cloned->save();
-
             TopValue::query()
                 ->create([
                     'name' => $top->name,
