@@ -574,6 +574,7 @@ class ProfileGroup extends Model
                 'g.id as group_id',
                 'g.name as group_name'
             ])
+            ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
                 ->whereDate('users.deleted_at', '>=', $dateFrom)
                 ->orWhereNull('users.deleted_at')
