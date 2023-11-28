@@ -360,6 +360,7 @@ final class Analytics
         $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
 
         return $employees
+            ->whereDoesntHave('activities')
             ->with('statistics', fn($statistic) => $statistic->select([
                 DB::raw('DAY(date) as day'),
                 'user_id',

@@ -6,6 +6,7 @@ use App\Api\BitrixOld as Bitrix;
 use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Analytics\Activity;
 use App\Models\Article\Article;
 use App\Models\Article\PollVote;
 use App\Models\Award\Award;
@@ -1750,5 +1751,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function restoredData(): HasMany
     {
         return $this->hasMany(UserRestored::class, 'user_id');
+    }
+
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class, 'activity_user', 'user_id', 'activity_id');
     }
 }
