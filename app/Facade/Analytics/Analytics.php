@@ -209,8 +209,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -352,6 +351,7 @@ final class Analytics
         int      $groupId = null
     ): Collection
     {
+        /** @var ProfileGroup $group */
         $group = ProfileGroup::query()->where('id', $groupId)->first();
         $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
@@ -372,13 +372,11 @@ final class Analytics
                 $appliedFrom = $employee->workdays_from_applied($date, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
-
                 $employee->fullname = $employee->full_name;
-                $employee->fired = $employee->deleted_at != null ? 1 : 0;
+                $employee->fired = (bool)$employee->deleted_at;
                 $employee->applied_from = $appliedFrom;
                 $employee->is_trainee = 1;
                 $employee->plan = $activity->daily_plan * $workDays;
-
 
                 return $employee;
             });
