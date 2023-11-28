@@ -559,17 +559,16 @@ class ProfileGroup extends Model
     ): BelongsToMany
     {
         return $this->users()
-            ->withTrashed()
             ->select('id', 'name', 'last_name', 'full_time', 'email', 'users.deleted_at')
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo))
             )
-//            ->where(fn($query) => $query->whereNull('users.deleted_at')->orWhere(
-////                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)
-//                fn($query) => $query->whereNotNull('users.deleted_at')
-//            ))
+            ->withTrashed()
+            ->where(fn($query) => $query->whereNull('users.deleted_at')->orWhere(
+                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)
+            ))
             ->orderBy('last_name')
             ->orderBy('name');
     }
