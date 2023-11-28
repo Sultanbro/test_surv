@@ -353,7 +353,7 @@ final class Analytics
     {
         /** @var ProfileGroup $group */
         $group = ProfileGroup::query()->where('id', $groupId)->first();
-        $dateFrom = Carbon::createFromDate($date)->startOfMonth()->format('Y-m-d');
+        $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
