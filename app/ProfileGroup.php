@@ -565,7 +565,9 @@ class ProfileGroup extends Model
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo)))
             ->where(fn($query) => $query->whereNull('users.deleted_at')->orWhere(
-                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)))
+//                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)
+                fn($query) => $query->whereNotNull('users.deleted_at')
+            ))
             ->orderBy('last_name')
             ->orderBy('name');
     }
