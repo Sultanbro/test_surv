@@ -558,14 +558,14 @@ class ProfileGroup extends Model
         string $dateTo
     ): BelongsToMany
     {
-        return $this->usersWithTrashed()
+        return $this->users()
             ->select('id', 'name', 'last_name', 'full_time', 'email', 'users.deleted_at')
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)
             ->where(fn($query) => $query->whereNull('to')->orWhere(
                 fn($query) => $query->whereDate('to', '>=', $dateTo)))
             ->where(fn($query) => $query->whereNull('users.deleted_at')->orWhere(
-                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateTo)))
+                fn($query) => $query->whereDate('users.deleted_at', '>=', $dateFrom)))
             ->orderBy('last_name')
             ->orderBy('name');
     }
