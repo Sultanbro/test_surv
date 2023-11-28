@@ -585,6 +585,7 @@ class ProfileGroup extends Model
 //                ->orWhereNull('p.to')
 //            )
             ->where('d.is_trainee', 0)
+            ->distinct()
             ->orderBy('last_name')
             ->orderBy('name');
     }
