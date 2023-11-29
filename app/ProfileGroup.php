@@ -572,7 +572,7 @@ class ProfileGroup extends Model
                 'users.deleted_at as deleted_at',
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
-                'g.name as group_name'
+                'g.name as group_name',
             ])
             ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
@@ -585,7 +585,7 @@ class ProfileGroup extends Model
 //                ->orWhereNull('p.to')
 //            )
             ->where('d.is_trainee', 0)
-            ->where('g.status', 'active')
+            ->where('p.status', 'active')
             ->distinct()
             ->orderBy('last_name')
             ->orderBy('name');
