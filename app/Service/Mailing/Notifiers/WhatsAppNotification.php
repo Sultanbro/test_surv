@@ -5,6 +5,7 @@ namespace App\Service\Mailing\Notifiers;
 use App\Classes\Helpers\Phone;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
+use App\Jobs\WhatsAppNotificationJob;
 use App\Models\Mailing\MailingNotification;
 use App\Models\Mailing\MailingNotificationSchedule;
 use App\ProfileGroup;
@@ -21,14 +22,8 @@ use stdClass;
 
 class WhatsAppNotification implements Notification
 {
-    /**
-     * @var string
-     */
-    private string $token;
-
     public function __construct()
     {
-        $this->token = config('wazzup')['token'];
     }
 
     /**
@@ -45,43 +40,10 @@ class WhatsAppNotification implements Notification
             return false;
         }else {
             $recipients = $recipients->where('phone', '!=', '');
-
-            foreach ($recipients as $recipient) {
-                $this->sendNotification($recipient, $message);
+            foreach ($recipients as $key=>$recipient) {
+                WhatsAppNotificationJob::dispatch($recipient,$message)->delay(now()->addMinutes($key+0.5));
             }
             return true;
-        }
-    }
-
-    /**
-     * @param User|stdClass $user
-     * @param string $message
-     * @return void
-     * @throws HttpClientException
-     */
-    private function sendNotification(
-        User|stdClass $user,
-        string $message
-    ): void
-    {
-        $phone      = Phone::normalize($user->phone);
-        $channelId  = config('wazzup')['channel_id'];
-
-        $response = Http::withHeaders([
-            "Content-Type"  => "application/json",
-            "Authorization" => "Bearer $this->token"
-        ])
-            ->timeout(10000)
-            ->post("https://api.wazzup24.com/v3/message", [
-            'channelId' => $channelId,
-            'chatId'    => $phone,
-            'text'      => $message,
-            'chatType'  => 'whatsapp',
-        ]);
-
-        if (!$response->successful())
-        {
-            throw new HttpClientException($response->body());
         }
     }
 }

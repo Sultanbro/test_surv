@@ -136,7 +136,7 @@ class Pusher extends Command
             }
             elseif($item->notificationable_type == 'App\\ProfileGroup') {
                 $employeeIds = [];
-                $userIds = ProfileGroup::getById(26)->activeUsers()->pluck('user_id')->toArray();
+                $userIds = ProfileGroup::getById($item->notificationable_id)->activeUsers()->pluck('user_id')->toArray();
                 $employeeIds = array_merge($employeeIds, $userIds);
             }
             elseif($item->notificationable_type == 'App\\Position') {
