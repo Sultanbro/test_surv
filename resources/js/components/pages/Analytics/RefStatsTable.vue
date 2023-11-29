@@ -23,6 +23,7 @@
 			</template>
 			<template #cell(switch)="{item}">
 				<div
+					v-if="item.deals || item.accepted"
 					class="RefStatsTable-switch pointer"
 					@click="toggleAfter(item.id)"
 				>
