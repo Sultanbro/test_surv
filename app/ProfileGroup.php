@@ -579,8 +579,8 @@ class ProfileGroup extends Model
             ->where(fn(Builder $query) => $query
                 ->whereNull('p.to')
                 ->orWhere(fn(Builder $query) => $query
-                    ->orWhereYear('p.to', Carbon::parse($dateTo)->year)
-                    ->whereMonth('p.to', Carbon::parse($dateTo)->month))
+                    ->orWhereYear('p.to', Carbon::parse($dateFrom)->year)
+                    ->whereMonth('p.to', Carbon::parse($dateFrom)->month))
             )
             ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
