@@ -79,5 +79,13 @@ Route::group([
      */
     Route::post('rentability/speedometers', [TopController::class, 'rentabilitySpeedometers'])->name('.speedometers');
 
+    /**
+     * Редактирование активности.
+     */
     Route::post('activity/edit', [ActivityController::class, 'edit'])->name('.activity.edit');
+
+    /**
+     * Прогнозы.
+     */
+    Route::get('predicts/', [TopController::class, 'getPredicts'])->name('.predicts');
 });
