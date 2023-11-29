@@ -560,34 +560,43 @@ class ProfileGroup extends Model
     ): Builder
     {
         return User::query()
-            ->join('group_user as p', fn($join) => $join->on('p.user_id', '=', 'users.id'))
-            ->join('profile_groups as g', fn($join) => $join->on('p.group_id', '=', 'g.id'))
-            ->join('user_descriptions as d', fn($join) => $join->on('d.user_id', '=', 'users.id'))
+            ->join('group_user as p', 'p.user_id', '=', 'users.id')
+            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
+            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->select([
                 'users.id as id',
                 'users.name as name',
                 'users.last_name as last_name',
                 'users.full_time as full_time',
                 'users.email as email',
+                'users.deleted_at as deleted_at',
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
-                'p.status as status',
                 'p.from as from',
                 'p.to as to',
+                'p.status as status'
             ])
-            ->where(fn(Builder $query) => $query
-                ->whereNull('p.to')
-                ->orWhere(fn(Builder $query) => $query
-                    ->orWhereYear('p.to', Carbon::parse($dateFrom)->year)
-                    ->whereMonth('p.to', Carbon::parse($dateFrom)->month))
-            )
-            ->where('group_id', $this->getKey())
-            ->where(fn($query) => $query
-                ->whereDate('users.deleted_at', '>=', $dateFrom)
-                ->orWhereNull('users.deleted_at')
-            )
-            ->groupBy('users.id')
+            ->where(function ($query) use ($dateFrom) {
+                $query->whereYear('p.to', '=', Carbon::parse($dateFrom)->year)
+                    ->whereMonth('p.to', '=', Carbon::parse($dateFrom)->month)
+                    ->orWhereNull('p.to');
+            })
+            ->where('g.id', $this->getKey())
+            ->groupBy([
+                'users.id',
+                'users.name',
+                'users.last_name',
+                'users.full_time',
+                'users.email',
+                'users.deleted_at',
+                'd.is_trainee',
+                'g.id',
+                'g.name',
+                'p.from',
+                'p.to',
+                'p.status'
+            ])
             ->orderBy('last_name')
             ->orderBy('name');
     }
