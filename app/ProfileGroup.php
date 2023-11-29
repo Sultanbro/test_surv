@@ -573,6 +573,7 @@ class ProfileGroup extends Model
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
+                'p.status as status',
             ])
             ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
