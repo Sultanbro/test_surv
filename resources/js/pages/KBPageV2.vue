@@ -1005,6 +1005,8 @@ export default {
 				data.book.isFavorite = page.isFavorite
 				if(!page.canEdit) this.mode = 'read'
 				this.activeBook = this.setTargetBlank(data.book)
+				this.activeBook.canEdit = page.canEdit
+				this.activeBook.canRead = page.canRead
 				this.editBook = false
 				// TODO: clear search
 				if(!init) this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}`)
