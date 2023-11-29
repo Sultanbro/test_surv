@@ -391,6 +391,10 @@ export default {
 			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
 
+			const phone = formData.get('phone').replace(/[^\d]+/g, '')
+			formData.set('phone', phone)
+
+
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
