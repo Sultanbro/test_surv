@@ -577,16 +577,15 @@ class ProfileGroup extends Model
                 'p.to as to',
                 'p.status as status'
             ])
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereDate('p.from', '<=', $dateFrom);
-            })
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereYear('p.to', '=', Carbon::parse($dateFrom)->year)
-                    ->whereMonth('p.to', '=', Carbon::parse($dateFrom)->month)
+//            ->where(function ($query) use ($dateFrom) {
+//                $query->whereDate('p.from', '<=', $dateFrom);
+//            })
+            ->where(function ($query) use ($dateTo) {
+                $query->whereDate('p.to', '<=', $dateTo)
                     ->orWhereNull('p.to');
             })
-            ->where(function ($query) use ($dateTo) {
-                $query->where('users.deleted_at', '>=', $dateTo)
+            ->where(function ($query) use ($dateFrom) {
+                $query->where('users.deleted_at', '>=', $dateFrom)
                     ->orWhereNull('users.deleted_at');
             })
             ->where('g.id', $this->getKey())

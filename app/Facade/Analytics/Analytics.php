@@ -24,8 +24,8 @@ use App\Traits\AnalyticTrait;
 use App\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 final class Analytics
 {
@@ -347,29 +347,27 @@ final class Analytics
 
     public function userStatisticFormTable(
         Activity $activity,
-        string   $date,
+        string   $firstOfMoth,
         int      $groupId = null
     ): Collection
     {
         /** @var ProfileGroup $group */
-        $group = ProfileGroup::query()->where('id', $groupId)->first();
-        $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
-        $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
-        $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
+        $group = ProfileGroup::query()->find($groupId);
 
-        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
+        $dateFrom = Carbon::createFromDate($firstOfMoth)->endOfMonth()->format('Y-m-d');
+        $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        return $employees
-            ->with('statistics', fn($statistic) => $statistic->select([
-                DB::raw('DAY(date) as day'),
-                'user_id',
-                'value',
-                'date'
-            ])->where('activity_id', $activity->id)->where('date', '>=', $firstOfMonth)->where('date', '<=', $dateFrom))
+        return $group->actualAndFiredEmployees($dateFrom, $dateTo)
+            ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
+                $query->selectRaw('DAY(date) as day, user_id, value, date')
+                    ->where('activity_id', $activity->id)
+                    ->where('date', '>=', $firstOfMoth)
+                    ->where('date', '<=', $dateFrom);
+            })
             ->get()
-            ->map(function ($employee) use ($date, $activity) {
+            ->map(function ($employee) use ($firstOfMoth, $activity) {
                 $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
-                $appliedFrom = $employee->workdays_from_applied($date, $workDay);
+                $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
                 $employee->fullname = $employee->full_name;
