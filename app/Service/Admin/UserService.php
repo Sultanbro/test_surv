@@ -30,7 +30,7 @@ class UserService
      * @return array
      */
     public function getPersonalData(): array
-    {   
+    {
         $user = auth()->user();
 
         /**
@@ -48,14 +48,12 @@ class UserService
         /**
          * Группы пользователя
          */
-        $groups = '<div><div><b>Отделы:</b></div>';
-        $gs = $user->inGroups( $user->position_id == 45 );
-
-        foreach($gs as $group) {
-            $groups .= '<div>' . $group['name'] . '</div>';
-        }
-
-        $groups .= '</div>';
+        $groups = $user->inGroups( $user->position_id == 45 )->map(function ($group) {
+            return [
+                'id' => $group->id,
+                'name' => $group->name,
+            ];
+        });
 
         /**
          * Оклад
@@ -70,10 +68,10 @@ class UserService
         /**
          * workday and time
          */
-        
+
         $workingDay = '5-2';
         $workingTime = '09:00 - 18:00'; //TODO fix charts
-        
+
         if($user->workingDay) $workingDay = $user->workingDay->name;
         if($user->workingTime) $workingTime = $user->workingTime->name;
 
@@ -85,7 +83,7 @@ class UserService
          * Work schedule
          */
         $schedule = $workStartTime;
-        
+
         if($workEndTime) {
             $schedule .= ' - ' . $workEndTime;
         } else {
@@ -118,7 +116,7 @@ class UserService
      * @return void
      */
     public function updateEmail(UserProfileUpdateRequest $request): void
-    {   
+    {
         $user = auth()->user();
 
         $new_email = trim(strtolower($request->email));
@@ -135,7 +133,7 @@ class UserService
      * @return void
      */
     public function updateCurrency($request): void
-    {   
+    {
         $user = auth()->user();
 
         if($request->currency != $user->currency
@@ -151,7 +149,7 @@ class UserService
      * @return RedirectResponse|void
      */
     public function changePassword($request)
-    {   
+    {
         $user = auth()->user();
 
         if(!empty($request->password)) { // Введен новый пароль
@@ -171,7 +169,7 @@ class UserService
      * @return array
      */
     public function getActivitiesToProfile(Request $request): array
-    {   
+    {
         $user = auth()->user();
         $gs         = $user->inGroups();
         $activities = [];
@@ -199,8 +197,8 @@ class UserService
                 $activities[] = [
                     'activities' => UserStat::activities($group->id, date('Y-m-d')),
                     'group' => [
-                        'id'   => $group->id, 
-                        'name' => $group->name, 
+                        'id'   => $group->id,
+                        'name' => $group->name,
                     ],
                 ];
             }
@@ -217,7 +215,7 @@ class UserService
      * @return array
      */
     public function getTraineeReport(): array
-    {   
+    {
         $user = auth()->user();
 
         $trainee_report = [];
@@ -250,7 +248,7 @@ class UserService
 
      /**
      * Условия оплаты из отделов и должности
-     * 
+     *
      * @param Request $request
      * @return array
      */
@@ -272,7 +270,7 @@ class UserService
         }
 
         $position_desc = PositionDescription::where('position_id', $user->position_id)->first();
-   
+
         return [
             'groups' => $groupTerms,
             'position' => $position_desc && $position_desc->show == 1

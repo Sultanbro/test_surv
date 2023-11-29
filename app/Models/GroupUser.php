@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ProfileGroup;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,11 @@ class GroupUser extends Model
 
     public function users(){
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function profile_group()
+    {
+        return $this->belongsTo(ProfileGroup::class, 'group_id');
     }
 
     public static function updateGroupUserWorkChart($dto, $old_work_chart):bool {

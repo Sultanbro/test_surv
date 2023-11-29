@@ -1014,6 +1014,7 @@ export default {
 		init() {
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			this.currentGroup = this.$route.query.group
 
 			//Расчет выходных дней
 			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца

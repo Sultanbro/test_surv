@@ -211,16 +211,22 @@
 @media(max-width:420px){
   .profit__info-back-mobile{
     display: block;
-    position:absolute;
-    top: 3.5rem;
-    right: unset;
-    left: 1.5rem;
-    cursor:pointer;
-    width: 1.5rem;
-    height: 1.5rem;
-    background: url('../images/dist/info-arrow-prev.svg') 50% no-repeat;
-    background-size: cover;
+    padding: 1rem;
 
+    position:absolute;
+    top: 0;
+    left: 0;
+
+    cursor:pointer;
+
+    &:before{
+      content: '';
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: url('../images/dist/info-arrow-prev.svg') 50% no-repeat;
+      background-size: cover;
+    }
   }
   .profit__info-back{
     display: none;
@@ -228,9 +234,8 @@
 }
 @media(max-width:340px){
   .profit__info-back-mobile{
-    top: 3.5rem;
+    top: 1rem;
     left: .5rem;
-
   }
 }
 
@@ -359,6 +364,7 @@
 .profit__info-title, .courses__title{
   font-family: "Open Sans", sans-serif;
   font-size:1.8rem;
+  line-height: 1.1;
   font-weight: 600;
   margin-bottom: 2.2rem;
   text-transform: uppercase;
@@ -397,6 +403,7 @@
 
 .profit__info__wrapper{
   display: flex;
+  gap: 10px;
   min-width:0;
   // justify-content: space-between;
 

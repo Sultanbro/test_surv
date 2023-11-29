@@ -102,7 +102,9 @@ class NotificationTemplatePusher extends Command
         $lastDayOfMonth = Carbon::now()->daysInMonth;
         $daysRemaining  = $lastDayOfMonth - $currentDay;
         $mailings       = $notification->mailings();
-        $recipients     = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+        $recipients     = User::query()
+            ->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+            ->withWhereHas('group_users',fn($query) => $query->where('status','active')->where('is_head',0))
             ->orderBy('last_name', 'asc')
             ->get();
 
