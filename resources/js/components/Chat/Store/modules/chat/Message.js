@@ -162,7 +162,7 @@ export default {
 		},
 		async loadMoreNewMessages({commit, getters, dispatch}) {
 			if(!(getters.messages && getters.messages.length)) return
-			const msg = getters.messages.slice().reverse.find(msg => msg.id)
+			const msg = getters.messages.slice().reverse().find(msg => msg.id)
 			if(!msg) return
 			commit('setMessagesLoadMoreCount', -MESSAGES_LOAD_COUNT);
 			commit('setStartMessageId', msg.id);

@@ -31,7 +31,7 @@
 			</div>
 			<div class="ProfileInfo-group ProfileInfo-border py-2">
 				<!-- eslint-disable vue/no-v-html -->
-				<span v-html="data.groups" />
+				<span><b>Отделы: </b> {{ data.groups.map(group => group.name).join(', ') }}</span>
 				<router-link
 					v-if="isAdmin && moreThanDays"
 					to="/timetracking/settings?tab=2&tabswitch=3"
@@ -73,6 +73,7 @@
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useWorkChartStore } from '@/stores/WorkChart.js'
+
 export default {
 	name: 'ProfileInfo',
 	props: {

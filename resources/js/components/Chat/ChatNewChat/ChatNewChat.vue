@@ -16,7 +16,7 @@
 			v-model="title"
 			type="text"
 			class="ChatNewChat-input mb-3"
-			placeholder="Название чата"
+			placeholder="Назовите эту группу"
 		>
 
 		<div class="ChatNewChat-content">

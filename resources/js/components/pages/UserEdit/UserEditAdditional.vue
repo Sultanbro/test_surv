@@ -84,6 +84,12 @@ export default {
 							</a>
 						</td>
 					</tr>
+					<tr v-if="user.creator">
+						<td>Принял в Jobtron: </td>
+						<td>
+							{{ user.creator.last_name }} {{ user.creator.name }}
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<span>Дата регистрации</span>
@@ -155,6 +161,12 @@ export default {
 							>
 								Ссылка на сделку
 							</a>
+						</td>
+					</tr>
+					<tr v-if="user.creator">
+						<td>Принял в Jobtron: </td>
+						<td>
+							{{ user.creator.last_name }} {{ user.creator.name }}
 						</td>
 					</tr>
 					<tr>

@@ -137,7 +137,7 @@ export default {
 			setTimeout(() => {
 				this.isFocus = false
 				this.isSelect = false
-			}, 100)
+			}, 300)
 		},
 		onSelect(opt){
 			this.localValue = opt.name

@@ -3,7 +3,7 @@
 		v-if="isVisible"
 		id="page-profile"
 	>
-		<div class="intro content">
+		<div class="intro">
 			<IntroTop
 				:courses="intro['courses']"
 				:profit="intro['profit']"
@@ -19,7 +19,7 @@
 			<!-- <new-intro-smart-table/> -->
 		</div>
 		<MobileProfileSidebar
-			v-show="isProfileVisible"
+			v-show="isMobileVisible"
 			ref="profileSidebar"
 			:class="{ _active: anim.profileSidebar }"
 		/>
@@ -27,6 +27,9 @@
 			ref="courses"
 			:class="{ _active: anim.courses }"
 			@init="intro['courses'] = true"
+		/>
+		<RefWidget
+			v-if="isBP && isMobileVisible"
 		/>
 		<Profit
 			ref="profit"
@@ -126,6 +129,7 @@ import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
+import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
@@ -154,6 +158,7 @@ export default {
 		Bonuses,
 		PopupQuartal,
 		Nominations,
+		RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -181,7 +186,8 @@ export default {
 				indicators: false,
 				referals: false,
 			},
-			intersectionObserver: null
+			intersectionObserver: null,
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0])
 		};
 	},
 	computed: {
@@ -198,7 +204,7 @@ export default {
 			if(w < 1360) return '75%'
 			return w - (19 * this.$viewportSize.rem) + 'px'
 		},
-		isProfileVisible(){
+		isMobileVisible(){
 			return this.$viewportSize.width < 1360
 		},
 		isReady(){
@@ -278,12 +284,17 @@ export default {
 
 <style lang="scss">
 #page-profile{
-    padding-bottom: 2rem;
-    padding-right: 2rem;
+	padding-bottom: 2rem;
+	padding-right: 2rem;
+	.RefWidget{
+		opacity: 1;
+		transform: translateY(0);
+		visibility: visible;
+	}
 }
 @media(max-width:1910px){
-    #page-profile{
-        padding-right: 0;
-    }
+	#page-profile{
+		padding-right: 0;
+	}
 }
 </style>

@@ -48,8 +48,8 @@ class StatisticRepository implements StatisticRepositoryInterface
             }
         }
 
-        $deal_lead_conversion = $deal_lead_conversion / $countForDeals;
-        $applied_deal_conversion = $applied_deal_conversion / $countForApplied;
+        $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
+        $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
 
         return [
             'employee_price' => $accepted ? $paidTotal / $accepted : 0,
