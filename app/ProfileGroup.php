@@ -576,9 +576,11 @@ class ProfileGroup extends Model
                 'p.from as from',
                 'p.to as to',
             ])
-            ->where(fn($query) => $query
-                ->whereDate('p.to', '<=', $dateTo)
-                ->orWhereNull('p.to')
+            ->where(fn(Builder $query) => $query
+                ->whereNull('p.to')
+                ->orWhere(fn(Builder $query) => $query
+                    ->orWhereYear('p.to', Carbon::parse($dateTo)->year)
+                    ->whereMonth('p.to', Carbon::parse($dateTo)->month))
             )
             ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
@@ -586,8 +588,6 @@ class ProfileGroup extends Model
                 ->orWhereNull('users.deleted_at')
             )
             ->groupBy('users.id')
-            ->orderBy('last_name')
-            ->orderBy('name')
             ->orderBy('last_name')
             ->orderBy('name');
     }
