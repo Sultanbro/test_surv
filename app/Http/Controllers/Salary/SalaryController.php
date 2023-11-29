@@ -13,6 +13,7 @@ use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedSalary;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\GroupUser;
 use App\Models\TestBonus;
 use App\Models\User\Card;
 use App\ProfileGroup;
@@ -469,6 +470,14 @@ class SalaryController extends Controller
         $exp_title = 'Начисления ' . $edate . ' "' . $group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
+    }
+
+    public function getTransfers(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|int'
+        ]);
+        return GroupUser::with('profile_group:id,name')->where('user_id', $request['id'])->where('status', GroupUser::STATUS_DROP)->get()->toArray();
     }
 
     /**
