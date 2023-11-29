@@ -93,7 +93,6 @@ export default {
 						<input
 							id="phone"
 							v-model="mainPhone"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone"
 							type="text"
 							class="phone_mask form-control mr-1 col-sm-8"
@@ -109,7 +108,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_1"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_1"
 							:value="user ? user.phone_1 : old_phone_1"
 							type="text"
@@ -126,7 +124,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_2"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_2"
 							:value="user ? user.phone_2 : old_phone_2"
 							type="text"
@@ -143,7 +140,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_3"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_3"
 							:value="user ? user.phone_3 : old_phone_3"
 							type="text"
@@ -160,7 +156,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_4"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_4"
 							:value="user ? user.phone_4 : old_phone_4"
 							type="text"
