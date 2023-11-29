@@ -559,7 +559,7 @@ class ProfileGroup extends Model
         string $dateTo
     ): Builder
     {
-        return User::query()
+        return User::withTrashed()
             ->join('group_user as p', 'p.user_id', '=', 'users.id')
             ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
             ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
@@ -584,6 +584,10 @@ class ProfileGroup extends Model
                 $query->whereYear('p.to', '=', Carbon::parse($dateFrom)->year)
                     ->whereMonth('p.to', '=', Carbon::parse($dateFrom)->month)
                     ->orWhereNull('p.to');
+            })
+            ->where(function ($query) use ($dateTo) {
+                $query->where('users.deleted_at', '>=', $dateTo)
+                    ->orWhereNull('users.deleted_at');
             })
             ->where('g.id', $this->getKey())
             ->groupBy([
