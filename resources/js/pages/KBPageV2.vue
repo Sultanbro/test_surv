@@ -825,6 +825,10 @@ export default {
 				this.pages = []
 				const pages = []
 
+
+				book.canEdit = root.canEdit
+				book.canRead = root.canRead || root.canEdit
+
 				for(const page of trees){
 					page.parent_id = +root.id
 					if(page.is_category) await this.bookAccess(page)
@@ -833,7 +837,7 @@ export default {
 				}
 				this.pages = pages
 				this.rootId = root.id
-				this.rootBook = book
+				this.rootBook = root
 				this.itemModels = item_models
 				this.activeBook = book
 				this.canSave = can_save
