@@ -91,7 +91,10 @@
 		<template #cell(title)="{item, value}">
 			{{ value }}
 			<template v-if="showGoups && item.lastGroup">
-				<b-badge>
+				<b-badge
+					:href="`/timetracking/reports?group=${item.lastGroup.id}`"
+					target="_blank"
+				>
 					{{ item.lastGroup.name }}
 				</b-badge>
 			</template>
