@@ -569,7 +569,6 @@ class ProfileGroup extends Model
                 'users.last_name as last_name',
                 'users.full_time as full_time',
                 'users.email as email',
-                'users.deleted_at as deleted_at',
                 'd.is_trainee as is_trainee',
                 'g.id as group_id',
                 'g.name as group_name',
