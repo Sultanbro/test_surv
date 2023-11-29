@@ -577,9 +577,6 @@ class ProfileGroup extends Model
                 'p.to as to',
                 'p.status as status'
             ])
-//            ->where(function ($query) use ($dateFrom) {
-//                $query->whereDate('p.from', '<=', $dateFrom);
-//            })
             ->where(function ($query) use ($dateTo) {
                 $query->whereDate('p.to', '<=', $dateTo)
                     ->orWhereNull('p.to');

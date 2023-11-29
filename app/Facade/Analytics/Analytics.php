@@ -357,7 +357,7 @@ final class Analytics
         $dateFrom = Carbon::createFromDate($firstOfMoth)->endOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        return $group->actualAndFiredEmployees($dateFrom, $dateTo)
+        return $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
                 $query->selectRaw('DAY(date) as day, user_id, value, date')
                     ->where('activity_id', $activity->id)
