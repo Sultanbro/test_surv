@@ -581,11 +581,11 @@ class ProfileGroup extends Model
                 ->whereDate('users.deleted_at', '>=', $dateFrom)
                 ->orWhereNull('users.deleted_at')
             )
-//            ->whereDate('p.from', '>=', $dateFrom)
-//            ->where(fn($query) => $query
-//                ->whereDate('p.to', '<=', $dateTo)
-//                ->orWhereNull('p.to')
-//            )
+            ->whereDate('p.from', '>=', $dateFrom)
+            ->where(fn($query) => $query
+                ->whereDate('p.to', '<=', $dateTo)
+                ->orWhereNull('p.to')
+            )
             ->where('d.is_trainee', 0)
             ->distinct()
             ->orderBy('last_name')
