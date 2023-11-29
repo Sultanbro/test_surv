@@ -582,7 +582,6 @@ class ProfileGroup extends Model
                 ->whereDate('users.deleted_at', '>=', $dateFrom)
                 ->orWhereNull('users.deleted_at')
             )
-            ->where('d.is_trainee', 0)
             ->orderBy('last_name')
             ->orderBy('name');
     }
