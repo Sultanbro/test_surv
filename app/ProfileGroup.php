@@ -585,7 +585,7 @@ class ProfileGroup extends Model
                 ->whereDate('users.deleted_at', '>=', $dateFrom)
                 ->orWhereNull('users.deleted_at')
             )
-            ->groupBy('users.id') // Group by user ID
+            ->groupBy('users.id')
             ->orderBy('last_name')
             ->orderBy('name')
             ->orderBy('last_name')
