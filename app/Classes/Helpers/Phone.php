@@ -5,40 +5,41 @@ namespace App\Classes\Helpers;
 /**
  * Вспомогательный класс нормализации телефонных номеров
  */
-
-class Phone 
+class Phone
 {
 
-    public static function normalize($phone = null) {
-        if(is_null($phone)) return null;
-        if($phone == '') return null;
+    public static function normalize($phone = null)
+    {
+        if (is_null($phone)) return null;
+        if ($phone == '') return null;
 
-        if($phone[0] == '+') $phone = substr($phone, 1, strlen($phone));
-        if($phone[0] == '8') $phone = '7' . substr($phone, 1, strlen($phone));
+        if ($phone[0] == '+') $phone = substr($phone, 1, strlen($phone));
+        if ($phone[0] == '8') $phone = '7' . substr($phone, 1, strlen($phone));
 
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-        
-        return $phone;
-        
+        return preg_replace('/[^0-9]/', '', $phone);
+
     }
-    
-    public static function getCountry($phone = null) {
+
+    public static function getCountry($phone = null): string
+    {
 
         $country_code = 'UN'; // неизвестный
-        if(is_null($phone)) return $country_code;
+        if (is_null($phone)) return $country_code;
 
         $phone = self::normalize($phone);
 
-        if(substr($phone, 0, 2) == '77' && strlen($phone) == 11) $country_code = 'KZ';
-        if(substr($phone, 0, 2) == '79' && strlen($phone) == 11) $country_code = 'RU';
-        if(substr($phone, 0, 3) == '998' && strlen($phone) == 12)  $country_code = 'UZ';
-        if(substr($phone, 0, 3) == '996' && strlen($phone) == 12)  $country_code = 'KG';
-        if(substr($phone, 0, 3) == '375' && strlen($phone) == 12)  $country_code = 'BY';
-        if(substr($phone, 0, 3) == '380' && strlen($phone) == 12)  $country_code = 'UA';
+        if (str_starts_with($phone, '77') && strlen($phone) == 11) $country_code = 'KZ';
+        if (str_starts_with($phone, '79') && strlen($phone) == 11) $country_code = 'RU';
+        if (str_starts_with($phone, '998') && strlen($phone) == 12) $country_code = 'UZ';
+        if (str_starts_with($phone, '996') && strlen($phone) == 12) $country_code = 'KG';
+        if (str_starts_with($phone, '375') && strlen($phone) == 12) $country_code = 'BY';
+        if (str_starts_with($phone, '380') && strlen($phone) == 12) $country_code = 'UA';
+        if (str_starts_with($phone, '374') && strlen($phone) == 11) $country_code = 'AM';
         return $country_code;
     }
 
-    public static function getCountryBitrix($phone = null) {
+    public static function getCountryBitrix($phone = null): int
+    {
         $country = [
             'UN' => 0,
             'KZ' => 2346,
@@ -51,7 +52,8 @@ class Phone
         return $country[self::getCountry($phone)];
     }
 
-    public static function getCurrency($phone = null) {
+    public static function getCurrency($phone = null): string
+    {
         $currencies = [
             'UN' => 'kzt',
             'KZ' => 'kzt',
@@ -61,7 +63,7 @@ class Phone
             'UA' => 'uah',
             'BY' => 'byn',
         ];
-        if(is_null($phone)) return 'kzt';
+        if (is_null($phone)) return 'kzt';
         return $currencies[self::getCountry($phone)];
     }
 }
