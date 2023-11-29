@@ -560,9 +560,6 @@ class ProfileGroup extends Model
     ): Builder
     {
         return User::withTrashed()
-            ->join('group_user as p', 'p.user_id', '=', 'users.id')
-            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
-            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->select([
                 'users.id as id',
                 'users.name as name',
@@ -577,6 +574,9 @@ class ProfileGroup extends Model
                 'p.to as to',
                 'p.status as status'
             ])
+            ->join('group_user as p', 'p.user_id', '=', 'users.id')
+            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
+            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->where(function ($query) use ($dateTo) {
                 $query->whereDate('p.to', '<=', $dateTo)
                     ->orWhereNull('p.to');
