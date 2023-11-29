@@ -357,7 +357,7 @@ final class Analytics
         $firstOfMonth = Carbon::createFromDate($date)->firstOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $employees = $group->actualAndFiredEmployees($firstOfMonth, $dateTo);
+        $employees = $group->actualAndFiredEmployees($dateFrom, $dateTo);
 
         return $employees
             ->with('statistics', fn($statistic) => $statistic->select([

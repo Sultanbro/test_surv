@@ -578,6 +578,9 @@ class ProfileGroup extends Model
                 'p.status as status'
             ])
             ->where(function ($query) use ($dateFrom) {
+                $query->whereDate('p.from', '<=', $dateFrom);
+            })
+            ->where(function ($query) use ($dateFrom) {
                 $query->whereYear('p.to', '=', Carbon::parse($dateFrom)->year)
                     ->whereMonth('p.to', '=', Carbon::parse($dateFrom)->month)
                     ->orWhereNull('p.to');
