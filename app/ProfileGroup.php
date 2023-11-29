@@ -560,6 +560,7 @@ class ProfileGroup extends Model
     ): Builder
     {
         return User::query()
+            ->distinct('users.id')
             ->join('group_user as p', fn($join) => $join->on('p.user_id', '=', 'users.id'))
             ->join('profile_groups as g', fn($join) => $join->on('p.group_id', '=', 'g.id'))
             ->join('user_descriptions as d', fn($join) => $join->on('d.user_id', '=', 'users.id'))
@@ -581,13 +582,7 @@ class ProfileGroup extends Model
                 ->whereDate('users.deleted_at', '>=', $dateFrom)
                 ->orWhereNull('users.deleted_at')
             )
-//            ->whereDate('p.from', '>=', $dateFrom)
-//            ->where(fn($query) => $query
-//                ->whereDate('p.to', '<=', $dateTo)
-//                ->orWhereNull('p.to')
-//            )
             ->where('d.is_trainee', 0)
-            ->distinct()
             ->orderBy('last_name')
             ->orderBy('name');
     }
