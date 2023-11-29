@@ -573,6 +573,8 @@ class ProfileGroup extends Model
                 'g.id as group_id',
                 'g.name as group_name',
                 'p.status as status',
+                'p.from as from',
+                'p.to as to',
             ])
             ->where('group_id', $this->getKey())
             ->where(fn($query) => $query
@@ -585,7 +587,6 @@ class ProfileGroup extends Model
 //                ->orWhereNull('p.to')
 //            )
             ->where('d.is_trainee', 0)
-//            ->where('p.status', 'active')
             ->distinct()
             ->orderBy('last_name')
             ->orderBy('name');
