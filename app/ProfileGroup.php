@@ -493,6 +493,26 @@ class ProfileGroup extends Model
     }
 
     /**
+     * @return BelongsToMany
+     */
+    public function activeEmployees(): BelongsToMany
+    {
+        return $this->users()
+            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+            ->wherePivot('status', 'active');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function activeTrainees(): BelongsToMany
+    {
+        return $this->users()
+            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 1))
+            ->wherePivot('status', 'active');
+    }
+
+    /**
      * Возвращает группы, которые берут данные о звонках с ucalls.
      *
      * @return self

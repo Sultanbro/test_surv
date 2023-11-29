@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V2\Analytics;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V2\Analytics\GetRentabilityRequest;
 use App\Http\Requests\V2\Analytics\SpeedometersRequest;
+use App\Service\V2\Analytics\GetPredictsService;
 use App\Service\V2\Analytics\GetRentabilityService;
 use App\Service\V2\Analytics\RentabilitySpeedometerService;
 use Exception;
@@ -41,6 +42,18 @@ class TopController extends Controller
         return $this->response(
           message: self::SUCCESS_MESSAGE,
           data: $service->handle($request->toDto())
+        );
+    }
+
+    /**
+     * @param GetPredictsService $service
+     * @return JsonResponse
+     */
+    public function getPredicts(GetPredictsService $service): JsonResponse
+    {
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->handle()
         );
     }
 }
