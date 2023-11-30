@@ -72,7 +72,7 @@
 						<div
 							class="form-control relative"
 							:class="{
-								'NotificationsTemplates-error': value.title.length > 1000
+								'NotificationsTemplates-error': value.title && (value.title.length > 1000)
 							}"
 						>
 							<JobtronTextarea
@@ -86,7 +86,7 @@
 								{{ value.titleTip }}
 							</div>
 							<div class="NotificationsEditForm-charCount">
-								{{ value.title.length }}
+								{{ value.title ? value.title.length : 0 }}
 							</div>
 						</div>
 					</b-col>
@@ -239,13 +239,21 @@ export default {
 	methods: {
 		loadEdit(){
 			if(!this.edit) return
-			if(!this.value) this.value = {}
+			if(!this.value) this.value = {
+				id: 0,
+				title: '',
+				recipients: [],
+				targets: '',
+				titleFixed: '',
+				titleTip: '',
+				when: [],
+			}
 			this.template = this.edit.template
 			this.$nextTick(() => {
 				if(!this.edit.id) return
 				this.value.id = this.edit.id
 				this.value.recipients = this.edit.recipients
-				this.value.title = this.edit.title
+				this.value.title = this.edit?.title || ''
 				this.selectedServices = this.edit.type_of_mailing.map(value => services.find(service => service.value === value))
 				this.frequency = this.edit.date.frequency
 				if(!templateFrequency.includes(this.edit.date.frequency)){
