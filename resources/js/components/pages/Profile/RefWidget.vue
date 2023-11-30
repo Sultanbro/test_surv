@@ -52,7 +52,7 @@
 				>
 			</template>
 			<a
-				href="https://www.youtube.com/watch?v=d-GstpURTig"
+				href="https://youtu.be/kKrnrBhx1ck"
 				target="_blank"
 				class="RefWidget-play ml-a"
 			>
