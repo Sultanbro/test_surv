@@ -24,7 +24,7 @@ class KpiController extends Controller
         $this->kpiService = $kpiService;
     }
 
-    public function index(): Factory|\Illuminate\Contracts\View\View|Application
+    public function view(): Factory|\Illuminate\Contracts\View\View|Application
     {
         View::share('title', 'KPI');
         View::share('menu', 'timetracking');
@@ -34,7 +34,7 @@ class KpiController extends Controller
         ]);
     }
 
-    public function getKpis(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         return $this->response(
             message: self::SUCCESS_MESSAGE,

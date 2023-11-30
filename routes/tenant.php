@@ -590,11 +590,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     });
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
-        Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
-        Route::get('/bonus', [Kpi\KpiController::class, 'index'])->name('indexBonus');
-        Route::get('/premium', [Kpi\KpiController::class, 'index'])->name('indexPremium');
-        Route::get('/statistics', [Kpi\KpiController::class, 'index'])->name('indexStatistics');
-        Route::get('/indicators', [Kpi\KpiController::class, 'index'])->name('indexIndicators');
+        Route::get('/', [Kpi\KpiController::class, 'view'])->name('index');
+        Route::get('/bonus', [Kpi\KpiController::class, 'view'])->name('indexBonus');
+        Route::get('/premium', [Kpi\KpiController::class, 'view'])->name('indexPremium');
+        Route::get('/statistics', [Kpi\KpiController::class, 'view'])->name('indexStatistics');
+        Route::get('/indicators', [Kpi\KpiController::class, 'view'])->name('indexIndicators');
         Route::post('/set/status', [Kpi\KpiStatusController::class, 'setActive']);
     });
 
@@ -701,7 +701,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         });
 
         Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function () {
-            Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
+            Route::post('/get', [Kpi\KpiController::class, 'index'])->name('get');
             Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
             Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');

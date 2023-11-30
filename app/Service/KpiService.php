@@ -36,6 +36,7 @@ class KpiService
             'year' => now()->year,
             'month' => now()->month,
         ];
+
         $date = Carbon::createFromDate($date['year'], $date['month']);
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
 
