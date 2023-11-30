@@ -560,9 +560,6 @@ class ProfileGroup extends Model
     ): Builder
     {
         return User::withTrashed()
-            ->join('group_user as p', 'p.user_id', '=', 'users.id')
-            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
-            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->select([
                 'users.id as id',
                 'users.name as name',
@@ -577,16 +574,15 @@ class ProfileGroup extends Model
                 'p.to as to',
                 'p.status as status'
             ])
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereDate('p.from', '<=', $dateFrom);
-            })
-            ->where(function ($query) use ($dateFrom) {
-                $query->whereYear('p.to', '=', Carbon::parse($dateFrom)->year)
-                    ->whereMonth('p.to', '=', Carbon::parse($dateFrom)->month)
+            ->join('group_user as p', 'p.user_id', '=', 'users.id')
+            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
+            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
+            ->where(function (Builder $query) use ($dateFrom, $dateTo) {
+                $query->whereBetween('p.to', [$dateFrom, $dateTo])
                     ->orWhereNull('p.to');
             })
-            ->where(function ($query) use ($dateTo) {
-                $query->where('users.deleted_at', '>=', $dateTo)
+            ->where(function ($query) use ($dateFrom) {
+                $query->where('users.deleted_at', '>=', $dateFrom)
                     ->orWhereNull('users.deleted_at');
             })
             ->where('g.id', $this->getKey())
