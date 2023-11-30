@@ -78,7 +78,7 @@ export default {
 				window.intlTelInput(input, {
 					utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js',
 					autoInsertDialCode: true,
-					preferredCountries: ['ru', 'kz', 'kg', 'uz'],
+					preferredCountries: ['kz', 'ru', 'kg', 'uz'],
 					nationalMode: false,
 					autoPlaceholder: 'aggressive',
 					numberType: 'MOBILE',

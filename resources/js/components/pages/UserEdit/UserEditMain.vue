@@ -124,7 +124,7 @@ export default {
 			this.position = user ? user.position_id : '';
 			this.workChartId = user ? user.work_chart_id : null;
 			this.userTimezone = user ? user.timezone : 6;
-			this.first_work_day = user ? user.first_work_day.substring(0, 10) : '';
+			this.first_work_day = user?.first_work_day?.substring(0, 10) || ''
 		},
 		position(value){
 			if(value === -1) {
