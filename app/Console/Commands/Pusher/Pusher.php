@@ -139,7 +139,7 @@ class Pusher extends Command
                 $employeeIds = array_merge($employeeIds, $userIds);
             }
             elseif($item->notificationable_type == 'App\\Position') {
-                $userIds = User::where('position_id', $item->notificationable_id)->pluck('id')->toArray();
+                $userIds = User::query()->where('position_id', $item->notificationable_id)->pluck('id')->toArray();
                 $employeeIds = array_merge($employeeIds, $userIds);
             }
 
