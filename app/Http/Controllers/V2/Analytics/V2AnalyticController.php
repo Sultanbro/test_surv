@@ -19,9 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class V2AnalyticController extends Controller
 {
-    const SUCCESS_MESSAGE = 'Success loaded';
 
-    const WARNING_MESSAGE= 'Something went wrong';
 
 
     /**

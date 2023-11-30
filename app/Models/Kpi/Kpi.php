@@ -79,7 +79,7 @@ class Kpi extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany('App\Models\Kpi\KpiItem');
+        return $this->hasMany('App\Models\Kpi\KpiItem')->withTrashed();
     }
 
     /**
