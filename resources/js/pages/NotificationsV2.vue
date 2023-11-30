@@ -489,7 +489,10 @@ export default {
 				this.selectedNotification = null
 				const index = this.notifications.findIndex(n => n.id === notification.id)
 				if(!~index) return
-				// this.$set(this.notifications, index, notification)
+				this.$set(this.notifications, index, {
+					...this.notifications[index],
+					...notification,
+				})
 			}
 			else{
 				if(!silent) this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
