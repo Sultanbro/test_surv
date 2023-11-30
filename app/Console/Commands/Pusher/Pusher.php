@@ -40,7 +40,7 @@ class Pusher extends Command
         $notifications = MailingNotification::with('recipients')
             ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
             ->where('status', 1)->get();
-dd($notifications->pluck('id')->toArray());
+
         foreach ($notifications as $notification)
         {
             $frequency = $notification->frequency;
