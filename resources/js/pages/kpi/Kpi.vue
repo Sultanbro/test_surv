@@ -521,9 +521,9 @@ export default {
 				: this.axios.put(this.uri + '/' + method, fields);
 
 			req.then(({data}) => {
-				item.id = data.id
+				item.id = data.data.id
 				item.items.forEach((el, index) => {
-					el.id = data.items[index]
+					el.id = data.data.items[index]
 				});
 
 				this.removeDeletedItems(item.items)
