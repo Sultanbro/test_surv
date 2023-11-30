@@ -27,7 +27,7 @@ class WhatsAppNotification implements Notification
         } else {
             $recipients = $recipients->where('phone', '!=', '');
             foreach ($recipients as $key => $recipient) {
-                WhatsAppNotificationJob::dispatch($recipient, $message)->delay($key * now()->addSeconds(2)->second);
+                WhatsAppNotificationJob::dispatch($recipient, $message)->delay(now()->addSeconds($key * 2));
             }
             return true;
         }
