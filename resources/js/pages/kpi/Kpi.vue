@@ -385,10 +385,10 @@ export default {
 					query: this.searchText
 				}
 			}).then(response => {
-				this.items = response.data.kpis;
-				this.all_items = response.data.kpis;
-				this.activities = response.data.activities;
-				this.groups = response.data.groups;
+				this.items = response.data.data.kpis;
+				this.all_items = response.data.data.kpis;
+				this.activities = response.data.data.activities;
+				this.groups = response.data.data.groups;
 
 				this.page_items = this.items.slice(0, this.pageSize);
 
