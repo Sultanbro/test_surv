@@ -179,7 +179,7 @@ export default {
 
 			const formData = new FormData()
 			formData.append('attachment', blobInfo.blob())
-			formData.append('id', this.activesbook.id)
+			formData.append('id', this.activeBook.id)
 			try {
 				const {data} = await this.axios.post('/upload/images/', formData)
 				success(data.location)
@@ -205,7 +205,7 @@ export default {
 
 			const formData = new FormData()
 			formData.append('attachment', this.attachment)
-			formData.append('id', this.activesbook.id)
+			formData.append('id', this.activeBook.id)
 
 			try {
 				const {data} = await this.axios.post('/upload/images/', formData, config)
