@@ -527,18 +527,4 @@ class BitrixOld
 
         return $this->curl_post($this->link . 'crm.deal.update.json', $query);
     }
-
-    public function findLead(int $id)
-    {
-
-        $client = new Client();
-        $lead = $client->get($this->link.'crm.lead.get',[
-            'query' => [
-                'id' => $id
-            ]
-        ]);
-        usleep(2000000);
-        $lead = json_decode($lead->getBody()->getContents(),true);
-        return $lead['result'];
-    }
 }

@@ -2,23 +2,10 @@
 
 namespace App\Service\Mailing\Notifiers;
 
-use App\Classes\Helpers\Phone;
-use App\Enums\Mailing\MailingEnum;
-use App\Facade\MailingFacade;
 use App\Jobs\WhatsAppNotificationJob;
-use App\Models\Mailing\MailingNotification;
-use App\Models\Mailing\MailingNotificationSchedule;
-use App\ProfileGroup;
-use App\User;
 use Exception;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Client\HttpClientException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
-use stdClass;
 
 class WhatsAppNotification implements Notification
 {
@@ -35,13 +22,12 @@ class WhatsAppNotification implements Notification
      */
     public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        if($recipients == null)
-        {
+        if ($recipients == null) {
             return false;
-        }else {
+        } else {
             $recipients = $recipients->where('phone', '!=', '');
-            foreach ($recipients as $key=>$recipient) {
-                WhatsAppNotificationJob::dispatch($recipient,$message)->delay(now()->addMinutes($key+0.5));
+            foreach ($recipients as $key => $recipient) {
+                WhatsAppNotificationJob::dispatch($recipient, $message)->delay(now()->addSeconds($key * 2));
             }
             return true;
         }

@@ -251,46 +251,17 @@ class IntellectController extends Controller
     {
         History::bitrix('Смена ответственного', $request->all());
 
-
-
         if ($request->lead_id) {
-           $lead = Lead::query()->where('lead_id', $request->lead_id)->latest()->first();
-           if ($lead !== null)
-           {
-               $lead->update([
-                   'resp_id' => $request->resp_email,
-                   'status' => 'CON',
-                   'deal_id' => $request->deal_id,
-                   'project' => $request->project ?? null,
-                   'net' => $request->net ?? null,
-                   'skyped' => now()
-               ]);
-           }else
-           {
-               $bitrix = new Bitrix();
-
-               $bitrixLead = $bitrix->findLead($request->lead_id);
-               if (preg_match('/\b(?:r=)(\d+)\b/', $bitrixLead['UF_CRM_1658163204'], $matches)) {
-                   $referrer_id = $matches[1];
-               } else {
-                   $referrer_id = null;
-               }
-               Lead::query()->create([
-                   'lead_id' => $bitrixLead['ID'],
-                   'name' =>$bitrixLead['NAME'],
-                   'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
-                   'phone' => $bitrixLead['PHONE'][0]['VALUE'],
-                   'resp_id' => $request->resp_email,
-                   'status' => 'CON',
-                   'deal_id' => $request->deal_id,
-                   'project' => $request->project ?? null,
-                   'net' => $request->net ?? null,
-                   'skyped' => now(),
-                   'referrer_id' => $referrer_id
-               ]);
-           }
+            Lead::query()->where('lead_id', $request->lead_id)
+                ->update([
+                    'resp_id' => $request->resp_email,
+                    'status' => 'CON',
+                    'deal_id' => $request->deal_id,
+                    'project' => $request->project ?? null,
+                    'net' => $request->net ?? null,
+                    'skyped' => now()
+                ]);
         }
-
     }
 
     public function loseDeal(Request $request)
