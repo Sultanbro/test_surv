@@ -1389,7 +1389,8 @@ public function planRequired($arr) {
             foreach($working as $user_id) {
                 $user = User::withTrashed()->find($user_id);
                 if($user) {
-                    $rate += $user->full_time == 1 ? 1 : 0.5;
+//                    $rate += $user->full_time == 1 ? 1 : 0.5;
+                    $rate += 1;
                 }
             }
 
