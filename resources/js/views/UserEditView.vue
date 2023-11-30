@@ -22,6 +22,7 @@ import {
 	fire_trainee_causes,
 	fire_employee_causes,
 } from '@/composables/fire_causes'
+import parsePhoneNumber from 'libphonenumber-js'
 
 import axios from 'axios'
 import { mapState } from 'pinia'
@@ -236,6 +237,20 @@ export default {
 			this.taxesFillData = data;
 		},
 		setData(data){
+			// fix phone
+			if(data?.user?.phone){
+				try {
+					const flatPhone = data.user.phone.replace(/[^\d]+/g, '')
+					const plusPhone = '+' + flatPhone
+
+					const phone = parsePhoneNumber(plusPhone, 'ZZ')
+					data.user.phone = phone.formatInternational() || plusPhone
+				}
+				catch (error) {
+					console.error(error)
+					window.onerror && window.onerror(error)
+				}
+			}
 			this.csrf = data.csrf
 			this.user = data.user
 			this.groups = data.groups

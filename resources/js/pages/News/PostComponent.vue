@@ -7,7 +7,21 @@
 			}"
 			:class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
 		>
-			<div class="news-item__header">
+			<NewsPostHeaderMobile
+				v-if="isMobile"
+				:post="currentPost"
+				:can-edit="isAdmin || isAuthor"
+				class="PostComponent-header"
+				@favorite="favouritePost(currentPost.id)"
+				@copy-link="copyPostLink"
+				@edit="editPost"
+				@delete="deletePost(currentPost.id)"
+				@toggle-pinned="pinPost(currentPost.id)"
+			/>
+			<div
+				v-else
+				class="news-item__header"
+			>
 				<div class="news-item__info">
 					<img
 						class="news-item__avatar"
@@ -320,6 +334,7 @@ import CommentsComponent from '@/pages/News/CommentsComponent'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronAvatar from '@ui/Avatar'
 import NewsQNA from './NewsQNA'
+import NewsPostHeaderMobile from './Post/NewsPostHeaderMobile'
 
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { usePortalStore } from '@/stores/Portal'
@@ -345,6 +360,7 @@ export default {
 		PopupMenu,
 		JobtronAvatar,
 		NewsQNA,
+		NewsPostHeaderMobile,
 	},
 	props: {
 		post: {
@@ -379,8 +395,18 @@ export default {
 	},
 	computed: {
 		...mapState(usePortalStore, ['isAdmin']),
+
+		content(){
+			return this.currentPost.content.replaceAll('<a ', '<a target="_blank" ')
+		},
+		isAuthor(){
+			return this.currentPost?.author?.id === this.me?.id
+		},
+		isMobile(){
+			return this.$viewportSize.width <= 900
+		},
 		createdAt(){
-			const created = this.$moment.utc(this.currentPost.created_at)
+			const created = this.$moment.utc(this.post.created_at)
 			const now = this.$moment.utc(Date.now())
 			const diff = now.diff(created, 'hours')
 			const min = now.diff(created, 'minutes')
@@ -392,12 +418,6 @@ export default {
 					: diff > 0
 						? `${diff} ${pluralForm(diff, ['час', 'часа', 'часов'])} назад`
 						: `${min} ${pluralForm(diff, ['минуту', 'минуты', 'минут'])} назад`
-		},
-		content(){
-			return this.currentPost.content.replaceAll('<a ', '<a target="_blank" ')
-		},
-		isAuthor(){
-			return this.currentPost?.author?.id === this.me?.id
 		},
 	},
 	mounted() {
@@ -578,6 +598,7 @@ export default {
 		},
 
 		async deletePost(postId) {
+			if(!confirm('Вы действительно хотите удалить новость?')) return
 			try {
 				await API.newsDelete(postId)
 				this.toggleShowPopup()
@@ -698,6 +719,9 @@ export default {
 		.JobtronAvatar{
 			flex: 0 0 24px;
 		}
+	}
+	&-header{
+		margin-bottom: 20px;
 	}
 }
 </style>
