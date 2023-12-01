@@ -134,10 +134,12 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
                 $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
-                    ->where('type', DayType::DAY_TYPES['TRAINEE']);
+                    ->where('type', DayType::DAY_TYPES['TRAINEE'])
+                    ->distinct();
             }])
             ->with(['timetracking' => function (HasMany $query) {
                 $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
+                    ->distinct()
                     ->havingRaw("work_total >= ?", [60 * 3]);
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
