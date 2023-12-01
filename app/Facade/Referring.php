@@ -44,15 +44,16 @@ class Referring extends Facade
             ->find($user_id)
             ->first();
 
-        $referrer = $referral?->referrer;
+        /** @var User $referrer */
+        $referrer = User::query()->find($referral->referrer_id);
 
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
-        $salary = $referrer->referralSalaries()
+
+        $referrer->referralSalaries()
             ->where('date', $date->format("Y-m-d"))
             ->where('referral_id', $referral->getKey())
             ->where('type', PaidType::TRAINEE)
             ->first()?->delete();
-        \Log::debug('check-this', $salary);
     }
 
     public static function touchReferrerSalaryForCertificate(User $user): void
