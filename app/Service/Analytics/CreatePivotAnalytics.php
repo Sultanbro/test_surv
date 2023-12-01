@@ -31,6 +31,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $currentMonth = $this->currentMonth();
 
         $newRows = $this->copyRows($groupId);
+        dd($newRows);
         $newCols = $this->copyCols($groupId);
         $colsWithValue = $this->getColsWithValue($currentMonth, $groupId);
 
@@ -40,7 +41,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'group_id' => $groupId
             ])
             ->get();
-        dd($prevMonthStatistics);
         $lastColumnId = 0;
 
         foreach ($prevMonthStatistics as $statistic) {
