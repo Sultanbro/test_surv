@@ -1,5 +1,8 @@
 <template>
-	<div v-if="groupss">
+	<div
+		v-if="groupss"
+		class="TableAccrual"
+	>
 		<div class="mb-0">
 			<!-- filters -->
 			<div class="row mb-4">
@@ -211,6 +214,36 @@
 								class="fa fa-info-circle"
 								title="Заметка"
 							/>
+							<span
+								v-else
+								class="relative"
+							>
+								<img
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+									width="20"
+									alt="info icon"
+									tabindex="-1"
+									@click="showTransfaredPopup($event, nameData.item)"
+								>
+								<PopupMenu
+									v-if="nameData.item.isTransfaredPopup"
+									v-click-outside="hideTransfaredPopup"
+									position="topLeft"
+									max-height="75px"
+								>
+									<!-- eslint-disable vue/no-v-html -->
+									<div
+										v-if="nameData.item.transfaredInfo"
+										v-html="nameData.item.transfaredInfo"
+									/>
+									<div
+										v-else
+										v-html="transfaredLoadingText"
+									/>
+									<!-- eslint-enable vue/no-v-html -->
+								</PopupMenu>
+							</span>
 						</div>
 					</template>
 
@@ -851,12 +884,15 @@
 
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 import { kpi_fields, parseKPI } from '@/pages/kpi/kpis.js'
-import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
 import salaryCellType from '@/composables/salaryCellType'
+import transferMixin from '@/mixins/transferMixin'
+
+import PopupMenu from '@ui/PopupMenu.vue'
+import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 export default {
 	name: 'TableAccrual',
@@ -864,7 +900,9 @@ export default {
 		Sidebar,
 		// KpiItemsV2,
 		KpiContent,
+		PopupMenu,
 	},
+	mixins: [transferMixin],
 	props: {
 		groupss: {
 			type: Array,
@@ -1886,7 +1924,8 @@ hr {
 		&:nth-child(1) {
 			width: 290px;
 			left:0 !important;
-			div {
+			z-index: 5;
+			> div {
 				width: 288px;
 				white-space: normal;
 			}
@@ -2060,7 +2099,8 @@ hr {
 		td {
 			&:nth-child(1) {
 				left:0 !important;
-				div {
+				z-index: 5;
+				> div {
 					width: 288px;
 					white-space: normal;
 				}
@@ -2154,6 +2194,18 @@ hr {
 	line-height: 1.3;
 	&-text{
 		font-size: 0.95em;
+	}
+}
+
+.TableAccrual{
+	.PopupMenu-scroll{
+		padding-left: 10px;
+		padding-right: 10px;
+		data,
+		div{
+			display: block !important; /// !important
+			white-space: nowrap;
+		}
 	}
 }
 </style>
