@@ -34,6 +34,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $newCols = $this->copyCols($groupId);
         $colsWithValue = $this->getColsWithValue($currentMonth, $groupId);
 
+        dd($groupId);
         $prevMonthStatistics = AnalyticStat::query()
             ->where([
                 'date' => $prevMonth,
