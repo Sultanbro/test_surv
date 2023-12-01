@@ -32,10 +32,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         $newRows = $this->copyRows($groupId);
         $newCols = $this->copyCols($groupId);
-        dd(
-            $newRows,
-            $newCols
-        );
+
         $colsWithValue = $this->getColsWithValue($currentMonth, $groupId);
 
         $prevMonthStatistics = AnalyticStat::query()
@@ -50,7 +47,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
             $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
                 && array_key_exists($statistic->column_id, $newCols);
-
+            dump($existsRowAndCol);
             if (!$existsRowAndCol) continue;
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
@@ -73,7 +70,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'decimals' => $statistic->decimals,
             ]);
         }
-
+        dd(1);
         $lastColumnStats = AnalyticStat::query()
             ->where('column_id', $lastColumnId)
             ->where('group_id', $groupId)
