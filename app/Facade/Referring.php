@@ -48,14 +48,11 @@ class Referring extends Facade
 
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
 
-        $salary = $referrer->referralSalaries()
-            ->where(fn($query) => $query
-                ->where('date', $date->format("Y-m-d"))
-                ->where('referral_id', $referral->getKey())
-                ->where('type', PaidType::TRAINEE)
-            )
-            ->first();
-        $salary?->delete();
+        $referrer->referralSalaries()
+            ->where('date', $date->format("Y-m-d"))
+            ->where('referral_id', $referral->getKey())
+            ->where('type', PaidType::TRAINEE)
+            ->first()?->delete();
     }
 
     public static function touchReferrerSalaryForCertificate(User $user): void
