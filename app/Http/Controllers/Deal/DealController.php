@@ -19,6 +19,6 @@ class DealController extends Controller
         $deal_id = $request->input('data')['FIELDS']['ID'];
         $deal = $bitrix->getDeal($deal_id);
 
-        UpdateDealJob::dispatch($deal)->delay(now()->addSeconds(2));
+//        UpdateDealJob::dispatch($deal)->delay(now()->addSeconds(2));
     }
 }
