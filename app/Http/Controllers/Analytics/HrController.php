@@ -480,7 +480,7 @@ class HrController extends Controller
             }
 
             //send notification to users about this trainees
-            if(count($request->send_users) > 0)
+            if($request->send_users and count($request->send_users) > 0)
             {
                 $service->sendAboutTrainee($request->send_users,$lead,$invite_at);
             }
