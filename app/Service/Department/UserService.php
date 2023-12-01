@@ -268,7 +268,7 @@ class UserService
      */
     public function getFiredEmployeesForSalaries(int $groupId, string $date): array
     {
-        $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $date) {
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function($q) use ($groupId, $date) {
             $q->whereIn('status', [GroupUser::STATUS_FIRED])
                 ->where('group_id', $groupId)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));

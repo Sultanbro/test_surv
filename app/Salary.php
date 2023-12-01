@@ -641,7 +641,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-        foreach ($users as $key => $user) {
+    foreach ($users as $key => $user) {
             /**
              * if internship is paid
              */
