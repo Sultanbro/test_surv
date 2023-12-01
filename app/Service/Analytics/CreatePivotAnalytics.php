@@ -20,7 +20,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     public function create(): void
     {
         $groups = $this->repository->getActiveGroupsWhereHasAnalytics();
-        dd($groups);
         foreach ($groups as $group) {
             $this->createStatistics($group->getKey());
         }
