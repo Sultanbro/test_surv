@@ -125,7 +125,12 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function referrals(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->select(['name', 'last_name', 'referrer_id', 'id'])
+            ->select(['id',
+                'referrer_id',
+                'name',
+                'last_name',
+                'referrer_status',
+                'deleted_at'])
             ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
                 $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
