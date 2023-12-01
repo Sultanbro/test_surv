@@ -55,7 +55,12 @@ class KnowBaseController extends Controller
         $auth_user = auth()->user();
         $books = [];
         if($auth_user->is_admin == 1)  {
-            $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
+            $books = KnowBase::query()
+                ->whereNull('parent_id')
+                ->orWhere('is_category', 1)
+                ->get('id')
+                ->pluck('id')
+                ->toArray();
         } else {
 
             $employee_groups = $auth_user->inGroups()->pluck('id')->toArray();
