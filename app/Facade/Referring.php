@@ -41,13 +41,12 @@ class Referring extends Facade
     {
         /** @var User $referral */
         $referral = User::with(['description', 'referrer'])
-            ->find($user_id)
-            ->first();
+            ->find($user_id);
 
         /** @var User $referrer */
         $referrer = User::query()->find($referral->referrer_id);
 
-        dd($referral->referrer_id);
+        dd($referrer);
 
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
 
