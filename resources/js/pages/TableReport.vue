@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="groups"
-		class="mt-4"
+		class="TableReport mt-4"
 	>
 		<div class="mb-0">
 			<div class="row mb-4">
@@ -162,9 +162,40 @@
 									{{ name.item.user_type }}
 								</b-badge>
 
+								<span
+									v-if="name.index"
+									class="relative"
+								>
+									<img
+										:id="'TableReportTransfers-' + name.item.id"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+										width="20"
+										alt="info icon"
+										tabindex="-1"
+										@click="showTransfaredPopup($event, name.item)"
+									>
+									<PopupMenu
+										v-if="name.item.isTransfaredPopup"
+										v-click-outside="hideTransfaredPopup"
+										position="topLeft"
+										max-height="75px"
+									>
+										<!-- eslint-disable vue/no-v-html -->
+										<div
+											v-if="name.item.transfaredInfo"
+											v-html="name.item.transfaredInfo"
+										/>
+										<div
+											v-else
+											v-html="transfaredLoadingText"
+										/>
+										<!-- eslint-enable vue/no-v-html -->
+									</PopupMenu>
+								</span>
 
 								<span
-									v-if="name.field.key == 'name' && name.item.is_trainee"
+									v-if="false && name.field.key == 'name' && name.item.is_trainee"
 									class="badgy badge-warning badge-pill"
 								>
 									Стажер
@@ -836,8 +867,6 @@
 
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
-import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import {useYearOptions} from '@/composables/yearOptions'
 import {
 	absence_causes,
@@ -848,13 +877,22 @@ import {
 	triggerApplyEmployee,
 	triggerAbsentInternship,
 } from '@/stores/api.js'
+import transferMixin from '@/mixins/transferMixin'
+
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
+import PopupMenu from '@ui/PopupMenu.vue'
+
+
 
 export default {
 	name: 'TableReport',
 	components: {
 		Sidebar,
 		GroupExcelImport,
+		PopupMenu,
 	},
+	mixins: [transferMixin],
 	props: {
 		groups: {
 			type: Array,
@@ -2026,7 +2064,8 @@ hr {
 	.b-table-sticky-column{
 		&:nth-child(1){
 			width: 290px;
-			div{
+			z-index: 3;
+			> div{
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
@@ -2083,6 +2122,14 @@ hr {
 			&:hover{
 				background-color: darken($bgAccept, 5) !important;
 			}
+		}
+	}
+	.PopupMenu-scroll{
+		padding-left: 10px;
+		padding-right: 10px;
+		data,
+		div{
+			display: block !important; /// !important
 		}
 	}
 }
