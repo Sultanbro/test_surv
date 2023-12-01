@@ -34,8 +34,10 @@ class KnowBaseController extends Controller
 
     public function get() : array
     {
-        $books = KnowBase::whereNull('parent_id')
-                ->orderBy('order');
+        $books = KnowBase::query()
+            ->whereNull('parent_id')
+            ->orWhere('is_category', 1)
+            ->orderBy('order');
 
         if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
 
