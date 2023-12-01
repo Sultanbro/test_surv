@@ -53,7 +53,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
-            dd($currentMonth);
             AnalyticStat::query()->firstOrCreate([
                 'group_id' => $statistic->group_id,
                 'date' => $currentMonth,
@@ -275,14 +274,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
     private function currentMonth(): string
     {
-        return Carbon::createFromDate('2023-05-01')
+        return Carbon::now()
             ->startOfMonth()
             ->format('Y-m-d');
     }
 
     private function previousMonth(): string
     {
-        return Carbon::createFromDate('2023-04-01')
+        return Carbon::now()
             ->subMonth()
             ->startOfMonth()
             ->format('Y-m-d');
