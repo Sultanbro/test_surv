@@ -1700,7 +1700,9 @@ class TimetrackingController extends Controller
         if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
-                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
+                ->where('is_trainee', 1)
+                ->where('user_id', $request->get("user_id"))
+                ->first();
 
             if ($trainee) {
 

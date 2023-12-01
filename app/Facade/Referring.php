@@ -47,6 +47,8 @@ class Referring extends Facade
         /** @var User $referrer */
         $referrer = User::query()->find($referral->referrer_id);
 
+        dd($referrer);
+
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
 
         $referrer->referralSalaries()
