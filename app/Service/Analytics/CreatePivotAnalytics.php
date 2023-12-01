@@ -47,13 +47,13 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
             $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
                 && array_key_exists($statistic->column_id, $newCols);
-            dump($existsRowAndCol);
+
             if (!$existsRowAndCol) continue;
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
-
+            dd($currentMonth);
             AnalyticStat::query()->firstOrCreate([
                 'group_id' => $statistic->group_id,
                 'date' => $currentMonth,
@@ -70,7 +70,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'decimals' => $statistic->decimals,
             ]);
         }
-        dd(1);
         $lastColumnStats = AnalyticStat::query()
             ->where('column_id', $lastColumnId)
             ->where('group_id', $groupId)
