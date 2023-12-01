@@ -74,8 +74,8 @@ const quotes = ['«»', '“”', '""', '()']
 const enders = '.,!?:;'.split('')
 const markOptions = {
 	element: 'span',
-	className: 'Booklist-mark',
-	exclude: ['.Booklist-definition'],
+	className: 'KBArticle-mark',
+	exclude: ['.KBArticle-definition'],
 	accuracy: 'exactly',
 }
 function createDefinition(text){
@@ -131,33 +131,36 @@ export default {
 			const div = document.createElement('div')
 			const hl = this.$route.query.hl
 			div.innerHTML = this.activeBook.text
-			const instance = new Mark(div.querySelector('.KBArticle-body'))
-			if(hl){
-				instance.mark(hl, {
-					...markOptions,
-					accuracy: 'partially',
-					each: el => {
-						this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
-					}
-				})
-			}
-			if(!this.glossary) return div.innerHTML
-			this.glossary.forEach(term => {
+			const instance = new Mark(div)
+
+			const glossary = this.glossary || []
+			glossary.forEach(term => {
 				instance.mark(term.word, {
 					...markOptions,
 					each: el => {
-						this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+						el.appendChild(createDefinition(term.definition))
 					}
 				})
 				getSynonims(term.word).forEach(word => {
 					instance.mark(word, {
 						...markOptions,
 						each: el => {
-							this.$nextTick(() => el.appendChild(createDefinition(term.definition)))
+							el.appendChild(createDefinition(term.definition))
 						}
 					})
 				})
 			})
+
+			if(hl){
+				instance.mark(hl, {
+					...markOptions,
+					accuracy: 'partially',
+					each: el => {
+						el.classList.add('KBArticle-mark_justmark')
+						// this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
+					}
+				})
+			}
 			return div.innerHTML
 		}
 	},
@@ -285,6 +288,7 @@ export default {
 		&_justmark{
 			background-color: #fcf8e3;
 			padding: 0 0.2em;
+			color: default;
 			&:after{
 				content: none;
 			}

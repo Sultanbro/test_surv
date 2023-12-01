@@ -234,7 +234,7 @@ export default {
 				? {
 					id: 0,
 					name: 'Вакантная',
-          /* eslint-disable-next-line camelcase */
+					/* eslint-disable-next-line camelcase */
 					last_name: 'позиция',
 					avatar: '/user.png',
 				}
@@ -257,7 +257,7 @@ export default {
 				return result
 			}, []),
 			isAccessSelect: false,
-			vacantDescription: (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)[1],
+			vacantDescription: (this.card.description || DESC_DIVIDER).split(DESC_DIVIDER)[1] || '',
 		}
 	},
 	computed: {
