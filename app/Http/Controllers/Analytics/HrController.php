@@ -459,7 +459,6 @@ class HrController extends Controller
         $msg_for_group_leader = '';
 
         $has_remote_to_send_notification = false;
-
         /**
          * leads
          */
@@ -478,6 +477,12 @@ class HrController extends Controller
                 if ($lead->status == 'MAN') {
                     $email = 'person' . $lead->id . '@bpartners.kz';
                 }
+            }
+
+            //send notification to users about this trainees
+            if(count($request->send_users) > 0)
+            {
+                $service->sendAboutTrainee($request->send_users,$lead,$invite_at);
             }
 
             try {
