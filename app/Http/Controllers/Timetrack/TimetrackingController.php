@@ -1703,9 +1703,10 @@ class TimetrackingController extends Controller
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
-                $targetUser->salaries()->where('date', $date->format("Y-m-d"))->first()?->delete();
 
                 Referring::deleteReferrerDailySalary($targetUser->id, $date);
+
+                $targetUser->salaries()->where('date', $date->format("Y-m-d"))->first()?->delete();
 
                 $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
 
