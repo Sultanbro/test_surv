@@ -99,7 +99,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             }
         }
 
-        DB::table('analytic_statistics')->insert($analyticStats);
+        DB::table('analytic_stats')->insert($analyticStats);
     }
 
     private function copyRows(int $groupId): array
