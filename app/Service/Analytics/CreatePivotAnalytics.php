@@ -20,6 +20,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     public function create(): void
     {
         $groups = $this->repository->getActiveGroupsWhereHasAnalytics();
+        dd($groups);
         foreach ($groups as $group) {
             $this->createStatistics($group->getKey());
         }
@@ -32,7 +33,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         $newRows = $this->copyRows($groupId);
         $newCols = $this->copyCols($groupId);
-
         $colsWithValue = $this->getColsWithValue($currentMonth, $groupId);
 
         $prevMonthStatistics = AnalyticStat::query()
@@ -111,7 +111,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $currentMonth = $this->currentMonth();
 
         $newRows = [];
-
         $prevRows = AnalyticRow::query()
             ->where([
                 'date' => $prevMonth,
@@ -119,7 +118,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ])
             ->orderBy('order', 'desc')
             ->get();
-
         foreach ($prevRows as $prevRow) {
             $newRow = AnalyticRow::query()
                 ->firstOrCreate([
@@ -131,7 +129,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 ]);
             $newRows[$prevRow->id] = $newRow->getKey();
         }
-
         /**
          * depend rows
          */
@@ -158,9 +155,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevMonth = $this->previousMonth();
         $currentMonth = $this->currentMonth();
 
-        /**
-         * Получаем данные за прошлый месяц.
-         */
+
         $prevMonthCols = AnalyticColumn::query()
             ->where([
                 'date' => $prevMonth,
@@ -235,7 +230,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     ): string|int|null
     {
         $value = $statistic->value;
-
         if ($statistic->type == 'remote' || $statistic->type == 'inhouse') {
             $value = '';
         }
@@ -283,14 +277,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
     private function currentMonth(): string
     {
-        return Carbon::now()
+        return Carbon::createFromDate('2023-05-01')
             ->startOfMonth()
             ->format('Y-m-d');
     }
 
     private function previousMonth(): string
     {
-        return Carbon::now()
+        return Carbon::createFromDate('2023-04-01')
             ->subMonth()
             ->startOfMonth()
             ->format('Y-m-d');
