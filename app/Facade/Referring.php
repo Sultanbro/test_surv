@@ -51,7 +51,7 @@ class Referring extends Facade
         $referrer->referralSalaries()
             ->where('date', $date->format("Y-m-d"))
             ->where('referral_id', $referral->getKey())
-            ->where('type', PaidType::TRAINEE)
+            ->where('type', PaidType::TRAINEE->name)
             ->first()?->delete();
     }
 
