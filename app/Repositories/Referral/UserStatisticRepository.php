@@ -148,7 +148,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $query->orderBy('date');
             }])
             ->with(['groups' => function (BelongsToMany $query) use ($referrer) {
-                $query->where('active', 1);
+                $query->wherePivot('status', 'active');
                 $query->select(["id", 'name']);
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
