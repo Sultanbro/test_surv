@@ -13,28 +13,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(WorkChartTypeRbSeeder::class);
         // this for job tron
 //        $this->call([
 //            JobtronSeeder::class
 //        ]);
 
         // this for tenants
-//        $this->call([
-//            PositionSeeder::class,
-//            ProgramSeeder::class,
-//            ProfileGroupSeeder::class,
-//            PageAndPermissionSeeder::class,
-//            WorkingDaySeeder::class,
-//            WorkingTimeSeeder::class,
-//            SettingSeeder::class,
-//            TariffSeeder::class,
-//            MailingTemplateSeeder::class
-//            // KpiSeeder::class,
-//            //KpiItemSeeder::class,
-//            //QuartalPremiumSeeder::class,
-//            //BonusSeeder::class,
-//            //ActivitySeeder::class,
-//        ]);
+        $this->call([
+            PositionSeeder::class,
+            ProgramSeeder::class,
+            ProfileGroupSeeder::class,
+            PageAndPermissionSeeder::class,
+            WorkingDaySeeder::class,
+            WorkingTimeSeeder::class,
+            SettingSeeder::class,
+            TariffSeeder::class,
+            WorkChartTypeRbSeeder::class
+//            MailingTemplateSeeder::class,
+            // KpiSeeder::class,
+            //KpiItemSeeder::class,
+            //QuartalPremiumSeeder::class,
+            //BonusSeeder::class,
+            //ActivitySeeder::class,
+        ]);
     }
 }
