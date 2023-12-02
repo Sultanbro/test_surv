@@ -586,7 +586,7 @@ class ProfileGroup extends Model
     ): BelongsToMany
     {
         return $this->users()
-            ->select('id', 'name', 'last_name', 'full_time', 'email')
+            ->select('id', 'name', 'last_name', 'full_time', 'email', 'user_type')
             ->withTrashed()
             ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->whereDate('from', '<=', $dateFrom)

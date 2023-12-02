@@ -22,7 +22,8 @@ class GetPredictsService
                         'total'     => $group->activeUsers->count(),
                         'trainees'  => $group->activeTrainees->count(),
                         'employees' => $group->activeEmployees->count()
-                    ]
+                    ],
+                    'plan'  => $group->required
                 ];
             });
     }

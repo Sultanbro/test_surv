@@ -373,7 +373,6 @@ final class Analytics
                 $appliedFrom = $employee->workdays_from_applied($date, $workDay);
                 $workDays = WorkChartModel::workdaysPerMonth($employee);
 
-
                 $employee->fullname = $employee->full_name;
                 $employee->fired = $employee->deleted_at != null ? 1 : 0;
                 $employee->applied_from = $appliedFrom;
