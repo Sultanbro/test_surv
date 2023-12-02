@@ -31,7 +31,7 @@ class EditActivityService
          */
         (new AnalyticService)->updatePlanPerMonth(
             $activity,
-            $dto->activity['daily_plan'],
+            (string) $dto->activity['daily_plan'],
             $dto->activity['plan_unit'],
             $dto->year,
             (string) $dto->month,

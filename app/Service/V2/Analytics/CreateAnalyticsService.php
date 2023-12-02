@@ -5,6 +5,7 @@ namespace App\Service\V2\Analytics;
 
 use App\DTO\Analytics\V2\CreateAnalyticDto;
 use App\Helpers\DateHelper;
+use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use Exception;
@@ -25,6 +26,7 @@ class CreateAnalyticsService
 
             AnalyticColumn::createAnalyticsColumns($dto);
             AnalyticRow::createAnalyticsRows($dto);
+            Activity::createQuality($dto->groupId);
 
             DB::commit();
 
