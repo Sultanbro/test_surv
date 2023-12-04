@@ -8,9 +8,29 @@ function addFavorites(items, favorites){
 	return items
 }
 
+function nest(items, id = null, link = 'parent_id'){
+	return items
+		.filter(item => item[link] === id)
+		.map(item => ({ ...item, children: nest(items, item.id) }))
+}
+
+function booksTree(books){
+	const map = books.reduce((map, book) => {
+		map[book.id] = structuredClone(book)
+		return map
+	}, {})
+
+	return {
+		map,
+		tree: nest(books),
+		flat: books,
+		orphans: books.filter(book => map[book.parent_id])
+	}
+}
+
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
-	return data.books
+	return booksTree(data.books || [])
 }
 
 export async function fetchKBArchived(){
