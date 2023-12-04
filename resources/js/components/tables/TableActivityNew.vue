@@ -1056,7 +1056,7 @@ export default {
 
 				if(
 					(this.user_types == 1 && account.status === 'drop' && !account.isTrainee)
-					|| (this.user_types == 0 && account.firstatused !== 'drop' && !account.isTrainee)
+					|| (this.user_types == 0 && account.status !== 'drop' && !account.isTrainee)
 					|| (this.user_types == 2 && account.isTrainee)
 				) {
 					this.itemsArray.push({
