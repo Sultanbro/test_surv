@@ -109,6 +109,19 @@ export const templateSettings = {
 			}
 		]
 	},
+	fired_employee_without_poll: {
+		targets: ['Сотрудники', 'Отделы', 'Должности', 'Все'],
+		recipients: [],
+		title: 'Подготовьте документы для увольнения сотрудника',
+		titleFixed: '"Имя и Фамилия указанные в профиле сотрудника"',
+		titleTip: '',
+		when: [
+			{
+				value: 'fired_employee_without_poll',
+				text: 'Уведомлять в момент увольнения (триггер)'
+			}
+		]
+	},
 }
 
 export const templates = [
@@ -130,6 +143,11 @@ export const templates = [
 	{
 		value: 'absent_internship',
 		text: 'Не присутствовал на стажировке',
+		class: '',
+	},
+	{
+		value: 'fired_employee_without_poll',
+		text: 'Уволен сотрудник',
 		class: '',
 	},
 ]
@@ -167,4 +185,5 @@ export const templateFrequency = [
 	'absent_internship',
 	'manager_assessment',
 	'coach_assessment',
+	'fired_employee_without_poll',
 ]
