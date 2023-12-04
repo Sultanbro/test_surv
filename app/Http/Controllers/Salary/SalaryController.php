@@ -190,7 +190,8 @@ class SalaryController extends Controller
         $data['group_total'] = GroupSalary::where('group_id', $request->group_id)
             ->where('date', $sdate)
             ->where('type', GroupSalary::WORKING)
-            ->get()->sum('total');
+            ->get()
+            ->sum('total');
 
         // group fired
 
