@@ -70,8 +70,8 @@ import Mark from 'mark.js/dist/mark.es6.js'
 import Questions from '@/pages/Questions'
 import JobtronAvatar from '@ui/Avatar.vue'
 
-const quotes = ['«»', '“”', '""', '()']
-const enders = '.,!?:;'.split('')
+// const quotes = ['«»', '“”', '""', '()']
+// const enders = '.,!?:;'.split('')
 const markOptions = {
 	element: 'span',
 	className: 'KBArticle-mark',
@@ -84,23 +84,23 @@ function createDefinition(text){
 	span.classList.add('KBArticle-definition')
 	return span
 }
-function getSynonims(term){
-	const result = []
-	enders.forEach(char => {
-		result.push(term + char)
-	})
-	quotes.forEach(pair => {
-		result.push(pair[0] + term)
-		result.push(term + pair[1])
-		result.push(pair[0] + term + pair[1])
-		enders.forEach(char => {
-			result.push(pair[0] + term + char)
-			result.push(term + pair[1] + char)
-			result.push(pair[0] + term + pair[1] + char)
-		})
-	})
-	return result
-}
+// function getSynonims(term){
+// 	const result = []
+// 	enders.forEach(char => {
+// 		result.push(term + char)
+// 	})
+// 	quotes.forEach(pair => {
+// 		result.push(pair[0] + term)
+// 		result.push(term + pair[1])
+// 		result.push(pair[0] + term + pair[1])
+// 		enders.forEach(char => {
+// 			result.push(pair[0] + term + char)
+// 			result.push(term + pair[1] + char)
+// 			result.push(pair[0] + term + pair[1] + char)
+// 		})
+// 	})
+// 	return result
+// }
 
 export default {
 	name: 'KBArticle',
@@ -141,14 +141,14 @@ export default {
 						el.appendChild(createDefinition(term.definition))
 					}
 				})
-				getSynonims(term.word).forEach(word => {
-					instance.mark(word, {
-						...markOptions,
-						each: el => {
-							el.appendChild(createDefinition(term.definition))
-						}
-					})
-				})
+				// getSynonims(term.word).forEach(word => {
+				// 	instance.mark(word, {
+				// 		...markOptions,
+				// 		each: el => {
+				// 			el.appendChild(createDefinition(term.definition))
+				// 		}
+				// 	})
+				// })
 			})
 
 			if(hl){
