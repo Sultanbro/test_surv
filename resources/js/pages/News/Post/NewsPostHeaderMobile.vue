@@ -191,6 +191,9 @@ export default {
 		line-height: 20px;
 		letter-spacing: -0.02em;
 		color: #156AE8;
+
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	&-menu{
 		position: relative;
