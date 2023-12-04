@@ -11,6 +11,7 @@ import {
 	dictionaries,
 	structure,
 } from '@/pages/Structure/mockApi.js'
+const DESC_DIVIDER = '◕◕'
 
 function recursiveToFlat(struct, result = []){
 	if(!struct) return result
@@ -18,7 +19,7 @@ function recursiveToFlat(struct, result = []){
 		id: struct.id,
 		name: struct.name,
 		parent_id: struct.parent_id,
-		description: struct.description,
+		description: struct.description || DESC_DIVIDER,
 		color: struct.color,
 		created_at: struct.created_at,
 		updated_at: struct.updated_at,
@@ -38,7 +39,7 @@ function recursiveToFlat(struct, result = []){
 function cardToRequest(card){
 	const request = {
 		parent_id: card.parent_id,
-		description: card.description,
+		description: card.description || DESC_DIVIDER,
 		color: card.color,
 		user_ids: card.users?.map(user => user.id),
 		position_id: card.manager?.position_id,

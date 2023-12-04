@@ -880,7 +880,8 @@ export default {
 					}
 				}
 				else{
-					this.pages.push(book)
+					this.books.push(book)
+					// this.allBooks.push(book)
 				}
 
 				this.updateBook = book
