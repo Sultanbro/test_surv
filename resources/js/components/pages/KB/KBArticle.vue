@@ -77,6 +77,7 @@ const markOptions = {
 	className: 'KBArticle-mark',
 	exclude: ['.KBArticle-definition'],
 	accuracy: 'exactly',
+	separateWordSearch: false,
 }
 function createDefinition(text){
 	const span = document.createElement('span')
