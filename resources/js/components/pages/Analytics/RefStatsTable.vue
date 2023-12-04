@@ -23,6 +23,7 @@
 			</template>
 			<template #cell(switch)="{item}">
 				<div
+					v-if="item.deals || item.accepted"
 					class="RefStatsTable-switch pointer"
 					@click="toggleAfter(item.id)"
 				>
@@ -35,6 +36,18 @@
 						class="fa fa-plus-circle"
 					/>
 				</div>
+			</template>
+			<template #cell(title)="{item, value}">
+				<a
+					v-if="userLink && canSettings"
+					:href="`/timetracking/edit-person?id=${item.id}`"
+					target="_blank"
+				>
+					{{ value }}
+				</a>
+				<template v-else>
+					{{ value }}
+				</template>
 			</template>
 			<template #cell(status)="{value}">
 				{{ value }}
@@ -84,6 +97,7 @@
 								:user-id="firstLayerData.value.id"
 								:sorted-subs="sortedSubs"
 								:hint-comments="hintComments"
+								:show-goups="showGoups"
 								@sub-sort="setSubSort"
 								@payment-click="$emit('payment-click', $event)"
 							/>
@@ -128,6 +142,12 @@ export default {
 			type: Boolean
 		},
 		hintComments: {
+			type: Boolean
+		},
+		userLink: {
+			type: Boolean
+		},
+		showGoups: {
 			type: Boolean
 		},
 	},
@@ -192,6 +212,17 @@ export default {
 			})
 			return sorted
 		},
+		canSettings(){
+			return this.$can('settings_view')
+				|| this.$can('users_view')
+				|| this.$can('positions_view')
+				|| this.$can('groups_view')
+				|| this.$can('fines_view')
+				|| this.$can('notifications_view')
+				|| this.$can('permissions_view')
+				|| this.$can('checklists_view')
+				|| this.$can('awards_view')
+		}
 	},
 	methods: {
 		toggleAfter(id){

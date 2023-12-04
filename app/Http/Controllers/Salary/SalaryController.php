@@ -13,6 +13,7 @@ use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedSalary;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\GroupUser;
 use App\Models\TestBonus;
 use App\Models\User\Card;
 use App\ProfileGroup;
@@ -137,19 +138,18 @@ class SalaryController extends Controller
         if ($request->has('group_id')) {
             $group = ProfileGroup::find($request->group_id);
 
-            // $users_ids = [];
-            // if($group) $users_ids = json_decode($group->users, true);
+            $users = [];
 
             if ($request->user_types == 0) {
-                $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
+                $users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
-            if ($request->user_types == 1) {
-                $users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
+            if ($request->user_types == '1') {
+                $users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
-            if ($request->user_types == 2) {
-                $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d'));
+            if ($request->user_types == '2') {
+                $users = (new UserService)->getTraineesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
             $users_ids = collect($users)->pluck('id')->toArray();
@@ -189,14 +189,15 @@ class SalaryController extends Controller
         $users_ids = json_decode($group->users);
         $data['group_total'] = GroupSalary::where('group_id', $request->group_id)
             ->where('date', $sdate)
-            ->where('type', 1)
-            ->get()->sum('total');
+            ->where('type', GroupSalary::WORKING)
+            ->get()
+            ->sum('total');
 
         // group fired
 
         $data['group_fired'] = GroupSalary::where('group_id', $request->group_id)
             ->where('date', $sdate)
-            ->where('type', 2)
+            ->where('type', GroupSalary::FIRED)
             ->get()
             ->sum('total');
 
@@ -204,12 +205,12 @@ class SalaryController extends Controller
 
         if (Auth::user()->is_admin == 1) {
             $data['all_total'] = GroupSalary::where('date', $sdate)
-                ->where('type', 1)
+                ->where('type', GroupSalary::WORKING)
                 ->whereNotIn('group_id', [34])
                 ->get()->sum('total');
 
             $data['all_total_fired'] = GroupSalary::where('date', $sdate)
-                ->where('type', 2)
+                ->where('type', GroupSalary::FIRED)
                 ->whereNotIn('group_id', [34])
                 ->get()->sum('total');
         } else {
@@ -397,10 +398,10 @@ class SalaryController extends Controller
         /**
          * get users
          */
-        $working_users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
+        $working_users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
         $working_users = collect($working_users)->pluck('id')->toArray();
 
-        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
+        $fired_users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
         $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $editors_id = json_decode($group->editors_id);
@@ -470,6 +471,14 @@ class SalaryController extends Controller
         $exp_title = 'Начисления ' . $edate . ' "' . $group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
+    }
+
+    public function getTransfers(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|int'
+        ]);
+        return GroupUser::with('profile_group:id,name')->where('user_id', $request['id'])->where('status', GroupUser::STATUS_DROP)->get()->toArray();
     }
 
     /**

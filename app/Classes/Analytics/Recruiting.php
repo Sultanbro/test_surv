@@ -1313,26 +1313,16 @@ public function planRequired($arr) {
             $users = (new UserService)->getUsers($group->id, $date->format('Y-m-d'));
             $user_ids = collect($users)->pluck('id')->toArray();
 
-            $applied = User::withTrashed()
+            $item['working'] = User::withTrashed()
                 ->with('user_description')
                 ->whereHas('user_description', function ($query) use ($date){
                     $query->whereMonth('applied', $date->month)
-                          ->whereYear('applied', $date->year);
+                          ->whereYear('applied', $date->year)
+                          ->where('is_trainee',0);
                 })
                 ->whereIn('id', $user_ids)
                 ->get(['id'])
-                ->pluck('id')
-                ->toArray();
-            
-            $item['working'] = User::with('user_description')
-                ->withTrashed()
-                ->whereHas('user_description', function ($query) {
-                    $query->where('is_trainee', 0);
-                })
-                ->whereIn('id', $applied)
-                ->get()
                 ->count();
-
             
             /**
              * Процент прохождения стажировки
@@ -1399,7 +1389,8 @@ public function planRequired($arr) {
             foreach($working as $user_id) {
                 $user = User::withTrashed()->find($user_id);
                 if($user) {
-                    $rate += $user->full_time == 1 ? 1 : 0.5;
+//                    $rate += $user->full_time == 1 ? 1 : 0.5;
+                    $rate += 1;
                 }
             }
 

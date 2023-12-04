@@ -129,10 +129,6 @@ class SalaryIndexation extends Command
 
 
         }
-
-        
-
-        
     }
 
      /**

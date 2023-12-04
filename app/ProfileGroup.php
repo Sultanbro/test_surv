@@ -10,6 +10,7 @@ use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -179,11 +180,17 @@ class ProfileGroup extends Model
         return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
             ->withPivot(['from', 'to'])
             ->withTimestamps();
+    }
+
+    public function usersWithTrashed(): BelongsToMany
+    {
+        return $this->users()
+            ->withTrashed();
     }
 
     /**
@@ -545,26 +552,55 @@ class ProfileGroup extends Model
     /**
      * @param string $dateFrom
      * @param string $dateTo
-     * @return BelongsToMany
+     * @return Builder
      */
     public function actualAndFiredEmployees(
         string $dateFrom,
         string $dateTo
-    ): BelongsToMany
+    ): Builder
     {
-        return $this->users()
-            ->select('id', 'name', 'last_name', 'full_time', 'email')
-            ->withTrashed()
-            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-            ->whereDate('from', '<=', $dateFrom)
-            ->where(fn($query) => $query->whereNull('to')->orWhere(
-                fn($query) => $query->whereDate('to', '>=', $dateTo))
-            )
-            ->when($dateFrom, function ($query) use ($dateFrom) {
-                $query->where(function (\Illuminate\Database\Eloquent\Builder $query) use ($dateFrom) {
-                    $query->where('users.deleted_at', '>', $dateFrom)
-                        ->orWhereNull('users.deleted_at');
-                });
-            });
+        return User::withTrashed()
+            ->select([
+                'users.id as id',
+                'users.name as name',
+                'users.last_name as last_name',
+                'users.full_time as full_time',
+                'users.email as email',
+                'users.deleted_at as deleted_at',
+                'd.is_trainee as is_trainee',
+                'g.id as group_id',
+                'g.name as group_name',
+                'p.from as from',
+                'p.to as to',
+                'p.status as status'
+            ])
+            ->join('group_user as p', 'p.user_id', '=', 'users.id')
+            ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
+            ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
+            ->where(function (Builder $query) use ($dateFrom, $dateTo) {
+                $query->whereBetween('p.to', [$dateFrom, $dateTo])
+                    ->orWhereNull('p.to');
+            })
+            ->where(function ($query) use ($dateFrom) {
+                $query->where('users.deleted_at', '>=', $dateFrom)
+                    ->orWhereNull('users.deleted_at');
+            })
+            ->where('g.id', $this->getKey())
+            ->groupBy([
+                'users.id',
+                'users.name',
+                'users.last_name',
+                'users.full_time',
+                'users.email',
+                'users.deleted_at',
+                'd.is_trainee',
+                'g.id',
+                'g.name',
+                'p.from',
+                'p.to',
+                'p.status'
+            ])
+            ->orderBy('last_name')
+            ->orderBy('name');
     }
 }

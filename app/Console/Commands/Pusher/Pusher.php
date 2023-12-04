@@ -4,7 +4,9 @@ namespace App\Console\Commands\Pusher;
 
 use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
+use App\ProfileGroup;
 use App\Service\Mailing\Notifiers\NotificationFactory;
+use App\User;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -62,10 +64,12 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
+        $recipientIds = $this->getUserIds($notification->recipients);
+        $recipients = User::query()->whereIn('id', $recipientIds)->get();
 
         foreach ($mailingSystems as $mailingSystem)
         {
-            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
         }
     }
 
@@ -81,12 +85,14 @@ class Pusher extends Command
         $mailingSystems = json_decode($notification->type_of_mailing);
         $days   =  json_decode($notification->days);
         $today  = Carbon::now()->dayOfWeekIso;
+        $recipientIds = $this->getUserIds($notification->recipients);
+        $recipients = User::query()->whereIn('id', $recipientIds)->get();
 
         if (in_array($today, $days))
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
             }
         }
     }
@@ -103,14 +109,41 @@ class Pusher extends Command
         $mailingSystems = json_decode($notification->type_of_mailing);
         $days   =  json_decode($notification->days);
         $today  = Carbon::now()->day;
+        $recipientIds = $this->getUserIds($notification->recipients);
+        $recipients = User::query()->whereIn('id', $recipientIds)->get();
 
         if (in_array($today, $days))
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title,$recipients);
             }
         }
 
+    }
+
+    /**
+     * Get employee ids which should notified by using notificationable_type and notificationable_id
+     */
+    private function getUserIds($recipients)
+    {
+        $employeeIds = [];
+
+        foreach ($recipients as $item) {
+
+            if($item->notificationable_type == 'App\\User') {
+                $employeeIds[] = $item->notificationable_id;
+            }
+            elseif($item->notificationable_type == 'App\\ProfileGroup') {
+                $userIds = ProfileGroup::getById($item->notificationable_id)->activeUsers()->pluck('user_id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+            elseif($item->notificationable_type == 'App\\Position') {
+                $userIds = User::query()->where('position_id', $item->notificationable_id)->pluck('id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+
+        }
+        return array_unique($employeeIds);
     }
 }

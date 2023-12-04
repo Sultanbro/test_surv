@@ -16,7 +16,6 @@ use App\Console\Commands\RestartQueue;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
-use App\Jobs\Bitrix\RecruiterStatsJob;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -90,10 +89,9 @@ class Kernel extends ConsoleKernel
          * BITRIX24 crons
          */
         //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
-         $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
-	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(20); // Данные почасовой таблицы рекрутинга из битрикса
-//	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса
-	    $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(40); // Данные почасовой таблицы рекрутинга из битрикса
+        $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
+        $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(20); // Данные почасовой таблицы рекрутинга из битрикса
+        $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(40); // Данные почасовой таблицы рекрутинга из битрикса
 //        $schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
 
@@ -111,9 +109,10 @@ class Kernel extends ConsoleKernel
         |
         */
 
+        $schedule->command('tenants:run check:ref-duplicates --tenants=bp')->everyTenMinutes(); //
         $schedule->command('tenants:run timetracking:check')->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
-        $schedule->command('tenants:run salary:group')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
+        $schedule->command('tenants:run salary:group')->everyTenMinutes(); // Сохранить заработанное группой без вычета шт и ав
         $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
         $schedule->command('tenants:run count:hours')->hourly(); // обновление минут
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
@@ -121,7 +120,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
 //        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
-        $schedule->command('tenants:run referrer:daily --tenants=bp')->dailyAt('00:00');
         $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         $schedule->command('tenants:run usernotification:adaptation')->dailyAt('02:40'); // Уведомление о заполнении адаптации
         $schedule->command('tenants:run salary:indexation')->dailyAt('17:02'); // Индексация зарплаты

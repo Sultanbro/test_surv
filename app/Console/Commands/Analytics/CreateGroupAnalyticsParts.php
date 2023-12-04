@@ -8,6 +8,7 @@ use App\ProfileGroup;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CreateGroupAnalyticsParts extends Command
 {
@@ -69,6 +70,19 @@ class CreateGroupAnalyticsParts extends Command
 
         }
 
+        DB::table('top_values')
+            ->whereIn('id', function ($query) {
+                $query->select('id')
+                    ->from(function ($subQuery) {
+                        $subQuery->selectRaw('id, ROW_NUMBER() OVER (PARTITION BY name, group_id, date ORDER BY id) as rn')
+                            ->from('top_values')
+                            ->whereDate('date', now())
+                            ->groupBy('id', 'name', 'group_id', 'date');
+                    }, 'RankedValues')
+                    ->where('rn', '>', 1);
+            })
+            ->delete();
+
         $this->line('end');
     }
 
@@ -88,14 +102,10 @@ class CreateGroupAnalyticsParts extends Command
                 'group_id' => $group_id,
                 'date' => $previousDate,
             ])
+            ->groupBy('group_id', 'date', 'name')
             ->get();
 
         foreach ($tops as $top) {
-//            $cloned = $top->replicate(); why dont use this
-//            $cloned->date = $currentDate;
-//            $cloned->value = 0;
-//            $cloned->save();
-
             TopValue::query()
                 ->create([
                     'name' => $top->name,

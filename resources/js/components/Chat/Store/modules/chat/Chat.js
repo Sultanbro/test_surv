@@ -24,9 +24,9 @@ export default {
 		setChat(state, chat) {
 			state.chat = chat;
 		},
-		updateChatLastMessage(state, {chat, message, isSender, userId}) {
+		updateChatLastMessage(state, {chat, message, isSender/* , userId */}) {
 			chat.last_message = message;
-			if (!isSender && !~message.readers?.findIndex(reader => reader.id === userId)) {
+			if (!isSender/*  && !~message.readers?.findIndex(reader => reader.id === userId) */) {
 				chat.unread_messages_count++;
 			}
 		},

@@ -41,7 +41,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'group_id' => $groupId
             ])
             ->get();
-
         $lastColumnId = 0;
 
         foreach ($prevMonthStatistics as $statistic) {
@@ -54,7 +53,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
-
             AnalyticStat::query()->firstOrCreate([
                 'group_id' => $statistic->group_id,
                 'date' => $currentMonth,
@@ -71,7 +69,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'decimals' => $statistic->decimals,
             ]);
         }
-
         $lastColumnStats = AnalyticStat::query()
             ->where('column_id', $lastColumnId)
             ->where('group_id', $groupId)
@@ -102,7 +99,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             }
         }
 
-        DB::table('analytic_statistics')->insert($analyticStats);
+        DB::table('analytic_stats')->insert($analyticStats);
     }
 
     private function copyRows(int $groupId): array
@@ -111,7 +108,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $currentMonth = $this->currentMonth();
 
         $newRows = [];
-
         $prevRows = AnalyticRow::query()
             ->where([
                 'date' => $prevMonth,
@@ -119,7 +115,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ])
             ->orderBy('order', 'desc')
             ->get();
-
         foreach ($prevRows as $prevRow) {
             $newRow = AnalyticRow::query()
                 ->firstOrCreate([
@@ -131,7 +126,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 ]);
             $newRows[$prevRow->id] = $newRow->getKey();
         }
-
         /**
          * depend rows
          */
@@ -158,9 +152,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevMonth = $this->previousMonth();
         $currentMonth = $this->currentMonth();
 
-        /**
-         * Получаем данные за прошлый месяц.
-         */
+
         $prevMonthCols = AnalyticColumn::query()
             ->where([
                 'date' => $prevMonth,
@@ -235,7 +227,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     ): string|int|null
     {
         $value = $statistic->value;
-
         if ($statistic->type == 'remote' || $statistic->type == 'inhouse') {
             $value = '';
         }

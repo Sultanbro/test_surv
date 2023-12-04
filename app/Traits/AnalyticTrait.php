@@ -31,13 +31,13 @@ trait AnalyticTrait
      * @return mixed
      */
     public function employees(
-        int $groupId,
+        int    $groupId,
         string $date
     )
     {
-        $group      = ProfileGroup::query()->where('id', $groupId)->first();
-        $dateFrom   = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
-        $dateTo     = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
+        $group = ProfileGroup::query()->where('id', $groupId)->first();
+        $dateFrom = Carbon::createFromDate($date)->endOfMonth()->format('Y-m-d');
+        $dateTo = Carbon::createFromDate($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         return $group->actualAndFiredEmployees($dateFrom, $dateTo);
     }
@@ -77,7 +77,7 @@ trait AnalyticTrait
      */
     public function columns(
         string $date,
-        int $groupId = null
+        int    $groupId = null
     ): Collection
     {
         return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_COLUMN, $groupId)));
@@ -94,7 +94,7 @@ trait AnalyticTrait
      */
     public function rows(
         string $date,
-        int $groupId = null
+        int    $groupId = null
     ): Collection
     {
         return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_ROW, $groupId)));
@@ -111,7 +111,7 @@ trait AnalyticTrait
      */
     public function statistics(
         string $date,
-        int $groupId = null
+        int    $groupId = null
     ): Collection
     {
         return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_STAT, $groupId)));
@@ -124,7 +124,7 @@ trait AnalyticTrait
      */
     public function decompositions(
         string $date,
-        int $groupId = null
+        int    $groupId = null
     ): Collection
     {
         return collect(AnalyticCacheStorage::get(AnalyticCacheStorage::key($date, AnalyticEnum::ANALYTIC_DECOMPOSITIONS, $groupId)));

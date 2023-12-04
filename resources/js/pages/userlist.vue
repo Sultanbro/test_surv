@@ -38,7 +38,7 @@
 			</div>
 			<div class="col-12">
 				<p class="mt-2 mr-2 fz14 mb-0">
-					<b> Все:</b> {{ filtered.length }}  <b>Рес:</b> {{ staff_res }}
+					<b> Все:</b> {{ totalRows }}  <b>Рес:</b> {{ staffRes }}
 				</p>
 			</div>
 		</div>
@@ -52,21 +52,15 @@
 				bordered
 				show-empty
 				stacked="md"
-				:items="filtered"
+				:items="items"
 				:fields="fields2"
-				:current-page="currentPage"
-				:per-page="perPage"
-				:filter="filter"
-				:filter-included-fields="filterOn"
 				:sort-by.sync="sortBy"
 				:sort-desc.sync="sortDesc"
-				:sort-direction="sortDirection"
-				empty-filtered-text="Еще не найдено ни одной записи"
+				sort-direction="desc"
 				empty-text="Не найдено ни одной записи"
-				@filtered="onFiltered"
 			>
 				<template #cell(index)="row">
-					{{ row.index + 1 }}
+					{{ ((currentPage - 1) * perPage) + (row.index + 1) }}
 				</template>
 				<template #cell(id)="data">
 					<a
@@ -268,6 +262,13 @@
 					>
 						Дата принятия
 					</b-form-checkbox>
+					<b-form-checkbox
+						v-model="showFields.city"
+						:value="true"
+						:unchecked-value="false"
+					>
+						Город
+					</b-form-checkbox>
 				</div>
 			</div>
 		</b-modal>
@@ -322,9 +323,9 @@ export default {
 			pageOptions: [5, 10, 15],
 			sortBy: 'created_at',
 			sortDesc: true,
-			sortDirection: 'desc',
 			currentUser: null,
 			search: '',
+			seatchTimeout: null,
 			filter: {
 				group: 0,
 				position: 0,
@@ -338,53 +339,21 @@ export default {
 				fullpart: '',
 				notrainees: false,
 			},
-			filterOn: [],
 			isRestored: false,
 			loading: false,
+			totalPart: 0,
+			totalFull: 0,
 		}
 	},
 	computed: {
 		searchText(){
-			return this.search.toLowerCase()
-		},
-
-		filtered() {
-			if(!this.items) return []
-			return this.items.filter(el => {
-				if (el.FULLNAME == null)  el.FULLNAME = ''
-				if (el.FULLNAME2 == null)  el.FULLNAME2 = ''
-				if (el.fullname == null)  el.fullname = ''
-				if (el.fullname2 == null)  el.fullname2 = ''
-				if (el.last_name == null)  el.last_name = ''
-				if (el.name == null)  el.name = ''
-
-				const isOK = el.email.toLowerCase().indexOf(this.searchText) > -1
-					|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
-					|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
-					|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
-					|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
-					|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
-					|| el.name.toLowerCase().indexOf(this.searchText) > -1
-					|| el.id.toString().indexOf(this.searchText) > -1
-					|| el.position.toLowerCase().indexOf(this.searchText) > -1
-
-				return Number(this.filter.group) ? el.groups.includes(Number(this.filter.group)) && isOK : isOK
-			})
-		},
-		staff_res(){
-			let res = 0
-			this.filtered.forEach(user => {
-				if(user.full_time == 1) {
-					res += 1
-				}
-				else {
-					res += 0.5
-				}
-			})
-			return res
+			return this.search.toLowerCase().trim()
 		},
 		totalRows(){
-			return this.filtered.length || 0
+			return this.totalPart + this.totalFull
+		},
+		staffRes(){
+			return this.totalFull + (this.totalPart * 0.5)
 		},
 		isBP(){
 			return ['test', 'bp'].includes(location.hostname.split('.')[0])
@@ -416,7 +385,6 @@ export default {
 			if(this.showFields.groups) fields.push({
 				key: 'groups',
 				label: 'Отделы',
-				sortable: true
 			})
 			if(this.showFields.position) fields.push({
 				key: 'position',
@@ -463,6 +431,10 @@ export default {
 				label: 'Full/Part',
 				sortable: true
 			})
+			if(this.showFields.city) fields.push({
+				key: 'working_country',
+				label: 'Город',
+			})
 			if(this.isRestored) fields.push({
 				key: 'restored_at',
 				label: 'Восстановлен'
@@ -496,7 +468,7 @@ export default {
 					title: pos.position
 				}))
 			]
-		}
+		},
 	},
 	watch: {
 		showFields: {
@@ -510,6 +482,24 @@ export default {
 		},
 		filter(){
 			this.getUsers()
+		},
+		currentPage(){
+			this.getUsers()
+		},
+		sortBy(){
+			this.currentPage = 1
+			this.getUsers()
+		},
+		sortDesc(){
+			this.currentPage = 1
+			this.getUsers()
+		},
+		searchText(){
+			clearTimeout(this.seatchTimeout)
+			this.seatchTimeout = setTimeout(() => {
+				this.currentPage = 1
+				this.getUsers()
+			}, 500);
 		}
 	},
 	created() {
@@ -544,12 +534,14 @@ export default {
 					segment: false,
 					applied: false,
 					full_time: false,
+					city: false,
 				}
 			}
 		},
 
 		getUsers() {
 			if(this.loading) return
+			this.items = []
 			this.loading = true
 			const loader = this.$loading.show();
 			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
@@ -558,9 +550,15 @@ export default {
 				filter: this.filter.userType,
 				segment: this.filter.segment.map(segment => segment.id),
 				job: this.filter.position,
+				group_id: +this.filter.group,
 				notrainees: this.filter.notrainees,
 				type: this.filter.type,
 				part: this.filter.fullpart,
+				search: this.searchText,
+				page: this.currentPage,
+				perPage: this.perPage,
+				sortBy: this.sortBy,
+				sortDirection: this.sortDesc ? 'desc' : 'asc',
 			}
 
 			if(this.filter.register[0] && this.filter.register[1]) {
@@ -585,32 +583,34 @@ export default {
 
 			this.isRestored = this.filter.userType === 'reactivated'
 
-			this.axios.post('/timetracking/get-persons', filter).then(response => {
+			this.axios.post('/timetracking/get-persons', filter).then(({data}) => {
 				const users = []
-				response.data.users.slice().reverse().forEach(user => {
+				data.users.data.slice().reverse().forEach(user => {
 					const exists = users.find(u => u.id === user.id)
 					if(!exists) {
 						users.push(user)
 					}
 				})
+				this.totalPart = data.users_part_time
+				this.totalFull = data.users_full_time
 				this.items = users.reverse().map(user => {
 					const pos = this.positionsMap[user.position_id]
 					return { ...user, position: pos ? pos.position : '' }
 				})
-				this.groups = response.data.groups
-				this.segments = response.data.segments
+				this.groups = data.groups
+				this.segments = data.segments
 
-				this.auth_token = response.data.auth_token
-				this.currentUser = response.data.currentUser
+				this.auth_token = data.auth_token
+				this.currentUser = data.currentUser
 				// if(this.filter.start_date == null) {
-				// 	this.filter.start_date = response.data.start_date
-				// 	this.filter.end_date = response.data.end_date
-				// 	this.filter.start_date_deactivate = response.data.start_date
-				// 	this.filter.end_date_deactivate = response.data.end_date
-				// 	this.filter.start_date_applied = response.data.start_date
-				// 	this.filter.end_date_applied = response.data.end_date
-				// 	this.filter.start_date_reapplied = response.data.start_date
-				// 	this.filter.end_date_reapplied = response.data.end_date
+				// 	this.filter.start_date = data.start_date
+				// 	this.filter.end_date = data.end_date
+				// 	this.filter.start_date_deactivate = data.start_date
+				// 	this.filter.end_date_deactivate = data.end_date
+				// 	this.filter.start_date_applied = data.start_date
+				// 	this.filter.end_date_applied = data.end_date
+				// 	this.filter.start_date_reapplied = data.start_date
+				// 	this.filter.end_date_reapplied = data.end_date
 				// }
 				loader.hide()
 				this.loading = false
@@ -650,10 +650,6 @@ export default {
 			link += '&segment=' + this.filter.segment
 			link += '&excel=1'
 			window.location.href = link
-		},
-
-		onFiltered() {
-			this.currentPage = 1
 		},
 
 		idLink(user){
@@ -709,6 +705,11 @@ export default {
 .UserList{
 	.fa-cog{
 		color: #fff;
+	}
+	.pagination .page-item .page-link{
+		width: auto;
+		min-width: 30px;
+		padding: 0 4px !important;
 	}
 }
 </style>

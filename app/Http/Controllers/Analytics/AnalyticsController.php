@@ -466,6 +466,7 @@ class AnalyticsController extends Controller
             );
             $act->update([
                 'name' => $request->activity['name'],
+                'daily_plan' => $request->activity['daily_plan'],
                 'plan_unit' => $request->activity['plan_unit'],
                 'unit' => $request->activity['unit'],
                 'weekdays' => $request->activity['weekdays'],

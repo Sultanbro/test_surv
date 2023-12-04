@@ -16,9 +16,6 @@ use Illuminate\Http\Request;
 
 class IntellectController extends Controller
 {
-    /**
-     * Start chat bot in Whatsapp
-     */
     public function start(Request $request)
     {
         History::bitrix('Запуск чатбота', $request->all());
@@ -53,7 +50,8 @@ class IntellectController extends Controller
                     'resp_id' => $resp_id,
                     'status' => 'NEW',
                     'segment' => Lead::getSegment($request->segment),
-                    'hash' => $hash
+                    'hash' => $hash,
+                    'house' => 'start',
                 ]);
             }
 
@@ -71,9 +69,6 @@ class IntellectController extends Controller
         }
     }
 
-    /**
-     * Create bitrix lead ???
-     */
     public function bitrixCreateLead(Request $request)
     {
         History::bitrix('Переименовали лид в удаленный', $request->all());
@@ -92,7 +87,7 @@ class IntellectController extends Controller
                     'resp_id' => $request->resp_email,
                     'status' => 'NEW',
                     'segment' => Lead::getSegment($request->segment),
-                    'hash' => $hash
+                    'hash' => $hash,
                 ]);
             } else {
                 Lead::create([
@@ -103,7 +98,8 @@ class IntellectController extends Controller
                     'resp_id' => $request->resp_email,
                     'status' => 'NEW',
                     'segment' => Lead::getSegment($request->segment),
-                    'hash' => $hash
+                    'hash' => $hash,
+                    'house' => 'bitrixCreateLead',
                 ]);
             }
 
@@ -116,79 +112,6 @@ class IntellectController extends Controller
 
     }
 
-    /**
-     * ???
-     */
-    public function changeResp(Request $request)
-    {
-        History::bitrix('Смена ответственного', $request->all());
-
-        if ($request->lead_id) {
-            Lead::query()->where('lead_id', $request->lead_id)
-                ->update([
-                    'resp_id' => $request->resp_email,
-                    'status' => 'CON',
-                    'deal_id' => $request->deal_id,
-                    'project' => $request->project ?? null,
-                    'net' => $request->net ?? null,
-                    'skyped' => now()
-                ]);
-        }
-
-    }
-
-    /**
-     * ???
-     */
-    public function loseDeal(Request $request)
-    {
-
-        History::bitrix('Cделка проиграна', $request->all());
-
-        if ($request->lead_id) {
-            $trainee = Trainee::where('lead_id', $request->lead_id)->first();
-            if ($trainee) {
-                $trainee->fired = now();
-                $trainee->save();
-            }
-
-            $lead = Lead::where('lead_id', $request->lead_id)->orderBy('id', 'desc')->first();
-            if ($lead) {
-                $lead->status = 'LOSE';
-                $lead->save();
-            }
-
-            $ud = UserDescription::where('lead_id', $request->lead_id)->first();
-            if ($ud) {
-                $ud->fired = now();
-                $ud->save();
-
-                $user = User::find($ud->user_id);
-                if ($user) {
-                    $request->id = $user->id;
-                    $request->day = date('d');
-                    $request->month = date('m');
-                    User::deleteUser($request);
-
-                    $nootis = UserNotification::where([
-                        'about_id' => $user->id,
-                    ])->get();
-
-                    foreach ($nootis as $noti) {
-                        $noti->read_at = now();
-                        $noti->save();
-                    }
-                }
-            }
-
-        }
-
-
-    }
-
-    /**
-     * ???
-     */
     public function newLead(Request $request)
     {
 
@@ -278,15 +201,115 @@ class IntellectController extends Controller
                 'hash' => 'converted_manually',
                 'skyped' => $skyped_time,
                 'lang' => $lang,
+                'house' => 'newLead',
             ]);
         }
 
 
     }
 
-    /**
-     * ???
-     */
+    public function create_lead(Request $request): void
+    {
+        History::bitrix('Create lead QR', [
+            $request->all(),
+        ]);
+
+        if ($request->has('phone') && $request->has('name')) {
+
+            $hash = md5(uniqid() . mt_rand());
+
+            $res = (new Bitrix('intellect'))->createLead([
+                "TITLE" => "Кандидат QR - " . $request->name,
+                "NAME" => $request->name,
+                "ASSIGNED_BY_ID" => 23900,
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
+                "PHONE" => [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
+            ]);
+
+            if ($res) {
+                $phone = Phone::normalize($request->phone);
+
+                Lead::query()->create([
+                    'lead_id' => $res['result'],
+                    'name' => $request->name,
+                    'phone' => $phone,
+                    'segment' => Lead::getSegment($request->segment),
+                    'status' => 'NEW',
+                    'hash' => $hash
+                ]);
+
+                $this->send_msg($phone, 'Добрый день, ' . $request->name . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
+                usleep(2000000); // 2 sec
+                $this->send_msg($phone, '/unset_tag:recruiter_bot%0a/set_tag:recruiter_bot');
+            }
+        }
+    }
+
+
+    public function changeResp(Request $request)
+    {
+        History::bitrix('Смена ответственного', $request->all());
+
+        if ($request->lead_id) {
+            Lead::query()->where('lead_id', $request->lead_id)
+                ->update([
+                    'resp_id' => $request->resp_email,
+                    'status' => 'CON',
+                    'deal_id' => $request->deal_id,
+                    'project' => $request->project ?? null,
+                    'net' => $request->net ?? null,
+                    'skyped' => now()
+                ]);
+        }
+    }
+
+    public function loseDeal(Request $request)
+    {
+
+        History::bitrix('Cделка проиграна', $request->all());
+
+        if ($request->lead_id) {
+            $trainee = Trainee::where('lead_id', $request->lead_id)->first();
+            if ($trainee) {
+                $trainee->fired = now();
+                $trainee->save();
+            }
+
+            $lead = Lead::where('lead_id', $request->lead_id)->orderBy('id', 'desc')->first();
+            if ($lead) {
+                $lead->status = 'LOSE';
+                $lead->save();
+            }
+
+            $ud = UserDescription::where('lead_id', $request->lead_id)->first();
+            if ($ud) {
+                $ud->fired = now();
+                $ud->save();
+
+                $user = User::find($ud->user_id);
+                if ($user) {
+                    $request->id = $user->id;
+                    $request->day = date('d');
+                    $request->month = date('m');
+                    User::deleteUser($request);
+
+                    $nootis = UserNotification::where([
+                        'about_id' => $user->id,
+                    ])->get();
+
+                    foreach ($nootis as $noti) {
+                        $noti->read_at = now();
+                        $noti->save();
+                    }
+                }
+            }
+
+        }
+
+
+    }
+
     public function inhouse(Request $request)
     {
         History::bitrix('inhouse', [
@@ -303,9 +326,6 @@ class IntellectController extends Controller
         }
     }
 
-    /**
-     * Запрос с bitrix редакт сделки
-     */
     public function editDeal(Request $request)
     {
 
@@ -386,9 +406,6 @@ class IntellectController extends Controller
         }
     }
 
-    /**
-     * Запрос с bitrix редакт лида
-     */
     public function editLead(Request $request)
     {
 
@@ -462,58 +479,11 @@ class IntellectController extends Controller
         }
     }
 
-    /**
-     * Create lead in Bitrix24 and lead in bitrix_leads table
-     */
-    public function create_lead(Request $request)
-    {
-        History::bitrix('Create lead QR', [
-            $request->all(),
-        ]);
-
-        if ($request->has('phone') && $request->has('name')) {
-
-            $hash = md5(uniqid() . mt_rand());
-
-            $res = (new Bitrix('intellect'))->createLead([
-                "TITLE" => "Кандидат QR - " . $request->name,
-                "NAME" => $request->name,
-                "ASSIGNED_BY_ID" => 23900,
-                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
-                "PHONE" => [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
-            ]);
-
-            if ($res) {
-                $phone = Phone::normalize($request->phone);
-
-                Lead::create([
-                    'lead_id' => $res['result'],
-                    'name' => $request->name,
-                    'phone' => $phone,
-                    'segment' => Lead::getSegment($request->segment),
-                    'status' => 'NEW',
-                    'hash' => $hash
-                ]);
-
-                $this->send_msg($phone, 'Добрый день, ' . $request->name . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
-                usleep(2000000); // 2 sec
-                $this->send_msg($phone, '/unset_tag:recruiter_bot%0a/set_tag:recruiter_bot');
-            }
-        }
-    }
-
-    /**
-     * Send message to whatsapp
-     */
     public function send_msg(string $phone, string $message)
     {
         return $this->curl_get(config('services.intellect.message_webhook') . '?phone=' . $phone . '&message=' . $message);
     }
 
-    /**
-     * Запрос с intellect
-     */
     public function save(Request $request)
     {
         if ($request->has('phone')) {

@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers\Kpi;
 
+use App\Exceptions\Kpi\TargetDuplicateException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Service\KpiService;
-use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
-use DB;
-use Carbon\Carbon;
-use App\User;
-use App\ProfileGroup;
-use App\Position;
-use App\Models\Analytics\Activity;
-use App\Service\GroupUserService;
-
-// use App\Models\Kpi\Kpi;
+use Illuminate\Support\Facades\View;
+use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class KpiController extends Controller
 {
@@ -27,10 +22,9 @@ class KpiController extends Controller
     public function __construct(KpiService $kpiService)
     {
         $this->kpiService = $kpiService;
-        $this->middleware('auth');
     }
 
-    public function index(Request $request)
+    public function view(): Factory|\Illuminate\Contracts\View\View|Application
     {
         View::share('title', 'KPI');
         View::share('menu', 'timetracking');
@@ -40,54 +34,47 @@ class KpiController extends Controller
         ]);
     }
 
-    public function getKpis(Request $request)
+    public function index(Request $request): JsonResponse
     {
-       // $response = $kpiService->get($request->input('id'));
-     
-        $response = $this->kpiService->fetch($request->filters);
-
-        return response()->json($response);
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $this->kpiService->fetch($request->get('filters')),
+            status: Response::HTTP_OK
+        );
     }
 
     /**
-     * Сохранение.
-     * @param KpiSaveRequest $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
+     * @throws TargetDuplicateException
      */
     public function save(KpiSaveRequest $request): JsonResponse
     {
-        $response = $this->kpiService->save($request);
-
-        return response()->json($response);
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $this->kpiService->save($request),
+            status: Response::HTTP_CREATED
+        );
     }
 
     /**
-     * Обновление.
-     * @param KpiUpdateRequest $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(KpiUpdateRequest $request): JsonResponse
     {
-       
-        $response = $this->kpiService->update($request);
-      
-        return response()->json($response);
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $this->kpiService->update($request),
+            status: Response::HTTP_ACCEPTED
+        );
     }
 
-    /**
-     * Удаление.
-     * @param Request $request
-     * @param KpiService $kpiService
-     * @return JsonResponse
-     */
     public function delete(Request $request, int $id): JsonResponse
     {
-        $response = $this->kpiService->delete($request);
-
-        return response()->json($response);
+        $this->kpiService->delete($request);
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $id,
+            status: Response::HTTP_NO_CONTENT
+        );
     }
 }

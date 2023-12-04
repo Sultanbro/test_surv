@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit) || isAdmin"
+				:can-edit="!!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				:root-book="rootBook"
 				:parent-book="parentBook"
@@ -828,6 +828,10 @@ export default {
 				this.pages = []
 				const pages = []
 
+
+				book.canEdit = root.canEdit
+				book.canRead = root.canRead || root.canEdit
+
 				for(const page of trees){
 					page.parent_id = +root.id
 					if(page.is_category) await this.bookAccess(page)
@@ -836,7 +840,7 @@ export default {
 				}
 				this.pages = pages
 				this.rootId = root.id
-				this.rootBook = book
+				this.rootBook = root
 				this.itemModels = item_models
 				this.activeBook = book
 				this.canSave = can_save
@@ -860,16 +864,23 @@ export default {
 					name: this.sectionName,
 					parent_id: this.createParentId,
 				})
+				book.canRead = true
+				book.canEdit = true
 				this.showCreate = false
 				this.sectionName = ''
 
 				if(this.createParentId){
 					const parent = this.pagesMap[this.createParentId] || this.booksMap[this.createParentId]
-					if(!parent.children) parent.children = []
-					parent.children.push(book)
+					if(parent){
+						if(!parent.children) parent.children = []
+						parent.children.push(book)
+					}
+					else{
+						this.pages.push(book)
+					}
 				}
 				else{
-					this.books.push(book)
+					this.pages.push(book)
 				}
 
 				this.updateBook = book
@@ -999,6 +1010,8 @@ export default {
 				data.book.isFavorite = page.isFavorite
 				if(!page.canEdit) this.mode = 'read'
 				this.activeBook = this.setTargetBlank(data.book)
+				this.activeBook.canEdit = page.canEdit
+				this.activeBook.canRead = page.canRead
 				this.editBook = false
 				// TODO: clear search
 				if(!init) this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}`)
@@ -1275,7 +1288,7 @@ export default {
 			})
 
 			/* eslint-disable require-atomic-updates */
-			book.canRead = this.isAdmin || canRead || canReadPair || (!whoCanRead.length && !whoCanReadPairs.length)
+			book.canRead = this.isAdmin || canRead || canEdit || canReadPair || canEditPair || (!whoCanRead.length && !whoCanReadPairs.length)
 			book.canEdit = this.isAdmin || canEdit || canEditPair
 			/* eslint-enable require-atomic-updates */
 

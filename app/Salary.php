@@ -539,6 +539,9 @@ class Salary extends Model
         return $salaries;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function salariesTable($user_types, $date, $users_ids, $group_id = 0): array
     {
         $date = Carbon::parse($date)->day(1);
@@ -638,7 +641,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-        foreach ($users as $key => $user) {
+    foreach ($users as $key => $user) {
             /**
              * if internship is paid
              */
@@ -663,9 +666,9 @@ class Salary extends Model
                     $arr = [];
 
                     foreach ($x as $y) {
-                        array_push($arr, [
+                        $arr[] = [
                             $y->name => $y->penalty_amount
-                        ]);
+                        ];
                         $fines_total += $y->penalty_amount;
                     }
 

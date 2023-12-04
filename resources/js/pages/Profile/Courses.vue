@@ -104,7 +104,10 @@
 			>
 				Назад
 			</div>
-			<div class="profit__info-back-mobile" />
+			<div
+				class="profit__info-back-mobile"
+				@click="back"
+			/>
 			<div class="profit__info__inner">
 				<div class="profit__info__item">
 					<img
@@ -508,8 +511,8 @@ export default {
 		gap: 5px;
 
 		position: absolute;
-		top: 2rem;
-		right: 2rem;
+		top: 1.5rem;
+		right: 1rem;
 	}
 	&-action{
 		width: 2rem;

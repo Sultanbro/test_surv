@@ -652,8 +652,7 @@ class KpiStatisticService
          */
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
 
-        $kpis = Kpi::withTrashed()
-            ->with([
+        $kpis = Kpi::with([
                 'histories_latest' => function ($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
@@ -668,7 +667,7 @@ class KpiStatisticService
 
         $droppedGroups = array();
         if ($user_id != 0) {
-            $user = User::withTrashed()->with('groups')->find($user_id);
+            $user = User::query()->with('groups')->find($user_id);
             $position_id = $user->position_id;
 
             $groups = ($user->inGroups())->pluck('id')->toArray();

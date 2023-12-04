@@ -95,7 +95,9 @@
 							class="text-center"
 							@click="openEditSidebar(notification)"
 						>
-							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
+							{{ periodNames[notification.date.frequency] }} {{
+								notification.date.frequency === 'weekly' ? weekdayNames(notification.date.days).join(', ') : notification.date.days.join(', ')
+							}}
 						</b-td>
 						<b-td
 							class="text-center wsnw"
@@ -232,6 +234,7 @@ import {
 	templateFrequency,
 	services,
 	templates,
+	weekdays,
 } from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
@@ -486,7 +489,10 @@ export default {
 				this.selectedNotification = null
 				const index = this.notifications.findIndex(n => n.id === notification.id)
 				if(!~index) return
-				// this.$set(this.notifications, index, notification)
+				this.$set(this.notifications, index, {
+					...this.notifications[index],
+					...notification,
+				})
 			}
 			else{
 				if(!silent) this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
@@ -555,6 +561,9 @@ export default {
 					recipients: item.recipients.filter(rec => rec.name)
 				}, true)
 			})
+		},
+		weekdayNames(days){
+			return days.map(day => weekdays[day])
 		},
 	}
 }

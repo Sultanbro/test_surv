@@ -53,6 +53,7 @@
 }
 .intro__stats{
   padding-top: 3rem;
+  padding-bottom: 1rem;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -410,7 +411,6 @@
     padding-right: 0;
   }
   .intro__stats {
-    padding-bottom: 1rem;
     -webkit-box-pack: unset;
     -ms-flex-pack: unset;
     gap: 2rem;

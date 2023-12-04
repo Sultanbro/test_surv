@@ -51,6 +51,7 @@
 		<div
 			v-if="!isDesktop"
 			class="ChatApp-close"
+			@click="toggle"
 		>
 			<ChatIconSearchClose />
 		</div>
@@ -170,25 +171,6 @@ export default {
 </script>
 
 <style lang="scss">
-.ChatApp{
-	&-close{
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		width: 28px;
-		height: 28px;
-
-		position: absolute;
-		z-index: 5;
-		top: 37px;
-		right: calc(100vw - 32px);
-
-		border-radius: 14px 0 0 14px;
-		background-color: #EDF6FF;
-		pointer-events: none;
-	}
-}
 #messenger_gallery{
 	.slides{
 		padding: 50px 0;
@@ -264,4 +246,23 @@ body.messenger__open {
 	right: 7rem !important;
 }
 // bx-livechat-wrapper bx-livechat-show bx-livechat-position-bottom-right bx-livechat-logo-ru bx-livechat-custom-scroll
+
+.ChatApp{
+	&-close{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 28px;
+		height: 28px;
+
+		position: absolute;
+		z-index: 5;
+		top: 37px;
+		right: calc(100vw - 32px);
+
+		border-radius: 14px 0 0 14px;
+		background-color: #EDF6FF;
+	}
+}
 </style>

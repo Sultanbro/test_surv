@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="header__profile _anim _anim-no-hide custom-scroll-y"
+		class="header__profile _anim _anim-no-hide custom-scroll-y mt-3"
 		:class="{
 			'v-loading': loading,
 			hidden: hide,
@@ -29,7 +29,7 @@
 			<div class="profile__col">
 				<ProfileInfo :data="userInfo" />
 
-				<RefWidget v-if="isBP" />
+				<!-- <RefWidget v-if="isBP" /> -->
 			</div>
 		</div>
 	</div>
@@ -43,14 +43,14 @@ import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 
 import ProfileInfo from '@/pages/Widgets/ProfileInfo'
 import StartDayBtn from '@/pages/Widgets/StartDayBtn'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 export default {
 	name: 'MobileProfileSidebar',
 	components: {
 		ProfileInfo,
 		StartDayBtn,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -62,8 +62,8 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'message']),
+		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'message', 'buttonStatus']),
 		...mapState(useProfileSalaryStore, ['user_earnings']),
 		...mapState(useProfileSalaryStore, {isSalaryReady: 'isReady'}),
 		totalBalance(){
@@ -82,10 +82,12 @@ export default {
 			}
 		},
 		showButton(){
-			if(this.$viewportSize.width < 768) return false
 			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
 			return this.status === 'started' || (this.user && this.user.user_type === 'remote')
-		}
+		},
+		isProfileVisible(){
+			return this.$viewportSize.width < 1360
+		},
 	},
 	mounted(){
 		const scrollObserver = new IntersectionObserver(() => {

@@ -4,10 +4,15 @@
 /* eslint-disable vue/no-mutating-props */
 
 import {mask} from 'vue-the-mask'
+// import { VueTelInput } from 'vue-tel-input'
+// import 'vue-tel-input/vue-tel-input.css'
 
 export default {
 	name: 'UserEditPhones',
 	directives: {mask},
+	components: {
+		// VueTelInput,
+	},
 	props: {
 		user: {
 			type: Object,
@@ -40,7 +45,7 @@ export default {
 	},
 	data() {
 		return{
-			mainPhone: ''
+			mainPhone: this.user?.phone || ''
 		}
 	},
 	watch: {
@@ -48,7 +53,40 @@ export default {
 			this.mainPhone = obj ? obj.phone : '';
 		}
 	},
-	methods:{
+	mounted(){
+		this.applyMask()
+	},
+	created(){
+		this.initMask()
+	},
+	methods: {
+		initMask(){
+			if(window.intlTelInput) return
+			const el = document.createElement('script')
+			el.setAttribute('src', 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js')
+			document.head.appendChild(el)
+
+			const link = document.createElement('link')
+			link.rel = 'stylesheet'
+			link.href = 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css'
+			document.head.appendChild(link)
+		},
+		applyMask(){
+			if(!window.intlTelInput) return setTimeout(this.applyMask, 100)
+			const phones = document.querySelectorAll('.UserEditPhones-phoneInput')
+			phones.forEach(input => {
+				window.intlTelInput(input, {
+					utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js',
+					autoInsertDialCode: true,
+					preferredCountries: ['kz', 'ru', 'kg', 'uz'],
+					nationalMode: false,
+					autoPlaceholder: 'aggressive',
+					numberType: 'MOBILE',
+					// separateDialCode: true,
+					// hiddenInput: true,
+				})
+			})
+		},
 		addPhone(){
 			this.$emit('add_contacts', {
 				type: 'phone',
@@ -72,7 +110,7 @@ export default {
 <template>
 	<div
 		id="profile_contacts"
-		class="phones"
+		class="UserEditPhones phones"
 	>
 		<div class="row">
 			<div class="col-12 col-md-6">
@@ -93,10 +131,9 @@ export default {
 						<input
 							id="phone"
 							v-model="mainPhone"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone"
 							type="text"
-							class="phone_mask form-control mr-1 col-sm-8"
+							class="UserEditPhones-phoneInput form-control mr-1 col-sm-8"
 							placeholder="Телефон"
 						>
 					</div>
@@ -109,7 +146,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_1"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_1"
 							:value="user ? user.phone_1 : old_phone_1"
 							type="text"
@@ -126,7 +162,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_2"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_2"
 							:value="user ? user.phone_2 : old_phone_2"
 							type="text"
@@ -143,7 +178,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_3"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_3"
 							:value="user ? user.phone_3 : old_phone_3"
 							type="text"
@@ -160,7 +194,6 @@ export default {
 					<div class="col-sm-12">
 						<input
 							id="phone_4"
-							v-mask="'+7(###) ###-##-##'"
 							name="phone_4"
 							:value="user ? user.phone_4 : old_phone_4"
 							type="text"
@@ -215,3 +248,17 @@ export default {
 		</div>
 	</div>
 </template>
+
+<style lang="scss">
+.UserEditPhones{
+	&-phoneInput{
+		&.form-control{
+			padding-left: 56px !important;
+		}
+	}
+
+	.iti{
+		width: 100%;
+	}
+}
+</style>

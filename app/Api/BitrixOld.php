@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Api;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
 /**

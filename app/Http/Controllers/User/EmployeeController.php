@@ -404,12 +404,13 @@ class EmployeeController extends Controller
             }
             $users = $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->with(['group_users']);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
@@ -419,21 +420,22 @@ class EmployeeController extends Controller
                 $users = User::withTrashed();
             }
             $users = $users
-                ->whereNotNull('deleted_at')
+                ->whereNotNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'fired');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'fired')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
-            $users_1 = \DB::table('users')
+            $users_1 = User::query()
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
@@ -448,14 +450,10 @@ class EmployeeController extends Controller
 
             $users_1 = array_diff($users_1, array_unique($downloads));
 
-            $users = User::withTrashed()
-                ->whereNull('deleted_at')
+            $users = User::query()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -469,27 +467,30 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = User::query()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = User::query();
             }
             $users = $users
-                ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date')
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
@@ -503,50 +504,63 @@ class EmployeeController extends Controller
                     $join->on('users.id', '=', 'ur.user_id')
                         ->whereRaw('ur.created_at = (SELECT MAX(created_at) FROM users_restored WHERE user_id = users.id)');
                 })
-                ->whereNull('deleted_at')
+                ->whereNull('users.deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
         else {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = User::query()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = User::query();
             }
             $users = $users
-                ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->leftJoin('bitrix_leads as bl', function ($q) {
-                    // users left joint with bitrix_leads, and get last record on bitrix_leads table
-                    $q->on('bl.phone', '=', DB::raw("REGEXP_REPLACE(users.phone, '[^0-9]', '')"))
-                        ->whereRaw('bl.id IN (select MAX(bl2.id) from bitrix_leads as bl2 join users as u2 on u2.phone = bl2.phone group by u2.id)');
-                })
+                ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
+                ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where('is_trainee', 0)
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
+
+            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+                $q->where('status', 'active')->where('group_id', $request['group_id']);
+            });
         }
 
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
-        if ($request['start_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '>=', $request['start_date']);
-        if ($request['end_date']) $users = $users->where(DB::raw("COALESCE(bl.created_at, users.created_at)"), '<=', $request['end_date']);
-        if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
-        if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
+        if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
+        if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
+        if ($request['start_date_deactivate']) $users = $users->whereDate('users.deleted_at', '>=', $request['start_date_deactivate']);
+        if ($request['end_date_deactivate']) $users = $users->whereDate('users.deleted_at', '<=', $request['end_date_deactivate']);
         if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
         if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
         if ($request['segment']) $users = $users->whereIn('users.segment', $request['segment']);
         if ($request['type']) $users = $users->where('user_type', $request['type']);
         if ($request['part'] && $request['part'] == 'full') $users = $users->where('full_time', 1);
         if ($request['part'] && $request['part'] == 'part') $users = $users->where('full_time', 0);
+
+        if ($request['search']) {
+            $users = $users
+                ->where(function ($query) use ($request){
+                    $query->where('users.email', 'like', $request['search'] . '%')
+                        ->orWhere('users.id', $request['search'])
+                        ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', $request['search'] . '%')
+                        ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', $request['search'] . '%')
+                        ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
+                });
+
+        }
 
         $columns = [
             'users.id',
@@ -556,21 +570,16 @@ class EmployeeController extends Controller
             'users.last_name',
             'users.name',
             'users.full_time',
+            'users.working_country',
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"),
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            DB::raw("COALESCE(bl.created_at, users.created_at) as created_at"),
+            DB::raw("COALESCE(bl.skyped, users.created_at) as created_at"),
             'users.deleted_at',
             'users.position_id',
             'users.phone',
-            'users.birthday',
-            'users.description',
-            'users.working_day_id',
-            'users.working_time_id',
-            'users.work_start',
-            'users.work_end',
-            'users.program_id',
             'ud.fire_cause',
-            'ud.applied'
+            'ud.applied',
+            'position.position'
         ];
         if (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['start_date_reapplied'] and $request['end_date_reapplied']) {
@@ -591,7 +600,31 @@ class EmployeeController extends Controller
             array_push($columns, 'urst.destroyed_at', 'urst.restored_at');
         }
 
-        $users = $users->get($columns);
+        $part_time = clone $users;
+        $full_time = clone $users;
+        $part_time_count = $part_time->distinct('users.id')->where('full_time', 0)->count();
+        $full_time_count = $full_time->distinct('users.id')->where('full_time', 1)->count();
+        $users = $users->select($columns);
+
+        //////
+        ///
+        /// Sort by column and direction
+        ///
+        //////
+
+        $sortDirection = 'asc';
+        if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
+
+        if ($request['sortBy'] && in_array($request['sortBy'], [
+                'name', 'last_name', 'group', 'created_at', 'users.deleted_at',
+                'fire_cause', 'user_type', 'segment', 'applied', 'full_time', 'position'
+            ])
+        ) {
+            $users = $users->orderBy($request['sortBy'], $sortDirection);
+        }
+
+        $users = $users->paginate($request['perPage'] ?? 20);
+
         foreach ($users as $key => $user) {
             if (isset($request['filter']) && $request['filter'] == 'all') {
                 $status = 'active';
@@ -610,16 +643,17 @@ class EmployeeController extends Controller
             $users[$key]['groups'] = $new_groups;
 
             if (is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
-                $user->deleted_at = '';
+                $user->deleted_at = null;
             } else {
                 $user->deleted_at = $user->deleted_at->addHours(6)->format('Y-m-d H:i:s');
                 if ($user->deleted_at == '30.11.-0001 00:00:00') {
-                    $user->deleted_at = '';
+                    $user->deleted_at = null;
                 }
             }
 
-
-            $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            if (!is_null($user->created_at)) {
+                $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
+            }
 
             if ($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
@@ -637,13 +671,13 @@ class EmployeeController extends Controller
             return Excel::download($export, $title);
         }
 
-        $users = $users->values();
-
 
         ////////////////////
 
         return [
             'users' => $users,
+            'users_part_time' => $part_time_count,
+            'users_full_time' => $full_time_count,
             'can_login_users' => [5, 18, 1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,

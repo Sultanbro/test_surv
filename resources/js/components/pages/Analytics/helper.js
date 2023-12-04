@@ -132,6 +132,7 @@ function getDaysFields(){
 		result.push({
 			key: `${i + 1}`,
 			label: `${i + 1}`,
+			labelDialog: `${i + 1}й день`,
 			thClass: 'RefStatsReferalsTable-referalValue',
 			rowspan: 2,
 			days: true,
@@ -159,6 +160,7 @@ export const subTableFields = [
 	{
 		key: 'attest',
 		label: 'Сдал аттестацию',
+		labelDialog: 'Сдал аттестацию',
 		thClass: 'RefStatsReferalsTable-attest',
 		tdClass: 'RefStatsReferalsTable-attest',
 		rowspan: 2,
@@ -166,36 +168,43 @@ export const subTableFields = [
 	{
 		key: 'firstWeek',
 		label: '1',
+		labelDialog: '1я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'secondWeek',
 		label: '2',
+		labelDialog: '2я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'thirdWeek',
 		label: '3',
+		labelDialog: '3я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'fourthWeek',
 		label: '4',
+		labelDialog: '4я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'sixthWeek',
 		label: '6',
+		labelDialog: '6я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'eighthWeek',
 		label: '8',
+		labelDialog: '8я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{
 		key: 'twelfthWeek',
 		label: '12',
+		labelDialog: '12я неделя',
 		thClass: 'RefStatsReferalsTable-week',
 	},
 	{

@@ -5,6 +5,7 @@
 			:sorted-subs="sortedSubs"
 			:layer="1"
 			:hint-comments="hintComments"
+			:show-goups="showGoups"
 			@sub-sort="$emit('sub-sort', $event)"
 			@payment-click="$emit('payment-click', $event)"
 		/>
@@ -29,6 +30,9 @@ export default {
 			default: () => ({}),
 		},
 		hintComments: {
+			type: Boolean
+		},
+		showGoups: {
 			type: Boolean
 		},
 	},

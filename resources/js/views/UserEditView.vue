@@ -22,8 +22,11 @@ import {
 	fire_trainee_causes,
 	fire_employee_causes,
 } from '@/composables/fire_causes'
+import parsePhoneNumber from 'libphonenumber-js'
 
 import axios from 'axios'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 
 const DATE_YMD = 'YYYY-MM-DD';
 const DATE_DMY = 'DD.MM.YYYY';
@@ -48,7 +51,6 @@ export default {
 		return {
 			activeUserId: this.$route.query.id || '',
 			csrf: '',
-			tenant: window.location.hostname.split('.')[0],
 			workChartId: null,
 			user: null,
 			groups: [],
@@ -128,6 +130,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(usePortalStore, ['isMain']),
 		isTrainee(){
 			return this.user?.user_description?.is_trainee === 1
 		},
@@ -234,6 +237,20 @@ export default {
 			this.taxesFillData = data;
 		},
 		setData(data){
+			// fix phone
+			if(data?.user?.phone){
+				try {
+					const flatPhone = data.user.phone.replace(/[^\d]+/g, '')
+					const plusPhone = '+' + flatPhone
+
+					const phone = parsePhoneNumber(plusPhone, 'ZZ')
+					data.user.phone = phone.formatInternational() || plusPhone
+				}
+				catch (error) {
+					console.error(error)
+					window.onerror && window.onerror(error)
+				}
+			}
 			this.csrf = data.csrf
 			this.user = data.user
 			this.groups = data.groups
@@ -388,6 +405,10 @@ export default {
 			const position = formData.get('position');
 			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
+
+			const phone = formData.get('phone').replace(/[^\d]+/g, '')
+			formData.set('phone', phone)
+
 
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
@@ -861,7 +882,7 @@ export default {
 							<span>Оплата</span>
 						</li>
 						<li
-							v-if="user && tenant === 'bp'"
+							v-if="user && isMain"
 							id="bg-this-7"
 							:class="{'active': showBlocks.adaptation}"
 							@click="showBlock(7)"

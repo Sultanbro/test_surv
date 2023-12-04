@@ -34,6 +34,8 @@
 				{key: 'switch', label: '', thClass: 'RefStats-switch'},
 				...tableFields,
 			]"
+			:user-link="true"
+			:show-goups="true"
 			@load-user="loadUser"
 			@payment-click="showPaymentDialog"
 		/>
@@ -196,7 +198,7 @@ export default {
 		},
 		showPaymentDialog({item, field}){
 			if(!this.$can('referal_edit')) return
-			this.paymentDialog.title = `Редактирование оплаты ${item.title} ${field.key}`
+			this.paymentDialog.title = `Редактирование оплаты ${item.title} ${field.labelDialog}`
 			this.paymentDialog.id = item.id
 			this.paymentDialog.key = field.key
 			this.paymentDialog.paid = item[field.key].paid

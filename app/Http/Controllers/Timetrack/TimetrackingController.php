@@ -348,6 +348,8 @@ class TimetrackingController extends Controller
             ->addTime($exit, $user->timezone())
             ->save();
 
+        Referring::touchReferrerSalaryWeekly($user, $exit);
+
         return 'stopped';
     }
 
@@ -636,9 +638,11 @@ class TimetrackingController extends Controller
         if (!$user) return response()->json(['message' => 'user not found']);
 
         $user->user_description()->updateOrCreate([
-            'is_trainee' => 0,
-            'applied' => $date->format("Y-m-d"),
-        ]);
+            'user_id' => $user->getKey()],
+            [
+                'is_trainee' => 0,
+                'applied' => $date->format("Y-m-d"),
+            ]);
 
         ///////////////////////////////////////////
         $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
@@ -723,6 +727,8 @@ class TimetrackingController extends Controller
 
         Referring::touchReferrerStatus($user);
         Referring::touchReferrerSalaryForCertificate($user);
+        Referring::deleteReferrerDailySalary($user->getKey(), $date);
+
 
         return response()->json([
             'msg' => 'Заявка отправлена рекрутерам'
@@ -1692,12 +1698,18 @@ class TimetrackingController extends Controller
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
-
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
-                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
+                ->where('is_trainee', 1)
+                ->where('user_id', $request->get("user_id"))
+                ->first();
 
             if ($trainee) {
+
+                Referring::deleteReferrerDailySalary($targetUser->id, $date);
+
+                $targetUser->salaries()->where('date', $date->format("Y-m-d"))->first()?->delete();
+
                 $editPersonLink = 'https://' . tenant('id') . '.jobtron.org/timetracking/edit-person?id=' . $request->get("user_id");
 
                 // Поиск ID лида или сделки
@@ -1819,7 +1831,6 @@ class TimetrackingController extends Controller
                     ]);
                 }
                 /////-*-*-*-----------*-*-*-*-*-*-*//
-                Referring::deleteReferrerDailySalary($targetUser->id, $date);
             }
 
 
@@ -1859,6 +1870,8 @@ class TimetrackingController extends Controller
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
+            $trainee = UserDescription::query()
+                ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
             DayType::markDayAsTrainee($targetUser, $date);
             UserPresence::query()
                 ->firstOrCreate([
@@ -1866,6 +1879,26 @@ class TimetrackingController extends Controller
                     'user_id' => $request->get("user_id")
                 ]);
             Referring::touchReferrerSalaryForTrain($targetUser, $date);
+
+            if ($trainee) {
+                $bitrix = new Bitrix();
+
+                $deal_id = 0;
+
+
+                if ($trainee->deal_id != 0) {
+                    $deal_id = $trainee->deal_id;
+                } else if ($trainee->lead_id != 0) {
+                    $deal_id = $bitrix->findDeal($trainee->lead_id, false);
+                    usleep(1000000); // 1 sec
+                }
+
+                if ($deal_id != 0) {
+                    $bitrix->changeDeal($deal_id, [
+                        'STAGE_ID' => 'C4:18'
+                    ]);
+                }
+            }
         }
 
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
@@ -1874,6 +1907,7 @@ class TimetrackingController extends Controller
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
+                Referring::deleteReferrerDailySalary($targetUser->getKey(), $date);
 
                 // Поиск ID лида или сделки
                 if ($trainee->lead_id != 0) {
@@ -1884,6 +1918,7 @@ class TimetrackingController extends Controller
                         ->where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if ($lead) {
                         $lead_id = $lead->lead_id;
+                        $lead->update(['status' => 'LOSE']);
                     } else {
                         $lead_id = 0;
                     }

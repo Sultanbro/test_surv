@@ -107,6 +107,35 @@ class UserService
     }
 
     /**
+     * Все сотрудники из отдела.
+     * @param int $groupId
+     * @param string $date
+     * @return array
+     */
+    public function getEmployeesForSalaries(int $groupId, string $date): array
+    {
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $last_date, $nextMonthFirstDay) {
+            $q->where('status', GroupUser::STATUS_ACTIVE)
+                ->where('group_id', $groupId)
+                ->whereDate('from', '<=', $last_date)
+                ->where(fn($query) => $query->whereNull('to')->orWhere(
+                    fn($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
+                );
+        })
+        ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+        ->where(function (Builder $query) use ($last_date) {
+            $query->where('deleted_at', '>', $last_date)
+                ->orWhereNull('deleted_at');
+        })
+        ->get();
+
+        return $data->unique(fn($u) => $u->id)->toArray();
+    }
+
+    /**
      * Получить id всех пользователей группы.
      *
      * @param $groupId
@@ -162,6 +191,34 @@ class UserService
     }
 
     /**
+     * Все стажеры из отдела.
+     * @param int $groupId
+     * @param string $date
+     * @return array
+     */
+    public function getTraineesForSalaries(int $groupId, string $date): array
+    {
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $last_date, $nextMonthFirstDay) {
+            $q->where('status', GroupUser::STATUS_ACTIVE)
+                ->where('group_id', $groupId)
+                ->whereDate('from', '<=', $last_date)
+                ->where(fn($query) => $query
+                    ->whereNull('to')
+                    ->orWhere(
+                        fn($query) => $query
+                            ->whereDate('to', '>=', $nextMonthFirstDay))
+                );
+        })
+        ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
+        ->get();
+
+        return $data->unique(fn($u) => $u->id)->toArray();
+    }
+
+    /**
      * @param int $groupId
      * @param string $date
      * @return array
@@ -203,6 +260,24 @@ class UserService
         }
 
         return $data;
+    }
+
+    /**
+     * @param int $groupId
+     * @param string $date
+     * @return array
+     */
+    public function getFiredEmployeesForSalaries(int $groupId, string $date): array
+    {
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function($q) use ($groupId, $date) {
+            $q->whereIn('status', [GroupUser::STATUS_FIRED])
+                ->where('group_id', $groupId)
+                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
+        })
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+            ->get();
+
+        return $data->unique(fn($u) => $u->id)->toArray();
     }
 
 
