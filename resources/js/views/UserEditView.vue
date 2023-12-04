@@ -248,7 +248,7 @@ export default {
 				}
 				catch (error) {
 					console.error(error)
-					window.onerror && window.onerror(error)
+					// window.onerror && window.onerror(error)
 				}
 			}
 			this.csrf = data.csrf
