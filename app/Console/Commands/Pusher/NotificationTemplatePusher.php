@@ -2,21 +2,16 @@
 
 namespace App\Console\Commands\Pusher;
 
-use App\Classes\Helpers\Phone;
-use App\Enums\Mailing\MailingEnum;
-use App\Facade\MailingFacade;
-use App\Models\GroupUser;
-use App\Models\Mailing\Mailing;
-use App\Models\Mailing\MailingNotification;
-use App\Models\Mailing\MailingNotificationSchedule;
-use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
-use Carbon\Carbon;
-use Exception;
-use http\Exception\InvalidArgumentException;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use Exception;
+use Carbon\Carbon;
+use App\Classes\Helpers\Phone;
+use Illuminate\Console\Command;
+use App\Enums\Mailing\MailingEnum;
+use App\Models\Mailing\MailingNotification;
+use http\Exception\InvalidArgumentException;
+use App\Service\Mailing\Notifiers\NotificationFactory;
 
 class NotificationTemplatePusher extends Command
 {
@@ -82,6 +77,32 @@ class NotificationTemplatePusher extends Command
                 $this->line("Id of user:".$user->id);
                 $message    = $notification?->title ."\n";
                 $message   .= $link;
+                $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
+
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);
+            }
+        }
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function fired_employee_without_poll_pusher(
+        MailingNotification $notification
+    )
+    {
+        $date = Carbon::now()->subDay()->format('Y-m-d');
+
+        $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
+        $mailings = $notification?->mailings();
+
+        foreach ($mailings as $mailing)
+        {
+            $this->line("type of mailing:".$mailing);
+            foreach ($users as $user)
+            {
+                $this->line("Id of user:".$user->id);
+                $message    = $notification?->title ."\n";
                 $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
 
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);

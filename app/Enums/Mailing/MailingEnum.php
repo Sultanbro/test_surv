@@ -28,6 +28,7 @@ enum MailingEnum
         self::MONTHLY,
         self::TRIGGER_APPLIED,
         self::TRIGGER_FIRED,
+        self::TRIGGER_FIRED_WITHOUT_POLL,
         self::TRIGGER_ABSENT_INTERNSHIP,
         self::TRIGGER_MANAGER_ASSESSMENT,
         self::TRIGGER_COACH_ASSESSMENT,
