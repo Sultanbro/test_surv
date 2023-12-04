@@ -7,6 +7,7 @@ use App\Entities\DataTransferObjects\News\ArticleStoreDTO;
 use App\Exceptions\News\BusinessLogicException;
 use App\Models\Article\Article;
 use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
+use App\User;
 
 class ArticleService
 {
@@ -51,12 +52,12 @@ class ArticleService
      */
     public function delete(Article $article, int $userId): bool
     {
-        if ($article->author_id !== $userId) {
+        if (User::query()->find($userId)?->is_admin == 1 || $article->author_id == $userId) {
+            if (!$result = $this->repository->delete($article->id)) {
+                throw new BusinessLogicException(__('exception.delete'));
+            }
+        } else {
             throw new BusinessLogicException(__('exception.no_access'));
-        }
-
-        if (!$result = $this->repository->delete($article->id)) {
-            throw new BusinessLogicException(__('exception.delete'));
         }
 
         return $result;

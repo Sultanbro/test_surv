@@ -202,7 +202,8 @@ class UserService
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $last_date, $nextMonthFirstDay) {
-            $q->where('group_id', $groupId)
+            $q->where('status', GroupUser::STATUS_ACTIVE)
+                ->where('group_id', $groupId)
                 ->whereDate('from', '<=', $last_date)
                 ->where(fn($query) => $query
                     ->whereNull('to')
