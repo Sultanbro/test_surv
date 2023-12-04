@@ -973,6 +973,8 @@ export default {
 			const name = `${this.user.last_name} ${this.user.name}`
 			book.author = name
 			book.editor = name
+			book.canRead = true
+			book.canEdit = true
 			book.parent_id = parent.id
 
 			if(parent.id === this.rootId){
