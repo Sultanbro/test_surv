@@ -11,19 +11,20 @@
 			<div class="d-flex aic gap-2">
 				<template v-if="type === 'book'">
 					<i
-						v-if="isEditMode && parent.canEdit"
+						v-if="isEditMode && (parent ? parent.canEdit : true)"
 						class="KBNavItem-mover fa fa-bars"
 					/>
 				</template>
 				<template v-else>
 					<div class="KBNavItem-handler">
 						<i
-							v-if="isEditMode && parent.canEdit"
+							v-if="isEditMode && (parent ? parent.canEdit : true)"
 							class="KBNavItem-mover fa fa-bars"
 						/>
 						<i
 							class="KBNavItem-shower"
 							:class="handler"
+							@click.stop="$emit('open', item)"
 						/>
 					</div>
 				</template>
@@ -39,21 +40,26 @@
 				class="KBNavItem-actions"
 			>
 				<i
+					v-if="!sectionsMode"
 					class="KBNavItem-action fa fa-plus"
+					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
 				/>
 				<i
 					v-if="type === 'book'"
+					title="Добавить раздел"
 					class="KBNavItem-action far fa-plus-square"
 					@click.stop="$emit('add-book', item)"
 				/>
 				<i
-					v-if="type === 'book' && parent.canEdit"
+					v-if="type === 'book' && (parent ? parent.canEdit : true)"
+					title="Удалить раздел"
 					class="KBNavItem-action fa fa-trash"
 					@click.stop="$emit('remove-book', item)"
 				/>
 				<i
-					v-if="type === 'book' && parent.canEdit"
+					v-if="type === 'book' && (parent ? parent.canEdit : true)"
+					title="Настройки"
 					class="KBNavItem-action fa fa-cog"
 					@click.stop="$emit('settings', item)"
 				/>
@@ -80,6 +86,9 @@ export default {
 			type: String,
 			default: 'read'
 		},
+		sectionsMode: {
+			type: Boolean
+		}
 	},
 	data(){
 		return {}

@@ -1,20 +1,21 @@
 <template>
 	<Draggable
-		:id="'KBNavItems' + parent.id"
+		:id="'KBNavItems' + (parent ? parent.id : 0)"
 		class="KBNavItems dragArea"
 		tag="ul"
 		:handle="'.fa-bars'"
 		:group="{ name: 'g1' }"
-		:data-id="parent.id"
+		:data-id="parent ? parent.id : 0"
 		@end="onDrop"
 	>
 		<template v-for="item in sorted">
 			<KBNavItem
-				v-if="opened && item.canRead"
+				v-if="(opened && item.canRead) || (sectionsMode && (mode === 'edit' || !parent))"
 				:key="item.id"
 				:item="item"
 				:parent="parent"
 				:mode="mode"
+				:sections-mode="sectionsMode"
 				:class="['KBNavItems-item', {
 					'KBNavItems-item_active': active === item.id
 				}]"
@@ -34,6 +35,7 @@
 						:mode="mode"
 						:active="active"
 						:parent="item"
+						:sections-mode="sectionsMode"
 						@show-page="showPage"
 						@add-page="addPage"
 						@add-book="$emit('add-book', $event)"
@@ -73,6 +75,9 @@ const KBNavItems = {
 			type: Number,
 			default: 0
 		},
+		sectionsMode: {
+			type: Boolean
+		}
 	},
 	data(){
 		return {}

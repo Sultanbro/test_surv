@@ -793,7 +793,8 @@ export default {
 		},
 		async fetchData() {
 			try {
-				this.books = await API.fetchKBBooks()
+				const {tree} = await API.fetchKBBooks()
+				this.books = tree
 			}
 			catch (error) {
 				console.error(error)

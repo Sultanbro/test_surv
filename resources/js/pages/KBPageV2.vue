@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit)"
+				:can-edit="!!(parentBook && parentBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				:root-book="rootBook"
 				:parent-book="parentBook"
@@ -797,7 +797,10 @@ export default {
 			}
 
 			try {
-				this.books = await API.fetchKBBooks()
+				const { tree, orphans } = await API.fetchKBBooks()
+				const books = [...tree, ...orphans]
+				this.booksAccess(books)
+				this.books = books
 				this.allBooks = this.books
 				this.itemModels = []
 				this.activeBook = null
@@ -967,10 +970,12 @@ export default {
 				if(!parent.children) parent.children = []
 				parent.children.push(book)
 			}
+			this.pages = this.pages.slice() // reactivity issue
 
 			this.$nextTick(() => {
 				this.activeBook = book
 				this.editBook = true
+				parent.opened = true
 			})
 
 			this.$toast.info('Добавлена страница')
@@ -1284,6 +1289,12 @@ export default {
 					await this.bookAccess(child)
 				}
 			}
+		},
+		booksAccess(books){
+			books.forEach(book => {
+				book.canEdit = this.$can('books_edit')
+				if(book.children) this.booksAccess(book.children)
+			})
 		},
 		/* === ACCESS === */
 

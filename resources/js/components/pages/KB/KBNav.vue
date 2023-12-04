@@ -168,8 +168,23 @@
 				@remove-book="archiveBook($event)"
 				@settings="$emit('settings', $event)"
 			/>
-			<Draggable
+			<KBNavItems
 				v-else-if="books.length"
+				:items="books"
+				:opened="true"
+				:mode="mode"
+				:parent="null"
+				:active="null"
+				:sections-mode="true"
+				@show-page="$emit('book', $event)"
+				@page-order="$emit('page-order', $event)"
+				@add-book="$emit('create', $event)"
+				@remove-book="archiveBook($event)"
+				@settings="$emit('settings', $event)"
+			/>
+			<!-- @add-page="$emit('add-page', $event)" -->
+			<Draggable
+				v-else-if="false || books.length"
 				:id="null"
 				class="dragArea ml-0"
 				tag="div"
@@ -239,14 +254,21 @@
 		<div v-if="mode === 'edit' && rootBook">
 			<div
 				v-if="!archived.show"
-				class="d-flex jscb mt-3"
+				class="d-flex jscb mt-3 gap-1"
 			>
+				<div
+					class="btn btn-grey w-full mr-1"
+					@click="$emit('add-page', rootBook)"
+				>
+					<i class="fa fa-plus" />
+					<span>Страница</span>
+				</div>
 				<div
 					class="btn btn-grey w-full mr-1"
 					@click="$emit('create', rootBook)"
 				>
 					<i class="fa fa-plus" />
-					<span>Добавить базу</span>
+					<span>База</span>
 					<img
 						v-b-popover.hover.right="'Вы можете создать дополнительную базу знаний с отдельными доступами'"
 						src="/images/dist/profit-info.svg"
