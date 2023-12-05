@@ -189,7 +189,7 @@ export default {
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
 		},
 		cardsOrFirst(){
-			if(this.cards && this.cards.length){
+			if(this.cards && this.cards.lengtkh){
 				return this.cards
 			}
 			/* eslint-disable camelcase */
@@ -347,11 +347,12 @@ export default {
 		// Settings
 		async fetchSettings(){
 			const {settings} = await fetchSettings('structure_auto_manager')
-			this.settings.autoManager = parseInt(settings.custom_structure_auto_manager)
+			this.settings.autoManager = !!parseInt(settings.custom_structure_auto_manager)
 		},
 		async updateSettings(){
 			await updateSettings({
 				type: 'structure_auto_manager',
+				// eslint-disable-next-line camelcase
 				custom_structure_auto_manager: this.settings.autoManager
 			})
 			this.$toast.success('Настройки сохранены')
@@ -407,6 +408,7 @@ export default {
 					return false
 				})
 				if(!manager ?? card.manager?.user_id){
+					/* eslint-disable camelcase */
 					await this.updateCard({
 						...card,
 						manager: {
@@ -415,8 +417,10 @@ export default {
 						},
 						is_vacant: true
 					})
+					/* eslint-enable camelcase */
 				}
 				if(manager && manager.id !== card.manager?.user_id){
+					/* eslint-disable camelcase */
 					await this.updateCard({
 						...card,
 						manager: {
@@ -425,6 +429,7 @@ export default {
 						},
 						is_vacant: false
 					})
+					/* eslint-enable camelcase */
 				}
 			}
 		}

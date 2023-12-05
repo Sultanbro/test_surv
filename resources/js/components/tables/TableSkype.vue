@@ -323,6 +323,12 @@
 						class="form-control form-control-sm"
 					>
 						<option
+							value="0"
+							disabled
+						>
+							Выберите отдел
+						</option>
+						<option
 							v-for="group in groups"
 							:key="group.id"
 							:value="group.id"
@@ -351,6 +357,26 @@
 					>
 				</div>
 				<div class="col-sm-2">
+					<div
+						class="form-control TableSkype-control"
+						@click="isSendUsers = true"
+					>
+						<template
+							v-if="sendUsers.length"
+						>
+							<template v-if="sendUsers.length === 1">
+								{{ sendUsers[0].name }}
+							</template>
+							<template v-else>
+								{{ sendUsers.length }} {{ pluralForm(sendUsers.length, ['сотрудник', 'сотрудника', 'сотрудников']) }}
+							</template>
+						</template>
+						<template v-else>
+							<span class="TableSkype-placeholder">Кого уведомлять</span>
+						</template>
+					</div>
+				</div>
+				<div class="col-sm-2">
 					<button
 						class="btn btn-primary rounded py-1"
 						@click="inviteUsers()"
@@ -358,7 +384,8 @@
 						Пригласить на стажировку
 					</button>
 				</div>
-				<div class="col-sm-3 d-flex justify-end">
+
+				<div class="col-sm-1 d-flex justify-end">
 					<div class="blues">
 						<div
 							v-if="checkedBoxes.length == records.length"
@@ -466,6 +493,25 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<JobtronOverlay
+			v-if="isSendUsers"
+			:z="99999"
+			@close="isSendUsers = false"
+		>
+			<AccessSelect
+				v-model="sendUsers"
+				:tabs="['Сотрудники']"
+				:access-dictionaries="{
+					users: accessDictionaries.users,
+					positions: [],
+					profile_groups: [],
+				}"
+				search-position="beforeTabs"
+				submit-button=""
+				absolute
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -473,15 +519,21 @@
 /* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
 /* eslint-disable vue/prop-name-casing */
+import { mapGetters, mapActions } from 'vuex'
 
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
+import JobtronOverlay from '@ui/Overlay.vue'
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import { pluralForm } from '@/composables/pluralForm.js'
 
 export default {
 	name: 'TableSkype', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
 	components: {
 		JobtronTable,
 		JobtronButton,
+		JobtronOverlay,
+		AccessSelect,
 	},
 	props: {
 		skypes: {
@@ -631,7 +683,16 @@ export default {
 			currentPage: 1,
 			perPage: 100,
 			pageOptions: [5, 10, 15],
+			sendUsers: [],
+			isSendUsers: false,
 		};
+	},
+	computed: {
+		...mapGetters([
+			'user',
+			'users',
+			'accessDictionaries',
+		]),
 	},
 	watch: {
 		// эта функция запускается при любом изменении данных
@@ -688,6 +749,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions(['loadCompany']),
+		pluralForm,
 		getDates(s, e) {
 			const a = []
 			for(var d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
@@ -904,34 +967,29 @@ export default {
 		},
 
 		inviteUsers() {
-
-			if(this.selected.date ==  null) {
-				this.$toast.info('Выберите дату приглашения')
-				return '';
-			}
+			if(this.selected.date ==  null) return this.$toast.info('Выберите дату приглашения')
+			if(!this.sendUsers.length) return this.$toast.info('Выберите когу уведомлять')
 
 			this.axios.post('/timetracking/analytics/invite-users', {
 				users: this.checkedBoxes,
 				group_id: this.selected.group_id,
 				date: this.selected.date,
 				time: this.selected.time,
-			})
-				.then(response => {
-					if(response.data.code == 201) {
-						this.$toast.error('Отдел не найден. Обратитесь к разработчику')
-					}
+				send_users: this.sendUsers.map(user => user.id)
+			}).then(response => {
+				if(response.data.code == 201) {
+					this.$toast.error('Отдел не найден. Обратитесь к разработчику')
+				}
 
-					if(response.data.code == 202) {
-						this.$toast.error('Не приглашены. В отделе не указана ссылка на Zoom конференцию.')
-					}
+				if(response.data.code == 202) {
+					this.$toast.error('Не приглашены. В отделе не указана ссылка на Zoom конференцию.')
+				}
 
-					if(response.data.code == 200) {
-						this.$toast.success('Успешно приглашены')
-						this.checkedBoxes = []
-					}
-
-				})
-				.catch(() => alert('Ошибка'))
+				if(response.data.code == 200) {
+					this.$toast.success('Успешно приглашены')
+					this.checkedBoxes = []
+				}
+			}).catch(() => alert('Ошибка'))
 		},
 
 		filterTable() {
@@ -1154,6 +1212,21 @@ export default {
 	}
 	.bg-red{
 		background-color: #f58c94 !important;
+	}
+	&-control{
+		height: 35px;
+		padding: 0 20px;
+		border: 1px solid #e8e8e8;
+
+		line-height: 33px;
+
+		border-radius: 6px;
+		background-color: #F7FAFC;
+		user-select: none;
+		cursor: default;
+	}
+	&-placeholder{
+		color: #777;
 	}
 }
 </style>
