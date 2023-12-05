@@ -53,7 +53,7 @@ function referrerToUser(user){
 		deals: Number(user.deals || 0),
 		leadsToDealPercent: Number(user.deal_lead_conversion_ratio || 0),
 		accepted: Number(user.applieds || 0) || Number(user.applied_count || 0),
-		dealToUserPercent: Number(user.appiled_deal_conversion_ratio || 0),
+		dealToUserPercent: Number(user.applied_deal_conversion_ratio || 0),
 		total: Number(user.absolute_earned || 0),
 		month: Number(user.month_earned || user.month_paid || 0),
 		monthRef: Number(user.referrers_earned || user.referrers_paid || 0),
