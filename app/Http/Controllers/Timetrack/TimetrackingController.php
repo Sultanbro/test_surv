@@ -780,15 +780,15 @@ class TimetrackingController extends Controller
          * Выбираем кого покзаывать
          */
         if ($request->user_types == 0) { // Действующие
-            $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
+            $users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
         }
 
         if ($request->user_types == 1) { // Уволенныне
-            $users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
+            $users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
         }
 
         if ($request->user_types == 2) { // Стажеры
-            $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d'));
+            $users = (new UserService)->getTraineesForSalaries($request->group_id, $date->format('Y-m-d'));
         }
 
         $_user_ids = collect($users)->pluck('id')->toArray();
