@@ -50,11 +50,12 @@
 				class="structure-card-body"
 			>
 				<template v-if="isVacant">
-					<img
-						src="/user.png"
-						alt="photo"
-						class="director-photo"
-					>
+					<JobtronAvatar
+						image="/user.png"
+						title="Вакантная позиция"
+						:size="130"
+						class="StructureItem-userAvatar"
+					/>
 					<StructureInfo v-if="description[1]">
 						<template #default>
 							{{ description[1] }}
@@ -71,20 +72,23 @@
 					</p>
 				</template>
 				<template v-else-if="manager">
-					<div class="relative">
-						<img
-							:src="manager.avatar"
-							alt="photo"
-							class="director-photo"
+					<JobtronAvatar
+						:image="manager.avatar"
+						:title="`${manager.name || ''} ${manager.last_name || ''}`"
+						:size="130"
+						class="StructureItem-userAvatar"
+					>
+						<template
+							v-if="['activist', 'ambassador'].includes(status)"
+							#after
 						>
-						<template v-if="['activist', 'ambassador'].includes(status)">
 							<img
 								:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
 								alt=""
 								class="StructureItem-refIcon"
 							>
 						</template>
-					</div>
+					</JobtronAvatar>
 					<StructureInfo
 						:info="{
 							avatar: manager.avatar,
@@ -93,6 +97,7 @@
 							birthday: manager.birthday,
 							phone: card.parent_id ? manager.phone : '',
 							email: manager.email,
+							avatarSize: 120,
 						}"
 					/>
 					<p
@@ -102,7 +107,7 @@
 						{{ position.name }}
 					</p>
 					<p class="StructureItem-contrast full-name">
-						{{ manager.name }} {{ manager.last_name }}
+						{{ manager.name || '' }} {{ manager.last_name || '' }}
 					</p>
 				</template>
 				<hr
@@ -112,14 +117,25 @@
 				<template v-if="users && users.length">
 					<div class="users-group">
 						<template v-for="(user, usrIdx) in users">
-							<img
+							<JobtronAvatar
 								v-if="usrIdx < 6"
 								:key="usrIdx"
-								:src="user.avatar"
-								alt="photo"
-								:title="`${user.name} ${user.last_name}`"
+								:image="user.avatar"
+								:title="`${user.name || ''} ${user.last_name || ''}`"
+								:size="50"
 								class="StructureItem-userAvatar"
 							>
+								<template
+									v-if="['activist', 'ambassador'].includes(status)"
+									#after
+								>
+									<img
+										:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
+										alt=""
+										class="StructureItem-refIcon"
+									>
+								</template>
+							</JobtronAvatar>
 							<StructureInfo
 								:key="'i' + usrIdx"
 								:info="{
@@ -129,6 +145,7 @@
 									birthday: user.birthday,
 									position: user.position_name,
 									email: user.email,
+									avatarSize: 50,
 								}"
 							/>
 						</template>
@@ -195,9 +212,11 @@
 
 <script>
 import {mapState, mapActions} from 'pinia'
-import StructureInfo from './StructureInfo'
 import {useStructureStore} from '@/stores/Structure.js'
+
+import StructureInfo from './StructureInfo'
 import PulseCard from '@ui/PulseCard.vue'
+import JobtronAvatar from '@/components/ui/Avatar.vue'
 
 const DESC_DIVIDER = '◕◕'
 
@@ -206,6 +225,7 @@ export default {
 	components: {
 		StructureInfo,
 		PulseCard,
+		JobtronAvatar,
 	},
 	props: {
 		card: {
@@ -397,6 +417,15 @@ export default {
 		right: 0;
 		bottom: 0;
 		pointer-events: none;
+	}
+
+	.users-group{
+		.StructureItem{
+			&-userAvatar{
+				margin-left: -20px;
+				border: 2px solid #fff;
+			}
+		}
 	}
 }
 #StructureGroup{
