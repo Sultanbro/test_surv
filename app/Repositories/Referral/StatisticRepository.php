@@ -6,7 +6,6 @@ use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
 use App\User;
 use Carbon\Carbon;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class StatisticRepository implements StatisticRepositoryInterface
@@ -86,16 +85,12 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->select('ref.referrer_id', DB::raw('COUNT(*) as total_applieds'))
             ->where('user_descriptions.is_trainee', 0)
             ->whereNull('ref.deleted_at')
-            ->where(fn(Builder $query) => $query->whereNull('user_descriptions.applied')
-                ->orWhereBetween('user_descriptions.applied', [$startDate, $endDate])
-            )
             ->groupBy('ref.referrer_id');
 
         // SubQuery for counting leads
         $leadsSubQuery = DB::table('bitrix_leads')
             ->select('referrer_id', DB::raw('COUNT(*) as total_leads'))
             ->where('segment', $segmentId)
-            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('referrer_id');
 
         // SubQuery for counting deals
@@ -103,7 +98,6 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->select('referrer_id', DB::raw('COUNT(*) as total_deals'))
             ->where('segment', $segmentId)
             ->where('deal_id', '>', 0)
-            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('referrer_id');
 
         // Main query with optimized joins
