@@ -16,12 +16,13 @@ class UserWorkChartController extends Controller
      * Выставляем график для пользователя.
      *
      * @param AddUserChartRequest $request
-     * @param AddUserChartService $service
      * @return JsonResponse
      * @throws Exception
      */
-    public function addChart(AddUserChartRequest $request, AddUserChartService $service): JsonResponse
+    public function addChart(AddUserChartRequest $request): JsonResponse
     {
+        /** @var AddUserChartService $service */
+        $service = app(AddUserChartService::class);
         $response = $service->handle($request->toDto());
 
         return $this->response(
