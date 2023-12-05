@@ -268,12 +268,15 @@ class UserService
      */
     public function getFiredEmployeesForSalaries(int $groupId, string $date): array
     {
-        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($groupId, $date) {
-            $q->whereIn('status', [GroupUser::STATUS_FIRED])
-                ->where('group_id', $groupId)
-                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
-        })
-            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
+
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($groupId, $date, $last_date, $nextMonthFirstDay) {
+            $q->whereIn('status', [GroupUser::STATUS_FIRED]);
+            $q->where('group_id', $groupId);
+            $q->whereBetween('to', [$last_date, $nextMonthFirstDay])
+                ->orWhereNull('to');
+        })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 
         return $data->unique(fn($u) => $u->id)->toArray();
