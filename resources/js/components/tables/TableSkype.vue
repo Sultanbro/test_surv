@@ -323,6 +323,12 @@
 						class="form-control form-control-sm"
 					>
 						<option
+							value="0"
+							disabled
+						>
+							Выберите отдел
+						</option>
+						<option
 							v-for="group in groups"
 							:key="group.id"
 							:value="group.id"
@@ -352,7 +358,7 @@
 				</div>
 				<div class="col-sm-2">
 					<div
-						class="form-control"
+						class="form-control TableSkype-control"
 						@click="isSendUsers = true"
 					>
 						<template
@@ -366,7 +372,7 @@
 							</template>
 						</template>
 						<template v-else>
-							Кого уведомлять
+							<span class="TableSkype-placeholder">Кого уведомлять</span>
 						</template>
 					</div>
 				</div>
@@ -962,6 +968,7 @@ export default {
 
 		inviteUsers() {
 			if(this.selected.date ==  null) return this.$toast.info('Выберите дату приглашения')
+			if(!this.sendUsers.length) return this.$toast.info('Выберите когу уведомлять')
 
 			this.axios.post('/timetracking/analytics/invite-users', {
 				users: this.checkedBoxes,
@@ -1205,6 +1212,21 @@ export default {
 	}
 	.bg-red{
 		background-color: #f58c94 !important;
+	}
+	&-control{
+		height: 35px;
+		padding: 0 20px;
+		border: 1px solid #e8e8e8;
+
+		line-height: 33px;
+
+		border-radius: 6px;
+		background-color: #F7FAFC;
+		user-select: none;
+		cursor: default;
+	}
+	&-placeholder{
+		color: #777;
 	}
 }
 </style>
