@@ -84,7 +84,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 DB::raw("(SELECT SUM(amount) FROM referral_salaries WHERE users.id = referral_salaries.referrer_id AND STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '{$startDate}' AND '{$endDate}' AND amount IN (1000, 1100, 1500, 5000, 5500, 5750, 10000, 11000, 15000)) AS mine"),
                 DB::raw("(SELECT COUNT(*) FROM users ref
                     INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
-                    WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0 ) AS applieds"),
+                    WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0 AND ref.deleted_at IS NOT NULL ) AS applieds"),
                 DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = {$segmentId}) AS leads"),
                 DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id > 0 AND segment = {$segmentId}) AS deals"),
             ])
