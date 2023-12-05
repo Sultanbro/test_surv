@@ -197,7 +197,7 @@ export default {
 			// ]
 		},
 		showPaymentDialog({item, field}){
-			if(!this.$can('referal_edit')) return
+			if(!this.$can('referral_edit')) return
 			this.paymentDialog.title = `Редактирование оплаты ${item.title} ${field.labelDialog}`
 			this.paymentDialog.id = item.id
 			this.paymentDialog.key = field.key
