@@ -271,10 +271,16 @@
 				</div>
 			</div>
 
-			<CommentsComponent
+			<!-- <CommentsComponent
 				v-show="showComments"
 				ref="comments"
 				:me="me"
+				@changeCommentsCount="changeCommentsCount"
+				@send="getData"
+			/> -->
+			<NewsComments
+				v-if="showComments"
+				:post-id="currentPost.id"
 				@changeCommentsCount="changeCommentsCount"
 				@send="getData"
 			/>
@@ -300,7 +306,7 @@
 			class="news-comment-store"
 		>
 			<img
-				:src="me ? me.avatar : null"
+				:src="$laravel.avatar"
 				class="news-comment-store__avatar"
 			>
 			<div class="news-comment-store__form">
@@ -329,18 +335,19 @@
 <script>
 /* eslint-disable camelcase */
 /* eslint-disable vue/no-mutating-props */
+import { mapGetters } from 'vuex'
+import { mapState, mapActions } from 'pinia'
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
+import { usePortalStore } from '@/stores/Portal'
+import { pluralForm } from '@/composables/pluralForm.js'
+import * as API from '@/stores/api/news.js'
 
-import CommentsComponent from '@/pages/News/CommentsComponent'
+import NewsComments from '@/pages/News/Comment/NewsComments'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronAvatar from '@ui/Avatar'
 import NewsQNA from './NewsQNA'
 import NewsPostHeaderMobile from './Post/NewsPostHeaderMobile'
 
-import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
-import { usePortalStore } from '@/stores/Portal'
-import { mapState, mapActions } from 'pinia'
-import { pluralForm } from '@/composables/pluralForm.js'
-import * as API from '@/stores/api/news.js'
 
 const imageTypes = {
 	png: 'image/png',
@@ -356,7 +363,7 @@ const imageTypes = {
 export default {
 	name: 'PostComponent',
 	components: {
-		CommentsComponent,
+		NewsComments,
 		PopupMenu,
 		JobtronAvatar,
 		NewsQNA,
@@ -367,10 +374,6 @@ export default {
 			type: Object,
 			required: true
 		},
-		me: {
-			type: Object,
-			required: true
-		}
 	},
 	data() {
 		return {
@@ -395,12 +398,13 @@ export default {
 	},
 	computed: {
 		...mapState(usePortalStore, ['isAdmin']),
+		...mapGetters(['user']),
 
 		content(){
 			return this.currentPost.content.replaceAll('<a ', '<a target="_blank" ')
 		},
 		isAuthor(){
-			return this.currentPost?.author?.id === this.me?.id
+			return this.currentPost?.author?.id === this.$laravel.userId
 		},
 		isMobile(){
 			return this.$viewportSize.width <= 900
@@ -492,15 +496,15 @@ export default {
 			return '/images/some-files/img.png'
 		},
 
-		async getPostComments(postId) {
-			await this.$refs.comments.getComments(postId)
+		async getPostComments(/* postId */) {
+			// await this.$refs.comments.getComments(postId)
 		},
 
 		getData(data) {
 			const el = this.$refs.NewsCommentInput
 			if (el) {
 				el.scrollIntoView({block: 'center', behavior: 'smooth'})
-				el.focus()
+				el.querySelector('input')?.focus()
 			}
 			this.parentId = data.parentId
 			this.commentText = data.userName + ', '
@@ -570,7 +574,10 @@ export default {
 			try {
 				await API.newsComment(postId, formData)
 				this.currentPost.comments_count = this.currentPost.comments_count + 1
-				this.getPostComments(postId)
+				this.showComments = false
+				this.$nextTick(() => {
+					this.showComments = true
+				})
 			}
 			catch (error) {
 				console.error(error)
@@ -640,14 +647,17 @@ export default {
 					const answers = question.answers.filter(answer => Array.isArray(value) ? value.includes(answer.id) : value === answer.id)
 					answers.forEach(answer => {
 						if(!answer.votes) answer.votes = []
-						answer.votes.push(this.me)
+						answer.votes.push({
+							id: this.user.id,
+							name: `${this.user.name} ${this.user.last_name}`,
+							avatar: `/users_img/${this.user.img_url}`
+						})
 					})
 				})
 			}
 			catch (error) {
 				console.error(error)
 			}
-
 		}
 	}
 }

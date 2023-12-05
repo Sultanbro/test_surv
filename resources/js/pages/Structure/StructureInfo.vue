@@ -1,12 +1,13 @@
 <template>
 	<div class="StructureInfo additional-info">
 		<slot>
-			<img
-				:src="info.avatar ? info.avatar : '/user.png'"
-				alt="photo"
-				class="addi-director-photo"
-			>
-			<div class="addi-content">
+			<JobtronAvatar
+				:image="info.avatar ? info.avatar : '/user.png'"
+				:title="`${info.name || ''} ${info.last_name || ''}`"
+				:size="info.avatarSize"
+				class="StructureInfo-avatar"
+			/>
+			<div class="StructureInfo-content addi-content">
 				<div
 					v-if="info.name || info.last_name"
 					class="addi-fullname"
@@ -43,9 +44,13 @@
 </template>
 
 <script>
+import JobtronAvatar from '@/components/ui/Avatar.vue';
+
 export default {
 	name: 'StructureInfo',
-	components: {},
+	components: {
+		JobtronAvatar,
+	},
 	props: {
 		info: {
 			type: Object,
@@ -55,5 +60,13 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.StructureInfo{
+	&-avatar{
+		flex: 0 0 auto;
+	}
+	&-content{
+		flex: 1;
+	}
+}
 </style>

@@ -13,51 +13,50 @@
 				<div class="news-comment__content">
 					<span class="news-comment__name">{{ comment.author.name }}</span>
 					<span class="news-comment__text">{{ comment.content }}</span>
-					<div class="news-comment__footer news-footer">
-						<div class="news-footer__main">
-							<div class="news-comment__action">
-								{{ comment.created_at }}
-							</div>
-							<div
-								class="news-comment__action hover-pointer"
-								@click="sendData(comment.id, comment.author.name)"
-							>
-								Ответить
-							</div>
-							<div class="news-comment__action hover-pointer">
-								Поделиться
-							</div>
-							<div
-								v-show="comment.author.id == me.id"
-								class="news-comment__action hover-pointer"
-								@click="destroyComment(comment.id)"
-							>
-								Удалить
-							</div>
+				</div>
+				<div class="news-comment__footer news-footer">
+					<div class="news-footer__main">
+						<div class="news-comment__action">
+							{{ comment.created_at }}
 						</div>
-						<div class="news-footer__reactions">
-							<img
-								v-if="comment.is_liked == true"
-								class="hover-pointer"
-								src="/icon/news/post-actions/like-active.svg"
-								@click="likeComment(comment.id)"
-							>
-							<img
-								v-else
-								class="news-icon hover-pointer"
-								src="/icon/news/post-actions/like.svg"
-								@click="likeComment(comment.id)"
-							>
-							<span class="news-item__footer-count">{{ comment.likes_count }}</span>
+						<div
+							class="news-comment__action hover-pointer"
+							@click="sendData(comment.id, comment.author.name)"
+						>
+							Ответить
+						</div>
+						<div class="news-comment__action hover-pointer">
+							Поделиться
+						</div>
+						<div
+							v-show="comment.author.id == me.id"
+							class="news-comment__action hover-pointer"
+							@click="destroyComment(comment.id)"
+						>
+							Удалить
 						</div>
 					</div>
-
-					<ReactionComponent
-						:article-id="postId"
-						:comment-id="comment.id"
-						:reactions="comment.reactions"
-					/>
+					<div class="news-footer__reactions">
+						<img
+							v-if="comment.is_liked == true"
+							class="hover-pointer"
+							src="/icon/news/post-actions/like-active.svg"
+							@click="likeComment(comment.id)"
+						>
+						<img
+							v-else
+							class="news-icon hover-pointer"
+							src="/icon/news/post-actions/like.svg"
+							@click="likeComment(comment.id)"
+						>
+						<span class="news-item__footer-count">{{ comment.likes_count }}</span>
+					</div>
 				</div>
+				<ReactionComponent
+					:article-id="postId"
+					:comment-id="comment.id"
+					:reactions="comment.reactions"
+				/>
 			</div>
 
 			<div

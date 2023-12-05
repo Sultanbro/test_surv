@@ -1,6 +1,7 @@
 <template>
 	<div
 		v-show="isOpen"
+		v-scroll-lock="isOpen"
 		class="messenger__wrapper"
 		@click.self="toggle"
 	>

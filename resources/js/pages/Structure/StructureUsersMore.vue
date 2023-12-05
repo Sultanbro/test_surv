@@ -11,11 +11,12 @@
 						:key="idx"
 						class="user-group-item"
 					>
-						<img
-							:src="user.avatar"
-							alt="photo"
-							class="user-group-photo"
-						>
+						<JobtronAvatar
+							:image="user.avatar"
+							:title="`${user.name || ''} ${user.last_name || ''}`"
+							:size="50"
+							class="StructureUsersMore-avatar"
+						/>
 						<StructureInfo
 							:info="{
 								avatar: user.avatar,
@@ -24,6 +25,7 @@
 								birthday: user.birthday,
 								position: user.position_name,
 								email: user.email,
+								avatarSize: 120,
 							}"
 						/>
 						<div>
@@ -48,13 +50,16 @@
 
 <script>
 import {mapState, mapActions} from 'pinia'
-import StructureInfo from './StructureInfo.vue'
 import {useStructureStore} from '@/stores/Structure.js'
+
+import StructureInfo from './StructureInfo.vue'
+import JobtronAvatar from '@/components/ui/Avatar.vue';
 
 export default {
 	name: 'StructureUsersMore',
 	components: {
 		StructureInfo,
+		JobtronAvatar,
 	},
 	props: {
 		users: {
