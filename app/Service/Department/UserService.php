@@ -117,21 +117,20 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $last_date, $nextMonthFirstDay) {
-            $q->where('status', GroupUser::STATUS_ACTIVE)
-                ->where('group_id', $groupId)
-                ->whereDate('from', '<=', $last_date)
-                ->where(fn($query) => $query->whereNull('to')->orWhere(
-                    fn($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
-                );
+        $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date, $nextMonthFirstDay) {
+            $q->whereIn('status', [GroupUser::STATUS_ACTIVE, GroupUser::STATUS_DROP]) // status 'drop' for transferred employees
+            ->where('group_id', $groupId);
+            $q->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
+                $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
+                    ->orWhereNull('to');
+            });
         })
-        ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-        ->where(function (Builder $query) use ($last_date) {
-            $query->where('deleted_at', '>', $last_date)
-                ->orWhereNull('deleted_at');
-        })
-        ->get();
-
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
+            ->where(function (Builder $query) use ($last_date) {
+                $query->where('deleted_at', '>', $last_date)
+                    ->orWhereNull('deleted_at');
+            })
+            ->get();
         return $data->unique(fn($u) => $u->id)->toArray();
     }
 
@@ -201,7 +200,7 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $data = User::with('groups')->whereHas('group_users', function($q) use ($groupId, $last_date, $nextMonthFirstDay) {
+        $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date, $nextMonthFirstDay) {
             $q->where('status', GroupUser::STATUS_ACTIVE)
                 ->where('group_id', $groupId)
                 ->whereDate('from', '<=', $last_date)
@@ -212,8 +211,8 @@ class UserService
                             ->whereDate('to', '>=', $nextMonthFirstDay))
                 );
         })
-        ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
-        ->get();
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
+            ->get();
 
         return $data->unique(fn($u) => $u->id)->toArray();
     }
@@ -269,7 +268,7 @@ class UserService
      */
     public function getFiredEmployeesForSalaries(int $groupId, string $date): array
     {
-        $data = User::withTrashed()->with('groups')->whereHas('group_users', function($q) use ($groupId, $date) {
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($groupId, $date) {
             $q->whereIn('status', [GroupUser::STATUS_FIRED])
                 ->where('group_id', $groupId)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
@@ -484,11 +483,11 @@ class UserService
      * @param int $userId
      * @return void
      */
-    public function restoredUser(int $userId):void
+    public function restoredUser(int $userId): void
     {
         GroupUser::where('user_id', $userId)
             ->whereNotNull('to')
-            ->where('status','fired')
+            ->where('status', 'fired')
             ->update([
                 'to' => null,
                 'status' => 'active',
