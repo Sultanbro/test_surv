@@ -90,8 +90,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ])
             ->first();
 
-        $referrer->deal_lead_conversion_ratio = $this->getRatio($referrer->referralLeads_count, $referrer->leads_count);
-        $referrer->applied_deal_conversion_ratio = $this->getRatio($referrer->appliedReferrals_count, $referrer->referralLeads_count);
+        $referrer->deal_lead_conversion_ratio = $this->getRatio($referrer->leads, $referrer->deals);
+        $referrer->applied_deal_conversion_ratio = $this->getRatio($referrer->applieds, $referrer->deals);
 
         return $referrer;
     }
