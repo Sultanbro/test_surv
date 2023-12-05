@@ -157,6 +157,7 @@
 		<!-- Потомки -->
 		<template v-if="children && children.length">
 			<div
+				:id="'StructureGroup-' + card.id"
 				ref="group"
 				class="structure-group"
 				:style="{
@@ -396,6 +397,11 @@ export default {
 		right: 0;
 		bottom: 0;
 		pointer-events: none;
+	}
+}
+#StructureGroup{
+	&-1{
+		margin-left: -8px;
 	}
 }
 </style>
