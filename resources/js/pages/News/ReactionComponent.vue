@@ -4,8 +4,7 @@
 			v-for="(reaction, index) in reactionsList"
 			v-show="reaction.value != 0"
 			:key="index"
-			:class="'news-comment-reactions__item '
-				+ (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
+			:class="'news-comment-reactions__item ' + (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
 			@click="sendReaction(reaction.icon)"
 		>
 			<!-- eslint-disable-next-line -->
@@ -31,8 +30,8 @@
 					<div class="news-emoji-keyboard__items">
 						<!-- eslint-disable -->
 						<span
-							v-for="reaction in reactionsList"
-							:key="reaction.icon"
+							v-for="reaction, reactionIndex in reactionsList"
+							:key="reactionIndex"
 							class="news-emoji-keyboard__item"
 							@click="sendReaction(reaction.icon)"
 							v-html="reaction.icon"

@@ -17,7 +17,7 @@
 				<img
 					class="news-create__avatar"
 					alt="img"
-					:src="me ? me.avatar : null"
+					:src="$laravel.avatar"
 				>
 				<span class="news-create__placeholder">Что у вас нового?</span>
 			</div>
@@ -254,12 +254,7 @@ export default {
 		ProfileTabs,
 		NewsCreateQNA,
 	},
-	props: {
-		me: {
-			type: Object,
-			required: true
-		},
-	},
+	props: {},
 	data() {
 		return {
 			csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
