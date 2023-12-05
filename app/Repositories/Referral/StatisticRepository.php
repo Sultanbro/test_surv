@@ -84,6 +84,7 @@ class StatisticRepository implements StatisticRepositoryInterface
             ->join('user_descriptions', 'ref.id', '=', 'user_descriptions.user_id')
             ->select('ref.referrer_id', DB::raw('COUNT(*) as total_applieds'))
             ->where('user_descriptions.is_trainee', 0)
+            ->whereNull('ref.deleted_at')
             ->groupBy('ref.referrer_id');
 
         // SubQuery for counting leads
