@@ -85,7 +85,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 DB::raw("(SELECT COUNT(*) FROM users ref
                     INNER JOIN user_descriptions ON ref.id = user_descriptions.user_id 
                     WHERE ref.referrer_id = users.id AND user_descriptions.is_trainee = 0
-                    WHERE ref.deleted_id IS NULL) AS applieds"),
+                    AND ref.deleted_id IS NULL) AS applieds"),
                 DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND segment = {$segmentId}) AS leads"),
                 DB::raw("(SELECT COUNT(*) FROM bitrix_leads WHERE referrer_id = users.id AND deal_id > 0 AND segment = {$segmentId}) AS deals"),
             ])
