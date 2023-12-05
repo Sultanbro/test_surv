@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Analytics;
 
 use DB;
+use Illuminate\Http\JsonResponse;
 use View;
 use Auth;
 use Carbon\Carbon;
@@ -28,18 +29,11 @@ class NpsController extends Controller
      * Страница NPS в ТОП
      * @method POST
      */
-    public function fetch(Request $request)
+    public function fetch(Request $request): JsonResponse
     {
-
-
-
-        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
-
-
-
         $users = [];
 
-        $_users = \DB::table('users')
+        $_users = DB::table('users')
             ->whereNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
@@ -47,7 +41,7 @@ class NpsController extends Controller
             ->get(['users.id', 'users.name', 'users.last_name', 'users.position_id']);
 
         foreach($_users as $user) {
-
+            /** @var User $user */
             $user = User::withTrashed()->find($user->id);
             $groups = $user->position_id == 45 ? $user->inGroups(true) : $user->inGroups();
             $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
@@ -63,8 +57,8 @@ class NpsController extends Controller
             ];
 
             for($i = 1; $i <=12; $i++) {
-                $m = Carbon::createFromDate($request->year, $i, 1)->format('Y-m-d');
-                $es_grades = EstimateGrade::where('date', $m)
+                $m = Carbon::createFromDate($request['year'], $i, 1)->format('Y-m-d');
+                $es_grades = EstimateGrade::query()->where('date', $m)
                     ->where('about_id', $user->id)
                     ->get();
 
@@ -107,15 +101,17 @@ class NpsController extends Controller
     public function estimate_your_trainer(Request $request)
     {
         if ($request->isMethod('get')) {
-            return $this->estimate_your_trainer_get($request);
+            return $this->estimate_your_trainer_get();
         }
 
         if ($request->isMethod('post')) {
             return $this->estimate_your_trainer_post($request);
         }
+
+        return false;
     }
 
-    public function estimate_your_trainer_get(Request $request){
+    public function estimate_your_trainer_get(){
         $user = Auth::user();
         $groups = $user->inGroups();
 
@@ -141,7 +137,7 @@ class NpsController extends Controller
     public function saveGrades($grades, $user, $date){
         foreach($grades as $grade) {
             if($grade['grade'] != 0) {
-                $est = EstimateGrade::where('date', $date)
+                $est = EstimateGrade::query()->where('date', $date)
                     ->where('user_id', $user->id)
                     ->where('about_id', $grade['id'])
                     ->first();
@@ -169,13 +165,14 @@ class NpsController extends Controller
     /**
      * Получить руководителей или старших спецов
      */
-    private function getRooksV2($groups, $userType){
+    private function getRooksV2($groups, $userType): array
+    {
         $field = $userType == self::USER_SPEC ? 'is_spec' : 'is_head';
 
         $user_ids = [];
         $users = [];
 
-        $positions = Position::select(['id'])
+        $positions = Position::query()->select(['id'])
             ->where($field, 1)
             ->get()
             ->pluck('id');
@@ -184,7 +181,7 @@ class NpsController extends Controller
 
         foreach($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
-            $_users = \DB::table('users')
+            $_users = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
@@ -194,22 +191,22 @@ class NpsController extends Controller
 
             foreach($_users as $user) {
                 if(!in_array($user->id, $user_ids)) {
-                    array_push($user_ids, $user->id);
-                    array_push($users, [
+                    $user_ids[] = $user->id;
+                    $users[] = [
                         'id' => $user->id,
-                        'name' => $user->last_name . ' '. $user->name,
+                        'name' => $user->last_name . ' ' . $user->name,
                         'type' => $userType,
-                    ]);
+                    ];
                 }
             }
         }
 
         if(count($users) == 0) {
-            array_push($users, [
+            $users[] = [
                 'id' => 0,
                 'name' => 'Без имени',
                 'type' => $userType,
-            ]);
+            ];
         }
         return $users;
     }
@@ -217,7 +214,7 @@ class NpsController extends Controller
     /**
      * Получить руководителей или старших спецов
      */
-    private function getRooks($groups, $position_id)
+    private function getRooks($groups, $position_id): array
     {
 
         $user_ids = [];
@@ -225,7 +222,7 @@ class NpsController extends Controller
 
         foreach($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
-            $_users = \DB::table('users')
+            $_users = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
@@ -235,21 +232,21 @@ class NpsController extends Controller
 
             foreach($_users as $user) {
                 if(!in_array($user->id, $user_ids)) {
-                    array_push($user_ids, $user->id);
-                    array_push($users, [
+                    $user_ids[] = $user->id;
+                    $users[] = [
                         'id' => $user->id,
-                        'name' => $user->last_name . ' '. $user->name
-                    ]);
+                        'name' => $user->last_name . ' ' . $user->name
+                    ];
                 }
 
             }
         }
 
         if(count($users) == 0) {
-            array_push($users, [
+            $users[] = [
                 'id' => 0,
                 'name' => 'Без имени'
-            ]);
+            ];
         }
 
         return $users;
