@@ -226,7 +226,7 @@ class KnowBaseController extends Controller
 
             $trees->toArray();
 
-            $book = KnowBase::whereNull('parent_id')
+            $book = KnowBase::where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
                 ->orderBy('order')
                 ->where('id', $request->id)
                 ->first();
