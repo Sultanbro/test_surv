@@ -1858,10 +1858,11 @@ $bgAccept: #156AE8;
 		background-color: $bgPresent !important;
 	}
 
-	// .table-day-10 {
-	// 	color: #fff;
-	// 	background-color: $bgFirst !important;
-	// }
+	.table-day-8 {
+		// принят на работу
+		color: #fff;
+		background-color: $bgFirst !important;
+	}
 
 	.cell-border {
 		position: absolute;
