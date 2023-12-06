@@ -119,8 +119,6 @@ export default {
 <style lang="scss">
 .KBNavItem{
 	&-button{
-		padding: 8px 0;
-
 		position: relative;
 
 		font-size: 13px;
@@ -163,6 +161,7 @@ export default {
 	// &-shower{}
 	&-name{
 		flex: 1;
+		padding: 8px 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
