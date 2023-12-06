@@ -9,6 +9,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
+use App\Models\GroupUser;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
 use Auth;
@@ -574,6 +575,7 @@ class Salary extends Model
 
         $users->with([
             'user_description',
+            'group_users',
             'salaries' => function ($q) use ($date) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', $date->month)
