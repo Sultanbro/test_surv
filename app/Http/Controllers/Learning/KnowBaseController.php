@@ -35,11 +35,12 @@ class KnowBaseController extends Controller
     public function get() : array
     {
         $books = KnowBase::query()
-            ->whereNull('parent_id')
-            ->orWhere('is_category', 1)
+            ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
             ->orderBy('order');
 
         if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
+
+        // dd($books->toSql());
 
         return [
             'books' => $books->get()->toArray()
@@ -98,7 +99,7 @@ class KnowBaseController extends Controller
                 $readOrEditPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
             }
             $books_with_read_access =  KnowBase::withTrashed()
-                ->whereNull('parent_id')
+                ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->orWhere(function ($query) use ($readOrEditPairs) {
                     if (count($readOrEditPairs) > 0) {
