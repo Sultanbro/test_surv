@@ -98,7 +98,7 @@ class KnowBaseController extends Controller
                 $readOrEditPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
             }
             $books_with_read_access =  KnowBase::withTrashed()
-                ->whereNull('parent_id')
+                ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->orWhere(function ($query) use ($readOrEditPairs) {
                     if (count($readOrEditPairs) > 0) {
