@@ -337,16 +337,17 @@ class KnowBaseController extends Controller
     }
 
     /**
-     * find top parent of knowbase
+     * find top parent of knowbase // Or find parent where is_category = 1
      * @return Knowbase | null
      */
     private function getTopParent($id)
     {
+        /** @var KnowBase $kb */
         $kb = KnowBase::withTrashed()->find($id);
-        if ($kb && $kb->parent_id != null) {
-            return $this->getTopParent($kb->parent_id);
+        if ($kb->is_category == 1 || $kb->parent_id == null) {
+            return $kb;
         }
-        return $kb;
+        return $this->getTopParent($kb->parent_id);
     }
 
     /**
