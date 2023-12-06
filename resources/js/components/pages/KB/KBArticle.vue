@@ -134,8 +134,7 @@ export default {
 			div.innerHTML = this.activeBook.text
 			const instance = new Mark(div)
 
-			const glossary = this.glossary || []
-			glossary.forEach(term => {
+			this.fixedGlossary.forEach(term => {
 				instance.mark(term.word, {
 					...markOptions,
 					each: el => {
@@ -163,16 +162,24 @@ export default {
 				})
 			}
 			return div.innerHTML
-		}
+		},
+		fixedGlossary(){
+			const fixedMap = {}
+			const fixed = []
+			const glossary = this.glossary || []
+			glossary.forEach(term => {
+				const word = term.word.trim().toLowerCase()
+				if(~fixedMap[word] && fixedMap[word] !== undefined){
+					fixed[fixedMap[word]].definition += '\n' + term.definition
+					return
+				}
+				fixedMap[word] = fixed.length
+				fixed.push(term)
+			})
+			return fixed
+		},
 	},
-	watch: {
-		activeBook: {
-			handler(){
-				this.updateMarks()
-			},
-			deep: true
-		}
-	},
+	watch: {},
 	methods: {
 		passed() {
 			// pass if its not course.  cos there not nextElement button
@@ -196,9 +203,6 @@ export default {
 			/* eslint-enable camelcase */
 		},
 		onChangePassGrade(){},
-		updateMarks(){
-
-		}
 	},
 }
 </script>
@@ -309,6 +313,7 @@ export default {
 		font-size: 14px;
 		font-weight: 400;
 		color: #333;
+		white-space: pre-line;
 
 		background-color: #fff;
 		transform: translate(-50%, -50%);
