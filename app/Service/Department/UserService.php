@@ -117,13 +117,13 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date, $nextMonthFirstDay) {
-            $q->where('status', GroupUser::STATUS_ACTIVE)
-                ->where('group_id', $groupId)
-                ->whereDate('from', '<=', $last_date)
-                ->where(fn($query) => $query->whereNull('to')->orWhere(
-                    fn($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
-                );
+        $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date,$nextMonthFirstDay) {
+            $q->whereIn('status', [GroupUser::STATUS_ACTIVE, GroupUser::STATUS_DROP]) // status 'drop' for transferred employees
+            ->where('group_id', $groupId);
+            $q->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
+                $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
+                    ->orWhereNull('to');
+            });
         })
             ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->where(function (Builder $query) use ($last_date) {

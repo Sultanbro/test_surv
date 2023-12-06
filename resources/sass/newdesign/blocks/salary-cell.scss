@@ -120,4 +120,64 @@
       background: linear-gradient(110deg, $weekend-avans 25%, $weekend-bonus 25%, $weekend-bonus 50%, $weekend-fine 50%, $weekend-fine 75%, $weekend-training 75%);
     }
   }
+
+  &_accrual{
+    &.SalaryCell{
+      &-2{
+        background: none;
+      }
+      &-3{
+        background: $fine;
+      }
+      &-6{
+        background: $bonus;
+      }
+      &-10{
+        background: $avans;
+      }
+
+      &-7{
+        background: linear-gradient(110deg, $bonus 50%, $fine 50%);
+      }
+      &-11{
+        background: linear-gradient(110deg, $avans 50%, $fine 50%);
+      }
+      &-14{
+        background: linear-gradient(110deg, $bonus 50%, $fine 50%);
+      }
+
+      &-15{
+        background: linear-gradient(110deg, $avans 33%, $bonus 33.3%, $bonus 66.6%, $fine 66.6%);
+      }
+
+      &-weekend{
+        &-2{
+          background: $weekend;
+        }
+        &-3{
+          background: $weekend-fine;
+        }
+        &-6{
+          background: $weekend-bonus;
+        }
+        &-10{
+          background: $weekend-avans;
+        }
+
+        &-7{
+          background: linear-gradient(110deg, $weekend-bonus 50%, $weekend-fine 50%);
+        }
+        &-11{
+          background: linear-gradient(110deg, $weekend-avans 50%, $weekend-fine 50%);
+        }
+        &-14{
+          background: linear-gradient(110deg, $weekend-bonus 50%, $weekend-fine 50%);
+        }
+
+        &-15{
+          background: linear-gradient(110deg, $weekend-avans 33%, $weekend-bonus 33.3%, $weekend-bonus 66.6%, $weekend-fine 66.6%);
+        }
+      }
+    }
+  }
 }

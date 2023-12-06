@@ -3,7 +3,6 @@
 		<NewsCreate
 			v-if="isRedactor"
 			ref="newsCreate"
-			:me="me"
 			@update-news-list="getPosts"
 		/>
 
@@ -18,18 +17,16 @@
 			</div>
 			<PostComponent
 				v-for="post in pinnedPosts"
-				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
+				:key="'pinned' + post.id"
 				:post="post"
-				:me="me"
 				@editPost="updatePost"
 				@update-news-list="getPosts"
 			/>
 
 			<PostComponent
 				v-for="post in posts"
-				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
+				:key="post.id"
 				:post="post"
-				:me="me"
 				@editPost="updatePost"
 				@update-news-list="getPosts"
 			/>

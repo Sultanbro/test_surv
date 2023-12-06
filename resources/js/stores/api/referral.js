@@ -1,11 +1,12 @@
 import axios from 'axios'
+import moment from 'moment'
 
 function referalToUser(ref){
 	const user = {
 		id: Number(ref.id),
-		name: ref.name,
-		lastName: ref.last_name,
-		title: `${ref.last_name} ${ref.name}`,
+		name: ref.name || '',
+		lastName: ref.last_name || '',
+		title: `${ref.last_name || ''} ${ref.name || ''}`,
 		groups: ref.groups || [],
 		status: ref.deleted_at
 			? 'Уволен'
@@ -27,7 +28,7 @@ function referalToUser(ref){
 			})
 		}
 	}
-	days.forEach((day, index) => {
+	days.sort((a,b) => moment(a.date).valueOf() - moment(b.date).valueOf()).forEach((day, index) => {
 		if(index < 15) user[index + 1] = day
 	})
 	user.attest = datetypes['pass_certification'] || datetypes['pass certification']
@@ -45,9 +46,9 @@ function referalToUser(ref){
 function referrerToUser(user){
 	return {
 		id: Number(user.id),
-		title: `${user.name} ${user.last_name}`,
-		name: user.name,
-		lastName: user.last_name,
+		title: `${user.name || ''} ${user.last_name || ''}`,
+		name: user.name || '',
+		lastName: user.last_name || '',
 		status: user.referrer_status,
 		leads: Number(user.leads || 0),
 		deals: Number(user.deals || 0),
