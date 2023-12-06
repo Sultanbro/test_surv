@@ -1,6 +1,9 @@
 <template>
 	<aside class="KBNav">
-		<div class="KBNav-search">
+		<div
+			v-if="$can('kb_edit')"
+			class="KBNav-search"
+		>
 			<i class="fa fa-search" />
 			<input
 				v-model="search.input"
