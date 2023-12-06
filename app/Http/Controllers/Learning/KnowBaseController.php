@@ -35,11 +35,12 @@ class KnowBaseController extends Controller
     public function get() : array
     {
         $books = KnowBase::query()
-            ->whereNull('parent_id')
-            ->orWhere('is_category', 1)
+            ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
             ->orderBy('order');
 
         if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
+
+        // dd($books->toSql());
 
         return [
             'books' => $books->get()->toArray()
@@ -225,7 +226,7 @@ class KnowBaseController extends Controller
 
             $trees->toArray();
 
-            $book = KnowBase::whereNull('parent_id')
+            $book = KnowBase::where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
                 ->orderBy('order')
                 ->where('id', $request->id)
                 ->first();
