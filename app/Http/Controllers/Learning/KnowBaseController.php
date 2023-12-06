@@ -13,6 +13,7 @@ use Auth;
 use App\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 
@@ -421,12 +422,33 @@ class KnowBaseController extends Controller
     }
 
     /**
+     * Get favourite knowbases
+     *
+     */
+    public function getFavourites()
+    {
+        $favourites = DB::table('user_starred_kbs')->where('user_id', Auth::id())->pluck('kb_id')->toArray();
+
+        /** @var KnowBase $items */
+        $items = KnowBase::query()->whereIn('id', $favourites)->select('id', 'title')->get();
+
+
+        foreach ($items as $item) {
+            $item->topParent_id = $item->getTopParentId($item->id);
+        }
+
+        return [
+            'items' => $items,
+        ];
+    }
+
+    /**
      * Update access to knowbase
      * update knowbase
      */
     public function toggleFavourite(Request $request, KnowBase $kb)
     {
-        $favourite = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->first();
+        $favourite = DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->first();
         if ($favourite && $request->toggle != 1) {
             $favourite->delete();
         } elseif (!$favourite && $request->toggle == 1) {

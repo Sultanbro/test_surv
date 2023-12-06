@@ -279,4 +279,25 @@ class KnowBase extends Model implements CourseInterface
         }
         return $query;
     }
+
+    public function getTopParentId($id)
+    {
+        return DB::select("
+            WITH RECURSIVE ParentChain AS (
+                SELECT id, parent_id, is_category
+                FROM kb
+                WHERE id = :child_id
+            
+                UNION ALL
+            
+                SELECT k.id, k.parent_id, k.is_category
+                FROM kb k
+                INNER JOIN ParentChain pc ON k.id = pc.parent_id
+            )
+            SELECT id
+            FROM ParentChain
+            WHERE parent_id IS NULL OR is_category = 1
+            LIMIT 1", ['child_id' => $id]
+        )[0]->id;
+    }
 }
