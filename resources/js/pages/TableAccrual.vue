@@ -327,6 +327,7 @@
 							:class="[
 								{
 									'SalaryCell': cellData.item.dayType && cellData.item.dayType[cellData.field.key],
+									'SalaryCell_accrual': cellData.item.dayType && cellData.item.dayType[cellData.field.key],
 								},
 								cellData.item.dayType ? `SalaryCell${cellData.field.weekend ? '-weekend' : ''}-${cellData.item.dayType[cellData.field.key] || '0'}` : '',
 							]"
