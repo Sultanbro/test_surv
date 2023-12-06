@@ -24,7 +24,7 @@ function booksTree(books){
 		map,
 		tree: nest(books),
 		flat: books,
-		orphans: books.filter(book => map[book.parent_id])
+		orphans: books.filter(book => book.parent_id && !map[book.parent_id])
 	}
 }
 
