@@ -9,6 +9,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
+use App\Models\GroupUser;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
 use Auth;
@@ -620,7 +621,9 @@ class Salary extends Model
                     ->whereYear('enter', $date->year)
                     ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
             },
-        ]);
+        ])->withCount(['group_users' => function ($q) {
+            $q->where('status', GroupUser::STATUS_DROP);
+        }]);
 
         $users = $users->get([
             'users.id',
