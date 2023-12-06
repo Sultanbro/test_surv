@@ -655,7 +655,7 @@ class TimetrackingController extends Controller
         $notification_receivers = NotificationTemplate::getReceivers(7);
 
         foreach ($notification_receivers as $user_id) {
-            UserNotification::create([
+            UserNotification::query()->create([
                 'user_id' => $user_id,
                 'about_id' => $request->user_id,
                 'title' => 'Подготовьте документы на принятие на работу',
@@ -697,7 +697,9 @@ class TimetrackingController extends Controller
             ->get();
 
         foreach ($daytypes as $dt) {
-            $dt->delete();
+            $dt->update([
+                'type' => DayType::DAY_TYPES['APPLIED']
+            ]);
         }
 
         // group provided increment
@@ -717,6 +719,7 @@ class TimetrackingController extends Controller
             ->where('user_id', $user->id)
             ->orderBy('id', 'desc')
             ->first();
+
         if ($lead && $lead->deal_id != 0) {
             $bitrix = new Bitrix();
 

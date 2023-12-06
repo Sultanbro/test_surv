@@ -18,7 +18,7 @@ class ManagerPermissionController extends Controller
      */
     public function getOwnerInfo(GetOwnerInfoRequest $request, GetOwnerInfoService $service): JsonResponse
     {
-        $manager = auth()->user() ?? User::find(13865);
+        $manager = auth()->user() ?? User::query()->find(13865);
 
         abort_if(!$manager->can('owner_view'), ErrorCode::FORBIDDEN, 'У вас нет доступа');
 

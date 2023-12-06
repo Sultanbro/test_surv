@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Settings;
 
 use App\AdaptationTalk;
+use App\DayType;
 use App\DTO\Settings\UpdateUserDTO;
 use App\Enums\ErrorCode;
 use App\Facade\Referring;
@@ -105,6 +106,13 @@ final class UserUpdateService
             $user->description()->update([
                 'is_trainee' => 0
             ]);
+
+            $user->daytypes()
+                ->where('date', now()->format('Y-m-d'))
+                ->update([
+                    'type' => DayType::DAY_TYPES['APPLIED']
+                ]);
+
             Referring::touchReferrerStatus($user);
             Referring::touchReferrerSalaryForCertificate($user);
         }

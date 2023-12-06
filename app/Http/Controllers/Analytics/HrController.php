@@ -480,9 +480,8 @@ class HrController extends Controller
             }
 
             //send notification to users about this trainees
-            if($request->send_users and count($request->send_users) > 0)
-            {
-                $service->sendAboutTrainee($request->send_users,$lead,$invite_at);
+            if ($request->send_users and count($request->send_users) > 0) {
+                $service->sendAboutTrainee($request->send_users, $lead, $invite_at);
             }
 
             try {
@@ -576,13 +575,6 @@ class HrController extends Controller
                     'is_trainee' => 1
                 ]);
 
-//                UserDescription::make([  // почему make а не create ? не ясно
-//                    'user_id' => $user->id,
-//                    'lead_id' => $lead->lead_id,
-//                    'deal_id' => $lead->deal_id,
-//                    'is_trainee' => 1,
-//                ]);
-
                 $user->segment = $lead->segment;
                 $user->referrer_id = $lead->referrer_id;
                 $userIds[] = $user->id;
@@ -625,7 +617,7 @@ class HrController extends Controller
                 ]);
 
             /* Зачисление в выбранную отдел */
-            GroupUser::create([
+            GroupUser::query()->updateOrCreate([
                 'user_id' => $user->id,
                 'group_id' => $group->id,
                 'from' => date('Y-m-d'),
@@ -975,12 +967,12 @@ class HrController extends Controller
 
     public function createDeal(Request $request)
     {
-        $bitrixUrl =  'https://infinitys.bitrix24.kz/rest/158504/';
+        $bitrixUrl = 'https://infinitys.bitrix24.kz/rest/158504/';
         $dealId = $request->deal_id;
 
         $client = new Client();
 
-        $response = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/' . 'crm.deal.get', [
+        $response = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'crm.deal.get', [
             'query' => [
                 'id' => $dealId,
             ],
@@ -988,13 +980,13 @@ class HrController extends Controller
 
         $deal = json_decode($response->getBody()->getContents(), true);
 
-        $lead = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/'.'crm.lead.get',[
+        $lead = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'crm.lead.get', [
             'query' => [
                 'id' => $deal['result']['LEAD_ID']
             ]
         ]);
         $assignedUserId = $deal['result']['ASSIGNED_BY_ID'];
-        $userResponse = $client->get($bitrixUrl.'/lyg5ejdqbyjc1js8/' . 'user.get', [
+        $userResponse = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'user.get', [
             'query' => [
                 'ID' => $assignedUserId,
             ],
@@ -1003,7 +995,7 @@ class HrController extends Controller
         $user = json_decode($userResponse->getBody()->getContents(), true);
 
         $hash = md5(uniqid() . mt_rand());
-        $lead = json_decode($lead->getBody()->getContents(),true);
+        $lead = json_decode($lead->getBody()->getContents(), true);
         $phone = Phone::normalize($lead['result']['PHONE'][0]['VALUE']);
         Lead::query()->updateOrCreate(
             [
@@ -1017,12 +1009,12 @@ class HrController extends Controller
                 'net' => 'у меня Домашний Wi-Fi интернет в квартире',
                 'hash' => $hash,
                 'phone' => $phone,
-                'resp_id' =>$user['result'][0]['EMAIL'],
+                'resp_id' => $user['result'][0]['EMAIL'],
                 'segment' => Lead::getSegmentAlt($lead['result']['UF_CRM_1498210379'])
             ]);
 
 
-        return response()->json(['deal'=>$deal,'lead'=>$lead]);
+        return response()->json(['deal' => $deal, 'lead' => $lead]);
 
     }
 }

@@ -90,6 +90,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $work_chart_id
  * @property int $coordinate_id
  * @property int $referrer_id
+ * @property string $full_name
  * @property string $referrer_status
  * @property string $welcome_message
  * @property Collection<Service\Salary\> $salaries

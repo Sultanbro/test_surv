@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Facade\Referring;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\GetUserRequest;
 use App\Http\Requests\Settings\SettingUserRequest;
@@ -110,24 +109,10 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Put(
-     *     summary="Update User",
-     *     path="/timetracking/update-person",
-     *     description="Update user in settings page"
-     *     @OA\Response(
-     *          response=200,
-     *          description="Success"
-     *      ),
-     * )
-     * @param UpdateUserRequest $request
-     * @return JsonResponse
      * @throws Exception
      */
     public function update(UpdateUserRequest $request): JsonResponse
     {
-        $user = auth()->user();
-        abort_if(!$user, Response::HTTP_FORBIDDEN, 'Access denied');
-
         $response = $this->updateService->updateUser($request->toDto());
 
         return $this->response(
