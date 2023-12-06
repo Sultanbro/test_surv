@@ -575,6 +575,7 @@ class Salary extends Model
 
         $users->with([
             'user_description',
+            'group_users',
             'salaries' => function ($q) use ($date) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', $date->month)
@@ -621,9 +622,7 @@ class Salary extends Model
                     ->whereYear('enter', $date->year)
                     ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
             },
-        ])->withCount(['group_users' => function ($q) {
-            $q->where('status', GroupUser::STATUS_DROP);
-        }]);
+        ]);
 
         $users = $users->get([
             'users.id',

@@ -204,6 +204,7 @@ class Timetracking extends Model
     public static function getTimeTrackingReportPaginate($request, $users_ids, $year, $perPage = 1000)
     {
         return User::withTrashed()->with([
+            'group_users',
             'timetracking' => function ($q) use ($request, $year) {
                 $q->selectRaw("*,DATE_FORMAT(enter, '%e') as date, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes")
                     ->orderBy('id', 'ASC')
