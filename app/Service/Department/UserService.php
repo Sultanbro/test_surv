@@ -277,7 +277,10 @@ class UserService
             ->whereHas('group_users', function ($q) use ($groupId, $date, $last_date, $nextMonthFirstDay) {
                 $q->whereIn('status', [GroupUser::STATUS_FIRED]);
                 $q->where('group_id', $groupId);
-                $q->whereBetween('to', [$last_date, $nextMonthFirstDay]);
+                $q->where(function ($q) use ($groupId, $date, $last_date, $nextMonthFirstDay) {
+                    $q->whereBetween('to', [$last_date, $nextMonthFirstDay]);
+                    $q->orWhereNull('to');
+                });
             })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 
