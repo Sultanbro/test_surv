@@ -1858,7 +1858,8 @@ $bgAccept: #156AE8;
 		background-color: $bgPresent !important;
 	}
 
-	.table-day-10 {
+	.table-day-8 {
+		// принят на работу
 		color: #fff;
 		background-color: $bgFirst !important;
 	}

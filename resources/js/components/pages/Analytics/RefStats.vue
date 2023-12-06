@@ -205,7 +205,7 @@ export default {
 			this.paymentDialog.transactionId = item[field.key].id
 			this.paymentDialog.oldComment = item[field.key].comment || ''
 			this.paymentDialog.comment = ''
-			this.paymentDialog.date = item[field.key].day ? `за день стажировки ${this.$moment.utc([this.filters.year, this.filters.month, item[field.key].day]).format('DD.MM.YYYY')}` : ''
+			this.paymentDialog.date = item[field.key].day ? `за день стажировки ${this.$moment.utc(item[field.key].date).format('DD.MM.YYYY')}` : ''
 			this.paymentDialog.open = true
 		},
 		async paymentSave(){
