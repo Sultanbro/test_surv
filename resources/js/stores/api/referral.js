@@ -1,4 +1,5 @@
 import axios from 'axios'
+import moment from 'moment'
 
 function referalToUser(ref){
 	const user = {
@@ -27,7 +28,7 @@ function referalToUser(ref){
 			})
 		}
 	}
-	days.forEach((day, index) => {
+	days.sort((a,b) => moment(a.date).valueOf() - moment(b.date).valueOf()).forEach((day, index) => {
 		if(index < 15) user[index + 1] = day
 	})
 	user.attest = datetypes['pass_certification'] || datetypes['pass certification']
