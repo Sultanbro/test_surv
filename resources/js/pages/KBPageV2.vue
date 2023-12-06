@@ -653,9 +653,7 @@ export default {
 		},
 		booksMap(){
 			const map = {}
-			this.books.forEach(book => {
-				map[book.id] = book
-			})
+			this.getPages(map, this.allBooks)
 			return map
 		},
 		breadcrumbs(){
