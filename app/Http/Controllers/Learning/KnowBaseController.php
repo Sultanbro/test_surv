@@ -434,7 +434,7 @@ class KnowBaseController extends Controller
 
 
         foreach ($items as $item) {
-            $item->topParent_id = $item->getTopParentId($item->id);
+            $item->topParent_id = $item->getTopParentV2($item->id);
         }
 
         return [

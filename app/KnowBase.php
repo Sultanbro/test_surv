@@ -280,7 +280,10 @@ class KnowBase extends Model implements CourseInterface
         return $query;
     }
 
-    public function getTopParentId($id)
+    /**
+     * Get top parent id with one query
+     */
+    public function getTopParentV2($id)
     {
         return DB::select("
             WITH RECURSIVE ParentChain AS (
