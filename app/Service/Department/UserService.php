@@ -129,7 +129,7 @@ class UserService
         }
 
 
-        $data = User::with('groups')->whereHas('group_users', function ($q) use ($nextMonth, $groupId, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($nextMonth, $groupId, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
             $q->where('group_id', $groupId)
                 ->where(function ($query) use ($nextMonth, $nextMonthFirstDay, $first_date, $last_date, $addCondition) {
                     $query->where(function ($subQuery) use ($nextMonth, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
