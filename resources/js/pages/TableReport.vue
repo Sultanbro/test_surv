@@ -162,37 +162,12 @@
 									{{ name.item.user_type }}
 								</b-badge>
 
-								<span
+								<TransfersInfo
 									v-if="name.index"
-									class="relative"
-								>
-									<img
-										:id="'TableReportTransfers-' + name.item.id"
-										src="/images/dist/profit-info.svg"
-										class="img-info"
-										width="20"
-										alt="info icon"
-										tabindex="-1"
-										@click="showTransfaredPopup($event, name.item)"
-									>
-									<PopupMenu
-										v-if="name.item.isTransfaredPopup"
-										v-click-outside="hideTransfaredPopup"
-										position="topLeft"
-										max-height="75px"
-									>
-										<!-- eslint-disable vue/no-v-html -->
-										<div
-											v-if="name.item.transfaredInfo"
-											v-html="name.item.transfaredInfo"
-										/>
-										<div
-											v-else
-											v-html="transfaredLoadingText"
-										/>
-										<!-- eslint-enable vue/no-v-html -->
-									</PopupMenu>
-								</span>
+									:transfers="name.item.groupUsers"
+									:group-id="currentGroup"
+									:groups="groups"
+								/>
 
 								<span
 									v-if="false && name.field.key == 'name' && name.item.is_trainee"
@@ -877,11 +852,10 @@ import {
 	triggerApplyEmployee,
 	triggerAbsentInternship,
 } from '@/stores/api.js'
-import transferMixin from '@/mixins/transferMixin'
 
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
-import PopupMenu from '@ui/PopupMenu.vue'
+import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
 
 
 
@@ -890,9 +864,8 @@ export default {
 	components: {
 		Sidebar,
 		GroupExcelImport,
-		PopupMenu,
+		TransfersInfo,
 	},
-	mixins: [transferMixin],
 	props: {
 		groups: {
 			type: Array,
@@ -1517,6 +1490,7 @@ export default {
 					requested: item.requested,
 					applied_at: item.applied_at,
 					history: item.track_history,
+					groupUsers: item.group_users,
 					...variants,
 					...dayHours,
 				})

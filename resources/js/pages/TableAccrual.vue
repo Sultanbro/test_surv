@@ -214,36 +214,12 @@
 								class="fa fa-info-circle"
 								title="Заметка"
 							/>
-							<span
+							<TransfersInfo
 								v-else
-								class="relative"
-							>
-								<img
-									src="/images/dist/profit-info.svg"
-									class="img-info"
-									width="20"
-									alt="info icon"
-									tabindex="-1"
-									@click="showTransfaredPopup($event, nameData.item)"
-								>
-								<PopupMenu
-									v-if="nameData.item.isTransfaredPopup"
-									v-click-outside="hideTransfaredPopup"
-									position="topLeft"
-									max-height="75px"
-								>
-									<!-- eslint-disable vue/no-v-html -->
-									<div
-										v-if="nameData.item.transfaredInfo"
-										v-html="nameData.item.transfaredInfo"
-									/>
-									<div
-										v-else
-										v-html="transfaredLoadingText"
-									/>
-									<!-- eslint-enable vue/no-v-html -->
-								</PopupMenu>
-							</span>
+								:transfers="nameData.item.groupUsers"
+								:group-id="selectedGroup"
+								:groups="groups"
+							/>
 						</div>
 					</template>
 
@@ -889,11 +865,10 @@ import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 import { kpi_fields, parseKPI } from '@/pages/kpi/kpis.js'
 import salaryCellType from '@/composables/salaryCellType'
-import transferMixin from '@/mixins/transferMixin'
 
-import PopupMenu from '@ui/PopupMenu.vue'
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
 
 export default {
 	name: 'TableAccrual',
@@ -901,9 +876,8 @@ export default {
 		Sidebar,
 		// KpiItemsV2,
 		KpiContent,
-		PopupMenu,
+		TransfersInfo,
 	},
-	mixins: [transferMixin],
 	props: {
 		groupss: {
 			type: Array,
@@ -1422,6 +1396,7 @@ export default {
 					edited_salary: item.edited_salary,
 					dayType: item.dayType,
 					salaries: daySalariesOnly,
+					groupUsers: item.group_users,
 					...daySalaries,
 				};
 

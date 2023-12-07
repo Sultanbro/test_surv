@@ -6,6 +6,14 @@ export default {
 			isTransfaredPopup: false,
 		}
 	},
+	computed: {
+		transfers(){
+			return this.items.reduce((result, item) => {
+				result[item.id] = this.parseTransfers(item.group_users)
+				return result
+			}, {})
+		},
+	},
 	methods: {
 		async loadTransfers(item){
 			const id = item.id || item.user_id
@@ -26,11 +34,17 @@ export default {
 			}
 		},
 		parseTransfers(transfers){
-			if(!transfers.length) return '<data>Перевод: Не было переводов</data>'
-			return '<data class="pb-1">Перевод: </data>' + transfers.map(item => {
+			if(!transfers) return null
+			if(!transfers.length) return null
+			for(let i = 0; i < transfers.length; ++i){
+				const item = transfers[i]
+				const prev = transfers[i - 1]
+				if(prev && prev.group_id === item.group_id) continue
+			}
+			return transfers.map(item => {
 				const date = this.$moment(item.to).format('DD.MM.YYYY')
 				return `<div class="py-1">${date} из ${item.profile_group.name}</div>`
-			}).join('')
+			})
 		},
 		showTransfaredPopup($event, item){
 			if(!item) return
