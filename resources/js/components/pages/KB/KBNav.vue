@@ -1,6 +1,9 @@
 <template>
 	<aside class="KBNav">
-		<div class="KBNav-search">
+		<div
+			v-if="$can('kb_edit')"
+			class="KBNav-search"
+		>
 			<i class="fa fa-search" />
 			<input
 				v-model="search.input"
@@ -151,6 +154,20 @@
 					/>
 				</div>
 			</div>
+			<template v-else-if="favorites.length">
+				<div class="KBNav-favorites">
+					<div
+						v-for="item in favorites"
+						:key="item.id"
+						class="KBNav-favorite"
+						@click="$emit('search', item, '')"
+					>
+						<i class="fas fa-heart" />
+						{{ item.title }}
+					</div>
+					<hr>
+				</div>
+			</template>
 			<KBNavItems
 				v-if="rootBook"
 				:items="[
@@ -320,6 +337,10 @@ export default {
 			default: () => []
 		},
 		pages: {
+			type: Array,
+			default: () => []
+		},
+		favorites: {
 			type: Array,
 			default: () => []
 		},
@@ -624,6 +645,23 @@ $KBNav-padding: 15px;
 
 		&:hover{
 			color: #007bff;
+		}
+	}
+	// &-favorites{}
+	&-favorite{
+		padding: 8px 0;
+
+		position: relative;
+
+		font-size: 13px;
+		font-weight: 400;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+
+		cursor: pointer;
+		&:hover{
+			background-color: #f1f1f1;
 		}
 	}
 	.chapter{
