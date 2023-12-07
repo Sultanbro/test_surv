@@ -105,6 +105,7 @@ export async function fetchKBFavorites(){
 				canRead: true,
 				canEdit: false,
 				opened: true,
+				isFavorite: true,
 				book: {
 					id: page.topParent_id,
 					opened: true,
