@@ -114,6 +114,10 @@ Vue.use(VScrollLock)
 import ViewportSize from './plugins/ViewportSize'
 Vue.use(ViewportSize)
 
+// reactive screen sizes vm.$screenSize.width && vm.$screenSize.height
+import ScreenSize from './plugins/ScreenSize.js'
+Vue.use(ScreenSize)
+
 import SeparateThousands from './plugins/SeparateThousands'
 Vue.use(SeparateThousands)
 

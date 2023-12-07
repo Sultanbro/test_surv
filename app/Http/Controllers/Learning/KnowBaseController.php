@@ -575,9 +575,7 @@ class KnowBaseController extends Controller
             $page->order = $order;
                 $page->save();
             $order++;
-
         }
-
     }
 
     /**
@@ -658,8 +656,11 @@ class KnowBaseController extends Controller
     public function restoreSection(Request $request) : void
     {
         $kb = KnowBase::onlyTrashed()->find($request->id);
-        if($kb)  $kb->restore();
-
+        if($kb) {
+            $kb->restore();
+            $kb->is_category = 1;
+            $kb->save();
+        }
     }
 
     /**

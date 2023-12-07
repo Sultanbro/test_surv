@@ -88,13 +88,22 @@
 									class="messenger__record-item"
 									@click="stopRecording($event)"
 								>
-									<svg
+									<!-- <svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 384 512"
 									>
 										<path
 											fill="#5ebee9"
 											d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"
+										/>
+									</svg> -->
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 17 17"
+									>
+										<path
+											fill="#5ebee9"
+											d="M 0.95,0.85 15.26,8.03 0.97,16 Z"
 										/>
 									</svg>
 								</div>

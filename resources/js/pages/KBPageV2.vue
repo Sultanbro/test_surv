@@ -5,6 +5,7 @@
 			:active-book="activeBook"
 			:books="books"
 			:pages="pages"
+			:favorites="favorites"
 			:root-book="rootBook"
 			class="KBPageV2-nav"
 			@glossary-open="showGlossary = true"
@@ -600,6 +601,7 @@ export default {
 			bookForm: null,
 			pagesMap: {},
 			createParentId: null,
+			favorites: [],
 		};
 	},
 	computed: {
@@ -787,15 +789,19 @@ export default {
 
 		/* === BOOKS === */
 		async fetchData() {
-			if(this.allBooks.length){
-				this.books = this.allBooks
-				this.itemModels = []
-				this.activeBook = null
-				return
-			}
+			// if(this.allBooks.length){
+			// 	this.books = this.allBooks
+			// 	this.itemModels = []
+			// 	this.activeBook = null
+			// 	return
+			// }
+
+			const loader = this.$loading.show()
 
 			try {
 				const { tree, orphans } = await API.fetchKBBooks()
+				const { items } = await API.fetchKBFavorites()
+				this.favorites = items
 				const books = [...tree, ...orphans]
 				this.booksAccess(books)
 				this.books = books
@@ -808,9 +814,11 @@ export default {
 				this.$toast.error('Не удалось получить список разделов')
 				window.onerror && window.onerror(error)
 			}
+			loader.hide()
 		},
 
 		async fetchBook(root, init){
+			const loader = this.$loading.show()
 			function setRootRights(root, page){
 				page.canEdit = root.canEdit
 				page.canRead = root.canRead
@@ -825,7 +833,6 @@ export default {
 				this.books = []
 				this.pages = []
 				const pages = []
-
 
 				book.canEdit = root.canEdit
 				book.canRead = root.canRead || root.canEdit
@@ -850,6 +857,7 @@ export default {
 				this.$toast.error('Не удалось получить список разделов')
 				window.onerror && window.onerror(error)
 			}
+			loader.hide()
 		},
 
 		async addSection() {
@@ -860,7 +868,7 @@ export default {
 			try {
 				const book = await API.createKBBook({
 					name: this.sectionName,
-					parent_id: this.createParentId,
+					parent_id: this.createParentId || null,
 				})
 				book.canRead = true
 				book.canEdit = true
@@ -1029,7 +1037,7 @@ export default {
 			}
 			this.$nextTick(async () => {
 				await this.onPage(page, true)
-				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}&hl=${search}`)
+				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}${search ? '&hl=' + search : ''}`)
 			})
 		},
 
@@ -1123,11 +1131,15 @@ export default {
 				await API.updateKBOrder({
 					id,
 					order: newIndex,
-					parent_id: parentId,
+					parent_id: parentId || null,
 				})
-				const page = this.pagesMap[id]
-				const prevParent = this.pagesMap[page.parent_id]
-				const parent = this.pagesMap[parentId]
+				let page = this.pagesMap[id]
+				if(!page) page = this.booksMap[id]
+				let prevParent = this.pagesMap[page.parent_id]
+				if(!prevParent) prevParent = this.booksMap[page.parent_id]
+				let parent = this.pagesMap[parentId]
+				if(!parent) parent = this.booksMap[parentId]
+
 				if(prevParent){
 					const index = prevParent.children.findIndex(children => children.id === id)
 					if(~index) prevParent.children.splice(index, 1)
@@ -1177,10 +1189,12 @@ export default {
 		},
 
 		async editAccess(book) {
+			const loader = this.$loading.show()
 			this.clearAccess()
-			this.showEdit = true
 			this.updateBook = book
 			this.fetchAccess(book)
+			this.showEdit = true
+			loader.hide()
 		},
 
 		clearAccess(){

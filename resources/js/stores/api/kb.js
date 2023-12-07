@@ -15,6 +15,10 @@ function nest(items, id = null, link = 'parent_id'){
 }
 
 function booksTree(books){
+	books.forEach(book => {
+		// eslint-disable-next-line camelcase
+		book.parent_id = book.parent_id || null
+	})
 	const map = books.reduce((map, book) => {
 		map[book.id] = structuredClone(book)
 		return map
@@ -91,11 +95,33 @@ export async function addKBPage(id){
 	return data
 }
 
+/* favorites */
+export async function fetchKBFavorites(){
+	const {data} = await axios.get('/kb/get-favourites')
+	return {
+		items: data.items.map(page => {
+			return {
+				...page,
+				canRead: true,
+				canEdit: false,
+				opened: true,
+				book: {
+					id: page.topParent_id,
+					opened: true,
+					canRead: true,
+					canEdit: false,
+				}
+			}
+		})
+	}
+}
 export async function toggleKBPageFavorite(id, request){
 	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)
 	return data
 }
+/* favorites */
 
+/* glossary */
 export async function fetchGlossary(){
 	const {data} = await axios.get('/glossary/get')
 	return data
@@ -123,3 +149,4 @@ export async function updateGlossaryAccess(targets){
 	})
 	return data
 }
+/* glossary */

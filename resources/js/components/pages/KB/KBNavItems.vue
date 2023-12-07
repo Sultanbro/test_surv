@@ -101,11 +101,7 @@ const KBNavItems = {
 			return this.mode === 'edit'
 		},
 		sorted(){
-			if(this.isEditMode) return this.items
-			return [
-				...this.items.slice().filter(item => item.isFavorite),
-				...this.items.slice().filter(item => !item.isFavorite),
-			]
+			return this.items
 		}
 	},
 	watch: {},
