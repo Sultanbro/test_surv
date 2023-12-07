@@ -397,8 +397,9 @@ class AnalyticStat extends Model
 
     }
 
-    public static function convert_formula(string $text, array $row_keys, array $col_keys): string
+    public static function convert_formula(string $text = null, array $row_keys, array $col_keys): string
     {
+        $text = $text ?: '';
         $matches = [];
         preg_match_all('/\[\d+:\d+]/', $text, $matches);
 
