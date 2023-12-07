@@ -119,13 +119,33 @@ class UserService
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $first_date, $last_date, $nextMonthFirstDay) {
-            $q->whereIn('status', [GroupUser::STATUS_ACTIVE, GroupUser::STATUS_DROP]) // status 'drop' for transferred employees
-            ->where('group_id', $groupId);
-            //$q->whereDate('from', '>=', $first_date);
-            $q->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
-                $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
-                    ->orWhereNull('to');
-            });
+            $q->where('group_id', $groupId)
+                ->where(function ($query) use ($nextMonthFirstDay, $first_date, $last_date) {
+                    $query->where(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
+                        // For active users in the selected month
+                        $subQuery->where('status', GroupUser::STATUS_ACTIVE);
+                        $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
+                            $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
+                                ->orWhereNull('to');
+                        });
+                    })->orWhere(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
+                        // For users who were active and then dropped in the selected month
+                        $subQuery->where('status', GroupUser::STATUS_DROP);
+                        $subQuery->whereDate('from', '>=', $first_date);
+                        $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
+                            $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
+                                ->orWhereNull('to');
+                        });
+                    });
+                });
+            /////////
+//            $q->whereIn('status', [GroupUser::STATUS_ACTIVE, GroupUser::STATUS_DROP]) // status 'drop' for transferred employees
+//            ->where('group_id', $groupId);
+//            //$q->whereDate('from', '>=', $first_date);
+//            $q->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
+//                $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
+//                    ->orWhereNull('to');
+//            });
         })
             ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->where(function (Builder $query) use ($last_date) {
