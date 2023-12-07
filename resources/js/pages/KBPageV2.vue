@@ -663,7 +663,7 @@ export default {
 			const breadcrumbs = []
 			let currentId = this.activeBook.id
 			while(currentId){
-				const book = this.allBooksMap[currentId] || this.pagesMap[currentId]
+				const book = this.booksMap[currentId] || this.pagesMap[currentId]
 				if(!book) return breadcrumbs.reverse()
 				breadcrumbs.push({
 					title: book.title,
