@@ -144,11 +144,11 @@ class SalaryController extends Controller
                 $users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
-            if ($request->user_types == '1') {
+            if ($request->user_types == 1) {
                 $users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
-            if ($request->user_types == '2') {
+            if ($request->user_types == 2) {
                 $users = (new UserService)->getTraineesForSalaries($request->group_id, $date->format('Y-m-d'));
             }
 
