@@ -47,6 +47,7 @@ final class Analytics
     {
         $date = $stat->date;
         $ids = $this->covertLettersToIds($stat->group_id, $date, $value);
+        if (!$ids) return $formula;
         return $ids . $formula;
     }
 
