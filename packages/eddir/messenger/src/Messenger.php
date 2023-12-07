@@ -943,12 +943,24 @@ class Messenger
 
         if ($chatId == 0) return $chat;
 
+        $messages = MessengerMessage::query()->where('chat_id', $chatId)->get();
+
         if (is_int($userId)) {
+            if ( $messages->count() > 0 ) {
+                // set messages as read
+                $user = User::query()->find($userId);
+                if ($user) {
+                    $messages->each(function (MessengerMessage $message) use ($user) {
+                        // add user to read users
+                        $message->readers()->syncWithoutDetaching($user);
+                    });
+                }
+            }
             $this->createEvent($chat, $promote, MessengerEvent::TYPE_JOIN, [
                 'user' => User::find($userId)->toArray(),
             ]);
         } else if (is_array($userId)) {
-            foreach ($_userId as $user => $userId) {
+            foreach ($userId as $user) {
                 $this->createEvent($chat, $promote, MessengerEvent::TYPE_JOIN, [
                     'user' => User::find($user)->toArray(),
                 ]);
