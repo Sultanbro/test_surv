@@ -325,7 +325,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/settings/notifications/user', [Timetrack\TimetrackingController::class, 'getUserNotifications']);
     Route::post('/timetracking/settings/notifications/user/save', [Timetrack\TimetrackingController::class, 'saveUserNotifications']);
     Route::get('/timetracking/reports', [Timetrack\TimetrackingController::class, 'reports']);
-    Route::post('/timetracking/reports', [Timetrack\TimetrackingController::class, 'getR§eports']);
+    Route::post('/timetracking/reports', [Timetrack\TimetrackingController::class, 'getReports']);
     Route::post('/timetracking/reports/update/day', [Timetrack\TimetrackingController::class, 'updateTimetrackingDay']);
     Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
     Route::any('/timetracking/status', [Timetrack\TimetrackingController::class, 'trackerstatus']);
