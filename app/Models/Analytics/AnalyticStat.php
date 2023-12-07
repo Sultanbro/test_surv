@@ -446,7 +446,7 @@ class AnalyticStat extends Model
         $length = count($letters);
 
         $fl_pos = $number % $length;
-        $sl_pos = floor($number / $length) - 1;
+        $sl_pos = floor($number / $length);
 
         if ($number < $length) {
             return $letters[$fl_pos];
