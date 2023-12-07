@@ -121,7 +121,7 @@ class UserService
         $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $first_date, $last_date, $nextMonthFirstDay) {
             $q->whereIn('status', [GroupUser::STATUS_ACTIVE, GroupUser::STATUS_DROP]) // status 'drop' for transferred employees
             ->where('group_id', $groupId);
-            $q->whereDate('from', '>=', $first_date);
+            //$q->whereDate('from', '>=', $first_date);
             $q->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
                 $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
                     ->orWhereNull('to');
