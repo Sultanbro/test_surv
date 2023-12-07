@@ -1158,6 +1158,8 @@ export default {
 					this.pages.splice(newIndex, 0, page)
 				}
 				page.parent_id = parentId
+				this.pages = this.pages.slice()
+				this.books = this.books.slice()
 				this.$toast.success('Очередь сохранена')
 			}
 			catch (error) {
