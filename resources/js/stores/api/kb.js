@@ -98,7 +98,22 @@ export async function addKBPage(id){
 /* favorites */
 export async function fetchKBFavorites(){
 	const {data} = await axios.get('/kb/get-favourites')
-	return data
+	return {
+		items: data.items.map(page => {
+			return {
+				...page,
+				canRead: true,
+				canEdit: false,
+				opened: true,
+				book: {
+					id: page.topParent_id,
+					opened: true,
+					canRead: true,
+					canEdit: false,
+				}
+			}
+		})
+	}
 }
 export async function toggleKBPageFavorite(id, request){
 	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)

@@ -800,6 +800,8 @@ export default {
 
 			try {
 				const { tree, orphans } = await API.fetchKBBooks()
+				const { items } = await API.fetchKBFavorites()
+				this.favorites = items
 				const books = [...tree, ...orphans]
 				this.booksAccess(books)
 				this.books = books
@@ -1035,7 +1037,7 @@ export default {
 			}
 			this.$nextTick(async () => {
 				await this.onPage(page, true)
-				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}&hl=${search}`)
+				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}${search ? '&hl=' + search : ''}`)
 			})
 		},
 
