@@ -118,12 +118,26 @@ class UserService
         $first_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $data = User::with('groups')->whereHas('group_users', function ($q) use ($groupId, $first_date, $last_date, $nextMonthFirstDay) {
+        $carbonDate = Carbon::parse($date);
+        $currentMonth = Carbon::now()->month;
+        $addCondition = false;
+        if (Carbon::parse($date)->month < $currentMonth) {
+            $addCondition = true;
+            $nextMonth = $carbonDate->copy()->addMonth()->month;
+        } else {
+            $nextMonth = $carbonDate->month;
+        }
+
+
+        $data = User::with('groups')->whereHas('group_users', function ($q) use ($nextMonth, $groupId, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
             $q->where('group_id', $groupId)
-                ->where(function ($query) use ($nextMonthFirstDay, $first_date, $last_date) {
-                    $query->where(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
+                ->where(function ($query) use ($nextMonth, $nextMonthFirstDay, $first_date, $last_date, $addCondition) {
+                    $query->where(function ($subQuery) use ($nextMonth, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
                         // For active users in the selected month
                         $subQuery->where('status', GroupUser::STATUS_ACTIVE);
+                        if ($addCondition) {
+                            $subQuery->whereMonth('from', '<', $nextMonth);
+                        }
                         $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
                             $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
                                 ->orWhereNull('to');
