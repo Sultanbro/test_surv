@@ -443,7 +443,7 @@ class AnalyticStat extends Model
     public static function getLetter($number): string
     {
         $letters = range('A', 'Z');
-        $length = count($letters) - 1;
+        $length = count($letters);
 
         $fl_pos = $number % $length;
         $sl_pos = floor($number / $length) - 1;
