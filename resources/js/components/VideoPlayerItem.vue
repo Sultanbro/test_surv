@@ -82,4 +82,13 @@ export default {
 		}
 	}
 }
+@media (min-width: 1600px) {
+	.video-player {
+		&.vjs-custom-skin{
+			.video-js{
+				min-height: 50vh;
+			}
+		}
+	}
+}
 </style>
