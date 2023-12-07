@@ -327,7 +327,7 @@ class AnalyticsController extends Controller
             $stat->show_value = $request->show_value;
 
             if ($request->type == 'formula') {
-                $stat->value = $request->formula;
+                $stat->value = $request->value;
             }
 
             if ($request->type == 'remote' || $request->type == 'inhouse') {
