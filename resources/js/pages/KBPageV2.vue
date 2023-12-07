@@ -818,6 +818,7 @@ export default {
 		},
 
 		async fetchBook(root, init){
+			if(!root) return
 			const loader = this.$loading.show()
 			function setRootRights(root, page){
 				page.canEdit = root.canEdit
