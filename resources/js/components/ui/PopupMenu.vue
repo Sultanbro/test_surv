@@ -29,7 +29,14 @@ export default {
 			default: 'bottomRight',
 			validator(value) {
 				// The value must match one of these strings
-				return ['bottomRight', 'bottomLeft', 'topRight', 'topLeft', 'right'].includes(value)
+				return [
+					'bottomRight',
+					'bottomLeft',
+					'topRight',
+					'topLeft',
+					'right',
+					'rightBottom'
+				].includes(value)
 			}
 		},
 		maxHeight: {
@@ -73,6 +80,10 @@ export default {
 		left: 100%;
 		top: 50%;
 		transform: translateY(-50%);
+	}
+	&_rightBottom{
+		left: 100%;
+		bottom: 0;
 	}
 
 	&-scroll{
