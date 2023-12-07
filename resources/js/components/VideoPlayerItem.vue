@@ -76,6 +76,19 @@ export default {
 
 <style lang="scss">
 .video-player {
-
+	&.vjs-custom-skin{
+		.video-js{
+			min-height: auto;
+		}
+	}
+}
+@media (min-width: 1600px) {
+	.video-player {
+		&.vjs-custom-skin{
+			.video-js{
+				min-height: 50vh;
+			}
+		}
+	}
 }
 </style>
