@@ -11,7 +11,7 @@
 		<template v-for="item in sorted">
 			<KBNavItem
 				v-if="(opened && item.canRead) || (sectionsMode && (mode === 'edit' || !parent))"
-				:key="item.id"
+				:key="`${parent ? parent.id : ''}-${item.id}`"
 				:item="item"
 				:parent="parent"
 				:mode="mode"
