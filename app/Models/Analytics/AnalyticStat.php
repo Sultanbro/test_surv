@@ -8,12 +8,10 @@ use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\Timetracking;
 use Carbon\Carbon;
-use DivisionByZeroError;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Throwable;
 
 /**
  * @property  int $row_id
@@ -58,25 +56,28 @@ class AnalyticStat extends Model
     const STAT = 'stat'; // value from individual stat
     const AVG = 'avg'; // avg from individual stat for 31 days
     const SUM = 'sum'; // sum from individual stat for 31 days
+    const SALARY = 'salary'; // sum of salaries
+    const REMOTE = 'remote'; // additional remote minutes
     const INHOUSE = 'inhouse'; // additional inhouse minutes
     const SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
 
+    /**
+     * Form pivot table to vue
+     */
     public static function form($group_id, $date): array
     {
         $table = [];
 
-        /** @var Collection<Row> $rows */
         $rows = Row::query()
             ->where('group_id', $group_id)
             ->where('date', $date)
             ->orderBy('order', 'desc') // это неправильно правильно с order
             ->get();
 
-        /** @var Collection<Column> $columns */
         $columns = Column::query()
             ->where('group_id', $group_id)
             ->where('date', $date)
-            ->orderBy('order')
+            ->orderBy('order', 'asc')
             ->get();
 
         $weekdays = self::getWeekdays($date); // coloring weekdays
@@ -134,13 +135,15 @@ class AnalyticStat extends Model
                         $arr['value'] = self::convert_formula($stat->value, $row_keys, $col_keys);
                         $val = self::calcFormula($stat, $date, $stat->decimals);
 
+
                         $arr['show_value'] = $val;
                         $stat->show_value = $val;
                         $stat->save();
                     }
 
 
-                    if ($stat->type == self::STAT) {
+                    if ($stat->type == 'stat') {
+
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
                         $val = UserStat::total_for_day($stat->activity_id, $day);
                         $stat->show_value = $val;
@@ -167,12 +170,12 @@ class AnalyticStat extends Model
                     }
 
                     if ($stat->type == 'salary') {
-                        $total = GroupSalary::query()
+                        $gsalary = GroupSalary::query()
                             ->where('group_id', $group_id)
                             ->where('date', $date)
                             ->get()
                             ->sum('total');
-                        $val = floor($total);
+                        $val = floor($gsalary);
                         $stat->show_value = $val;
                         $stat->save();
                         $arr['value'] = $val;
@@ -180,9 +183,9 @@ class AnalyticStat extends Model
                     }
 
                     if ($stat->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        $total = 0;
+                        $gsalary = 0;
 
-                        $val = floor($total);
+                        $val = floor($gsalary);
                         $stat->show_value = $val;
                         $stat->save();
                         $arr['value'] = $val;
@@ -190,7 +193,7 @@ class AnalyticStat extends Model
                     }
 
                     if ($stat->type == 'time') {
-                        /** @var AnalyticColumn $column */
+
                         $column = AnalyticColumn::query()->find($column->id);
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
 
@@ -207,8 +210,8 @@ class AnalyticStat extends Model
                     }
 
 
-                } else {
-                    //if not exist, then create
+                } else { //if not exist then create
+
                     $type = 'initial';
                     if ($column->name == 'sum' && $r_index > 3) $type = 'sum';
                     if ($column->name == 'avg' && $r_index > 3) $type = 'avg';
@@ -262,7 +265,6 @@ class AnalyticStat extends Model
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
 
-                    /** @var AnalyticStat $stat */
                     $stat = self::query()
                         ->where('column_id', $item['column_id'])
                         ->where('row_id', $item['row_id'])
@@ -273,6 +275,8 @@ class AnalyticStat extends Model
                         $stat->value = $val;
                         $stat->save();
                     }
+                    //memp($val);
+                    // TODO sum days save to stat
                 }
 
                 if ($item['type'] == 'avg') {
@@ -280,7 +284,7 @@ class AnalyticStat extends Model
 
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
-                    /** @var AnalyticStat $stat */
+
                     $stat = self::query()
                         ->where('column_id', $item['column_id'])
                         ->where('row_id', $item['row_id'])
@@ -291,6 +295,7 @@ class AnalyticStat extends Model
                         $stat->value = $val;
                         $stat->save();
                     }
+                    // TODO avg days save to stat
                 }
             }
         }
@@ -298,17 +303,19 @@ class AnalyticStat extends Model
         return $table;
     }
 
+    /**
+     * Columns array for pivot table
+     */
     public static function columns($group_id, $date): array
     {
         $columns = [];
 
-        $_columns = Column::query()
-            ->where('group_id', $group_id)
+        $_columns = Column::where('group_id', $group_id)
             ->where('date', $date)
-            ->orderBy('id')
+            ->orderBy('id', 'asc')
             ->get();
 
-        foreach ($_columns as $column) {
+        foreach ($_columns as $key => $column) {
             $columns[] = [
                 'key' => $column->name,
             ];
@@ -319,38 +326,42 @@ class AnalyticStat extends Model
 
     public static function new_row($group_id, $after_row_id, $date): array
     {
-        /** @var Row $new_row */
-        $new_row = Row::query()
-            ->create([
-                'group_id' => $group_id,
-                'date' => $date,
-                'name' => 'name',
-                'order' => 1,
-            ]);
 
-        /** @var Row $row */
-        $row = Row::query()
-            ->find($after_row_id);
-        $after_row_order = $row->order;
+        $new_row = Row::create([
+            'group_id' => $group_id,
+            'date' => $date,
+            'name' => 'name',
+            'order' => 1,
+        ]);
 
-        /** @var Collection<AnalyticRow> $rows */
-        $rows = Row::query()
-            ->where('group_id', $group_id)
+        $after_row_order = Row::find($after_row_id)->order;
+
+        $rows = Row::where('group_id', $group_id)
             ->where('date', $date)
             ->where('order', '>=', $after_row_order)
-            ->orderBy('order')
+            ->orderBy('order', 'asc')
             ->get();
-
         $new_row->order = $after_row_order++;
         $new_row->save();
 
-        foreach ($rows as $row) {
+        foreach ($rows as $key => $row) {
             $row->order = $after_row_order++;
             $row->save();
         }
 
-        $columns = Column::query()
-            ->where('group_id', $group_id)
+        // $rows = Row::where('group_id', $group_id)
+        //     ->where('date', $date)
+        //     ->orderBy('order', 'desc')
+        //     ->get();
+
+        // $r_start = $rows->count() + 1;
+        // foreach ($rows as $key => $row) {
+        //     $row->order = $r_start--;
+        //     $row->save();
+        // }
+
+        //// columns
+        $columns = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->get();
 
@@ -366,18 +377,17 @@ class AnalyticStat extends Model
             $class = 'text-center';
             if ($column->name == 'name') $class = 'text-left';
 
-            self::query()
-                ->create([
-                    'group_id' => $group_id,
-                    'date' => $date,
-                    'row_id' => $new_row->id,
-                    'column_id' => $column->id,
-                    'value' => '',
-                    'show_value' => '',
-                    'editable' => 1,
-                    'type' => $type,
-                    'class' => $class
-                ]);
+            $stat = self::create([
+                'group_id' => $group_id,
+                'date' => $date,
+                'row_id' => $new_row->id,
+                'column_id' => $column->id,
+                'value' => '',
+                'show_value' => '',
+                'editable' => 1,
+                'type' => $type,
+                'class' => $class
+            ]);
 
             $arr = [
                 'value' => '',
@@ -397,34 +407,36 @@ class AnalyticStat extends Model
 
     }
 
-    public static function convert_formula(string $text = null, array $row_keys, array $col_keys): string
-    {
-        $text = $text ?: '';
-        $matches = [];
-        preg_match_all('/\[\d+:\d+]/', $text, $matches);
 
-        // Loop through matches and build an array for str_replace.
-        $search = [];
-        $replace = [];
+    /**
+     * convert cells
+     * from [123:34] to E5
+     *
+     */
+    public static function convert_formula($text, $row_keys, $col_keys)
+    {
+        $matches = [];
+        preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
-            $search[] = "[" . $match . "]";
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $replace[] = self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]];
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
             } else {
-                $replace[] = '0';
+                $text = str_replace("[" . $match . "]", '0', $text);
             }
         }
-
-        // Use str_replace with arrays as parameters.
-        return str_replace($search, $replace, $text);
+        return $text;
     }
 
+    /**
+     * convert cells
+     * from [123:34] to [234:45]
+     */
     public static function convert_formula_to_new_month($text, $row_keys, $col_keys)
     {
         $matches = [];
-        preg_match_all('/\[\d+:\d+]/', $text, $matches);
+        preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
 
         foreach ($matches[0] as $match) {
             $match = str_replace("[", "", $match);
@@ -442,37 +454,39 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
-        $letters = range('A', 'Z');
-        $length = count($letters);
+        $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
-        $fl_pos = $number % $length;
-        $sl_pos = floor($number / $length) - 1;
 
-        if ($number < $length) {
-            return $letters[$fl_pos];
-        } else {
-            return $letters[$sl_pos] . $letters[$fl_pos];
+        $sl_pos = -1;
+
+        $fl_pos = ($number + 1) % 26;
+        if ($fl_pos == 0) $sl_pos++;
+
+        if ($number >= 26 && $fl_pos != 0) {
+            $sl_pos = 0;
         }
+
+        if ($sl_pos >= 0) {
+            $res = $letters[$sl_pos] . $letters[$fl_pos];
+        } else {
+            $res = $letters[$fl_pos];
+        }
+
+
+        return $res;
     }
 
     public static function daysAvg($date, $row_id, $group_id): float|int
     {
         $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-        $columns = AnalyticColumn::query()
-            ->where('group_id', $group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)
-            ->get();
+        $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
 
         $total = 0;
         $count = 0;
 
-        $all_stats = self::query()
-            ->where('row_id', $row_id)
-            ->where('date', $date)
-            ->get();
+        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
 
-        foreach ($columns as $column) {
+        foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
             if ($stat) {
@@ -502,18 +516,12 @@ class AnalyticStat extends Model
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
-        $columns = AnalyticColumn::query()
-            ->where('group_id', $group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)->get();
+        $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
 
         $total = 0;
 
-        $all_stats = self::query()
-            ->where('row_id', $row_id)
-            ->where('date', $date)
-            ->get();
-        foreach ($columns as $column) {
+        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
+        foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
             if ($stat and is_numeric($stat->show_value)) {
@@ -523,6 +531,7 @@ class AnalyticStat extends Model
 
         return $total;
     }
+
 
     public static function getWeekdays($date): array
     {
@@ -544,7 +553,7 @@ class AnalyticStat extends Model
     {
         $text = $stat->value;
         $matches = [];
-        preg_match_all('/\[\d+:\d+]/', $text, $matches);
+        preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -559,7 +568,7 @@ class AnalyticStat extends Model
                 ->first();
 
             if ($cell) {
-                if ($cell->type == self::FORMULA) {
+                if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) return 0;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
@@ -592,11 +601,21 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}", "", $math_string);
             }
             $math_string = str_replace("%", "", $math_string);
+            $word = "E14";
+
+            // Test if string contains the word
+
 
             $res = eval($math_string);
 
-        } catch (DivisionByZeroError|Throwable) {
 
+        } catch (\DivisionByZeroError $e) {
+
+            $res = 0;
+        } catch (\ParseError $p) {
+            $res = 0;
+            // dd($math_string);
+        } catch (\Throwable $e) {
             $res = 0;
         }
         return round($res, $round);
@@ -605,26 +624,19 @@ class AnalyticStat extends Model
     public static function getRentability($group_id, $date): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-
-        /** @var Column $column */
-        $column = Column::query()
-            ->where('group_id', $group_id)
+        $column = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'plan')
             ->first();
 
-        /** @var Row $row */
-        $row = Row::query()
-            ->where('group_id', $group_id)
+        $row = Row::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'Impl')
             ->first();
 
         $val = 0;
         if ($row && $column) {
-            /** @var AnalyticStat $stat */
-            $stat = self::query()
-                ->where('column_id', $column->id)
+            $stat = self::where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->where('date', $date)
                 ->first();
@@ -642,17 +654,12 @@ class AnalyticStat extends Model
     public static function getProceedsPlan($group_id, $date): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-
-        /** @var Column $column */
-        $column = Column::query()
-            ->where('group_id', $group_id)
+        $column = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'sum')
             ->first();
 
-        /** @var Row $row */
-        $row = Row::query()
-            ->where('group_id', $group_id)
+        $row = Row::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'Pr, cstll')
             ->first();
@@ -660,9 +667,7 @@ class AnalyticStat extends Model
         $val = 0;
 
         if ($row && $column) {
-            /** @var AnalyticStat $stat */
-            $stat = self::query()
-                ->where('column_id', $column->id)
+            $stat = self::where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->where('date', $date)
                 ->first();
@@ -686,16 +691,12 @@ class AnalyticStat extends Model
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
-        /** @var Column $columns */
-        $columns = Column::query()
-            ->where('group_id', $group_id)
+        $columns = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->whereIn('name', $days)
             ->get();
 
-        /** @var Row $row */
-        $row = Row::query()
-            ->where('group_id', $group_id)
+        $row = Row::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'second')
             ->first();
@@ -707,9 +708,7 @@ class AnalyticStat extends Model
 
         if ($row) {
             foreach ($columns as $column) {
-                /** @var AnalyticStat $stat */
-                $stat = self::query()
-                    ->where('column_id', $column->id)
+                $stat = self::where('column_id', $column->id)
                     ->where('row_id', $row->id)
                     ->where('date', $date)
                     ->first();
@@ -721,6 +720,8 @@ class AnalyticStat extends Model
                     } else {
                         $values[(int)$column->name] = (int)$stat->show_value;
                     }
+
+
                 }
             }
 
@@ -733,12 +734,16 @@ class AnalyticStat extends Model
     {
         $values = self::getProceeds($group_id, $date);
         $sum = 0;
-        foreach ($values as $value) {
+        foreach ($values as $key => $value) {
             $sum += $value;
         }
         return $sum;
     }
 
+    /**
+     * get value from cell string
+     * ex: C4 or A5
+     */
     public static function getCellValue($group_id, $cell, $date, $round = 0): float|int
     {
         // get indexes
@@ -764,7 +769,9 @@ class AnalyticStat extends Model
 
         if ($column_letters != '') {
             $i = 0;
-            if ($column_letters != 'A') {
+            if ($column_letters == 'A') {
+                $c_index = 0;
+            } else {
                 while ($column_letters != self::getLetter($i)) {
                     $i++;
                 }
@@ -772,24 +779,23 @@ class AnalyticStat extends Model
             }
         }
 
+
         if ($row_letters != '') {
             $r_index = (int)$row_letters - 1;
         }
+
         // get column
-        /** @var Collection<Column> $columns */
-        $columns = AnalyticColumn::query()
-            ->where('date', $date)
+
+        $columns = AnalyticColumn::where('date', $date)
             ->where('group_id', $group_id)
-            ->orderBy('order')
+            ->orderBy('order', 'asc')
             ->get();
 
         $column = $columns[$c_index] ?? null;
 
         // get row
 
-        /** @var Collection<Row> $rows */
-        $rows = AnalyticRow::query()
-            ->where('date', $date)
+        $rows = AnalyticRow::where('date', $date)
             ->where('group_id', $group_id)
             ->orderBy('order', 'desc')
             ->get();
@@ -799,9 +805,7 @@ class AnalyticStat extends Model
 
         $value = 0;
         if ($row && $column) {
-            /** @var AnalyticStat $stat */
-            $stat = self::query()
-                ->where('date', $date)
+            $stat = self::where('date', $date)
                 ->where('column_id', $column->id)
                 ->where('row_id', $row->id)
                 ->first();
@@ -818,6 +822,10 @@ class AnalyticStat extends Model
         return $value;
     }
 
+
+    /**
+     * Получить рентабельность на конкретный день в месяце
+     */
     public static function getRentabilityOnDay(int $group_id, string $date): float|int
     {
         $impl = 0;
