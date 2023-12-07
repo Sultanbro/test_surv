@@ -136,7 +136,7 @@ class UserService
                         // For active users in the selected month
                         $subQuery->where('status', GroupUser::STATUS_ACTIVE);
                         if ($addCondition) {
-                            $subQuery->whereMonth('from', '<', $nextMonth);
+                            $subQuery->whereDate('from', '<', $nextMonthFirstDay);
                         }
                         $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
                             $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
