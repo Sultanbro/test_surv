@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 final class Analytics
 {
@@ -48,7 +49,7 @@ final class Analytics
         $date = $stat->date;
         $ids = $this->covertLettersToIds($stat->group_id, $date, $value);
         if (!$ids) return $formula;
-        if (\Str::contains($formula, $ids)) return $formula;
+        if (Str::contains($formula, $ids)) return $formula;
         return $ids . $formula;
     }
 
