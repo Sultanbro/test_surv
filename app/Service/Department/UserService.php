@@ -154,7 +154,7 @@ class UserService
                         // For users who were active and then dropped in the selected month
                         $subQuery->where('status', GroupUser::STATUS_FIRED);
                         $subQuery->where(function (Builder $query) use ($first_date, $last_date, $nextMonthFirstDay) {
-                            $query->whereBetween('to', [$first_date, $nextMonthFirstDay]);
+                            $query->whereDate('to', '>', $first_date);
                         });
                     });
                 });
