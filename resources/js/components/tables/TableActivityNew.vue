@@ -1055,8 +1055,8 @@ export default {
 				}
 
 				if(
-					(this.user_types == 1 && ['drop', 'fired'].includes(account.status) && !account.isTrainee)
-					|| (this.user_types == 0 && !['drop', 'fired'].includes(account.status) && !account.isTrainee)
+					(this.user_types == 1 && account.fired && !account.isTrainee)
+					|| (this.user_types == 0 && !account.fired && !account.isTrainee)
 					|| (this.user_types == 2 && account.isTrainee)
 				) {
 					this.itemsArray.push({
