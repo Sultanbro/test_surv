@@ -95,11 +95,18 @@ export async function addKBPage(id){
 	return data
 }
 
+/* favorites */
+export async function fetchKBFavorites(){
+	const {data} = await axios.get('/kb/get-favourites')
+	return data
+}
 export async function toggleKBPageFavorite(id, request){
 	const {data} = await axios.post(`/kb/toggle-favorite/${id}`, request)
 	return data
 }
+/* favorites */
 
+/* glossary */
 export async function fetchGlossary(){
 	const {data} = await axios.get('/glossary/get')
 	return data
@@ -127,3 +134,4 @@ export async function updateGlossaryAccess(targets){
 	})
 	return data
 }
+/* glossary */

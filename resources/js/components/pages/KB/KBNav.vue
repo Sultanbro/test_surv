@@ -326,6 +326,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		favorites: {
+			type: Array,
+			default: () => []
+		},
 		rootBook: {
 			type: Object,
 			default: null
