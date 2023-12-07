@@ -450,7 +450,7 @@ class KnowBaseController extends Controller
     {
         $favourite = DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->first();
         if ($favourite && $request->toggle != 1) {
-            $favourite->delete();
+            DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->delete();
         } elseif (!$favourite && $request->toggle == 1) {
             \DB::table('user_starred_kbs')->insert([
                 'user_id' => Auth::id(),

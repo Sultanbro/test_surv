@@ -818,6 +818,7 @@ export default {
 		},
 
 		async fetchBook(root, init){
+			if(!root) return
 			const loader = this.$loading.show()
 			function setRootRights(root, page){
 				page.canEdit = root.canEdit
@@ -1157,6 +1158,8 @@ export default {
 					this.pages.splice(newIndex, 0, page)
 				}
 				page.parent_id = parentId
+				this.pages = this.pages.slice()
+				this.books = this.books.slice()
 				this.$toast.success('Очередь сохранена')
 			}
 			catch (error) {
