@@ -8,10 +8,12 @@ use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\Timetracking;
 use Carbon\Carbon;
+use DivisionByZeroError;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Throwable;
 
 /**
  * @property  int $row_id
@@ -601,21 +603,9 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}", "", $math_string);
             }
             $math_string = str_replace("%", "", $math_string);
-            $word = "E14";
-
-            // Test if string contains the word
-
-
             $res = eval($math_string);
+        } catch (DivisionByZeroError|Throwable) {
 
-
-        } catch (\DivisionByZeroError $e) {
-
-            $res = 0;
-        } catch (\ParseError $p) {
-            $res = 0;
-            // dd($math_string);
-        } catch (\Throwable $e) {
             $res = 0;
         }
         return round($res, $round);
@@ -766,7 +756,6 @@ class AnalyticStat extends Model
         if (count($matches[0]) > 0) {
             $row_letters = $matches[0][0];
         }
-
         if ($column_letters != '') {
             $i = 0;
             if ($column_letters == 'A') {
@@ -779,35 +768,33 @@ class AnalyticStat extends Model
             }
         }
 
-
         if ($row_letters != '') {
             $r_index = (int)$row_letters - 1;
         }
 
-        // get column
-
-        $columns = AnalyticColumn::where('date', $date)
+        $columns = AnalyticColumn::query()
+            ->where('date', $date)
             ->where('group_id', $group_id)
-            ->orderBy('order', 'asc')
+            ->orderBy('order')
             ->get();
 
-        $column = $columns[$c_index] ?? null;
-
+        $column = $columns->toArray()[$c_index] ?? null;
         // get row
 
-        $rows = AnalyticRow::where('date', $date)
+        $rows = AnalyticRow::query()
+            ->where('date', $date)
             ->where('group_id', $group_id)
             ->orderBy('order', 'desc')
             ->get();
-        $row = $rows[$r_index] ?? null;
-        // get cell
 
+        $row = $rows->toArray()[$r_index] ?? null;
+        // get cell
 
         $value = 0;
         if ($row && $column) {
-            $stat = self::where('date', $date)
-                ->where('column_id', $column->id)
-                ->where('row_id', $row->id)
+            $stat = self::query()->where('date', $date)
+                ->where('column_id', $column['id'])
+                ->where('row_id', $row['id'])
                 ->first();
 
             if ($stat) {

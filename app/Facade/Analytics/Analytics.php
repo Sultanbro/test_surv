@@ -43,6 +43,13 @@ final class Analytics
     {
     }
 
+    public function convertCellCoordinatesToFormula(AnalyticStat $stat, string $value, string $formula): string
+    {
+        $date = $stat->date;
+        $ids = $this->covertLettersToIds($stat->group_id, $date, $value);
+        return $ids . $formula;
+    }
+
     public static function getArr(
         AnalyticStat    $statistic,
         AnalyticRow     $row,
@@ -338,7 +345,6 @@ final class Analytics
             return [$column->id => $index - 1];
         })->toArray();
 
-
         return [
             'rows' => $rowKeys,
             'columns' => $columnKeys
@@ -616,5 +622,67 @@ final class Analytics
     private function labels(?ProfileGroup $group): array
     {
         return [0, 50, 100, $group->rentability_max];
+    }
+
+    public function covertLettersToIds(int $group_id, string $date, ?string $cell = null): ?string
+    {
+        // get indexes
+        $r_index = 0;
+        $c_index = 0;
+
+        $column_letters = '';
+        $row_letters = '';
+
+        $matches = [];
+        preg_match_all('/[a-zA-Z]{1,2}+/', $cell, $matches);
+
+        if (count($matches[0]) > 0) {
+            $column_letters = strtoupper($matches[0][0]);
+        }
+
+        $matches = [];
+        preg_match_all('/\d+/', $cell, $matches);
+
+        if (count($matches[0]) > 0) {
+            $row_letters = $matches[0][0];
+        }
+        if ($column_letters != '') {
+            $i = 0;
+            if ($column_letters == 'A') {
+                $c_index = 0;
+            } else {
+                while ($column_letters != AnalyticStat::getLetter($i)) {
+                    $i++;
+                }
+                $c_index = $i + 1;
+            }
+        }
+
+        if ($row_letters != '') {
+            $r_index = (int)$row_letters - 1;
+        }
+
+        $columns = AnalyticColumn::query()
+            ->where('date', $date)
+            ->where('group_id', $group_id)
+            ->orderBy('order')
+            ->get();
+
+        $column = $columns->toArray()[$c_index] ?? null;
+
+        // get row
+        $rows = AnalyticRow::query()
+            ->where('date', $date)
+            ->where('group_id', $group_id)
+            ->orderBy('order', 'desc')
+            ->get();
+
+        $row = $rows->toArray()[$r_index] ?? null;
+
+        if (!$row || !$column) {
+            return null;
+        }
+
+        return '[' . $column['id'] . ':' . $row['id'] . ']';
     }
 }
