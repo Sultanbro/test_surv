@@ -1146,8 +1146,14 @@ export default {
 					if(~index) prevParent.children.splice(index, 1)
 				}
 				else{
-					const index = this.pages.findIndex(p => p.id === id)
-					if(~index) this.pages.splice(index, 1)
+					if(this.root){
+						const index = this.pages.findIndex(p => p.id === id)
+						if(~index) this.pages.splice(index, 1)
+					}
+					else{
+						const index = this.books.findIndex(p => p.id === id)
+						if(~index) this.books.splice(index, 1)
+					}
 				}
 
 				if(parent){
@@ -1155,11 +1161,20 @@ export default {
 					parent.children.splice(newIndex, 0, page)
 				}
 				else{
-					this.pages.splice(newIndex, 0, page)
+					if(this.root){
+						this.pages.splice(newIndex, 0, page)
+					}
+					else{
+						this.books.splice(newIndex, 0, page)
+					}
 				}
 				page.parent_id = parentId
-				this.pages = this.pages.slice()
-				this.books = this.books.slice()
+				this.$nextTick(() => {
+					this.$forceUpdate()
+					this.pages = this.pages.slice()
+					this.books = this.books.slice()
+					this.allBooks = this.allBooks.slice()
+				})
 				this.$toast.success('Очередь сохранена')
 			}
 			catch (error) {
