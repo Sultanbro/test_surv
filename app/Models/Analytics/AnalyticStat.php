@@ -413,22 +413,28 @@ class AnalyticStat extends Model
      * from [123:34] to E5
      *
      */
-    public static function convert_formula($text, $row_keys, $col_keys)
+    public static function convert_formula(string $text, array $row_keys, array $col_keys): string
     {
         $matches = [];
-        preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+        preg_match_all('/\[\d+:\d+]/', $text, $matches);
+
+        // Loop through matches and build an array for str_replace.
+        $search = [];
+        $replace = [];
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
+            $search[] = "[" . $match . "]";
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
+                $replace[] = self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]];
             } else {
-                $text = str_replace("[" . $match . "]", '0', $text);
+                $replace[] = '0';
             }
         }
-        return $text;
-    }
 
+        // Use str_replace with arrays as parameters.
+        return str_replace($search, $replace, $text);
+    }
     /**
      * convert cells
      * from [123:34] to [234:45]
@@ -454,28 +460,18 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
-        $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $letters = range('A', 'Z');
+        $length = count($letters);
 
+        $fl_pos = $number % $length;
+        $sl_pos = floor($number / $length) - 1;
 
-        $sl_pos = -1;
-
-        $fl_pos = ($number + 1) % 26;
-        if ($fl_pos == 0) $sl_pos++;
-
-        if ($number >= 26 && $fl_pos != 0) {
-            $sl_pos = 0;
-        }
-
-        if ($sl_pos >= 0) {
-            $res = $letters[$sl_pos] . $letters[$fl_pos];
+        if ($number < $length) {
+            return $letters[$fl_pos];
         } else {
-            $res = $letters[$fl_pos];
+            return $letters[$sl_pos].$letters[$fl_pos];
         }
-
-
-        return $res;
     }
-
     public static function daysAvg($date, $row_id, $group_id): float|int
     {
         $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
