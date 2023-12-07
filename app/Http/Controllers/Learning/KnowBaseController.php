@@ -572,7 +572,7 @@ class KnowBaseController extends Controller
         $kb->questions = [];
         $kb->parent_id = null;
 
-//        $this->notifyAboutChanges('Страница: ', $page);
+        $this->notifyAboutChanges('Добавлена новая страница: ', $kb);
 
         return $kb;
     }
