@@ -88,7 +88,7 @@
 										v-if="isUserAdmin(member.id)"
 										#after
 									>
-										<IconCog class="ConversationHeader-adminIcon" />
+										<IconCrown class="ConversationHeader-adminIcon" />
 									</template>
 								</JobtronAvatar>
 								<template v-if="showMembersNames">
@@ -146,7 +146,7 @@
 													v-if="isUserAdmin(user.id)"
 													#after
 												>
-													<IconCog class="ConversationHeader-adminIcon" />
+													<IconCrown class="ConversationHeader-adminIcon" />
 												</template>
 											</JobtronAvatar>
 											{{ `${user.name} ${user.last_name}` }}
@@ -289,7 +289,7 @@ import {
 	ChatIconMuteChat,
 	ChatIconDeleteChat,
 	ChatIconHistoryBack,
-	IconCog,
+	IconCrown,
 } from '@icons'
 import JobtronAvatar from '@ui/Avatar'
 import JobtronOverlay from '@ui/Overlay'
@@ -310,7 +310,7 @@ export default {
 		ChatIconMuteChat,
 		ChatIconDeleteChat,
 		ChatIconHistoryBack,
-		IconCog,
+		IconCrown,
 		JobtronOverlay,
 		JobtronButton,
 	},
@@ -849,15 +849,19 @@ export default {
 		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
 	}
 	&-adminIcon{
-		width: 75%;
-		height: 75%;
+		width: 50%;
+		height: 50%;
+		padding: 2px;
 
 		position: absolute;
 		right: -10%;
-		bottom: -10%;
+		top: -10%;
 
 		stroke: #fff;
 		stroke-width: 3;
+
+		border-radius: 50%;
+		background: #eee;
 	}
 }
 </style>

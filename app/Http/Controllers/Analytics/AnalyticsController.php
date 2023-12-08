@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Analytics;
 use App\CallBase;
 use App\Classes\Analytics\DM;
 use App\Events\UserStatUpdatedEvent;
+use App\Facade\Analytics\Analytics;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Analytics\Statistics\UpdateUserStatRequest;
 use App\Imports\AnalyticsImport;
@@ -327,7 +328,9 @@ class AnalyticsController extends Controller
             $stat->show_value = $request->show_value;
 
             if ($request->type == 'formula') {
-                $stat->value = $request->value;
+                /** @var Analytics $service */
+                $service = app(Analytics::class);
+                $stat->value = $service->convertCellCoordinatesToFormula($stat, $request->value, $request->formula);
             }
 
             if ($request->type == 'remote' || $request->type == 'inhouse') {

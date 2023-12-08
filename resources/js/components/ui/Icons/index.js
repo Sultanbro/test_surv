@@ -46,6 +46,7 @@ import IconChatNoImage from './IconChatNoImage'
 
 import IconDelete from './IconDelete'
 import IconCog from './IconCog'
+import IconCrown from './IconCrown'
 
 export {
 	ChatIconBack,
@@ -96,4 +97,5 @@ export {
 
 	IconDelete,
 	IconCog,
+	IconCrown,
 }
