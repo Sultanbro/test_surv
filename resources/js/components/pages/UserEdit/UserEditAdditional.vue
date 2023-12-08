@@ -60,6 +60,17 @@ export default {
 					<col class="UserEditAdditional-values">
 				</colgroup>
 				<tbody>
+					<tr v-if="user && user.inviter">
+						<td>Пригласивший</td>
+						<td>
+							<a
+								:href="'/timetracking/edit-person?id=' + user.inviter.id"
+								target="_blank"
+							>
+								{{ user.inviter.name }} {{ user.inviter.last_name }}
+							</a>
+						</td>
+					</tr>
 					<tr v-if="isBP && user && user.lead && (user.lead.lead_id || user.lead.deal_id)">
 						<td
 							v-if="user.lead.lead_id"
@@ -139,6 +150,17 @@ export default {
 					<col class="UserEditAdditional-values">
 				</colgroup>
 				<tbody>
+					<tr v-if="user && user.inviter">
+						<td>Пригласивший</td>
+						<td>
+							<a
+								:href="'/timetracking/edit-person?id=' + user.inviter.id"
+								target="_blank"
+							>
+								{{ user.inviter.name }} {{ user.inviter.last_name }}
+							</a>
+						</td>
+					</tr>
 					<tr v-if="isBP && user && user.lead && (user.lead.lead_id || user.lead.deal_id)">
 						<td
 							v-if="user.lead.lead_id"
