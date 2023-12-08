@@ -2,21 +2,17 @@
 
 namespace App\Console\Commands\Pusher;
 
-use App\Classes\Helpers\Phone;
-use App\Enums\Mailing\MailingEnum;
-use App\Facade\MailingFacade;
-use App\Models\GroupUser;
-use App\Models\Mailing\Mailing;
-use App\Models\Mailing\MailingNotification;
-use App\Models\Mailing\MailingNotificationSchedule;
-use App\Service\Mailing\Notifiers\NotificationFactory;
+use App\ProfileGroup;
 use App\User;
-use Carbon\Carbon;
-use Exception;
-use http\Exception\InvalidArgumentException;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use Exception;
+use Carbon\Carbon;
+use App\Classes\Helpers\Phone;
+use Illuminate\Console\Command;
+use App\Enums\Mailing\MailingEnum;
+use App\Models\Mailing\MailingNotification;
+use http\Exception\InvalidArgumentException;
+use App\Service\Mailing\Notifiers\NotificationFactory;
 
 class NotificationTemplatePusher extends Command
 {
@@ -43,7 +39,7 @@ class NotificationTemplatePusher extends Command
     public function handle()
     {
         $notifications = MailingNotification::getTemplates()->isActive()
-            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
+            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_FIRED_WITHOUT_POLL])
             ->get();
 
         foreach ($notifications as $notification)
@@ -90,6 +86,33 @@ class NotificationTemplatePusher extends Command
     }
 
     /**
+     * @throws Throwable
+     */
+    private function fired_employee_without_poll_pusher(
+        MailingNotification $notification
+    )
+    {
+        $date = Carbon::now()->subDay()->format('Y-m-d');
+
+        $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
+        $mailings = $notification?->mailings();
+        $recipientIds = $this->getUserIds($notification->recipients);
+        $recipients = User::query()->whereIn('id', $recipientIds)->get();
+
+        foreach ($mailings as $mailing)
+        {
+            $this->line("type of mailing:".$mailing);
+            foreach ($users as $user)
+            {
+                $this->line("Id of user:".$user->id);
+                $message    = $notification?->title ."\n" . $user->name . " " . $user->last_name;
+
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
+            }
+        }
+    }
+
+    /**
      * @param MailingNotification $notification
      * @return void
      * @throws Throwable
@@ -121,5 +144,30 @@ class NotificationTemplatePusher extends Command
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }
+    }
+
+    /**
+     * Get employee ids which should notified by using notificationable_type and notificationable_id
+     */
+    private function getUserIds($recipients)
+    {
+        $employeeIds = [];
+
+        foreach ($recipients as $item) {
+
+            if($item->notificationable_type == 'App\\User') {
+                $employeeIds[] = $item->notificationable_id;
+            }
+            elseif($item->notificationable_type == 'App\\ProfileGroup') {
+                $userIds = ProfileGroup::getById($item->notificationable_id)->activeUsers()->pluck('user_id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+            elseif($item->notificationable_type == 'App\\Position') {
+                $userIds = User::query()->where('position_id', $item->notificationable_id)->pluck('id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+
+        }
+        return array_unique($employeeIds);
     }
 }

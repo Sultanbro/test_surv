@@ -5,10 +5,8 @@ namespace App\Service\Trigger;
 
 use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
-use App\Models\Mailing\MailingNotificationSchedule;
 use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
-use http\Exception\InvalidArgumentException;
 use Throwable;
 
 /**

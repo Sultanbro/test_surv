@@ -214,6 +214,7 @@ final class UserRepository extends CoreRepository
                 'img_url' => $dto->fileName,
                 'coordinate_id' => isset($dto->coordinates) ? $this->setCoordinate($dto->coordinates) : null,
                 'segment' => $segment ? $segment->id : 57,
+                'inviter_id' => \Auth::id()
             ]
         );
 
