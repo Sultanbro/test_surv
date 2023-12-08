@@ -35,7 +35,7 @@ class AnalyticStatTest extends TenantTestCase
 
         /** @var Analytics $service */
         $service = app(Analytics::class);
-        $result = $service->convertCellCoordinatesToFormula($stats->first(), 'I5*8', '*8');
+        $result = $service->convertCellFormulaToCoordinates($stats->first(), 'I5*8', '*8');
         dd($result);
     }
 }

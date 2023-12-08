@@ -26,9 +26,11 @@ use App\User;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use View;
 
 class AnalyticsController extends Controller
@@ -313,51 +315,60 @@ class AnalyticsController extends Controller
     /**
      * Edit stat
      */
-    public function editStat(Request $request)
+    public function editStat(Request $request): JsonResponse
     {
 
+        /** @var AnalyticStat $stat */
         $stat = AnalyticStat::query()
-            ->where('date', $request->date)
-            ->where('row_id', $request->row_id)
-            ->where('column_id', $request->column_id)
+            ->where('date', $request->get("date"))
+            ->where('row_id', $request->get("row_id"))
+            ->where('column_id', $request->get("column_id"))
             ->first();
 
-        if ($stat) {
-            $old_value = $stat->value;
-            $stat->value = $request->value;
-            $stat->show_value = $request->show_value;
+        if (!$stat) return $this->response(
+            message: 'Statistic not found!',
+            data: [],
+            code: ResponseAlias::HTTP_NOT_FOUND,
+        );
 
-            if ($request->type == 'formula') {
-                /** @var Analytics $service */
-                $service = app(Analytics::class);
-                $stat->value = $service->convertCellCoordinatesToFormula($stat, $request->value, $request->formula);
-            }
+        $old_value = $stat->value;
+        $stat->value = $request->get("value");
+        $stat->show_value = $request->get("show_value");
 
-            if ($request->type == 'remote' || $request->type == 'inhouse') {
-
-                $type = $request->type == 'remote' ? 'remote' : 'office';
-
-                $day = AnalyticColumn::withTrashed()->find($request->column_id);
-                if ($day) {
-                    $date = Carbon::parse($request->date)
-                        ->day($day->name)
-                        ->format('Y-m-d');
-
-                    $this->addHours($request->group_id, $type, $request->value, $old_value, $date);
-                }
-
-                $stat->comment = $request->comment;
-            }
-
-            $stat->type = $request->type;
-            $stat->class = $request->class;
-            $stat->save();
+        if ($request->get("type") == 'formula') {
+            /** @var Analytics $service */
+            $service = app(Analytics::class);
+            $stat->value = $service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula"));
         }
+
+        if ($request->get("type") == 'remote' || $request->get("type") == 'inhouse') {
+
+            $type = $request->get("type") == 'remote' ? 'remote' : 'office';
+            /** @var AnalyticColumn $column */
+            $column = AnalyticColumn::withTrashed()->find($request->get("column_id"));
+
+            if ($column) {
+                $date = Carbon::parse($request->get("date"))
+                    ->day($column->name)
+                    ->format('Y-m-d');
+
+                $this->addHours($request->get("group_id"), $type, $request->get("value"), $old_value, $date);
+            }
+
+            $stat->comment = $request->get("comment");
+        }
+
+        $stat->type = $request->get("type");
+        $stat->class = $request->get("class");
+        $stat->save();
+
+        return $this->response(
+            message: 'Success!',
+            data: $stat->toArray(),
+            code: ResponseAlias::HTTP_ACCEPTED,
+        );
     }
 
-    /**
-     * Add hours for remote and inhouse users
-     */
     public function addHours($group_id, $user_type, $value, $old_value, $date)
     {
         // TODO users

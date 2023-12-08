@@ -44,7 +44,7 @@ final class Analytics
     {
     }
 
-    public function convertCellCoordinatesToFormula(AnalyticStat $stat, string $value, string $formula): string
+    public function convertCellFormulaToCoordinates(AnalyticStat $stat, string $value, string $formula): string
     {
         $date = $stat->date;
         $ids = $this->covertLettersToIds($stat->group_id, $date, $value);
