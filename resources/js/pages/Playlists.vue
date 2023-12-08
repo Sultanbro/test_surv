@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="token"
-		class="video-playlists"
+		class="PlayLists video-playlists"
 	>
 		<div class="d-flex">
 			<div class="lp">
@@ -140,7 +140,7 @@
 								<div
 									v-for="(playlistItem, p_index) in activeCat.playlists"
 									:key="playlistItem.id"
-									class="playlist mb-4"
+									class="PlayList playlist mb-4"
 									@click="selectPl(p_index)"
 								>
 									<div class="left">
@@ -166,11 +166,11 @@
 										</div>
 									</div>
 
-									<div class="right">
+									<div class="PlayList-content right">
 										<div class="title">
 											{{ playlistItem.title }}
 										</div>
-										<div class="text">
+										<div class="PlayList-text text">
 											{{ playlistItem.text }}
 										</div>
 									</div>
@@ -705,3 +705,11 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+.PlayList{
+	&-content{
+		overflow: hidden;
+	}
+}
+</style>

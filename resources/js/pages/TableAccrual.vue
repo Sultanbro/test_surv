@@ -2183,5 +2183,9 @@ hr {
 			white-space: nowrap;
 		}
 	}
+	.SalaryCell-2,
+	.SalaryCell-weekend-2{
+		color: #62788b;
+	}
 }
 </style>
