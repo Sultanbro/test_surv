@@ -198,6 +198,14 @@ export default {
 		},
 		showPaymentDialog({item, field}){
 			if(!this.$can('referral_edit')) return
+			const isDay = item[field.key].day
+			const isAttest = field.key === 'attest'
+			const reason = isDay
+				? 'за день стажировки'
+				: isAttest
+					? 'сдал аттестацию'
+					: 'за неделю работы'
+
 			this.paymentDialog.title = `Редактирование оплаты ${item.title} ${field.labelDialog}`
 			this.paymentDialog.id = item.id
 			this.paymentDialog.key = field.key
@@ -205,7 +213,7 @@ export default {
 			this.paymentDialog.transactionId = item[field.key].id
 			this.paymentDialog.oldComment = item[field.key].comment || ''
 			this.paymentDialog.comment = ''
-			this.paymentDialog.date = item[field.key].date ? `за день стажировки ${this.$moment.utc(item[field.key].date).format('DD.MM.YYYY')}` : ''
+			this.paymentDialog.date = item[field.key].date ? `${reason} ${this.$moment.utc(item[field.key].date).format('DD.MM.YYYY')}` : ''
 			this.paymentDialog.open = true
 		},
 		async paymentSave(){
