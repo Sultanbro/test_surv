@@ -164,7 +164,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         'coordinate_id',
         'referrer_id',
         'referrer_status',
-        'welcome_message'
+        'welcome_message',
+        'inviter_id'
     ];
 
     protected $casts = [

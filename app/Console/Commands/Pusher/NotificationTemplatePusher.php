@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Pusher;
 
+use App\ProfileGroup;
 use App\User;
 use Throwable;
 use Exception;
@@ -95,6 +96,8 @@ class NotificationTemplatePusher extends Command
 
         $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
         $mailings = $notification?->mailings();
+        $recipientIds = $this->getUserIds($notification->recipients);
+        $recipients = User::query()->whereIn('id', $recipientIds)->get();
 
         foreach ($mailings as $mailing)
         {
@@ -102,10 +105,9 @@ class NotificationTemplatePusher extends Command
             foreach ($users as $user)
             {
                 $this->line("Id of user:".$user->id);
-                $message    = $notification?->title ."\n";
-                $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
+                $message    = $notification?->title ."\n" . $user->name . " " . $user->last_name;
 
-                NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }
     }
@@ -142,5 +144,30 @@ class NotificationTemplatePusher extends Command
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }
+    }
+
+    /**
+     * Get employee ids which should notified by using notificationable_type and notificationable_id
+     */
+    private function getUserIds($recipients)
+    {
+        $employeeIds = [];
+
+        foreach ($recipients as $item) {
+
+            if($item->notificationable_type == 'App\\User') {
+                $employeeIds[] = $item->notificationable_id;
+            }
+            elseif($item->notificationable_type == 'App\\ProfileGroup') {
+                $userIds = ProfileGroup::getById($item->notificationable_id)->activeUsers()->pluck('user_id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+            elseif($item->notificationable_type == 'App\\Position') {
+                $userIds = User::query()->where('position_id', $item->notificationable_id)->pluck('id')->toArray();
+                $employeeIds = array_merge($employeeIds, $userIds);
+            }
+
+        }
+        return array_unique($employeeIds);
     }
 }
