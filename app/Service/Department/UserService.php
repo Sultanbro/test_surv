@@ -145,7 +145,7 @@ class UserService
                     })->orWhere(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
                         // For users who were active and then dropped in the selected month
                         $subQuery->where('status', GroupUser::STATUS_DROP);
-                        $subQuery->whereDate('from', '>=', $first_date);
+                        $subQuery->whereDate('from', '<=', $last_date);
                         $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
                             $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
                                 ->orWhereNull('to');
