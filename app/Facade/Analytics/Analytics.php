@@ -47,10 +47,10 @@ final class Analytics
     public function convertCellFormulaToCoordinates(AnalyticStat $stat, string $value, string $formula): string
     {
         $date = $stat->date;
-        $ids = $this->covertLettersToIds($stat->group_id, $date, $value);
-        if (!$ids) return $formula;
-        if (Str::contains($formula, $ids)) return $formula;
-        return $ids . $formula;
+        $coordinates = $this->getCoordinates($stat->group_id, $date, $value);
+        if (!$coordinates) return $formula;
+        if (Str::contains($formula, $coordinates)) return $formula;
+        return $coordinates . $formula;
     }
 
     public static function getArr(
@@ -627,7 +627,7 @@ final class Analytics
         return [0, 50, 100, $group->rentability_max];
     }
 
-    public function covertLettersToIds(int $group_id, string $date, ?string $cell = null): ?string
+    public function getCoordinates(int $group_id, string $date, ?string $cell = null): ?string
     {
         // get indexes
         $r_index = 0;
