@@ -413,7 +413,9 @@ class UserService
     {
         $userData = [];
         foreach ($groupUsers as $groupUser) {
-            $user = User::withTrashed()->with('groups')->where('id', $groupUser->user_id)
+            $user = User::withTrashed()
+                ->with('groups')
+                ->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0));
 
             if ($last_date) {
