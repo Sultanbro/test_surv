@@ -17,6 +17,7 @@ import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сай�
 import 'vue-croppie'
 import {
 	triggerApplyEmployee,
+	triggerFiredEmployee,
 } from '@/stores/api.js'
 import {
 	fire_trainee_causes,
@@ -586,6 +587,9 @@ export default {
 					data: formData,
 					headers: { 'Content-Type': 'multipart/form-data' },
 				})
+				if(this.user){
+					await triggerFiredEmployee(this.user.id)
+				}
 				this.parseResponse(data)
 				this.$toast.success('Сотрудник уволен')
 			}
