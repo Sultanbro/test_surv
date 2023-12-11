@@ -284,7 +284,8 @@ class UserService
         foreach ($groups as $group) {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
                 ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
+                ->whereYear('to', $this->getYear($date))
+                ->whereMonth('to', $this->getMonth($date));
 
             $data = $this->getGroupEmployees($groupUser->get());
         }
@@ -497,6 +498,16 @@ class UserService
     function getMonth(string $date): int
     {
         return $date == null ? Carbon::now()->month : Carbon::createFromFormat('Y-m-d', $date)->month;
+    }
+
+    public function getEmployeesWithFired(int $id, Carbon $date)
+    {
+        $active = $this->getEmployees($id, $date->toDateString());
+        $fired = $this->getFiredEmployees($id, $date->toDateString());
+        return [
+            ...$active,
+            ...$fired
+        ];
     }
 
     /**
