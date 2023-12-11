@@ -732,11 +732,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
         Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
-
-        /**
-         * API не используется так как перешли на крон. Но оставлю в списке
-         */
-        Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
+        Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']); // for company headers
     });
 
     Route::prefix('')
