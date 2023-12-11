@@ -21,18 +21,15 @@
 					>
 						<div
 							v-if="isEditMode && (parent ? parent.canEdit : true)"
-							class="KBNavItem-handlerIcon"
+							class="KBNavItem-handlerIcon KBNavItem-mover"
 						>
-							<i class="KBNavItem-mover fa fa-bars" />
+							<i class="fa fa-bars" />
 						</div>
 						<div
-							class="KBNavItem-handlerIcon"
+							class="KBNavItem-handlerIcon KBNavItem-shower"
 							@click.stop="$emit('open', item)"
 						>
-							<i
-								class="KBNavItem-shower"
-								:class="handler"
-							/>
+							<i :class="handler" />
 						</div>
 					</div>
 				</template>
@@ -128,6 +125,8 @@ export default {
 
 <style lang="scss">
 .KBNavItem{
+	color: #212529;
+
 	&-button{
 		position: relative;
 
@@ -229,7 +228,7 @@ export default {
 				&:hover{
 					.KBNavItem{
 						&-mover{
-							display: inline-block;
+							display: flex;
 						}
 						&-shower{
 							display: none;
