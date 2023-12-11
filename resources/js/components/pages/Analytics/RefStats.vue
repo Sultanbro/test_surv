@@ -127,6 +127,7 @@ export default {
 				comment: '',
 				date: '',
 				sum: 0,
+				loading: false,
 			},
 		}
 	},
@@ -218,6 +219,8 @@ export default {
 		},
 		async paymentSave(){
 			if(!this.paymentDialog.comment.trim() && this.paymentDialog.oldComment.trim()) return this.$toast.error('Добавьте комментарий')
+			if(this.paymentDialog.loading) return
+			this.paymentDialog.loading = true
 			try {
 				const comment = [this.paymentDialog.oldComment.trim(), this.paymentDialog.comment.trim()].join('\n')
 				await API.referralStatPay(this.paymentDialog.id, {
@@ -236,6 +239,7 @@ export default {
 				this.$toast.error('Не сохранено')
 				window.onerror && window.onerror(error)
 			}
+			this.paymentDialog.loading = false
 		},
 		field2type(field){
 			if(field === 'attest') return 3

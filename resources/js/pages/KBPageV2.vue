@@ -11,7 +11,7 @@
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
 			@back="back"
-			@book="fetchBook"
+			@book="onBook"
 			@search="onSearch"
 			@page="onPage"
 			@add-page="addPage"
@@ -817,6 +817,11 @@ export default {
 			loader.hide()
 		},
 
+		onBook(book){
+			if(this.mode === 'edit') return
+			return this.fetchBook(book)
+		},
+
 		async fetchBook(root, init){
 			if(!root) return
 			const loader = this.$loading.show()
@@ -1073,7 +1078,7 @@ export default {
 			if(!confirm('Вы уверены?')) return
 
 			const id = this.activeBook.id
-			const parent = this.pagesMap[this.activeBook.parent_id] || this.booksMap[this.activeBook.parent_id]
+			const parent = this.rootBook ? this.pagesMap[this.activeBook.parent_id] :this.booksMap[this.activeBook.parent_id]
 			try {
 				await this.axios.post('/kb/page/delete', { id })
 				if(parent){
@@ -1084,6 +1089,7 @@ export default {
 					const index = this.pages.findIndex(page => page.id === id)
 					if(~index) this.pages.splice(index, 1)
 				}
+				this.pages = this.pages.slice()
 				this.activeBook = this.allBooksMap[this.rootId]
 				this.$toast.success('Удалено')
 			}
@@ -1107,7 +1113,12 @@ export default {
 			else{
 				const index = this.allBooks.findIndex(children => children.id === book.id)
 				if(~index) this.allBooks.splice(index, 1)
+				const index2 = this.books.findIndex(children => children.id === book.id)
+				if(~index2) this.books.splice(index2, 1)
 			}
+
+			this.pages = this.pages.slice()
+			this.books = this.books.slice()
 		},
 		unarchive(book){
 			const parent = this.booksMap[book.parent_id]
@@ -1134,41 +1145,8 @@ export default {
 					order: newIndex,
 					parent_id: parentId || null,
 				})
-				let page = this.pagesMap[id]
-				if(!page) page = this.booksMap[id]
-				let prevParent = this.pagesMap[page.parent_id]
-				if(!prevParent) prevParent = this.booksMap[page.parent_id]
-				let parent = this.pagesMap[parentId]
-				if(!parent) parent = this.booksMap[parentId]
+				this[this.rootBook ? 'updatePageOrder' : 'updateBookOrder'](id, parentId, newIndex)
 
-				if(prevParent){
-					const index = prevParent.children.findIndex(children => children.id === id)
-					if(~index) prevParent.children.splice(index, 1)
-				}
-				else{
-					if(this.root){
-						const index = this.pages.findIndex(p => p.id === id)
-						if(~index) this.pages.splice(index, 1)
-					}
-					else{
-						const index = this.books.findIndex(p => p.id === id)
-						if(~index) this.books.splice(index, 1)
-					}
-				}
-
-				if(parent){
-					if(!parent.children) parent.children = []
-					parent.children.splice(newIndex, 0, page)
-				}
-				else{
-					if(this.root){
-						this.pages.splice(newIndex, 0, page)
-					}
-					else{
-						this.books.splice(newIndex, 0, page)
-					}
-				}
-				page.parent_id = parentId
 				this.$nextTick(() => {
 					this.$forceUpdate()
 					this.pages = this.pages.slice()
@@ -1182,6 +1160,52 @@ export default {
 				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить очередь')
 			}
+		},
+		updateBookOrder(id, parentId, newIndex){
+			const book = this.booksMap[id]
+			const prevParent = this.booksMap[book.parent_id]
+			const parent = this.booksMap[parentId]
+
+			if(prevParent){
+				const index = prevParent.children.findIndex(children => children.id === id)
+				if(~index) prevParent.children.splice(index, 1)
+			}
+			else{
+				const index = this.books.findIndex(p => p.id === id)
+				if(~index) this.books.splice(index, 1)
+			}
+
+			if(parent){
+				if(!parent.children) parent.children = []
+				parent.children.splice(newIndex, 0, book)
+			}
+			else{
+				this.books.splice(newIndex, 0, book)
+			}
+			book.parent_id = parentId
+		},
+		updatePageOrder(id, parentId, newIndex){
+			const page = this.pagesMap[id]
+			const prevParent = this.pagesMap[page.parent_id]
+			const parent = this.pagesMap[parentId]
+
+			if(prevParent){
+				const index = prevParent.children.findIndex(children => children.id === id)
+				if(~index) prevParent.children.splice(index, 1)
+			}
+			else{
+				const index = this.pages.findIndex(p => p.id === id)
+				if(~index) this.pages.splice(index, 1)
+			}
+
+			if(parent){
+				if(!parent.children) parent.children = []
+				parent.children.splice(newIndex, 0, page)
+			}
+			else{
+				this.pages.splice(newIndex, 0, page)
+			}
+			page.parent_id = parentId
 		},
 		/* === BOOKS === */
 
@@ -1280,6 +1304,15 @@ export default {
 			}]
 		},
 
+		pageAccess(page, canRead, canEdit){
+			page.canRead = canRead
+			page.canEdit = canEdit
+			if(page.children){
+				page.children.forEach(child => {
+					this.pageAccess(child, canRead, canEdit)
+				})
+			}
+		},
 		async bookAccess(book){
 			const {
 				whoCanEdit,
@@ -1328,8 +1361,7 @@ export default {
 			if(book.children && book.children.length){
 				for(const child of book.children){
 					if(!child.is_category) {
-						child.canRead = book.canRead
-						child.canEdit = book.canEdit
+						this.pageAccess(child, book.canRead, book.canEdit)
 						continue
 					}
 					await this.bookAccess(child)
