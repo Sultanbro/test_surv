@@ -31,10 +31,17 @@ function booksTree(books){
 		orphans: books.filter(book => book.parent_id && !map[book.parent_id])
 	}
 }
+function booksOpen(books){
+	books.forEach(book => {
+		book.opened = true
+		book.canRead = true
+	})
+	return books
+}
 
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
-	return booksTree(data.books || [])
+	return booksTree(booksOpen(data.books || []))
 }
 
 export async function fetchKBArchived(){

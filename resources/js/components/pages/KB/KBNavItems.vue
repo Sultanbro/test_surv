@@ -11,7 +11,7 @@
 	>
 		<template v-for="item in sorted">
 			<KBNavItem
-				v-if="(opened && item.canRead) || (sectionsMode && (mode === 'edit' || !parent))"
+				v-if="sectionsMode && !isEditMode ? !parent && item.canRead : (opened || !parent) && item.canRead"
 				:key="`${parent ? parent.id : ''}-${item.id}`"
 				:item="item"
 				:parent="parent"
@@ -132,7 +132,7 @@ const KBNavItems = {
 			this.$nextTick(() => {
 				this.$forceUpdate()
 			})
-		}
+		},
 	},
 }
 

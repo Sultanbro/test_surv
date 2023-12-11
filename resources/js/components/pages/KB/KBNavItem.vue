@@ -16,16 +16,24 @@
 					/>
 				</template>
 				<template v-else>
-					<div class="KBNavItem-handler">
-						<i
+					<div
+						class="KBNavItem-handler"
+					>
+						<div
 							v-if="isEditMode && (parent ? parent.canEdit : true)"
-							class="KBNavItem-mover fa fa-bars"
-						/>
-						<i
-							class="KBNavItem-shower"
-							:class="handler"
+							class="KBNavItem-handlerIcon"
+						>
+							<i class="KBNavItem-mover fa fa-bars" />
+						</div>
+						<div
+							class="KBNavItem-handlerIcon"
 							@click.stop="$emit('open', item)"
-						/>
+						>
+							<i
+								class="KBNavItem-shower"
+								:class="handler"
+							/>
+						</div>
 					</div>
 				</template>
 				<div
@@ -155,6 +163,13 @@ export default {
 		.fa-circle{
 			font-size: 5px;
 		}
+	}
+	&-handlerIcon{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
 	}
 	&-mover{
 		color: #1db332 !important;

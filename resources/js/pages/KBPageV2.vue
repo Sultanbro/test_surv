@@ -11,7 +11,7 @@
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
 			@back="back"
-			@book="fetchBook"
+			@book="onBook"
 			@search="onSearch"
 			@page="onPage"
 			@add-page="addPage"
@@ -817,6 +817,11 @@ export default {
 			loader.hide()
 		},
 
+		onBook(book){
+			if(this.mode === 'edit') return
+			return this.fetchBook(book)
+		},
+
 		async fetchBook(root, init){
 			if(!root) return
 			const loader = this.$loading.show()
@@ -1108,6 +1113,8 @@ export default {
 			else{
 				const index = this.allBooks.findIndex(children => children.id === book.id)
 				if(~index) this.allBooks.splice(index, 1)
+				const index2 = this.books.findIndex(children => children.id === book.id)
+				if(~index2) this.books.splice(index2, 1)
 			}
 
 			this.pages = this.pages.slice()
