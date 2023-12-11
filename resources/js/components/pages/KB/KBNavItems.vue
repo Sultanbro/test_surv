@@ -146,5 +146,11 @@ export default KBNavItems
 </script>
 
 <style lang="scss">
-//.KBNavItems{}
+.KBNavItems{
+	&-item{
+		&_active{
+			color: #65790c;
+		}
+	}
+}
 </style>
