@@ -5,6 +5,7 @@ namespace App\Models\Article;
 use App\Enums\ArticleAvailableForTypeEnum;
 use App\Models\Comment\Comment;
 use App\Models\File\File;
+use App\Models\GroupUser;
 use App\Models\Like\Like;
 use App\Traits\Filterable;
 use App\User;
@@ -194,7 +195,14 @@ class Article extends Model
                 ->orWhereJsonContains('available_for', ['id' => $user->id, 'type' => ArticleAvailableForTypeEnum::EMPLOYEE])
                 ->orWhereJsonContains('available_for', ['id' => $user->position_id, 'type' => ArticleAvailableForTypeEnum::POSITION]);
 
-            $profileGroups = $user->groups;
+            $profileGroups = GroupUser::query()->where('user_id', $user->id)
+                ->where([
+                    ['status', 'active']
+                ])
+                ->whereNull('to')
+                ->get()
+                ->pluck('group_id')
+                ->toArray();
             foreach ($profileGroups as $id) {
                 $query->orWhereJsonContains('available_for', ['id' => $id, 'type' => ArticleAvailableForTypeEnum::PROFILE_GROUP]);
             }
