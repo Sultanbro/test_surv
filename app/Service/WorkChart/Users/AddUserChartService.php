@@ -8,8 +8,8 @@ use App\User;
 use Exception;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class AddUserChartService
 {
     /**
@@ -19,15 +19,8 @@ class AddUserChartService
     {
         $user = User::getUserById($dto->userId);
 
-        $updated = $user->update([
+        $user->update([
             'work_chart_id' => $dto->workChartId
         ]);
-
-        if (!$updated)
-        {
-            throw new Exception("При обновлений графика у сотрудника $user->full_name произошла ошибка");
-        }
-
-        return $updated;
     }
 }
