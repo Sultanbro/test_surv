@@ -79,7 +79,9 @@ export default {
 			required: true
 		},
 		parent: {
-			type: Object,
+			validator(value){
+				return ['[object Null]', '[object Object]'].includes(Object.prototype.toString.call(value))
+			},
 			required: true,
 		},
 		mode: {

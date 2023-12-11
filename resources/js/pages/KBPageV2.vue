@@ -1084,6 +1084,7 @@ export default {
 					const index = this.pages.findIndex(page => page.id === id)
 					if(~index) this.pages.splice(index, 1)
 				}
+				this.pages = this.pages.slice()
 				this.activeBook = this.allBooksMap[this.rootId]
 				this.$toast.success('Удалено')
 			}
@@ -1108,6 +1109,9 @@ export default {
 				const index = this.allBooks.findIndex(children => children.id === book.id)
 				if(~index) this.allBooks.splice(index, 1)
 			}
+
+			this.pages = this.pages.slice()
+			this.books = this.books.slice()
 		},
 		unarchive(book){
 			const parent = this.booksMap[book.parent_id]

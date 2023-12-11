@@ -1,6 +1,7 @@
 <template>
 	<Draggable
 		:id="'KBNavItems' + (parent ? parent.id : 0)"
+		:key="key"
 		class="KBNavItems dragArea"
 		tag="ul"
 		:handle="'.fa-bars'"
@@ -75,7 +76,9 @@ const KBNavItems = {
 			required: true,
 		},
 		parent: {
-			type: Object,
+			validator(value){
+				return ['[object Null]', '[object Object]'].includes(Object.prototype.toString.call(value))
+			},
 			required: true,
 		},
 		opened: {
@@ -94,7 +97,9 @@ const KBNavItems = {
 		}
 	},
 	data(){
-		return {}
+		return {
+			key: 0,
+		}
 	},
 	computed: {
 		isEditMode(){
@@ -104,7 +109,11 @@ const KBNavItems = {
 			return this.items
 		}
 	},
-	watch: {},
+	watch: {
+		items(){
+			++this.key
+		}
+	},
 	created(){},
 	mounted(){},
 	methods: {
