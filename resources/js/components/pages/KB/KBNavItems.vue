@@ -1,6 +1,7 @@
 <template>
 	<Draggable
 		:id="'KBNavItems' + (parent ? parent.id : 0)"
+		:key="key"
 		class="KBNavItems dragArea"
 		tag="ul"
 		:handle="'.fa-bars'"
@@ -10,7 +11,7 @@
 	>
 		<template v-for="item in sorted">
 			<KBNavItem
-				v-if="(opened && item.canRead) || (sectionsMode && (mode === 'edit' || !parent))"
+				v-if="sectionsMode && !isEditMode ? !parent && item.canRead : (opened || !parent) && item.canRead"
 				:key="`${parent ? parent.id : ''}-${item.id}`"
 				:item="item"
 				:parent="parent"
@@ -75,7 +76,9 @@ const KBNavItems = {
 			required: true,
 		},
 		parent: {
-			type: Object,
+			validator(value){
+				return ['[object Null]', '[object Object]'].includes(Object.prototype.toString.call(value))
+			},
 			required: true,
 		},
 		opened: {
@@ -94,7 +97,9 @@ const KBNavItems = {
 		}
 	},
 	data(){
-		return {}
+		return {
+			key: 0,
+		}
 	},
 	computed: {
 		isEditMode(){
@@ -104,7 +109,11 @@ const KBNavItems = {
 			return this.items
 		}
 	},
-	watch: {},
+	watch: {
+		items(){
+			++this.key
+		}
+	},
 	created(){},
 	mounted(){},
 	methods: {
@@ -123,7 +132,7 @@ const KBNavItems = {
 			this.$nextTick(() => {
 				this.$forceUpdate()
 			})
-		}
+		},
 	},
 }
 
