@@ -1291,6 +1291,15 @@ export default {
 			}]
 		},
 
+		pageAccess(page, canRead, canEdit){
+			page.canRead = canRead
+			page.canEdit = canEdit
+			if(page.children){
+				page.children.forEach(child => {
+					this.pageAccess(child, canRead, canEdit)
+				})
+			}
+		},
 		async bookAccess(book){
 			const {
 				whoCanEdit,
@@ -1339,8 +1348,7 @@ export default {
 			if(book.children && book.children.length){
 				for(const child of book.children){
 					if(!child.is_category) {
-						child.canRead = book.canRead
-						child.canEdit = book.canEdit
+						this.pageAccess(child, book.canRead, book.canEdit)
 						continue
 					}
 					await this.bookAccess(child)
