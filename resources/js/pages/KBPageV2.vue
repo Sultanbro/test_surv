@@ -1145,41 +1145,8 @@ export default {
 					order: newIndex,
 					parent_id: parentId || null,
 				})
-				let page = this.pagesMap[id]
-				if(!page) page = this.booksMap[id]
-				let prevParent = this.pagesMap[page.parent_id]
-				if(!prevParent) prevParent = this.booksMap[page.parent_id]
-				let parent = this.pagesMap[parentId]
-				if(!parent) parent = this.booksMap[parentId]
+				this[this.rootBook ? 'updatePageOrder' : 'updateBookOrder'](id, parentId, newIndex)
 
-				if(prevParent){
-					const index = prevParent.children.findIndex(children => children.id === id)
-					if(~index) prevParent.children.splice(index, 1)
-				}
-				else{
-					if(this.root){
-						const index = this.pages.findIndex(p => p.id === id)
-						if(~index) this.pages.splice(index, 1)
-					}
-					else{
-						const index = this.books.findIndex(p => p.id === id)
-						if(~index) this.books.splice(index, 1)
-					}
-				}
-
-				if(parent){
-					if(!parent.children) parent.children = []
-					parent.children.splice(newIndex, 0, page)
-				}
-				else{
-					if(this.root){
-						this.pages.splice(newIndex, 0, page)
-					}
-					else{
-						this.books.splice(newIndex, 0, page)
-					}
-				}
-				page.parent_id = parentId
 				this.$nextTick(() => {
 					this.$forceUpdate()
 					this.pages = this.pages.slice()
@@ -1193,6 +1160,52 @@ export default {
 				window.onerror && window.onerror(error)
 				this.$toast.error('Не удалось сохранить очередь')
 			}
+		},
+		updateBookOrder(id, parentId, newIndex){
+			const book = this.booksMap[id]
+			const prevParent = this.booksMap[book.parent_id]
+			const parent = this.booksMap[parentId]
+
+			if(prevParent){
+				const index = prevParent.children.findIndex(children => children.id === id)
+				if(~index) prevParent.children.splice(index, 1)
+			}
+			else{
+				const index = this.books.findIndex(p => p.id === id)
+				if(~index) this.books.splice(index, 1)
+			}
+
+			if(parent){
+				if(!parent.children) parent.children = []
+				parent.children.splice(newIndex, 0, book)
+			}
+			else{
+				this.books.splice(newIndex, 0, book)
+			}
+			book.parent_id = parentId
+		},
+		updatePageOrder(id, parentId, newIndex){
+			const page = this.pagesMap[id]
+			const prevParent = this.pagesMap[page.parent_id]
+			const parent = this.pagesMap[parentId]
+
+			if(prevParent){
+				const index = prevParent.children.findIndex(children => children.id === id)
+				if(~index) prevParent.children.splice(index, 1)
+			}
+			else{
+				const index = this.pages.findIndex(p => p.id === id)
+				if(~index) this.pages.splice(index, 1)
+			}
+
+			if(parent){
+				if(!parent.children) parent.children = []
+				parent.children.splice(newIndex, 0, page)
+			}
+			else{
+				this.pages.splice(newIndex, 0, page)
+			}
+			page.parent_id = parentId
 		},
 		/* === BOOKS === */
 
