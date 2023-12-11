@@ -196,33 +196,9 @@ export default {
 			formData.append('amount', this.summ);
 			this.summ = '';
 			await this.axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
-				.then(res => {
-					this.createAvans(res.data.data)
-				})
-				.catch(res => {
-					console.error(res);
-				})
+			this.success = true;
+			setTimeout(() => {  this.success = false;}, 5000);
 		},
-		async createAvans(data) {
-			await this.axios.post('/timetracking/salaries/update', data.avansData)
-				.then(() => {
-					this.sendBonuses(data.bonusData)
-				})
-				.catch(res => {
-					console.error(res)
-				})
-		},
-		async sendBonuses(data) {
-			await this.axios.post('/timetracking/salaries/update', data)
-				.then(() => {
-					this.success = true;
-					setTimeout(() => {  this.success = false;}, 5000);
-				})
-				.catch(res => {
-					console.error(res)
-				})
-		},
-
 	}
 }
 </script>
