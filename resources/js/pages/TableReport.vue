@@ -851,6 +851,7 @@ import {
 import {
 	triggerApplyEmployee,
 	triggerAbsentInternship,
+	triggerFiredEmployee,
 } from '@/stores/api.js'
 
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
@@ -1136,10 +1137,12 @@ export default {
 
 			if(this.errors.length) return this.$toast.error(this.errors.join('\n'))
 
+			const userId = this.sidebarContent.user_id
+
 			let formData = new FormData();
 			formData.append('month', this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'));
 			formData.append('day', this.sidebarContent.day);
-			formData.append('user_id', this.sidebarContent.user_id);
+			formData.append('user_id', userId);
 			formData.append('year', this.dateInfo.currentYear)
 			formData.append('type', this.currentDayType.type);
 			formData.append('comment', comment);
@@ -1155,6 +1158,8 @@ export default {
 				[this.sidebarContent.day] = `day-${this.currentDayType.type}`
 
 				this.items[this.sidebarContent.data.index]['_cellVariants'] = v
+
+				triggerFiredEmployee(userId)
 
 				this.$toast.success('Сотрудник успешно уволен!')
 
