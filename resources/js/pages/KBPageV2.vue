@@ -1078,7 +1078,7 @@ export default {
 			if(!confirm('Вы уверены?')) return
 
 			const id = this.activeBook.id
-			const parent = this.pagesMap[this.activeBook.parent_id] || this.booksMap[this.activeBook.parent_id]
+			const parent = this.rootBook ? this.pagesMap[this.activeBook.parent_id] :this.booksMap[this.activeBook.parent_id]
 			try {
 				await this.axios.post('/kb/page/delete', { id })
 				if(parent){
