@@ -51,7 +51,7 @@ class WorkChartController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show(int $id): JsonResponse
+    public function show($id): JsonResponse
     {
         $workChart = WorkChartModel::query()->findOrFail($id);
         return $this->response(

@@ -48,7 +48,7 @@ class UserService
         /**
          * Группы пользователя
          */
-        $groups = $user->inGroups( $user->position_id == 45 )->map(function ($group) {
+        $groups = $user->inGroups( $user_position->is_head == 1 )->map(function ($group) {
             return [
                 'id' => $group->id,
                 'name' => $group->name,
