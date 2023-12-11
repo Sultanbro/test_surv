@@ -1078,7 +1078,8 @@ class KpiStatisticService
         if ($type == 2) {
             $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
             $_user_ids = collect((new UserService)->getEmployeesWithFired($profileGroup->id, $date))
-                ->pluck('id');
+                ->pluck('id')
+                ->toArray();
             if ($user_id != 0) $_user_ids = [$user_id];
         }
 
