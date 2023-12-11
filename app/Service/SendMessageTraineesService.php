@@ -31,7 +31,7 @@ class SendMessageTraineesService
     public function sendAboutTrainee(array $userIds,Lead $lead,$invite_at): void
     {
         $title = "Новый стажер!";
-        $message = "Новый стажер ".$lead->name." не пропустите его На ".$invite_at->format('d.m.Y')." время начало обучения ".$invite_at->format("H:i")." ссылка на ватцап ";
+        $message = "Новый стажер ".$lead->name." не пропустите его \n На ".$invite_at->format('d.m.Y')." время начало обучения ".$invite_at->format("H:i")." \n ссылка на ватцап ";
         $message .="https://api.whatsapp.com/send/?phone=".Phone::normalize($lead->phone)."&text&app_absent=0";
         foreach ($userIds as $userId)
         {
