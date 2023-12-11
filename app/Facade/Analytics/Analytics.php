@@ -397,7 +397,6 @@ final class Analytics
             'date' => $date,
         ])->get();
 
-
         return [
             'group_id' => $dto->groupId,
             'records' => $decompositions

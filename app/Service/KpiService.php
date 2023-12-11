@@ -99,9 +99,7 @@ class KpiService
                     }
 
                     $_item['plan'] = $_item['daily_plan'];
-
                 }
-
                 $item['items'] = $items->values();
             }
 
