@@ -2,14 +2,8 @@
 
 namespace App\Service\Mailing\Notifiers;
 
-use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
-use App\Models\Mailing\MailingNotification;
-use App\Models\Mailing\MailingNotificationSchedule;
 use App\UserNotification;
-use Carbon\Carbon;
-use Exception;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 

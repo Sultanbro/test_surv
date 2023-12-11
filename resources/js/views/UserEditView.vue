@@ -236,7 +236,7 @@ export default {
 		taxesFill(data){
 			this.taxesFillData = data;
 		},
-		setData(data){
+		async setData(data){
 			// fix phone
 			if(data?.user?.phone){
 				try {
@@ -251,6 +251,7 @@ export default {
 					// window.onerror && window.onerror(error)
 				}
 			}
+
 			this.csrf = data.csrf
 			this.user = data.user
 			this.groups = data.groups
@@ -280,6 +281,18 @@ export default {
 			this.head_in_groups = data.head_in_groups
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
 			this.updateTaxes();
+			if(data?.user?.inviter_id){
+				try {
+					const {data: inviter} = await this.axios.get('/timetracking/get-person', {params: {id: data.user.inviter_id}})
+					/* eslint-disable require-atomic-updates */
+					this.user.inviter = inviter.user
+					/* eslint-enable require-atomic-updates */
+				}
+				catch (error) {
+					console.error(error)
+				}
+			}
+			this.user = this.user ? {...this.user} : null
 		},
 		async updateTaxes(){
 			try {

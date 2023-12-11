@@ -688,6 +688,17 @@ class EmployeeController extends Controller
         ];
     }
 
+    public function getPerson(Request $request){
+
+        $user = User::withTrashed()
+            ->where('id', $request->id)
+            ->first();
+
+        return [
+            'user' => $user,
+        ];
+    }
+
     /**
      * createPerson
      */
