@@ -42,7 +42,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function tops(): array
     {
         return User::query()
-            ->withCount(['referrals as applied_count' => function ($query) {
+            ->withCount(['referrals as applieds' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
             ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
