@@ -121,6 +121,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                     'group_id' => $prevRow->group_id,
                     'name' => $prevRow->name,
                     'date' => $currentMonth,
+                ], [
                     'order' => $prevRow->order,
                     'depend_id' => $prevRow->depend_id,
                 ]);
