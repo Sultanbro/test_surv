@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\WorkChart;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\WorkChart\Users\AddUserChartRequest;
 use App\Http\Requests\WorkChart\Users\DeleteUserChartRequest;
-use App\Jobs\ProcessAddUserChart;
-use App\Service\WorkChart\Users\AddUserChartService;
 use App\Service\WorkChart\Users\DeleteUserChartService;
 use App\User;
 use Exception;
