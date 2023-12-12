@@ -635,15 +635,9 @@ class TopValue extends Model
                 } else {
                     $row['ed' . $i] = false;
                 }
-<<<<<<< HEAD
 
                 $rentability = $proceeds > 0 ? ($proceeds - $salary) / $proceeds : 0;
                 if ($rentability > 0) $r_counts[$i]++;
-=======
-                
-                $rentability = $proceeds > 0 ?  ($proceeds - $salary) / $proceeds : 0;
-                if($rentability > 0) $r_counts[$i]++;
->>>>>>> a81a8e457 (fix)
                 $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
                 $row['c' . $i] = $salary > 0 ? round($salary) : '';
                 $row['r' . $i] = $rentability > 0 ? round($rentability, 1) . '%' : '';
