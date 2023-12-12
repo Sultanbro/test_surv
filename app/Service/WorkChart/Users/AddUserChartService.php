@@ -15,7 +15,7 @@ class AddUserChartService
     /**
      * @throws Exception
      */
-    public function handle(AddUserChartDTO $dto): bool
+    public function handle(AddUserChartDTO $dto): void
     {
         $user = User::getUserById($dto->userId);
 

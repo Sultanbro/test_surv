@@ -16,7 +16,7 @@ class SendMessageTraineesService
      * @param array $userIds
      * @return void
      */
-    public function handle(array $userIds):void
+    public function handle(array $userIds): void
     {
         //message must be send after two days for that used addDays()
         SendNotificationJob::dispatch($userIds)->delay(now()->addDays(2));
@@ -28,16 +28,15 @@ class SendMessageTraineesService
      * @param Lead $lead
      * @return void
      */
-    public function sendAboutTrainee(array $userIds,Lead $lead,$invite_at): void
+    public function sendAboutTrainee(array $userIds, Lead $lead, $invite_at): void
     {
         $title = "Новый стажер!";
-        $message = "Новый стажер ".$lead->name." не пропустите его \n На ".$invite_at->format('d.m.Y')." время начало обучения ".$invite_at->format("H:i")." \n ссылка на ватцап ";
-        $message .="https://api.whatsapp.com/send/?phone=".Phone::normalize($lead->phone)."&text&app_absent=0";
-        foreach ($userIds as $userId)
-        {
+        $link = "https://api.whatsapp.com/send/?phone=" . Phone::normalize($lead->phone) . "&text&app_absent=0";
+        $message = "Новый стажер " . $lead->name . " не пропустите его \n На " . $invite_at->format('d.m.Y') . " время начало обучения " . $invite_at->format("H:i") . " \n ссылка на ватцап ";
+            $message .= "<a href='$link'>написать стажеру в вацап </a><i class="fa fab fa-whatsapp"></i>";
+        foreach ($userIds as $userId) {
             // Create notification for selected users about new trainees
-            UserNotification::createNotification($title,$message,$userId);
+            UserNotification::createNotification($title, $message, $userId);
         }
-
     }
 }
