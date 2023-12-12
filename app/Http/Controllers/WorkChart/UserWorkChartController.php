@@ -8,6 +8,7 @@ use App\Http\Requests\WorkChart\Users\DeleteUserChartRequest;
 use App\Jobs\ProcessAddUserChart;
 use App\Service\WorkChart\Users\AddUserChartService;
 use App\Service\WorkChart\Users\DeleteUserChartService;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -28,8 +29,12 @@ class UserWorkChartController extends Controller
      */
     public function addChart(AddUserChartRequest $request): JsonResponse
     {
-        $this->workChartService->handle($request->toDto());
-//        ProcessAddUserChart::dispatch($request->toDto());
+        $dto = $request->toDto();
+
+        $user = User::getUserById($dto->userId);
+        $user->work_chart_id = $dto->workChartId;
+        $user->save();
+
         return $this->response(
             message: 'Successfully added'
         );
