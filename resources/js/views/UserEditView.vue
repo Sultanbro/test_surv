@@ -128,6 +128,7 @@ export default {
 			cityLat: 0,
 			cityLon: 0,
 			file8: null,
+			loading: false,
 		}
 	},
 	computed: {
@@ -573,11 +574,14 @@ export default {
 		},
 
 		async deleteUser(){
+			if(this.loading) return
 			this.deleteError = ''
 			if(!this.file8 && this.fireCause !== 'Дубликат, 2 учетки' && !this.isTrainee) {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
+
+			this.loading = true
 
 			const formData = new FormData(this.$refs.deleteForm)
 			try{
@@ -598,6 +602,7 @@ export default {
 				this.$toast.error('Не удалось уволить сотрудника')
 			}
 			this.toggleDeleteConfirm(false, 0)
+			this.loading = false
 		},
 		async recoverUser(){
 			const formData = new FormData(this.$refs.recoverForm)
