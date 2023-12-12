@@ -115,12 +115,13 @@ final class Analytics
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
-        foreach ($rows as $rowIndex => $row) {
-            $item = [];
-            $dependingFromRow = $rows->where('depend_id', $row->id)->first();
-            $cellNumber = $rowIndex + 1;
+        foreach ($columns as $columnIndex => $column) {
 
-            foreach ($columns as $columnIndex => $column) {
+            $item = [];
+            foreach ($rows as $rowIndex => $row) {
+
+                $dependingFromRow = $rows->where('depend_id', $row->id)->first();
+                $cellNumber = $rowIndex + 1;
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
@@ -136,7 +137,6 @@ final class Analytics
 //                    'cell' => $cellLetter . $cellNumber,
 //                    'depend_id' => $row->depend_id,
 //                ];
-
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
                     if ($statistic->activity_id != null) {
