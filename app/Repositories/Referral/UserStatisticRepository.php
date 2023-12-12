@@ -41,26 +41,22 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     private function tops(): array
     {
-        $users = User::query()
-            ->whereHas('referrals')
-            ->withCount(['referrals as applieds' => function ($query) {
-                $query->whereRelation('description', 'is_trainee', 0);
-            }])
-            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
-            ->groupBy('users.id')
+        return User::query()
+            ->selectRaw('
+        users.id as id, 
+        users.name as name, 
+        users.last_name as last_name, 
+        users.referrer_status as referrer_status, 
+        users.img_url as img_url, 
+        COUNT(r.id) as applieds'
+            )
+            ->leftJoin('users as r', 'users.id', '=', 'r.referrer_id')
+            ->leftJoin('user_descriptions as d', 'r.id', '=', 'd.user_id')
+            ->where('d.is_trainee', 0) // Adjust the condition according to your schema
+            ->groupBy('users.id', 'users.name', 'users.last_name', 'users.referrer_status', 'users.img_url')
             ->take(5)
-            ->get();
-
-        return $users->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'last_name' => $user->last_name,
-                'referrer_status' => $user->referrer_status,
-                'img_url' => $user->img_url,
-                'applieds' => $user->applieds, // Accessing the count as an attribute
-            ];
-        })->toArray();
+            ->get()
+            ->toArray();
     }
 
 
