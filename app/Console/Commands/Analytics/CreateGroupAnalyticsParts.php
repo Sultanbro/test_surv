@@ -82,7 +82,7 @@ class CreateGroupAnalyticsParts extends Command
                     ->where('rn', '>', 1);
             })
             ->delete();
-
+        $this->cleanDuplicates();
         $this->line('end');
     }
 
@@ -153,5 +153,22 @@ class CreateGroupAnalyticsParts extends Command
                     'values' => []
                 ]);
         }
+    }
+
+    private function cleanDuplicates(): void
+    {
+        // Define the date
+        $targetDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+
+        $subQuery = DB::table('decomposition_values as ar')
+            ->selectRaw('MIN(ar.id)')
+            ->whereDate('ar.date', $targetDate)
+            ->groupBy('ar.name', 'ar.group_id', DB::raw('DATE(ar.date)'));
+
+        DB::table('decomposition_values')
+            ->whereNotIn('id', $subQuery)
+            ->orWhere('name', '')
+            ->whereDate('date', $targetDate)
+            ->delete();
     }
 }
