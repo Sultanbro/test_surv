@@ -54,6 +54,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->leftJoin('user_descriptions as d', 'r.id', '=', 'd.user_id')
             ->where('d.is_trainee', 0) // Adjust the condition according to your schema
             ->groupBy('users.id', 'users.name', 'users.last_name', 'users.referrer_status', 'users.img_url')
+            ->orderBy('applieds', 'desc')
             ->take(5)
             ->get()
             ->toArray();
