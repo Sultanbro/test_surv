@@ -114,8 +114,8 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'group_id' => $groupId
             ])
             ->orderBy('order', 'desc')
-            ->get()
-            ->unique('name');
+            ->get();
+        dd($prevRows->pluck('name'));
         foreach ($prevRows as $prevRow) {
             $newRow = AnalyticRow::query()
                 ->firstOrCreate([
