@@ -862,7 +862,7 @@ class KpiStatisticService
         $filters = [
             'year' => $all['filters']['created_at']['year'] ?? null,
             'month' => $all['filters']['created_at']['month'] ?? null,
-            'type' => $all['filters']['created_at']['variant'] ?? 1
+            'type' => $request->type ? $request->type : 1
         ];
 
         $targetableType = 'App\User';
