@@ -511,7 +511,10 @@ class UserService
             ->where('g.id', $groupId)
             ->where(function ($query) use ($date) {
                 $query->whereNull('pivot.to');
-                $query->orWhere('pivot.to', '<=', $date->endOfMonth()->format("Y-m-d"));
+                $query->orWhere(function ($query) use ($date) {
+                    $query->where('pivot.to', '<=', $date->endOfMonth()->format("Y-m-d"));
+                    $query->where('pivot.to', '>=', $date->startOfMonth()->format("Y-m-d"));
+                });
             })
             ->groupBy('users.id')
             ->get();
