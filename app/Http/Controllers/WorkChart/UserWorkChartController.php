@@ -15,12 +15,6 @@ use Illuminate\Http\Request;
 
 class UserWorkChartController extends Controller
 {
-    protected AddUserChartService $workChartService;
-    public function __construct(AddUserChartService $service)
-    {
-        $this->workChartService = $service;
-    }
-
     /**
      * Выставляем график для пользователя.
      *
@@ -30,10 +24,9 @@ class UserWorkChartController extends Controller
      */
     public function addChart(Request $request): JsonResponse
     {
-
-        $user = User::getUserById($request['user_id']);
-        $user->work_chart_id = $request['work_chart_id'];
-        $user->save();
+        User::query()->where('id', $request['user_id'])->update([
+            'work_chart_id' => $request['work_chart_id']
+        ]);
 
         return $this->response(
             message: 'Successfully added'
