@@ -6,12 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkChart\Users\AddUserChartRequest;
 use App\Http\Requests\WorkChart\Users\DeleteUserChartRequest;
 use App\Jobs\ProcessAddUserChart;
+use App\Service\WorkChart\Users\AddUserChartService;
 use App\Service\WorkChart\Users\DeleteUserChartService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
 class UserWorkChartController extends Controller
 {
+    protected AddUserChartService $workChartService;
+    public function __construct(AddUserChartService $service)
+    {
+        $this->workChartService = $service;
+    }
+
     /**
      * Выставляем график для пользователя.
      *
@@ -21,7 +28,8 @@ class UserWorkChartController extends Controller
      */
     public function addChart(AddUserChartRequest $request): JsonResponse
     {
-        ProcessAddUserChart::dispatch($request->toDto());
+        $this->workChartService->handle($request->toDto());
+//        ProcessAddUserChart::dispatch($request->toDto());
         return $this->response(
             message: 'Successfully added'
         );
