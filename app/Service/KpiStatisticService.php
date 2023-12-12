@@ -860,8 +860,8 @@ class KpiStatisticService
         $all = $request->all();
 
         $filters = [
-            'year' => $all['filters']['created_at']['year'] ?? null,
-            'month' => $all['filters']['created_at']['month'] ?? null,
+            'year' => $all['filters']['data_from']['year'] ?? null,
+            'month' => $all['filters']['data_from']['month'] ?? null,
             'type' => $request->type ? $request->type : 1
         ];
 
