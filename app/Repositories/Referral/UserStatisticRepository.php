@@ -46,8 +46,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->withCount(['referrals as applieds' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
-            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url'])
-            ->has('referrals', '>', 0)
+            ->select(['id', 'name', 'last_name', 'referrer_status', 'img_url', 'applieds'])
             ->groupBy('users.id')
             ->take(5)
             ->get()
