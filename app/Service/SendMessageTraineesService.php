@@ -33,7 +33,7 @@ class SendMessageTraineesService
         $title = "Новый стажер!";
         $link = "https://api.whatsapp.com/send/?phone=" . Phone::normalize($lead->phone) . "&text&app_absent=0";
         $message = "Новый стажер " . $lead->name . " не пропустите его \n На " . $invite_at->format('d.m.Y') . " время начало обучения " . $invite_at->format("H:i") . " \n ссылка на ватцап ";
-        $message .= "<a href='$link'>Написать стажеру в вацап </a>";
+            $message .= "<a href='$link'>написать стажеру в вацап </a><i class="fa fab fa-whatsapp"></i>";
         foreach ($userIds as $userId) {
             // Create notification for selected users about new trainees
             UserNotification::createNotification($title, $message, $userId);
