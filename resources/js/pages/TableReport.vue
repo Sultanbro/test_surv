@@ -195,7 +195,7 @@
 							>
 								<i
 									v-if="dataItem.item.dayTypes && dataItem.item.dayTypes[dataItem.field.key] == 10"
-									class="fa fa-flag"
+									class="fa fa-flag TableReport-flag"
 								/>
 								<template v-else-if="dataItem.value.hour">
 									<input
@@ -2109,6 +2109,9 @@ hr {
 				background-color: darken($bgAccept, 5) !important;
 			}
 		}
+	}
+	&-flag{
+		color: #28a745;
 	}
 	.PopupMenu-scroll{
 		padding-left: 10px;
