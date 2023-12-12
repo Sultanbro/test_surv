@@ -580,6 +580,10 @@ export default {
 				this.deleteError = 'Прикрепите Заявление об увольнении!'
 				return
 			}
+			if(!this.fireCause) {
+				this.deleteError = 'Выберите причину увольнения'
+				return
+			}
 
 			this.loading = true
 
