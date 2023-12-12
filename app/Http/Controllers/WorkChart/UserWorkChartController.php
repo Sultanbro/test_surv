@@ -11,6 +11,7 @@ use App\Service\WorkChart\Users\DeleteUserChartService;
 use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserWorkChartController extends Controller
 {
@@ -23,16 +24,15 @@ class UserWorkChartController extends Controller
     /**
      * Выставляем график для пользователя.
      *
-     * @param AddUserChartRequest $request
+     * @param Request $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function addChart(AddUserChartRequest $request): JsonResponse
+    public function addChart(Request $request): JsonResponse
     {
-        $dto = $request->toDto();
 
-        $user = User::getUserById($dto->userId);
-        $user->work_chart_id = $dto->workChartId;
+        $user = User::getUserById($request['user_id']);
+        $user->work_chart_id = $request['work_chart_id'];
         $user->save();
 
         return $this->response(
