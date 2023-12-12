@@ -447,7 +447,9 @@ class HrController extends Controller
         if ($request->time) {
             $hour = substr($request->time, 0, 2);
             $minute = substr($request->time, 3, 2);
-            $invite_at = Carbon::parse($request->date)->hour($hour)->minute($minute);
+            $invite_at = Carbon::parse($request->date)
+                ->hour($hour)
+                ->minute($minute);
         } else {
             $invite_at = Carbon::parse($request->date);
         }
