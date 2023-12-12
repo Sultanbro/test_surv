@@ -500,14 +500,19 @@ class UserService
         return $date == null ? Carbon::now()->month : Carbon::createFromFormat('Y-m-d', $date)->month;
     }
 
-    public function getEmployeesWithFired(int $id, Carbon $date)
+    public function getEmployeesWithFired(int $groupId, Carbon|string $date): Collection
     {
-        $active = $this->getEmployees($id, $date->toDateString());
-        $fired = $this->getFiredEmployees($id, $date->toDateString());
-        return [
-            ...$active,
-            ...$fired
-        ];
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+
+        return User::withTrashed()
+            ->selectRaw('users.id as id, users.deleted_at as deleted_at')
+            ->join('group_user as pivot', 'users.id', '=', 'pivot.user_id')
+            ->join('profile_groups as g', 'g.id', '=', 'pivot.group_id')
+            ->where('g.id', $groupId)
+            ->whereNull('pivot.to')
+            ->orWhere('pivot.to', '<=', $date->endOfMonth()->format("Y-m-d"))
+            ->groupBy('users.id')
+            ->get();
     }
 
     /**

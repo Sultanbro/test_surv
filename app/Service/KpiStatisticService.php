@@ -1077,7 +1077,7 @@ class KpiStatisticService
         // ProfileGroup::class
         if ($type == 2) {
             $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
-            $_user_ids = collect((new UserService)->getEmployeesWithFired($profileGroup->id, $date))
+            $_user_ids = (new UserService)->getEmployeesWithFired($profileGroup->id, $date)
                 ->pluck('id')
                 ->toArray();
             if ($user_id != 0) $_user_ids = [$user_id];
@@ -1086,10 +1086,6 @@ class KpiStatisticService
         // Position::class
         if ($type == 3) {
             $_user_ids = User::withTrashed()
-                ->where(function (Builder $query) use ($date) {
-                    $query->whereNull('deleted_at')
-                        ->orWhere('deleted_at', '<', Carbon::parse($date->format('Y-m-d')));
-                })
                 ->where('position_id', $kpi->targetable_id)
                 ->pluck('id')
                 ->toArray();
