@@ -42,6 +42,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function tops(): array
     {
         return User::query()
+            ->whereHas('referrals')
             ->withCount(['referrals as applieds' => function ($query) {
                 $query->whereRelation('description', 'is_trainee', 0);
             }])
