@@ -49,7 +49,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $lastColumnId = 0;
 
         foreach ($prevMonthStats as $statistic) {
-            if ($statistic->show_value != '' || !is_numeric($statistic->show_value)) {
+            if ($statistic->show_value != '' && !is_numeric($statistic->show_value)) {
                 $exists = AnalyticStat::query()
                     ->where('group_id', $group_id)
                     ->where('date', $currentDate)
