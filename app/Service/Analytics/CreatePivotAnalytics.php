@@ -61,7 +61,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newStat = $statistic->replicate();
             $newStat->date = $currentDate;
             $newStat->row_id = $newRows[$statistic->row_id];
-            $newStat->col_id = $newCols[$statistic->column_id];
+            $newStat->column_id = $newCols[$statistic->column_id];
             $newStat->value = $value;
             $newStat->show_value = $show_value;
             $newStat->save();
