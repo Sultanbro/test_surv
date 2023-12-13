@@ -44,7 +44,7 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         $this->analytics->create();
-        $this->cleanDuplicates();
+//        $this->cleanDuplicates();
         $this->line('end');
     }
 

@@ -127,7 +127,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 ]);
             $newRows[$prevRow->id] = $newRow->getKey();
         }
-        dd($newRows);
         /**
          * depend rows
          */
