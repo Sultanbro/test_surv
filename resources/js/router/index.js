@@ -21,7 +21,6 @@ import AnalyticsView from '@/views/AnalyticsView'
 import SalaryView from '@/views/SalaryView'
 import QualityControlView from '@/views/QualityControlView'
 import MapView from '@/views/MapView'
-import KPIView from '@/views/KPIView'
 import PromotionalMaterialView from '@/views/PromotionalMaterialView'
 import ReferralPrsentationView from '@/views/ReferralPrsentationView'
 
@@ -219,24 +218,61 @@ const router = new VueRouter({
 				menuItem: 'maps',
 			},
 		},
-		// kpi.blade.php
-		{
-			path: '/kpi/:page',
-			name: 'KPIView',
-			component: KPIView,
-			meta: {
-				title: 'KPI - показателей',
-				menuItem: 'kpi',
-			},
-		},
 		{
 			path: '/kpi',
-			name: 'KPIView',
-			component: KPIView,
+			name: 'KPIViewV2',
+			component: () => import(/* webpackChunkName: "KPIViewV2" */ '@/views/KPIViewV2'),
 			meta: {
 				title: 'KPI - показателей',
 				menuItem: 'kpi',
 			},
+			children: [
+				{
+					path: '',
+					name: 'KPIPage',
+					component: () => import(/* webpackChunkName: "KPIPage" */ '@/pages/kpi/Kpi'),
+					meta: {
+						title: 'KPI - показателей',
+						menuItem: 'kpi',
+					},
+				},
+				{
+					path: 'bonus',
+					name: 'KPIBonuses',
+					component: () => import(/* webpackChunkName: "KPIBonuses" */ '@/pages/kpi/Bonuses.vue'),
+					meta: {
+						title: 'KPI - показателей',
+						menuItem: 'kpi',
+					},
+				},
+				{
+					path: 'premium',
+					name: 'KPIQuartalPremium',
+					component: () => import(/* webpackChunkName: "KPIQuartalPremium" */ '@/pages/kpi/QuartalPremium'),
+					meta: {
+						title: 'KPI - показателей',
+						menuItem: 'kpi',
+					},
+				},
+				{
+					path: 'statistics',
+					name: 'KPIStatsV2',
+					component: () => import(/* webpackChunkName: "KPIStatsV2" */ '@/pages/kpi/StatsV2'),
+					meta: {
+						title: 'KPI - показателей',
+						menuItem: 'kpi',
+					},
+				},
+				{
+					path: 'indicators',
+					name: 'KPIIndicators',
+					component: () => import(/* webpackChunkName: "KPIIndicators" */ '@/pages/kpi/Indicators'),
+					meta: {
+						title: 'KPI - показателей',
+						menuItem: 'kpi',
+					},
+				},
+			]
 		},
 		// admin/info.blade.php
 		{

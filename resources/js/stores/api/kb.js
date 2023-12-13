@@ -89,12 +89,28 @@ export async function updateKBOrder(request){
 
 export async function fetchKBAccess(id){
 	const {data} = await axios.post('/kb/page/get-access', {id})
+
 	return {
 		whoCanRead: data.who_can_read || [],
 		whoCanEdit: data.who_can_edit || [],
 		whoCanReadPairs: data.who_can_read_pairs || [],
 		whoCanEditPairs: data.who_can_edit_pairs || [],
 	}
+}
+
+// если массив id
+export async function fetchKBAccesses(id){
+	const {data} = await axios.post('/kb/page/get-access', {id})
+
+	return Object.keys(data).reduce((result, id) => {
+		result[id] = {
+			whoCanRead: data[id].who_can_read || [],
+			whoCanEdit: data[id].who_can_edit || [],
+			whoCanReadPairs: data[id].who_can_read_pairs || [],
+			whoCanEditPairs: data[id].who_can_edit_pairs || [],
+		}
+		return result
+	}, {})
 }
 
 export async function addKBPage(id){

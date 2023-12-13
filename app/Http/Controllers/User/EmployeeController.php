@@ -879,13 +879,14 @@ class EmployeeController extends Controller
 
                 if ($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
                     $user->worked_with_us = round((Carbon::parse($user->deleted_at)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
+                    $user->in_groups = $this->getLastFiredGroupForFiredEmployee($user->id);
                 } else if (!$user->is_trainee && $user->deleted_at == null) {
                     $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->created_at)->timestamp) / 3600 / 24) . ' дней';
+                    $user->in_groups = $this->getPersonGroup($user->id);
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
+                    $user->in_groups = $this->getPersonGroup($user->id);
                 }
-
-                $user->in_groups = $this->getPersonGroup($user->id);
 
                 if ($user->user_description) {
                     $user->in_books = '[]';
@@ -1361,34 +1362,17 @@ class EmployeeController extends Controller
             ->get()
             ->pluck('group_id')
             ->toArray();
-        // $g= ProfileGroup::whereIn('id', array_values($groups))
-        // ->select(['id', 'name'])
-        // ->get()
-        // ->toArray();
 
         return ProfileGroup::whereIn('id', array_values($groups))
             ->select(['id', 'name'])
             ->get()
             ->toArray();
+    }
 
-        // return
-
-        //     $_groups = [];
-
-        // $groups = ProfileGroup::where('active', 1)->get();
-
-        // foreach($groups as $group) {
-        //     if($group->users == null) {
-        //         $group->users = '[]';
-        //     }
-        //     $group_users = json_decode($group->users);
-
-        //     if(in_array($user_id, $group_users)) {
-        //         array_push($_groups, $group);
-        //     }
-        // }
-
-        // return $_groups;
+    public function getLastFiredGroupForFiredEmployee(int $user_id)
+    {
+        $group = GroupUser::query()->where('user_id', $user_id)->where('status', 'fired')->latest()->first();
+        return ProfileGroup::query()->where('id', $group->group_id)->get(['id', 'name']);
     }
 
     /**
@@ -1517,7 +1501,7 @@ class EmployeeController extends Controller
             $user->save();
             $user->restore();
 
-            (new UserService)->restoredUser($user->id);
+//            (new UserService)->restoredUser($user->id);
             $bitrix = new Bitrix();
 
             $bitrixUser = $bitrix->searchUser($user->email);
