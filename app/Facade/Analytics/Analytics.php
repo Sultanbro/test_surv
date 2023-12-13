@@ -129,13 +129,6 @@ final class Analytics
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
-//                $arr = [
-//                    'row_id' => $row->id,
-//                    'column_id' => $column->id,
-//                    'context' => false,
-//                    'cell' => $cellLetter . $cellNumber,
-//                    'depend_id' => $row->depend_id,
-//                ];
 
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);

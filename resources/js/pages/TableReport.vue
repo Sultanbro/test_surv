@@ -193,7 +193,11 @@
 								@mouseover="dayInfo(dataItem)"
 								@click="detectClick(dataItem)"
 							>
-								<template v-if="dataItem.value.hour">
+								<i
+									v-if="dataItem.item.dayTypes && dataItem.item.dayTypes[dataItem.field.key] == 10"
+									class="fa fa-flag TableReport-flag"
+								/>
+								<template v-else-if="dataItem.value.hour">
 									<input
 										class="cell-input"
 										type="number"
@@ -1412,7 +1416,8 @@ export default {
 						dayHours[tt.date] = {
 							hour: 0,
 							tooltip: '',
-							updated: tt.updated
+							updated: tt.updated,
+							type: +item.dayTypes[tt.date],
 						}
 					}
 
@@ -1457,7 +1462,7 @@ export default {
 						tooltip: `<table class="table table-sm mb-0 ">${startEnd[key].replace('undefined', '').replace('Invalid date', 'Еще не завершен')}</table>`,
 						key: key,
 						fine: (fine.length > 0),
-						updated: dh.updated === 1 || dh.updated === 2
+						updated: dh.updated === 1 || dh.updated === 2,
 					}
 				})
 
@@ -1496,6 +1501,7 @@ export default {
 					applied_at: item.applied_at,
 					history: item.track_history,
 					groupUsers: item.group_users,
+					dayTypes: item.dayTypes,
 					...variants,
 					...dayHours,
 				})
@@ -2103,6 +2109,9 @@ hr {
 				background-color: darken($bgAccept, 5) !important;
 			}
 		}
+	}
+	&-flag{
+		color: #28a745;
 	}
 	.PopupMenu-scroll{
 		padding-left: 10px;

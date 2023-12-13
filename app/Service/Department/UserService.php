@@ -284,7 +284,8 @@ class UserService
         foreach ($groups as $group) {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
                 ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
+                ->whereYear('to', $this->getYear($date))
+                ->whereMonth('to', $this->getMonth($date));
 
             $data = $this->getGroupEmployees($groupUser->get());
         }
@@ -413,7 +414,9 @@ class UserService
     {
         $userData = [];
         foreach ($groupUsers as $groupUser) {
-            $user = User::withTrashed()->with('groups')->where('id', $groupUser->user_id)
+            $user = User::withTrashed()
+                ->with('groups')
+                ->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0));
 
             if ($last_date) {
@@ -495,6 +498,26 @@ class UserService
     function getMonth(string $date): int
     {
         return $date == null ? Carbon::now()->month : Carbon::createFromFormat('Y-m-d', $date)->month;
+    }
+
+    public function getEmployeesWithFired(int $groupId, Carbon|string $date): Collection
+    {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+
+        return User::withTrashed()
+            ->selectRaw('users.id as id, users.deleted_at as deleted_at')
+            ->join('group_user as pivot', 'users.id', '=', 'pivot.user_id')
+            ->join('profile_groups as g', 'g.id', '=', 'pivot.group_id')
+            ->where('g.id', $groupId)
+            ->where(function ($query) use ($date) {
+                $query->whereNull('pivot.to');
+                $query->orWhere(function ($query) use ($date) {
+                    $query->where('pivot.to', '<=', $date->endOfMonth()->format("Y-m-d"));
+                    $query->where('pivot.to', '>=', $date->startOfMonth()->format("Y-m-d"));
+                });
+            })
+            ->groupBy('users.id')
+            ->get();
     }
 
     /**

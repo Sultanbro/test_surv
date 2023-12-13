@@ -204,9 +204,9 @@ class KpiStatController extends Controller
         return response()->success($response);
     }
 
-        /**
-         * get all activites
-     * 
+    /**
+     * get all activites
+     *
      * @return Array
      */
     public function getActivities()

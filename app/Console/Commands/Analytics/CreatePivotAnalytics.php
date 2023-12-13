@@ -3,7 +3,9 @@
 namespace App\Console\Commands\Analytics;
 
 use App\Service\Analytics\CreatePivotAnalyticsInterface;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class CreatePivotAnalytics extends Command
 {
@@ -42,6 +44,27 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         $this->analytics->create();
+//        $this->cleanDuplicates();
         $this->line('end');
+    }
+
+    private function cleanDuplicates(): void
+    {
+        $currentDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+
+        $subQuery = DB::table('analytic_rows as ar')
+            ->selectRaw('MIN(ar.id)')
+            ->whereDate('ar.date', $currentDate)
+            ->groupBy('ar.name', 'ar.group_id', DB::raw('DATE(ar.date)'));
+
+        $idsToDelete = DB::table('analytic_rows as ar2')
+            ->select('ar2.id')
+            ->whereNotIn('ar2.id', $subQuery)
+            ->whereDate('ar2.date', $currentDate)
+            ->pluck('id');
+
+        DB::table('analytic_rows')
+            ->whereIn('id', $idsToDelete)
+            ->delete();
     }
 }

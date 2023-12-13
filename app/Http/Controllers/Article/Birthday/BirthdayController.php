@@ -9,6 +9,7 @@ use App\Http\Resources\Birthday\BirthdayCollection;
 use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Salary;
 use App\Service\PaginationService;
+use App\Service\Salary\SalaryService;
 use App\User;
 use Illuminate\Http\JsonResponse;
 
@@ -16,7 +17,6 @@ class BirthdayController extends Controller
 {
     public function index(BirthdayRequest $request, PaginationService $paginationService): JsonResponse
     {
-
         $date = now();
 
         $birthdays =User::query()
@@ -40,50 +40,31 @@ class BirthdayController extends Controller
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function sendGift(BirthdaySendGiftRequest $request, User $user): JsonResponse
     {
         $today = today();
-        $avans =   Salary::where('user_id', \Auth::id())
-            ->whereYear('date', $today->year)
-            ->whereMonth('date', $today->month)
-            ->whereDay('date', $today->day)
+        $giftAmount = $request->input('amount') ?? 0;
+        // Аванс для отправитель
+        $prepaymentOfGiver = Salary::query()->where('user_id', \Auth::id())
+            ->whereDate('date', $today)
             ->first()
-            ->paid + $request->input('amount') ?? 0;
-        $bonus = Salary::where('user_id',$user->id)
-            ->whereYear('date', $today->year)
-            ->whereMonth('date', $today->month)
-            ->whereDay('date', $today->day)
+            ->paid + $giftAmount;
+
+        // Бонус для получатель
+        $bonusForRecipient = Salary::query()->where('user_id',$user->id)
+            ->whereDate('date', $today)
             ->first()
-            ->bonus  + $request->input('amount') ?? 0;
+            ->bonus + $giftAmount;
 
-        $avansParams = [
-            'user_id' => \Auth::id(),
-            'type' => 'avans',
-            'day' =>  $today->day,
-            'month' => $today->month,
-            'year' => $today->year,
-                'amount' =>  $avans,
-            'comment' =>'Аванс в виде подаренной суммы на день рождения',
-        ];
-        $bonusParams =  [
-            'user_id' => $user->id,
-            'type' => 'bonus',
-            'day' =>  $today->day,
-            'month' => $today->month,
-            'year' => $today->year,
-                'amount' =>  $bonus,
-                'comment' =>'Бонус в виде подарка на день рождения',
-        ];
+        SalaryService::updateSalary($today, 'avans', $prepaymentOfGiver, $giftAmount, 'Аванс в виде подаренной суммы на день рождения', \Auth::user());
+        SalaryService::updateSalary($today, 'bonus', $bonusForRecipient, $giftAmount, 'Бонус в виде подарка на день рождения', $user);
 
 
-        return response()->json(
-            new JsonSuccessResponse(
-                __('model/birthday.send_gift'),
-                [
-                    'avansData' => $avansParams,
-                    'bonusData' => $bonusParams
-                ]
-            )
-        );
+        return response()->json([
+            'success' => true
+        ]);
     }
 }
