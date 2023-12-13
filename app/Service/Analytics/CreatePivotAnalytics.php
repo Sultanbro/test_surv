@@ -158,6 +158,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevDate = $this->previousMonth();
         $currentDate = $this->currentMonth();
 
+        DB::table('analytic_columns')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
+
         /**
          * Получаем данные за прошлый месяц.
          */
