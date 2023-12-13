@@ -42,6 +42,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         $lastColumnId = 0;
 
+        AnalyticStat::query()->where([
+            'group_id' => $group_id,
+            'date' => $currentDate
+        ])->delete();
+
         foreach ($prevMonthStats as $statistic) {
 
             $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
@@ -53,12 +58,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
 
-            AnalyticStat::query()->firstOrCreate([
+            AnalyticStat::query()->updateOrCreate([
                 'group_id' => $statistic->group_id,
                 'date' => $currentDate,
                 'row_id' => $newRows[$statistic->row_id],
                 'column_id' => $newCols[$statistic->column_id],
-            ], [
                 'value' => $value,
                 'show_value' => $show_value,
                 'activity_id' => $statistic->activity_id,
@@ -116,9 +120,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->orderBy('order', 'desc')
             ->get();
 
+        AnalyticRow::query()
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
+
         foreach ($prevRows as $prevRow) {
             $newRow = AnalyticRow::query()
-                ->updateOrCreate([
+                ->create([
                     'group_id' => $prevRow->group_id,
                     'name' => $prevRow->name,
                     'date' => $currentDate,
