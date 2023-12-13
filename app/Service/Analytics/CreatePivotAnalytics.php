@@ -49,11 +49,15 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $lastColumnId = 0;
 
         foreach ($prevMonthStats as $statistic) {
-
-            $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
-                && array_key_exists($statistic->column_id, $newCols);
-
-            if (!$existsRowAndCol) continue;
+            if ($statistic->show_value != '' || !is_numeric($statistic->show_value)) {
+                $exists = AnalyticStat::query()
+                    ->where('group_id', $group_id)
+                    ->where('date', $currentDate)
+                    ->where('show_value', $statistic->show_value)
+                    ->exists();
+                dump($statistic->show_value . ' : ' . ($exists ? 'create' : 'skip'));
+                if ($exists) continue;
+            }
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
@@ -182,6 +186,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $newColumns = [];
         $lastOrder = 0;
         foreach ($prevMonthCols as $col) {
+            $exists = AnalyticColumn::query()
+                ->where('group_id', $group_id)
+                ->where('date', $currentDate)
+                ->where('name', $col->name)
+                ->exists();
+            dump($col->name . ' : ' . ($exists ? 'create' : 'skip'));
+            if ($exists) continue;
+
             $newColumn = $col->replicate();
             $newColumn->date = $currentDate;
             $newColumn->save();
