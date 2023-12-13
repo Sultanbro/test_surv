@@ -104,7 +104,7 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
+								<template v-if="field.key == 'name' && [1,2,3].includes(i_index) && oldGroup">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"
@@ -344,7 +344,8 @@
 											v-if="focused_item === i_index && focused_field === f_index"
 											v-model="item[field.key].value"
 											type="text"
-											class="in-cell"
+											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
+											class="in-cell name-input"
 											@change="change_stat(i_index, field.key)"
 										>
 										<input
@@ -659,6 +660,10 @@ export default {
 		isAdmin: {
 			type: Boolean
 		},
+		currentGroup: {
+			type: Object,
+			required: true,
+		},
 	},
 	data() {
 		return {
@@ -709,6 +714,13 @@ export default {
 			itemy: null,
 			letter_cells: [],
 		}
+	},
+
+	computed: {
+		oldGroup() {
+			// 1702383023746 - время когад помялись правила аналитики
+			return this.$moment(this.currentGroup.created_at).valueOf() < 1702383023746
+		},
 	},
 
 	created() {
@@ -981,7 +993,7 @@ export default {
 		},
 
 		focus(i,f) {
-			if([1,2,3].includes(i) && f == 0) return ''
+			if([1,2,3].includes(i) && f == 0 && this.oldGroup) return ''
 
 			if(!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();

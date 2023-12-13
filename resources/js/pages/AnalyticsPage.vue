@@ -153,6 +153,7 @@
 										:month-info="monthInfo"
 										:group_id="currentGroupId"
 										:activities="activitiesOptions"
+										:current-group="currentGroup"
 									/>
 								</template>
 								<b-skeleton-table
