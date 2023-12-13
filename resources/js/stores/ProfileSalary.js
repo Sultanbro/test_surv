@@ -97,7 +97,16 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			catch (error) {
 				console.error('fitchSalaryCrutch', error)
 			}
-			const sumKpi = kpis.reduce((result, kpi) => {
+
+			const targetables = {
+				'App\\User': 1,
+				'App\\Position': 2,
+				'App\\ProfileGroup': 3,
+			}
+
+			kpis.sort((a, b) => targetables[a.targetable_type] - targetables[b.targetable_type])
+
+			const sumKpi = kpis.slice(0, 1).reduce((result, kpi) => {
 				kpi.users.forEach(user => {
 					user.items.forEach(userItem => {
 						result += calcSum(userItem, kpi, userItem.percent / 100)
