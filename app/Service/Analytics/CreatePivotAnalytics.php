@@ -9,7 +9,6 @@ use App\Repositories\ProfileGroupRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use function Psy\debug;
 
 class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 {
@@ -128,9 +127,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                     'date' => $currentDate,
                     'name' => $prevRow->name,
                 ])->exists();
-            debug([
-                $prevRow->name => $exists ? 'skip' : 'create'
-            ]);
+            dump($prevRow->name . ' : ' . $exists ? 'skip' : 'create');
             if ($exists) continue;
 
             $newRow = $prevRow->replicate();
