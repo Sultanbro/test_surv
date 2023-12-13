@@ -118,17 +118,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->get();
 
         foreach ($prevRows as $prevRow) {
-
-            if ($prevRow->name !== 'name') {
-                $exists = AnalyticRow::query()
-                    ->where('group_id', $group_id)
-                    ->where('date', $currentDate)
-                    ->where('name', $prevRow->name)
-                    ->exists();
-                dump($prevRow->name . ' : ' . ($exists ? 'create' : 'skip'));
-                if ($exists) continue;
-            }
-
             $newRow = $prevRow->replicate();
             $newRow->date = $currentDate;
 
@@ -181,14 +170,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $newColumns = [];
         $lastOrder = 0;
         foreach ($prevMonthCols as $col) {
-            $exists = AnalyticColumn::query()
-                ->where('group_id', $group_id)
-                ->where('date', $currentDate)
-                ->where('name', $col->name)
-                ->exists();
-            dump($col->name . ' : ' . ($exists ? 'create' : 'skip'));
-            if ($exists) continue;
-
             $newColumn = $col->replicate();
             $newColumn->date = $currentDate;
             $newColumn->save();
