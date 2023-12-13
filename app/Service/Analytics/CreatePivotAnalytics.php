@@ -119,6 +119,19 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         foreach ($prevRows as $prevRow) {
             $newRow = $prevRow->replicate();
             $newRow->date = $currentDate;
+            $exists = AnalyticRow::query()
+                ->whereNot('name', 'name')
+                ->where([
+                    'group_id' => $group_id,
+                    'date' => $currentDate,
+                    'name' => $currentDate,
+                ])->exists();
+
+            if ($exists) {
+                $newRow->delete();
+                continue;
+            }
+
             $newRow->save();
             $newRows[$prevRow->id] = $newRow->getKey();
         }
