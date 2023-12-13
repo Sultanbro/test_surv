@@ -58,7 +58,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
 
-            AnalyticStat::query()->updateOrCreate([
+            AnalyticStat::query()->create([
                 'group_id' => $statistic->group_id,
                 'date' => $currentDate,
                 'row_id' => $newRows[$statistic->row_id],
@@ -112,6 +112,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevDate = $this->previousMonth();
         $currentDate = $this->currentMonth();
 
+        DB::table('analytic_rows')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
+
         $newRows = [];
 
         $prevRows = AnalyticRow::query()
@@ -120,22 +125,13 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->orderBy('order', 'desc')
             ->get();
 
-        AnalyticRow::query()
-            ->where('date', $currentDate)
-            ->where('group_id', $group_id)
-            ->delete();
-
         foreach ($prevRows as $prevRow) {
-            $newRow = AnalyticRow::query()
-                ->create([
-                    'group_id' => $prevRow->group_id,
-                    'name' => $prevRow->name,
-                    'date' => $currentDate,
-                    'order' => $prevRow->order,
-                    'depend_id' => $prevRow->depend_id,
-                ]);
+            $newRow = $prevRow->replicate();
+            $newRow->date = $currentDate;
+            $newRow->save();
             $newRows[$prevRow->id] = $newRow->getKey();
         }
+        dd($newRows);
         /**
          * depend rows
          */
@@ -177,24 +173,18 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $newColumns = [];
         $lastOrder = 0;
         foreach ($prevMonthCols as $col) {
-            $analyticColumn = AnalyticColumn::query()->firstOrCreate([
-                'group_id' => $col->group_id,
-                'name' => $col->name,
-                'date' => $currentDate,
-                'order' => $col->order,
-            ]);
+            $newColumn = $col->replicate();
+            $newColumn->date = $currentDate;
+            $newColumn->save();
 
-            /**
-             * Получаем последний элемент в массиве.
-             * После последний итерации останется последний элемент
-             */
             $lastOrder = $col->order;
 
             /**
              * Сохраняем ID новой колонки в массиве.
              */
-            $newColumns[$col->id] = $analyticColumn->getKey();
+            $newColumns[$col->id] = $newColumn->getKey();
         }
+
         foreach ($this->monthDifference() as $diffDay) {
             $newColumn = AnalyticColumn::query()->firstOrCreate([
                 'group_id' => $group_id,
