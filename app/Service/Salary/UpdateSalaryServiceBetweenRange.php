@@ -42,8 +42,9 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
         foreach ($users as $user) {
 
-            // Find the salary for the user
+            if (!$this->isWorked($date, $user)) continue;
 
+            // Find the salary for the user
             $salary = $user->salaries()
                 ->whereDate('date', $date->format("Y-m-d"))
                 ->first();
@@ -78,5 +79,14 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
                 ]);
             }
         }
+    }
+
+    private function isWorked(Carbon $date, User $user): bool
+    {
+        return $user->timetracking()
+            ->whereYear('enter', $date->year)
+            ->whereMonth('enter', $date->month)
+            ->whereDay('enter', $date->day)
+            ->exists();
     }
 }
