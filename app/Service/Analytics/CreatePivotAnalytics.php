@@ -58,20 +58,13 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
 
-            AnalyticStat::query()->create([
-                'group_id' => $statistic->group_id,
-                'date' => $currentDate,
-                'row_id' => $newRows[$statistic->row_id],
-                'column_id' => $newCols[$statistic->column_id],
-                'value' => $value,
-                'show_value' => $show_value,
-                'activity_id' => $statistic->activity_id,
-                'editable' => $statistic->editable,
-                'class' => $statistic->class,
-                'type' => $statistic->type,
-                'comment' => $statistic->comment,
-                'decimals' => $statistic->decimals,
-            ]);
+            $newStat = $statistic->replicate();
+            $newStat->date = $currentDate;
+            $newStat->row_id = $newRows[$statistic->row_id];
+            $newStat->col_id = $newCols[$statistic->column_id];
+            $newStat->value = $value;
+            $newStat->show_value = $show_value;
+            $newStat->save();
         }
 
         $lastColumnStats = AnalyticStat::query()
@@ -80,31 +73,29 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->where('date', $currentDate)
             ->get();
 
-        $analyticStats = [];
-
         /**
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
         foreach ($this->monthDifference() as $diffDay) {
             foreach ($lastColumnStats as $key => $columnStat) {
-                $analyticStats[] = [
-                    'group_id' => $columnStat->group_id,
-                    'date' => $currentDate,
-                    'row_id' => $columnStat->row_id,
-                    'column_id' => ++$columnStat->column_id,
-                    'value' => '',
-                    'show_value' => $key == 0 ? $diffDay : '',
-                    'activity_id' => null,
-                    'editable' => $columnStat->editable,
-                    'class' => $columnStat->class,
-                    'type' => $columnStat->type,
-                    'comment' => $columnStat->comment,
-                    'decimals' => $columnStat->decimals
-                ];
+                AnalyticStat::query()->updateOrCreate(
+                    [
+                        'group_id' => $columnStat->group_id,
+                        'date' => $currentDate,
+                        'show_value' => $key == 0 ? $diffDay : ''],
+                    [
+                        'row_id' => $columnStat->row_id,
+                        'column_id' => ++$columnStat->column_id,
+                        'value' => '',
+                        'activity_id' => null,
+                        'editable' => $columnStat->editable,
+                        'class' => $columnStat->class,
+                        'type' => $columnStat->type,
+                        'comment' => $columnStat->comment,
+                        'decimals' => $columnStat->decimals
+                    ]);
             }
         }
-
-        DB::table('analytic_stats')->insert($analyticStats);
     }
 
     private function createRows(int $group_id): array
