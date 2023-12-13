@@ -49,13 +49,10 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $lastColumnId = 0;
 
         foreach ($prevMonthStats as $statistic) {
-            $exists = AnalyticStat::query()
-                ->where('group_id', $group_id)
-                ->where('date', $currentDate)
-                ->where('show_value', $statistic->show_value)
-                ->exists();
-            dump($statistic->show_value . ' : ' . ($exists ? 'create' : 'skip'));
-            if ($exists) continue;
+
+            $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
+                && array_key_exists($statistic->column_id, $newCols);
+            if (!$existsRowAndCol) continue;
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
@@ -306,7 +303,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     private function previousMonth(): string
     {
         return Carbon::now()
-            ->subMonth()
+            ->subMonths(2)
             ->startOfMonth()
             ->format('Y-m-d');
     }
