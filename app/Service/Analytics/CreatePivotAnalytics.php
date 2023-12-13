@@ -30,6 +30,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevDate = $this->previousMonth();
         $currentDate = $this->currentMonth();
 
+        DB::table('analytic_stats')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
+
         $newRows = $this->createRows($group_id);
         $newCols = $this->createColumns($group_id);
 
@@ -41,11 +46,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->get();
 
         $lastColumnId = 0;
-
-        AnalyticStat::query()->where([
-            'group_id' => $group_id,
-            'date' => $currentDate
-        ])->delete();
 
         foreach ($prevMonthStats as $statistic) {
 
