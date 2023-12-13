@@ -1,5 +1,8 @@
 <template>
-	<div class="indicators px-3 py-1">
+	<div
+		v-if="$can('kpi_view') && isBP"
+		class="indicators px-3 py-1"
+	>
 		<!-- top line -->
 		<div class="d-flex mb-2 mt-2 jcsb aifs">
 			<div class="d-flex aic mr-2">
@@ -199,7 +202,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0])
 		}
 	},
 	watch: {

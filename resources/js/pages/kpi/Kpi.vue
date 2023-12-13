@@ -1,5 +1,8 @@
 <template>
-	<div class="kpi">
+	<div
+		v-if="$can('kpi_edit')"
+		class="kpi"
+	>
 		<!-- top line -->
 		<div class="d-flex my-4 jcsb aifs">
 			<div class="d-flex aic mr-2">

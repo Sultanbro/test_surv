@@ -1,5 +1,8 @@
 <template>
-	<div class="stats px-3 py-1">
+	<div
+		v-if="$can('kpi_view')"
+		class="stats px-3 py-1"
+	>
 		<!-- top line -->
 		<div class="d-flex my-4 jcsb aifs">
 			<div class="d-flex aic mr-2">
