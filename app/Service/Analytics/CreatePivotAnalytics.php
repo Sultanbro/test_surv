@@ -111,7 +111,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $prevRows = AnalyticRow::query()
             ->where([
                 'date' => $prevMonth,
-                'group_id' => 136
+                'group_id' => $groupId
             ])
             ->orderBy('order', 'desc')
             ->get();
@@ -119,9 +119,9 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newRow = AnalyticRow::query()
                 ->firstOrCreate([
                     'group_id' => $prevRow->group_id,
-                    'name' => $prevRow->name,
                     'date' => $currentMonth,
                 ], [
+                    'name' => $prevRow->name,
                     'order' => $prevRow->order,
                     'depend_id' => $prevRow->depend_id,
                 ]);
