@@ -127,7 +127,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                     'date' => $currentDate,
                     'name' => $prevRow->name,
                 ])->exists();
-            dump($prevRow->name . ' : ' . $exists ? 'skip' : 'create');
+            dd($prevRow->name . ' : ' . $exists ? 'skip' : 'create');
             if ($exists) continue;
 
             $newRow = $prevRow->replicate();
