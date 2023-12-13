@@ -360,6 +360,7 @@ final class Analytics
         $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
 
         return $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
+            ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
                 $query->selectRaw('DAY(date) as day, user_id, value, date')
                     ->where('activity_id', $activity->id)
