@@ -28,7 +28,6 @@ final class GetPerformanceService
             'year'      => $dto->year,
             'month'     => $dto->month
         ]);
-
         $utility     = AnalyticsFacade::utility($utilityDto);
         $rentability = AnalyticsFacade::rentability($utilityDto);
 

@@ -118,7 +118,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         foreach ($prevRows as $prevRow) {
             $newRow = AnalyticRow::query()
-                ->firstOrCreate([
+                ->updateOrCreate([
                     'group_id' => $prevRow->group_id,
                     'name' => $prevRow->name,
                     'date' => $currentDate,
