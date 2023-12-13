@@ -63,17 +63,17 @@ export default {
 
 <style lang="scss">
 .RouterTabs{
-	border-bottom: 1px solid #eaeaea;
 	&-tabs{
 		display: flex;
 		flex-flow: row wrap;
 		align-items: flex-end;
 		gap: 20px;
 
-		margin-bottom: -1px;
+		border-bottom: 1px solid #eaeaea;
 	}
 	&-tab{
 		padding: 0 0 20px;
+		margin-bottom: -1px;
 		border-bottom: 2px solid transparent;
 
 		font-size: 16px;
