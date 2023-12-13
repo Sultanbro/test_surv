@@ -7,6 +7,7 @@ use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Repositories\ProfileGroupRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
@@ -110,6 +111,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         $newRows = [];
 
+        /** @var Collection<AnalyticRow> $prevRows */
         $prevRows = AnalyticRow::query()
             ->where('date', $prevDate)
             ->where('group_id', $group_id)
@@ -125,7 +127,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                     'date' => $currentDate,
                     'name' => $prevRow->name,
                 ])->exists();
-
+            dump($prevRow->name . ' : ' . $exists ? 'skip' : 'create');
             if ($exists) continue;
 
             $newRow = $prevRow->replicate();
