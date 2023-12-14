@@ -1353,14 +1353,6 @@ export default {
 				daySalaries.taxes = Number(personalTaxes).toFixed(0);
 				daySalaries.final = Number(personalFinal).toFixed(0);
 
-				total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
-				total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
-				total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
-				total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
-				total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
-				total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
-				total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
-
 				daySalaries.forEach((amount, day) => {
 					if(isNaN(amount) || isNaN(Number(amount))) {
 						amount = 0;
@@ -1400,12 +1392,26 @@ export default {
 					...daySalaries,
 				};
 
+				let pass = false
+
 				if(this.show_user == 0) {
 					items.push(obj);
+					pass = true
 				}
 				else if(hasMoney > 0) { // show if has salary records
 					items.push(obj);
 					hasMoney = 0
+					pass = true
+				}
+
+				if(pass){
+					total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
+					total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
+					total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+					total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+					total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+					total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
+					total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
 				}
 			});
 
