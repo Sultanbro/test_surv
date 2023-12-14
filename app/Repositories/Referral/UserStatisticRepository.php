@@ -181,6 +181,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                     $this->employeeFirstWeek($firstWork),
                     $this->employeeWeekly($working)
                 );
+
                 $referral->datetypes = Arr::sort($dateTypes, 'date');
 
                 if ($referral->referrals_count) {
@@ -222,6 +223,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     private function employeeWeekly(Collection $working): array
     {
+        $working = $working->sort('date');
         $weekTemplate = $this->createWeekTemplate();
         $salaryWeeks = [2, 3, 4, 6, 8, 12]; // Define the weeks at which salaries are given
         $salaryIndex = 0; // Index to track the current salary
