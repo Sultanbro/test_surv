@@ -188,7 +188,7 @@ export default {
 		maxWorkedDays(){
 			let max = 0
 			this.sortedSubs[this.userId].forEach(sub => {
-				for(let i = 1; i < 16; ++i){
+				for(let i = 1; i < 32; ++i){
 					if(sub[i]) max = Math.max(max, i)
 				}
 			})
