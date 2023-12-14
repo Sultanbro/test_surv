@@ -128,7 +128,7 @@ export const tableFieldsProfile = [
 
 function getDaysFields(){
 	const result = []
-	for(let i = 0; i < 15; ++i){
+	for(let i = 0; i < 31; ++i){
 		result.push({
 			key: `${i + 1}`,
 			label: `${i + 1}`,
