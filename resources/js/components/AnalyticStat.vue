@@ -213,7 +213,7 @@
 											class="contextor"
 										>
 											<div
-												v-if="activeuserid == 5"
+												v-if="isMain && activeuserid == 5"
 												class="fonter d-flex justify-content-between"
 											>
 												<div @click="add_class(item[field.key], 'font-bold')">
@@ -256,13 +256,13 @@
 											</div>
 											<ul class="types">
 												<li
-													v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)"
+													v-if="(isMain && activeuserid == 5) || ['sum', 'avg'].includes(field.key)"
 													@click="change_type('initial', i_index, field.key)"
 												>
 													Обычный
 												</li>
 												<li
-													v-if="activeuserid == 5"
+													v-if="(isMain && activeuserid == 5)"
 													@click="change_type('formula', i_index, field.key)"
 												>
 													Формула
@@ -620,11 +620,14 @@
 /* eslint-disable camelcase */
 /* eslint-disable vue/prop-name-casing */
 
+const Parser = require('expr-eval').Parser
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+
 import {
 	IconDelete,
 	ChatIconPlus,
 } from '@icons'
-const Parser = require('expr-eval').Parser;
 
 export default {
 	name: 'AnalyticStat',
@@ -717,6 +720,7 @@ export default {
 	},
 
 	computed: {
+		...mapState(usePortalStore, ['isMain']),
 		oldGroup() {
 			// 1702383023746 - время когад помялись правила аналитики
 			return this.$moment(this.currentGroup.created_at).valueOf() < 1702383023746
