@@ -223,7 +223,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
 
     private function employeeWeekly(Collection $working): array
     {
-        $working = $working->sort('date');
+        $working = $working->sortBy('date');
         $weekTemplate = $this->createWeekTemplate();
         $salaryWeeks = [2, 3, 4, 6, 8, 12]; // Define the weeks at which salaries are given
         $salaryIndex = 0; // Index to track the current salary
