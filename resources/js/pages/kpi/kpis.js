@@ -246,6 +246,16 @@ function parseKPI(kpi){
 	return kpi
 }
 
+function removeDeletedItems(kpis){
+	kpis.forEach(kpi => {
+		if(!kpi.users) return
+		kpi.users.forEach(user => {
+			if(!user.items) return
+			user.items = user.items.filter(item => !item.deleted_at)
+		})
+	})
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
 	kpi_fields,
@@ -256,4 +266,5 @@ module.exports = {
 	formatDate,
 	calcCompleted,
 	parseKPI,
+	removeDeletedItems,
 };
