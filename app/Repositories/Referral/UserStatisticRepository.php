@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class UserStatisticRepository implements UserStatisticRepositoryInterface
@@ -173,12 +174,14 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $firstWork = $this->salaryFilter->filter(PaidType::FIRST_WORK);
                 $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
                 $referral->is_trainee = $referral->user_description?->is_trainee;
-                $referral->datetypes = array_merge(
+
+                $dateTypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
                     $this->employeeFirstWeek($firstWork),
                     $this->employeeWeekly($working)
                 );
+                $referral->datetypes = Arr::sort($dateTypes, 'date');
 
                 if ($referral->referrals_count) {
 
