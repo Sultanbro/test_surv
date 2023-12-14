@@ -51,6 +51,7 @@ export default {
 	border-radius: 8px;
 }
 .AccessSelectSearch-input {
+	flex: 1;
 	width: 80%;
 	padding: 16px 10px;
 	border: 0;

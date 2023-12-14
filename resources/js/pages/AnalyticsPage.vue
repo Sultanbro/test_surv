@@ -716,6 +716,12 @@ export default {
 		}
 	}
 
+	&-header{
+		~ .tabs{
+			overflow: visible;
+		}
+	}
+
 	&-skeletonImg{
 		width: 100px;
 		height: 100px;
