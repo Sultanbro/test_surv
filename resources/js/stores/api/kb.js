@@ -33,7 +33,7 @@ function booksTree(books){
 }
 function booksOpen(books){
 	books.forEach(book => {
-		book.opened = true
+		// book.opened = true
 		book.canRead = true
 	})
 	return books

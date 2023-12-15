@@ -716,20 +716,29 @@ export default {
 			this.fetchGlossaryAccess()
 
 			await this.fetchData()
-			if(this.$route.query.s) {
-				if(!this.booksMap[+this.$route.query.s]) {
+			const bookId = this.$route.query.s
+			const pageId = this.$route.query.b
+
+			if(bookId) {
+				const book = this.booksMap[+bookId]
+				if(!book) {
 					this.routerPush('/kb')
 					return this.$toast.error('Раздел удален')
 				}
+				// const top = this.getTopParent(book)
+				// this.routerPush(`/kb?s=${bookId}${pageId ? '&b=' + pageId : ''}`)
 				this.books = []
-				await this.fetchBook(this.booksMap[+this.$route.query.s], true)
+				await this.fetchBook(book, true)
+				// if(book.id !== top.id) this.setParentsOpened(bookId)
 			}
-			if(this.rootBook && this.$route.query.b){
-				if(!this.pagesMap[+this.$route.query.b]) {
-					this.routerPush(`/kb?s=${this.$route.query.s}`)
+			if(this.rootBook && pageId){
+				const page = this.pagesMap[+pageId]
+				if(!page) {
+					this.routerPush(`/kb?s=${bookId}`)
 					return this.$toast.error('Страница удалена')
 				}
-				this.onPage(this.pagesMap[+this.$route.query.b], true)
+				this.onPage(page, true)
+				this.setParentsOpened(pageId)
 			}
 		},
 		getPages(map, pages){
@@ -758,6 +767,18 @@ export default {
 			links.forEach(link => link.setAttribute('target', '_blank'))
 			book.text = div.innerHTML
 			return book
+		},
+		getTopParent(book){
+			const hasParent = book.parent_id && this.booksMap[book.parent_id]
+			if(hasParent) return this.getTopParent(hasParent)
+			return book
+		},
+		setParentsOpened(pageId){
+			const page = this.pagesMap[pageId]
+			if(page) {
+				page.opened = true
+				this.setParentsOpened(page.parent_id)
+			}
 		},
 		treePluck(books, result = []){
 			books.forEach(book => {
