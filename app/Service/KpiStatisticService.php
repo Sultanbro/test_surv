@@ -667,7 +667,7 @@ class KpiStatisticService
 
         $droppedGroups = array();
         if ($user_id != 0) {
-            $user = User::query()->with('groups')->find($user_id);
+            $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
 
             $groups = ($user->inGroups())->pluck('id')->toArray();
@@ -762,6 +762,7 @@ class KpiStatisticService
         $limit = $request->limit ? $request->limit : 10;
 
         $searchWord = $filters['query'] ?? null;
+        $filterGroupId = $filters['group_id'] ?? null;
 
         if (
             isset($filters['data_from']['year'])
@@ -800,14 +801,15 @@ class KpiStatisticService
             ->whereHasMorph(
                 'kpiable',
                 '*',
-                function (Builder $query, string $type) use ($date) {
+                function (Builder $query, string $type) use ($date, $filterGroupId) {
                     if ($type === 'App\ProfileGroup') {
                         $query->whereNull('archived_date');
+                        if ($filterGroupId) $query->where('id', $filterGroupId);
                     }
                     if ($type === 'App\User') {
                         $query->where(function (Builder $query) use ($date) {
                             $query->whereNull('deleted_at')
-                                ->orWhere('deleted_at', '<', Carbon::parse($date->format('Y-m-d')));
+                                ->orWhere('deleted_at', '>', Carbon::parse($date->format('Y-m-d')));
                         });
                     }
                 }
