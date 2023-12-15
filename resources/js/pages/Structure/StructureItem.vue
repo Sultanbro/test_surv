@@ -46,7 +46,7 @@
 
 			<!-- Список сотрудников -->
 			<div
-				v-if="manager || isVacant || (card.users && card.users.length)"
+				v-if="manager || isVacant || (users && users.length)"
 				class="structure-card-body"
 			>
 				<template v-if="isVacant">
