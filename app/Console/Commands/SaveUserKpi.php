@@ -143,6 +143,7 @@ class SaveUserKpi extends Command
 
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
+            dump($kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
 //            dd($kpi['users'][0]['items']);
 //             dd($kpi['users'][0]['items'][2]);
             foreach ($kpi['users'][0]['items'] as $item) {
@@ -180,7 +181,7 @@ class SaveUserKpi extends Command
                     (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
                     (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
-                dump($item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
+                dump('id=' . $item['id'] . ' ' . $item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
 
                 $earned += $earnedActivity;
 
