@@ -95,6 +95,7 @@
 									class="w-full"
 									:values="item.target == null ? [] : [item.target]"
 									:single="true"
+									:open-on-mount="!item.id"
 									@choose="(target) => item.target = target"
 									@remove="() => item.target = null"
 								/>
@@ -446,8 +447,6 @@ export default {
 
 		addKpi() {
 			this.items.unshift(newKpi());
-			//this.page_items.unshift(newKpi());
-			// this.page_items = this.items.slice(0, this.pageSize);
 			this.$toast.info('Добавлен KPI');
 		},
 
