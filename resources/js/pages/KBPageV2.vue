@@ -1278,8 +1278,8 @@ export default {
 		async editAccess(book) {
 			const loader = this.$loading.show()
 			this.clearAccess()
+			await this.fetchAccess(book)
 			this.updateBook = book
-			this.fetchAccess(book)
 			this.showEdit = true
 			loader.hide()
 		},
