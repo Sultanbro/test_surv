@@ -3,25 +3,28 @@
 namespace App\Http\Controllers\WorkChart;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\WorkChart\Users\AddUserChartRequest;
 use App\Http\Requests\WorkChart\Users\DeleteUserChartRequest;
-use App\Jobs\ProcessAddUserChart;
 use App\Service\WorkChart\Users\DeleteUserChartService;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserWorkChartController extends Controller
 {
     /**
      * Выставляем график для пользователя.
      *
-     * @param AddUserChartRequest $request
+     * @param Request $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function addChart(AddUserChartRequest $request): JsonResponse
+    public function addChart(Request $request): JsonResponse
     {
-        ProcessAddUserChart::dispatch($request->toDto());
+        User::query()->where('id', $request['user_id'])->update([
+            'work_chart_id' => $request['work_chart_id']
+        ]);
+
         return $this->response(
             message: 'Successfully added'
         );

@@ -17,6 +17,7 @@ use App\Models\Bitrix\Lead;
 use App\OauthClientToken;
 use Carbon\Carbon;
 use GuzzleHttp\Client as Guzzle;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class HeadHunter
@@ -450,27 +451,21 @@ class HeadHunter
         return $phone;
     }
 
-    public function createLead(Request $request)
+    public function createLead(Request $request): JsonResponse
     {
-        $lead = Lead::where('lead_id', $request->lead_id)->latest()->first();
-        if ($lead) {
-            $lead->update([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'status' => 'NEW',
-                'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
-                'hash' => $request->hash
-            ]);
-        } else {
-            $lead = Lead::create([
-                'lead_id' => $request->lead_id,
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'status' => 'NEW',
-                'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
-                'hash' => $request->hash
-            ]);
-        }
+        Lead::query()
+            ->updateOrCreate(
+                [
+                    'lead_id' => $request->lead_id
+                ],
+                [
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'status' => 'NEW',
+                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                    'hash' => $request->hash
+                ]);
+
         return response()->json([
             'message' => 'Lead has created!'
         ]);
@@ -490,6 +485,4 @@ class HeadHunter
             "lead" => $lead
         ]);
     }
-
-
 }

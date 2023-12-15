@@ -780,6 +780,17 @@ export default {
 				this.setParentsOpened(page.parent_id)
 			}
 		},
+		treePluck(books, result = []){
+			books.forEach(book => {
+				if(book.is_category){
+					result.push(book.id)
+					if(book.children){
+						this.treePluck(book.children, result)
+					}
+				}
+			})
+			return result
+		},
 		/* === HELPERS === */
 
 		/* === SETTINGS === */
@@ -863,8 +874,13 @@ export default {
 			this.showGlossary = false
 
 			try{
-				await this.bookAccess(root)
 				const {trees, item_models, book, can_save} = await API.fetchKBBook(root.id)
+
+				const ids = this.treePluck(trees)
+				if(!ids.includes(root.id)) ids.push(root.id)
+				const accessMap = await API.fetchKBAccesses(ids)
+				await this.bookAccess(root, accessMap)
+
 				this.books = []
 				this.pages = []
 				const pages = []
@@ -874,7 +890,7 @@ export default {
 
 				for(const page of trees){
 					page.parent_id = +root.id
-					if(page.is_category) await this.bookAccess(page)
+					if(page.is_category) await this.bookAccess(page, accessMap)
 					else setRootRights(root, page)
 					pages.push(page)
 				}
@@ -1342,13 +1358,18 @@ export default {
 				})
 			}
 		},
-		async bookAccess(book){
+		async bookAccess(book, accessMap){
+			if(!accessMap){
+				const ids = this.treePluck([book])
+				accessMap = await API.fetchKBAccesses(ids)
+			}
+
 			const {
 				whoCanEdit,
 				whoCanRead,
 				whoCanReadPairs,
 				whoCanEditPairs,
-			} = await API.fetchKBAccess(book.id)
+			} = accessMap[book.id]
 
 			const canRead = ~whoCanRead.findIndex(access => {
 				switch(access.type){
@@ -1393,7 +1414,7 @@ export default {
 						this.pageAccess(child, book.canRead, book.canEdit)
 						continue
 					}
-					await this.bookAccess(child)
+					this.bookAccess(child, accessMap)
 				}
 			}
 		},

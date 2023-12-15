@@ -129,13 +129,6 @@ final class Analytics
                     ->where('row_id', $row->id)
                     ->where('column_id', $column->id)
                     ->first();
-//                $arr = [
-//                    'row_id' => $row->id,
-//                    'column_id' => $column->id,
-//                    'context' => false,
-//                    'cell' => $cellLetter . $cellNumber,
-//                    'depend_id' => $row->depend_id,
-//                ];
 
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
@@ -219,7 +212,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -450,9 +444,10 @@ final class Analytics
     ): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $group = ProfileGroup::whereIn('id', $dto->groupIds)->first();
+        $group = ProfileGroup::query()->whereIn('id', $dto->groupIds)->first();
 
         $topValue = new ValueModel;
+
         $options = $topValue->getOptions('[]');
         $options['staticZones'] = $this->getStaticZones($group);
 
@@ -579,19 +574,19 @@ final class Analytics
     {
         $val = 0;
 
-        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
-        $row = $this->getGroupImplRows($group_id, $date)->first() ?? [];
+//        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
+//        $row = $this->getGroupImplRows($group_id, $date)->first() ?? [];
 
-        if ($row && $column) {
-            $stat = AnalyticStat::query()->where('column_id', $column->id)
-                ->where('row_id', $row->id)
-                ->where('date', $date)
-                ->first();
-            if ($stat) {
-                $val = AnalyticStat::calcFormula($stat, $date, 2);
-                $stat->show_value = $val;
-                $stat->save();
-            }
+        $stat = AnalyticStat::query()
+            ->where('group_id', $group_id)
+            ->where('date', $date)
+            ->where('show_value', 'Impl')
+            ->first();
+
+        if ($stat) {
+            $val = AnalyticStat::calcFormula($stat, $date, 2);
+            $stat->show_value = $val;
+            $stat->save();
         }
 
         return $val;
@@ -600,6 +595,7 @@ final class Analytics
     private function getGroupPlanColumns($group_id, $date): \Illuminate\Database\Eloquent\Builder
     {
         return AnalyticColumn::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'plan');
     }
@@ -607,6 +603,7 @@ final class Analytics
     private function getGroupImplRows($group_id, $date): \Illuminate\Database\Eloquent\Builder|null
     {
         return AnalyticRow::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'Impl');
     }

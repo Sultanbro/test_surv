@@ -447,7 +447,9 @@ class HrController extends Controller
         if ($request->time) {
             $hour = substr($request->time, 0, 2);
             $minute = substr($request->time, 3, 2);
-            $invite_at = Carbon::parse($request->date)->hour($hour)->minute($minute);
+            $invite_at = Carbon::parse($request->date)
+                ->hour($hour)
+                ->minute($minute);
         } else {
             $invite_at = Carbon::parse($request->date);
         }
@@ -481,7 +483,7 @@ class HrController extends Controller
 
             //send notification to users about this trainees
             if ($request->send_users and count($request->send_users) > 0) {
-                $service->sendAboutTrainee($request->send_users, $lead, $invite_at);
+                $service->sendAboutTrainee($request->send_users, $lead, ProfileGroup::query()->find($request->group_id)->name, $invite_at);
             }
 
             try {

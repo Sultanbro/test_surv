@@ -717,14 +717,29 @@ class KnowBaseController extends Controller
      */
     public function getAccess(Request $request) : array
     {
-
-        $book = KnowBase::withTrashed()->find($request->id);
-
         $selected_all_badge = [ // All badge in superselect.vue
             'id' => 0,
             'type' => 0,
             'name' => 'Все',
         ];
+
+        if (is_array($request['id'])) {
+            $books = KnowBase::withTrashed()->whereIn('id',$request['id'])->get();
+
+            $permissions = [];
+            foreach ($books as $book) {
+                $permissions[$book->id] = [
+                    'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),
+                    'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'edit'),
+                    'who_can_read_pairs' => $book->read_pairs,
+                    'who_can_edit_pairs' => $book->edit_pairs
+                ];
+            }
+
+            return $permissions;
+        }
+
+        $book = KnowBase::withTrashed()->find($request->id);
 
         return [
             'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),

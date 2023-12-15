@@ -17,13 +17,13 @@
 								<table>
 									<tr>
 										<td class="blue">
-											Выполнение KPI от 80-99%
+											Выполнение KPI от {{ wrap_item.lower_limit }}-{{ wrap_item.upper_limit - 1 }}%
 										</td>
 										<td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
 									</tr>
 									<tr>
 										<td class="blue">
-											Выполнение KPI на 100%
+											Выполнение KPI на {{ wrap_item.upper_limit }}%
 										</td>
 										<td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
 									</tr>
@@ -133,8 +133,11 @@
 							</template>
 						</table>
 
-						<div class="kpi__activities-tip">
-							* сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
+						<div
+							v-if="wrap_item.lower_limit"
+							class="kpi__activities-tip"
+						>
+							* сумма премии за выполнение показателей начнет меняться после достижения {{ wrap_item.lower_limit }}% от целевого значения на месяц
 						</div>
 					</div>
 				</div>

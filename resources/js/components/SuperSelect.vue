@@ -201,7 +201,10 @@ export default {
 		available_courses: {
 			type: Array,
 			default: () => []
-		}
+		},
+		openOnMount: {
+			type: Boolean,
+		},
 	},
 	data() {
 		return {
@@ -256,6 +259,11 @@ export default {
 		if(this.onlytype > 0){
 			this.changeType(2);
 		}
+	},
+	mounted(){
+		setTimeout(() => {
+			if(this.openOnMount) this.toggleShow()
+		}, 100)
 	},
 	methods: {
 		hidePlaceholder(){

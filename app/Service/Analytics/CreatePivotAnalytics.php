@@ -7,6 +7,7 @@ use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Repositories\ProfileGroupRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
@@ -21,117 +22,114 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     {
         $groups = $this->repository->getActiveGroupsWhereHasAnalytics();
         foreach ($groups as $group) {
-            $this->createStatistics($group->getKey());
+            $this->createStats($group->id);
         }
     }
 
-    private function createStatistics(int $groupId): void
+    private function createStats(int $group_id): void
     {
-        $prevMonth = $this->previousMonth();
-        $currentMonth = $this->currentMonth();
+        $prevDate = $this->previousMonth();
+        $currentDate = $this->currentMonth();
 
-        $newRows = $this->copyRows($groupId);
-        $newCols = $this->copyCols($groupId);
+        DB::table('analytic_stats')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
 
-        $colsWithValue = $this->getColsWithValue($currentMonth, $groupId);
+        $newRows = $this->createRows($group_id);
+        $newCols = $this->createColumns($group_id);
 
-        $prevMonthStatistics = AnalyticStat::query()
-            ->where([
-                'date' => $prevMonth,
-                'group_id' => $groupId
-            ])
+        $colsWithValue = $this->getColsWithValue($currentDate, $group_id);
+
+        $prevMonthStats = AnalyticStat::query()
+            ->where('date', $prevDate)
+            ->where('group_id', $group_id)
             ->get();
+
         $lastColumnId = 0;
 
-        foreach ($prevMonthStatistics as $statistic) {
+        foreach ($prevMonthStats as $statistic) {
 
             $existsRowAndCol = array_key_exists($statistic->row_id, $newRows)
                 && array_key_exists($statistic->column_id, $newCols);
-
             if (!$existsRowAndCol) continue;
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$statistic->column_id];
-            AnalyticStat::query()->firstOrCreate([
-                'group_id' => $statistic->group_id,
-                'date' => $currentMonth,
-                'row_id' => $newRows[$statistic->row_id],
-                'column_id' => $newCols[$statistic->column_id],
-            ], [
-                'value' => $value,
-                'show_value' => $show_value,
-                'activity_id' => $statistic->activity_id,
-                'editable' => $statistic->editable,
-                'class' => $statistic->class,
-                'type' => $statistic->type,
-                'comment' => $statistic->comment,
-                'decimals' => $statistic->decimals,
-            ]);
+
+            $newStat = $statistic->replicate();
+            $newStat->row_id = $newRows[$statistic->row_id];
+            $newStat->column_id = $newCols[$statistic->column_id];
+            $newStat->date = $currentDate;
+            $newStat->value = $value;
+            $newStat->show_value = $show_value;
+            $newStat->save();
         }
+
         $lastColumnStats = AnalyticStat::query()
             ->where('column_id', $lastColumnId)
-            ->where('group_id', $groupId)
-            ->where('date', $currentMonth)
+            ->where('group_id', $group_id)
+            ->where('date', $currentDate)
             ->get();
-
-        $analyticStats = [];
 
         /**
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
         foreach ($this->monthDifference() as $diffDay) {
             foreach ($lastColumnStats as $key => $columnStat) {
-                $analyticStats[] = [
-                    'group_id' => $columnStat->group_id,
-                    'date' => $currentMonth,
-                    'row_id' => $columnStat->row_id,
-                    'column_id' => ++$columnStat->column_id,
-                    'value' => '',
-                    'show_value' => $key == 0 ? $diffDay : '',
-                    'activity_id' => null,
-                    'editable' => $columnStat->editable,
-                    'class' => $columnStat->class,
-                    'type' => $columnStat->type,
-                    'comment' => $columnStat->comment,
-                    'decimals' => $columnStat->decimals
-                ];
+                AnalyticStat::query()->updateOrCreate(
+                    [
+                        'group_id' => $columnStat->group_id,
+                        'date' => $currentDate,
+                        'show_value' => $key == 0 ? $diffDay : ''],
+                    [
+                        'row_id' => $columnStat->row_id,
+                        'column_id' => ++$columnStat->column_id,
+                        'value' => '',
+                        'activity_id' => null,
+                        'editable' => $columnStat->editable,
+                        'class' => $columnStat->class,
+                        'type' => $columnStat->type,
+                        'comment' => $columnStat->comment,
+                        'decimals' => $columnStat->decimals
+                    ]);
             }
         }
-
-        DB::table('analytic_stats')->insert($analyticStats);
     }
 
-    private function copyRows(int $groupId): array
+    private function createRows(int $group_id): array
     {
-        $prevMonth = $this->previousMonth();
-        $currentMonth = $this->currentMonth();
+        $prevDate = $this->previousMonth();
+        $currentDate = $this->currentMonth();
+
+        DB::table('analytic_rows')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
 
         $newRows = [];
+
+        /** @var Collection<AnalyticRow> $prevRows */
         $prevRows = AnalyticRow::query()
-            ->where([
-                'date' => $prevMonth,
-                'group_id' => $groupId
-            ])
+            ->where('date', $prevDate)
+            ->where('group_id', $group_id)
             ->orderBy('order', 'desc')
             ->get();
+
         foreach ($prevRows as $prevRow) {
-            $newRow = AnalyticRow::query()
-                ->firstOrCreate([
-                    'group_id' => $prevRow->group_id,
-                    'name' => $prevRow->name,
-                    'date' => $currentMonth,
-                    'order' => $prevRow->order,
-                    'depend_id' => $prevRow->depend_id,
-                ]);
+            $newRow = $prevRow->replicate();
+            $newRow->date = $currentDate;
+
+            $newRow->save();
             $newRows[$prevRow->id] = $newRow->getKey();
         }
         /**
          * depend rows
          */
         $rows = AnalyticRow::query()
-            ->where('date', $currentMonth)
-            ->where('group_id', $groupId)
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
             ->whereNotNull('depend_id')
             ->orderBy('order', 'desc')
             ->get();
@@ -147,50 +145,53 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         return $newRows;
     }
 
-    private function copyCols(int $groupId): array
+    private function createColumns(int $group_id): array
     {
-        $prevMonth = $this->previousMonth();
-        $currentMonth = $this->currentMonth();
+        $prevDate = $this->previousMonth();
+        $currentDate = $this->currentMonth();
 
+        DB::table('analytic_columns')
+            ->where('date', $currentDate)
+            ->where('group_id', $group_id)
+            ->delete();
 
+        /**
+         * Получаем данные за прошлый месяц.
+         */
         $prevMonthCols = AnalyticColumn::query()
             ->where([
-                'date' => $prevMonth,
-                'group_id' => $groupId
+                'date' => $prevDate,
+                'group_id' => $group_id
             ])
-            ->whereIn('name', $this->getMonthlyTemplate($currentMonth))
+            ->whereIn('name', $this->getMonthlyTemplate($currentDate))
             ->orderBy('order')
             ->get();
 
         $newColumns = [];
         $lastOrder = 0;
         foreach ($prevMonthCols as $col) {
-            $analyticColumn = AnalyticColumn::query()->firstOrCreate([
-                'group_id' => $col->group_id,
-                'name' => $col->name,
-                'date' => $currentMonth,
-                'order' => $col->order,
-            ]);
+            $newColumn = $col->replicate();
+            $newColumn->date = $currentDate;
+            $newColumn->save();
 
-            /**
-             * Получаем последний элемент в массиве.
-             * После последний итерации останется последний элемент
-             */
             $lastOrder = $col->order;
 
             /**
              * Сохраняем ID новой колонки в массиве.
              */
-            $newColumns[$col->id] = $analyticColumn->getKey();
+            $newColumns[$col->id] = $newColumn->getKey();
         }
+
         foreach ($this->monthDifference() as $diffDay) {
             $newColumn = AnalyticColumn::query()->firstOrCreate([
-                'group_id' => $groupId,
+                'group_id' => $group_id,
                 'name' => (string)$diffDay,
-                'date' => $currentMonth
+                'date' => $currentDate
             ],
                 [
                     'order' => ++$lastOrder,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
 
             /**
@@ -201,12 +202,12 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         return $newColumns;
     }
 
-    private function getColsWithValue($date, $groupId): array
+    private function getColsWithValue($date, $group_id): array
     {
         return AnalyticColumn::query()
             ->where([
                 'date' => $date,
-                'group_id' => $groupId
+                'group_id' => $group_id
             ])
             ->whereIn('name', [
                 'name',
@@ -227,6 +228,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     ): string|int|null
     {
         $value = $statistic->value;
+
         if ($statistic->type == 'remote' || $statistic->type == 'inhouse') {
             $value = '';
         }
@@ -282,7 +284,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     private function previousMonth(): string
     {
         return Carbon::now()
-            ->subMonth()
+            ->subMonths(2)
             ->startOfMonth()
             ->format('Y-m-d');
     }

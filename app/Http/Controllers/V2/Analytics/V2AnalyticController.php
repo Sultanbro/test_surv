@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\V2\Analytics;
 
-use App\CacheStorage\AnalyticCacheStorage;
-use App\Enums\V2\Analytics\AnalyticEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V2\Analytics\GetAnalyticsRequest;
 use App\Http\Requests\V2\Analytics\GetFiredInfoRequest;
-use App\ProfileGroup;
 use App\Service\V2\Analytics\GetActivitiesService;
 use App\Service\V2\Analytics\GetAnalyticsService;
 use App\Service\V2\Analytics\GetDecompositionsService;
@@ -21,7 +18,6 @@ class V2AnalyticController extends Controller
 {
 
 
-
     /**
      * @param GetFiredInfoRequest $request
      * @param GetFiredInfoService $service
@@ -31,7 +27,7 @@ class V2AnalyticController extends Controller
     {
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data:  $service->handle($request->toDto()),
+            data: $service->handle($request->toDto()),
             status: Response::HTTP_OK
         );
     }
