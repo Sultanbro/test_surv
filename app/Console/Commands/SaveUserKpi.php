@@ -32,7 +32,7 @@ class SaveUserKpi extends Command
      *
      * @var mixed
      */
-    public $date; // Дата пересчета 
+    public $date; // Дата пересчета
 
     /**
      * Вытащить кпи показатели сотрудника
@@ -172,7 +172,7 @@ class SaveUserKpi extends Command
                     $completed_percent = 100;
                 }
 
-                $earned += $this->calculator->earned(
+                $earnedActivity = $this->calculator->earned(
                     (int)$kpi['lower_limit'],
                     (int)$kpi['upper_limit'],
                     (float)$completed_percent,
@@ -180,7 +180,9 @@ class SaveUserKpi extends Command
                     (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
                     (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
+                dump($item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
 
+                $earned += $earnedActivity;
 
                 // dump($kpi['lower_limit'],
                 // $kpi['upper_limit'],
@@ -200,7 +202,7 @@ class SaveUserKpi extends Command
      */
     private function updateSavedKpi(array $data): void
     {
-        // save 
+        // save
         $sk = SavedKpi::query()->where('user_id', $data['user_id'])
             ->where('date', $data['date'])
             ->first();
