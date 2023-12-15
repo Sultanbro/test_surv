@@ -762,7 +762,6 @@ class KpiStatisticService
         $limit = $request->limit ? $request->limit : 10;
 
         $searchWord = $filters['query'] ?? null;
-        $filterGroupId = $filters['group_id'] ?? null;
 
         if (
             isset($filters['data_from']['year'])
@@ -801,10 +800,9 @@ class KpiStatisticService
             ->whereHasMorph(
                 'kpiable',
                 '*',
-                function (Builder $query, string $type) use ($date, $filterGroupId) {
+                function (Builder $query, string $type) use ($date) {
                     if ($type === 'App\ProfileGroup') {
                         $query->whereNull('archived_date');
-                        if ($filterGroupId) $query->where('id', $filterGroupId);
                     }
                     if ($type === 'App\User') {
                         $query->where(function (Builder $query) use ($date) {
