@@ -717,10 +717,18 @@ export default {
 
 			await this.fetchData()
 			if(this.$route.query.s) {
+				if(!this.allBooksMap[+this.$route.query.s]) {
+					this.routerPush('/kb')
+					return this.$toast.error('Раздел удален')
+				}
 				this.books = []
 				await this.fetchBook(this.allBooksMap[+this.$route.query.s], true)
 			}
-			if(this.$route.query.b){
+			if(this.rootBook && this.$route.query.b){
+				if(!this.pagesMap[+this.$route.query.b]) {
+					this.routerPush(`/kb?s=${this.$route.query.s}`)
+					return this.$toast.error('Страница удалена')
+				}
 				this.onPage(this.pagesMap[+this.$route.query.b], true)
 			}
 		},
