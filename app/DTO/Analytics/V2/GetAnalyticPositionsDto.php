@@ -8,10 +8,10 @@ use Webmozart\Assert\Assert;
 class GetAnalyticPositionsDto
 {
     /**
-     * @param int $groupId
+     * @param string $groupId
      */
     public function __construct(
-        public readonly int $groupId
+        public readonly string $groupId
     )
     {}
 
