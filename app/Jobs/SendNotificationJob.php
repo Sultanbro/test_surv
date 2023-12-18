@@ -41,7 +41,7 @@ class SendNotificationJob implements ShouldQueue
 
 Вам открыли доступ для обучения и работы в нашем корпоративном портале.
 
-Пройдите по ссылке: https://bp.jobtron.org/
+Пройдите по ссылке: https://bp.jobtron.org
 Ведите логин: ' . $user->email . '
 Введите пароль: 12345
 
