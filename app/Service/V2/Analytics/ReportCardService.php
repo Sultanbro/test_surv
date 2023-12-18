@@ -6,8 +6,11 @@ namespace App\Service\V2\Analytics;
 use App\DTO\Analytics\V2\ReportCardDto;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\ReportCard;
 use App\Timetracking;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
 * Класс для работы с Service.
@@ -17,10 +20,14 @@ class ReportCardService
     /**
      * @param ReportCardDto $dto
      * @return bool
+     * @throws Throwable
      */
     public function handle(ReportCardDto $dto): bool
     {
         $firstOfMonth = Carbon::createFromDate($dto->year, $dto->month)->firstOfMonth()->format('Y-m-d');
+        DB::beginTransaction();
+
+        $this->saveReportCards($dto, $firstOfMonth);
 
         AnalyticColumn::query()
             ->where('date', $firstOfMonth)
@@ -47,7 +54,28 @@ class ReportCardService
                     $stat->save();
                 }
         });
-
+        DB::commit();
         return true;
+    }
+
+    /**
+     * @param ReportCardDto $dto
+     * @param string $date
+     * @return void
+     */
+    private function saveReportCards(ReportCardDto $dto, string $date): void
+    {
+        $reportCards = [];
+
+        foreach ($dto->positions as $position)
+        {
+            $reportCards[] = [
+                'position_id'   => $position,
+                'group_id'      => $dto->groupId,
+                'date'          => $date
+            ];
+        }
+
+        ReportCard::query()->insert($reportCards);
     }
 }

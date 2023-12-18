@@ -52,6 +52,7 @@ class V2AnalyticController extends Controller
      * @param ReportCardRequest $request
      * @param ReportCardService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function reportCard(ReportCardRequest $request, ReportCardService $service): JsonResponse
     {

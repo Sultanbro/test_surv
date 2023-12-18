@@ -4,6 +4,7 @@ namespace App;
 
 use App\DTO\Top\SwitchTopDTO;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\ReportCard;
 use App\Models\AnalyticsActivitiesSetting;
 use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
@@ -664,5 +665,13 @@ class ProfileGroup extends Model
                 ->whereMonth('archived_date', '>=', $month)
             ))
             ->get();
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function reportCards(): HasMany
+    {
+        return $this->hasMany(ReportCard::class, 'group_id');
     }
 }

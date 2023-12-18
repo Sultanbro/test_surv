@@ -201,8 +201,9 @@ final class Analytics
 
                     if ($statistic->type == 'time') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
-
-                        $val = Timetracking::totalHours($day, $dto->groupId);
+                        $group = ProfileGroup::query()->find($dto->groupId);
+                        $positions = $group->reportCards->pluck('position_id')->toArray();
+                        $val = Timetracking::totalHours($day, $dto->groupId, $positions);
                         $val = floor($val / 9 * 10) / 10;
                         $val = max($val, 0);
 

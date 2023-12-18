@@ -444,7 +444,7 @@ class TopValue extends Model
 
     }
 
-    public static function getRentabilityGauges($date, $common_name = ''): array
+    public static function  getRentabilityGauges($date, $common_name = ''): array
     {
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
