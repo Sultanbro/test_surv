@@ -120,12 +120,6 @@ class SalaryController extends Controller
      */
     public function salaries(Request $request)
     {
-        if (!auth()->user()->can('salaries_view')) {
-            return [
-                'error' => 'access'
-            ];
-        }
-
         $year = $request->year;
         $month = $request->month;
 
