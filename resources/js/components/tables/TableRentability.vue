@@ -3,6 +3,13 @@
 		:key="skey"
 		class="mb-3"
 	>
+		<RentabilityGauges
+			v-if="activeRentability.length"
+			:items="activeRentability"
+			class="mb-5"
+			@save="saveRenabilityGaguge"
+		/>
+
 		<div class="table-container">
 			<table class="table table-bordered table-responsive whitespace-no-wrap custom-table-rentability">
 				<thead>
@@ -137,8 +144,13 @@
 </template>
 
 <script>
+const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
+
 export default {
 	name: 'TableRentability',
+	components: {
+		RentabilityGauges,
+	},
 	props: {
 		year: {
 			type: Number,
@@ -147,7 +159,11 @@ export default {
 		month: {
 			type: Number,
 			default: 0
-		}
+		},
+		rentabilitySwitch: {
+			type: Object,
+			default: () => ({}),
+		},
 	},
 	data() {
 		return {
@@ -168,8 +184,14 @@ export default {
 			},
 			tops: {},
 			skey: 1,
-			sorts: {}
+			sorts: {},
+			speedometers: [],
 		};
+	},
+	computed: {
+		activeRentability(){
+			return this.speedometers.filter(rent => this.isActiveRentability(rent.group_id))
+		},
 	},
 	watch: {
 		year: function() {
@@ -206,18 +228,23 @@ export default {
 			});
 		},
 
-		fetchData() {
-			this.axios
-				.post('/timetracking/top/get-rentability', {
+		async fetchData() {
+			const loader = this.$loading.show()
+			try {
+				const {data} = await this.axios.get('/v2/analytics-page/get-rentability', {params: {
 					year: this.year,
-					month: this.month
-				})
-				.then((response) => {
-					this.items = response.data
-					this.countRents();
-					this.countTop();
-					this.skey++;
-				});
+					month: this.month,
+				}})
+				this.items = data.data.table
+				this.speedometers = data.data.speedometers
+				this.countRents();
+				this.countTop();
+				this.skey++;
+			}
+			catch (error) {
+				console.error('[TableRentability.fetchData]', error)
+			}
+			loader.hide()
 		},
 
 		update(month, index) {
@@ -268,6 +295,30 @@ export default {
 			this.items.unshift(item);
 		},
 
+		async saveRenabilityGaguge(gauge){
+			const loader = this.$loading.show()
+			try {
+				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
+					gauge: {
+						...gauge,
+						reversed: false,
+						date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}-01`,
+					},
+					type: 2,
+				})
+				this.$toast.success('Успешно сохранено!')
+				this.fetchData()
+			}
+			catch (error) {
+				console.error('[TableRentability.saveRenabilityGaguge]', error)
+				alert(error)
+			}
+			loader.hide()
+		},
+
+		isActiveRentability(groupId){
+			return this.rentabilitySwitch[groupId] && this.rentabilitySwitch[groupId].value
+		},
 	},
 };
 </script>

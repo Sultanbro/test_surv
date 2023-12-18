@@ -14,14 +14,12 @@ export default {
 	data(){
 		return {
 			data: null,
-			activeuserid: 0,
 			activeTab: 'nav-top-tab'
 		}
 	},
 	mounted(){
 		useAsyncPageData('/timetracking/top').then(data => {
 			this.data = data.data || null
-			this.activeuserid = '' + data.activeuserid
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
@@ -34,9 +32,8 @@ export default {
 		<div class="old__content">
 			<ReportsNav :active-tab="activeTab" />
 			<TopPage
-				v-show="activeuserid"
+				v-show="data"
 				:data="data"
-				:activeuserid="activeuserid"
 			/>
 		</div>
 	</DefaultLayout>

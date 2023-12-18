@@ -50,12 +50,12 @@ export async function getAnalyticsActivityHiddenUsers(groupId){
 	const {data} = await axios.get(`/timetracking/analytics/activity/removed/users/${groupId}`)
 	const result = {}
 	if(data.data){
-		result.groupId = data.data.group_id
 		delete data.data.group_id
 		Object.keys(data.data).forEach(key => {
 			const splitKey = key.split('_')
-			if(splitKey[0] === 'group' && parseInt(splitKey[1])){
-				result[parseInt(splitKey[1])] = JSON.parse(data.data[key])
+			const activityId = parseInt(splitKey[1])
+			if(splitKey[0] === 'group' && activityId){
+				result[activityId] = JSON.parse(data.data[key])
 			}
 		})
 	}

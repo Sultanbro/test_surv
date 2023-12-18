@@ -351,7 +351,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable vue/prop-name-casing */
 
-import VGauge from 'vgauge'
+const VGauge = () => import(/* webpackChunkName: "VGauge" */ 'vgauge')
 export default {
 	name: 'TopGauges',
 	components:{

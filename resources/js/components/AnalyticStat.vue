@@ -381,7 +381,7 @@
 																v-model="hoursDivider"
 																type="number"
 																min="0.01"
-																class="AnContext2-input"
+																class="AnContext2-input ml-3"
 															>
 														</label>
 														<div class="AnContext2-row">

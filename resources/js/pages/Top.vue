@@ -75,82 +75,10 @@
 				card
 				@click="showIcons()"
 			>
-				<div
-					:key="ukey"
-					class="d-flex flex-wrap mb-5"
-				>
-					<template v-for="(gauge, g_index) in rentability">
-						<div
-							v-if="isActiveRentability(gauge.group_id)"
-							:key="gauge.name"
-							class="gauge-block"
-						>
-							<div @click="gauge.editable = !gauge.editable">
-								<VGauge
-									:value="gauge.value"
-									unit="%"
-									:options="gauge.options"
-									:max-value="Number(gauge.max_value)"
-									:top="true"
-									height="75px"
-									width="125px"
-									gauge-value-class="gauge-span"
-								/>
-							</div>
-							<p
-								class="text-center font-bold"
-								style="font-size: 14px;margin-bottom: 0;"
-							>
-								<a
-									:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
-									target="_blank"
-								>{{ gauge.name }}</a>
-							</p>
-							<p class="text-center font-bold text-14">
-								{{ gauge.value }}%
-							</p>
-							<div
-								v-if="gauge.editable"
-								class="mb-5 edt-window"
-								style="width: 125px;"
-							>
-								<div>
-									<div class="d-flex justify-content-between align-items-center">
-										<span class="pr-2 l-label">Max</span>
-										<input
-											v-model="gauge.max_value"
-											type="text"
-											class="form-control form-control-sm w-250 wiwi"
-										>
-									</div>
-								</div>
-								<div class="d-flex">
-									<button
-										class="btn btn-primary rounded mt-1 mr-2"
-										@click="saveRentGauge(g_index)"
-									>
-										Сохранить
-									</button>
-								</div>
-							</div>
-						</div>
-					</template>
-
-					<div class="ml-a pt-4">
-						<JobtronButton
-							v-if="archiveUtility.length"
-							title="Открыть архив"
-							@click="isArchiveOpen = true"
-						>
-							Архив
-						</JobtronButton>
-					</div>
-				</div>
-
-
 				<TableRentability
 					:year="+currentYear"
 					:month="+monthInfo.month"
+					:rentability-switch="rentabilitySwitch"
 				/>
 			</b-tab>
 
@@ -403,14 +331,7 @@
 
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
-const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
-const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
-import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
-import NPS from '@/components/tables/NPS' // Оценка руководителей
-import TopSwitches from '@/components/pages/Top/TopSwitches'
 import { useYearOptions } from '@/composables/yearOptions'
-import JobtronButton from '@ui/Button'
-import SideBar from '@ui/Sidebar'
 import {
 	fetchTop,
 	fetchArchiveUtility,
@@ -419,11 +340,17 @@ import {
 	switchArchiveTop,
 } from '@/stores/api'
 
+const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
+import NPS from '@/components/tables/NPS' // Оценка руководителей
+import TopSwitches from '@/components/pages/Top/TopSwitches'
+import JobtronButton from '@ui/Button'
+import SideBar from '@ui/Sidebar'
+
 export default {
 	name: 'PageTop',
 	components: {
 		TopGauges,
-		VGauge,
 		TableRentability,
 		NPS,
 		TopSwitches,
@@ -435,14 +362,11 @@ export default {
 			type: Object,
 			default: null
 		},
-		activeuserid: {
-			type: Number,
-			default: null
-		},
 	},
 	data() {
 		const now = new Date()
 		return {
+			activeuserid: this.$laravel.userId,
 			afterCreated: false,
 			activeTab: 0,
 			utility: [], // первая вкладка
@@ -506,6 +430,9 @@ export default {
 		archiveUtility(){
 			return this.utility.filter(util => !(this.utilitySwitch[util.id] && this.utilitySwitch[util.id].value))
 		},
+		activeRentability(){
+			return this.rentability.filter(rent => this.isActiveRentability(rent.group_id))
+		},
 		switches(){
 			switch(this.activeTab){
 			case 1:
@@ -536,7 +463,7 @@ export default {
 			this.fetchSwitches()
 		},
 		showIcons(){
-			this.rentability = this.data.rentability;
+			this.rentability = this.data.rentability || [];
 		},
 		setMonth() {
 			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
@@ -564,7 +491,7 @@ export default {
 
 				this.setMonth()
 
-				if(this.afterCreated) this.rentability = rentability
+				if(this.afterCreated) this.rentability = rentability || []
 				this.afterCreated = true;
 				this.utility = utility;
 				this.proceeds = proceeds;
@@ -623,7 +550,7 @@ export default {
 		saveRentGauge(g_index) {
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/top/save_rent_max', {
-				gauge: this.rentability[g_index]
+				gauge: this.rentability[g_index],
 			})
 				.then(() => {
 					this.$toast.success('Успешно сохранено!')
