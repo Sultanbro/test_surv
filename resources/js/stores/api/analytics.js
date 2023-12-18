@@ -112,6 +112,7 @@ const ActivityRecordsTable = {
 			appliedFrom: rec.applied_from,
 			group: rec.group,
 			plan: Number(rec.plan),
+			userType: rec.user_type,
 		}
 		rec.statistics.forEach(stat => {
 			result[stat.day] = Number(stat.value)
@@ -131,6 +132,7 @@ const ActivityRecordsTable = {
 			appliedFrom: rec.applied_from,
 			group: rec.group,
 			plan: Number(rec.plan),
+			userType: rec.user_type,
 		}
 		rec.statistics.forEach(stat => {
 			result[stat.day] = Number(stat.value)
@@ -148,6 +150,7 @@ const ActivityRecordsTable = {
 			avg3: rec.avg3,
 			avg4: rec.avg4,
 			avg5: rec.avg5,
+			userType: rec.user_type,
 		}
 		rec.week_qualities.forEach(stat => {
 			result[stat.day] = Number(stat.total)
