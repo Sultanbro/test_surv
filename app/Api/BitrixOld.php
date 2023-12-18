@@ -11,6 +11,8 @@ use Illuminate\Support\Collection;
 */
 class BitrixOld
 {
+
+    public $client;
     /**
      * @var string
      */
@@ -23,6 +25,7 @@ class BitrixOld
     {
         $this->link = config('bitrix.host') . config('bitrix.token') . '/';
 
+        $this->client = new Client();
         // Headhunter 
         if ($line == 'hh') {
             $this->link = 'https://infinitys.bitrix24.kz/rest/1/h42tawdhk8sf2m41/';
@@ -530,9 +533,7 @@ class BitrixOld
 
     public function findLead(int $id)
     {
-
-        $client = new Client();
-        $lead = $client->get($this->link.'crm.lead.get',[
+        $lead = $this->client->get($this->link.'crm.lead.get',[
             'query' => [
                 'id' => $id
             ]
@@ -540,5 +541,34 @@ class BitrixOld
         $lead = json_decode($lead->getBody()->getContents(),true);
         usleep(2000000); // 2 sec
         return $lead['result'];
+    }
+
+    /**
+     * @param string $crm_field
+     * @param string $crm_field_value
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getUserField(string $crm_field,string $crm_field_value)
+    {
+        $fields = $this->client->post($this->link.'crm.lead.userfield.list');
+        usleep(1000000);
+        $fields = json_decode($fields->getBody()->getContents(),true);
+
+        foreach($fields['result'] as $field)
+        {
+            if ($field['FIELD_NAME'] == $crm_field)
+            {
+                $needFields = $field['LIST'];
+            }
+        }
+
+        foreach ($needFields as $item) {
+            if ($item['ID'] == $crm_field_value) {
+                $value = $item['VALUE'];
+                break;
+            }
+        }
+        return $value;
     }
 }

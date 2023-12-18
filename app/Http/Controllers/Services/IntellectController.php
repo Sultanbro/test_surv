@@ -1065,6 +1065,8 @@ class IntellectController extends Controller
             $bitrix = new Bitrix('intellect');
 
             $bitrixLead = $bitrix->findLead($request->lead_id);
+            $net = $bitrix->getUserField("UF_CRM_1638972628",$bitrixLead['UF_CRM_1638972628']);
+            $language = $bitrix->getUserField("UF_CRM_1626255643",$bitrixLead['UF_CRM_1626255643']);
             History::lead($bitrixLead);
             $lead = Lead::query()
                 ->updateOrCreate(
@@ -1077,6 +1079,8 @@ class IntellectController extends Controller
                         'skyped' => $bitrixLead['MOVED_TIME'],
                         'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
                         'phone' => $bitrixLead['PHONE'][0]['VALUE'],
+                        'lang' => $language,
+                        'net'  => $net
                     ]);
             return response()->json([
                 "status" => 200,
