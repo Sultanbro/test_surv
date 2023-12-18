@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
+use App\Service\Tools\Debugger;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
@@ -258,9 +259,10 @@ class IntellectController extends Controller
 
     public function changeResp(Request $request): JsonResponse
     {
+        Debugger::debug('check', $request->lead_id);
         $lead = null;
 //        $this->changeLead($request);
-        if ($request->has('lead_id')) {
+        if ($request->lead_id) {
             $lead = Lead::query()
                 ->updateOrCreate([
                     'lead_id' => $request->get('lead_id'),
