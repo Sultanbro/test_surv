@@ -15,7 +15,7 @@ class SaveGroupSalary extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:group {date?}';
+    protected $signature = 'salary:group {date?} {group_id?}';
 
     /**
      * The console command description.
@@ -70,7 +70,13 @@ class SaveGroupSalary extends Command
     }
 
     public function count($date) {
-        $groups = ProfileGroup::where('active', 1)->get();
+        if($this->argument('group_id')) {
+            $groups = ProfileGroup::query()->where('id', $this->argument('group_id'))->get();
+            if (!$groups[0]) return;
+        } else {
+            $groups = ProfileGroup::query()->where('active', 1)->get();
+        }
+
 
         $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
         $firedGroups = Salary::getAllTotals($date, $groups, Salary::FIRED_USERS);
