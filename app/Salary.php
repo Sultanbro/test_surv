@@ -1227,6 +1227,7 @@ class Salary extends Model
                     $obon += $total_bonuses;
                     $osal += $total_salary;
                 }
+                dump($user_total);
             }
         }
 
