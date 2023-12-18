@@ -63,6 +63,7 @@ Route::group([
      */
     Route::get('/get-rentability', [TopController::class, 'getRentability'])->name('.rentability');
 
+    Route::get('/get-utility', [TopController::class, 'getUtility'])->name('.utility');
 
     /**
      * Часы из табеля.
