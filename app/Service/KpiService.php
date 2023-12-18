@@ -47,7 +47,8 @@ class KpiService
                         $query->with(['histories' => function (MorphMany $query) use ($endOfDate) {
                             $query->whereDate('created_at', '<=', $endOfDate);
                         }]);
-                        $query->whereDate('created_at', '<=', $endOfDate);
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '<=', $endOfDate);
                     },
                     'user' => fn(HasOne $query) => $query->select('id'),
                     'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
@@ -65,12 +66,11 @@ class KpiService
 
             $item = $kpi->toArray();
 
-
             // remove items if it's not in history
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items->whereNull('deleted_at');
+                $items = $kpi->items;
 
                 if (isset($payload['children'])) {
                     $items = $items->whereIn('id', $payload['children']);
@@ -175,23 +175,20 @@ class KpiService
     public function update(KpiUpdateRequest $request): array
     {
         $id = $request->get('id');
-        $kpi_item_ids = [];
-        $kpi = null;
 
-        DB::transaction(function () use ($request, $id, &$kpi_item_ids, &$kpi) {
+        DB::beginTransaction();
+        $kpi_item_ids = $this->updateItems($id, $request->get('items'));
 
-            $kpi_item_ids = $this->updateItems($id, $request->get('items'));
+        $all = $request->all();
 
-            $all = $request->all();
+        $all['updated_by'] = auth()->id();
+        $all['children'] = $kpi_item_ids;
 
-            $all['updated_by'] = auth()->id();
-            $all['children'] = $kpi_item_ids;
+        unset($all['source']);
 
-            unset($all['source']);
-
-            $kpi = Kpi::query()->findOrFail($id);
-            $kpi->update($all);
-        });
+        $kpi = Kpi::query()->findOrFail($id);
+        $kpi->update($all);
+        DB::commit();
 
         $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
         event(new KpiChangedEvent($kpiCreatedDate));

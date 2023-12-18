@@ -256,10 +256,11 @@ class IntellectController extends Controller
         }
     }
 
-    public function changeResp(Request $request)
+    public function changeResp(Request $request): JsonResponse
     {
         History::bitrix('Смена ответственного', $request->all());
         $lead = null;
+        $this->changeLead($request);
         if ($request->has('lead_id')) {
             $lead = Lead::query()
                 ->updateOrCreate([
@@ -287,13 +288,18 @@ class IntellectController extends Controller
         History::bitrix('Cделка проиграна', $request->all());
 
         if ($request->get('lead_id')) {
-            $trainee = Trainee::where('lead_id', $request->get('lead_id'))->first();
+            $trainee = UserDescription::query()
+                ->where('lead_id', $request->get('lead_id'))
+                ->first();
             if ($trainee) {
                 $trainee->fired = now();
                 $trainee->save();
             }
 
-            $lead = Lead::where('lead_id', $request->get('lead_id'))->orderBy('id', 'desc')->first();
+            $lead = Lead::query()
+                ->where('lead_id', $request->get('lead_id'))
+                ->orderBy('id', 'desc')
+                ->first();
             if ($lead) {
                 $lead->status = 'LOSE';
                 $lead->save();
@@ -332,7 +338,7 @@ class IntellectController extends Controller
         History::bitrix('inhouse', [
             $request->all(),
         ]);
-
+        $this->changeLead($request);
         $lead = Lead::query()
             ->updateOrCreate([
                 'lead_id' => $request->get('lead_id'),
@@ -1046,6 +1052,38 @@ class IntellectController extends Controller
             }
 
 
+        }
+
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse|void
+     */
+    public function changeLead(Request $request)
+    {
+        History::bitrix('Изменит Лида в ручную', $request->all());
+
+        if ($request->lead_id) {
+            $bitrix = new Bitrix();
+
+            $bitrixLead = $bitrix->findLead($request->lead_id);
+            $lead = Lead::query()->where('lead_id', $request->lead_id)->latest()->first();
+            if ($lead !== null)
+            {
+                $lead->update([
+                    'name' =>$bitrixLead['NAME'],
+                    'status' => 'CON',
+                    'skyped' => $bitrixLead['MOVED_TIME'],
+                    'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
+                    'phone' => $bitrixLead['PHONE'][0]['VALUE'],
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "data"   => $lead
+                ]);
+            }
         }
 
     }
