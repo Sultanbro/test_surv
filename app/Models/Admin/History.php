@@ -5,7 +5,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 
 class History extends Model
-{   
+{
     protected $table = 'admin_history';
 
     public $timestamps = false;
@@ -16,7 +16,7 @@ class History extends Model
         'action',
         'data',
         'created_at',
-    ];  
+    ];
 
     protected $casts = [
         'data' => 'array',
@@ -33,7 +33,8 @@ class History extends Model
         'INTELLECT' => 2,
     ];
 
-    public static function system(String $action, $data = []) {
+    public static function system(string $action, $data = [])
+    {
         self::create([
             'author' => self::SYSTEM,
             'author_id' => 0,
@@ -42,7 +43,8 @@ class History extends Model
         ]);
     }
 
-    public static function user($user_id, String $action, $data = []) {
+    public static function user($user_id, string $action, $data = [])
+    {
         self::create([
             'author' => self::USER,
             'author_id' => $user_id,
@@ -51,7 +53,8 @@ class History extends Model
         ]);
     }
 
-    public static function bitrix(String $action, $data = []) {
+    public static function bitrix(string $action, $data = [])
+    {
         self::create([
             'author' => self::SERVICE,
             'author_id' => self::AUTHORS['BITRIX'],
@@ -60,12 +63,23 @@ class History extends Model
         ]);
     }
 
-    public static function intellect(String $action, $data = []) {
+    public static function intellect(string $action, $data = [])
+    {
         self::create([
             'author' => self::SERVICE,
             'author_id' => self::AUTHORS['INTELLECT'],
             'action' => $action,
             'data' => $data,
+        ]);
+    }
+
+    public static function lead(array $bitrixLead): void
+    {
+        self::query()->create([
+            'author' => self::SERVICE,
+            'author_id' => self::AUTHORS['INTELLECT'],
+            'action' => "Получение лида из битрикс",
+            'data' => $bitrixLead,
         ]);
     }
 }
