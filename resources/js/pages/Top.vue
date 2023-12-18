@@ -222,65 +222,7 @@
 						md="8"
 						class="p-0 mt-4"
 					>
-						<div class="forecast table-container">
-							<table class="table table-bordered table-custom-forecast">
-								<thead>
-									<th class="text-left t-name table-title td-blue">
-										Отдел
-
-										<i
-											v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
-											class="fa fa-info-circle"
-											title="Отдел"
-										/>
-									</th>
-									<th class="text-center t-name table-title">
-										План
-
-										<i
-											v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
-											class="fa fa-info-circle"
-											title="План"
-										/>
-									</th>
-									<th class="text-center t-name table-title">
-										Факт
-
-										<i
-											v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
-											class="fa fa-info-circle"
-											title="Факт"
-										/>
-									</th>
-									<th class="text-center t-name table-title">
-										Осталось принять
-									</th>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(group, index) in prognoz_groups"
-										:key="index"
-									>
-										<td class="text-left t-name table-title td-blue align-middle">
-											{{ group.name }}
-										</td>
-										<td class="text-center t-name table-title align-middle">
-											<input
-												v-model="group.plan"
-												type="number"
-												@change="saveGroupPlan(index)"
-											>
-										</td>
-										<td class="text-center t-name table-title align-middle">
-											{{ group.applied }}
-										</td>
-										<td class="text-center t-name table-title align-middle">
-											{{ isNaN(group.left_to_apply) ? 0 : Number(group.left_to_apply) }}
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
+						<TopPredicts v-if="activeTab === 6" />
 					</b-col>
 				</b-row>
 			</b-tab>
@@ -344,6 +286,7 @@ const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
 import NPS from '@/components/tables/NPS' // Оценка руководителей
 import TopSwitches from '@/components/pages/Top/TopSwitches'
+import TopPredicts from '@/components/pages/Top/TopPredicts'
 import JobtronButton from '@ui/Button'
 import SideBar from '@ui/Sidebar'
 
@@ -354,6 +297,7 @@ export default {
 		TableRentability,
 		NPS,
 		TopSwitches,
+		TopPredicts,
 		JobtronButton,
 		SideBar,
 	},
@@ -377,7 +321,6 @@ export default {
 			rentabilitySwitch: {},
 			proceedsSwitch: {},
 
-			prognoz_groups: [], //
 			currentYear: now.getFullYear(),
 			monthInfo: {
 				currentMonth: null,
@@ -455,9 +398,8 @@ export default {
 	},
 	methods: {
 		init(){
-			this.utility = this.data.utility;
-			this.proceeds = this.data.proceeds;
-			this.prognoz_groups = this.data.prognoz_groups
+			this.utility = this.data.utility
+			this.proceeds = this.data.proceeds
 			this.setMonth()
 			this.fetchData()
 			this.fetchSwitches()
@@ -561,22 +503,6 @@ export default {
 					alert(error)
 					loader.hide()
 				});
-		},
-
-		saveGroupPlan(index) {
-			const loader = this.$loading.show();
-			const prognozGroup = this.prognoz_groups[index]
-			this.axios.post('/timetracking/top/save_group_plan', {
-				group_id: prognozGroup.id,
-				plan: prognozGroup.plan,
-			}).then(() => {
-				this.$toast.success('Успешно сохранено!')
-				prognozGroup.left_to_apply = Number(prognozGroup.plan || 0) - Number(prognozGroup.applied || 0);
-				loader.hide()
-			}).catch(error => {
-				alert(error)
-				loader.hide()
-			});
 		},
 
 		updateProceed(record, field, type) {
