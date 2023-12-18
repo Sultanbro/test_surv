@@ -770,6 +770,7 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/bitrix/create-link', [Services\IntellectController::class, 'bitrixCreateLead']);
         Route::any('/bitrix/change-resp', [Services\IntellectController::class, 'changeResp']);
         Route::any('/bitrix/inhouse', [Services\IntellectController::class, 'inhouse']);
+        Route::any('/bitrix/change-lead',[Services\IntellectController::class,'changeLead']);
 
 
         Route::group(['prefix' => 'statistics'], function () {

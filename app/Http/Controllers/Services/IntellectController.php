@@ -1054,4 +1054,36 @@ class IntellectController extends Controller
         }
 
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse|void
+     */
+    public function changeLead(Request $request)
+    {
+        History::bitrix('Изменит Лида в ручную', $request->all());
+
+        if ($request->lead_id) {
+            $bitrix = new Bitrix();
+
+            $bitrixLead = $bitrix->findLead($request->lead_id);
+            $lead = Lead::query()->where('lead_id', $request->lead_id)->latest()->first();
+            if ($lead !== null)
+            {
+                $lead->update([
+                    'name' =>$bitrixLead['NAME'],
+                    'status' => 'CON',
+                    'skyped' => $bitrixLead['MOVED_TIME'],
+                    'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
+                    'phone' => $bitrixLead['PHONE'][0]['VALUE'],
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "data"   => $lead
+                ]);
+            }
+        }
+
+    }
 }

@@ -989,10 +989,10 @@ export default {
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		showAccruals(){
-			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
 		},
 		showTotals(){
-			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
 		},
 		actualFOT(){
 			if (!this.items || !this.items[0]) return 0
