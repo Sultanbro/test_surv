@@ -26,7 +26,7 @@ class Kpi extends Model
     public $timestamps = true;
 
     protected $appends = ['target', 'expanded'];
-    
+
     protected $fillable = [
         'targetable_id',
         'targetable_type',
@@ -46,12 +46,12 @@ class Kpi extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $casts = [
-        'created_at'  => 'date:d.m.Y H:i',
-        'updated_at'  => 'date:d.m.Y H:i',
-        'children'    => 'array',
-        'read_by'     => 'array', 
+        'created_at' => 'date:d.m.Y H:i',
+        'updated_at' => 'date:d.m.Y H:i',
+        'children' => 'array',
+        'read_by' => 'array',
     ];
 
     public function kpiable()
@@ -79,12 +79,13 @@ class Kpi extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany('App\Models\Kpi\KpiItem')->withTrashed();
+        return $this->hasMany('App\Models\Kpi\KpiItem')
+            ->withTrashed();
     }
 
     /**
      * История
-     * 
+     *
      * @return MorphMany
      */
     public function histories()

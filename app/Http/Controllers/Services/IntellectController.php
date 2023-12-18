@@ -1068,22 +1068,23 @@ class IntellectController extends Controller
             $bitrix = new Bitrix();
 
             $bitrixLead = $bitrix->findLead($request->lead_id);
-            $lead = Lead::query()->where('lead_id', $request->lead_id)->latest()->first();
-            if ($lead !== null)
-            {
-                $lead->update([
-                    'name' =>$bitrixLead['NAME'],
-                    'status' => 'CON',
-                    'skyped' => $bitrixLead['MOVED_TIME'],
-                    'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
-                    'phone' => $bitrixLead['PHONE'][0]['VALUE'],
-                ]);
+            $lead = Lead::query()
+                ->updateOrCreate(
+                    [
+                        'lead_id', $request->lead_id
+                    ],
+                    [
+                        'name' => $bitrixLead['NAME'],
+                        'status' => 'CON',
+                        'skyped' => $bitrixLead['MOVED_TIME'],
+                        'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
+                        'phone' => $bitrixLead['PHONE'][0]['VALUE'],
+                    ]);
 
-                return response()->json([
-                    "status" => 200,
-                    "data"   => $lead
-                ]);
-            }
+            return response()->json([
+                "status" => 200,
+                "data" => $lead
+            ]);
         }
 
     }
