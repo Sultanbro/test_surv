@@ -259,7 +259,7 @@ class IntellectController extends Controller
     public function changeResp(Request $request): JsonResponse
     {
         $lead = null;
-        $this->changeLead($request);
+//        $this->changeLead($request);
         if ($request->has('lead_id')) {
             $lead = Lead::query()
                 ->updateOrCreate([
