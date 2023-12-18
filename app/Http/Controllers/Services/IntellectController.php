@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
+use App\Service\Tools\Debugger;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
@@ -260,13 +261,14 @@ class IntellectController extends Controller
     {
         History::bitrix('Смена ответственного', $request->all());
         $lead = null;
+        Debugger::debug('lead', $request->all());
         $this->changeLead($request);
         if ($request->has('lead_id')) {
             $lead = Lead::query()
                 ->updateOrCreate([
                     'lead_id' => $request->get('lead_id'),
                 ], [
-                    'deal_id' => $request->get('deal_id'),
+                    'deal_id' => $request->get('deal_id', 0),
                     'resp_id' => $request->get('resp_email'),
                     'status' => 'CON',
                     'project' => $request->get('project'),

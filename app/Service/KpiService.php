@@ -69,7 +69,7 @@ class KpiService
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items;
+                $items = $kpi->items->whereNull('deleted_at');
 
                 if (isset($payload['children'])) {
                     $items = $items->whereIn('id', $payload['children']);
