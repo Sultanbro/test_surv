@@ -181,7 +181,11 @@ class KnowBaseController extends Controller
     public function getArchived(Request $request) : array
     {
         if(auth()->user()->can('kb_edit')) {
-            $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orWhere('is_category', 1)->orderBy('order')->get()->toArray();
+            $books = KnowBase::onlyTrashed()
+            ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
+            ->orderBy('order')
+            ->get()
+            ->toArray();
         } else {
             $books = [];
         }

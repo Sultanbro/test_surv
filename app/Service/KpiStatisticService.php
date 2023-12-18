@@ -667,7 +667,8 @@ class KpiStatisticService
 
         $droppedGroups = array();
         if ($user_id != 0) {
-            $user = User::query()->with('groups')->find($user_id);
+            /** @var User $user */
+            $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
 
             $groups = ($user->inGroups())->pluck('id')->toArray();
@@ -692,25 +693,17 @@ class KpiStatisticService
         }
 
         $kpis = $kpis
-            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
-                ->endOfMonth()
-                ->format('Y-m-d')
-            )->where(fn($query) => $query->whereNull('deleted_at')->orWhere(
-                fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
-                    ->endOfMonth()
-                    ->format('Y-m-d')))
-            )
+            ->whereDate('created_at', '<=', $last_date)
+            ->where(fn($query) => $query->whereNull('deleted_at')->orWhereDate('deleted_at', '>', $last_date))
             ->where('is_active', true)
-            ->whereNot(function (Builder $query) use ($date) {
+            ->whereNot(function (Builder $query) use ($last_date, $date) {
                 $query->where('targetable_type', 'App\\User')
-                    ->whereHas('user', function (Builder $query) use ($date) {
-                        $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
-                            ->endOfMonth()
-                            ->format('Y-m-d'));
+                    ->whereHas('user', function (Builder $query) use ($last_date, $date) {
+                        $query->where('deleted_at', '<', $last_date);
                     });
             })
             ->orderBy('targetable_type', 'desc')
-            ->limit(1)
+            ->limit(3)
             ->get();
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
@@ -807,7 +800,7 @@ class KpiStatisticService
                     if ($type === 'App\User') {
                         $query->where(function (Builder $query) use ($date) {
                             $query->whereNull('deleted_at')
-                                ->orWhere('deleted_at', '<', Carbon::parse($date->format('Y-m-d')));
+                                ->orWhere('deleted_at', '>', Carbon::parse($date->format('Y-m-d')));
                         });
                     }
                 }
