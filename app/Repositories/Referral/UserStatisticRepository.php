@@ -178,8 +178,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $dateTypes = array_merge(
                     $this->traineesDaily($days, $training),
                     $this->attestation($attestation),
-                    $this->employeeFirstWeek($firstWork),
-                    $this->employeeWeekly($working)
+                    $this->employeeWeekly($working),
+                    $this->employeeFirstWeek($firstWork)
                 );
 
                 $referral->datetypes = Arr::sort($dateTypes, 'date');
@@ -282,8 +282,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return $types;
     }
 
-    private
-    function parseSalary(?array $current): array
+    private function parseSalary(?array $current): array
     {
         return [
             'paid' => (bool)($current['is_paid'] ?? null),

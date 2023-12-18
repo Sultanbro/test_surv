@@ -264,8 +264,8 @@ class IntellectController extends Controller
             $lead = Lead::query()
                 ->updateOrCreate([
                     'lead_id' => $request->get('lead_id'),
-                    'deal_id' => $request->get('deal_id')
                 ], [
+                    'deal_id' => $request->get('deal_id'),
                     'resp_id' => $request->get('resp_email'),
                     'status' => 'CON',
                     'project' => $request->get('project'),
@@ -336,8 +336,8 @@ class IntellectController extends Controller
         $lead = Lead::query()
             ->updateOrCreate([
                 'lead_id' => $request->get('lead_id'),
-                'deal_id' => $request->get('deal_id'),
             ], [
+                'deal_id' => $request->get('deal_id'),
                 'inhouse' => date('Y-m-d H:i:s', time() + 3600 * 6),
                 'project' => $request->get('project'),
                 'net' => $request->get('net'),
