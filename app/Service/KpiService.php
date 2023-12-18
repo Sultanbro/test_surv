@@ -39,16 +39,15 @@ class KpiService
 
         $date = Carbon::createFromDate($date['year'], $date['month']);
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
+        $startOfDate = $date->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
-                    'items' => function (HasMany $query) use ($endOfDate) {
+                    'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                         $query->with(['histories' => function (MorphMany $query) use ($endOfDate) {
                             $query->whereDate('created_at', '<=', $endOfDate);
                         }]);
-                        $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '<=', $endOfDate);
                     },
                     'user' => fn(HasOne $query) => $query->select('id'),
                     'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
