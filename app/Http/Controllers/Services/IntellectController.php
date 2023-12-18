@@ -7,27 +7,28 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
-use App\Trainee;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class IntellectController extends Controller
 {
-    public function start(Request $request)
+    public function start(Request $request): void
     {
         History::bitrix('Запуск чатбота', $request->all());
 
-        if ($request->phone && $request->lead_id) {
+        if ($request->get('phone') && $request->get('lead_id')) {
 
             $hash = md5(uniqid() . mt_rand());
 
-            $phone = Phone::normalize($request->phone);
+            $phone = Phone::normalize($request->get('phone'));
 
             ///// check this lead exists
-            $lead = Lead::where('lead_id', $request->lead_id)->latest()->first();
+            $lead = Lead::where('lead_id', $request->get('lead_id'))->latest()->first();
 
             $resp_id = $request->resp_email;
 
@@ -43,7 +44,7 @@ class IntellectController extends Controller
                 ]);
             } else {
                 Lead::create([
-                    'lead_id' => $request->lead_id,
+                    'lead_id' => $request->get('lead_id'),
                     'name' => $request->namex,
                     'email' => $request->email,
                     'phone' => $phone,
@@ -56,7 +57,7 @@ class IntellectController extends Controller
             }
 
             // Update bitrix fields
-            (new Bitrix('intellect'))->updateLead($request->lead_id, [
+            (new Bitrix('intellect'))->updateLead($request->get('lead_id'), [
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
             ]);
@@ -69,52 +70,54 @@ class IntellectController extends Controller
         }
     }
 
-    public function bitrixCreateLead(Request $request)
+    public function bitrixCreateLead(Request $request): void
     {
         History::bitrix('Переименовали лид в удаленный', $request->all());
 
-        if ($request->phone && $request->lead_id) {
+        if ($request->get('phone') && $request->get('lead_id')) {
             $hash = md5(uniqid() . mt_rand());
-            $phone = Phone::normalize($request->phone);
+            $phone = Phone::normalize($request->get('phone'));
 
             ///// check this lead exists
-            $lead = Lead::where('lead_id', $request->lead_id)->latest()->first();
+            $lead = Lead::query()
+                ->where('lead_id', $request->get('lead_id'))
+                ->latest()
+                ->first();
             if ($lead) {
                 $lead->update([
-                    'name' => $request->name ? $request->name : 'Без имени',
-                    'email' => $request->email,
+                    'name' => $request->get('name', 'Без имени'),
+                    'email' => $request->get('email'),
                     'phone' => $phone,
-                    'resp_id' => $request->resp_email,
+                    'resp_id' => $request->get('resp_email'),
                     'status' => 'NEW',
-                    'segment' => Lead::getSegment($request->segment),
+                    'segment' => Lead::getSegment($request->get('segment')),
                     'hash' => $hash,
                 ]);
             } else {
-                Lead::create([
-                    'lead_id' => $request->lead_id,
-                    'name' => $request->name ? $request->name : 'Без имени',
-                    'email' => $request->email,
-                    'phone' => $phone,
-                    'resp_id' => $request->resp_email,
-                    'status' => 'NEW',
-                    'segment' => Lead::getSegment($request->segment),
-                    'hash' => $hash,
-                    'house' => 'bitrixCreateLead',
-                ]);
+                Lead::query()
+                    ->create([
+                        'lead_id' => $request->get('lead_id'),
+                        'name' => $request->get('name', 'Без имени'),
+                        'email' => $request->get('email'),
+                        'phone' => $phone,
+                        'resp_id' => $request->get('resp_email'),
+                        'status' => 'NEW',
+                        'segment' => Lead::getSegment($request->get('segment')),
+                        'hash' => $hash,
+                        'house' => 'bitrixCreateLead',
+                    ]);
             }
 
             // Update bitrix fields
-            (new Bitrix('intellect'))->updateLead($request->lead_id, [
+            (new Bitrix('intellect'))->updateLead($request->get('lead_id'), [
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
             ]);
         }
-
     }
 
-    public function newLead(Request $request)
+    public function newLead(Request $request): void
     {
-
         History::bitrix('Ручная конвертация', $request->all());
 
         $name = $request->name ? $request->name : 'Без имени';
@@ -126,34 +129,31 @@ class IntellectController extends Controller
 
         try {
             $lang = $langs[$request->lang];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $lang = 0;
         }
 
         // find deal from Btirix
         $bitrix = new Bitrix();
-        $deal_id = $bitrix->findDeal($request->lead_id, false);
+        $deal_id = $bitrix->findDeal($request->get('lead_id'), false);
 
         /////////////
-
-        $lead = Lead::where('lead_id', $request->lead_id)->first();
-
+        /** @var Lead $lead */
+        $lead = Lead::query()
+            ->where('lead_id', $request->get('lead_id'))->first();
 
         $phone = null;
         $phone_2 = null;
         $phone_3 = null;
 
-        if ($request->phone) {
-            $phones = explode(',', $request->phone);
-
+        if ($request->get('phone')) {
+            $phones = explode(',', $request->get('phone'));
             if (count($phones) > 0) $phone = Phone::normalize($phones[0]);
             if (count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
             if (count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
-
         }
 
         if ($lead) {
-            //$trainee = Trainee::where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
             $trainee = UserDescription::query()
                 ->where('is_trainee', 1)
                 ->where('lead_id', $lead->lead_id)
@@ -182,27 +182,23 @@ class IntellectController extends Controller
             $lead->save();
         } else {
 
-            if ($lead->status != 'LOSE') {
-                $skyped_time = date('Y-m-d H:i:s', time() + 3600 * 6);
-            } else {
-                $skyped_time = null;
-            }
+            $skyped_time = $lead->status != 'LOSE' ? date('Y-m-d H:i:s', time() + 3600 * 6) : null;
 
-
-            Lead::create([
-                'lead_id' => $request->lead_id,
-                'deal_id' => $deal_id,
-                'name' => $request->name,
-                'phone' => Phone::normalize($request->phone),
-                'phone_2' => Phone::normalize($phone_2),
-                'phone_3' => Phone::normalize($phone_3),
-                'segment' => Lead::getSegment($request->segment),
-                'status' => 'CON',
-                'hash' => 'converted_manually',
-                'skyped' => $skyped_time,
-                'lang' => $lang,
-                'house' => 'newLead',
-            ]);
+            Lead::query()
+                ->create([
+                    'lead_id' => $request->get('lead_id'),
+                    'deal_id' => $deal_id,
+                    'name' => $name,
+                    'phone' => Phone::normalize($request->get('phone')),
+                    'phone_2' => Phone::normalize($phone_2),
+                    'phone_3' => Phone::normalize($phone_3),
+                    'segment' => Lead::getSegment($request->get('segment')),
+                    'status' => 'CON',
+                    'hash' => 'converted_manually',
+                    'skyped' => $skyped_time,
+                    'lang' => $lang,
+                    'house' => 'newLead',
+                ]);
         }
 
 
@@ -216,7 +212,22 @@ class IntellectController extends Controller
 
         if ($request->has('phone') && $request->has('name')) {
 
+            $phone = Phone::normalize($request->get('phone'));
+
             $hash = md5(uniqid() . mt_rand());
+            /** @var Lead $exists */
+            $exists = Lead::query()
+                ->where('phone', $phone)
+                ->where('created_date', '>=', now()->subDays(7))
+                ->first();
+
+            if ($exists) {
+                $inBitrix = (new Bitrix('intellect'))->getLeads(
+                    lead_id: $exists->lead_id
+                );
+                $alreadyExists = array_key_exists('result', $inBitrix);
+                if ($alreadyExists) return;
+            }
 
             $res = (new Bitrix('intellect'))->createLead([
                 "TITLE" => "Кандидат QR - " . $request->name,
@@ -224,14 +235,13 @@ class IntellectController extends Controller
                 "ASSIGNED_BY_ID" => 23900,
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
-                "PHONE" => [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
+                "PHONE" => [["VALUE" => $request->get('phone'), "VALUE_TYPE" => "WORK"]]
             ]);
 
             if ($res) {
-                $phone = Phone::normalize($request->phone);
-
-                Lead::query()->create([
+                Lead::query()->updateOrCreate([
                     'lead_id' => $res['result'],
+                ], [
                     'name' => $request->name,
                     'phone' => $phone,
                     'segment' => Lead::getSegment($request->segment),
@@ -246,43 +256,55 @@ class IntellectController extends Controller
         }
     }
 
-
-    public function changeResp(Request $request)
+    public function changeResp(Request $request): JsonResponse
     {
         History::bitrix('Смена ответственного', $request->all());
-
-        if ($request->lead_id) {
-            Lead::query()->where('lead_id', $request->lead_id)
-                ->update([
-                    'resp_id' => $request->resp_email,
+        $lead = null;
+        if ($request->has('lead_id')) {
+            $lead = Lead::query()
+                ->updateOrCreate([
+                    'lead_id' => $request->get('lead_id'),
+                ], [
+                    'deal_id' => $request->get('deal_id'),
+                    'resp_id' => $request->get('resp_email'),
                     'status' => 'CON',
-                    'deal_id' => $request->deal_id,
-                    'project' => $request->project ?? null,
-                    'net' => $request->net ?? null,
+                    'project' => $request->get('project'),
+                    'net' => $request->get('net'),
                     'skyped' => now()
                 ]);
         }
+
+        return $this->response(
+            message: 'Lead has been saved!',
+            data: $lead?->toArray(),
+            status: ResponseAlias::HTTP_CREATED,
+        );
     }
 
-    public function loseDeal(Request $request)
+    public function loseDeal(Request $request): void
     {
 
         History::bitrix('Cделка проиграна', $request->all());
 
-        if ($request->lead_id) {
-            $trainee = Trainee::where('lead_id', $request->lead_id)->first();
+        if ($request->get('lead_id')) {
+            $trainee = UserDescription::query()
+                ->where('lead_id', $request->get('lead_id'))
+                ->first();
             if ($trainee) {
                 $trainee->fired = now();
                 $trainee->save();
             }
 
-            $lead = Lead::where('lead_id', $request->lead_id)->orderBy('id', 'desc')->first();
+            $lead = Lead::query()
+                ->where('lead_id', $request->get('lead_id'))
+                ->orderBy('id', 'desc')
+                ->first();
             if ($lead) {
                 $lead->status = 'LOSE';
                 $lead->save();
             }
 
-            $ud = UserDescription::where('lead_id', $request->lead_id)->first();
+            $ud = UserDescription::where('lead_id', $request->get('lead_id'))->first();
             if ($ud) {
                 $ud->fired = now();
                 $ud->save();
@@ -310,23 +332,29 @@ class IntellectController extends Controller
 
     }
 
-    public function inhouse(Request $request)
+    public function inhouse(Request $request): JsonResponse
     {
         History::bitrix('inhouse', [
             $request->all(),
         ]);
 
-        $lead = Lead::where('lead_id', $request->lead_id)->first();
-
-        if ($lead) {
-            $lead->inhouse = date('Y-m-d H:i:s', time() + 3600 * 6);
-            if ($request->project) $lead->project = $request->project;
-            if ($request->net) $lead->net = $request->net;
-            $lead->save();
-        }
+        $lead = Lead::query()
+            ->updateOrCreate([
+                'lead_id' => $request->get('lead_id'),
+            ], [
+                'deal_id' => $request->get('deal_id'),
+                'inhouse' => date('Y-m-d H:i:s', time() + 3600 * 6),
+                'project' => $request->get('project'),
+                'net' => $request->get('net'),
+            ]);
+        return $this->response(
+            message: 'Lead has been saved!',
+            data: $lead->toArray(),
+            status: ResponseAlias::HTTP_CREATED,
+        );
     }
 
-    public function editDeal(Request $request)
+    public function editDeal(Request $request): void
     {
 
         History::bitrix('Edit deal', [
@@ -348,18 +376,17 @@ class IntellectController extends Controller
             'c 19:00 - 23:00' => 6, //
         ];
 
-        $lead = Lead::where('lead_id', $request->lead_id)->first();
-
+        $lead = Lead::query()
+            ->where('lead_id', $request->get('lead_id'))
+            ->first();
 
         try {
-
-
             if ($lead) {
                 if ($request->lang) $lead->lang = $langs[$request->lang];
                 if ($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
 
-                if ($request->phone) {
-                    $phones = explode(',', $request->phone);
+                if ($request->get('phone')) {
+                    $phones = explode(',', $request->get('phone'));
 
                     $phone = null;
                     $phone_2 = null;
@@ -371,7 +398,11 @@ class IntellectController extends Controller
 
                     //$trainee = Trainee::where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
 
-                    $trainee = UserDescription::where('is_trainee', 1)->where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
+                    $trainee = UserDescription::query()
+                        ->where('is_trainee', 1)
+                        ->where('lead_id', $lead->lead_id)
+                        ->orderBy('id', 'desc')->first();
+
                     if ($trainee) {
                         $user = User::withTrashed()->find($trainee->user_id);
                         if ($user) {
@@ -401,12 +432,12 @@ class IntellectController extends Controller
                 $lead->save();
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
         }
     }
 
-    public function editLead(Request $request)
+    public function editLead(Request $request): void
     {
 
         History::bitrix('Edit lead', [
@@ -428,18 +459,16 @@ class IntellectController extends Controller
             'c 19:00 - 23:00' => 6, //
         ];
 
-
-        $lead = Lead::where('lead_id', $request->lead_id)->first();
-
+        $lead = Lead::query()
+            ->where('lead_id', $request->get('lead_id'))
+            ->first();
 
         try {
-
-
             if ($lead) {
                 if ($request->lang) $lead->lang = $langs[$request->lang];
                 if ($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
-                if ($request->phone) {
-                    $phones = explode(',', $request->phone);
+                if ($request->get('phone')) {
+                    $phones = explode(',', $request->get('phone'));
 
                     $phone = null;
                     $phone_2 = null;
@@ -473,8 +502,7 @@ class IntellectController extends Controller
                 }
                 $lead->save();
             }
-
-        } catch (\Exception $e) {
+        } catch (Exception) {
 
         }
     }
@@ -486,100 +514,83 @@ class IntellectController extends Controller
 
     public function save(Request $request)
     {
-        if ($request->has('phone')) {
+        if (!$request->has('phone')) return 'Телефон не указан!';
+        /** @var Lead $lead */
+        $lead = Lead::query()
+            ->where('phone', $request->get('phone'))
+            ->latest()
+            ->first();
+        if (!$lead) return 'Лид не найден в jobtron.org!';
 
-            /// Для битрикса
-            $req = [];
+        /// Для битрикса
+        $req = [];
 
-            if ($request->has('city')) $req['ADDRESS_CITY'] = $request->city;
-            if ($request->has('lang')) {
+        if ($request->has('city')) $req['ADDRESS_CITY'] = $request->city;
+        if ($request->has('lang')) {
 
-                if ((int)$request->lang == 1 || (int)$request->lang == 2 || (int)$request->lang == 3) {
-                    $langs = [
-                        1 => 2180, // Русский 50% и Казахский 100%
-                        2 => 2176, // Только Русский 100%
-                        3 => 2178, // Русский 100% и Казахский 100%
-                    ];
-                    $req['UF_CRM_1626255643'] = $langs[(int)$request->lang];
-                } else {
-                    $req['COMMENTS'] = $request->lang;
-                }
-            }
-
-            if ($request->has('house')) {
-                if ((int)$request->house == 1 || (int)$request->house == 2) {
-                    $houses = [
-                        1 => 'Частный дом',
-                        2 => 'Квартира',
-                    ];
-                    $req['UF_CRM_1626847280342'] = $houses[(int)$request->house];
-                } else {
-                    $req['UF_CRM_1626847280342'] = $request->house;
-                }
-            }
-
-            if ($request->has('wishtime_inhouse')) {
-                if (in_array((int)$request->wishtime_inhouse, [1, 2, 3, 4, 5, 6])) {
-                    $wishtimes = [
-                        1 => 2260, // 'с 08:45 - 19:00',
-                        2 => 2258, //'c 08:45 - 13:00',
-                        3 => 2264, //'c 14:00 - 19:00',
-                    ];
-                    $req['UF_CRM_1629291391354'] = $wishtimes[(int)$request->wishtime_inhouse];
-                } else {
-                    $req['UF_CRM_1629291391354'] = 2260;
-                }
-            }
-
-            if ($request->has('wishtime_remote')) {
-                if (in_array((int)$request->wishtime_remote, [1, 2, 3, 4, 5, 6])) {
-                    $wishtimes = [
-                        1 => 2260, // 'с 08:45 - 19:00',
-                        2 => 2262, //'с 13:00 - 23:00',
-                    ];
-                    $req['UF_CRM_1629291391354'] = $wishtimes[(int)$request->wishtime_remote];
-                } else {
-                    $req['UF_CRM_1629291391354'] = 2260;
-                }
-            }
-
-            // Для лида
-            $lead = Lead::where('phone', $request->phone)->latest()->first();
-
-            if ($lead) {
-                ///////
-
-                if ($request->has('lang')) $lead->lang = $request->lang;
-                if ($request->has('age')) $lead->age = $request->age;
-                if ($request->has('house')) $lead->house = $request->house;
-                if ($request->has('net')) {
-                    if ($request->net == 'Наличие интернета') {
-                        $lead->net = 1;
-                    } else {
-                        $lead->net = $request->net;
-                    }
-                }
-                if ($request->has('wishtime_inhouse')) {
-                    $lead->wishtime = $request->wishtime_inhouse;
-                    if ((int)$request->wishtime_inhouse == 2) $lead->wishtime = 4;
-                    if ((int)$request->wishtime_inhouse == 3) $lead->wishtime = 5;
-                }
-                if ($request->has('wishtime_remote')) {
-                    $lead->wishtime = $request->wishtime_remote;
-                }
-                if ($request->has('city')) $lead->city = $request->city;
-
-                $lead->save();
-
-                //////
-                return (new Bitrix('intellect'))->updateLead($lead->lead_id, $req);
+            if ((int)$request->lang == 1 || (int)$request->lang == 2 || (int)$request->lang == 3) {
+                $langs = [
+                    1 => 2180, // Русский 50% и Казахский 100%
+                    2 => 2176, // Только Русский 100%
+                    3 => 2178, // Русский 100% и Казахский 100%
+                ];
+                $req['UF_CRM_1626255643'] = $langs[(int)$request->lang];
             } else {
-                return 'Лид не найден в jobtron.org!';
+                $req['COMMENTS'] = $request->lang;
             }
-        } else {
-            return 'Телефон не указан!';
+        }
+        if ($request->has('house')) {
+            if ((int)$request->house == 1 || (int)$request->house == 2) {
+                $houses = [
+                    1 => 'Частный дом',
+                    2 => 'Квартира',
+                ];
+                $req['UF_CRM_1626847280342'] = $houses[(int)$request->house];
+            } else {
+                $req['UF_CRM_1626847280342'] = $request->house;
+            }
+        }
+        if ($request->has('wishtime_inhouse')) {
+            if (in_array((int)$request->wishtime_inhouse, [1, 2, 3, 4, 5, 6])) {
+                $wishtimes = [
+                    1 => 2260, // 'с 08:45 - 19:00',
+                    2 => 2258, //'c 08:45 - 13:00',
+                    3 => 2264, //'c 14:00 - 19:00',
+                ];
+                $req['UF_CRM_1629291391354'] = $wishtimes[(int)$request->wishtime_inhouse];
+            } else {
+                $req['UF_CRM_1629291391354'] = 2260;
+            }
+        }
+        if ($request->has('wishtime_remote')) {
+            if (in_array((int)$request->wishtime_remote, [1, 2, 3, 4, 5, 6])) {
+                $wishtimes = [
+                    1 => 2260, // 'с 08:45 - 19:00',
+                    2 => 2262, //'с 13:00 - 23:00',
+                ];
+                $req['UF_CRM_1629291391354'] = $wishtimes[(int)$request->wishtime_remote];
+            } else {
+                $req['UF_CRM_1629291391354'] = 2260;
+            }
         }
 
+        // Для лида
+        $lead->net = $request->get("net") == 'Наличие интернета' ? 1 : $request->get("net");
+        if ($request->has('lang')) $lead->lang = $request->lang;
+        if ($request->has('age')) $lead->age = $request->age;
+        if ($request->has('house')) $lead->house = $request->house;
+        if ($request->has('wishtime_inhouse')) {
+            $lead->wishtime = $request->wishtime_inhouse;
+            if ((int)$request->wishtime_inhouse == 2) $lead->wishtime = 4;
+            if ((int)$request->wishtime_inhouse == 3) $lead->wishtime = 5;
+        }
+        if ($request->has('wishtime_remote')) {
+            $lead->wishtime = $request->wishtime_remote;
+        }
+        if ($request->has('city')) $lead->city = $request->city;
+
+        $lead->save();
+        return (new Bitrix('intellect'))->updateLead($lead->lead_id, $req);
     }
 
     /**
@@ -589,27 +600,25 @@ class IntellectController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function get_name(Request $request)
+    public function get_name(Request $request): JsonResponse
     {
-        if (!$request->has('phone')) {
-            return response()->json(['message' => 'Phone is not provided'], 400);
-        }
-
-        $lead = Lead::where('phone', $request->phone)->latest()->first();
-
         $name = 'Cоискатель';
 
-        if ($lead) {
-            if ($request->has('save')) {
-                $this->save($request);
-            }
+        if (!$request->has('phone')) return response()->json(['message' => 'Phone is not provided'], 400);
 
-            $name = $lead->name;
-        } else {
-            // Intellect не хочет получать 404
-            //return response()->json(['message' => 'Lead is not found'], 404);
+        /** @var Lead $lead */
+        $lead = Lead::query()
+            ->where('phone', $request->get('phone'))
+            ->latest()
+            ->first();
+
+        if (!$lead) response()->json(['name' => $name]);
+
+        if ($request->has('save')) {
+            $this->save($request);
         }
 
+        $name = $lead->name;
         return response()->json(['name' => $name]);
     }
 
@@ -618,7 +627,8 @@ class IntellectController extends Controller
      * для удаленных если link = 1
      * для офисных если link = 2
      */
-    public function get_link(Request $request)
+    public
+    function get_link(Request $request): JsonResponse
     {
         if (!$request->has('phone')) {
             return response()->json(['message' => 'Phone is not provided'], 400);
@@ -628,51 +638,49 @@ class IntellectController extends Controller
             return response()->json(['message' => 'Link is not provided'], 400);
         }
 
-        $lead = Lead::where('phone', $request->phone)->latest()->first();
+        $lead = Lead::query()
+            ->where('phone', $request->get('phone'))
+            ->latest()
+            ->first();
 
-        if (!$lead) {
-            // return response()->json(['message' => 'Lead is not found'], 404);
+        if (!$lead) return response()->json(['message' => 'Lead is not found'], 404);
+
+
+        if ($request->has('city')) {
+            $lead->city = $request->city;
+            $lead->save();
+            (new Bitrix('intellect'))->updateLead($lead->lead_id, [
+                'UF_CRM_1658397129' => $request->city
+            ]);
         }
 
-        if ($lead) {
+        $this->save($request);
 
-            if ($request->has('city')) {
-                $lead->city = $request->city;
-                $lead->save();
+        // ссылка для подписи договора дял удаленных
+        if ($request->link == 1) {
+
+            if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
+                $lead->status = '40';
+
                 (new Bitrix('intellect'))->updateLead($lead->lead_id, [
-                    'UF_CRM_1658397129' => $request->city
+                    'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
                 ]);
+
+                usleep(3000000); // 3 sec
+                $bitrix = new Bitrix();
+                $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
+                $lead->save();
             }
 
-            $this->save($request);
-
-            // ссылка для подписи договора дял удаленных
-            if ($request->link == 1) {
-
-                if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
-                    $lead->status = '40';
-
-                    (new Bitrix('intellect'))->updateLead($lead->lead_id, [
-                        'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
-                    ]);
-
-                    usleep(3000000); // 3 sec
-                    $bitrix = new Bitrix();
-                    $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
-                    $lead->save();
-                }
-
-                return response()->json(['link' => config('services.intellect.contract_link') . $lead->hash], 200);
-            }
-
-            // ссылка для выбора времени для офисных
-            if ($request->link == 2) {
-                return response()->json(['link' => config('services.intellect.time_link') . $lead->hash], 200);
-            }
-
+            return response()->json(['link' => config('services.intellect.contract_link') . $lead->hash], 200);
         }
 
-        return response()->json(['link' => ''], 200);
+        // ссылка для выбора времени для офисных
+        if ($request->link == 2) {
+            return response()->json(['link' => config('services.intellect.time_link') . $lead->hash], 200);
+        }
+
+        return response()->json(['link' => '']);
     }
 
     public function change_status(Request $request)
@@ -682,7 +690,7 @@ class IntellectController extends Controller
 
         if ($request->has('phone')) {
 
-            $lead = Lead::where('phone', $request->phone)->latest()->first();
+            $lead = Lead::where('phone', $request->get('phone'))->latest()->first();
 
             if ($lead) { // сущетсвуте лид
                 if ($lead->skype == null || $lead->skype == '') { // если нет скайпа
@@ -727,13 +735,13 @@ class IntellectController extends Controller
 
                 }
 
-
             }
 
         }
     }
 
-    private function check_time()
+    private
+    function check_time()
     {
 
         $times = [];
@@ -773,7 +781,8 @@ class IntellectController extends Controller
         return $times;
     }
 
-    public function curl_get($url)
+    public
+    function curl_get($url)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -787,7 +796,8 @@ class IntellectController extends Controller
         return json_decode($json_resuls);
     }
 
-    public function get_int($url)
+    public
+    function get_int($url)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -804,7 +814,8 @@ class IntellectController extends Controller
         return json_decode($json_resuls);
     }
 
-    public function curl_post($url, $query)
+    public
+    function curl_post($url, $query)
     {
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -830,7 +841,8 @@ class IntellectController extends Controller
     /*
      * Подпись договора и заполнения скайпа
      */
-    public function contract(Request $request)
+    public
+    function contract(Request $request)
     {
 
         $lead = Lead::where('hash', $request->hash)->latest()->first();
@@ -860,7 +872,7 @@ class IntellectController extends Controller
                     $front_name = $lead->phone . '_front_' . time() . '.' . $front->getClientOriginalExtension();
                     $front->move("static/uploads/job/", $front_name);
                     $files = [$front_name];
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
 
                     History::system('Ошибка в подписании соглашения', [
                         'error' => $e->getMessage(),
@@ -932,7 +944,8 @@ class IntellectController extends Controller
     /*
      * Выбор времени собеседования дял офисных кандидатов
      */
-    public function choose_time(Request $request)
+    public
+    function choose_time(Request $request)
     {
 
         if ($request->has('hash')) {
@@ -980,7 +993,7 @@ class IntellectController extends Controller
                         $bitrix = new Bitrix();
                         $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
                         $lead->save();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                     }
 
 
@@ -996,7 +1009,8 @@ class IntellectController extends Controller
     /**
      * Saves answers after Whatsapp questions
      */
-    public function quiz_after_fire(Request $request)
+    public
+    function quiz_after_fire(Request $request)
     {
 
         History::intellect('Уволенный анкета', $request->all());
@@ -1008,7 +1022,7 @@ class IntellectController extends Controller
 
             foreach ($users as $user) {
                 $phone = Phone::normalize($user->phone);
-                if ($phone == Phone::normalize($request->phone)) {
+                if ($phone == Phone::normalize($request->get('phone'))) {
                     $ud = UserDescription::where('user_id', $user->id)->first();
                     if (!$ud) {
                         $ud = UserDescription::create([
