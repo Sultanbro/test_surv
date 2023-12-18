@@ -4,6 +4,7 @@ import {
 	updateOnlineStatus,
 	// checkVersion,
 } from './stores/api'
+import { useSnowEffect } from '@/composables/effects.js'
 
 const DEFAULT_TITLE = 'Jobtron.org';
 
@@ -28,6 +29,9 @@ export default {
 			this.updateTitle()
 			this.updateIcon()
 		}
+	},
+	created(){
+		useSnowEffect()
 	},
 	mounted(){
 		if(window.location.hostname.split('.')[0] === 'bp'){
