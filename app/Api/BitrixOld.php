@@ -538,6 +538,7 @@ class BitrixOld
             ]
         ]);
         $lead = json_decode($lead->getBody()->getContents(),true);
+        usleep(2000000); // 2 sec
         return $lead['result'];
     }
 }
