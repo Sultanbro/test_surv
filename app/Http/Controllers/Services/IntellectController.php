@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
+use App\Service\Tools\Debugger;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
@@ -1080,7 +1081,7 @@ class IntellectController extends Controller
                         'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
                         'phone' => $bitrixLead['PHONE'][0]['VALUE'],
                     ]);
-
+            Debugger::debug('check-this', $lead);
             return response()->json([
                 "status" => 200,
                 "data" => $lead
