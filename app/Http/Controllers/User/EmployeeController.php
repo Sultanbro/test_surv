@@ -557,6 +557,8 @@ class EmployeeController extends Controller
                         ->orWhere('users.id', $request['search'])
                         ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', $request['search'] . '%')
                         ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', $request['search'] . '%')
+                        ->orWhere('users.name', 'like', $request['search'] . '%')
+                        ->orWhere('users.last_name', 'like', $request['search'] . '%')
                         ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
                 });
 
