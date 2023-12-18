@@ -260,6 +260,7 @@ class IntellectController extends Controller
     {
         History::bitrix('Смена ответственного', $request->all());
         $lead = null;
+        $this->changeLead($request);
         if ($request->has('lead_id')) {
             $lead = Lead::query()
                 ->updateOrCreate([
@@ -337,7 +338,7 @@ class IntellectController extends Controller
         History::bitrix('inhouse', [
             $request->all(),
         ]);
-
+        $this->changeLead($request);
         $lead = Lead::query()
             ->updateOrCreate([
                 'lead_id' => $request->get('lead_id'),
