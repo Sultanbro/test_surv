@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 /**
  * This class is responsible for interact with bitrix api
-*/
+ */
 class BitrixOld
 {
 
@@ -84,8 +84,8 @@ class BitrixOld
          * getLeads($user_id = 0, $fields = [])
          *
          * */
-        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
-        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018,1462,3452,2436,2362,2426,3460,1666,1604,3878,2012,1442,3480,3482,3548];
+        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house', 'реферал', 'заполнение'];
+        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018, 1462, 3452, 2436, 2362, 2426, 3460, 1666, 1604, 3878, 2012, 1442, 3480, 3482, 3548];
 
         if ($search_by == 'hh') $filter['UF_CRM_1498210379'] = [1462];
         if ($search_by == 'insta') $filter['UF_CRM_1498210379'] = [1018, 2436];
@@ -457,7 +457,7 @@ class BitrixOld
         }
 
         if ($type == 'all') {
-            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
+            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house', 'реферал', 'заполнение'];
         }
 
         if ($type == 'hh') $filter['UF_CRM_1498210393'] = [1466];
@@ -531,14 +531,14 @@ class BitrixOld
         return $this->curl_post($this->link . 'crm.deal.update.json', $query);
     }
 
-    public function findLead(int $id)
+    public function findLead($id)
     {
-        $lead = $this->client->get($this->link.'crm.lead.get',[
+        $lead = $this->client->get($this->link . 'crm.lead.get', [
             'query' => [
                 'id' => $id
             ]
         ]);
-        $lead = json_decode($lead->getBody()->getContents(),true);
+        $lead = json_decode($lead->getBody()->getContents(), true);
         usleep(2000000); // 2 sec
         return $lead['result'];
     }
@@ -549,16 +549,14 @@ class BitrixOld
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getUserField(string $crm_field,string $crm_field_value)
+    public function getUserField(string $crm_field, string $crm_field_value)
     {
-        $fields = $this->client->post($this->link.'crm.lead.userfield.list');
+        $fields = $this->client->post($this->link . 'crm.lead.userfield.list');
         usleep(1000000);
-        $fields = json_decode($fields->getBody()->getContents(),true);
+        $fields = json_decode($fields->getBody()->getContents(), true);
 
-        foreach($fields['result'] as $field)
-        {
-            if ($field['FIELD_NAME'] == $crm_field)
-            {
+        foreach ($fields['result'] as $field) {
+            if ($field['FIELD_NAME'] == $crm_field) {
                 $needFields = $field['LIST'];
             }
         }

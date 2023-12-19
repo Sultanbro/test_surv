@@ -48,6 +48,7 @@ class UpdateDealJob implements ShouldQueue
             isset($contact['EMAIL']) => [['email', $contact['EMAIL'][0]['VALUE']]],
             isset($contact['PHONE']) => [['phone', $contact['PHONE'][0]['VALUE']]],
         })->first();
+
         if (!$user) return;
 
         $stage_id = $deal['STAGE_ID'];
