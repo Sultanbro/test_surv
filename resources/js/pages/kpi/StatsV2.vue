@@ -81,6 +81,7 @@
 				<b-tab title="Годовая">
 					<StatsTableYear
 						:year="filters.data_from ? filters.data_from.year : new Date().getFullYear()"
+						:groups="groups"
 						class="mt-4"
 					/>
 				</b-tab>

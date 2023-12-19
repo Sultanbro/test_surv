@@ -1733,11 +1733,14 @@ export default {
 		// Дичайший костыль, переделать при первой возможности
 		getUserGroups(userId){
 			const user = this.data.users.find(user => user.id === userId)
-			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY').format('YYYY-DD')
+			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY')
+			const currentDateFormat = currentDate.format('YYYY-DD')
 			return user.group_users.reduce((result, group) => {
-				const from = this.$moment(group.from).format('YYYY-DD')
-				const to = this.$moment(group.to).format('YYYY-DD')
-				if(currentDate == from || currentDate == to || !group.to){
+				const from = this.$moment(group.from)
+				const fromFormat = from.format('YYYY-DD')
+				const to = this.$moment(group.to)
+				const toFormat = to.format('YYYY-DD')
+				if(currentDateFormat == fromFormat || currentDateFormat == toFormat || !group.to || currentDate.isBetween(from, to)){
 					result.push(group.group_id)
 				}
 				return result
