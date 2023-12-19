@@ -7,7 +7,6 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
-use App\Service\Tools\Debugger;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
@@ -258,26 +257,20 @@ class IntellectController extends Controller
         }
     }
 
-    /**
-     * @throws GuzzleException
-     */
     public function changeResp(Request $request): JsonResponse
     {
-        $lead = null;
-        if ($request->lead_id) {
-            $lead = Lead::query()
-                ->updateOrCreate([
-                    'lead_id' => (int)$request->get('lead_id'),
-                ], [
-                    'deal_id' => $request->get('deal_id', 0),
-                    'resp_id' => $request->get('resp_email'),
-                    'status' => 'CON',
-                    'project' => $request->get('project'),
-                    'net' => $request->get('net'),
-                    'skyped' => now()
-                ]);
-        }
-        $this->changeLead($request);
+        $lead = Lead::query()
+            ->updateOrCreate([
+                'lead_id' => (int)$request->get('lead_id'),
+            ], [
+                'deal_id' => $request->get('deal_id', 0),
+                'resp_id' => $request->get('resp_email'),
+                'status' => 'CON',
+                'project' => $request->get('project'),
+                'net' => $request->get('net'),
+                'skyped' => now()
+            ]);
+//        $this->changeLead($request);
         return $this->response(
             message: 'Lead has been saved!',
             data: $lead?->toArray(),
