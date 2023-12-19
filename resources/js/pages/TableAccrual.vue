@@ -329,11 +329,15 @@
 		>
 			<div class="px-2 pt-5">
 				<KpiContent
+					v-if="kpiItems.length"
 					class="px-4 TableAccrual-kpi"
 					:items="kpiItems"
 					:groups="groups"
 					:fields="kpiFields"
 				/>
+				<template v-else>
+					У сотрудника нет KPI
+				</template>
 			</div>
 		</Sidebar>
 
