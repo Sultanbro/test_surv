@@ -1227,7 +1227,7 @@ class Salary extends Model
                     $obon += $total_bonuses;
                     $osal += $total_salary;
                 }
-                dump($user_total, "user_id=" . $user->id);
+                dump($user_total, "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name . " kpi=" . $kpi . " bonus=" . $total_bonuses . " oklad=" . $total_salary);
             }
         }
 
