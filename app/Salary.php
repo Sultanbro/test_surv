@@ -366,12 +366,12 @@ class Salary extends Model
             //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->with([
                 'groups' => function ($q) use ($month) {
-                    $q->with('workChart')
-                        ->where([
-                            ['status', 'active'],
-                            ['is_head', false]
-                        ])
-                        ->whereNull('to');
+                    $q->with('workChart');
+//                        ->where([
+//                            ['status', 'active'],
+//                            ['is_head', false]
+//                        ])
+//                        ->whereNull('to');
                 },
                 'zarplata',
                 'workingTime',
