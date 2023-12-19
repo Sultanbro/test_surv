@@ -21,7 +21,7 @@ class CreateAnalyticsService
      */
     public function handle(CreateAnalyticDto $dto): bool
     {
-        try {
+//        try {
             DB::beginTransaction();
 
             AnalyticColumn::createAnalyticsColumns($dto);
@@ -31,9 +31,9 @@ class CreateAnalyticsService
             DB::commit();
 
             return true;
-        } catch (Throwable $exception) {
-            DB::rollBack();
-            throw new Exception($exception->getMessage());
-        }
+//        } catch (Throwable $exception) {
+//            DB::rollBack();
+//            throw new Exception($exception->getMessage());
+//        }
     }
 }

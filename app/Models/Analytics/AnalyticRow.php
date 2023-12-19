@@ -292,16 +292,27 @@ class AnalyticRow extends Model
                 'date'      => $firstDayOfMonth
             ])->get();
 
+            /**
+             * Создать первую строку.
+             */
             $row = self::query()->create([
                 'group_id'  => $dto->groupId,
-                'name'      => $dto->rows['name'],
+                'name'      => $dto->rows['name'] ?? '',
                 'date'      => $firstDayOfMonth,
                 'order'     => 1,
             ]);
+
+            self::query()->create([
+                'group_id'  => $dto->groupId,
+                'name'      => '',
+                'date'      => $firstDayOfMonth,
+                'order'     => 2,
+            ]);
+
             /**
              * Создаем в таблице аналитики данные.
              */
-            $stats = $columns->whereIn('name', $fields)->map(function ($column) use (
+            $stats = $columns->whereIn('name', $fields)->map(function ($column, $index) use (
                 $row,
                 $dto,
                 $date
@@ -312,7 +323,7 @@ class AnalyticRow extends Model
                     'row_id'    => $row->id,
                     'column_id' => $column->id,
                     'value'     => $column->name,
-                    'show_value' => $column->name,
+                    'show_value' => $index == 0 ? $dto->rows['name'] : $column->name,
                     'editable'  => 1,
                     'class'     => 'text-center font-bold bg-grey',
                     'type'      => AnalyticStat::INITIAL,
