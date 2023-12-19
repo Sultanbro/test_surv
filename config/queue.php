@@ -42,6 +42,15 @@ return [
             'retry_after' => 90,
         ],
 
+        'central' => [
+            'driver' => 'database',
+            'table' => 'jobs',
+            'connection' => 'mysql',
+            'queue' => 'default',
+            'retry_after' => 90,
+            'central' => true, // <---
+        ],
+
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
