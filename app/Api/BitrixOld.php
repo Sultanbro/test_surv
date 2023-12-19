@@ -21,7 +21,7 @@ class BitrixOld
     /**
      * @param string $line
      */
-    public function __construct(string $line = 'common')
+    public function __construct( $line = 'common')
     {
         $this->link = config('bitrix.host') . config('bitrix.token') . '/';
 
@@ -42,7 +42,7 @@ class BitrixOld
      * @param array $lead_fields
      * @return mixed
      */
-    public function updateLead(int $lead_id, array $lead_fields): mixed
+    public function updateLead( $lead_id,  $lead_fields): mixed
     {
         $fields = [
             'id' => $lead_id,
@@ -66,7 +66,7 @@ class BitrixOld
      * @param string $search_by
      * @return mixed
      */
-    public function getLeads(int $user_id = 0, string $status = '', string $semantic = 'ALL', string $sort = 'ASC', string $start = '2010-01-01', string $end = '2050-01-01', string $date_type = "DATE_CREATE", int $lead_id = 0, string $search_by = 'title'): mixed
+    public function getLeads( $user_id = 0,  $status = '',  $semantic = 'ALL',  $sort = 'ASC',  $start = '2010-01-01',  $end = '2050-01-01',  $date_type = "DATE_CREATE",  $lead_id = 0,  $search_by = 'title'): mixed
     {
         $filter = [];
 
@@ -129,7 +129,7 @@ class BitrixOld
      * @param ?bool $isNeedCallback
      * @return mixed
      */
-    public function createLead(array $fields, ?bool $isNeedCallback = null): mixed
+    public function createLead( $fields, ?bool $isNeedCallback = null): mixed
     {
         $arrayQuery = [
             'fields' => $fields,
@@ -174,7 +174,7 @@ class BitrixOld
      * @param string $id
      * @return bool
      */
-    public function deleteUser(string $id): bool
+    public function deleteUser( $id): bool
     {
         $query = http_build_query([
             'id' => $id,
@@ -192,7 +192,7 @@ class BitrixOld
      * @param string $id
      * @return bool
      */
-    public function recoverUser(string $id): bool
+    public function recoverUser( $id): bool
     {
         $query = http_build_query([
             'id' => $id,
@@ -210,7 +210,7 @@ class BitrixOld
      * @param string $email
      * @return mixed|null
      */
-    public function searchUser(string $email): mixed
+    public function searchUser( $email): mixed
     {
         $query = http_build_query([
             'FILTER' => [
@@ -232,7 +232,7 @@ class BitrixOld
      * @param array $deal_fields
      * @return mixed
      */
-    public function changeDeal(int $deal_id, array $deal_fields): mixed
+    public function changeDeal( $deal_id,  $deal_fields): mixed
     {
         $fields = [
             'id' => $deal_id,
@@ -433,7 +433,7 @@ class BitrixOld
      * @param int $page
      * @return mixed
      */
-    public function getDeals($user_id, string $status = '', string $sort = 'ASC', string $start = '2020-01-01', string $end = '2050-01-01', string $date_type = "DATE_CREATE", string $type = 'all', int $page = 1): mixed
+    public function getDeals($user_id,  $status = '',  $sort = 'ASC',  $start = '2020-01-01',  $end = '2050-01-01',  $date_type = "DATE_CREATE",  $type = 'all',  $page = 1): mixed
     {
         if (strlen($start) == 10) {
             $start = $start . "T00:00:00+06:00";
@@ -488,7 +488,7 @@ class BitrixOld
      * @param mixed $sort
      * @return mixed
      */
-    public function extracted(string $start, string $end, array $filter, mixed $duration, mixed $sort): mixed
+    public function extracted( $start,  $end,  $filter,  $duration,  $sort): mixed
     {
         if (strlen($start) == 10) {
             $start = $start . "T00:00:00";
@@ -549,7 +549,7 @@ class BitrixOld
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getUserField(string $crm_field, string $crm_field_value)
+    public function getUserField( $crm_field,  $crm_field_value)
     {
         $fields = $this->client->post($this->link . 'crm.lead.userfield.list');
         usleep(1000000);
