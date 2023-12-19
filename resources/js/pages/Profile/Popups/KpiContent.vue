@@ -19,13 +19,13 @@
 										<td class="blue">
 											Выполнение KPI от {{ wrap_item.lower_limit }}-{{ wrap_item.upper_limit - 1 }}%
 										</td>
-										<td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
+										<td>{{ numberToCurrency(wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2) }}</td>
 									</tr>
 									<tr>
 										<td class="blue">
 											Выполнение KPI на {{ wrap_item.upper_limit }}%
 										</td>
-										<td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
+										<td>{{ numberToCurrency(wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2) }}</td>
 									</tr>
 								</table>
 							</div>
@@ -117,6 +117,7 @@
 																		:upper_limit="wrap_item.upper_limit"
 																		:editable="false"
 																		:kpi_page="false"
+																		:currency="currency"
 																		date="date"
 																		@getSum="wrap_item.my_sum = $event"
 																		@recalced="countAvg"
@@ -147,6 +148,8 @@
 </template>
 
 <script>
+import { numberToCurrency } from '@/composables/format.js'
+
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2.vue'
 import ProfileTabs from '@ui/ProfileTabs'
 
@@ -176,7 +179,11 @@ export default {
 		editable: {
 			type: Boolean,
 			default: false
-		}
+		},
+		currency: {
+			type: String,
+			default: 'KZT',
+		},
 	},
 	methods: {
 		countAvg() {
@@ -212,6 +219,7 @@ export default {
 				kpi.avg = kpiCount > 0 ? Number(Number(kpiSum / kpiCount * 100).toFixed(2)) : 0;
 			});
 		},
+		numberToCurrency,
 	}
 }
 </script>

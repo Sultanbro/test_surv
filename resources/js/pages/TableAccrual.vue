@@ -329,11 +329,15 @@
 		>
 			<div class="px-2 pt-5">
 				<KpiContent
+					v-if="kpiItems.length"
 					class="px-4 TableAccrual-kpi"
 					:items="kpiItems"
 					:groups="groups"
 					:fields="kpiFields"
 				/>
+				<template v-else>
+					У сотрудника нет KPI
+				</template>
 			</div>
 		</Sidebar>
 
@@ -1734,12 +1738,19 @@ export default {
 
 		// Дичайший костыль, переделать при первой возможности
 		getUserGroups(userId){
-			return this.groups.reduce((result, group) => {
-				if(!group.users) return result
-				const users = JSON.parse(group.users)
-				if(~users.indexOf(userId) && !~result.indexOf(group.id)) result.push(group.id)
+			const user = this.data.users.find(user => user.id === userId)
+			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY')
+			const currentDateFormat = currentDate.format('YYYY-DD')
+			return user.group_users.reduce((result, group) => {
+				const from = this.$moment(group.from)
+				const fromFormat = from.format('YYYY-DD')
+				const to = this.$moment(group.to)
+				const toFormat = to.format('YYYY-DD')
+				if(currentDateFormat == fromFormat || currentDateFormat == toFormat || !group.to || currentDate.isBetween(from, to)){
+					result.push(group.group_id)
+				}
 				return result
-			}, [this.selectedGroup.id])
+			}, [])
 		},
 
 		async fetchKPIStatistics(userId){
@@ -1776,7 +1787,7 @@ export default {
 					})
 					if(!groupData.message){
 						groupData.kpi.users = groupData.kpi.users.filter(user => user.id === userId)
-						this.kpiItems.push(parseKPI(groupData.kpi))
+						if(groupData.kpi.users.length) this.kpiItems.push(parseKPI(groupData.kpi))
 					}
 				}))
 				removeDeletedItems(this.kpiItems)
