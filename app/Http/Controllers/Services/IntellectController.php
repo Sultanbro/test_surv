@@ -265,7 +265,7 @@ class IntellectController extends Controller
         if ($request->lead_id) {
             $lead = Lead::query()
                 ->updateOrCreate([
-                    'lead_id' => $request->get('lead_id'),
+                    'lead_id' => (int)$request->get('lead_id'),
                 ], [
                     'deal_id' => $request->get('deal_id', 0),
                     'resp_id' => $request->get('resp_email'),
