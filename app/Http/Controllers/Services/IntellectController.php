@@ -14,6 +14,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class IntellectController extends Controller
@@ -259,6 +260,7 @@ class IntellectController extends Controller
 
     public function changeResp(Request $request): JsonResponse
     {
+        Log::debug('check-this', $request->all());
         $lead = Lead::query()
             ->updateOrCreate([
                 'lead_id' => (int)$request->get('lead_id'),
