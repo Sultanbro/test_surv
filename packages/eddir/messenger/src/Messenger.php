@@ -677,7 +677,7 @@ class Messenger
         $message->sender;
 
         if ($chatId == 0) {
-            $users = MessengerUserOnline::all();
+            $users = MessengerUserOnline::all()->unique('user_id');
         } else {
             $users = MessengerUserOnline::getOnlineMembers($chatId);
         }
