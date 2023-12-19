@@ -7,13 +7,14 @@ use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\History;
 use App\Models\Bitrix\Lead;
-use App\Service\Tools\Debugger;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class IntellectController extends Controller
@@ -259,23 +260,19 @@ class IntellectController extends Controller
 
     public function changeResp(Request $request): JsonResponse
     {
-        Debugger::debug('check', $request->lead_id);
-        $lead = null;
+        Log::debug('check-this', $request->all());
+        $lead = Lead::query()
+            ->updateOrCreate([
+                'lead_id' => (int)$request->get('lead_id'),
+            ], [
+                'deal_id' => $request->get('deal_id', 0),
+                'resp_id' => $request->get('resp_email'),
+                'status' => 'CON',
+                'project' => $request->get('project'),
+                'net' => $request->get('net'),
+                'skyped' => now()
+            ]);
 //        $this->changeLead($request);
-        if ($request->lead_id) {
-            $lead = Lead::query()
-                ->updateOrCreate([
-                    'lead_id' => $request->get('lead_id'),
-                ], [
-                    'deal_id' => $request->get('deal_id', 0),
-                    'resp_id' => $request->get('resp_email'),
-                    'status' => 'CON',
-                    'project' => $request->get('project'),
-                    'net' => $request->get('net'),
-                    'skyped' => now()
-                ]);
-        }
-
         return $this->response(
             message: 'Lead has been saved!',
             data: $lead?->toArray(),
@@ -1060,11 +1057,12 @@ class IntellectController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse|void
+     * @throws GuzzleException
      */
     public function changeLead(Request $request)
     {
         if ($request->lead_id) {
-            $bitrix = new Bitrix('intellect');
+            $bitrix = new Bitrix();
 
             $bitrixLead = $bitrix->findLead($request->lead_id);
             $net = $bitrix->getUserField("UF_CRM_1638972628", $bitrixLead['UF_CRM_1638972628']);
