@@ -1082,10 +1082,10 @@ class Salary extends Model
                     continue;
                 }
 
-                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
-                    // dump('skip_no_group');
-                    continue;
-                }
+//                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
+//                    // dump('skip_no_group');
+//                    continue;
+//                }
 
                 $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
                 // dump('hourly_pay '.$hourly_pay);
