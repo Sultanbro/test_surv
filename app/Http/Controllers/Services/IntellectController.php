@@ -12,6 +12,7 @@ use App\User;
 use App\UserDescription;
 use App\UserNotification;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
@@ -257,10 +258,12 @@ class IntellectController extends Controller
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function changeResp(Request $request): JsonResponse
     {
         $lead = null;
-        $this->changeLead($request);
         if ($request->lead_id) {
             $lead = Lead::query()
                 ->updateOrCreate([
@@ -274,7 +277,7 @@ class IntellectController extends Controller
                     'skyped' => now()
                 ]);
         }
-
+        $this->changeLead($request);
         return $this->response(
             message: 'Lead has been saved!',
             data: $lead?->toArray(),
@@ -1059,11 +1062,12 @@ class IntellectController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse|void
+     * @throws GuzzleException
      */
     public function changeLead(Request $request)
     {
         if ($request->lead_id) {
-            $bitrix = new Bitrix('intellect');
+            $bitrix = new Bitrix();
 
             $bitrixLead = $bitrix->findLead($request->lead_id);
             $net = $bitrix->getUserField("UF_CRM_1638972628", $bitrixLead['UF_CRM_1638972628']);
