@@ -113,7 +113,11 @@ class UpdateDealJob implements ShouldQueue
                     }
 
                     Lead::query()
-                        ->create($lead_data);
+                        ->updateOrCreate([
+                            'deal_id' => $deal['ID']
+                        ],
+                            $lead_data
+                        );
                 }
                 break;
             }
