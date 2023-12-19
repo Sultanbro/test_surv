@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Services;
 
-use Illuminate\Http\Request;
-use App\User;
-use App\UserNotification;
-use App\UserDescription;
-use App\Trainee;
-use App\Classes\Helpers\Phone;
-use App\Models\Bitrix\Lead;
 use App\Api\BitrixOld as Bitrix;
-use App\Models\Admin\History;
-use Illuminate\Http\JsonResponse;
+use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
+use App\Models\Admin\History;
+use App\Models\Bitrix\Lead;
+use App\Trainee;
+use App\User;
+use App\UserDescription;
+use App\UserNotification;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class IntellectController extends Controller
 {
@@ -23,9 +23,9 @@ class IntellectController extends Controller
     {
         History::bitrix('Запуск чатбота', $request->all());
 
-        if($request->phone && $request->lead_id) {
+        if ($request->phone && $request->lead_id) {
 
-            $hash = md5(uniqid().mt_rand());
+            $hash = md5(uniqid() . mt_rand());
 
             $phone = Phone::normalize($request->phone);
 
@@ -34,7 +34,7 @@ class IntellectController extends Controller
 
             $resp_id = $request->resp_email;
 
-            if($lead) {
+            if ($lead) {
                 $lead->update([
                     'name' => $request->namex,
                     'email' => $request->email,
@@ -78,13 +78,13 @@ class IntellectController extends Controller
     {
         History::bitrix('Переименовали лид в удаленный', $request->all());
 
-        if($request->phone && $request->lead_id) {
-            $hash = md5(uniqid().mt_rand());
+        if ($request->phone && $request->lead_id) {
+            $hash = md5(uniqid() . mt_rand());
             $phone = Phone::normalize($request->phone);
 
             ///// check this lead exists
             $lead = Lead::where('lead_id', $request->lead_id)->latest()->first();
-            if($lead) {
+            if ($lead) {
                 $lead->update([
                     'name' => $request->name ? $request->name : 'Без имени',
                     'email' => $request->email,
@@ -123,17 +123,18 @@ class IntellectController extends Controller
     {
         History::bitrix('Смена ответственного', $request->all());
 
-        if($request->lead_id) {
+        if ($request->lead_id) {
             $lead = Lead::where('lead_id', $request->lead_id)->first();
 
-            if($lead) {
+            if ($lead) {
                 $lead->resp_id = $request->resp_email;
                 $lead->status = 'CON';
                 $lead->deal_id = $request->deal_id;
-                if($request->project) $lead->project = $request->project;
-                if($request->net) $lead->net = $request->net;
-                if($request->remote == 'Y') $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
-                if($request->resp_id) $lead->net = $request->net;
+                if ($request->project) $lead->project = $request->project;
+                if ($request->net) $lead->net = $request->net;
+//                if($request->remote == 'Y')
+                $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
+                if ($request->resp_id) $lead->net = $request->net;
                 $lead->save();
             }
         }
@@ -148,26 +149,26 @@ class IntellectController extends Controller
 
         History::bitrix('Cделка проиграна', $request->all());
 
-        if($request->lead_id) {
+        if ($request->lead_id) {
             $trainee = Trainee::where('lead_id', $request->lead_id)->first();
-            if($trainee) {
+            if ($trainee) {
                 $trainee->fired = now();
                 $trainee->save();
             }
 
             $lead = Lead::where('lead_id', $request->lead_id)->orderBy('id', 'desc')->first();
-            if($lead) {
+            if ($lead) {
                 $lead->status = 'LOSE';
                 $lead->save();
             }
 
             $ud = UserDescription::where('lead_id', $request->lead_id)->first();
-            if($ud) {
+            if ($ud) {
                 $ud->fired = now();
                 $ud->save();
 
                 $user = User::find($ud->user_id);
-                if($user) {
+                if ($user) {
                     $request->id = $user->id;
                     $request->day = date('d');
                     $request->month = date('m');
@@ -177,7 +178,7 @@ class IntellectController extends Controller
                         'about_id' => $user->id,
                     ])->get();
 
-                    foreach($nootis as $noti) {
+                    foreach ($nootis as $noti) {
                         $noti->read_at = now();
                         $noti->save();
                     }
@@ -185,7 +186,6 @@ class IntellectController extends Controller
             }
 
         }
-
 
 
     }
@@ -207,7 +207,7 @@ class IntellectController extends Controller
 
         try {
             $lang = $langs[$request->lang];
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $lang = 0;
         }
 
@@ -224,44 +224,44 @@ class IntellectController extends Controller
         $phone_2 = null;
         $phone_3 = null;
 
-        if($request->phone) {
+        if ($request->phone) {
             $phones = explode(',', $request->phone);
 
-            if(count($phones) > 0) $phone   = Phone::normalize($phones[0]);
-            if(count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
-            if(count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
+            if (count($phones) > 0) $phone = Phone::normalize($phones[0]);
+            if (count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
+            if (count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
 
         }
 
-        if($lead) {
+        if ($lead) {
 
             //$trainee = Trainee::where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
             $trainee = UserDescription::where('is_trainee', 1)->where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
-            if($trainee) {
+            if ($trainee) {
                 $user = User::withTrashed()->find($trainee->user_id);
-                if($user) {
-                    if($phone) $user->phone   = Phone::normalize($phone);
+                if ($user) {
+                    if ($phone) $user->phone = Phone::normalize($phone);
                     // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                     // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                     $user->save();
                 }
             }
 
-            if($lead->status != 'LOSE') {
+            if ($lead->status != 'LOSE') {
                 $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
             }
 
 
             $lead->status = 'CON';
-            if($phone) $lead->phone   = Phone::normalize($phone);
-            if($phone_2) $lead->phone_2 = Phone::normalize($phone_2);
-            if($phone_3) $lead->phone_3 = Phone::normalize($phone_3);
-            $lead->lang =  $lang;
+            if ($phone) $lead->phone = Phone::normalize($phone);
+            if ($phone_2) $lead->phone_2 = Phone::normalize($phone_2);
+            if ($phone_3) $lead->phone_3 = Phone::normalize($phone_3);
+            $lead->lang = $lang;
             $lead->deal_id = $deal_id;
             $lead->save();
         } else {
 
-            if($lead->status != 'LOSE') {
+            if ($lead->status != 'LOSE') {
                 $skyped_time = date('Y-m-d H:i:s', time() + 3600 * 6);
             } else {
                 $skyped_time = null;
@@ -297,10 +297,10 @@ class IntellectController extends Controller
 
         $lead = Lead::where('lead_id', $request->lead_id)->first();
 
-        if($lead) {
+        if ($lead) {
             $lead->inhouse = date('Y-m-d H:i:s', time() + 3600 * 6);
-            if($request->project) $lead->project = $request->project;
-            if($request->net) $lead->net = $request->net;
+            if ($request->project) $lead->project = $request->project;
+            if ($request->net) $lead->net = $request->net;
             $lead->save();
         }
     }
@@ -336,54 +336,54 @@ class IntellectController extends Controller
         try {
 
 
-            if($lead) {
-                if($request->lang) $lead->lang = $langs[$request->lang];
-                if($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
+            if ($lead) {
+                if ($request->lang) $lead->lang = $langs[$request->lang];
+                if ($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
 
-                if($request->phone) {
+                if ($request->phone) {
                     $phones = explode(',', $request->phone);
 
                     $phone = null;
                     $phone_2 = null;
                     $phone_3 = null;
 
-                    if(count($phones) > 0) $phone   = Phone::normalize($phones[0]);
-                    if(count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
-                    if(count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
+                    if (count($phones) > 0) $phone = Phone::normalize($phones[0]);
+                    if (count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
+                    if (count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
 
                     //$trainee = Trainee::where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
 
                     $trainee = UserDescription::where('is_trainee', 1)->where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
-                    if($trainee) {
+                    if ($trainee) {
                         $user = User::withTrashed()->find($trainee->user_id);
-                        if($user) {
-                            if($phone) $user->phone     = Phone::normalize($phone);
+                        if ($user) {
+                            if ($phone) $user->phone = Phone::normalize($phone);
                             // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                             // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                             $user->save();
                         }
                     }
 
-                    if($phone) $lead->phone = $phone;
-                    if($phone_2) $lead->phone_2 = $phone_2;
-                    if($phone_3) $lead->phone_3 = $phone_3;
+                    if ($phone) $lead->phone = $phone;
+                    if ($phone_2) $lead->phone_2 = $phone_2;
+                    if ($phone_3) $lead->phone_3 = $phone_3;
                 }
 
-                if($request->segment) {
+                if ($request->segment) {
                     $lead->segment = Lead::getSegment($request->segment);
                 }
 
-                if($request->project) {
+                if ($request->project) {
                     $lead->project = $request->project;
                 }
 
-                if($request->net) $lead->net = $request->net;
+                if ($request->net) $lead->net = $request->net;
 
                 $lead->wishtime = $wishtimes[$request->wishtime];
                 $lead->save();
             }
 
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
         }
     }
@@ -417,31 +417,30 @@ class IntellectController extends Controller
         $lead = Lead::where('lead_id', $request->lead_id)->first();
 
 
-
         try {
 
 
-            if($lead) {
-                if($request->lang) $lead->lang = $langs[$request->lang];
-                if($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
-                if($request->phone) {
+            if ($lead) {
+                if ($request->lang) $lead->lang = $langs[$request->lang];
+                if ($request->wishtime) $lead->wishtime = $wishtimes[$request->wishtime];
+                if ($request->phone) {
                     $phones = explode(',', $request->phone);
 
                     $phone = null;
                     $phone_2 = null;
                     $phone_3 = null;
 
-                    if(count($phones) > 0) $phone   = Phone::normalize($phones[0]);
-                    if(count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
-                    if(count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
+                    if (count($phones) > 0) $phone = Phone::normalize($phones[0]);
+                    if (count($phones) > 1) $phone_2 = Phone::normalize($phones[1]);
+                    if (count($phones) > 2) $phone_3 = Phone::normalize($phones[2]);
 
                     //$trainee = Trainee::where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
                     $trainee = UserDescription::where('is_trainee', 1)->where('lead_id', $lead->lead_id)->orderBy('id', 'desc')->first();
-                    if($trainee) {
+                    if ($trainee) {
                         $user = User::withTrashed()->find($trainee->user_id);
-                        if($user) {
+                        if ($user) {
 
-                            if($phone) $user->phone     = Phone::normalize($phone);
+                            if ($phone) $user->phone = Phone::normalize($phone);
                             // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                             // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
 
@@ -450,18 +449,17 @@ class IntellectController extends Controller
                     }
 
 
-
-                    if($phone) $lead->phone   = $phone;
-                    if($phone_2) $lead->phone_2 = $phone_2;
-                    if($phone_3) $lead->phone_3 = $phone_3;
+                    if ($phone) $lead->phone = $phone;
+                    if ($phone_2) $lead->phone_2 = $phone_2;
+                    if ($phone_3) $lead->phone_3 = $phone_3;
                 }
-                if($request->segment) {
+                if ($request->segment) {
                     $lead->segment = Lead::getSegment($request->segment);
                 }
                 $lead->save();
             }
 
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
         }
     }
@@ -475,9 +473,9 @@ class IntellectController extends Controller
             $request->all(),
         ]);
 
-        if($request->has('phone') && $request->has('name')) {
+        if ($request->has('phone') && $request->has('name')) {
 
-            $hash = md5(uniqid().mt_rand());
+            $hash = md5(uniqid() . mt_rand());
 
             $res = (new Bitrix('intellect'))->createLead([
                 "TITLE" => "Кандидат QR - " . $request->name,
@@ -485,10 +483,10 @@ class IntellectController extends Controller
                 "ASSIGNED_BY_ID" => 23900,
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
-                "PHONE"=> [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
+                "PHONE" => [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
             ]);
 
-            if($res) {
+            if ($res) {
                 $phone = Phone::normalize($request->phone);
 
                 Lead::create([
@@ -510,9 +508,9 @@ class IntellectController extends Controller
     /**
      * Send message to whatsapp
      */
-    public function send_msg(String $phone, String $message)
+    public function send_msg(string $phone, string $message)
     {
-        return $this->curl_get(config('services.intellect.message_webhook') . '?phone=' . $phone .'&message='. $message);
+        return $this->curl_get(config('services.intellect.message_webhook') . '?phone=' . $phone . '&message=' . $message);
     }
 
     /**
@@ -520,15 +518,15 @@ class IntellectController extends Controller
      */
     public function save(Request $request)
     {
-        if($request->has('phone')) {
+        if ($request->has('phone')) {
 
             /// Для битрикса
             $req = [];
 
-            if($request->has('city')) $req['ADDRESS_CITY'] = $request->city;
-            if($request->has('lang')) {
+            if ($request->has('city')) $req['ADDRESS_CITY'] = $request->city;
+            if ($request->has('lang')) {
 
-                if((int)$request->lang == 1 || (int)$request->lang == 2 || (int)$request->lang == 3) {
+                if ((int)$request->lang == 1 || (int)$request->lang == 2 || (int)$request->lang == 3) {
                     $langs = [
                         1 => 2180, // Русский 50% и Казахский 100%
                         2 => 2176, // Только Русский 100%
@@ -540,8 +538,8 @@ class IntellectController extends Controller
                 }
             }
 
-            if($request->has('house')) {
-                if((int)$request->house == 1 || (int)$request->house == 2) {
+            if ($request->has('house')) {
+                if ((int)$request->house == 1 || (int)$request->house == 2) {
                     $houses = [
                         1 => 'Частный дом',
                         2 => 'Квартира',
@@ -552,8 +550,8 @@ class IntellectController extends Controller
                 }
             }
 
-            if($request->has('wishtime_inhouse')) {
-                if(in_array((int)$request->wishtime_inhouse, [1,2,3,4,5,6])) {
+            if ($request->has('wishtime_inhouse')) {
+                if (in_array((int)$request->wishtime_inhouse, [1, 2, 3, 4, 5, 6])) {
                     $wishtimes = [
                         1 => 2260, // 'с 08:45 - 19:00',
                         2 => 2258, //'c 08:45 - 13:00',
@@ -565,8 +563,8 @@ class IntellectController extends Controller
                 }
             }
 
-            if($request->has('wishtime_remote')) {
-                if(in_array((int)$request->wishtime_remote, [1,2,3,4,5,6])) {
+            if ($request->has('wishtime_remote')) {
+                if (in_array((int)$request->wishtime_remote, [1, 2, 3, 4, 5, 6])) {
                     $wishtimes = [
                         1 => 2260, // 'с 08:45 - 19:00',
                         2 => 2262, //'с 13:00 - 23:00',
@@ -580,28 +578,28 @@ class IntellectController extends Controller
             // Для лида
             $lead = Lead::where('phone', $request->phone)->latest()->first();
 
-            if($lead) {
+            if ($lead) {
                 ///////
 
-                if($request->has('lang')) $lead->lang = $request->lang;
-                if($request->has('age')) $lead->age = $request->age;
-                if($request->has('house')) $lead->house = $request->house;
-                if($request->has('net')) {
-                    if($request->net == 'Наличие интернета') {
+                if ($request->has('lang')) $lead->lang = $request->lang;
+                if ($request->has('age')) $lead->age = $request->age;
+                if ($request->has('house')) $lead->house = $request->house;
+                if ($request->has('net')) {
+                    if ($request->net == 'Наличие интернета') {
                         $lead->net = 1;
                     } else {
                         $lead->net = $request->net;
                     }
                 }
-                if($request->has('wishtime_inhouse')) {
+                if ($request->has('wishtime_inhouse')) {
                     $lead->wishtime = $request->wishtime_inhouse;
-                    if((int)$request->wishtime_inhouse == 2) $lead->wishtime = 4;
-                    if((int)$request->wishtime_inhouse == 3) $lead->wishtime = 5;
+                    if ((int)$request->wishtime_inhouse == 2) $lead->wishtime = 4;
+                    if ((int)$request->wishtime_inhouse == 3) $lead->wishtime = 5;
                 }
-                if($request->has('wishtime_remote')) {
+                if ($request->has('wishtime_remote')) {
                     $lead->wishtime = $request->wishtime_remote;
                 }
-                if($request->has('city')) $lead->city = $request->city;
+                if ($request->has('city')) $lead->city = $request->city;
 
                 $lead->save();
 
@@ -625,7 +623,7 @@ class IntellectController extends Controller
      */
     public function get_name(Request $request)
     {
-        if( !$request->has('phone') ) {
+        if (!$request->has('phone')) {
             return response()->json(['message' => 'Phone is not provided'], 400);
         }
 
@@ -633,12 +631,12 @@ class IntellectController extends Controller
 
         $name = 'Cоискатель';
 
-        if($lead) {
-            if($request->has('save')) {
+        if ($lead) {
+            if ($request->has('save')) {
                 $this->save($request);
             }
 
-            $name =  $lead->name;
+            $name = $lead->name;
         } else {
             // Intellect не хочет получать 404
             //return response()->json(['message' => 'Lead is not found'], 404);
@@ -654,23 +652,23 @@ class IntellectController extends Controller
      */
     public function get_link(Request $request)
     {
-        if( !$request->has('phone') ) {
+        if (!$request->has('phone')) {
             return response()->json(['message' => 'Phone is not provided'], 400);
         }
 
-        if( !$request->has('link') ) {
+        if (!$request->has('link')) {
             return response()->json(['message' => 'Link is not provided'], 400);
         }
 
         $lead = Lead::where('phone', $request->phone)->latest()->first();
 
-        if( !$lead ) {
+        if (!$lead) {
             // return response()->json(['message' => 'Lead is not found'], 404);
         }
 
-        if($lead) {
+        if ($lead) {
 
-            if($request->has('city')) {
+            if ($request->has('city')) {
                 $lead->city = $request->city;
                 $lead->save();
                 (new Bitrix('intellect'))->updateLead($lead->lead_id, [
@@ -681,9 +679,9 @@ class IntellectController extends Controller
             $this->save($request);
 
             // ссылка для подписи договора дял удаленных
-            if($request->link == 1) {
+            if ($request->link == 1) {
 
-                if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
                     $lead->status = '40';
 
                     (new Bitrix('intellect'))->updateLead($lead->lead_id, [
@@ -696,12 +694,12 @@ class IntellectController extends Controller
                     $lead->save();
                 }
 
-                return response()->json(['link' => config('services.intellect.contract_link') . $lead->hash ], 200);
+                return response()->json(['link' => config('services.intellect.contract_link') . $lead->hash], 200);
             }
 
             // ссылка для выбора времени для офисных
-            if($request->link == 2) {
-                return response()->json(['link' => config('services.intellect.time_link') . $lead->hash ], 200);
+            if ($request->link == 2) {
+                return response()->json(['link' => config('services.intellect.time_link') . $lead->hash], 200);
             }
 
         }
@@ -714,15 +712,15 @@ class IntellectController extends Controller
 
         History::intellect('Смена статуса', $request->all());
 
-        if($request->has('phone')) {
+        if ($request->has('phone')) {
 
             $lead = Lead::where('phone', $request->phone)->latest()->first();
 
-            if($lead) { // сущетсвуте лид
-                if($lead->skype == null || $lead->skype == '') { // если нет скайпа
-                    if($request->has('status') && $request->status == 36) {
+            if ($lead) { // сущетсвуте лид
+                if ($lead->skype == null || $lead->skype == '') { // если нет скайпа
+                    if ($request->has('status') && $request->status == 36) {
 
-                        if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                        if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
                             $lead->status = '36';
                             $lead->save();
 
@@ -732,9 +730,9 @@ class IntellectController extends Controller
                         }
                     }
 
-                    if($request->has('status') && $request->status == 37) {
+                    if ($request->has('status') && $request->status == 37) {
 
-                        if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                        if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
                             $lead->status = '37';
                             $lead->save();
 
@@ -745,9 +743,9 @@ class IntellectController extends Controller
 
                     }
 
-                    if($request->has('status') && $request->status == 28) {
+                    if ($request->has('status') && $request->status == 28) {
 
-                        if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                        if ($lead->signed != 2 && !in_array($lead->status, ['39', 'CON', 'LOSE'])) {
                             $lead->status = '28';
                             $lead->save();
 
@@ -757,11 +755,9 @@ class IntellectController extends Controller
                         }
 
 
-
                     }
 
                 }
-
 
 
             }
@@ -774,32 +770,32 @@ class IntellectController extends Controller
 
         $times = [];
 
-        $evening = strtotime(date('Y-m-d'). ' 10:00:00'); // 16:00 UTC+6
-        $morning = strtotime(date('Y-m-d'). ' 04:00:00'); // 10:00 UTC+6
+        $evening = strtotime(date('Y-m-d') . ' 10:00:00'); // 16:00 UTC+6
+        $morning = strtotime(date('Y-m-d') . ' 04:00:00'); // 10:00 UTC+6
         $now = time();
 
-        if(date('w') == '4') {
+        if (date('w') == '4') {
             $times = [
                 ['text' => 'Завтра в 10:00', 'value' => $morning + 3600 * 24],
                 ['text' => 'Понедельник в 10:00', 'value' => $morning + 3600 * 4 * 24]
             ];
         }
 
-        if(date('w') == '5') {
+        if (date('w') == '5') {
             $times = [
                 ['text' => 'Понедельник в 10:00', 'value' => $morning + 3600 * 3 * 24],
                 ['text' => 'Вторник в 10:00', 'value' => $morning + 3600 * 4 * 24]
             ];
         }
 
-        if(date('w') == '6') {
+        if (date('w') == '6') {
             $times = [
                 ['text' => 'Понедельник в 10:00', 'value' => $morning + 3600 * 2 * 24],
                 ['text' => 'Вторник в 10:00', 'value' => $morning + 3600 * 3 * 24]
             ];
         }
 
-        if(in_array(date('w'), ['0','1','2','3'])) {
+        if (in_array(date('w'), ['0', '1', '2', '3'])) {
             $times = [
                 ['text' => 'Завтра в 10:00', 'value' => $morning + 3600 * 24],
                 ['text' => 'Послезавтра в 10:00', 'value' => $morning + 3600 * 2 * 24]
@@ -871,22 +867,21 @@ class IntellectController extends Controller
 
         $lead = Lead::where('hash', $request->hash)->latest()->first();
 
-        if($lead) {
+        if ($lead) {
 
             if ($request->isMethod('get')) {
-                if($lead->signed == 0) {
+                if ($lead->signed == 0) {
                     return view('recruiting.contract')->with('hash', $lead->hash);
                 }
             }
 
 
-            if($lead->signed == 2) {
+            if ($lead->signed == 2) {
                 return view('recruiting.skype')->with([
-                    'view'=> 2,
-                    'msg'=> 'Обучение идет в 09:30 утра по понедельникам, средам и пятницам. Точное время вы получите в вацап.',
+                    'view' => 2,
+                    'msg' => 'Обучение идет в 09:30 утра по понедельникам, средам и пятницам. Точное время вы получите в вацап.',
                 ]);
             }
-
 
 
             if ($request->isMethod('post')) {
@@ -894,10 +889,10 @@ class IntellectController extends Controller
                 $front = $request->file('front');
 
                 try {
-                    $front_name = $lead->phone. '_front_' . time() . '.' . $front->getClientOriginalExtension();
+                    $front_name = $lead->phone . '_front_' . time() . '.' . $front->getClientOriginalExtension();
                     $front->move("static/uploads/job/", $front_name);
                     $files = [$front_name];
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
 
                     History::system('Ошибка в подписании соглашения', [
                         'error' => $e->getMessage(),
@@ -908,7 +903,6 @@ class IntellectController extends Controller
                 }
 
 
-
                 ////////////////////////////////////
 
                 $lead->files = json_encode($files);
@@ -916,7 +910,7 @@ class IntellectController extends Controller
                 $lead->name = $request->name;
                 $lead->status = '39';
 
-                if($lead->status != 'LOSE') {
+                if ($lead->status != 'LOSE') {
                     $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6); // Раньше был, чтобы фиксировать время заполнения скайпа. Сейчас для хранения времени подписи
                 }
 
@@ -929,23 +923,23 @@ class IntellectController extends Controller
 
                 ////////// РАСЧЕТ БЛИЖАЙШЕГО ВРЕМЕНИ
 
-                $morning = strtotime(date('Y-m-d'). '03:30:00'); // 09:30 UTC+6
+                $morning = strtotime(date('Y-m-d') . '03:30:00'); // 09:30 UTC+6
 
-                if(date('w') == '1') $date = $morning + 3600 * 24 * 2;
-                if(date('w') == '2') $date = $morning + 3600 * 24;
-                if(date('w') == '3') $date = $morning + 3600 * 24 * 2;
-                if(date('w') == '4') $date = $morning + 3600 * 24;
-                if(date('w') == '5') $date = $morning + 3600 * 24 * 3;
-                if(date('w') == '6') $date = $morning + 3600 * 24 * 2;
-                if(date('w') == '0') $date = $morning + 3600 * 24;
+                if (date('w') == '1') $date = $morning + 3600 * 24 * 2;
+                if (date('w') == '2') $date = $morning + 3600 * 24;
+                if (date('w') == '3') $date = $morning + 3600 * 24 * 2;
+                if (date('w') == '4') $date = $morning + 3600 * 24;
+                if (date('w') == '5') $date = $morning + 3600 * 24 * 3;
+                if (date('w') == '6') $date = $morning + 3600 * 24 * 2;
+                if (date('w') == '0') $date = $morning + 3600 * 24;
 
-                if(date('w') == '1') $msg = 'Обучение начнется в эту среду '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
-                if(date('w') == '2') $msg = 'Обучение начнется завтра '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
-                if(date('w') == '3') $msg = 'Обучение начнется в эту пятницу '. date('d.m.Y', $date + 3600 * 6) .'  в 09:30 утра.';
-                if(date('w') == '4') $msg = 'Обучение начнется завтра '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
-                if(date('w') == '5') $msg = 'Обучение начнется в понедельник '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
-                if(date('w') == '6') $msg = 'Обучение начнется в понедельник '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
-                if(date('w') == '0') $msg = 'Обучение начнется завтра '. date('d.m.Y', $date + 3600 * 6) .' в 09:30 утра.';
+                if (date('w') == '1') $msg = 'Обучение начнется в эту среду ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
+                if (date('w') == '2') $msg = 'Обучение начнется завтра ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
+                if (date('w') == '3') $msg = 'Обучение начнется в эту пятницу ' . date('d.m.Y', $date + 3600 * 6) . '  в 09:30 утра.';
+                if (date('w') == '4') $msg = 'Обучение начнется завтра ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
+                if (date('w') == '5') $msg = 'Обучение начнется в понедельник ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
+                if (date('w') == '6') $msg = 'Обучение начнется в понедельник ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
+                if (date('w') == '0') $msg = 'Обучение начнется завтра ' . date('d.m.Y', $date + 3600 * 6) . ' в 09:30 утра.';
 
                 //////////////////////////////
 
@@ -955,8 +949,8 @@ class IntellectController extends Controller
                 ]);
 
                 return view('recruiting.skype')->with([
-                    'view'=> 2,
-                    'msg'=> $msg,
+                    'view' => 2,
+                    'msg' => $msg,
                 ]);
 
             }
@@ -973,22 +967,22 @@ class IntellectController extends Controller
     public function choose_time(Request $request)
     {
 
-        if($request->has('hash')) {
+        if ($request->has('hash')) {
 
             $lead = Lead::where('hash', $request->hash)->latest()->first();
 
 
-            if($lead) {
+            if ($lead) {
 
-                if($lead->time != null) {
+                if ($lead->time != null) {
 
                     return view('recruiting.choose_time')->with([
                         'view' => 2,
-                        'msg' => 'Поздравляем вас, '. $lead->name . '! Вам назначена стажировка. <br><br>дата: '. date('d.m.Y', strtotime($lead->time) + 3600 * 6) . ' <br>время:'. date('H:i', strtotime($lead->time) + 3600 * 6) .' <br><br>Пожалуйста приходите ровно в это время 😉'
+                        'msg' => 'Поздравляем вас, ' . $lead->name . '! Вам назначена стажировка. <br><br>дата: ' . date('d.m.Y', strtotime($lead->time) + 3600 * 6) . ' <br>время:' . date('H:i', strtotime($lead->time) + 3600 * 6) . ' <br><br>Пожалуйста приходите ровно в это время 😉'
                     ]);
                 }
 
-                if($request->isMethod('get')) {
+                if ($request->isMethod('get')) {
 
                     return view('recruiting.choose_time')->with([
                         'view' => 1,
@@ -997,12 +991,12 @@ class IntellectController extends Controller
                     ]);
                 }
 
-                if($request->isMethod('post')) {
+                if ($request->isMethod('post')) {
 
                     $lead->time = date('Y-m-d H:i:s', $request->time);
                     $lead->save();
 
-                    $msg = 'Поздравляю, вам назначена стажировка на '. date('H:i d.m.Y', $request->time + 3600 * 6) . '.%0a%0aМы находимся по Адресу г. Шымкент ул. Рыскулова 10А%0aТрех этажное здание "Автомир"%0aПоднимайтесь на 3й этаж и ищите 2ю дверь по левой стороне с табличкой "Business Partner"%0aКак войдете в офис, я Вас встречу 😉%0a%0ahttps://go.2gis.com/x8ppu%0a%0aПожалуйста, не опаздывайте 😊';
+                    $msg = 'Поздравляю, вам назначена стажировка на ' . date('H:i d.m.Y', $request->time + 3600 * 6) . '.%0a%0aМы находимся по Адресу г. Шымкент ул. Рыскулова 10А%0aТрех этажное здание "Автомир"%0aПоднимайтесь на 3й этаж и ищите 2ю дверь по левой стороне с табличкой "Business Partner"%0aКак войдете в офис, я Вас встречу 😉%0a%0ahttps://go.2gis.com/x8ppu%0a%0aПожалуйста, не опаздывайте 😊';
 
                     $this->send_msg($lead->phone, $msg);
 
@@ -1018,7 +1012,8 @@ class IntellectController extends Controller
                         $bitrix = new Bitrix();
                         $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
                         $lead->save();
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                    }
 
 
                     return redirect('https://api.whatsapp.com/send/?phone=77715942364&text&app_absent=0');
@@ -1038,17 +1033,16 @@ class IntellectController extends Controller
 
         History::intellect('Уволенный анкета', $request->all());
 
-        if($request->has('phone')) {
-
+        if ($request->has('phone')) {
 
 
             $users = User::withTrashed()->get();
 
-            foreach($users as $user) {
+            foreach ($users as $user) {
                 $phone = Phone::normalize($user->phone);
-                if($phone == Phone::normalize($request->phone)) {
+                if ($phone == Phone::normalize($request->phone)) {
                     $ud = UserDescription::where('user_id', $user->id)->first();
-                    if(!$ud) {
+                    if (!$ud) {
                         $ud = UserDescription::create([
                             'user_id' => $user->id
                         ]);
@@ -1056,7 +1050,7 @@ class IntellectController extends Controller
                 }
             }
 
-            if($ud) {
+            if ($ud) {
                 $answers = [];
 
                 $answers['1'] = $request->has('answer1') ? $request->answer1 : "";
