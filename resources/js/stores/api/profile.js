@@ -94,7 +94,7 @@ export async function fetchProfileBalance(year, month){
  * Получение kpi за месяц
  */
 export async function fetchProfileKpi(year, month){
-	const { data } = await axios.post('/statistics/kpi', {
+	const { data } = await axios.post('/statistics/kpi-with-currency', {
 		filters: {
 			data_from: {
 				month: month + 1,

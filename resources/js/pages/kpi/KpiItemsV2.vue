@@ -23,7 +23,7 @@
 					<th v-if="!kpi_page">
 						% выполнения
 					</th>
-					<th>Сумма премии при выполнении плана, KZT</th>
+					<th>Сумма премии при выполнении плана, {{ currency.toUpperCase() }}</th>
 					<th>Заработано</th>
 					<th v-if="kpi_page" />
 				</tr>
@@ -250,10 +250,10 @@
 							{{ item.percent }}
 						</td>
 						<td class="text-center">
-							{{ my_sum * (parseInt(item.histories_latest ? item.histories_latest.payload.share : item.share)/100) }}
+							{{ numberToCurrency(my_sum * (parseInt(item.histories_latest ? item.histories_latest.payload.share : item.share)/100)) }}
 						</td>
 						<td class="text-center">
-							{{ item.sum }}
+							{{ numberToCurrency(item.sum) }}
 						</td>
 					</tr>
 				</template>
@@ -296,6 +296,7 @@
 
 import {newKpiItem, /* numberize,  */calcCompleted, calcSum} from './kpis.js';
 import {sources, methods} from './helpers.js';
+import { numberToCurrency } from '@/composables/format.js'
 
 export default {
 	name: 'KpiItemsV2',
@@ -355,6 +356,10 @@ export default {
 		date: {
 			type: Object,
 			default: null
+		},
+		currency: {
+			type: String,
+			default: 'KZT',
 		},
 	},
 	data() {
@@ -416,6 +421,7 @@ export default {
 	},
 
 	methods: {
+		numberToCurrency,
 		toggle() {
 			this.show_description = false;
 		},
