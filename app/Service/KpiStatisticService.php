@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Classes\Helpers\Currency;
 use App\CacheStorage\KpiItemsCacheStorage;
 use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
@@ -746,6 +747,143 @@ class KpiStatisticService
             'groups' => ProfileGroup::get()->pluck('name', 'id')->toArray(),
             'user_id' => auth()->user() ? auth()->id() : 1,
             'read' => $read,
+        ];
+    }
+
+    public function fetchKpisWithCurrency(Request $request): array
+    {
+        $filters = $request->filters;
+
+        /**
+         * filters
+         *
+         * date_from
+         * user_id
+         */
+        if (
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+        $currency = 'kzt';
+
+        $this->workdays = collect($this->userWorkdays($request));
+        $this->updatedValues = UpdatedUserStat::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->orderBy('date', 'desc')
+            ->get();
+        /**
+         * get kpis
+         */
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::with([
+            'histories_latest' => function ($query) use ($last_date) {
+                $query->whereDate('created_at', '<=', $last_date);
+            },
+            'items.histories_latest' => function ($query) use ($last_date) {
+                $query->whereDate('created_at', '<=', $last_date);
+            },
+            'items' => function ($query) use ($last_date) {
+                $query->whereDate('created_at', '<=', $last_date);
+            },
+            'items.activity'
+        ]);
+
+        $droppedGroups = array();
+        if ($user_id != 0) {
+            $user = User::query()->with('groups')->find($user_id);
+            $currency = $user->currency;
+            $position_id = $user->position_id;
+
+            $groups = ($user->inGroups())->pluck('id')->toArray();
+            $droppedGroups = $user->droppedGroups($date);
+
+            $groups = array_merge($groups, $droppedGroups);
+
+            $kpis->where(function ($query) use ($user_id, $groups, $position_id) {
+                $query->where(function ($q) use ($user_id) {
+                    $q->where('targetable_id', $user_id)
+                        ->where('targetable_type', 'App\User');
+                })
+                    ->orWhere(function ($q) use ($groups) {
+                        $q->whereIn('targetable_id', $groups)
+                            ->where('targetable_type', 'App\ProfileGroup');
+                    })
+                    ->orWhere(function ($q) use ($position_id) {
+                        $q->where('targetable_id', $position_id)
+                            ->where('targetable_type', 'App\Position');
+                    });
+            });
+        }
+
+        $kpis = $kpis
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                ->endOfMonth()
+                ->format('Y-m-d')
+            )->where(fn($query) => $query->whereNull('deleted_at')->orWhere(
+                fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')))
+            )
+            ->where('is_active', true)
+            ->whereNot(function (Builder $query) use ($date) {
+                $query->where('targetable_type', 'App\\User')
+                    ->whereHas('user', function (Builder $query) use ($date) {
+                        $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
+                            ->endOfMonth()
+                            ->format('Y-m-d'));
+                    });
+            })
+            ->orderBy('targetable_type', 'desc')
+            ->limit(1)
+            ->get();
+
+        $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
+        $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
+
+        foreach ($kpis as $kpi) {
+            $kpi->kpi_items = [];
+
+            // remove items if it's not in history
+            if ($kpi->histories_latest) {
+                $payload = json_decode($kpi->histories_latest->payload, true);
+
+                if (isset($payload['children'])) {
+                    $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                }
+                $kpi->completed_80 = $payload['completed_80'] * $currency_rate;
+                $kpi->completed_100 = $payload['completed_100'] * $currency_rate;
+            }
+
+            $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+            $kpi_sum = 0;
+            foreach ($kpi->users as $user) {
+                $kpi_sum = $kpi_sum + $user['avg_percent'];
+            }
+
+            $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users), 2) : 0; //AVG percent of all KPI of all USERS in GROUP
+
+            $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
+        }
+
+        return [
+            'items' => $kpis,
+            'activities' => Activity::get(),
+            'groups' => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'user_id' => auth()->user() ? auth()->id() : 1,
+            'read' => $read,
+            'currency' => $currency,
         ];
     }
 

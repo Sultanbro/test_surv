@@ -568,6 +568,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [Kpi\KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [Kpi\KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('kpi-with-currency', [Kpi\KpiStatController::class, 'fetchKpisWithCurrency'])->name('fetchKpisWithCurrency');
         Route::any('kpi/read', [Kpi\KpiStatController::class, 'readKpis'])->name('readKpis');
         Route::any('kpi/groups-and-users', [Kpi\KpiStatController::class, 'fetchKpiGroupsAndUsers'])->name('fetchKpiGroupsAndUsers');
         Route::any('kpi/groups-and-users/{targetable_id}', [Kpi\KpiStatController::class, 'showKpiGroupAndUsers'])
