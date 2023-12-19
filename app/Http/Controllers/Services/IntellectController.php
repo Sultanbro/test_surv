@@ -259,7 +259,7 @@ class IntellectController extends Controller
 
     public function changeResp(Request $request): JsonResponse
     {
-        Debugger::debug('check', $request->lead_id);
+        Debugger::debug('check', $request->all());
         $lead = null;
 //        $this->changeLead($request);
         if ($request->lead_id) {
