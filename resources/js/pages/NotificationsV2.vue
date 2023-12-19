@@ -477,7 +477,8 @@ export default {
 				this.selectedNotification = null
 			}
 			else{
-				this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
+				const msg = message || ''
+				this.$toast.error(msg.raplace('title', 'Текст уведомления'))
 			}
 			this.fetchNotifications()
 		},
@@ -496,7 +497,10 @@ export default {
 				})
 			}
 			else{
-				if(!silent) this.$toast.error((message || '').raplace('title', 'Текст уведомления'))
+				if(!silent) {
+					const msg = message || ''
+					this.$toast.error(msg.raplace('title', 'Текст уведомления'))
+				}
 			}
 		},
 		async fetchSettings(){
