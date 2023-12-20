@@ -53,8 +53,8 @@ class KpiService
                     'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
                     'creator',
                     'updater',
-                    'histories' => function (morphMany $query) use ($endOfDate) {
-                        $query->whereDate('created_at', '<=', $endOfDate);
+                    'histories' => function (morphMany $query) use ($startOfDate) {
+                        $query->whereDate('created_at', '>=', $startOfDate);
                     }
                 ]
             )->get();

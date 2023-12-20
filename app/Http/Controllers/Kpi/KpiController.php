@@ -44,6 +44,7 @@ class KpiController extends Controller
         );
     }
 
+
     /**
      * @throws Throwable
      * @throws TargetDuplicateException
