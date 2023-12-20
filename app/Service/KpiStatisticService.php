@@ -781,16 +781,23 @@ class KpiStatisticService
          * get kpis
          */
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
-            'histories_latest' => function ($query) use ($last_date) {
-                $query->whereDate('created_at', '<=', $last_date);
+            'histories_latest' => function ($query) use ($start_date, $last_date) {
+                $query->whereBetween('created_at', [$start_date, $last_date]);
             },
-            'items.histories_latest' => function ($query) use ($last_date) {
-                $query->whereDate('created_at', '<=', $last_date);
+            'items.histories_latest' => function ($query) use ($start_date, $last_date) {
+                $query->whereBetween('created_at', [$start_date, $last_date]);
             },
-            'items' => function ($query) use ($last_date) {
-                $query->whereDate('created_at', '<=', $last_date);
+            'items' => function (HasMany $query) use ($last_date, $start_date) {
+                $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
+                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                }]);
+                $query->where(function (Builder $query) use ($start_date, $last_date) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>', $last_date);
+                });
             },
             'items.activity'
         ]);
