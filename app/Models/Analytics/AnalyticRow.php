@@ -40,15 +40,15 @@ class AnalyticRow extends Model
             ProfileGroup::query()
                 ->find($group_id)->name,
             'second',
-            'Impl',
-            'Pr, cstll',
-            'Средняя конверсия',
-            'План согласий',
-            'Факт согласий',
-            'Минуты операторов',
-            'План операторов',
-            'Факт операторов',
-            '',
+//            'Impl',
+//            'Pr, cstll',
+//            'Средняя конверсия',
+//            'План согласий',
+//            'Факт согласий',
+//            'Минуты операторов',
+//            'План операторов',
+//            'Факт операторов',
+//            '',
         ];
 
         $column = AnalyticColumn::where('group_id', $group_id)
@@ -240,14 +240,14 @@ class AnalyticRow extends Model
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_plan->id . ':' . $row_4 . '] * 100';
-                $arr['comment'] = 'Баланс выполнения';
+                $arr['comment'] = '1';
                 AnalyticStat::create($arr); // B3
 
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_sum->id . ':' . $row_4 . '] * 100';
-                $arr['comment'] = 'Процент выполнения месячного плана';
+                $arr['comment'] = '2';
                 AnalyticStat::create($arr); // C3
 
             }
@@ -259,14 +259,14 @@ class AnalyticRow extends Model
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_11 . ']  * 250 * 8 * 3.5 / 1000';
-                $arr['comment'] = 'Сколько на данный момент должны сделать';
+                $arr['comment'] = '3';
                 AnalyticStat::create($arr); // B4
 
                 $arr['row_id'] = $row_4;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_7 . ']  * 250 * 3.5 / 1000';
-                $arr['comment'] = 'План на месяц';
+                $arr['comment'] = '4';
 
                 AnalyticStat::create($arr); // C4
             }
@@ -300,13 +300,6 @@ class AnalyticRow extends Model
                 'name'      => $dto->rows['name'] ?? '',
                 'date'      => $firstDayOfMonth,
                 'order'     => 1,
-            ]);
-
-            self::query()->create([
-                'group_id'  => $dto->groupId,
-                'name'      => '',
-                'date'      => $firstDayOfMonth,
-                'order'     => 2,
             ]);
 
             /**

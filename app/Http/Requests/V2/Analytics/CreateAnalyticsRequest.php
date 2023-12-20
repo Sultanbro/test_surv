@@ -27,9 +27,6 @@ class CreateAnalyticsRequest extends FormRequest
     {
         return [
             'group_id'  => 'required|integer|exists:profile_groups,id',
-            'rows'      => 'required|array',
-            'rows.name'   => 'string|nullable',
-            'rows.index'  => 'integer',
             'year'      => 'required|integer',
             'month'     => 'required|integer'
         ];
