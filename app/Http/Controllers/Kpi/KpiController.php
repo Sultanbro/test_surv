@@ -36,9 +36,11 @@ class KpiController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $kpis = $this->kpiService->fetch($request->get('filters'));
+        dd($kpis);
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: $this->kpiService->fetch($request->get('filters')),
+            data: $kpis,
             status: Response::HTTP_OK
         );
     }
