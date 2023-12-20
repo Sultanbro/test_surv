@@ -13,6 +13,7 @@ use App\UserDescription;
 use App\UserNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class IntellectController extends Controller
 {
@@ -1093,16 +1094,17 @@ class IntellectController extends Controller
             $net = $bitrix->getUserField("UF_CRM_1638972628",$bitrixLead['UF_CRM_1638972628']);
             $language = $bitrix->getUserField("UF_CRM_1626255643",$bitrixLead['UF_CRM_1626255643']);
             $wishtime = $bitrix->getUserField("UF_CRM_1629291391354",$bitrixLead['UF_CRM_1629291391354']);
+            $skyped = Carbon::parse($bitrixLead['MOVED_TIME'])->setTimezone('Asia/Almaty');
             History::lead($bitrixLead);
             $lead = Lead::query()
                 ->updateOrCreate(
                     [
-                        'lead_id', $request->lead_id
+                        'lead_id'=>$request->lead_id
                     ],
                     [
                         'name' => $bitrixLead['NAME'],
                         'status' => 'CON',
-                        'skyped' => $bitrixLead['MOVED_TIME'],
+                        'skyped' => $skyped->format('Y-m-d H:i:s'),
                         'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
                         'phone' => $bitrixLead['PHONE'][0]['VALUE'],
                         'lang' => $language,
