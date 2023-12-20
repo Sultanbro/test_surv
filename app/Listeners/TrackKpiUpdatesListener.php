@@ -26,7 +26,7 @@ class TrackKpiUpdatesListener
      * @param  TrackKpiUpdatesEvent  $event
      * @return void
      */
-    public function handle(TrackKpiUpdatesEvent $event)
+    public function handle(TrackKpiUpdatesEvent $event): void
     {
         $kpi = Kpi::query()->withTrashed()->findOrFail($event->kpiId);
     

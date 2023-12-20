@@ -16,6 +16,7 @@ use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -48,6 +49,10 @@ class KpiService
                         $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
                             $query->whereDate('created_at', '>=', $startOfDate);
                         }]);
+                        $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                            $query->whereNull('deleted_at');
+                            $query->orWhere('deleted_at', '>', $endOfDate);
+                        });
                     },
                     'user' => fn(HasOne $query) => $query->select('id'),
                     'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
@@ -68,10 +73,10 @@ class KpiService
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items->where('created_at', '>=', $startOfDate);
+                $items = $kpi->items;
 
                 if (isset($payload['children'])) {
-                    $items = $items->whereIn('id', $payload['children'])->where('created_at', '>=', $startOfDate);
+                    $items = $items->whereIn('id', $payload['children']);
                 }
 
                 foreach ($items as $_item) {
@@ -287,10 +292,10 @@ class KpiService
                 } else {
                     unset($item['daily_plan']);
                     unset($item['histories']);
-                    $kpi->items()->where('id', $item['id'])->update($item);
+//                    $kpi->items()->where('id', $item['id'])->update($item); move this to histories
                 }
 
-                event(new TrackKpiItemEvent($item['id']));
+                event(new TrackKpiItemEvent($item));
             }
         }
 

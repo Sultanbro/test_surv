@@ -2,6 +2,7 @@
 
 namespace App\Models\Kpi;
 
+use App\Models\Analytics\Activity;
 use App\Models\History;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property $name
+ * @property $activity_id
+ * @property $kpi_id
+ * @property $plan
+ * @property $share
+ * @property $method
+ * @property $unit
+ * @property $cell
+ * @property $common
+ * @property Activity $activity
+ */
 class KpiItem extends Model
 {
     use HasFactory, SoftDeletes;
@@ -34,11 +47,11 @@ class KpiItem extends Model
     ];
 
     /**
-     * 
+     *
      */
     public function activity()
     {
-        return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
+        return $this->belongsTo('App\Models\Analytics\Activity', 'activity_id', 'id')
             ->withTrashed();
     }
 
