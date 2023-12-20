@@ -47,7 +47,7 @@ class KpiService
             ->with([
                     'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                         $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                            $query->whereDate('created_at', '>=', $startOfDate);
+                            $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
                         }]);
                         $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
                             $query->whereNull('deleted_at');
@@ -81,7 +81,7 @@ class KpiService
 
                 foreach ($items as $_item) {
 
-                    $history = $_item->histories->where('created_at', '>=', $startOfDate)->first();
+                    $history = $_item->histories->whereBetween('created_at', [$startOfDate, $endOfDate])->first();
 
                     $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
