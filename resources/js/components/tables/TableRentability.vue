@@ -144,6 +144,8 @@
 </template>
 
 <script>
+import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+
 const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 
 export default {
@@ -231,12 +233,12 @@ export default {
 		async fetchData() {
 			const loader = this.$loading.show()
 			try {
-				const {data} = await this.axios.get('/v2/analytics-page/get-rentability', {params: {
+				const {table, speedometers, staticRent} = await fetchRentabilityV2({
 					year: this.year,
 					month: this.month,
-				}})
-				this.items = data.data.table
-				this.speedometers = data.data.speedometers
+				})
+				this.items = table
+				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
 				this.skey++;
@@ -245,6 +247,13 @@ export default {
 				console.error('[TableRentability.fetchData]', error)
 			}
 			loader.hide()
+		},
+
+		actualSpeedmeters(speedometers, staticRent){
+			return staticRent.map(old => {
+				const _new = speedometers.find(_new => _new.group_id === old.group_id)
+				return _new || old
+			})
 		},
 
 		update(month, index) {

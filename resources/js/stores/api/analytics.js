@@ -262,3 +262,18 @@ export async function fetchAnalyticsV2(request){
 	if(!data.data?.table) throw new Error('AnalyticsV2: no analytics')
 	return data.data
 }
+
+export async function fetchRentabilityV2(params){
+	const { data } = await axios.get(AnV2Path + '/get-rentability', {params})
+	const rent = data.data
+	if(!Array.isArray(rent.speedometers)){
+		rent.speedometers = Object.keys(rent.speedometers).map(key => {
+			return rent.speedometers[key].slice(-1)[0]
+		})
+	}
+	return {
+		table: rent.table,
+		speedometers: rent.speedometers,
+		staticRent: rent.static_rentability,
+	}
+}
