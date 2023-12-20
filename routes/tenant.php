@@ -707,6 +707,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
             Route::post('/get', [Kpi\KpiController::class, 'index'])->name('get');
             Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
             Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+            Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
         });
 

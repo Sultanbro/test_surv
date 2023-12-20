@@ -40,6 +40,7 @@ class Kpi extends Model
         'children',
         'is_active',
         'read_by',
+        'off_limit',
     ];
 
     protected $dates = [
