@@ -58,7 +58,7 @@ class KpiService
                     }
                 ]
             )->get();
-
+        dd($kpis->count());
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
