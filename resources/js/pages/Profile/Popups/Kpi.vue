@@ -26,7 +26,7 @@
 import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
-import { kpi_fields, parseKPI, removeDeletedItems } from '../../kpi/kpis.js';
+import { kpi_fields, parseKPI/* , removeDeletedItems */ } from '../../kpi/kpis.js';
 import { useYearOptions } from '@/composables/yearOptions'
 
 import KpiContent from './KpiContent.vue'
@@ -131,7 +131,7 @@ export default {
 
 				// items
 				this.items = data.items.map(res=> ({...parseKPI(res), my_sum: 0}))
-				removeDeletedItems(this.items)
+				// removeDeletedItems(this.items)
 
 				this.activities = data.activities;
 				this.groups = data.groups;
