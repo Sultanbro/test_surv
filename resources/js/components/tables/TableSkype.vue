@@ -228,11 +228,11 @@
 
 				<template #cell(lang)="data">
 					<div>
-						<div v-if="data.value != '1' && data.value != '2' && data.value != '3'">
-							{{ data.value }}
+						<div v-if="data.value ? langs[data.value.trim()] : ''">
+							{{ langs[data.value.trim()] }}
 						</div>
 						<div v-else>
-							{{ langs[data.value] }}
+							{{ data.value }}
 						</div>
 					</div>
 				</template>
@@ -267,11 +267,11 @@
 
 				<template #cell(wishtime)="data">
 					<div>
-						<div v-if="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5' && data.value != '6'">
-							{{ data.value }}
+						<div v-if="data.value ? wishtimes[data.value.trim()] : ''">
+							{{ wishtimes[data.value.trim()] }}
 						</div>
 						<div v-else>
-							{{ wishtimes[data.value] }}
+							{{ data.value }}
 						</div>
 					</div>
 				</template>
@@ -637,6 +637,10 @@ export default {
 				1: 'Каз',
 				2: 'Рус',
 				3: 'Каз|Рус',
+				'Казахский 100% и Русский 100%': 'Каз|Рус',
+				'Казахский 100% и Русский 50%': 'Каз|Рус50',
+				'Русский 100% и Казахский 50%': 'Каз50|Рус',
+				'Только Русский 100%': 'Рус',
 			},
 			countries: {
 				'KZ': '🇰🇿',
@@ -653,6 +657,11 @@ export default {
 				2: 'с 13:00 - 23:00',
 				4: 'c 08:45 - 13:00',
 				5: 'c 14:00 - 19:00',
+				'не выбрано': 'не выбрано',
+				'2/2 по 12 часов': '2/2',
+				'5/2 с плавающими выходными по 9 часов': '5/2',
+				'6/1 с плавающим выходным по 9 часов': '6/1 по 9 часов',
+				'6/1 с плавающим выходным по 5 часов': '6/1 по 5 часов'
 			},
 			datepickerLabels: {
 				labelPrevDecade: 'Пред 10 лет',
