@@ -32,10 +32,10 @@ class KpiService
     public function fetch($filters): array
     {
         $searchWord = $filters['query'] ?? null;
-
-        $date = $filters['date'] ?? [
-            'year' => now()->year,
-            'month' => now()->month,
+        $dateToFilter = $filters['data_from'] ?? null;
+        $date = [
+            'year' => $dateToFilter['year'] ?? now()->year,
+            'month' => $dateToFilter['month'] ?? now()->month,
         ];
 
         $date = Carbon::createFromDate($date['year'], $date['month']);
