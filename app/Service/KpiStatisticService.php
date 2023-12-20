@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Classes\Helpers\Currency;
 use App\CacheStorage\KpiItemsCacheStorage;
+use App\Classes\Helpers\Currency;
 use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
@@ -23,6 +23,8 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -894,17 +896,14 @@ class KpiStatisticService
 
         $searchWord = $filters['query'] ?? null;
 
-        if (
-            isset($filters['data_from']['year'])
-            && isset($filters['data_from']['month'])
-        ) {
-            $date = Carbon::createFromDate(
-                $filters['data_from']['year'],
-                $filters['data_from']['month']
-            )->startOfMonth();
-        } else {
-            $date = Carbon::now()->startOfMonth();
-        }
+        $date = Carbon::createFromDate(
+            $filters['data_from']['year'] ?? now()->year,
+            $filters['data_from']['month'] ?? now()->month
+        )->startOfMonth();
+
+        $start_date = $date->startOfMonth()->format('Y-m-d');
+        $last_date = $date->endOfMonth()->format('Y-m-d');
+
 
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
@@ -913,18 +912,23 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
-                'histories_latest' => function ($query) use ($last_date) {
-                    $query->whereDate('created_at', '<=', $last_date);
+                'histories_latest' => function ($query) use ($start_date, $last_date) {
+                    $query->whereBetween('created_at', [$start_date, $last_date]);
                 },
-                'items.histories_latest' => function ($query) use ($last_date) {
-                    $query->whereDate('created_at', '<=', $last_date);
+                'items.histories_latest' => function ($query) use ($start_date, $last_date) {
+                    $query->whereBetween('created_at', [$start_date, $last_date]);
                 },
-                'items' => function ($query) use ($last_date) {
-                    $query->withTrashed()->whereDate('created_at', '<=', $last_date)->whereNull('deleted_at');
+                'items' => function (HasMany $query) use ($last_date, $start_date) {
+                    $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
+                        $query->whereBetween('created_at', [$start_date, $last_date]);
+                    }]);
+                    $query->where(function (Builder $query) use ($start_date, $last_date) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $last_date);
+                    });
                 },
                 'items.activity'
             ])
