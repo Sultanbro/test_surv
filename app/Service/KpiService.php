@@ -68,10 +68,10 @@ class KpiService
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items;
+                $items = $kpi->items->where('created_at', '>=', $startOfDate);
 
                 if (isset($payload['children'])) {
-                    $items = $items->whereIn('id', $payload['children']);
+                    $items = $items->whereIn('id', $payload['children'])->where('created_at', '>=', $startOfDate);
                 }
 
                 foreach ($items as $_item) {
