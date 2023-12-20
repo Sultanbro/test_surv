@@ -228,7 +228,7 @@
 
 				<template #cell(lang)="data">
 					<div>
-						<div v-if="langs[data.value.trim()]">
+						<div v-if="data.value ? langs[data.value.trim()] : ''">
 							{{ langs[data.value.trim()] }}
 						</div>
 						<div v-else>
@@ -267,7 +267,7 @@
 
 				<template #cell(wishtime)="data">
 					<div>
-						<div v-if="wishtimes[data.value.trim()]">
+						<div v-if="data.value ? wishtimes[data.value.trim()] : ''">
 							{{ wishtimes[data.value.trim()] }}
 						</div>
 						<div v-else>
