@@ -448,7 +448,7 @@ export default {
 		fetchKPI(filters) {
 			let loader = this.$loading.show();
 
-			this.axios.post('/statistics/kpi', {
+			this.axios.post('/statistics/kpi-with-currency', {
 				filters: filters
 			}).then(response => {
 

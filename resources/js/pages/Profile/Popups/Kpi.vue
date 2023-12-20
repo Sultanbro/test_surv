@@ -15,6 +15,7 @@
 			:groups="groups"
 			:activities="activities"
 			:fields="fields"
+			:currency="currency"
 		/>
 	</div>
 </template>
@@ -63,6 +64,7 @@ export default {
 			user_id: 1,
 			loading: false,
 			selectedDate: this.$moment().format('DD.MM.YYYY'),
+			currency: 'KZT',
 		};
 	},
 	computed: {
@@ -123,7 +125,7 @@ export default {
 		fetchData(filters = null) {
 			this.loading = true
 
-			this.axios.post('/statistics/kpi', {
+			this.axios.post('/statistics/kpi-with-currency', {
 				filters: filters
 			}).then(({data}) => {
 
@@ -133,6 +135,7 @@ export default {
 
 				this.activities = data.activities;
 				this.groups = data.groups;
+				this.currency = data.currency
 
 				this.setReadedKpis()
 

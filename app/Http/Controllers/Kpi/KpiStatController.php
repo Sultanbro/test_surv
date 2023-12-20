@@ -81,6 +81,16 @@ class KpiStatController extends Controller
     }
 
     /**
+     * Вытащить kpi по фильтрам
+     */
+    public function fetchKpisWithCurrency(Request $request): JsonResponse
+    {
+        $response = $this->service->fetchKpisWithCurrency($request);
+
+        return response()->json($response);
+    }
+
+    /**
      * Вытащить список Групп и Пользователей для KPI
      */
     public function fetchKpiGroupsAndUsers(Request $request): JsonResponse

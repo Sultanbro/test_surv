@@ -366,12 +366,12 @@ class Salary extends Model
             //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->with([
                 'groups' => function ($q) use ($month) {
-                    $q->with('workChart')
-                        ->where([
-                            ['status', 'active'],
-                            ['is_head', false]
-                        ])
-                        ->whereNull('to');
+                    $q->with('workChart');
+//                        ->where([
+//                            ['status', 'active'],
+//                            ['is_head', false]
+//                        ])
+//                        ->whereNull('to');
                 },
                 'zarplata',
                 'workingTime',
@@ -1082,10 +1082,10 @@ class Salary extends Model
                     continue;
                 }
 
-                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
-                    // dump('skip_no_group');
-                    continue;
-                }
+//                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
+//                    // dump('skip_no_group');
+//                    continue;
+//                }
 
                 $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
                 // dump('hourly_pay '.$hourly_pay);
@@ -1227,7 +1227,7 @@ class Salary extends Model
                     $obon += $total_bonuses;
                     $osal += $total_salary;
                 }
-                dump($user_total, "user_id=" . $user->id);
+                dump($user_total, "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name . " kpi=" . $kpi . " bonus=" . $total_bonuses . " oklad=" . $total_salary);
             }
         }
 
