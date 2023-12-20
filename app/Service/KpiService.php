@@ -81,7 +81,7 @@ class KpiService
 
                 foreach ($items as $_item) {
 
-                    $history = $_item->histories->where('created_at', '>=', $startOfDate)->last();
+                    $history = $_item->histories->where('created_at', '>=', $startOfDate)->first();
 
                     $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
