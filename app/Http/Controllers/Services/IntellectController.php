@@ -268,19 +268,21 @@ class IntellectController extends Controller
             }
 
 
-            Lead::create([
-                'lead_id' => $request->lead_id,
-                'deal_id' => $deal_id,
-                'name' => $request->name,
-                'phone' => Phone::normalize($request->phone),
-                'phone_2' => Phone::normalize($phone_2),
-                'phone_3' => Phone::normalize($phone_3),
-                'segment' => Lead::getSegment($request->segment),
-                'status' => 'CON',
-                'hash' => 'converted_manually',
-                'skyped' => $skyped_time,
-                'lang' => $lang,
-            ]);
+            Lead::query()
+                ->updateOrCreate([
+                    'lead_id' => $request->lead_id],
+                    [
+                        'deal_id' => $deal_id,
+                        'name' => $request->name,
+                        'phone' => Phone::normalize($request->phone),
+                        'phone_2' => Phone::normalize($phone_2),
+                        'phone_3' => Phone::normalize($phone_3),
+                        'segment' => Lead::getSegment($request->segment),
+                        'status' => 'CON',
+                        'hash' => 'converted_manually',
+                        'skyped' => $skyped_time,
+                        'lang' => $lang,
+                    ]);
         }
 
 
@@ -489,14 +491,17 @@ class IntellectController extends Controller
             if ($res) {
                 $phone = Phone::normalize($request->phone);
 
-                Lead::create([
-                    'lead_id' => $res['result'],
-                    'name' => $request->name,
-                    'phone' => $phone,
-                    'segment' => Lead::getSegment($request->segment),
-                    'status' => 'NEW',
-                    'hash' => $hash
-                ]);
+                Lead::query()->updateOrCreate(
+                    [
+                        'lead_id' => $res['result']
+                    ],
+                    [
+                        'name' => $request->name,
+                        'phone' => $phone,
+                        'segment' => Lead::getSegment($request->segment),
+                        'status' => 'NEW',
+                        'hash' => $hash
+                    ]);
 
                 $this->send_msg($phone, 'Добрый день, ' . $request->name . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
                 usleep(2000000); // 2 sec
@@ -1041,9 +1046,11 @@ class IntellectController extends Controller
             foreach ($users as $user) {
                 $phone = Phone::normalize($user->phone);
                 if ($phone == Phone::normalize($request->phone)) {
-                    $ud = UserDescription::where('user_id', $user->id)->first();
+                    $ud = UserDescription::query()
+                        ->where('user_id', $user->id)
+                        ->first();
                     if (!$ud) {
-                        $ud = UserDescription::create([
+                        $ud = UserDescription::query()->updateOrCreate([
                             'user_id' => $user->id
                         ]);
                     }

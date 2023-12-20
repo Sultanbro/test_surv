@@ -45,8 +45,8 @@ class KpiService
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                     'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                        $query->with(['histories' => function (MorphMany $query) use ($endOfDate) {
-                            $query->whereDate('created_at', '<=', $endOfDate);
+                        $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
+                            $query->whereDate('created_at', '>=', $startOfDate);
                         }]);
                     },
                     'user' => fn(HasOne $query) => $query->select('id'),
@@ -69,7 +69,7 @@ class KpiService
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items->whereNull('deleted_at');
+                $items = $kpi->items;
 
                 if (isset($payload['children'])) {
                     $items = $items->whereIn('id', $payload['children']);
@@ -104,7 +104,6 @@ class KpiService
 
             $kpis_final[] = $item;
         }
-
 
         return [
             'kpis' => $kpis_final,
