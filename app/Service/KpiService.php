@@ -243,7 +243,7 @@ class KpiService
                 'common' => $item['common']
             ]);
 
-            event(new TrackKpiItemEvent($kpi_item->getKey()));
+            event(new TrackKpiItemEvent($kpi_item->toArray()));
 
             $ids[] = $kpi_item->getKey();
         }
