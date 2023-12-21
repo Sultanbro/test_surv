@@ -6,13 +6,15 @@ namespace App\Service\V2\Analytics;
 use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
+use App\Models\Analytics\ReportCard;
+use App\ProfileGroup;
 use App\Traits\AnalyticTrait;
 
 class GetAnalyticsService
 {
     use AnalyticTrait;
 
-    /**
+    /**T
      * @param GetAnalyticDto $dto
      * @return array
      */
@@ -29,7 +31,8 @@ class GetAnalyticsService
         });
         return [
             'table' => AnalyticsFacade::analytics($dto),
-            'columns' => $columns
+            'columns' => $columns,
+            'report_cards' => ProfileGroup::with('reportCards')->findOrFail($dto->groupId)
         ];
     }
 }

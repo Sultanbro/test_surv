@@ -189,10 +189,9 @@
 						<td
 							v-else
 							class="table-primary b-table-sticky-column text-left px-2 t-name"
-							:title="item.id + ' ' + item.email"
 						>
-							<div class="wd d-flex">
-								{{ item.lastname }} {{ item.name }}
+							<div class="d-flex aic fz-12">
+								<span :title="item.id + ' ' + item.email">{{ item.lastname }} {{ item.name }}</span>
 								<b-badge
 									v-if="item.group"
 									:variant="item.group == 'Просрочники' ? 'success' : 'primary'"
@@ -201,9 +200,19 @@
 								</b-badge>
 
 								<JobtronCup
-									:place="sortDir === 'asc' ? index : filtered.length - index"
+									:place="sortDir === 'asc' ? (show_headers ? index - 1 : index) : filtered.length - index"
 									rotate
 								/>
+
+								<img
+									v-if="show_headers ? index > 1 : index"
+									v-b-popover.hover.right="item.userType"
+									src="/images/dist/profit-info.svg"
+									width="16"
+									class="img-info ml-a"
+									alt="info icon"
+									tabindex="-1"
+								>
 							</div>
 						</td>
 
@@ -676,10 +685,12 @@ export default {
 		setLeaders() {
 			const arr = this.filtered;
 
-			if(arr > 4) {
-				arr[1].show_cup = 1;
-				arr[2].show_cup = 2;
-				arr[3].show_cup = 3;
+			const first = this.show_headers ? 2 : 1
+
+			if(arr.length > first + 3) {
+				arr[first].show_cup = 1;
+				arr[first + 1].show_cup = 2;
+				arr[first + 2].show_cup = 3;
 			}
 		},
 
@@ -1071,6 +1082,8 @@ export default {
 						appliedFrom: account.appliedFrom,
 						fullTime: account.fullTime,
 						email: account.email,
+						userType: account.userType,
+						status: account.status,
 						...cellValues,
 					});
 				}
@@ -1356,6 +1369,10 @@ export default {
 		font-size: 14px;
 		line-height: 1.3;
 		background-color: #F7FAFC;
+	}
+
+	.t-name:has(.img-info:hover){
+		z-index: 9999;
 	}
 }
 </style>

@@ -65,7 +65,7 @@ final class GetActivitiesService
 
             if ($activity->type == self::QUALITY)
             {
-                $quality = $this->quality($dto);
+                $quality = $this->quality($dto, $activity);
                 $activity->records  = $quality['records'];
                 $activity->weeks    = $quality['weeks'];
             }
@@ -76,14 +76,16 @@ final class GetActivitiesService
 
     /**
      * @param GetAnalyticDto $dto
+     * @param Activity $activity
      * @return array
      */
     private function quality(
-        GetAnalyticDto $dto
+        GetAnalyticDto $dto,
+        Activity $activity
     ): array
     {
         $date       = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $employees  = $this->employees($dto->groupId, $date)->withWhereHas('weekQualities',
+        $employees  = $this->employees($dto->groupId, $date)->whereDoesntHave('activities')->withWhereHas('weekQualities',
             fn($quality) => $quality->where('month', $dto->month)->where('year', $dto->year)->select('day', 'total', 'user_id'))->get();
 
         return [

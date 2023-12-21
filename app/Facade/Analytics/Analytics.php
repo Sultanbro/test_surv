@@ -201,8 +201,9 @@ final class Analytics
 
                     if ($statistic->type == 'time') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
-
-                        $val = Timetracking::totalHours($day, $dto->groupId);
+                        $group = ProfileGroup::query()->find($dto->groupId);
+                        $positions = $group->reportCards->pluck('position_id')->toArray();
+                        $val = Timetracking::totalHours($day, $dto->groupId, $positions);
                         $val = floor($val / 9 * 10) / 10;
                         $val = max($val, 0);
 
@@ -361,6 +362,7 @@ final class Analytics
         $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
 
         return $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
+            ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
                 $query->selectRaw('DAY(date) as day, user_id, value, date')
                     ->where('activity_id', $activity->id)
@@ -390,6 +392,7 @@ final class Analytics
             'group_id' => $dto->groupId,
             'date' => $date,
         ])->get();
+
 
         return [
             'group_id' => $dto->groupId,

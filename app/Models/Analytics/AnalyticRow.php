@@ -2,11 +2,16 @@
 
 namespace App\Models\Analytics;
 
+use App\DTO\Analytics\V2\CreateAnalyticDto;
+use App\Helpers\DateHelper;
 use App\ProfileGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * @property int $id
@@ -35,15 +40,15 @@ class AnalyticRow extends Model
             ProfileGroup::query()
                 ->find($group_id)->name,
             'second',
-            'Impl',
-            'Pr, cstll',
-            'Средняя конверсия',
-            'План согласий',
-            'Факт согласий',
-            'Минуты операторов',
-            'План операторов',
-            'Факт операторов',
-            '',
+//            'Impl',
+//            'Pr, cstll',
+//            'Средняя конверсия',
+//            'План согласий',
+//            'Факт согласий',
+//            'Минуты операторов',
+//            'План операторов',
+//            'Факт операторов',
+//            '',
         ];
 
         $column = AnalyticColumn::where('group_id', $group_id)
@@ -235,14 +240,14 @@ class AnalyticRow extends Model
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_plan->id . ':' . $row_4 . '] * 100';
-                $arr['comment'] = 'Баланс выполнения';
+                $arr['comment'] = '1';
                 AnalyticStat::create($arr); // B3
 
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_2 . '] / [' . $column_sum->id . ':' . $row_4 . '] * 100';
-                $arr['comment'] = 'Процент выполнения месячного плана';
+                $arr['comment'] = '2';
                 AnalyticStat::create($arr); // C3
 
             }
@@ -254,17 +259,91 @@ class AnalyticRow extends Model
                 $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_11 . ']  * 250 * 8 * 3.5 / 1000';
-                $arr['comment'] = 'Сколько на данный момент должны сделать';
+                $arr['comment'] = '3';
                 AnalyticStat::create($arr); // B4
 
                 $arr['row_id'] = $row_4;
                 $arr['column_id'] = $column_sum->id;
                 $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':' . $row_7 . ']  * 250 * 3.5 / 1000';
-                $arr['comment'] = 'План на месяц';
+                $arr['comment'] = '4';
 
                 AnalyticStat::create($arr); // C4
             }
+        }
+    }
+
+    /**
+     * @param CreateAnalyticDto $dto
+     * @return void
+     * @throws Throwable
+     */
+    public static function createAnalyticsRows(CreateAnalyticDto $dto): void
+    {
+        try {
+            DB::beginTransaction();
+
+            $date   = Carbon::createFromDate($dto->year, $dto->month);
+            $firstDayOfMonth = $date->firstOfMonth()->toDateString();
+
+            $fields = ['name', 'plan', 'sum', 'avg'];
+            $columns = AnalyticColumn::query()->where([
+                'group_id'  => $dto->groupId,
+                'date'      => $firstDayOfMonth
+            ])->get();
+
+            /**
+             * Создать первую строку.
+             */
+            $row = self::query()->create([
+                'group_id'  => $dto->groupId,
+                'name'      => $dto->rows['name'] ?? '',
+                'date'      => $firstDayOfMonth,
+                'order'     => 1,
+            ]);
+
+            /**
+             * Создаем в таблице аналитики данные.
+             */
+            $stats = $columns->whereIn('name', $fields)->map(function ($column, $index) use (
+                $row,
+                $dto,
+                $date
+            ) {
+                return [
+                    'group_id'  => $dto->groupId,
+                    'date'      => $date->firstOfMonth()->toDateString(),
+                    'row_id'    => $row->id,
+                    'column_id' => $column->id,
+                    'value'     => $column->name,
+                    'show_value' => $index == 0 ? $dto->rows['name'] : $column->name,
+                    'editable'  => 1,
+                    'class'     => 'text-center font-bold bg-grey',
+                    'type'      => AnalyticStat::INITIAL,
+                ];
+            })->toArray();
+
+            for ($day = 1; $day <= $date->daysInMonth; $day++)
+            {
+                $col = $columns->where('name', $day)->first();
+                $stats[] = [
+                    'group_id' => $dto->groupId,
+                    'date' => $firstDayOfMonth,
+                    'row_id' => $row->id,
+                    'column_id' => $col->id,
+                    'value' => $day,
+                    'show_value' => $day,
+                    'class' => 'text-center font-bold bg-grey',
+                    'editable' => 1,
+                    'type' => AnalyticStat::INITIAL,
+                ];
+            }
+
+            AnalyticStat::query()->insert($stats);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw new Exception($e->getMessage());
         }
     }
 }

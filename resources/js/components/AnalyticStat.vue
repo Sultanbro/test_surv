@@ -104,7 +104,7 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
+								<template v-if="field.key == 'name' && [1,2,3].includes(i_index) && oldGroup">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"
@@ -213,7 +213,7 @@
 											class="contextor"
 										>
 											<div
-												v-if="activeuserid == 5"
+												v-if="isMain && activeuserid == 5"
 												class="fonter d-flex justify-content-between"
 											>
 												<div @click="add_class(item[field.key], 'font-bold')">
@@ -256,78 +256,90 @@
 											</div>
 											<ul class="types">
 												<li
-													v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)"
+													v-if="(isMain && activeuserid == 5) || ['sum', 'avg'].includes(field.key)"
 													@click="change_type('initial', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Обычный
 												</li>
 												<li
-													v-if="activeuserid == 5"
+													v-if="(isMain && activeuserid == 5)"
 													@click="change_type('formula', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Формула
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="change_type('time', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], 'hours')"
 												>
 													Часы из табеля
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="change_type('stat', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Показатели
 												</li>
 												<li
 													v-if="['avg'].includes(field.key)"
 													@click="change_type('avg', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Среднее за месяц
 												</li>
 												<li
 													v-if="['sum'].includes(field.key)"
 													@click="change_type('sum', i_index, field.key)"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Сумма за месяц
 												</li>
 												<li
 													v-if="['name'].includes(field.key) && item[field.key].depend_id === null"
 													@click="selectDepend(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Зависимость от ряда
 												</li>
 												<li
 													v-else-if="['name'].includes(field.key)"
 													@click="removeDependency(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Убрать зависимость
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_formula_1_31(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Формула с 1 по 31
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_inhouse(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Отсутствие минут inhouse
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_remote(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Отсутствие минут remote
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_salary(item[field.key])"
+													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Начисления отдела
 												</li>
-												<li>
+												<li @mouseover="toggleContext2(item[field.key], '')">
 													<div class="d-flex decimals">
 														<p>Дробные</p>
 														<input
@@ -338,13 +350,60 @@
 													</div>
 												</li>
 											</ul>
+
+											<div
+												v-if="item[field.key].context2"
+												class="AnalyticStat-context2 AnContext2"
+												@context.capture.stop
+											>
+												<div
+													class="AnContext2-body"
+													:class="[`AnContext2-body_${item[field.key].context2}`]"
+												>
+													<template v-if="item[field.key].context2 === 'hours'">
+														<div class="AnContext2-row">
+															Выберите должность
+														</div>
+														<div class="AnContext2-row">
+															<AccessSelect
+																v-if="accessDictionaries.positions.length"
+																v-model="hoursPositions"
+																:access-dictionaries="accessDictionaries"
+																:tabs="['Должности']"
+																search-position="none"
+																submit-button=""
+															/>
+															<span v-else>В отделе нет сотрудников с должностями</span>
+														</div>
+														<label class="AnContext2-row AnContext2-field">
+															<div class="AnContext2-label">Делить на</div>
+															<input
+																v-model="hoursDivider"
+																type="number"
+																min="0.01"
+																class="AnContext2-input ml-3"
+															>
+														</label>
+														<div class="AnContext2-row">
+															<JobtronButton
+																small
+																class="ml-a"
+																@click="onSubmitHours(item[field.key])"
+															>
+																Применить
+															</JobtronButton>
+														</div>
+													</template>
+												</div>
+											</div>
 										</div>
 
 										<input
 											v-if="focused_item === i_index && focused_field === f_index"
 											v-model="item[field.key].value"
 											type="text"
-											class="in-cell"
+											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
+											class="in-cell name-input"
 											@change="change_stat(i_index, field.key)"
 										>
 										<input
@@ -619,15 +678,23 @@
 /* eslint-disable camelcase */
 /* eslint-disable vue/prop-name-casing */
 
+const Parser = require('expr-eval').Parser
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+// import { useCompanyStore } from '@/stores/Company'
+
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import JobtronButton from '@ui/Button.vue'
 import {
 	IconDelete,
 	ChatIconPlus,
 } from '@icons'
-const Parser = require('expr-eval').Parser;
 
 export default {
 	name: 'AnalyticStat',
 	components: {
+		AccessSelect,
+		JobtronButton,
 		IconDelete,
 		ChatIconPlus,
 	},
@@ -658,6 +725,14 @@ export default {
 		},
 		isAdmin: {
 			type: Boolean
+		},
+		currentGroup: {
+			type: Object,
+			required: true,
+		},
+		reportCards: {
+			type: Array,
+			default: () => [],
 		},
 	},
 	data() {
@@ -708,6 +783,33 @@ export default {
 			],
 			itemy: null,
 			letter_cells: [],
+			hoursDivider: 1,
+			hoursPositions: [],
+			groupPositions: [],
+		}
+	},
+
+	computed: {
+		...mapState(usePortalStore, ['isMain']),
+		oldGroup() {
+			// 1702383023746 - время когад помялись правила аналитики
+			return this.$moment(this.currentGroup.created_at).valueOf() < 1702383023746
+		},
+		accessDictionaries(){
+			return {
+				users: [],
+				profile_groups: [],
+				positions: this.groupPositions,
+			}
+		},
+		reportCardsFix(){
+			return this.reportCards?.report_cards?.map(rc => rc.position_id) || []
+		},
+	},
+
+	watch: {
+		reportCards(){
+			this.setReportCards()
 		}
 	},
 
@@ -716,17 +818,46 @@ export default {
 		this.form()
 
 		this.calcGlobal()
-		this.setDependencies();
+		this.setDependencies()
+		this.setReportCards()
 
 		//this.fields = this.columns
 	},
 
 	mounted () {
-		document.addEventListener('keyup', this.nextItem);
+		document.addEventListener('keyup', this.nextItem)
 		// this.listener()
+		this.fetchPositions()
 	},
 
 	methods: {
+		setReportCards(){
+			this.hoursPositions = this.reportCardsFix.map(id => ({
+				id,
+				type: 3,
+			}))
+		},
+		async fetchPositions(){
+			try {
+				const { data } = await this.axios.get('/v2/analytics-page/positions', {params: {
+					group_id: this.group_id
+				}})
+				const positions = data.data || []
+				this.groupPositions = positions.map(pos => ({...pos, type: 3}))
+			}
+			catch (error) {
+				console.error('[AnalyticStat.fetchPositions]', error)
+				// TMP
+				this.groupPositions = [{
+					id: 30,
+					name: 'Администратор',
+				},
+				{
+					id: 31,
+					name: 'Программист',
+				}].map(pos => ({...pos, type: 3}))
+			}
+		},
 		fixNameValue(items){
 			items.forEach(item => {
 				if(item.name){
@@ -981,7 +1112,7 @@ export default {
 		},
 
 		focus(i,f) {
-			if([1,2,3].includes(i) && f == 0) return ''
+			if([1,2,3].includes(i) && f == 0 && this.oldGroup) return ''
 
 			if(!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
@@ -1024,6 +1155,7 @@ export default {
 			this.items.forEach(item => {
 				Object.values(item).forEach((value) => {
 					value.context = false
+					value.context2 = false
 				});
 			})
 		},
@@ -1064,6 +1196,14 @@ export default {
 				context.style.left = pos.left + 'px'
 			})
 		},
+
+		toggleContext2(item, content){
+			content && this.clearContextForms()
+			this.$set(item, 'context2', content)
+			this.items = this.items.slice()
+		},
+
+		clearContextForms(){},
 
 		editQuery(i_index, f_index) {
 			let item = this.items[i_index][f_index];
@@ -1629,12 +1769,47 @@ export default {
 				});
 			}
 			return items;
-		}
+		},
+
+		async onSubmitHours(item){
+			const divider = +this.hoursDivider
+			if(!this.hoursPositions.length) return this.$toast.warning('Выберите хотябы 1 должность')
+			if(!divider) return this.$toast.warning('На 0 нельзя')
+			if(divider < 1) return this.$toast.warning('Делитель должен быть больше или равен 1')
+
+			const loader = this.$loading.show()
+
+			try {
+				await this.axios.post('/v2/analytics-page/report-card', {
+					group_id: +this.group_id,
+					row_id: +item.row_id,
+					year: +this.monthInfo.currentYear,
+					month: +this.monthInfo.month,
+					divide: divider,
+					positions: this.hoursPositions.map(pos => +pos.id),
+				})
+				this.$emit('cellUpdated')
+				this.$toast.success('Обновите чтобы подтянуть данные!')
+			}
+			catch (error) {
+				console.error('[AnalyticStat.onSubmitHours]', error)
+				this.$toast.error('Ошибка!')
+			}
+
+			loader.hide()
+		},
 	}
 }
 </script>
 
 <style lang="scss">
+.z-12 {
+	z-index: 12
+}
+#wow-table{
+	z-index: 100;
+}
+
 .AnalyticStat{
 	&-settings{
 		font-size: 0.8em;
@@ -1652,7 +1827,40 @@ export default {
 		}
 	}
 }
-.z-12 {
-	z-index: 12
+.AnContext2{
+	width: 320px;
+	padding-left: 20px;
+
+	position: absolute;
+	top: 0;
+	left: 100%;
+
+	&-body{
+		border: 1px solid #333;
+
+		background-color: #e9ecef;
+		&_hours{
+			.AccessSelectTabs{
+				display: none;
+			}
+		}
+	}
+	&-row{
+		padding: 5px 10px;
+		border-bottom: 1px solid #dee2e6;
+	}
+	&-field{
+		display: flex;
+		align-items: center;
+	}
+	&-label{
+		display: block;
+	}
+	&-input{}
+
+	// AAAAAAAAA Ебучите селекторы по тэгам!!!
+	.AccessSelectListItem-input{
+		width: 0 !important;
+	}
 }
 </style>

@@ -1,6 +1,9 @@
 import axios from 'axios'
 import moment from 'moment'
 
+
+const AnV2Path = '/v2/analytics-page'
+
 export async function fetchAnalyticsMonthlyStats(request){
 	const {data} = await axios.post('/timetracking/user-statistics-by-month', request)
 	return data
@@ -22,8 +25,9 @@ export async function deleteAnalyticsActivity(request){
 }
 
 export async function createAnalyticsGroup(request){
-	const {data} = await axios.post('/timetracking/analytics/new-group', request)
-	return data
+	// const {data} = await axios.post('/timetracking/analytics/new-group', request)
+	const {data} = await axios.post(AnV2Path + '/create', request)
+	return data.data
 }
 
 export async function archiveAnalyticsGroup(request){
@@ -50,19 +54,18 @@ export async function getAnalyticsActivityHiddenUsers(groupId){
 	const {data} = await axios.get(`/timetracking/analytics/activity/removed/users/${groupId}`)
 	const result = {}
 	if(data.data){
-		result.groupId = data.data.group_id
 		delete data.data.group_id
 		Object.keys(data.data).forEach(key => {
 			const splitKey = key.split('_')
-			if(splitKey[0] === 'group' && parseInt(splitKey[1])){
-				result[parseInt(splitKey[1])] = JSON.parse(data.data[key])
+			const activityId = parseInt(splitKey[1])
+			if(splitKey[0] === 'group' && activityId){
+				result[activityId] = JSON.parse(data.data[key])
 			}
 		})
 	}
 	return result
 }
 
-const AnV2Path = '/v2/analytics-page'
 
 function weeksOfMonth(year, month){
 	const daysInMonth = moment(`${year}-${(month > 9 ? '0' : '') + month}`, 'YYYY-MM').daysInMonth()
@@ -112,6 +115,7 @@ const ActivityRecordsTable = {
 			appliedFrom: rec.applied_from,
 			group: rec.group,
 			plan: Number(rec.plan),
+			userType: rec.user_type,
 		}
 		rec.statistics.forEach(stat => {
 			result[stat.day] = Number(stat.value)
@@ -131,6 +135,7 @@ const ActivityRecordsTable = {
 			appliedFrom: rec.applied_from,
 			group: rec.group,
 			plan: Number(rec.plan),
+			userType: rec.user_type,
 		}
 		rec.statistics.forEach(stat => {
 			result[stat.day] = Number(stat.value)
@@ -148,6 +153,7 @@ const ActivityRecordsTable = {
 			avg3: rec.avg3,
 			avg4: rec.avg4,
 			avg5: rec.avg5,
+			userType: rec.user_type,
 		}
 		rec.week_qualities.forEach(stat => {
 			result[stat.day] = Number(stat.total)
@@ -258,4 +264,19 @@ export async function fetchAnalyticsV2(request){
 
 	if(!data.data?.table) throw new Error('AnalyticsV2: no analytics')
 	return data.data
+}
+
+export async function fetchRentabilityV2(params){
+	const { data } = await axios.get(AnV2Path + '/get-rentability', {params})
+	const rent = data.data
+	if(!Array.isArray(rent.speedometers)){
+		rent.speedometers = Object.keys(rent.speedometers).map(key => {
+			return rent.speedometers[key].slice(-1)[0]
+		})
+	}
+	return {
+		table: rent.table,
+		speedometers: rent.speedometers,
+		staticRent: rent.static_rentability,
+	}
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\Analytics;
 
+use App\DTO\Analytics\V2\CreateAnalyticDto;
+use App\Helpers\DateHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,6 +58,37 @@ class AnalyticColumn extends Model
             ]);
         }
 
+    }
+
+    /**
+     * @param CreateAnalyticDto $dto
+     * @return void
+     */
+    public static function createAnalyticsColumns(CreateAnalyticDto $dto): void
+    {
+        $date           = Carbon::createFromDate($dto->year, $dto->month)->firstOfMonth();
+        $daysInMonth    = DateHelper::daysInMonthToArray($dto->year, $dto->month);
+        $fields         = [
+            'name',
+            'plan',
+            'sum',
+            'avg',
+        ];
+        $columns = array_merge($fields, $daysInMonth);
+
+        $insertionValues = [];
+
+        foreach ($columns as $index => $column)
+        {
+            $insertionValues[] = [
+                'group_id'  => $dto->groupId,
+                'name'      => $column,
+                'date'      => $date->toDateString(),
+                'order'     => $index,
+            ];
+        }
+
+        self::query()->insert($insertionValues);
     }
 
     public static function getValuesBetweenDates($group_id, $start_date, $end_date)

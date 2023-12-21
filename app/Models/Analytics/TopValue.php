@@ -54,7 +54,11 @@ class TopValue extends Model
         'fixed', // некоторые поля не редактируются
         'value_type', // avg  или sum с активности
         'reversed', //
+        'type'
     ];
+
+    const UTILITY = 1;
+    const RENTABILITY = 2;
 
     public function getOptions($options = null): array
     {
@@ -440,12 +444,13 @@ class TopValue extends Model
 
     }
 
-    public static function getRentabilityGauges($date, $common_name = ''): array
+    public static function  getRentabilityGauges($date, $common_name = ''): array
     {
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
-        $groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
+        //$groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
+        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)->pluck('id')->toArray();
 
         if (!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
@@ -534,15 +539,17 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year, $month, 1);
 
-        $groups = ProfileGroup::query()
-            ->whereNotIn('id', [34, 58, 26])
-            ->where('has_analytics', '=', 1)
-            ->where('active', '=', 1)
-            ->whereDate('created_at','<=',$date)
-            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
-                ->whereMonth('archived_date', '>=', $date->month)
-            ))
-            ->get();
+//        $groups = ProfileGroup::query()
+//            ->whereNotIn('id', [34, 58, 26])
+//            ->where('has_analytics', '=', 1)
+//            ->where('active', '=', 1)
+//            ->whereDate('created_at','<=',$date)
+//            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
+//                ->whereMonth('archived_date', '>=', $date->month)
+//            ))
+//            ->get();
+
+        $groups = ProfileGroup::withRentability($year, $month);
 
         $r_counts = []; // for count avg rentability on every monht
         $total_row = []; // first row
@@ -751,5 +758,13 @@ class TopValue extends Model
     )
     {
         return $query->where('group_id', $groupId)->where('date', $date);
+    }
+
+    /**
+     * @return bool
+     */
+    public function issetActivities(): bool
+    {
+        return $this->activity_id != 0 && $this->activity_id != -1;
     }
 }

@@ -33,6 +33,11 @@ use Throwable;
  * @property AnalyticRow $analyticRow
  * @property AnalyticColumn $analyticColumn
  */
+
+/**
+ * @property string $value
+ * @property string $show_value
+ */
 class AnalyticStat extends Model
 {
     use HasFactory;
@@ -351,18 +356,6 @@ class AnalyticStat extends Model
             $row->save();
         }
 
-        // $rows = Row::where('group_id', $group_id)
-        //     ->where('date', $date)
-        //     ->orderBy('order', 'desc')
-        //     ->get();
-
-        // $r_start = $rows->count() + 1;
-        // foreach ($rows as $key => $row) {
-        //     $row->order = $r_start--;
-        //     $row->save();
-        // }
-
-        //// columns
         $columns = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->get();
