@@ -262,10 +262,14 @@ export default {
 				if(_new) {
 					return {
 						..._new,
-						options: JSON.parse(_new.options)
+						options: JSON.parse(_new.options),
+						sections: Array.isArray(_new.sections) ? JSON.stringify(_new.sections) : _new.sections
 					}
 				}
-				return old
+				return {
+					...old,
+					sections: Array.isArray(old.sections) ? JSON.stringify(old.sections) : old.sections
+				}
 			})
 		},
 
