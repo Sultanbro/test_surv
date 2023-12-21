@@ -76,6 +76,7 @@
 				@click="showIcons()"
 			>
 				<TableRentability
+					v-if="activeTab === 1"
 					:year="+currentYear"
 					:month="+monthInfo.month"
 					:rentability-switch="rentabilitySwitch"

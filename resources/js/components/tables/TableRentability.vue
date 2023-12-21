@@ -5,6 +5,7 @@
 	>
 		<RentabilityGauges
 			v-if="activeRentability.length"
+			:key="skey"
 			:items="activeRentability"
 			class="mb-5"
 			@save="saveRenabilityGaguge"
@@ -208,6 +209,11 @@ export default {
 		this.fetchData();
 	},
 
+	mounted(){
+		this.skey++;
+		setTimeout(() => { this.skey++ }, 100)
+	},
+
 	methods: {
 
 		countTop() {
@@ -241,7 +247,8 @@ export default {
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
-				this.skey++;
+				this.skey++
+				setTimeout(() => { this.skey++ }, 1000)
 			}
 			catch (error) {
 				console.error('[TableRentability.fetchData]', error)
