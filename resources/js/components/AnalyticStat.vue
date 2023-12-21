@@ -72,7 +72,7 @@
 						<td class="t-cell rownumber ruler-cells">
 							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
 								<span
-									v-if="editTableMode && i_index > 3"
+									v-if="editTableMode && i_index > (oldGroup ? 3 : 1)"
 									@click="deleteRow(i_index)"
 								>
 									<IconDelete
@@ -83,7 +83,7 @@
 									/>
 								</span>
 								<span
-									v-if="editTableMode && i_index > 2"
+									v-if="editTableMode && i_index > (oldGroup ? 2 : 0)"
 									@click="add_row(i_index)"
 								>
 									<ChatIconPlus
@@ -179,7 +179,7 @@
 												v-else
 												type="text"
 												class="in-cell"
-												:value="item['plan'].show_value + (i_index == 2 ? '%' : '')"
+												:value="item['plan'].show_value + (i_index == 2 && oldGroup ? '%' : '')"
 											>
 
 											<div
