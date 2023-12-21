@@ -118,6 +118,7 @@
 																		:editable="false"
 																		:kpi_page="false"
 																		:currency="currency"
+																		:allow_overfulfillment="wrap_item.off_limit"
 																		date="date"
 																		@getSum="wrap_item.my_sum = $event"
 																		@recalced="countAvg"

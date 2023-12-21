@@ -202,6 +202,7 @@
 															:editable="editable"
 															:kpi_page="false"
 															:date="date"
+															:allow_overfulfillment="wrap_item.off_limit"
 															@getSum="wrap_item.my_sum = $event"
 															@recalced="countAvg"
 														/>

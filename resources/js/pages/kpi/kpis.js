@@ -163,10 +163,6 @@ function calcCompleted(el) {
 		res = (fact / plan * 100).toFixed(2);
 	}
 
-	if(el.method == 2) {
-		res = (avg / plan * 100).toFixed(2);
-	}
-
 	if(el.method == 3) {
 		res = plan - fact >= 0 ? 100 : 0;
 	}
@@ -219,7 +215,8 @@ function calcSum(el, kpi, completed) {
 
 		if (completed < upper_limit) {
 			result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
-		} else {
+		}
+		else {
 			result = completed_100 * share * completed
 		}
 	}
