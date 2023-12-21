@@ -5,6 +5,7 @@
 	>
 		<RentabilityGauges
 			v-if="activeRentability.length"
+			:key="skey"
 			:items="activeRentability"
 			class="mb-5"
 			@save="saveRenabilityGaguge"
@@ -208,6 +209,11 @@ export default {
 		this.fetchData();
 	},
 
+	mounted(){
+		this.skey++;
+		setTimeout(() => { this.skey++ }, 100)
+	},
+
 	methods: {
 
 		countTop() {
@@ -241,7 +247,8 @@ export default {
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
-				this.skey++;
+				this.skey++
+				setTimeout(() => { this.skey++ }, 1000)
 			}
 			catch (error) {
 				console.error('[TableRentability.fetchData]', error)
@@ -252,7 +259,17 @@ export default {
 		actualSpeedmeters(speedometers, staticRent){
 			return staticRent.map(old => {
 				const _new = speedometers.find(_new => _new.group_id === old.group_id)
-				return _new || old
+				if(_new) {
+					return {
+						..._new,
+						options: JSON.parse(_new.options),
+						sections: Array.isArray(_new.sections) ? JSON.stringify(_new.sections) : _new.sections
+					}
+				}
+				return {
+					...old,
+					sections: Array.isArray(old.sections) ? JSON.stringify(old.sections) : old.sections
+				}
 			})
 		},
 
@@ -310,6 +327,7 @@ export default {
 				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
 					gauge: {
 						...gauge,
+						options: typeof gauge.options === 'string' ? JSON.parse(gauge.options) : gauge.options,
 						reversed: false,
 						date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}-01`,
 					},
