@@ -563,7 +563,8 @@ export default {
 				completed_100: item.completed_100,
 				upper_limit: item.upper_limit,
 				lower_limit: item.lower_limit,
-				items: item.items
+				items: item.items,
+				off_limit: item.off_limit,
 			};
 
 			let req = this.items[i].id == 0
