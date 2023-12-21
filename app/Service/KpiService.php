@@ -330,6 +330,8 @@ class KpiService
             'off_limit' => $request->get('off_limit')
         ]);
 
+        event(new TrackKpiUpdatesEvent($kpi->id));
+
         return true;
     }
 }
