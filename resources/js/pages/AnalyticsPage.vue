@@ -154,6 +154,7 @@
 										:group_id="currentGroupId"
 										:activities="activitiesOptions"
 										:current-group="currentGroup"
+										:report-cards="reportCards"
 									/>
 								</template>
 								<b-skeleton-table
@@ -367,6 +368,7 @@ export default {
 				groups: false,
 				analytics: false,
 			},
+			reportCards: [],
 		}
 	},
 	computed: {
@@ -550,9 +552,10 @@ export default {
 
 		async fetchAnalytics(request){
 			try{
-				const {columns, table} = await API.fetchAnalyticsV2(request)
+				const {columns, table, report_cards: reportCards} = await API.fetchAnalyticsV2(request)
 				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
 				this.table = Array.isArray(table) ? table : Object.values(table)
+				this.reportCards = reportCards || []
 				this.ready.analytics = true
 			}
 			catch(error){

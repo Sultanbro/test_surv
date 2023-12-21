@@ -730,6 +730,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		reportCards: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	data() {
 		return {
@@ -798,6 +802,15 @@ export default {
 				positions: this.groupPositions,
 			}
 		},
+		reportCardsFix(){
+			return this.reportCards?.report_cards?.map(rc => rc.position_id) || []
+		},
+	},
+
+	watch: {
+		reportCards(){
+			this.setReportCards()
+		}
 	},
 
 	created() {
@@ -806,6 +819,7 @@ export default {
 
 		this.calcGlobal()
 		this.setDependencies()
+		this.setReportCards()
 
 		//this.fields = this.columns
 	},
@@ -817,6 +831,12 @@ export default {
 	},
 
 	methods: {
+		setReportCards(){
+			this.hoursPositions = this.reportCardsFix.map(id => ({
+				id,
+				type: 3,
+			}))
+		},
 		async fetchPositions(){
 			try {
 				const { data } = await this.axios.get('/v2/analytics-page/positions', {params: {
@@ -1183,10 +1203,7 @@ export default {
 			this.items = this.items.slice()
 		},
 
-		clearContextForms(){
-			this.hoursDivider = 1
-			this.hoursPositions = []
-		},
+		clearContextForms(){},
 
 		editQuery(i_index, f_index) {
 			let item = this.items[i_index][f_index];
