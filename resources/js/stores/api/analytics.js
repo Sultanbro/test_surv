@@ -1,6 +1,9 @@
 import axios from 'axios'
 import moment from 'moment'
 
+
+const AnV2Path = '/v2/analytics-page'
+
 export async function fetchAnalyticsMonthlyStats(request){
 	const {data} = await axios.post('/timetracking/user-statistics-by-month', request)
 	return data
@@ -22,8 +25,9 @@ export async function deleteAnalyticsActivity(request){
 }
 
 export async function createAnalyticsGroup(request){
-	const {data} = await axios.post('/timetracking/analytics/new-group', request)
-	return data
+	// const {data} = await axios.post('/timetracking/analytics/new-group', request)
+	const {data} = await axios.post(AnV2Path + '/create', request)
+	return data.data
 }
 
 export async function archiveAnalyticsGroup(request){
@@ -62,7 +66,6 @@ export async function getAnalyticsActivityHiddenUsers(groupId){
 	return result
 }
 
-const AnV2Path = '/v2/analytics-page'
 
 function weeksOfMonth(year, month){
 	const daysInMonth = moment(`${year}-${(month > 9 ? '0' : '') + month}`, 'YYYY-MM').daysInMonth()

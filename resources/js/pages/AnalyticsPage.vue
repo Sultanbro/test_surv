@@ -632,7 +632,7 @@ export default {
 				await API.createAnalyticsGroup({
 					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 					year: this.currentYear,
-					group_id: this.currentGroupId
+					group_id: this.currentGroupId,
 				})
 				this.$toast.success('Аналитика для группы добавлена!')
 				this.fetchData()
