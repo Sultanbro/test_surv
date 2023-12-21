@@ -316,4 +316,20 @@ class KpiService
             ])
             ->exists();
     }
+
+    /**
+     * Change kpi off_limit property, off_limit -> If employee do his activity bigger than 100%, then he will get more kpi_bonus
+     * @param Request $request
+     * @return true
+     */
+    public function setOffLimit(Request $request): bool
+    {
+        $kpi = Kpi::query()->findOrFail($request->get('id'));
+
+        $kpi->update([
+            'off_limit' => $request->get('off_limit')
+        ]);
+
+        return true;
+    }
 }

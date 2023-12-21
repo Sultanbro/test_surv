@@ -180,6 +180,10 @@
 						<td>
 							<div class="d-flex">
 								<i
+									class="fa fa-cog ml-2 mr-1 btn btn-icon"
+									@click="settingsItem = item"
+								/>
+								<i
 									class="fa fa-save ml-2 mr-1 btn btn-success btn-icon"
 									@click="saveKpi(i)"
 								/>
@@ -211,6 +215,7 @@
 										:upper_limit="item.upper_limit"
 										:editable="true"
 										:kpi_page="true"
+										:allow_overfulfillment="!!item.off_limit"
 										@getSum="item.my_sum = $event"
 									/>
 								</div>
@@ -261,6 +266,30 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<SimpleSidebar
+			v-if="settingsItem"
+			title="Настройки kpi"
+			:open="!!settingsItem"
+			width="400px"
+			@close="settingsItem = null"
+		>
+			<template #body>
+				<label class="d-flex aic mb-2">
+					<b-form-checkbox
+						class="kpi-status-switch"
+						switch
+						:checked="!!settingsItem.off_limit"
+						:disabled="statusRequest"
+						@input="changeOffLimit(settingsItem, $event)"
+					>
+						&nbsp;
+					</b-form-checkbox>
+					<p>Доначислять за превышение 100% от плана</p>
+				</label>
+			</template>
+			<template #footer />
+		</SimpleSidebar>
 	</div>
 </template>
 
@@ -271,6 +300,7 @@ import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import KpiItems from '@/pages/kpi/KpiItems'
 import SuperSelect from '@/components/SuperSelect'
+import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 
 import {kpi_fields, newKpi} from './kpis.js'
 import {findModel/* , groupBy */} from './helpers.js'
@@ -282,6 +312,7 @@ export default {
 		SuperFilter,
 		SuperSelect,
 		KpiItems,
+		SimpleSidebar,
 	},
 	props: {},
 	data() {
@@ -307,8 +338,10 @@ export default {
 				'updated_by',
 			],
 			statusRequest: false,
+			offLimitRequest: false,
 			timeout: null,
 			filters: null,
+			settingsItem: null,
 		}
 	},
 	watch: {
@@ -366,6 +399,21 @@ export default {
 				this.$toast.error('Статус не изменен')
 				this.statusRequest = false
 			})
+		},
+		async changeOffLimit(item){
+			if(this.offLimitRequest) return
+			this.offLimitRequest = true
+			try {
+				await this.axios.put('/kpi/set-off-limit', {
+					id: item.id,
+					off_limit: !item.off_limit
+				})
+				item.off_limit = !item.off_limit
+			}
+			catch (error) {
+				console.error(error)
+			}
+			this.offLimitRequest = false
 		},
 		expand(i) {
 			this.page_items[i].expanded = !this.page_items[i].expanded

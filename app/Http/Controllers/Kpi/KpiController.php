@@ -70,6 +70,15 @@ class KpiController extends Controller
         );
     }
 
+    public function setOffLimit(Request $request): JsonResponse
+    {
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $this->kpiService->setOffLimit($request),
+            status: Response::HTTP_ACCEPTED
+        );
+    }
+
     public function delete(Request $request, int $id): JsonResponse
     {
         $this->kpiService->delete($request);
