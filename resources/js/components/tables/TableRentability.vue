@@ -259,7 +259,13 @@ export default {
 		actualSpeedmeters(speedometers, staticRent){
 			return staticRent.map(old => {
 				const _new = speedometers.find(_new => _new.group_id === old.group_id)
-				return _new || old
+				if(_new) {
+					return {
+						..._new,
+						options: JSON.parse(_new.options)
+					}
+				}
+				return old
 			})
 		},
 
@@ -317,6 +323,7 @@ export default {
 				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
 					gauge: {
 						...gauge,
+						options: typeof gauge.options === 'string' ? JSON.parse(gauge.options) : gauge.options,
 						reversed: false,
 						date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}-01`,
 					},
