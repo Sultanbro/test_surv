@@ -90,11 +90,10 @@
 						>
 							<div v-if="field.key == 'target'">
 								<SuperSelect
-									v-if="item.target == null || item.id == 0"
+									v-if="item.id == 0"
 									:key="i"
 									class="w-full"
-									:values="item.target == null ? [] : [item.target]"
-									:single="true"
+									:values="item.targets"
 									:open-on-mount="!item.id"
 									@choose="(target) => item.target = target"
 									@remove="() => item.target = null"
@@ -103,27 +102,35 @@
 									v-else
 									class="d-flex aic"
 								>
-									<i
-										v-if="item.target.type == 1"
-										class="fa fa-user ml-2"
-									/>
-									<i
-										v-if="item.target.type == 2"
-										class="fa fa-users ml-2"
-									/>
-									<i
-										v-if="item.target.type == 3"
-										class="fa fa-briefcase ml-2"
-									/>
-									<span class="ml-2 kpi-name-rows">
-										{{ item.target.name }}
+									<div class="">
 										<span
-											v-if="item.user"
-											class="kpi-name-row"
+											v-for="target, targetIndex in item.targets"
+											:key="targetIndex"
 										>
-											({{ getUserGourpsString(item.user) }})
+											<i
+												v-if="target.type == 1"
+												class="fa fa-user ml-2"
+											/>
+											<i
+												v-if="target.type == 2"
+												class="fa fa-users ml-2"
+											/>
+											<i
+												v-if="target.type == 3"
+												class="fa fa-briefcase ml-2"
+											/>
+											<span class="ml-2 kpi-name-rows">
+												{{ target.name }}
+												<span
+													v-if="item.user && 0"
+													class="kpi-name-row"
+												>
+													({{ getUserGourpsString(item.user) }})
+												</span>
+											</span>
 										</span>
-									</span>
+									</div>
+
 
 									<b-form-checkbox
 										class="kpi-status-switch"
@@ -303,7 +310,19 @@ import SuperSelect from '@/components/SuperSelect'
 import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 
 import {kpi_fields, newKpi} from './kpis.js'
-import {findModel/* , groupBy */} from './helpers.js'
+
+const classToType = {
+	'App\\User': 1,
+	'App\\ProfileGroup': 2,
+	'App\\Position': 3,
+}
+
+const typeToClass = [
+	'',
+	'App\\User',
+	'App\\ProfileGroup',
+	'App\\Position',
+]
 
 export default {
 	name: 'KPI',
@@ -437,8 +456,8 @@ export default {
 					query: this.searchText
 				}
 			}).then(response => {
-				this.items = response.data.data.kpis;
-				this.all_items = response.data.data.kpis;
+				this.items = response.data.data.kpis.map(this.addKpiTargets);
+				this.all_items = response.data.data.kpis.map(this.addKpiTargets);
 				this.activities = response.data.data.activities;
 				this.groups = response.data.data.groups;
 
@@ -450,6 +469,47 @@ export default {
 				loader.hide()
 				alert(error)
 			});
+		},
+
+		addKpiTargets(kpi){
+			return {
+				...kpi,
+				targets: kpi.target ? [
+					{
+						kpiable_id: kpi.targetable_id,
+						kpiable_type: kpi.targetable_type,
+						name: kpi.target.name,
+						type: classToType[kpi.targetable_type],
+					},
+					...this.combineKpiTargets(kpi)
+				] : this.combineKpiTargets(kpi)
+			}
+		},
+
+		combineKpiTargets(kpi){
+			return [
+				...kpi.users.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[1],
+					type: 1,
+					name: `${item.last_name} ${item.name}`
+				})),
+				...kpi.positions.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[3],
+					type: 3,
+					name: item.position,
+				})),
+				...kpi.groups.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[2],
+					type: 2,
+					name: item.name,
+				})),
+			]
 		},
 
 		setDefaultShowFields() {
@@ -501,7 +561,7 @@ export default {
 		validateMsg(item) {
 			let msg = '';
 
-			if(item.target == null) msg = 'Выберите Кому назначить'
+			if(item.target == null && !item.targets.length) msg = 'Выберите Кому назначить'
 
 			// wtf share ???
 			// eslint-disable-next-line no-unused-vars
@@ -552,19 +612,23 @@ export default {
 				return;
 			}
 
-
 			let loader = this.$loading.show();
 
 			let fields = {
 				id: item.id,
-				targetable_id: item.target.id,
-				targetable_type: findModel(item.target.type),
+				// targetable_id: item.target.id,
+				// targetable_type: findModel(item.target.type),
 				completed_80: item.completed_80,
 				completed_100: item.completed_100,
 				upper_limit: item.upper_limit,
 				lower_limit: item.lower_limit,
 				items: item.items,
 				off_limit: item.off_limit,
+				kpiables: item.targets.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[item.type],
+				})),
 			};
 
 			let req = this.items[i].id == 0

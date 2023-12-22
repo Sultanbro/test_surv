@@ -17,14 +17,16 @@ trait Targetable
      * Таргет
      * @return array | null
      */
-    public function getTargetAttribute() 
+    public function getTargetAttribute(): ?array
     {
         $target = $this->targetable;
+        if (!$target) return null;
+
         $type = $this->targets[$this->targetable_type];
-        
-        if($type == 1 && $target) $name = $target->last_name . ' ' . $target->name; 
-        if($type == 2 && $target) $name = $target->name; 
-        if($type == 3 && $target) $name = $target->position; 
+
+        if ($type == 1 && $target) $name = $target->last_name . ' ' . $target->name;
+        if ($type == 2 && $target) $name = $target->name;
+        if ($type == 3 && $target) $name = $target->position;
 
         return $target ? [
             'id' => $this->targetable_id,
@@ -38,6 +40,7 @@ trait Targetable
      */
     public function targetable()
     {
-        return $this->morphTo()->withTrashed();
+        return $this->morphTo()
+            ->withTrashed();
     }
 }
