@@ -138,7 +138,6 @@ class KpiService
 
         $kpi_id = 0;
         $kpi_item_ids = [];
-
         try {
             DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
                 /** @var Kpi $kpi */
@@ -150,7 +149,6 @@ class KpiService
                     'colors' => json_encode($request->input('colors')),
                     'created_by' => auth()->id()
                 ]);
-
                 foreach ($request->get('kpiables') as $kpiable) {
                     $kpi->saveTarget($kpiable);
                 }

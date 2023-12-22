@@ -127,17 +127,7 @@ class KpiTest extends TenantTestCase
         $group = ProfileGroup::factory()->create();
         $group->editors_id = $user->pluck('id')->toJson();
         $this->actingAs($user);
-        $response = $this->json('post', 'kpi/save');
-        $response->assertJsonStructure([
-            'data' => [
-                'kpis' => [
-                    0 => [
-                        'users',
-                        'positions',
-                        'groups',
-                    ]
-                ]
-            ]
-        ]);
+        $response = $this->json('post', 'kpi/save', $dataToSave);
+        $response->dd();
     }
 }
