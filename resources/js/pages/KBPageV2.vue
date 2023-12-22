@@ -927,7 +927,7 @@ export default {
 				this.sectionName = ''
 
 				if(this.createParentId){
-					const parent = this.pagesMap[this.createParentId] || this.booksMap[this.createParentId]
+					const parent = this.rootBook ? this.pagesMap[this.createParentId] : this.booksMap[this.createParentId]
 					if(parent){
 						if(!parent.children) parent.children = []
 						parent.children.push(book)
@@ -1126,6 +1126,7 @@ export default {
 			const parent = this.rootBook ? this.pagesMap[this.activeBook.parent_id] :this.booksMap[this.activeBook.parent_id]
 			try {
 				await this.axios.post('/kb/page/delete', { id })
+
 				if(parent){
 					const index = parent.children.findIndex(page => page.id === id)
 					if(~index) parent.children.splice(index, 1)
@@ -1145,7 +1146,7 @@ export default {
 			}
 		},
 		archive(book){
-			const parent = this.pagesMap[book.parent_id] || this.booksMap[book.parent_id]
+			const parent = this.rootBook ? this.pagesMap[book.parent_id] :this.booksMap[book.parent_id]
 
 			if(parent){
 				const index = parent.children.findIndex(children => children.id === book.id)
