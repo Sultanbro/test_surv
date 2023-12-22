@@ -942,6 +942,21 @@ class KpiStatisticService
             ->whereHasMorph(
                 'kpiable',
                 '*',
+                function (Builder $query, string $type) use ($start_date, $last_date) {
+                    if ($type === 'App\ProfileGroup') {
+                        $query->whereNull('archived_date');
+                    }
+                    if ($type === 'App\User') {
+                        $query->where(function (Builder $query) use ($start_date, $last_date) {
+                            $query->whereNull('deleted_at')
+                                ->orWhereBetween('deleted_at', [$start_date, $last_date]);
+                        });
+                    }
+                }
+            )
+            ->orWhereHasMorph(
+                'kpiables',
+                '*',
                 function (Builder $query, string $type) use ($date) {
                     if ($type === 'App\ProfileGroup') {
                         $query->whereNull('archived_date');
