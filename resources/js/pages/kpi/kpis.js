@@ -101,6 +101,7 @@ function newKpi() {
 	return {
 		id: 0,
 		target: null,
+		targets: [],
 		completed_80: 10000,
 		completed_100: 30000,
 		lower_limit: 80,
