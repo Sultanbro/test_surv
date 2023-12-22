@@ -132,9 +132,9 @@ class KpiService
      */
     public function save(KpiSaveRequest $request): array
     {
-        if ($this->hasDuplicate($request)) {
-            throw new TargetDuplicateException();
-        }
+//        if ($this->hasDuplicate($request)) {
+//            throw new TargetDuplicateException();
+//        }
 
         $kpi_id = 0;
         $kpi_item_ids = [];

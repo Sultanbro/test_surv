@@ -81,10 +81,6 @@ class KpiTest extends TenantTestCase
         $user = User::factory()->create();
         $positions = Position::factory()->create();
         $group = ProfileGroup::factory()->create();
-        $kpi = Kpi::factory()->create();
-        $kpiItem = KpiItem::factory()->create([
-            'kpi_id' => $kpi->getKey()
-        ]);
 
         $dataToSave = array(
             "id" => 0,
@@ -123,11 +119,35 @@ class KpiTest extends TenantTestCase
             )
         );
 
-        $user = User::factory()->create();
-        $group = ProfileGroup::factory()->create();
-        $group->editors_id = $user->pluck('id')->toJson();
-        $this->actingAs($user);
+        $auth = User::factory()->create();
+        ProfileGroup::factory()->create()->editors_id = $auth->pluck('id')->toJson();
+        $this->actingAs($auth);
         $response = $this->json('post', 'kpi/save', $dataToSave);
-        $response->dd();
+        $response->assertOk();
+        $kpiId = $response->getOriginalContent()['data']['id'];
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'items',
+            ]
+        ]);
+        $this->assertDatabaseHas('kpis', [
+            'id' => $kpiId
+        ]);
+        $this->assertDatabaseHas('kpiables', [
+            'kpi_id' => $kpiId,
+            'kpiable_id' => $user->getKey(),
+            'kpiable_type' => User::class,
+        ]);
+        $this->assertDatabaseHas('kpiables', [
+            'kpi_id' => $kpiId,
+            'kpiable_id' => $positions->getKey(),
+            'kpiable_type' => Position::class,
+        ]);
+        $this->assertDatabaseHas('kpiables', [
+            'kpi_id' => $kpiId,
+            'kpiable_id' => $group->getKey(),
+            'kpiable_type' => ProfileGroup::class,
+        ]);
     }
 }
