@@ -63,6 +63,81 @@ class KpiTest extends TenantTestCase
         $group->editors_id = $user->pluck('id')->toJson();
         $this->actingAs($user);
         $response = $this->json('post', 'kpi/get');
-        dd($response->getOriginalContent());
+        $response->assertJsonStructure([
+            'data' => [
+                'kpis' => [
+                    0 => [
+                        'users',
+                        'positions',
+                        'groups',
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    public function test_it_can_save_kpis()
+    {
+        $user = User::factory()->create();
+        $positions = Position::factory()->create();
+        $group = ProfileGroup::factory()->create();
+        $kpi = Kpi::factory()->create();
+        $kpiItem = KpiItem::factory()->create([
+            'kpi_id' => $kpi->getKey()
+        ]);
+
+        $dataToSave = array(
+            "id" => 0,
+            'kpiables' => [
+                [
+                    'kpiable_id' => $user->getKey(),
+                    'kpiable_type' => User::class,
+                ],
+                [
+                    'kpiable_id' => $positions->getKey(),
+                    'kpiable_type' => Position::class,
+                ],
+                [
+                    'kpiable_id' => $group->getKey(),
+                    'kpiable_type' => ProfileGroup::class,
+                ],
+            ],
+            "completed_80" => 10000,
+            "completed_100" => 30000,
+            "upper_limit" => 100,
+            "lower_limit" => 80,
+            "items" => array(
+                array(
+                    "id" => 0,
+                    "sum" => 0,
+                    "method" => 1,
+                    "name" => "Активность aa",
+                    "activity_id" => 0,
+                    "plan" => "10",
+                    "share" => 0,
+                    "cell" => "",
+                    "common" => 0,
+                    "percent" => 0,
+                    "source" => "0"
+                )
+            )
+        );
+
+        $user = User::factory()->create();
+        $group = ProfileGroup::factory()->create();
+        $group->editors_id = $user->pluck('id')->toJson();
+        $this->actingAs($user);
+        $response = $this->json('post', 'kpi/save');
+        $response->assertJsonStructure([
+            'data' => [
+                'kpis' => [
+                    0 => [
+                        'users',
+                        'positions',
+                        'groups',
+                    ]
+                ]
+            ]
+        ]);
     }
 }

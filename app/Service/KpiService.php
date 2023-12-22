@@ -68,7 +68,6 @@ class KpiService
                 'groups',
             ])
             ->get();
-        dd($kpis);
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {

@@ -9,9 +9,9 @@ class KpiSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kpiable' => ['required', 'array', 'min:1'],
-            'kpiable.*.kpiable_id' => 'integer|required',
-            'kpiable.*.kpiable_type' => 'required',
+            'kpiables' => ['required', 'array', 'min:1'],
+            'kpiables.*.kpiable_id' => 'integer|required',
+            'kpiables.*.kpiable_type' => 'required',
             'completed_80' => 'required',
             'completed_100' => 'required',
             'lower_limit' => 'required',
