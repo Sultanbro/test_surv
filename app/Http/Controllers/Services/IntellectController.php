@@ -11,6 +11,7 @@ use App\Trainee;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -119,6 +120,7 @@ class IntellectController extends Controller
 
     /**
      * ???
+     * @throws GuzzleException
      */
     public function changeResp(Request $request)
     {
@@ -131,12 +133,14 @@ class IntellectController extends Controller
                 $lead->resp_id = $request->resp_email;
                 $lead->status = 'CON';
                 $lead->deal_id = $request->deal_id;
+
                 if ($request->project) $lead->project = $request->project;
                 if ($request->net) $lead->net = $request->net;
 //                if($request->remote == 'Y')
                 $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
                 if ($request->resp_id) $lead->net = $request->net;
                 $lead->save();
+                $this->changeLead($request);
             }
         }
 
@@ -1084,6 +1088,7 @@ class IntellectController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse|void
+     * @throws GuzzleException
      */
     public function changeLead(Request $request)
     {
@@ -1091,15 +1096,15 @@ class IntellectController extends Controller
             $bitrix = new Bitrix('intellect');
 
             $bitrixLead = $bitrix->findLead($request->lead_id);
-            $net = $bitrix->getUserField("UF_CRM_1638972628",$bitrixLead['UF_CRM_1638972628']);
-            $language = $bitrix->getUserField("UF_CRM_1626255643",$bitrixLead['UF_CRM_1626255643']);
-            $wishtime = $bitrix->getUserField("UF_CRM_1629291391354",$bitrixLead['UF_CRM_1629291391354']);
+            $net = $bitrix->getUserField("UF_CRM_1638972628", $bitrixLead['UF_CRM_1638972628']);
+            $language = $bitrix->getUserField("UF_CRM_1626255643", $bitrixLead['UF_CRM_1626255643']);
+            $wishtime = $bitrix->getUserField("UF_CRM_1629291391354", $bitrixLead['UF_CRM_1629291391354']);
             $skyped = Carbon::parse($bitrixLead['MOVED_TIME'])->setTimezone('Asia/Almaty');
             History::lead($bitrixLead);
             $lead = Lead::query()
                 ->updateOrCreate(
                     [
-                        'lead_id'=>$request->lead_id
+                        'lead_id' => $request->lead_id
                     ],
                     [
                         'name' => $bitrixLead['NAME'],
@@ -1108,7 +1113,7 @@ class IntellectController extends Controller
                         'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
                         'phone' => $bitrixLead['PHONE'][0]['VALUE'],
                         'lang' => $language,
-                        'net'  => $net,
+                        'net' => $net,
                         'wishtime' => $wishtime
                     ]);
             return response()->json([
