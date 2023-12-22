@@ -146,6 +146,7 @@
 
 <script>
 import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+import { bus } from '@/bus'
 
 const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 
@@ -212,6 +213,11 @@ export default {
 	mounted(){
 		this.skey++;
 		setTimeout(() => { this.skey++ }, 100)
+		bus.$on('tt-top-update', this.fetchData)
+	},
+
+	beforeUnmount(){
+		bus.$off('tt-top-update', this.fetchData)
 	},
 
 	methods: {
