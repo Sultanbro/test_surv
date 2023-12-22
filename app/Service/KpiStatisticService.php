@@ -954,21 +954,6 @@ class KpiStatisticService
                     }
                 }
             )
-            ->orWhereHasMorph(
-                'kpiables',
-                '*',
-                function (Builder $query, string $type) use ($date) {
-                    if ($type === 'App\ProfileGroup') {
-                        $query->whereNull('archived_date');
-                    }
-                    if ($type === 'App\User') {
-                        $query->where(function (Builder $query) use ($date) {
-                            $query->whereNull('deleted_at')
-                                ->orWhere('deleted_at', '>', Carbon::parse($date->format('Y-m-d')));
-                        });
-                    }
-                }
-            )
             ->where('is_active', true)
             ->where('kpis.created_at', '<=', Carbon::parse($date->endOfMonth()->format('Y-m-d')))
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
