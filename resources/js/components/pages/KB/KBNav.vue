@@ -170,6 +170,7 @@
 			</template>
 			<KBNavItems
 				v-if="rootBook"
+				:key="'p' + listsKey"
 				:items="[
 					...books,
 					...pages,
@@ -187,6 +188,7 @@
 			/>
 			<KBNavItems
 				v-else-if="books.length"
+				:key="'b' + listsKey"
 				:items="books"
 				:opened="true"
 				:mode="mode"
@@ -203,6 +205,7 @@
 			<Draggable
 				v-else-if="false || books.length"
 				:id="null"
+				:key="'?' + listsKey"
 				class="dragArea ml-0"
 				tag="div"
 				handle=".KBNav-mover"
@@ -361,6 +364,7 @@ export default {
 				show: false,
 				items: [],
 			},
+			listsKey: 1,
 		}
 	},
 	computed: {
@@ -371,8 +375,19 @@ export default {
 			return map
 		},
 	},
+	watch: {
+		pages(){
+			this.updateKeys()
+		},
+		books(){
+			this.updateKeys()
+		},
+	},
 	mounted(){},
 	methods: {
+		updateKeys(){
+			++this.listsKey
+		},
 		onBack(){
 			this.$emit('back')
 			this.clearSearch()
