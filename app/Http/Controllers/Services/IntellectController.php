@@ -1107,13 +1107,8 @@ class IntellectController extends Controller
                         'lead_id' => $request->lead_id
                     ],
                     [
-                        'name' => $bitrixLead['NAME'],
-                        'status' => 'CON',
-                        'skyped' => $skyped->format('Y-m-d H:i:s'),
-                        'segment' => Lead::getSegmentAlt($bitrixLead['UF_CRM_1498210379']),
                         'phone' => $bitrixLead['PHONE'][0]['VALUE'],
                         'lang' => $language,
-                        'net' => $net,
                         'wishtime' => $wishtime
                     ]);
             return response()->json([
