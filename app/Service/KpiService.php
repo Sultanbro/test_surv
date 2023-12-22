@@ -45,24 +45,30 @@ class KpiService
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
-                    'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                        $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                            $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                        }]);
-                        $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
-                            $query->whereNull('deleted_at');
-                            $query->orWhere('deleted_at', '>', $endOfDate);
-                        });
-                    },
-                    'user' => fn(HasOne $query) => $query->select('id'),
-                    'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
-                    'creator',
-                    'updater',
-                    'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
+                'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
+                    $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
                         $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                    }
-                ]
-            )->get();
+                    }]);
+                    $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $endOfDate);
+                    });
+                },
+                'user' => fn(HasOne $query) => $query->select('id'),
+                'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
+                'creator',
+                'updater',
+                'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
+                    $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+                }
+            ])
+            ->with([
+                'users',
+                'positions',
+                'groups',
+            ])
+            ->get();
+        dd($kpis);
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
@@ -136,9 +142,8 @@ class KpiService
 
         try {
             DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
+                /** @var Kpi $kpi */
                 $kpi = Kpi::query()->create([
-                    'targetable_id' => $request->input('targetable_id'),
-                    'targetable_type' => $request->input('targetable_type'),
                     'completed_80' => $request->input('completed_80'),
                     'completed_100' => $request->input('completed_100'),
                     'lower_limit' => $request->input('lower_limit'),
@@ -146,6 +151,10 @@ class KpiService
                     'colors' => json_encode($request->input('colors')),
                     'created_by' => auth()->id()
                 ]);
+
+                foreach ($request->get('kpiables') as $kpiable) {
+                    $kpi->saveTarget($kpiable);
+                }
 
                 $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
 
