@@ -29,13 +29,15 @@ final class GetPerformanceService
             'year'      => $dto->year,
             'month'     => $dto->month
         ]);
-//        $utility     = AnalyticsFacade::utility($utilityDto);
-//        $rentability = AnalyticsFacade::rentability($utilityDto);
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
+
+//        $utility     = AnalyticsFacade::utility($utilityDto);
+        $staticRentability = AnalyticsFacade::rentability($utilityDto);
 
         return [
             'utility'       => TopValue::utility($dto->groupId)->where('date', $date)->get(),
-            'rentability'   => TopValue::rentability($dto->groupId)->where('date', $date)->get()
+            'rentability'   => TopValue::rentability($dto->groupId)->where('date', $date)->get(),
+            'static_rentability' => $staticRentability
         ];
     }
 }
