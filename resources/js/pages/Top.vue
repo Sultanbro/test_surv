@@ -34,7 +34,7 @@
 			<div class="col-1">
 				<div
 					class="btn btn-primary rounded"
-					@click="fetchData()"
+					@click="updateData()"
 				>
 					<i class="fa fa-redo-alt" />
 				</div>
@@ -282,6 +282,7 @@ import {
 	fetchArchiveProceeds,
 	switchArchiveTop,
 } from '@/stores/api'
+import { bus } from '@/bus'
 
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
@@ -418,7 +419,10 @@ export default {
 			this.monthInfo.daysInMonth = new Date(this.currentYear, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 		},
-
+		updateData(){
+			this.fetchData()
+			bus.$emit('tt-top-update', {})
+		},
 		async fetchData() {
 			const loader = this.$loading.show()
 

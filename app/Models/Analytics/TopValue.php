@@ -155,6 +155,7 @@ class TopValue extends Model
             // Retrieve top values for the current group and date.
             /** @var Collection<TopValue> $top_values   */
             $top_values = TopValue::query()
+                ->where('type', TopValue::UTILITY)
                 ->where([
                     'group_id' => $group_id,
                     'date' => $date,
@@ -415,7 +416,7 @@ class TopValue extends Model
 
         // dump((($max - $min) * 0.2) + $min);
 
-        $options['staticLabels']['labels'] = $sections;
+        $options['staticLabels']['labels'] = $options['staticLabels']['labels'] ?? $sections;
 
         if ($reverse) {
 
