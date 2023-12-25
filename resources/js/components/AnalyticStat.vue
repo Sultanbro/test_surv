@@ -731,8 +731,8 @@ export default {
 			required: true,
 		},
 		reportCards: {
-			type: Array,
-			default: () => [],
+			type: Object,
+			default: () => ({}),
 		},
 	},
 	data() {

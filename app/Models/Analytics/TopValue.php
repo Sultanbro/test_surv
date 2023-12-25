@@ -9,6 +9,7 @@ use App\QualityRecordMonthlyStat;
 use App\Salary;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool fixed
  * @property string value_type
  * @property bool reversed
+ *@method static utility(int $groupId)
+ * @method static rentability(int $groupId)
  */
 class TopValue extends Model
 {
@@ -767,5 +770,25 @@ class TopValue extends Model
     public function issetActivities(): bool
     {
         return $this->activity_id != 0 && $this->activity_id != -1;
+    }
+
+    /**
+     * @param Builder $query
+     * @param int $groupId
+     * @return Builder
+     */
+    public function scopeRentability(Builder $query, int $groupId): Builder
+    {
+        return $query->where('type', self::RENTABILITY)->where('group_id', $groupId);
+    }
+
+    /**
+     * @param Builder $query
+     * @param int $groupId
+     * @return Builder
+     */
+    public function scopeUtility(Builder $query, int $groupId): Builder
+    {
+        return $query->where('type', self::UTILITY)->where('group_id', $groupId);
     }
 }
