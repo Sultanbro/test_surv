@@ -397,16 +397,29 @@ export default {
 			}
 		},
 
-		async updateManagers(){
+		async updateManagers(parent = null, parentManagers = [this.owner.id]){
 			if(!this.dictionaries.users) return
 			for(const card of this.cards){
-				if(!card.group_id) continue
+				if(card.parent_id !== parent) continue
+				if(!card.group_id) {
+					if(card.manager.user_id) parentManagers.push(card.manager.user_id)
+					this.updateManagers(card.id, parentManagers)
+					continue
+				}
+
 				const manager = this.dictionaries.users.find(user => {
 					if(!user.profile_group) return false
 					const group = user.profile_group.find(group => group.id === card.group_id)
 					if(group) return group.is_head
 					return false
 				})
+
+				if(parentManagers.includes(manager?.id)){
+					if(card.manager.user_id) parentManagers.push(card.manager.user_id)
+					this.updateManagers(card.id, parentManagers)
+					continue
+				}
+
 				if(!manager ?? card.manager?.user_id){
 					/* eslint-disable camelcase */
 					await this.updateCard({
@@ -429,8 +442,10 @@ export default {
 						},
 						is_vacant: false
 					})
+					parentManagers.push(manager.id)
 					/* eslint-enable camelcase */
 				}
+				this.updateManagers(card.id, parentManagers)
 			}
 		}
 	}
