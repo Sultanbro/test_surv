@@ -7,6 +7,7 @@ use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\DTO\Analytics\V2\UtilityDto;
 use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
+use App\Models\Analytics\TopValue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
@@ -28,12 +29,13 @@ final class GetPerformanceService
             'year'      => $dto->year,
             'month'     => $dto->month
         ]);
-        $utility     = AnalyticsFacade::utility($utilityDto);
-        $rentability = AnalyticsFacade::rentability($utilityDto);
+//        $utility     = AnalyticsFacade::utility($utilityDto);
+//        $rentability = AnalyticsFacade::rentability($utilityDto);
+        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
         return [
-            'utility'       => $utility,
-            'rentability'   => $rentability
+            'utility'       => TopValue::utility($dto->groupId)->where('date', $date)->get(),
+            'rentability'   => TopValue::rentability($dto->groupId)->where('date', $date)->get()
         ];
     }
 }
