@@ -1147,7 +1147,7 @@ class Salary extends Model
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($worktime / 2, 1);
                         $hourly_pays[$i] = round($hourly_pay, 2);
-                    } else if ($x->count() > 0) { // отработанное врея есть
+                    } else if ($x->count() > 0 && isset($s)) { // отработанное врея есть
                         $total_hours = $x->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
