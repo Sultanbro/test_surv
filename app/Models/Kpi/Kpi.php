@@ -7,6 +7,8 @@ use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
+use App\Position;
+use App\ProfileGroup;
 use App\Traits\ActivateAbleModelTrait;
 use App\Traits\TargetJoin;
 use App\User;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kpi extends Model
@@ -60,6 +63,43 @@ class Kpi extends Model
         return $this->morphTo('kpiable', 'targetable_type', 'targetable_id');
     }
 
+    /**---------------------------------------------**/
+    public function groups(): MorphToMany
+    {
+        return $this->morphedByMany(
+            ProfileGroup::class,
+            'kpiable',
+            'kpiables'
+        );
+    }
+
+    public function users(): MorphToMany
+    {
+        return $this->morphedByMany(
+            User::class,
+            'kpiable',
+            'kpiables'
+        );
+    }
+
+    public function positions(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Position::class,
+            'kpiable',
+            'kpiables'
+        );
+    }
+
+    public function kpiables(): \Illuminate\Database\Eloquent\Collection
+    {
+        $users = $this->users()->get();
+        $positions = $this->positions()->get();
+        $groups = $this->groups()->get();
+        return $groups->merge($positions)->merge($users);
+    }
+    /**---------------------------------------------**/
+
     /**
      * One To Many отношения с users.
      * У одного kpi может быть 1 пользователь.
@@ -99,5 +139,12 @@ class Kpi extends Model
     {
         return $this->morphOne(History::class, 'historable', 'reference_table', 'reference_id')
             ->orderBy('created_at', 'desc')->latest();
+    }
+
+    public function saveTarget(array $kpiable): void
+    {
+        if ($kpiable['kpiable_type'] === User::class) $this->users()->attach($kpiable['kpiable_id']);
+        if ($kpiable['kpiable_type'] === ProfileGroup::class) $this->groups()->attach($kpiable['kpiable_id']);
+        if ($kpiable['kpiable_type'] === Position::class) $this->positions()->attach($kpiable['kpiable_id']);
     }
 }

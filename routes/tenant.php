@@ -562,7 +562,6 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::delete('delete/{id}', [Kpi\QuartalPremiumController::class, 'destroy']);
         Route::post('/set/status', [Kpi\QuartalPremiumStatusController::class, 'setActive']);
     });
-
     // Статистика для KPI
     Route::group(['prefix' => 'statistics', 'as' => 'kpi-statistic.'], function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');

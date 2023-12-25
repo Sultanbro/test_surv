@@ -4,15 +4,17 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
 class Position extends Model
 {
-    use HasRoles, SoftDeletes;
+    use HasRoles, SoftDeletes, HasFactory;
 
     public $timestamps = true;
 
@@ -59,6 +61,19 @@ class Position extends Model
     public function qpremium(): MorphMany
     {
         return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    public function kpisMany(): MorphToMany
+    {
+        return $this->morphToMany(
+            'App\Models\Kpi\Kpi',
+            'kpiable',
+            'kpiables',
+            'kpiable_id',
+            'kpi_id',
+            'id',
+            'id'
+        );
     }
 
     /**

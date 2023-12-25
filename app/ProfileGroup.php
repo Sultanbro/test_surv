@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -133,6 +134,7 @@ class ProfileGroup extends Model
     const IS_FIRED = 'fired';
 
     const IS_TRANSFER = 'drop';
+
     /**
      * @param int $id
      * @return Model
@@ -213,6 +215,19 @@ class ProfileGroup extends Model
     public function kpis(): MorphMany
     {
         return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
+    }
+
+    public function kpisMany(): MorphToMany
+    {
+        return $this->morphToMany(
+            'App\Models\Kpi\Kpi',
+            'kpiable',
+            'kpiables',
+            'kpiable_id',
+            'kpi_id',
+            'id',
+            'id'
+        );
     }
 
     public function dialer()
