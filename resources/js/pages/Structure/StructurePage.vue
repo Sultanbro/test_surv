@@ -237,9 +237,11 @@ export default {
 		await this.structureGet()
 		this.drawLines()
 		this.autoZoom()
-		if(this.settings.autoManager) this.updateManagers()
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
 		window.addEventListener('storage', this.checkTabEvents, false)
+
+		if(!this.isDemo) await this.autoDeleteCards()
+		if(this.settings.autoManager && !this.isDemo) this.updateManagers()
 	},
 	beforeUnmount() {
 		window.removeEventListener('wheel', this.scrollArea)
@@ -257,6 +259,7 @@ export default {
 			'closeEditCard',
 			'setDemo',
 			'updateCard',
+			'deleteCard',
 		]),
 
 		// ScrollZoom
@@ -394,6 +397,15 @@ export default {
 				const loader = this.$loading.show()
 				await this.fetchDictionaries(true)
 				loader.hide()
+			}
+		},
+
+		async autoDeleteCards(){
+			if(!this.dictionaries.profile_groups) return
+			for(const card of this.cards){
+				if(!card.group_id) continue
+				const cardGroup = this.dictionaries.profile_groups.find(group => group.id === card.group_id)
+				if(!cardGroup || !cardGroup.active) await this.deleteCard(card.id)
 			}
 		},
 
