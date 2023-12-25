@@ -384,10 +384,10 @@ export default {
 			}))
 		},
 		gauges(){
-			if(!this.performances.utility.length) return []
+			if(!this.performances) return []
 			return [{
 				gauges: [
-					...this.performances.utility[0].gauges,
+					...this.performances.utility,
 					{
 						...this.performances.rentability,
 						name: 'Рентабельность'
@@ -555,7 +555,7 @@ export default {
 				const {columns, table, report_cards: reportCards} = await API.fetchAnalyticsV2(request)
 				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
 				this.table = Array.isArray(table) ? table : Object.values(table)
-				this.reportCards = reportCards || []
+				this.reportCards = reportCards || {}
 				this.ready.analytics = true
 			}
 			catch(error){

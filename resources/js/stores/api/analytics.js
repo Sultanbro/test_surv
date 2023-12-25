@@ -236,7 +236,25 @@ export async function fetchPerformancesV2(request){
 	})
 
 	if(!data.data) throw new Error('AnalyticsV2: no performances')
-	return data.data
+
+	const utility = data.data.utility || []
+	const result = {
+		utility: utility.map(item => ({
+			...item,
+			options: typeof item.options === 'string' ? JSON.parse(item.options) : item.options,
+		})),
+	}
+	if(Array.isArray(data.data.rentability) && data.data.rentability.length){
+		result.rentability = data.data.rentability.slice(-1)[0]
+	}
+	else if(!Array.isArray(data.data.rentability)){
+		result.rentability = data.data.rentability
+	}
+	else{
+		result.rentability = data.data.static_rentability
+	}
+	if(typeof result.rentability.options === 'string') result.rentability.options = JSON.parse(result.rentability.options)
+	return result
 }
 
 export async function fetchFiredInfoV2(request){
