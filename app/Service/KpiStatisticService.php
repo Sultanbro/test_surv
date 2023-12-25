@@ -1239,6 +1239,7 @@ class KpiStatisticService
                 ->where('position_id', $kpi->targetable_id)
                 ->pluck('id')
                 ->toArray();
+            if ($user_id != 0) $_user_ids = [$user_id];
         }
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
