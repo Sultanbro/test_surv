@@ -1740,12 +1740,12 @@ export default {
 		getUserGroups(userId){
 			const user = this.data.users.find(user => user.id === userId)
 			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY')
-			const currentDateFormat = currentDate.format('YYYY-DD')
+			const currentDateFormat = currentDate.format('YYYY-MM')
 			return user.group_users.reduce((result, group) => {
 				const from = this.$moment(group.from)
-				const fromFormat = from.format('YYYY-DD')
+				const fromFormat = from.format('YYYY-MM')
 				const to = this.$moment(group.to)
-				const toFormat = to.format('YYYY-DD')
+				const toFormat = to.format('YYYY-MM')
 				if(currentDateFormat == fromFormat || currentDateFormat == toFormat || !group.to || currentDate.isBetween(from, to)){
 					result.push(group.group_id)
 				}

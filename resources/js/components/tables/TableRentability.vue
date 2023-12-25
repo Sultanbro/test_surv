@@ -146,6 +146,7 @@
 
 <script>
 import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+import { bus } from '@/bus'
 
 const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 
@@ -212,6 +213,11 @@ export default {
 	mounted(){
 		this.skey++;
 		setTimeout(() => { this.skey++ }, 100)
+		bus.$on('tt-top-update', this.fetchData)
+	},
+
+	beforeUnmount(){
+		bus.$off('tt-top-update', this.fetchData)
 	},
 
 	methods: {
@@ -323,11 +329,12 @@ export default {
 
 		async saveRenabilityGaguge(gauge){
 			const loader = this.$loading.show()
+			if(typeof gauge.options === 'string') gauge.options = JSON.parse(gauge.options)
+			gauge = this.gaugeSectionsCrutch(gauge)
 			try {
 				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
 					gauge: {
 						...gauge,
-						options: typeof gauge.options === 'string' ? JSON.parse(gauge.options) : gauge.options,
 						reversed: false,
 						date: `${this.year}-${this.month < 10 ? '0' + this.month : this.month}-01`,
 					},
@@ -346,6 +353,165 @@ export default {
 		isActiveRentability(groupId){
 			return this.rentabilitySwitch[groupId] && this.rentabilitySwitch[groupId].value
 		},
+
+		gaugeSectionsCrutch(gauge){
+			if(!gauge.options) gauge.options = {}
+			if(!gauge.options.staticLabels) gauge.options.staticLabels = {}
+			const sections = JSON.parse(gauge.sections)
+			gauge.options.staticLabels.labels = sections
+			gauge.options.staticZones = this.createZones(sections)
+			return gauge
+		},
+
+		createZones(sections){
+			switch(sections.length){
+			case 2:
+				return [
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[0],
+						max: sections[1],
+					}
+				]
+			case 3:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[1],
+						max: sections[2],
+					},
+				]
+			case 4:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[2],
+						max: sections[3],
+					},
+				]
+			case 5:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[3],
+						max: sections[4],
+					},
+				]
+			case 6:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[4],
+						max: sections[5],
+					},
+				]
+			case 7:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// orange light
+						strokeStyle: '#ffc107',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[4],
+						max: sections[5],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[5],
+						max: sections[6],
+					},
+				]
+			}
+			return []
+		}
 	},
 };
 </script>
