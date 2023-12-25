@@ -416,7 +416,7 @@ class TopValue extends Model
 
         // dump((($max - $min) * 0.2) + $min);
 
-        $options['staticLabels']['labels'] = $sections;
+        $options['staticLabels']['labels'] = $options['staticLabels']['labels'] ?? $sections;
 
         if ($reverse) {
 
