@@ -99,255 +99,318 @@
 								{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
 							</p>
 						</div>
-						<div
-							v-show="gauge.editable"
-							class="mb-5 edit-window"
+						<JobtronOverlay
+							v-if="gauge.editable"
+							@close="gauge.editable = false"
 						>
-							<div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Min</span>
-									<input
-										v-model="gauge.min_value"
-										type="text"
-										class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
-									>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Max</span>
-									<input
-										v-model="gauge.max_value"
-										type="text"
-										class="TopGauges-input form-control form-control-sm w-250 wiwi"
-									>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Сег</span>
-									<input
-										v-model="gauge.sections"
-										type="text"
-										class="TopGauges-input form-control form-control-sm w-250 wiwi"
-									>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Ед.</span>
-									<input
-										v-model="gauge.unit"
-										type="text"
-										class="TopGauges-input form-control form-control-sm wiwi"
-									>
-								</div>
-								<template v-if="gauge.fixed == 0">
+							<div class="mb-5 edit-window">
+								<div>
 									<div class="d-flex justify-content-between align-items-center">
-										<span class="pr-2 l-label">Наз</span>
+										<span class="pr-2 l-label">Название</span>
 										<input
 											v-model="gauge.name"
 											type="text"
-											class="TopGauges-input form-control form-control-sm wiwi"
+											placeholder="Введите название"
+											class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
 										>
 									</div>
 									<div class="d-flex justify-content-between align-items-center">
-										<span class="pr-2 l-label">Окр</span>
+										<span class="pr-2 l-label">Min</span>
 										<input
-											v-model="gauge.round"
+											v-model="gauge.min_value"
+											type="text"
+											class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
+										>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Max</span>
+										<input
+											v-model="gauge.max_value"
+											type="text"
+											class="TopGauges-input form-control form-control-sm w-250 wiwi"
+										>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Сег</span>
+										<input
+											v-model="gauge.sections"
+											type="text"
+											class="TopGauges-input form-control form-control-sm w-250 wiwi"
+										>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Ед.</span>
+										<input
+											v-model="gauge.unit"
 											type="text"
 											class="TopGauges-input form-control form-control-sm wiwi"
 										>
 									</div>
-									<div class="d-flex justify-content-between align-items-center">
-										<span class="pr-2 l-label">Акт</span>
-										<select
-											v-model="gauge.activity_id"
-											class="TopGauges-input form-control form-control-sm h-23"
-										>
-											<option
-												:key="-1"
-												:value="-1"
+									<template v-if="!gauge.fixed">
+										<div class="d-flex justify-content-between align-items-center">
+											<span class="pr-2 l-label">Окр</span>
+											<input
+												v-model="gauge.round"
+												type="text"
+												class="TopGauges-input form-control form-control-sm wiwi"
 											>
-												Ячейка из сводной
-											</option>
-											<template v-for="(group_activity, key) in group.group_activities">
+										</div>
+										<div class="d-flex justify-content-between align-items-center">
+											<span class="pr-2 l-label">Акт</span>
+											<select
+												v-model="gauge.activity_id"
+												class="TopGauges-input form-control form-control-sm h-23"
+											>
 												<option
-													v-if="group_activity.name !== 'Ячейка из сводной'"
-													:key="key"
-													:value="group_activity.id"
+													:key="-1"
+													:value="-1"
 												>
-													{{ group_activity.name }}
+													Ячейка из сводной
 												</option>
-											</template>
-										</select>
-									</div>
-									<div
-										v-if="gauge.activity_id > 0"
-										class="d-flex justify-content-between align-items-center"
-									>
-										<span class="pr-2 l-label">Тип</span>
-										<select
-											v-model="gauge.value_type"
-											class="TopGauges-input form-control form-control-sm h-23"
+												<template v-for="(group_activity, key) in group.group_activities">
+													<option
+														v-if="group_activity.name !== 'Ячейка из сводной'"
+														:key="key"
+														:value="group_activity.id"
+													>
+														{{ group_activity.name }}
+													</option>
+												</template>
+											</select>
+										</div>
+										<div
+											v-if="gauge.activity_id > 0"
+											class="d-flex justify-content-between align-items-center"
 										>
-											<option value="sum">
-												Сумма выполненного
-											</option>
-											<option value="avg">
-												Среднее значение
-											</option>
-										</select>
+											<span class="pr-2 l-label">Тип</span>
+											<select
+												v-model="gauge.value_type"
+												class="TopGauges-input form-control form-control-sm h-23"
+											>
+												<option value="sum">
+													Сумма выполненного
+												</option>
+												<option value="avg">
+													Среднее значение
+												</option>
+											</select>
+										</div>
+										<div
+											v-if="gauge.activity_id == -1"
+											class="d-flex justify-content-between align-items-center mt-1"
+										>
+											<span class="pr-2">Ячейка</span>
+											<input
+												v-model="gauge.cell"
+												type="text"
+												class="TopGauges-input form-control form-control-sm wiwi text-uppercase"
+											>
+										</div>
+									</template>
+									<div>
+										<b-form-checkbox
+											v-model="gauge.reversed"
+											:value="1"
+											:unchecked-value="0"
+											class="mb-3"
+										>
+											Отразить цвета
+										</b-form-checkbox>
 									</div>
-									<div
-										v-if="gauge.activity_id == -1"
-										class="d-flex justify-content-between align-items-center mt-1"
-									>
-										<span class="pr-2">Ячейка</span>
+									<div>
+										<b-form-checkbox
+											v-model="gauge.is_main"
+											:value="1"
+											:unchecked-value="0"
+											class="mb-3"
+										>
+											Ключевой
+										</b-form-checkbox>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
 										<input
-											v-model="gauge.cell"
-											type="text"
-											class="TopGauges-input form-control form-control-sm wiwi text-uppercase"
+											v-model="gauge.angle"
+											type="range"
+											class="TopGauges-input form-control form-control-sm w-250 mr-2 wiwi"
+											min="-0.2"
+											max="0.2"
+											step="0.01"
 										>
+										{{ gauge.angle }}
 									</div>
-								</template>
-								<div>
-									<b-form-checkbox
-										v-model="gauge.reversed"
-										:value="1"
-										:unchecked-value="0"
-										class="mb-3"
-									>
-										Отразить цвета
-									</b-form-checkbox>
 								</div>
-								<div>
-									<b-form-checkbox
-										v-model="gauge.is_main"
-										:value="1"
-										:unchecked-value="0"
-										class="mb-3"
+								<div class="d-flex">
+									<button
+										class="btn btn-primary rounded mt-1 mr-2"
+										@click="save(group_index, gauge_index)"
 									>
-										Ключевой
-									</b-form-checkbox>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<input
-										v-model="gauge.angle"
-										type="range"
-										class="TopGauges-input form-control form-control-sm w-250 mr-2 wiwi"
-										min="-0.2"
-										max="0.2"
-										step="0.01"
+										Сохранить
+									</button>
+									<button
+										class="btn btn-danger rounded mt-1"
+										@click="delete_gauge(group_index, gauge_index)"
 									>
-									{{ gauge.angle }}
+										Удалить
+									</button>
 								</div>
 							</div>
-							<div class="d-flex">
-								<button
-									class="btn btn-primary rounded mt-1 mr-2"
-									@click="save(group_index, gauge_index)"
-								>
-									Сохранить
-								</button>
-								<button
-									class="btn btn-danger rounded mt-1"
-									@click="delete_gauge(group_index, gauge_index)"
-								>
-									Удалить
-								</button>
-							</div>
-						</div>
+						</JobtronOverlay>
 					</div>
 				</div>
 			</div>
 		</template>
 
 		<!-- Modal Create activity -->
-		<b-modal
-			v-model="showNewGaugeWindow"
-			title="Добавить новый спидометр"
-			size="lg"
-			class="modalle"
-			@ok="create_gauge()"
+		<JobtronOverlay
+			v-if="newGauge.editable"
+			@close="newGauge.editable = false"
 		>
-			<div class="row">
-				<div class="col-5">
-					<p>Название</p>
-				</div>
-				<div class="col-7">
-					<input
-						v-model="newGauge.name"
-						type="text"
-						class="form-control form-control-sm"
-					>
-				</div>
-			</div>
-
-			<div class="row  mt-1">
-				<div class="col-5">
-					<p class="">
-						Выберите откуда брать данные
-					</p>
-				</div>
-				<div class="col-7">
-					<select
-						v-model="newGauge.activity_id"
-						class="form-control form-control-sm"
-					>
-						<option
-							:key="-1"
-							:value="-1"
+			<div class="mb-5 edit-window">
+				<div>
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="pr-2 l-label">Название</span>
+						<input
+							v-model="newGauge.name"
+							type="text"
+							placeholder="Введите название"
+							class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
 						>
-							Ячейка из сводной
-						</option>
-						<option
-							v-for="(group_activity, key) in group_activities"
-							:key="key"
-							:value="group_activity.id"
+					</div>
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="pr-2 l-label">Min</span>
+						<input
+							v-model="newGauge.min_value"
+							type="text"
+							class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
 						>
-							{{ group_activity.name }}
-						</option>
-					</select>
+					</div>
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="pr-2 l-label">Max</span>
+						<input
+							v-model="newGauge.max_value"
+							type="text"
+							class="TopGauges-input form-control form-control-sm w-250 wiwi"
+						>
+					</div>
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="pr-2 l-label">Сег</span>
+						<input
+							v-model="newGauge.sections"
+							type="text"
+							class="TopGauges-input form-control form-control-sm w-250 wiwi"
+						>
+					</div>
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="pr-2 l-label">Ед.</span>
+						<input
+							v-model="newGauge.unit"
+							type="text"
+							class="TopGauges-input form-control form-control-sm wiwi"
+						>
+					</div>
+					<template v-if="!newGauge.fixed">
+						<div class="d-flex justify-content-between align-items-center">
+							<span class="pr-2 l-label">Окр</span>
+							<input
+								v-model="newGauge.round"
+								type="text"
+								class="TopGauges-input form-control form-control-sm wiwi"
+							>
+						</div>
+						<div class="d-flex justify-content-between align-items-center">
+							<span class="pr-2 l-label">Акт</span>
+							<select
+								v-model="newGauge.activity_id"
+								class="TopGauges-input form-control form-control-sm h-23"
+							>
+								<option
+									:key="-1"
+									:value="-1"
+								>
+									Ячейка из сводной
+								</option>
+								<template v-for="(group_activity, key) in group_activities">
+									<option
+										v-if="group_activity.name !== 'Ячейка из сводной'"
+										:key="key"
+										:value="group_activity.id"
+									>
+										{{ group_activity.name }}
+									</option>
+								</template>
+							</select>
+						</div>
+						<div
+							v-if="newGauge.activity_id > 0"
+							class="d-flex justify-content-between align-items-center"
+						>
+							<span class="pr-2 l-label">Тип</span>
+							<select
+								v-model="newGauge.value_type"
+								class="TopGauges-input form-control form-control-sm h-23"
+							>
+								<option value="sum">
+									Сумма выполненного
+								</option>
+								<option value="avg">
+									Среднее значение
+								</option>
+							</select>
+						</div>
+						<div
+							v-if="newGauge.activity_id == -1"
+							class="d-flex justify-content-between align-items-center mt-1"
+						>
+							<span class="pr-2">Ячейка</span>
+							<input
+								v-model="newGauge.cell"
+								type="text"
+								class="TopGauges-input form-control form-control-sm wiwi text-uppercase"
+							>
+						</div>
+					</template>
+					<div>
+						<b-form-checkbox
+							v-model="newGauge.reversed"
+							:value="1"
+							:unchecked-value="0"
+							class="mb-3"
+						>
+							Отразить цвета
+						</b-form-checkbox>
+					</div>
+					<div>
+						<b-form-checkbox
+							v-model="newGauge.is_main"
+							:value="1"
+							:unchecked-value="0"
+							class="mb-3"
+						>
+							Ключевой
+						</b-form-checkbox>
+					</div>
+					<div class="d-flex justify-content-between align-items-center">
+						<input
+							v-model="newGauge.angle"
+							type="range"
+							class="TopGauges-input form-control form-control-sm w-250 mr-2 wiwi"
+							min="-0.2"
+							max="0.2"
+							step="0.01"
+						>
+						{{ newGauge.angle }}
+					</div>
 				</div>
-			</div>
-
-			<div
-				v-if="newGauge.activity_id == -1"
-				class="row  mt-1"
-			>
-				<div class="col-5">
-					<p class="">
-						Выберите ячейку из аналитики
-					</p>
-				</div>
-				<div class="col-7">
-					<input
-						v-model="newGauge.cell"
-						type="text"
-						class="form-control form-control-sm"
+				<div class="d-flex">
+					<button
+						class="btn btn-primary rounded mt-1 mr-2"
+						@click="create_gauge()"
 					>
+						Сохранить
+					</button>
 				</div>
 			</div>
-
-			<div
-				v-if="newGauge.activity_id != -1"
-				class="row  mt-1"
-			>
-				<div class="col-5">
-					<p class="">
-						Какое значение
-					</p>
-				</div>
-				<div class="col-7">
-					<select
-						v-model="newGauge.value_type"
-						class="form-control form-control-sm"
-					>
-						<option value="sum">
-							Сумма выполненного
-						</option>
-						<option value="avg">
-							Среднее значение
-						</option>
-					</select>
-				</div>
-			</div>
-		</b-modal>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -356,10 +419,13 @@
 /* eslint-disable vue/prop-name-casing */
 
 const VGauge = () => import(/* webpackChunkName: "VGauge" */ 'vgauge')
+import JobtronOverlay from '@ui/Overlay.vue'
+
 export default {
 	name: 'TopGauges',
 	components:{
 		VGauge,
+		JobtronOverlay,
 	},
 	props: {
 		utility_items: {
@@ -383,11 +449,46 @@ export default {
 			utility: [],
 			skey: 1,
 			newGauge: {
+				editable: false,
 				activity_id: null,
 				group_id: null,
-				name: null,
+				name: '',
 				cell: '',
-				value_type: 'sum'
+				value_type: 'sum',
+				unit: '',
+				round: 0,
+				is_main: false,
+				reversed: false,
+				value: '',
+				min_value: 0,
+				max_value: 100,
+				options: {
+					angle:-0.01,
+					staticLabels:{
+						font: '7px sans-serif',
+						labels:[0,50,75,100],
+						color: '#000000',
+						fractionDigits:0
+					},
+					staticZones:[
+						{strokeStyle:'#F03E3E',min:0,max:50},
+						{strokeStyle:'#fd7e14',min:50,max:75},
+						{strokeStyle:'#FFDD00',min:75,max:100},
+					],
+					pointer:{
+						length:0.5,
+						strokeWidth:0.025,
+						color:'#000000'
+					},
+					limitMax:true,
+					limitMin:true,
+					lineWidth:0.2,
+					radiusScale:0.8,
+					colorStart:'#6FADCF',
+					generateGradient:true,
+					highDpiSupport:true,
+				},
+				sections: '[0,50,75,100]'
 			},
 			showNewGaugeWindow: false,
 			group_activities: [],
@@ -565,35 +666,65 @@ export default {
 				group_id: group_id,
 			}).then(response => {
 				this.group_activities = response.data;
+				this.newGauge.editable = true
 			}).catch(error => {
 				alert(error)
 			});
+		},
 
-			this.showNewGaugeWindow = true
+		clearNewGauge(){
+			this.newGauge = {
+				activity_id: null,
+				group_id: null,
+				name: '',
+				cell: '',
+				value_type: 'sum',
+				unit: '',
+				round: '',
+				is_main: false,
+				reversed: false,
+				value: '',
+				min_value: 0,
+				max_value: 100,
+				options: {
+					angle:-0.01,
+					staticLabels:{
+						font: '7px sans-serif',
+						labels:[0,50,75,100],
+						color: '#000000',
+						fractionDigits:0
+					},
+					staticZones:[
+						{strokeStyle:'#F03E3E',min:0,max:50},
+						{strokeStyle:'#fd7e14',min:50,max:75},
+						{strokeStyle:'#FFDD00',min:75,max:100},
+					],
+					pointer:{
+						length:0.5,
+						strokeWidth:0.025,
+						color:'#000000'
+					},
+					limitMax:true,
+					limitMin:true,
+					lineWidth:0.2,
+					radiusScale:0.8,
+					colorStart:'#6FADCF',
+					generateGradient:true,
+					highDpiSupport:true,
+				},
+				sections: '[0,50,75,100]'
+			}
 		},
 
 		create_gauge() {
-			this.axios.post('/timetracking/top/create_gauge', {
-				group_id: this.newGauge.group_id,
-				activity_id: this.newGauge.activity_id,
-				name: this.newGauge.name,
-				value_type: this.newGauge.value_type,
-				cell: this.newGauge.cell,
-			}).then(response => {
+			this.axios.post('/timetracking/top/create_gauge', this.newGauge).then(response => {
 				this.utility[this.newGauge.group_index].gauges.push(response.data);
 
-				this.newGauge = {
-					activity_id: null,
-					group_id: null,
-					name: null,
-					cell:'',
-					value_type: 'sum'
-				};
+				this.clearNewGauge()
 
 				this.skey++
 				this.normalize();
 
-				this.showNewGaugeWindow = false;
 				this.$toast.success('Успешно сохранено!')
 			}).catch(error => {
 				alert(error)
@@ -605,7 +736,7 @@ export default {
 
 <style lang="scss">
 .l-label {
-	width: 39px;
+	min-width: 39px;
 	text-align: left;
 }
 .gauge-title {
@@ -688,13 +819,17 @@ input.form-control.form-control-sm.wiwi {
 	// width: 160px;
 }
 .edit-window {
-	width: 300px;
+	width: 400px;
 	position: absolute;
 	background: aliceblue;
 	padding: 15px;
 	border: 1px solid #ddd;
 	border-radius: 3px;
 	z-index: 222222;
+
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 .custom-control {
 	display: flex;
