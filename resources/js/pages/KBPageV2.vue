@@ -73,6 +73,7 @@
 			size="md"
 			class="modalle"
 			hide-footer
+			no-enforce-focus
 		>
 			<input
 				v-model="sectionName"
@@ -179,6 +180,7 @@
 			title="Настройки базы знаний"
 			:open="showBookSettings"
 			width="400px"
+			no-enforce-focus
 			@close="showBookSettings = false"
 		>
 			<template #body>
