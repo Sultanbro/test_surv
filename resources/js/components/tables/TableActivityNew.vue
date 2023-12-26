@@ -182,7 +182,12 @@
 								class="btn btn-light rounded btn-sm"
 								@click="switchAction"
 							>
-								Сумма\Среднее
+								<template v-if="currentAction === 'sum'">
+									<b>Сумма</b>\Среднее
+								</template>
+								<template v-else>
+									Сумма\<b>Среднее</b>
+								</template>
 							</button>
 						</td>
 
