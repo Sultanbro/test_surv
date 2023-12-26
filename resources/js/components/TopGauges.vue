@@ -109,7 +109,7 @@
 									<input
 										v-model="gauge.min_value"
 										type="text"
-										class="form-control form-control-sm w-250 wiwi"
+										class="TopGauges-input form-control form-control-sm w-250 wiwi flex-1"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
@@ -117,7 +117,7 @@
 									<input
 										v-model="gauge.max_value"
 										type="text"
-										class="form-control form-control-sm w-250 wiwi"
+										class="TopGauges-input form-control form-control-sm w-250 wiwi"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
@@ -125,7 +125,7 @@
 									<input
 										v-model="gauge.sections"
 										type="text"
-										class="form-control form-control-sm w-250 wiwi"
+										class="TopGauges-input form-control form-control-sm w-250 wiwi"
 									>
 								</div>
 								<div class="d-flex justify-content-between align-items-center">
@@ -133,7 +133,7 @@
 									<input
 										v-model="gauge.unit"
 										type="text"
-										class="form-control form-control-sm wiwi"
+										class="TopGauges-input form-control form-control-sm wiwi"
 									>
 								</div>
 								<template v-if="gauge.fixed == 0">
@@ -142,7 +142,7 @@
 										<input
 											v-model="gauge.name"
 											type="text"
-											class="form-control form-control-sm wiwi"
+											class="TopGauges-input form-control form-control-sm wiwi"
 										>
 									</div>
 									<div class="d-flex justify-content-between align-items-center">
@@ -150,14 +150,14 @@
 										<input
 											v-model="gauge.round"
 											type="text"
-											class="form-control form-control-sm wiwi"
+											class="TopGauges-input form-control form-control-sm wiwi"
 										>
 									</div>
 									<div class="d-flex justify-content-between align-items-center">
 										<span class="pr-2 l-label">Акт</span>
 										<select
 											v-model="gauge.activity_id"
-											class="form-control form-control-sm h-23"
+											class="TopGauges-input form-control form-control-sm h-23"
 										>
 											<option
 												:key="-1"
@@ -181,7 +181,7 @@
 										<span class="pr-2 l-label">Тип</span>
 										<select
 											v-model="gauge.value_type"
-											class="form-control form-control-sm h-23"
+											class="TopGauges-input form-control form-control-sm h-23"
 										>
 											<option value="sum">
 												Сумма выполненного
@@ -199,7 +199,7 @@
 										<input
 											v-model="gauge.cell"
 											type="text"
-											class="form-control form-control-sm wiwi text-uppercase"
+											class="TopGauges-input form-control form-control-sm wiwi text-uppercase"
 										>
 									</div>
 								</template>
@@ -208,6 +208,7 @@
 										v-model="gauge.reversed"
 										:value="1"
 										:unchecked-value="0"
+										class="mb-3"
 									>
 										Отразить цвета
 									</b-form-checkbox>
@@ -217,6 +218,7 @@
 										v-model="gauge.is_main"
 										:value="1"
 										:unchecked-value="0"
+										class="mb-3"
 									>
 										Ключевой
 									</b-form-checkbox>
@@ -225,7 +227,7 @@
 									<input
 										v-model="gauge.angle"
 										type="range"
-										class="form-control form-control-sm w-250 mr-2 wiwi"
+										class="TopGauges-input form-control form-control-sm w-250 mr-2 wiwi"
 										min="-0.2"
 										max="0.2"
 										step="0.01"
@@ -703,6 +705,12 @@ input.form-control.form-control-sm.wiwi {
 		// &_single{
 		// 	width: 100%;
 		// }
+	}
+	&-input{
+		flex: 1;
+		width: auto;
+		min-width: auto;
+		margin-bottom: 10px !important;
 	}
 }
 </style>

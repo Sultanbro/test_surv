@@ -39,7 +39,7 @@
 					<input
 						v-model="gauge.min_value"
 						type="text"
-						class="form-control form-control-sm w-250 wiwi"
+						class="RentabilityGauge-input form-control form-control-sm w-250 wiwi"
 					>
 				</div>
 				<div class="d-flex justify-content-between align-items-center">
@@ -47,7 +47,7 @@
 					<input
 						v-model="gauge.max_value"
 						type="text"
-						class="form-control form-control-sm w-250 wiwi"
+						class="RentabilityGauge-input form-control form-control-sm w-250 wiwi"
 					>
 				</div>
 				<div class="d-flex justify-content-between align-items-center">
@@ -55,14 +55,14 @@
 					<input
 						v-model="gauge.sections"
 						type="text"
-						class="form-control form-control-sm w-250 wiwi"
+						class="RentabilityGauge-input form-control form-control-sm w-250 wiwi"
 					>
 				</div>
 				<div class="d-flex justify-content-between align-items-center">
 					<span class="pr-2 l-label">Акт</span>
 					<select
 						v-model="gauge.activity_id"
-						class="form-control form-control-sm h-23"
+						class="RentabilityGauge-input form-control form-control-sm h-23"
 					>
 						<option
 							:key="-1"
@@ -86,7 +86,7 @@
 					<span class="pr-2 l-label">Тип</span>
 					<select
 						v-model="gauge.value_type"
-						class="form-control form-control-sm h-23"
+						class="RentabilityGauge-input form-control form-control-sm h-23"
 					>
 						<option value="sum">
 							Сумма выполненного
@@ -104,7 +104,7 @@
 					<input
 						v-model="gauge.cell"
 						type="text"
-						class="form-control form-control-sm wiwi text-uppercase"
+						class="RentabilityGauge-input form-control form-control-sm wiwi text-uppercase"
 					>
 				</div>
 				<div class="d-flex mt-3">
@@ -200,6 +200,12 @@ export default {
 
 		background-color: #fff;
 		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+	}
+	&-input{
+		flex: 1;
+		width: auto;
+		min-width: auto;
+		margin-bottom: 10px !important;
 	}
 }
 </style>
