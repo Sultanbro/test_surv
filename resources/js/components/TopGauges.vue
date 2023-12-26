@@ -165,13 +165,15 @@
 											>
 												Ячейка из сводной
 											</option>
-											<option
-												v-for="(group_activity, key) in group.group_activities"
-												:key="key"
-												:value="group_activity.id"
-											>
-												{{ group_activity.name }}
-											</option>
+											<template v-for="(group_activity, key) in group.group_activities">
+												<option
+													v-if="group_activity.name !== 'Ячейка из сводной'"
+													:key="key"
+													:value="group_activity.id"
+												>
+													{{ group_activity.name }}
+												</option>
+											</template>
 										</select>
 									</div>
 									<div
