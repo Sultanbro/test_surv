@@ -1,5 +1,24 @@
 <template>
 	<div class="messenger__chat-footer ConversationFooter">
+		<div
+			v-if="mentionText"
+			class="ConversationFooter-mentions"
+		>
+			<div
+				v-for="user in metionTargets"
+				:key="user.id"
+				class="ConversationFooter-mention"
+				@click="addMention(user)"
+			>
+				<img
+					:src="'/users_img/' + user.img_url"
+					width="20"
+					class="radius-full"
+				>
+				{{ user.name || '' }} {{ user.last_name || '' }}
+			</div>
+		</div>
+
 		<vue-draggable-resizable
 			:w="'auto'"
 			:h="localState.height"
@@ -32,7 +51,7 @@
 							v-model="body"
 							class="messenger__textarea"
 							placeholder="Ввести сообщение"
-							@keydown.enter="performMessage"
+							@keydown="onKeyDown"
 							@paste="pasteMessage"
 						/>
 					</div>
@@ -217,11 +236,18 @@ export default {
 			files: [],
 			isRecordingAudio: false,
 			recordingTime: 0,
-			localState: this.defaultLocalState()
+			localState: this.defaultLocalState(),
+			mentionText: '',
+
 		};
 	},
 	computed: {
-		...mapGetters(['chat', 'editMessage', 'citedMessage', 'messageSending'])
+		...mapGetters(['chat', 'editMessage', 'citedMessage', 'messageSending']),
+		metionTargets(){
+			const search = this.mentionText.toLowerCase().slice(1)
+			if(!search) return this.chat.users
+			return this.chat.users.filter(user => `${user.name} ${user.last_name}`.toLowerCase().includes(search) || `${user.last_name} ${user.name}`.toLowerCase().includes(search))
+		}
 	},
 	watch: {
 		editMessage(message) {
@@ -364,6 +390,35 @@ export default {
 		onQuote(text){
 			if(this.body.trim()) this.body += '\n> ' + text.split('\n').join('\n> ') + '\n'
 			else this.body = '> ' + text.split('\n').join('\n> ') + '\n'
+		},
+		onKeyDown(event){
+			if(event.key === 'Enter') return this.performMessage(event)
+			if(event.key === '@') return this.showMentions(event)
+			if(this.mentionText) this.updateMentions(event)
+		},
+		showMentions(){
+			this.mentionText = '@'
+		},
+		updateMentions(){
+			setTimeout(() => {
+				const textarea = document.getElementById('messengerMessageInput')
+				const result = []
+				for(let i = textarea.selectionStart; i >= 0; --i){
+					result.push(this.body[i])
+					if(this.body[i] === '@') break
+				}
+				result.reverse()
+				this.mentionText = (result[0] === '@' ? result.join('') : '').trim()
+			}, 16)
+		},
+		addMention(user){
+			const textarea = document.getElementById('messengerMessageInput')
+			const index = this.body.substring(0, textarea.selectionStart).lastIndexOf(this.mentionText)
+			if(!~index) return
+			const first = this.body.substring(0, index)
+			const last =  this.body.substring(index + (this.mentionText.length))
+			this.body = first + `@${user.name}#${user.id};` + last
+			this.mentionText = ''
 		}
 	},
 }
@@ -371,6 +426,7 @@ export default {
 
 <style lang="scss">
 .ConversationFooter{
+
 	overflow: hidden;
 
 	// fix for vue-draggable-resizable
@@ -397,6 +453,23 @@ export default {
 		width: 100% !important;
 		min-height: 45px;
 		transform: none !important;
+	}
+	&-mentions{
+		max-height: 100px;
+		border-bottom: 1px solid #eee;
+		overflow-y: auto;
+	}
+	&-mention{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+
+		padding: 2px 10px;
+		margin-bottom: 1px;
+		cursor: pointer;
+		&:hover{
+			background-color: #eef;
+		}
 	}
 }
 .messenger__chat-footer {
