@@ -8,7 +8,7 @@
 			@click="openSettings"
 		>
 			<VGauge
-				:value="gauge.value"
+				:value="+gauge.value"
 				unit="%"
 				:options="gauge.options"
 				:max-value="Number(gauge.max_value)"

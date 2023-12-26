@@ -273,7 +273,6 @@ export default {
 				if(_new) {
 					return {
 						..._new,
-						options: JSON.parse(_new.options),
 						sections: Array.isArray(_new.sections) ? JSON.stringify(_new.sections) : _new.sections
 					}
 				}
@@ -345,7 +344,7 @@ export default {
 					},
 					type: 2,
 				})
-				this.$toast.success('Успешно сохранено!')
+				this.$toast.success('Успешно сохранено')
 				this.fetchData()
 			}
 			catch (error) {
