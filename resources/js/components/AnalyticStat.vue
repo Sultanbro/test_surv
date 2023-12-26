@@ -410,8 +410,9 @@
 										<input
 											v-else
 											type="text"
-											class="in-cell"
+											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
 											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
+											class="in-cell"
 										>
 
 										<div
