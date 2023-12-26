@@ -265,7 +265,7 @@ class TopController extends Controller
         $fields[] = 'Итого';
         $fields[] = '+/-';
 
-        // get weeks  
+        // get weeks
         $start_week = 1;
         $last_week = null;
 
@@ -396,18 +396,21 @@ class TopController extends Controller
 
         $top_value = new TopValue();
 
+        $top_value->value_type = $request->get("value_type");
+        $top_value->round = $request->get("round");
+        $top_value->is_main = $request->get("is_main");
+        $top_value->min_value = $request->get("min_value");
+        $top_value->max_value = $request->get("max_value");
+        $top_value->reversed = $request->get("reversed");
+
         $top_value->activity_id = $activity_id;
         $top_value->name = $request->get("name");
         $top_value->group_id = $group_id;
         $top_value->date = Carbon::now()->day(1)->format('Y-m-d');
-        $top_value->value = 0;
-        $top_value->min_value = 0;
-        $top_value->max_value = 100;
         $top_value->cell = $request->get("cell");
         $top_value->value_type = $request->get("value_type");
-        $top_value->unit = '';
-        $top_value->options = '[]';
-        $top_value->options = json_encode($top_value->getOptions());
+        $top_value->unit = $request->get("unit");
+        $top_value->options = json_encode($request->get("options"));
         $top_value->save();
 
         return [
@@ -417,14 +420,14 @@ class TopController extends Controller
             'group_id' => $top_value->group_id,
             'place' => 1,
             'unit' => $top_value->unit,
-            'editable' => true,
+            'editable' => false,
             'edit_value' => true,
             'key' => $top_value->getKey() * 1000,
             'min_value' => $top_value->min_value,
             'activity_id' => $top_value->activity_id,
             'max_value' => $top_value->max_value,
             'cell' => $top_value->cell,
-            'sections' => '[0,50,75,100]',
+            'sections' => json_encode($request->get("options")["staticLabels"]["labels"]),
             'options' => json_decode($top_value->options),
             'diff' => 0
         ];

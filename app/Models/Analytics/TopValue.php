@@ -579,6 +579,7 @@ class TopValue extends Model
                 ->diffInDays();
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
+            $row['archived_date'] = $group->archived_date;
 
             for ($i = 1; $i <= 12; $i++) {
 

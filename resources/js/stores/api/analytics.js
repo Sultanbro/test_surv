@@ -292,6 +292,14 @@ export async function fetchRentabilityV2(params){
 			return rent.speedometers[key].slice(-1)[0]
 		})
 	}
+	rent.speedometers = rent.speedometers.map(item => {
+		const options = typeof item.options === 'string' ? JSON.parse(item.options) : item.options
+		return {
+			...item,
+			options,
+			sections: options?.staticLabels?.labels
+		}
+	})
 	return {
 		table: rent.table,
 		speedometers: rent.speedometers,
