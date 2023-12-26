@@ -92,8 +92,13 @@
 						v-for="(item, index) in items"
 						:key="index"
 					>
-						<td class="table-primary b-table-sticky-column text-left px-2 t-name wdf">
+						<td class="table-primary b-table-sticky-column text-left px-2 t-name wdf d-flex aic">
 							<div>{{ item.name }}</div>
+							<i
+								v-if="item.archived_date"
+								v-b-popover.hover.right.html="'Аналитика архвирована ' + $moment(item.archived_date, 'YYYY-MM-DD').format('DD.MM.YYYY')"
+								class="fa fa-info-circle"
+							/>
 						</td>
 
 						<td class="text-center">
