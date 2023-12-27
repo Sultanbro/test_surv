@@ -1733,9 +1733,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
 
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
-                if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
+                if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count = $count + 1;
             } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
-                if ($this->DayInWorkDaysDiapason($workChart)) $count++;
+                if ($this->DayInWorkDaysDiapason($workChart)) $count = $count + 1;;
             }
         }
         return $count;
