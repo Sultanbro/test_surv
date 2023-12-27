@@ -1044,16 +1044,11 @@ class Salary extends Model
      */
     public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS): array
     {
-
         $month_start = Carbon::parse($date)->startOfMonth();
 
         $month = Carbon::parse($date)->startOfMonth();
 
         $all_total = [];
-
-        $okpi = 0;
-        $osal = 0;
-        $obon = 0;
 
         foreach ($groups as $group) {
             $internshipPayRate = $group->paid_internship == 1 ? 0.5 : 0;
@@ -1079,12 +1074,12 @@ class Salary extends Model
 
             /** @var User $user */
             foreach ($users as $user) {
-                $debug = [];
-                if ($user->user_description && $user->user_description->is_trainee == 0) {
-                } else {
-                    // dump('skip_no_desc');
-                    continue;
-                }
+//                $debug = [];
+//                if ($user->user_description && $user->user_description->is_trainee == 0) {
+//                } else {
+//                    // dump('skip_no_desc');
+//                    continue;
+//                }
 
 //                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
 //                    // dump('skip_no_group');
@@ -1121,6 +1116,7 @@ class Salary extends Model
 //                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
 
                 $workdays = $user->calcWorkDays($date);
+                dump($workdays . " " . $working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
@@ -1193,12 +1189,6 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-
-                if ($user->id == 29748 || $user->id == 28209) {
-                    dump($schedule);
-                    dump($workdays);
-                    dump($earnings);
-                }
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $total_bonuses += (float)$bonuses[$i];
