@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 class MarkAsPaidController extends Controller
 {
-    public function __invoke(PaidRequest $request, User $user): JsonResponse
+    public function pay(PaidRequest $request, User $user): JsonResponse
     {
         $data = $request->validated();
         $referrer = $user->referrer;
