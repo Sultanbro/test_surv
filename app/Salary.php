@@ -9,7 +9,6 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
-use App\Models\GroupUser;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
 use Auth;
@@ -32,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string comment_award
  * @property string resource
  * @property bool is_paid
-*/
+ */
 class Salary extends Model
 {
     use HasFactory;
@@ -643,7 +642,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-    foreach ($users as $key => $user) {
+        foreach ($users as $key => $user) {
             /**
              * if internship is paid
              */
@@ -1039,6 +1038,9 @@ class Salary extends Model
         return $data;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS): array
     {
 
@@ -1074,6 +1076,7 @@ class Salary extends Model
             }
             $users = self::getUsersDataV2($month_start, $user_ids);
 
+            /** @var User $user */
             foreach ($users as $user) {
                 $debug = [];
                 if ($user->user_description && $user->user_description->is_trainee == 0) {
@@ -1109,18 +1112,14 @@ class Salary extends Model
 
                 $trainings = [];
 
-                if ($user->working_time_id == 1) {
-                    $worktime = 8;
-                } else {
-                    $worktime = 9;
-                }
-
                 $schedule = $user->scheduleFast();
                 $lunchTime = 1;
-                $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
 
-                $ignore = $user->working_day_id == 1 ? [6, 0] : [0];
-                $workdays = workdays($month->year, $month->month, $ignore);
+                $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+
+//                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
+
+                $workdays = $user->calcWorkDays($date);
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
@@ -1193,7 +1192,7 @@ class Salary extends Model
                 $total_salary = 0;
 
 
-                if($user->id == 29748 || $user->id == 28209) {
+                if ($user->id == 29748 || $user->id == 28209) {
                     dump($schedule);
                     dump($workdays);
                     dump($earnings);
