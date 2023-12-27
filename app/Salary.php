@@ -1194,7 +1194,7 @@ class Salary extends Model
 
 
                 if($user->id == 29748 || $user->id == 28209) {
-                    dump($schedule);
+                    dump($user->checkWorkdaysForStartTracking());
                     dump($workdays);
                     dump($earnings);
                 }
@@ -1222,15 +1222,15 @@ class Salary extends Model
 
                 $user_total += (float)$kpi;
 
-                $total_must_count = (float)$user_total - $avans - $fines;
+//                $total_must_count = (float)$user_total - $avans - $fines;
 
-                if ($total_must_count > 0) {
-                    $all_total[$group->id] += $user_total;
-
-                    $okpi += $kpi;
-                    $obon += $total_bonuses;
-                    $osal += $total_salary;
-                }
+                $all_total[$group->id] += $user_total;
+//                if ($total_must_count > 0) {
+//
+//                    $okpi += $kpi;
+//                    $obon += $total_bonuses;
+//                    $osal += $total_salary;
+//                }
                 dump($user_total, "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name . " kpi=" . $kpi . " bonus=" . $total_bonuses . " oklad=" . $total_salary);
             }
         }
