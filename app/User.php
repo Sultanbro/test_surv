@@ -1729,7 +1729,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $count = 0;
         $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChart = $this->getWorkChartFast();
-        dd($workChart->work_charts_type);
         if (!$workChart) return 22;
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
             $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
@@ -1820,8 +1819,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     private function dayInWorkDaysDiapason(WorkChartModel $workChart, Carbon $date): bool
     {
-        $start = $this->first_work_day ?? $this->timetracking()->first()?->enter;
+        $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
         $end = $date->endOfMonth();
+        dd($start);
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
