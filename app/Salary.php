@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string comment_award
  * @property string resource
  * @property bool is_paid
-*/
+ */
 class Salary extends Model
 {
     use HasFactory;
@@ -1039,6 +1039,9 @@ class Salary extends Model
         return $data;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function getAllTotals($date, $groups, $user_types = self::ALL_USERS): array
     {
 
@@ -1074,6 +1077,7 @@ class Salary extends Model
             }
             $users = self::getUsersDataV2($month_start, $user_ids);
 
+            /** @var User $user */
             foreach ($users as $user) {
                 $debug = [];
                 if ($user->user_description && $user->user_description->is_trainee == 0) {
@@ -1109,19 +1113,14 @@ class Salary extends Model
 
                 $trainings = [];
 
-                if ($user->working_time_id == 1) {
-                    $worktime = 8;
-                } else {
-                    $worktime = 9;
-                }
-
                 $schedule = $user->scheduleFast();
                 $lunchTime = 1;
-                $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
 
-                $ignore = $user->working_day_id == 1 ? [6, 0] : [0];
-                $workdays = workdays($month->year, $month->month, $ignore);
+                $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
 
+//                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
+
+                $workdays = $user->calcWorkDays($date);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
@@ -1129,6 +1128,8 @@ class Salary extends Model
                     //count hourly pay
                     $s = $user->salaries->where('day', $d)->first();
                     $zarplata = $s ? $s->amount : 70000;
+
+
                     $hourly_pay = $zarplata / $workdays / $working_hours;
 
                     $hourly_pays[$i] = round($hourly_pay, 2);
@@ -1193,8 +1194,8 @@ class Salary extends Model
                 $total_salary = 0;
 
 
-                if($user->id == 29748 || $user->id == 28209) {
-                    dump($user->checkWorkdaysForStartTracking());
+                if ($user->id == 29748 || $user->id == 28209) {
+                    dump($schedule);
                     dump($workdays);
                     dump($earnings);
                 }
