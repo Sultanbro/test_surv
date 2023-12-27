@@ -1193,8 +1193,11 @@ class Salary extends Model
                 $total_salary = 0;
 
 
-                if($user->id == 29748) dump($earnings);
-                if($user->id == 28209) dump($earnings);
+                if($user->id == 29748 || $user->id == 28209) {
+                    dump($schedule);
+                    dump($workdays);
+                    dump($earnings);
+                }
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $total_bonuses += (float)$bonuses[$i];
