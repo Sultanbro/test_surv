@@ -1729,6 +1729,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $count = 0;
         $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChart = $this->getWorkChartFast();
+        if (!$workChart) return 0;
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
             $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
@@ -1826,7 +1827,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
         $date1 = date_create(now()->format('Y-m-d'));
-        $date2 = date_create($this->first_work_day);
+        $date2 = date_create($start);
         $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
 
         $total = $workingDay + $dayOff;
