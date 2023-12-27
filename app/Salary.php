@@ -1120,7 +1120,6 @@ class Salary extends Model
 //                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
 
                 $workdays = $user->calcWorkDays($date);
-
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
@@ -1128,6 +1127,9 @@ class Salary extends Model
                     //count hourly pay
                     $s = $user->salaries->where('day', $d)->first();
                     $zarplata = $s ? $s->amount : 70000;
+                    dump($workdays);
+                    dump($working_hours);
+
                     $hourly_pay = $zarplata / $workdays / $working_hours;
 
                     $hourly_pays[$i] = round($hourly_pay, 2);
