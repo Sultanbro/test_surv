@@ -1731,10 +1731,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workChart = $this->getWorkChartFast();
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
             $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
-
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
                 if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
-            } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
+            } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                 if ($this->DayInWorkDaysDiapason($workChart)) $count++;
             }
         }
@@ -1819,6 +1818,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     private function DayInWorkDaysDiapason(WorkChartModel $workChart): bool
     {
+        $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
+        if (!$start) return 0;
+
         $days = explode('-', $workChart->name);
         $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
         $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);

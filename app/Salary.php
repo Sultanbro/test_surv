@@ -1121,7 +1121,6 @@ class Salary extends Model
 
                 $workdays = $user->calcWorkDays($date);
                 dump($workdays);
-                dump($working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
