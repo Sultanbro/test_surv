@@ -1735,7 +1735,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
                 if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
             } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                if ($this->dayInWorkDaysDiapason($workChart, $date)) $count++;
+                if ($this->dayInWorkDaysDiapason($dayOfWeek, $workChart, $date)) $count++;
             }
         }
         return $count;
@@ -1817,11 +1817,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     /**
      * @throws Exception
      */
-    private function dayInWorkDaysDiapason(WorkChartModel $workChart, Carbon $date): bool
+    private function dayInWorkDaysDiapason(int $dayOfWeek, WorkChartModel $workChart, Carbon $date): bool
     {
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
-        dump($this->getKey(), $this->first_work_day);
         $end = $date->endOfMonth();
+
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
