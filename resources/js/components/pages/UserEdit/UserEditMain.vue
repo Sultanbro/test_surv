@@ -156,7 +156,7 @@ export default {
 					!val.length ? this.$emit('valid_change', {name: 'position', bool: false}) : this.$emit('valid_change', {name: 'position', bool: true});
 				}
 				if(err !== 'email' && err !== 'position'){
-					val.length < 3 ? this.$emit('valid_change', {name: err, bool: false}) : this.$emit('valid_change', {name: err, bool: true});
+					val.length < 2 ? this.$emit('valid_change', {name: err, bool: false}) : this.$emit('valid_change', {name: err, bool: true});
 				}
 			}
 		},
