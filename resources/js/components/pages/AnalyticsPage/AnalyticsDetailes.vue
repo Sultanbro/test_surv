@@ -187,6 +187,7 @@
 						<input
 							v-model="activity.name"
 							type="text"
+							placeholder="Напишите название активности"
 							class="form-control form-control-sm"
 						>
 					</div>

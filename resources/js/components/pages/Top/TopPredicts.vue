@@ -53,7 +53,7 @@
 							{{ group.users.employees }}
 						</td>
 						<td class="text-center t-name table-title align-middle">
-							{{ group.plan - group.users.employees }}
+							{{ (group.plan - group.users.employees) < 0 ? 0 : group.plan - group.users.employees }}
 						</td>
 					</tr>
 				</tbody>

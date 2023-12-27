@@ -477,8 +477,8 @@ export default {
 				this.selectedNotification = null
 			}
 			else{
-				const msg = message || ''
-				this.$toast.error(msg.raplace('title', 'Текст уведомления'))
+				const msg = `${message}` || ''
+				this.$toast.error(msg.replace('title', 'Текст уведомления'))
 			}
 			this.fetchNotifications()
 		},
@@ -498,8 +498,8 @@ export default {
 			}
 			else{
 				if(!silent) {
-					const msg = message || ''
-					this.$toast.error(msg.raplace('title', 'Текст уведомления'))
+					const msg = `${message}` || ''
+					this.$toast.error(msg.replace('title', 'Текст уведомления'))
 				}
 			}
 		},
@@ -568,7 +568,7 @@ export default {
 			})
 		},
 		weekdayNames(days){
-			return days.map(day => weekdays[day])
+			return days.slice().sort().map(day => weekdays[day])
 		},
 	}
 }

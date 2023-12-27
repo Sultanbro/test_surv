@@ -84,6 +84,7 @@
 								</span>
 								<span
 									v-if="editTableMode && i_index > (oldGroup ? 2 : 0)"
+									class="AnalyticStat-addRow"
 									@click="add_row(i_index)"
 								>
 									<ChatIconPlus
@@ -409,8 +410,9 @@
 										<input
 											v-else
 											type="text"
-											class="in-cell"
+											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
 											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
+											class="in-cell"
 										>
 
 										<div
@@ -1814,12 +1816,22 @@ export default {
 	&-settings{
 		font-size: 0.8em;
 	}
+	&-addRow{
+		display: none;
+	}
 	&-rowControls{
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
 		justify-content: center;
 		gap: 0.4rem;
+		&:hover{
+			.AnalyticStat{
+				&-addRow{
+					display: inline;
+				}
+			}
+		}
 	}
 	&-contexts{
 		input{

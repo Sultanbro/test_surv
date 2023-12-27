@@ -345,7 +345,11 @@ export default {
 			if(this.manager && this.manager.id === Laravel.userId) return true
 
 			return this.users.some(user => user.id === Laravel.userId)
-		}
+		},
+		status(){
+			if(!this.manager) return ''
+			return this.manager.referrer_status
+		},
 	},
 	watch: {
 		card(){

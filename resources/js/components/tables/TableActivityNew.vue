@@ -182,7 +182,12 @@
 								class="btn btn-light rounded btn-sm"
 								@click="switchAction"
 							>
-								Сумма\Среднее
+								<template v-if="currentAction === 'sum'">
+									<b>Сумма</b>\Среднее
+								</template>
+								<template v-else>
+									Сумма\<b>Среднее</b>
+								</template>
 							</button>
 						</td>
 
@@ -632,10 +637,15 @@ export default {
 			handler(){
 				this.daysInMonth = this.month.daysInMonth
 			}
-		}
+		},
 		// user_types() {
 		// 	this.fetchData()
 		// },
+		hiddenUsers(){
+			this.getWeekends();
+			this.fetchData();
+			this.local_activity = this.activity
+		},
 	},
 	created() {
 		this.getWeekends();
@@ -696,7 +706,6 @@ export default {
 
 		async fetchData() {
 			let loader = this.$loading.show();
-
 			this.activityUsersToShowForm = this.accessDictionaries.users.reduce((result, user) => {
 				const isHidden = this.hiddenUsers.find(id =>  id === user.id)
 				if(!isHidden) result.push({
@@ -714,7 +723,7 @@ export default {
 			if(this.show_headers) this.calculateTotalsRow()
 			this.setLeaders();
 			this.items = this.itemsArray;
-			this.filtered = this.itemsArray;
+			this.filtered = this.itemsArray.filter(user => !this.hiddenUsers.includes(user.id));
 			this.addCellVariantsArrayToRecords();
 			this.setCellVariants();
 
