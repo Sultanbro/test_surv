@@ -1729,7 +1729,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $count = 0;
         $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChart = $this->getWorkChartFast();
-        if (!$workChart) return 0;
+        if (!$workChart) return 22;
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
             $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
