@@ -9,7 +9,6 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
-use App\Models\GroupUser;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
 use Auth;
@@ -643,7 +642,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-    foreach ($users as $key => $user) {
+        foreach ($users as $key => $user) {
             /**
              * if internship is paid
              */
@@ -1127,7 +1126,7 @@ class Salary extends Model
                     $zarplata = $s ? $s->amount : 70000;
 
 
-                    $hourly_pay = $zarplata / $workdays / $working_hours;
+                    $hourly_pay = $workdays ? $zarplata / $workdays / $working_hours : 0;
 
                     $hourly_pays[$i] = round($hourly_pay, 2);
 

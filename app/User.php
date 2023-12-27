@@ -1730,13 +1730,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChart = $this->getWorkChartFast();
         if (!$workChart) return 22;
-        for ($i = 1; $i <= $date->daysInMonth; $i++) {
-            $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
-            if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
+
+        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
+            for ($i = 1; $i <= $date->daysInMonth; $i++) {
+                $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
                 if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
-            } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                if ($this->dayInWorkDaysDiapason($dayOfWeek, $workChart, $date)) $count++;
             }
+        }
+        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+            $count = $this->dayInWorkDaysDiapason($date, $workChart);
         }
         return $count;
     }
@@ -1814,31 +1816,35 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $dayNum == 1;
     }
 
-    /**
-     * @throws Exception
-     */
-    private function dayInWorkDaysDiapason(int $dayOfWeek, WorkChartModel $workChart, Carbon $date): bool
+    public function dayInWorkDaysDiapason(Carbon $date, WorkChartModel $workChart): int
     {
-
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
-        $end = $date->setDaysFromStartOfWeek($dayOfWeek)->format("Y-m-d");
-        dump($end);
         if (!$start) return 0;
 
+        if (is_string($start)) $start = Carbon::parse($this->first_work_day ?? $this->timetracking()->first()?->exit);
+        $end = $date->endOfMonth();
+
         $days = explode('-', $workChart->name);
-        $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
-        $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
-        $date1 = date_create($end->format('Y-m-d'));
-        $date2 = date_create($start);
-        $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
+        // Initialize counters
+        $workDays = 0;
 
-        $total = $workingDay + $dayOff;
+        // Loop through each day from the first worked day to the current date
+        while ($start <= $end) {
+            // Get the current day of the week (1 = Monday, 7 = Sunday)
+            $dayOfWeek = $start->format('N');
 
-        $remains = $differBetweenFirstAndLastDay % $total;
-        if ($workingDay === 1) {
-            return $remains === 0;
+            // Check if the current day is a working day based on the schedule
+            $isWorkingDay = in_array($dayOfWeek, $days);
+
+            // Increment the counters accordingly
+            if ($isWorkingDay) {
+                $workDays++;
+            }
+
+            // Move to the next day
+            $start->addDay();
         }
 
-        return $remains < $workingDay;
+        return $workDays;
     }
 }
