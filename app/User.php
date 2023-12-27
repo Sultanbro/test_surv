@@ -1819,6 +1819,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     private function DayInWorkDaysDiapason(WorkChartModel $workChart): bool
     {
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
+        dump($start);
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
