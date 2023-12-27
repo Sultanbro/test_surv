@@ -1735,6 +1735,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
                 if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
             } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+                dump($this->dayInWorkDaysDiapason($workChart, $date));
                 if ($this->dayInWorkDaysDiapason($workChart, $date)) $count++;
             }
         }
@@ -1821,7 +1822,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     {
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
         $end = $date->endOfMonth();
-        dd($start);
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
