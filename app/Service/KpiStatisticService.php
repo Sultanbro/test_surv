@@ -847,7 +847,14 @@ class KpiStatisticService
                             ->format('Y-m-d'));
                     });
             })
-            ->orderBy('targetable_type', 'desc')
+            ->orderByRaw("
+                CASE
+                    WHEN targetable_type = 'App\\\\User' THEN 1
+                    WHEN targetable_type = 'App\\\\Position' THEN 2
+                    WHEN targetable_type = 'App\\\\ProfileGroup' THEN 3
+                    ELSE 4
+                END
+            ")
             ->limit(1)
             ->get();
 
