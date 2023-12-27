@@ -1116,6 +1116,7 @@ class Salary extends Model
 //                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
 
                 $workdays = $user->calcWorkDays($date);
+
                 dump($user->id . " " . $workdays . " " . $working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;

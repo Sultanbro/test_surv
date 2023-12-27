@@ -1698,11 +1698,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
             $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-            $date1 = date_create(now()->format('Y-m-d'));
-            $date2 = date_create($this->first_work_day);
-            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
+            $date1 = date_create(now()->format('Y-m-d')); // 27
+            $date2 = date_create($this->first_work_day); // 16
+            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days; // 11
 
-            $total = $workingDay + $dayOff;
+            $total = $workingDay + $dayOff; // 2+2=4
 
             if ($workingDay === 1) {
                 $remains = $differBetweenFirstAndLastDay % $total;
@@ -1819,9 +1819,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     private function dayInWorkDaysDiapason(int $dayOfWeek, WorkChartModel $workChart, Carbon $date): bool
     {
+
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
         $end = $date->endOfMonth();
-
+        dd($start,$this->id);
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
