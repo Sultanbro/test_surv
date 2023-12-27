@@ -1821,8 +1821,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     {
 
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
-        $end = $date->endOfMonth();
-        dd($start,$this->id);
+        $end = $date->setDaysFromStartOfWeek($dayOfWeek)->format("Y-m-d");
+        dump($end);
         if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
