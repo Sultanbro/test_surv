@@ -1819,8 +1819,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     private function DayInWorkDaysDiapason(WorkChartModel $workChart): bool
     {
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
-        dump($start);
-        if (!$start) return 0;
+        if (!$this->getKey()) return 0;
 
         $days = explode('-', $workChart->name);
         $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
