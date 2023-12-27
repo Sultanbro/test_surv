@@ -1735,7 +1735,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
                 if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
             } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                if ($this->DayInWorkDaysDiapason($workChart)) $count++;
+                if ($this->dayInWorkDaysDiapason($workChart, $date)) $count++;
             }
         }
         return $count;
@@ -1817,16 +1817,17 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     /**
      * @throws Exception
      */
-    private function DayInWorkDaysDiapason(WorkChartModel $workChart): bool
+    private function dayInWorkDaysDiapason(WorkChartModel $workChart, Carbon $date): bool
     {
-        $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
-        if (!$this->getKey()) return 0;
+        $start = $this->first_work_day ?? $this->timetracking()->first()?->enter;
+        $end = $date->endOfMonth();
+        if (!$start) return 0;
 
         $days = explode('-', $workChart->name);
         $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
         $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-        $date1 = date_create(now()->format('Y-m-d'));
+        $date1 = date_create($end->format('Y-m-d'));
         $date2 = date_create($start);
         $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
 

@@ -1090,7 +1090,7 @@ class Salary extends Model
 //                    continue;
 //                }
 
-                $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
+                $user->hourly_pay($month->format('Y-m-d'));
                 // dump('hourly_pay '.$hourly_pay);
 
                 $user_applied_at = null;
