@@ -12,7 +12,7 @@ class MarkAsPaidController extends Controller
     public function pay(PaidRequest $request, int $user): JsonResponse
     {
         /** @var User $referral */
-        $referral = User::withTrashed()->where('id', $user);
+        $referral = User::withTrashed()->where('id', $user)->first();
         $data = $request->validated();
         $referrer = $referral->referrer;
         $salary = $referrer->referralSalaries()
