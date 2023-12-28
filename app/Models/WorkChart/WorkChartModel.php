@@ -129,6 +129,7 @@ class WorkChartModel extends Model
         return [
             'workStartTime' => $this->start_time,
             'workEndTime'   => $this->end_time,
+            'workRestTime'   => $this->rest_time,
         ];
     }
 
@@ -186,6 +187,7 @@ class WorkChartModel extends Model
         return [
             'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
             'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
+            'workRestTime'   => 0,
         ];
     }
 
