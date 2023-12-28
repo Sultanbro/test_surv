@@ -1098,10 +1098,11 @@ class Salary extends Model
                 }
 
                 $tts = $user->timetracking->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-                    $trainee_days = $user->daytypes->whereIn('type', [5, 6, 7]);
+                    $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
                 if ($user->id == 15193) {
                     dump($trainee_days);
                 }
+                $retrainee_days = $user->daytypes->whereIn('type', [6]);
                 $tts_before_apply = $user->timetracking->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
 
                 $earnings = [];
@@ -1136,12 +1137,20 @@ class Salary extends Model
                     $x = $tts->where('day', $i);
                     $y = $tts_before_apply->where('day', $i);
                     $a = $trainee_days->where('day', $i);
+                    $ewrewqre = $retrainee_days->where('day', $i);
 
                     $earnings[$i] = null;
                     $hours[$i] = null;
                     $trainings[$i] = null;
 
-                    if ($a->count() > 0) { // день отмечен как стажировка
+                    if ($ewrewqre->count() > 0) { // день отмечен как переобучение
+                        $trainings[$i] = true;
+                        $earning = $hourly_pay * $worktime;
+                        $earnings[$i] = round($earning);
+                        $hours[$i] = round($worktime / 2, 1);
+                        $hourly_pays[$i] = round($hourly_pay, 2);
+                    }
+                    else if ($a->count() > 0) { // день отмечен как стажировка
                         $trainings[$i] = true;
                         $earning = $hourly_pay * $internshipPayRate * $worktime;
                         $earnings[$i] = round($earning);
