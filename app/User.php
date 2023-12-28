@@ -1722,28 +1722,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     }
 
     /**
-     * @throws Exception
-     */
-    public function calcWorkDays(Carbon|string $date): int
-    {
-        $workChart = $this->getWorkChartFast();
-        if (!$workChart) return 22;
-
-        $date = is_string($date) ? Carbon::parse($date) : $date;
-        $count = 0;
-
-        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
-            $count = $this->dayInWorkDaysGraphWithTypeUsual($date, $workChart);
-        }
-
-        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-            $count = $this->dayInWorkDaysGraphWithTypeReplaceable($date, $workChart);
-        }
-
-        return $count;
-    }
-
-    /**
      * @return bool
      */
     public function isFired(): bool
@@ -1805,64 +1783,5 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function activities()
     {
         return $this->belongsToMany(Activity::class, 'activity_user', 'user_id', 'activity_id');
-    }
-
-    private function dayInWorkDaysGraphWithTypeUsual(Carbon $date, WorkChartModel $workChart): int
-    {
-        $dayoffs = $workChart->floating_dayoffs;
-
-        if ($dayoffs) {
-            return $date->daysInMonth - ($dayoffs * 4);
-        }
-
-        $count = 0;
-        for ($i = 1; $i <= $date->daysInMonth; $i++) {
-            $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
-            $day = strrev(decbin($workChart->workdays));
-
-            $numWeek = $dayOfWeek === 0 ? 7 : $dayOfWeek;
-
-            $dayNum = $day[$numWeek - 1] ?? null;
-            if ($dayNum == 1) $count++;
-        }
-        return $count;
-    }
-
-    public function dayInWorkDaysGraphWithTypeReplaceable(Carbon $date, WorkChartModel $workChart): int
-    {
-        $count = 0;
-
-        $start = $this->first_work_day;
-//            $this->timetracking()
-//                ->whereMonth('enter', $date->month)
-//                ->whereYear('enter', $date->year)
-//                ->first()?->enter ??
-
-        if (!$start) return 0;
-
-        if (is_string($start)) $start = Carbon::parse($start);
-        $end = $date->endOfMonth();
-
-        $days = explode('-', $workChart->name);
-        $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
-        $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
-
-        $differBetweenFirstAndLastDay = date_diff($end, $start)->days; // 11
-
-        $total = $workingDay + $dayOff; // 2+2=4
-
-        if ($workingDay === 1) {
-            $remains = $differBetweenFirstAndLastDay % $total;
-            if ($remains === 0) {
-                $count++;
-            }
-        }
-
-        $remains = $differBetweenFirstAndLastDay % $total;
-        if ($remains < $workingDay) {
-            $count++;
-        }
-
-        return $count;
     }
 }
