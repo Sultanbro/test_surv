@@ -6,6 +6,7 @@ use App\GroupSalary;
 use App\ProfileGroup;
 use App\Salary;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 
 class SaveGroupSalary extends Command
@@ -45,6 +46,7 @@ class SaveGroupSalary extends Command
      * Execute the console command.
      *
      * @return void
+     * @throws Exception
      */
     public function handle(): void
     {
@@ -65,6 +67,9 @@ class SaveGroupSalary extends Command
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function count($date): void
     {
         if ($this->argument('group_id')) {
