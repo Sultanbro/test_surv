@@ -1829,10 +1829,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function dayInWorkDaysGraphWithTypeReplaceable(Carbon $date, WorkChartModel $workChart): int
     {
-        $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
+        $start = $this->timetracking()
+            ->whereMonth('enter', $date->month)
+            ->whereYear('enter', $date->year)
+            ->first()?->exit;
         if (!$start) return 0;
 
-        if (is_string($start)) $start = Carbon::parse($this->first_work_day ?? $this->timetracking()->first()?->exit);
+        if (is_string($start)) $start = Carbon::parse($start);
         $end = $date->endOfMonth();
 
         $days = explode('-', $workChart->name);
