@@ -285,6 +285,7 @@
 						<div
 							v-if="user_types == '1'"
 							class="pointer"
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
 							@click="defineClickNumber('final', finalData)"
 						>
 							{{ finalData.value }}
@@ -293,7 +294,10 @@
 								class="cell-border"
 							/>
 						</div>
-						<div v-else>
+						<div
+							v-else
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
+						>
 							{{ finalData.value }}
 						</div>
 					</template>
