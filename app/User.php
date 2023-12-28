@@ -1831,10 +1831,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     {
         $count = 0;
 
-        $start = $this->timetracking()
-            ->whereMonth('enter', $date->month)
-            ->whereYear('enter', $date->year)
-            ->first()?->enter ?? $this->first_work_day;
+        $start = $this->first_work_day;
+//            $this->timetracking()
+//                ->whereMonth('enter', $date->month)
+//                ->whereYear('enter', $date->year)
+//                ->first()?->enter ??
 
         if (!$start) return 0;
 
