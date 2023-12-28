@@ -1846,9 +1846,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
         $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-        $date1 = $end; // 27
-        $date2 = $start; // 16
-        $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days; // 11
+        $differBetweenFirstAndLastDay = date_diff($end, $start)->days; // 11
 
         $total = $workingDay + $dayOff; // 2+2=4
 

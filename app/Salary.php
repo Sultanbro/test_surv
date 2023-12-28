@@ -1114,7 +1114,7 @@ class Salary extends Model
 
 //                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
 
-                $workdays = $user->calcWorkDays($date);
+                $workdays = $user->getWorkDays($date);
 
                 dump($user->id . " " . $workdays . " " . $working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
@@ -1189,7 +1189,7 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-                if($user->id == 21356) {
+                if ($user->id == 21356) {
                     dump($earnings);
                 }
 
