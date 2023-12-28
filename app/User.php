@@ -1829,34 +1829,40 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function dayInWorkDaysGraphWithTypeReplaceable(Carbon $date, WorkChartModel $workChart): int
     {
+        $count = 0;
+
         $start = $this->timetracking()
             ->whereMonth('enter', $date->month)
             ->whereYear('enter', $date->year)
-            ->first()?->exit;
+            ->first()?->enter ?? $this->first_work_day;
+
         if (!$start) return 0;
 
         if (is_string($start)) $start = Carbon::parse($start);
         $end = $date->endOfMonth();
 
         $days = explode('-', $workChart->name);
-        // Initialize counters
-        $workDays = 0;
+        $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
+        $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-        // Loop through each day from the first worked day to the current date
-        while ($start <= $end) {
-            // Get the current day of the week (1 = Monday, 7 = Sunday)
-            $dayOfWeek = $start->format('N');
+        $date1 = $end; // 27
+        $date2 = $start; // 16
+        $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days; // 11
 
-            // Check if the current day is a working day based on the schedule
-            $isWorkingDay = in_array($dayOfWeek, $days);
+        $total = $workingDay + $dayOff; // 2+2=4
 
-            // Increment the counters accordingly
-            if ($isWorkingDay) $workDays++;
-
-            // Move to the next day
-            $start->addDay();
+        if ($workingDay === 1) {
+            $remains = $differBetweenFirstAndLastDay % $total;
+            if ($remains === 0) {
+                $count++;
+            }
         }
 
-        return $workDays;
+        $remains = $differBetweenFirstAndLastDay % $total;
+        if ($remains < $workingDay) {
+            $count++;
+        }
+
+        return $count;
     }
 }
