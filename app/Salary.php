@@ -1112,7 +1112,7 @@ class Salary extends Model
                 $trainings = [];
 
                 $schedule = $user->scheduleFast();
-                $lunchTime = $schedule->rest_time ? $schedule->rest_time / 60 : 0;
+                $lunchTime = $schedule['rest_time'] ? $schedule['rest_time'] / 60 : 0;
 
                 $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
 
