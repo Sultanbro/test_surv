@@ -1145,7 +1145,7 @@ class Salary extends Model
 
                     if ($ewrewqre->count() > 0) { // день отмечен как переобучение
                         $trainings[$i] = true;
-                        $earning = $hourly_pay * $worktime;
+                        $earning = $hourly_pay * 0.5 * $worktime;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($worktime / 2, 1);
                         $hourly_pays[$i] = round($hourly_pay, 2);
