@@ -1200,6 +1200,7 @@ class Salary extends Model
                 $total_salary = 0;
 
                 if ($user->id == 3865) {
+                    dump($workdays . " " . $working_hours);
                     dump($earnings);
                 }
 
