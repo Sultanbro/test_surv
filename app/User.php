@@ -1760,6 +1760,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function getWorkDays($date): int
     {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChartType = $this->workChart->work_charts_type ?? 0;
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
             $ignore = $this->getCountWorkDays();   // Какие дни не учитывать в месяце
