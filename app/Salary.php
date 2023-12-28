@@ -1189,6 +1189,9 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
+                if($user->id == 28369) {
+                    dump($earnings);
+                }
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $total_bonuses += (float)$bonuses[$i];
