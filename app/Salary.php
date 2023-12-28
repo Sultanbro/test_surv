@@ -1199,7 +1199,7 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-                if ($user->id == 27977) {
+                if ($user->id == 28875) {
                     dump($workdays . " " . $working_hours);
                     dump($earnings);
                 }
