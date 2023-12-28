@@ -164,6 +164,10 @@ function calcCompleted(el) {
 		res = (fact / plan * 100).toFixed(2);
 	}
 
+	if(el.method == 2) {
+		res = el.percent
+	}
+
 	if(el.method == 3) {
 		res = plan - fact >= 0 ? 100 : 0;
 	}

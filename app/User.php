@@ -1726,20 +1726,20 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function calcWorkDays(Carbon|string $date): int
     {
-        $count = 0;
-        $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChart = $this->getWorkChartFast();
         if (!$workChart) return 22;
 
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+        $count = 0;
+
         if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
-            for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
-                if ($this->ifDayIsInWorkDaysGraph($dayOfWeek, $workChart)) $count++;
-            }
+            $count = $this->dayInWorkDaysGraphWithTypeUsual($date, $workChart);
         }
+
         if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-            $count = $this->dayInWorkDaysDiapason($date, $workChart);
+            $count = $this->dayInWorkDaysGraphWithTypeReplaceable($date, $workChart);
         }
+
         return $count;
     }
 
@@ -1806,17 +1806,28 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->belongsToMany(Activity::class, 'activity_user', 'user_id', 'activity_id');
     }
 
-    private function ifDayIsInWorkDaysGraph(int $dayOfWeek, WorkChartModel $workChart): bool
+    private function dayInWorkDaysGraphWithTypeUsual(Carbon $date, WorkChartModel $workChart): int
     {
-        $day = strrev(decbin($workChart->workdays));
+        $dayoffs = $workChart->floating_dayoffs;
 
-        $numWeek = $dayOfWeek === 0 ? 7 : $dayOfWeek;
+        if ($dayoffs) {
+            return $date->daysInMonth - ($dayoffs * 4);
+        }
 
-        $dayNum = $day[$numWeek - 1] ?? null;
-        return $dayNum == 1;
+        $count = 0;
+        for ($i = 1; $i <= $date->daysInMonth; $i++) {
+            $dayOfWeek = $date->copy()->setDay($i)->dayOfWeek;
+            $day = strrev(decbin($workChart->workdays));
+
+            $numWeek = $dayOfWeek === 0 ? 7 : $dayOfWeek;
+
+            $dayNum = $day[$numWeek - 1] ?? null;
+            if ($dayNum == 1) $count++;
+        }
+        return $count;
     }
 
-    public function dayInWorkDaysDiapason(Carbon $date, WorkChartModel $workChart): int
+    public function dayInWorkDaysGraphWithTypeReplaceable(Carbon $date, WorkChartModel $workChart): int
     {
         $start = $this->first_work_day ?? $this->timetracking()->first()?->exit;
         if (!$start) return 0;
@@ -1837,9 +1848,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $isWorkingDay = in_array($dayOfWeek, $days);
 
             // Increment the counters accordingly
-            if ($isWorkingDay) {
-                $workDays++;
-            }
+            if ($isWorkingDay) $workDays++;
 
             // Move to the next day
             $start->addDay();
