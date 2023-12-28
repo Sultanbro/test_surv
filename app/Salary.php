@@ -738,12 +738,12 @@ class Salary extends Model
                 if ($workChart && $workChart->rest_time != null) {
                     $lunchTime = $workChart->rest_time;
                     $hour = floatval($lunchTime / 60);
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
+                    $userWorkHours = max($schedule['end']->diffInHours($schedule['start']), 0);
+                    $working_hours = $userWorkHours - $hour;
                 } else {
-                    $lunchTime = 1;
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                    $lunchTime = 0;
+                    $userWorkHours = max($schedule['end']->diffInHours($schedule['start']), 0);
+                    $working_hours = $userWorkHours - $lunchTime;
                 }
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
