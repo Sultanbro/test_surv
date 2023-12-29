@@ -1,8 +1,8 @@
 <template>
 	<div class="kpi__content">
-		<ProfileTabs :tabs="items.slice().reverse().map(kpi => (kpi.target && kpi.target.name) || '---')">
+		<ProfileTabs :tabs="items.map(kpi => (kpi.target && kpi.target.name) || '---')">
 			<template
-				v-for="(wrap_item, w) in items.slice().reverse()"
+				v-for="(wrap_item, w) in items"
 				#[`tab(${w})`]
 			>
 				<div
