@@ -29,7 +29,7 @@ final class UserRepository extends CoreRepository
      */
     public function betweenDate(Carbon $startDate, Carbon $endDate): Collection
     {
-        return User::query()
+        return User::withTrashed()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
             ->with(['salaries' => fn($query) => $query->whereBetween('date', [
                 $startDate->format("Y-m-d"),
