@@ -47,9 +47,9 @@ class SetExitTimetracking extends Command
                 $workEndTime->addDays(1);
             }
 
-            if (!$workEndTime->isBefore($currentDate)) {
-                continue;
-            }
+//            if (!$workEndTime->isBefore($currentDate)) {
+//                continue;
+//            }
 
             if ($record->user->getKey() === 16885) {
                 dump(!$workEndTime->isBefore($currentDate));
