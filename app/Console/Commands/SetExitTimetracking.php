@@ -35,6 +35,7 @@ class SetExitTimetracking extends Command
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
+
             if (!$record->user) {
                 continue;
             }
@@ -48,6 +49,12 @@ class SetExitTimetracking extends Command
 
             if (!$workEndTime->isBefore($currentDate)) {
                 continue;
+            }
+
+            if ($record->user->getKey() === 16885) {
+                dump(!$workEndTime->isBefore($currentDate));
+                dump(!$workEndTime->isBefore($currentDate));
+                dump($record->isWorkEndTimeSetToNextDay($workEndTime));
             }
 
             $record->setExit($workEndTime)
