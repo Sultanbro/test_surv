@@ -878,6 +878,12 @@ import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
 
+const target2type = {
+	'App\\User': 1,
+	'App\\Position': 2,
+	'App\\ProfileGroup': 3,
+}
+
 export default {
 	name: 'TableAccrual',
 	components: {
@@ -1795,6 +1801,7 @@ export default {
 					}
 				}))
 				removeDeletedItems(this.kpiItems)
+				this.kpiItems.sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
 				this.kpiSidebar = true
 			}
 			catch(error){
