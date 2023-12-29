@@ -738,10 +738,12 @@ class Salary extends Model
                 if ($workChart && $workChart->rest_time != null) {
                     $lunchTime = $workChart->rest_time;
                     $hour = floatval($lunchTime / 60);
-                    $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $hour, 0);
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
                 } else {
-                    $lunchTime = 0;
-                    $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+                    $lunchTime = 1;
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
                 }
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
@@ -1096,11 +1098,8 @@ class Salary extends Model
                 }
 
                 $tts = $user->timetracking->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-                    $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
-                if ($user->id == 15193) {
-                    dump($trainee_days);
-                }
-                $retrainee_days = $user->daytypes->whereIn('type', [6]);
+                $trainee_days = $user->daytypes->whereIn('type', [5, 6, 7]);
+
                 $tts_before_apply = $user->timetracking->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
 
                 $earnings = [];
@@ -1110,7 +1109,7 @@ class Salary extends Model
                 $trainings = [];
 
                 $schedule = $user->scheduleFast();
-                $lunchTime = $schedule['rest_time'] ? $schedule['rest_time'] / 60 : 0;
+                $lunchTime = 1;
 
                 $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
 
@@ -1118,7 +1117,7 @@ class Salary extends Model
 
                 $workdays = $user->getWorkDays($date);
 
-//                dump($user->id . " " . $workdays . " " . $working_hours);
+                dump($user->id . " " . $workdays . " " . $working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
@@ -1127,7 +1126,6 @@ class Salary extends Model
                     $s = $user->salaries->where('day', $d)->first();
                     $zarplata = $s ? $s->amount : 70000;
 
-
                     $hourly_pay = $workdays ? $zarplata / $workdays / $working_hours : 0;
 
                     $hourly_pays[$i] = round($hourly_pay, 2);
@@ -1135,20 +1133,12 @@ class Salary extends Model
                     $x = $tts->where('day', $i);
                     $y = $tts_before_apply->where('day', $i);
                     $a = $trainee_days->where('day', $i);
-                    $ewrewqre = $retrainee_days->where('day', $i);
 
                     $earnings[$i] = null;
                     $hours[$i] = null;
                     $trainings[$i] = null;
 
-                    if ($ewrewqre->count() > 0) { // день отмечен как переобучение
-                        $trainings[$i] = true;
-                        $earning = $hourly_pay * 0.5 * $worktime;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($worktime / 2, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    }
-                    else if ($a->count() > 0) { // день отмечен как стажировка
+                    if ($a->count() > 0) { // день отмечен как стажировка
                         $trainings[$i] = true;
                         $earning = $hourly_pay * $internshipPayRate * $worktime;
                         $earnings[$i] = round($earning);
@@ -1199,8 +1189,7 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-                if ($user->id == 28875) {
-                    dump($workdays . " " . $working_hours);
+                if ($user->id == 15193) {
                     dump($earnings);
                 }
 
@@ -1236,8 +1225,7 @@ class Salary extends Model
 //                    $obon += $total_bonuses;
 //                    $osal += $total_salary;
 //                }
-//                dump($user_total, "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name . " kpi=" . $kpi . " bonus=" . $total_bonuses . " oklad=" . $total_salary);
-                dump($user_total . " " .  "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name);
+                dump($user_total, "user_id=" . $user->id . " name=" . $user->last_name . ' ' . $user->name . " kpi=" . $kpi . " bonus=" . $total_bonuses . " oklad=" . $total_salary);
             }
         }
 
