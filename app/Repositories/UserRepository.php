@@ -37,11 +37,11 @@ final class UserRepository extends CoreRepository
             ])])
             ->with('zarplata')
             ->where(fn($query) => $query
-                ->whereNull('deleted_at')
-                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [
-                    $startDate->format("Y-m-d"),
-                    $endDate->format("Y-m-d")
-                ]))
+//                ->whereNull('deleted_at')
+//                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [
+//                    $startDate->format("Y-m-d"),
+//                    $endDate->format("Y-m-d")
+//                ]))
             )
             ->get();
     }
