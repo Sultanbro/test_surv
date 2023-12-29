@@ -12,7 +12,7 @@ class DailySalaryUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:update {date?}';  //php artisan salary:update  2022-04-12
+    protected $signature = 'salary:update {date?} {group_id?}';  //php artisan salary:update  2022-04-12
 
     public function __construct(
         private readonly UpdateSalaryInterface $updateSalary
@@ -31,6 +31,7 @@ class DailySalaryUpdate extends Command
     public function handle(): void
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
-        $this->updateSalary->touch($date);
+        dd($this->argument('group_id'));
+        $this->updateSalary->touch($date, $this->argument('group_id'));
     }
 }
