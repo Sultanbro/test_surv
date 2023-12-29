@@ -56,7 +56,7 @@ class SetExitTimetracking extends Command
                 dump(!$workEndTime->isBefore($currentDate));
                 dump($record->isWorkEndTimeSetToNextDay($workEndTime));
             }
-
+            dd(1);
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)
                 ->addTime($workEndTime, $record->user->timezone())
