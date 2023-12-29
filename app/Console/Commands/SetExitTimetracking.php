@@ -40,7 +40,9 @@ class SetExitTimetracking extends Command
 
             /** @var Carbon $workEndTime */
             $workEndTime = $record->user->schedule()['end'];
-            dump(!$workEndTime->isBefore($currentDate),$record->user->id);
+            dump($workEndTime->toDateString());
+            dump(!$workEndTime->isBefore($currentDate), $record->user->id);
+
             if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
                 $workEndTime->addDays();
             }
