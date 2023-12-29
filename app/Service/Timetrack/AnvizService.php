@@ -18,6 +18,7 @@ class AnvizService
     public function fetchMarkTimes($date = null): void
     {
         $dateToFetch = Carbon::parse($date ?? now()->toDateString());
+        dd($dateToFetch);
         $dates = $this->shouldFetchPreviousDays()
             ? [$dateToFetch, $dateToFetch->subDay()->toDateString(), $dateToFetch->subDays(2)->toDateString()]
             : [$dateToFetch->toDateString()];
