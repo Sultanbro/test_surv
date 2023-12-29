@@ -28,7 +28,7 @@ class SetExitTimetracking extends Command
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::with('user')
-            ->where('enter', [$currentDate, $dayBeforeCurrentDate])
+            ->where('enter', [$dayBeforeCurrentDate, $currentDate])
 //            ->where('status', Model::DAY_STARTED)
             ->get();
         /** @var Timetracking $record */
@@ -41,7 +41,7 @@ class SetExitTimetracking extends Command
             /** @var Carbon $workEndTime */
             $workEndTime = $record->user->schedule()['end'];
 
-            if ($record->user->id === 16885) {
+            if ($record->user_id === 16885) {
                 dd(
                     $record->isWorkEndTimeSetToNextDay($workEndTime),
                     !$workEndTime->isBefore($currentDate->addDay()),
