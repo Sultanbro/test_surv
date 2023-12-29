@@ -35,7 +35,7 @@ class SetExitTimetracking extends Command
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
-
+            dd($record->user);
             if (!$record->user) {
                 continue;
             }
