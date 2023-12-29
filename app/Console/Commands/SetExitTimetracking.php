@@ -25,7 +25,6 @@ class SetExitTimetracking extends Command
     public function handle(): void
     {
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
-        dd($currentDate);
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::with('user')
             ->whereBetween('enter', [$currentDate->toDateString(), $dayBeforeCurrentDate->toDateString()])
