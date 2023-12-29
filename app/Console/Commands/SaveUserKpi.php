@@ -144,10 +144,12 @@ class SaveUserKpi extends Command
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
             dump($kpi['id'] . " " . $kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
-            dd($kpi['users'][0]['items']);
+//            dd($kpi['users'][0]['items']);
 //             dd($kpi['users'][0]['items'][2]);
             foreach ($kpi['users'][0]['items'] as $item) {
-
+                if ($item['id'] == 44 || $item['id'] == 45) {
+                    continue;
+                }
                 $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
 
 //                $workdays = $itemActivityWeekdays == 0
