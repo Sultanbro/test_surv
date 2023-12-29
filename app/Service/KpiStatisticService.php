@@ -706,7 +706,7 @@ class KpiStatisticService
                     });
             })
             ->orderBy('targetable_type', 'desc')
-//            ->limit(3)
+            ->limit(3)
             ->get();
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
