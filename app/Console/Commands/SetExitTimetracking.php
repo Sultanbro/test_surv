@@ -35,11 +35,11 @@ class SetExitTimetracking extends Command
 
         /** @var Timetracking $record */
         foreach ($records as $record) {
-
+            dump($record->user_id);
             /** @var Carbon $workEndTime */
             $workEndTime = $record->user->schedule()['end'];
 
-            if ($record->user_id === 16885) {
+            if ($record->user_id == 16885) {
                 dd(
                     $record->isWorkEndTimeSetToNextDay($workEndTime),
                     !$workEndTime->isBefore($currentDate->addDay()),
