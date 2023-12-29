@@ -1098,10 +1098,8 @@ class Salary extends Model
                 }
 
                 $tts = $user->timetracking->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-                    $trainee_days = $user->daytypes->whereIn('type', [5, 6, 7]);
-                if ($user->id == 15193) {
-                    dump($trainee_days);
-                }
+                $trainee_days = $user->daytypes->whereIn('type', [5, 6, 7]);
+
                 $tts_before_apply = $user->timetracking->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
 
                 $earnings = [];
@@ -1127,7 +1125,6 @@ class Salary extends Model
                     //count hourly pay
                     $s = $user->salaries->where('day', $d)->first();
                     $zarplata = $s ? $s->amount : 70000;
-
 
                     $hourly_pay = $workdays ? $zarplata / $workdays / $working_hours : 0;
 
