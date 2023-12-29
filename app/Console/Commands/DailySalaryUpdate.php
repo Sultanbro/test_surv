@@ -12,7 +12,7 @@ class DailySalaryUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:update {date?} {group_id?}';  //php artisan salary:update  2022-04-12
+    protected $signature = 'salary:update {date?,group_id?}';  //php artisan salary:update  2022-04-12
 
     public function __construct(
         private readonly UpdateSalaryInterface $updateSalary
