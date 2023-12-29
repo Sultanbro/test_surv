@@ -49,11 +49,9 @@ class SetExitTimetracking extends Command
                 continue;
             }
 
-            if ($record->user->getKey() === 16885) {
-                dump(!$workEndTime->isBefore($currentDate));
-                dump(!$workEndTime->isBefore($currentDate));
-                dump($record->isWorkEndTimeSetToNextDay($workEndTime));
-            }
+            dump(!$workEndTime->isBefore($currentDate));
+            dump(!$workEndTime->isBefore($currentDate));
+            dump($record->isWorkEndTimeSetToNextDay($workEndTime));
 
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)
