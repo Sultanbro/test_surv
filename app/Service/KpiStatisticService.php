@@ -678,7 +678,7 @@ class KpiStatisticService
             $droppedGroups = $user->droppedGroups($date);
 
             $groups = array_merge($groups, $droppedGroups);
-
+            dump($groups);
             $kpis->where(function ($query) use ($user_id, $groups, $position_id) {
                 $query->where(function ($q) use ($user_id) {
                     $q->where('targetable_id', $user_id)

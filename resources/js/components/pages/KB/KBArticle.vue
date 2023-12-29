@@ -166,7 +166,7 @@ export default {
 		fixedGlossary(){
 			const fixedMap = {}
 			const fixed = []
-			const glossary = this.glossary || []
+			const glossary = JSON.parse(JSON.stringify(this.glossary || []))
 			glossary.forEach(term => {
 				const word = term.word.trim().toLowerCase()
 				if(~fixedMap[word] && fixedMap[word] !== undefined){

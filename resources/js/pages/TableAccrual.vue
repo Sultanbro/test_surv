@@ -871,7 +871,7 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import { kpi_fields, parseKPI, removeDeletedItems } from '@/pages/kpi/kpis.js'
+import { kpi_fields, parseKPI, removeDeletedItems, target2type } from '@/pages/kpi/kpis.js'
 import salaryCellType from '@/composables/salaryCellType'
 
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
@@ -1795,6 +1795,7 @@ export default {
 					}
 				}))
 				removeDeletedItems(this.kpiItems)
+				this.kpiItems.sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
 				this.kpiSidebar = true
 			}
 			catch(error){

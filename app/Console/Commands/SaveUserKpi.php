@@ -143,7 +143,7 @@ class SaveUserKpi extends Command
 
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
-            dump($kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
+            dump($kpi['id'] . " " . $kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
 //            dd($kpi['users'][0]['items']);
 //             dd($kpi['users'][0]['items'][2]);
             foreach ($kpi['users'][0]['items'] as $item) {
@@ -161,7 +161,7 @@ class SaveUserKpi extends Command
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
                     'records_count' => $item['records_count'],
-                    'daily_plan' => (int)$item['daily_plan'],
+                    'daily_plan' => (float)$item['daily_plan'],
                     'full_time' => $item['full_time'],
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
@@ -169,7 +169,7 @@ class SaveUserKpi extends Command
 
                 $payload = json_decode($kpi['histories_latest']['payload'], true);
                 $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
-                dump("fact=" . $item['fact'] . " method=" . $item['method']);
+                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
                 dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
                 dump($off_limit);
                 // off_limit -> check employee can get more kpi bonus with this kpi

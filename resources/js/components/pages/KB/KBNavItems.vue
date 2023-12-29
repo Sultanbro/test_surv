@@ -149,7 +149,7 @@ export default KBNavItems
 .KBNavItems{
 	&-item{
 		&_active{
-			color: #65790c;
+			color: #3361ff;
 		}
 	}
 }

@@ -258,6 +258,12 @@ function removeDeletedItems(kpis){
 	})
 }
 
+const target2type = {
+	'App\\User': 1,
+	'App\\Position': 2,
+	'App\\ProfileGroup': 3,
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
 	kpi_fields,
@@ -269,4 +275,5 @@ module.exports = {
 	calcCompleted,
 	parseKPI,
 	removeDeletedItems,
+	target2type,
 };

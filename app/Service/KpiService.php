@@ -210,13 +210,12 @@ class KpiService
     }
 
     /**
-     * @param Request $request
+     * @param $id
      * @return void
      */
-    public function delete(Request $request): void
+    public function delete($id): void
     {
-        $kpi = Kpi::query()->find($request->get('id'));
-
+        $kpi = Kpi::query()->find($id);
         if ($kpi) {
             $kpi->updated_by = auth()->id();
             $kpi->save();
