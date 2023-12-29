@@ -27,11 +27,11 @@ class SetExitTimetracking extends Command
     {
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
-        dd($currentDate->toDateString(), $dayBeforeCurrentDate->toDateString());
         $records = Model::with('user')
-            ->whereBetween('enter', [$currentDate, $dayBeforeCurrentDate])
-            ->where('status', Model::DAY_STARTED)
+            ->where('enter', [$currentDate, $dayBeforeCurrentDate])
+//            ->where('status', Model::DAY_STARTED)
             ->get();
+        dd($records);
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
