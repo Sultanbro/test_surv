@@ -31,7 +31,6 @@ class SetExitTimetracking extends Command
             ->where('enter', [$currentDate, $dayBeforeCurrentDate])
 //            ->where('status', Model::DAY_STARTED)
             ->get();
-        dd($records);
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
@@ -46,16 +45,16 @@ class SetExitTimetracking extends Command
                 $workEndTime->addDays(1);
             }
 
-//            if (!$workEndTime->isBefore($currentDate)) {
-//                continue;
-//            }
+            if (!$workEndTime->isBefore($currentDate)) {
+                continue;
+            }
 
             if ($record->user->getKey() === 16885) {
                 dump(!$workEndTime->isBefore($currentDate));
                 dump(!$workEndTime->isBefore($currentDate));
                 dump($record->isWorkEndTimeSetToNextDay($workEndTime));
             }
-            dd(1);
+
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)
                 ->addTime($workEndTime, $record->user->timezone())
