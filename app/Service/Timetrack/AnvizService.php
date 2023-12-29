@@ -38,10 +38,9 @@ class AnvizService
             ->latest('CheckTime')
             ->whereDate('CheckTime', $this->date)
             ->get();
-        dd($anvizRecords);
         $usersIds = $this->getUserIds($anvizRecords);
         $timetrackingRecords = $this->getTimetrackingRecords($usersIds);
-
+        dd($timetrackingRecords);
         foreach ($usersIds as $user_id) {
             $lastAnvizDate = optional($anvizRecords->where('Userid', $user_id)->first())->CheckTime;
             $userRecords = $timetrackingRecords->where('user_id', $user_id);
