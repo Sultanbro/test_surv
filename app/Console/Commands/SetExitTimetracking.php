@@ -31,7 +31,6 @@ class SetExitTimetracking extends Command
             ->where('enter', [$currentDate, $dayBeforeCurrentDate])
 //            ->where('status', Model::DAY_STARTED)
             ->get();
-        dd($records->pluck('enter'));
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
