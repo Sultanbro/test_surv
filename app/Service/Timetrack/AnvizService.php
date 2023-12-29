@@ -21,7 +21,6 @@ class AnvizService
         $dates = $this->shouldFetchPreviousDays()
             ? [$dateToFetch, $dateToFetch->subDay()->toDateString(), $dateToFetch->subDays(2)->toDateString()]
             : [$dateToFetch->toDateString()];
-        dd($dates);
         foreach ($dates as $my_date) {
             $this->date = $my_date;
             $this->resolveOneDay();
@@ -39,6 +38,7 @@ class AnvizService
             ->latest('CheckTime')
             ->whereDate('CheckTime', $this->date)
             ->get();
+        dd($anvizRecords);
         $usersIds = $this->getUserIds($anvizRecords);
         $timetrackingRecords = $this->getTimetrackingRecords($usersIds);
 
