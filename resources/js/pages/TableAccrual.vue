@@ -871,18 +871,12 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import { kpi_fields, parseKPI, removeDeletedItems } from '@/pages/kpi/kpis.js'
+import { kpi_fields, parseKPI, removeDeletedItems, target2type } from '@/pages/kpi/kpis.js'
 import salaryCellType from '@/composables/salaryCellType'
 
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
-
-const target2type = {
-	'App\\User': 1,
-	'App\\Position': 2,
-	'App\\ProfileGroup': 3,
-}
 
 export default {
 	name: 'TableAccrual',
