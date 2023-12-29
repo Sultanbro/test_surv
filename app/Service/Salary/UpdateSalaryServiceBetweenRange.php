@@ -33,8 +33,8 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
         $date = Carbon::parse($date);
         return [
-            Carbon::parse($date)->subDays(9),
-            Carbon::parse($date)
+            Carbon::parse($date)->startOfMonth(),
+            Carbon::parse($date)->endOfMonth()
         ];
     }
 
