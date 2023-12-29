@@ -24,9 +24,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
         $users = $this->userRepository->betweenDate($startDate, $endDate);
 
         while ($startDate <= $endDate) {
-            if ($startDate->day === 25) {
-                dd($users->where('id', 30386));
-            }
+
             $this->updateDaySalary($users, $startDate);
             $startDate->addDay();
         }

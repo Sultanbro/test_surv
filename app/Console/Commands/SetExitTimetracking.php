@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Timetracking as Model;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SetExitTimetracking extends Command
 {
-    protected $signature = 'timetracking:check';
+    protected $signature = 'timetracking:check {date?}';
 
     protected $description = 'Автоматическое завершение рабочего дня';
 
@@ -19,27 +20,26 @@ class SetExitTimetracking extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
+        $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
+        $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::with('user')
-            ->where(function($query) {
-                $query->whereDate('enter', now())
-                    ->orWhereDate('enter', now()->subDay());
-            })
-            ->workdayStarted()
+            ->whereBetween('enter', [$currentDate->toDateString(), $dayBeforeCurrentDate->toDateString()])
+            ->where('status', Model::DAY_STARTED)
             ->get();
 
         foreach ($records as $record) {
 
-            if(!$record->user) {
+            if (!$record->user) {
                 continue;
-			}
+            }
 
             $workEndTime = $record->user->schedule()['end'];
 
-            if($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+            if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
                 $workEndTime->addDays(1);
             }
 
@@ -52,7 +52,7 @@ class SetExitTimetracking extends Command
                 ->addTime($workEndTime, $record->user->timezone())
                 ->save();
 
-            $this->line("Для сотрудника с ID ".$record->user_id." рабочий день завершен автоматический в ".$workEndTime->format('H:i'));
+            $this->line("Для сотрудника с ID " . $record->user_id . " рабочий день завершен автоматический в " . $workEndTime->format('H:i'));
         }
     }
 }
