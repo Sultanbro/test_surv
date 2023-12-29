@@ -31,11 +31,10 @@ class SetExitTimetracking extends Command
             ->whereBetween('enter', [$currentDate->toDateString(), $dayBeforeCurrentDate->toDateString()])
             ->where('status', Model::DAY_STARTED)
             ->get();
-
+        dd($records);
         /** @var Timetracking $record */
         foreach ($records as $record) {
 
-            dd($record->user);
             if (!$record->user) {
                 continue;
             }
