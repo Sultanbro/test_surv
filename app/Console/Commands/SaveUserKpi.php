@@ -169,7 +169,7 @@ class SaveUserKpi extends Command
 
                 $payload = json_decode($kpi['histories_latest']['payload'], true);
                 $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
-                dump("fact=" . $item['fact'] . " method=" . $item['method']);
+                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
                 dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
                 dump($off_limit);
                 // off_limit -> check employee can get more kpi bonus with this kpi
