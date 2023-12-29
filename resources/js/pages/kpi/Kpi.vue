@@ -674,35 +674,29 @@ export default {
 
 		},
 
-		deleteKpi(i) {
+		async deleteKpi(index) {
+			const item = this.items[index]
+			const allIndex = this.all_items.findIndex(el => el.id == item.id)
 
-			let item = this.items[i]
-			let a = this.all_items.findIndex(el => el.id == item.id);
-
-			if(!confirm('Вы уверены?')) {
-				return;
-			}
+			if(!confirm('Вы уверены?')) return
 
 			if(item.id == 0) {
-				if(a != -1) this.all_items.splice(a, 1);
-				// this.onSearch();
-				this.$toast.info('KPI Удален!');
-				return;
+				if(~allIndex) this.all_items.splice(allIndex, 1)
+				this.$toast.info('KPI Удален')
+				return
 			}
 
-			let loader = this.$loading.show();
-			this.axios.delete(this.uri + '/delete/' + item.id).then(() => {
-
-
-				if(a != -1) this.all_items.splice(a, 1);
-				// this.onSearch();
-
-				this.$toast.info('KPI Удален!');
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			let loader = this.$loading.show()
+			try {
+				await this.axios.delete(this.uri + '/delete/' + item.id)
+				this.items.splice(index)
+				if(allIndex != -1) this.all_items.splice(allIndex, 1)
+				this.$toast.info('KPI Удален')
+			}
+			catch (error) {
 				alert(error)
-			});
+			}
+			loader.hide()
 		},
 
 		showStat() {
