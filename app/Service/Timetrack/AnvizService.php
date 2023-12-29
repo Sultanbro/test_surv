@@ -18,11 +18,10 @@ class AnvizService
     public function fetchMarkTimes($date = null): void
     {
         $dateToFetch = Carbon::parse($date ?? now()->toDateString());
-        dd($dateToFetch);
         $dates = $this->shouldFetchPreviousDays()
             ? [$dateToFetch, $dateToFetch->subDay()->toDateString(), $dateToFetch->subDays(2)->toDateString()]
             : [$dateToFetch->toDateString()];
-
+        dd($dates);
         foreach ($dates as $my_date) {
             $this->date = $my_date;
             $this->resolveOneDay();
