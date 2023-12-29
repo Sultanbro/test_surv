@@ -161,7 +161,7 @@ class SaveUserKpi extends Command
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
                     'records_count' => $item['records_count'],
-                    'daily_plan' => (int)$item['daily_plan'],
+                    'daily_plan' => (float)$item['daily_plan'],
                     'full_time' => $item['full_time'],
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
