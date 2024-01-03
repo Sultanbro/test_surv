@@ -96,7 +96,7 @@
 								/>
 							</div>
 							<p class="text-center text-14">
-								{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
+								{{ toFloat(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
 							</p>
 						</div>
 						<JobtronOverlay
@@ -698,7 +698,12 @@ export default {
 			}).catch(error => {
 				alert(error)
 			});
-		}
+		},
+
+		toFloat(num){
+			if(Number(num) !== parseInt(num)) return Number(num).toFixed(2)
+			return parseInt(num)
+		},
 	}
 }
 </script>
