@@ -307,6 +307,7 @@
 												</li>
 												<li
 													v-else-if="['name'].includes(field.key)"
+													:title="`ряд: ${ rowsMap[item[field.key].depend_id].row }`"
 													@click="removeDependency(item[field.key])"
 													@mouseover="toggleContext2(item[field.key], '')"
 												>
@@ -807,6 +808,17 @@ export default {
 		reportCardsFix(){
 			return this.reportCards?.report_cards?.map(rc => rc.position_id) || []
 		},
+		rowsMap(){
+			if(!this.table) return {}
+			return this.table.reduce((result, row) => {
+				const firstCell = row.name
+				result[firstCell.row_id] = {
+					id: firstCell.row_id,
+					row: +firstCell.cell.replace(/[^\d]+/g, ''),
+				}
+				return result
+			})
+		}
 	},
 
 	watch: {
