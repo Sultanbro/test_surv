@@ -152,9 +152,6 @@ final class Analytics
                         if ($statistic->activity) {
                             // TODO: here should be condition, $statistic->activity can be null
                             $val = $this->totalForDay($statistic->activity, $day);
-                            if ($statistic->getKey() === 293862) {
-                                dd($this->totalForDay($statistic->activity, $day));
-                            }
                         }
                         $statistic->show_value = $val;
                         $statistic->save();

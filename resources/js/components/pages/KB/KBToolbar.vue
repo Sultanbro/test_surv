@@ -32,13 +32,6 @@
 				<i class="fa fa-pen" />
 			</button>
 			<template v-if="activeBook">
-				<button
-					v-if="isActiveCategory && isEdit"
-					class="KBToolbar-action KBToolbar-action_info"
-					@click="$emit('settings', activeBook)"
-				>
-					<i class="fa fa-cog" />
-				</button>
 				<template
 					v-if="editBook"
 				>
