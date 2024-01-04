@@ -457,13 +457,13 @@
 						v-for="(item, i_index) in items"
 						:key="i_index"
 					>
-						<template v-for="(field,f_index) in fields">
+						<template v-for="(field, f_index) in fields">
 							<td
 								v-if="f_index > 3"
 								:key="f_index"
 								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
-								:class="item[field.key].class"
+								:class="fixWeekends(field.key, item[field.key].class || '')"
 								@click="focus(i_index, f_index)"
 							>
 								<div
@@ -1811,6 +1811,16 @@ export default {
 			}
 
 			loader.hide()
+		},
+
+		fixWeekends(day, className){
+			if(!parseInt(day)) return className
+			const {currentYear, currentMonth} = this.monthInfo
+			const $date = this.$moment(`${currentYear}-${currentMonth}-${day}`, 'YYYY-MMMM-D')
+			const isWeekend = [0, 6].includes($date.day())
+			const resilt = className.replaceAll('weekday', '')
+			if(isWeekend) return resilt + ' weekday'
+			return resilt
 		},
 	}
 }
