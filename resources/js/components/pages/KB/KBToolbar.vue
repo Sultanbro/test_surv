@@ -98,7 +98,7 @@
 					</button>
 				</template>
 			</template>
-			<template v-else>
+			<!-- <template v-else>
 				<div
 					v-if="canEdit"
 					class="KBToolbar-action"
@@ -108,7 +108,7 @@
 						@click="$emit('settings')"
 					/>
 				</div>
-			</template>
+			</template> -->
 		</div>
 	</nav>
 </template>
