@@ -463,7 +463,7 @@
 								:key="f_index"
 								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
-								:class="fixWeekends(field.key, item[field.key].class || '')"
+								:class="fixClassName(field.key, item[field.key].class || '', item)"
 								@click="focus(i_index, f_index)"
 							>
 								<div
@@ -1813,7 +1813,8 @@ export default {
 			loader.hide()
 		},
 
-		fixWeekends(day, className){
+		fixClassName(day, className, row){
+			if(+day === 31 && row && row[30]) return this.fixClassName(day, row[30].class)
 			if(!parseInt(day)) return className
 			const {currentYear, currentMonth} = this.monthInfo
 			const $date = this.$moment(`${currentYear}-${currentMonth}-${day}`, 'YYYY-MMMM-D')
