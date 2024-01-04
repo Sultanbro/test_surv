@@ -100,7 +100,8 @@ class NotificationTemplatePusher extends Command
         $recipients     = User::query()
             ->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
             ->withWhereHas('group_users',fn($query) => $query->where('status','active')->where('is_head',0))
-            ->orderBy('last_name', 'asc')
+            ->withWhereHas('position', fn($query) => $query->where('is_spec', 0)->where('is_head', 0))
+            ->orderBy('last_name')
             ->get();
 
         $message    = $notification->title;
