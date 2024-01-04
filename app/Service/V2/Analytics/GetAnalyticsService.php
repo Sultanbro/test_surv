@@ -6,7 +6,6 @@ namespace App\Service\V2\Analytics;
 use App\DTO\Analytics\V2\GetAnalyticDto;
 use App\Facade\Analytics\AnalyticsFacade;
 use App\Helpers\DateHelper;
-use App\Models\Analytics\ReportCard;
 use App\ProfileGroup;
 use App\Traits\AnalyticTrait;
 
@@ -24,11 +23,13 @@ class GetAnalyticsService
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
-        $columns = $this->columns($date, $dto->groupId)->map(function ($column) {
-            return [
-                'key' => $column->name
-            ];
-        });
+        $columns = $this->columns($date, $dto->groupId)
+            ->map(function ($column) {
+                return [
+                    'key' => $column->name
+                ];
+            });
+
         return [
             'table' => AnalyticsFacade::analytics($dto),
             'columns' => $columns,
