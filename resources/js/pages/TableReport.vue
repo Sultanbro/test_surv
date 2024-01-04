@@ -1428,17 +1428,18 @@ export default {
 					let enter = this.$moment.utc(tt.enter, 'YYYY-MM-DD HH:mm:ss').local().format('HH:mm')
 					let exit = this.$moment.utc(tt.exit, 'YYYY-MM-DD HH:mm:ss').local().format('HH:mm')
 					startEnd[tt.date] += `<tr><td>${enter}</td><td>${exit}</td></td>`
+					const hours = Math.round((Number(tt.minutes) / 60) * 100) / 100
 
 					if (dayHours[tt.date].updated === 1 || dayHours[tt.date].updated === 2 || dayHours[tt.date].updated === 3) {
 						if (tt.updated !== 0) {
-							dayHours[tt.date].hour = Number(tt.minutes / 60)
+							dayHours[tt.date].hour = hours
 						}
-						tt_hours = Number(tt.minutes / 60);
+						tt_hours = hours
 					}
 					else {
 						if (tt.minutes > 0) {
-							dayHours[tt.date].hour += Number(tt.minutes / 60);
-							tt_hours += Number(tt.minutes / 60);
+							dayHours[tt.date].hour += hours
+							tt_hours += hours
 						}
 					}
 
@@ -1451,14 +1452,14 @@ export default {
 
 				//Время, история
 				dayHours.forEach((dh, key) => {
-					let resultHour = (item.user_type == 'office') ? Number(parseFloat(dh.hour)).toFixed(1) : Number(parseFloat(dh.hour)).toFixed(1)
-					let checkHour = (resultHour > 0) ? resultHour : 0
+					let resultHour = Math.round(parseFloat(dh.hour) * 100) / 100
+					let checkHour = resultHour || 0
 					let fine = []
 					if (item.selectedFines[key]) {
 						fine = item.selectedFines[key]
 					}
 					dayHours[key] = {
-						hour: Number(checkHour).toFixed(1),
+						hour: '' + (Math.round(Number(checkHour) * 100) / 100),
 						tooltip: `<table class="table table-sm mb-0 ">${startEnd[key].replace('undefined', '').replace('Invalid date', 'Еще не завершен')}</table>`,
 						key: key,
 						fine: (fine.length > 0),
@@ -1490,7 +1491,7 @@ export default {
 
 				items.push({
 					name: `${item.last_name} ${item.name}`,
-					total: Number(total).toFixed(1),
+					total: Math.round(Number(total) * 100) / 100,
 					enable_comment: item.enable_comment,
 					id: item.id,
 					fines: item.selectedFines,
@@ -1509,7 +1510,7 @@ export default {
 			this.items = items
 
 			for (let i = 1; i <= 31; i++) {
-				daily_totals[i] = Number(daily_totals[i]).toFixed(1);
+				daily_totals[i] = Math.round(Number(daily_totals[i]) * 100) / 100;
 			}
 			this.items.unshift(daily_totals);
 			this.totalRows = this.items.length

@@ -1248,9 +1248,15 @@ export default {
 
 			if(parent){
 				if(!parent.children) parent.children = []
+				page.is_category = parent.is_category ? page.factCategory : 0
+				if(!parent.is_category) {
+					page.canEdit = parent.canEdit
+					page.canRead = parent.canRead
+				}
 				parent.children.splice(newIndex, 0, page)
 			}
 			else{
+				page.is_category = page.factCategory
 				this.pages.splice(newIndex, 0, page)
 			}
 			page.parent_id = parentId

@@ -501,7 +501,8 @@ const totalMethods = {
 		return parseInt(avg.count ? avg.value / avg.count : 0)
 	},
 	sum(items, day){
-		return items.reduce((sum, item) => sum + (Number(item[day]) || 0), 0)
+		const result = items.reduce((sum, item) => sum + (Number(item[day]) || 0), 0)
+		return Math.round(result * 100) / 100
 	},
 }
 

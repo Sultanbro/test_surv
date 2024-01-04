@@ -4,9 +4,20 @@ function addFavorites(items, favorites){
 	items.forEach(item => {
 		if(favorites.includes(item.id)) item.isFavorite = true
 		if(item.children) addFavorites(item.children, favorites)
+		item.factCategory = item.is_category
 	})
 	return items
 }
+
+/* eslint-disable camelcase */
+function catInPage(items, parent = {is_category: 1}){
+	items.forEach(item => {
+		item.is_category = parent.is_category ? item.is_category : 0
+		if(item.children) catInPage(item.children, item)
+	})
+	return items
+}
+/* eslint-enable camelcase */
 
 function nest(items, id = null, link = 'parent_id'){
 	return items
@@ -53,7 +64,7 @@ export async function fetchKBBook(id){
 	const {data} = await axios.post('/kb/tree', {id})
 	return {
 		...data,
-		trees: addFavorites(data.trees, data.favourite_ids)
+		trees: catInPage(addFavorites(data.trees, data.favourite_ids))
 	}
 }
 

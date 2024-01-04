@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Timetracking;
 use App\Timetracking as Model;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -27,25 +28,26 @@ class SetExitTimetracking extends Command
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::with('user')
-            ->whereBetween('enter', [$currentDate->toDateString(), $dayBeforeCurrentDate->toDateString()])
-            ->where('status', Model::DAY_STARTED)
+            ->whereHas('user')
+            ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
+//            ->where('status', Model::DAY_STARTED)
             ->get();
 
+        /** @var Timetracking $record */
         foreach ($records as $record) {
-
-            if (!$record->user) {
-                continue;
-            }
-
+            dump($record->user_id);
+            /** @var Carbon $workEndTime */
             $workEndTime = $record->user->schedule()['end'];
 
+
             if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
-                $workEndTime->addDays(1);
+                $workEndTime->addDays();
             }
 
-            if (!$workEndTime->isPast()) {
+            if (!$workEndTime->isBefore($currentDate->addDay())) {
                 continue;
             }
+
 
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)

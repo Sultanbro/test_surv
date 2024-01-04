@@ -152,6 +152,9 @@ final class Analytics
                         if ($statistic->activity) {
                             // TODO: here should be condition, $statistic->activity can be null
                             $val = $this->totalForDay($statistic->activity, $day);
+                            if ($statistic->getKey() === 293862) {
+                                dd($this->totalForDay($statistic->activity, $day));
+                            }
                         }
                         $statistic->show_value = $val;
                         $statistic->save();
@@ -213,8 +216,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -268,7 +270,6 @@ final class Analytics
             ->where('date', $date)
             ->where('value', '>', 0)
             ->{$method}('value');
-
         if ($method === 'avg') {
             $total = round($total, 1);
         }
