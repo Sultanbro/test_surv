@@ -55,7 +55,7 @@ export async function newsFetch(params){
 		pagination: data.data.pagination,
 		// eslint-disable-next-line
 		pinned_articles: data.data.pinned_articles?.map(articleParse),
-		articles: data.data.articles?.map(question2QNA)
+		articles: data.data.articles?.map(articleParse)
 	}
 }
 
