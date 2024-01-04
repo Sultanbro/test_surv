@@ -394,6 +394,7 @@ export default {
 
 			isViewsPopup: false,
 			viewsPopupTimeout: null,
+			isVoteProgress: false,
 		}
 	},
 	computed: {
@@ -632,6 +633,8 @@ export default {
 			// clearTimeout(this.viewsPopupTimeout)
 		},
 		async onVote(data){
+			if(this.isVoteProgress) return
+			this.isVoteProgress = true
 			const votes = Object.entries(data)
 			try {
 				await API.newsVote(this.currentPost.id, {
@@ -658,6 +661,7 @@ export default {
 			catch (error) {
 				console.error(error)
 			}
+			this.isVoteProgress = false
 		}
 	}
 }
