@@ -51,7 +51,10 @@
 						</template>
 					</tr>
 				</thead>
-				<tbody class="TableDecomposition-tbody">
+				<tbody
+					:key="updateKey"
+					class="TableDecomposition-tbody"
+				>
 					<tr
 						v-for="(item, index) in items"
 						:key="index"
@@ -243,6 +246,7 @@ export default {
 				to: null,
 				index: null,
 			},
+			updateKey: 0,
 		};
 	},
 	computed: {
@@ -314,6 +318,8 @@ export default {
 				name:'',
 				plan: 0,
 				editable: false,
+				total_plan: '',
+				total_fact: '',
 			};
 
 			for (let i = 1; i <= this.month.daysInMonth; i++) {
@@ -324,6 +330,7 @@ export default {
 			}
 
 			this.items.push(cells)
+			++this.updateKey
 
 			this.$toast.info('Пункт добавлен')
 		},
@@ -408,27 +415,24 @@ export default {
 			this.$refs['change-plan-modal'].hide();
 		},
 
-		deleteRecord(id, index) {
-			if (!confirm('Вы уверены?')) {
-				return '';
-			}
+		async deleteRecord(id, index) {
+			if (!confirm('Вы уверены?')) return
 
-			if(id != 0) {
-				let url = '/timetracking/analytics/decomposition/delete';
-
-				this.axios.delete(url, {
-					headers: {},
-					data: {
-						id: id
-					}
-				}).then(() => {
+			if(id) {
+				const url = '/timetracking/analytics/decomposition/delete'
+				try {
+					await this.axios.delete(url, {
+						headers: {},
+						data: { id }
+					})
 					this.$toast.info('Пункт удален')
-				}).catch(error => {
+				}
+				catch (error) {
 					alert(error)
-				});
+				}
 			}
-
-			this.items.splice(index, 1);
+			this.items.splice(index, 1)
+			++this.updateKey
 		},
 
 		editMode(item) {

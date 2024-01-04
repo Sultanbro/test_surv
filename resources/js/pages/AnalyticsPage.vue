@@ -176,6 +176,7 @@
 								:month="monthInfo"
 								:decompositions="decompositions"
 								:group-id="currentGroupId"
+								class="pt-4"
 							/>
 							<b-skeleton-table
 								v-else
