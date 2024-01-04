@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {arrayUniqueKey} from '@/lib/array.js'
 
 export async function newsCreate(formData){
 	const { data } = await axios.post('/news', formData, {
@@ -23,33 +24,38 @@ export async function newsUpdate(id, formData){
 	return data
 }
 
+function uniqueVotes(answers){
+	return answers.map(answer => ({
+		...answer,
+		votes: arrayUniqueKey(answer.votes || [], 'id')
+	}))
+}
+
 function question2QNA(question){
 	return {
 		id: question.id,
 		multiAnswer: !!question.multi_answer,
 		question: question.question,
 		order: question.order,
-		answers: question.answers || [],
+		answers: uniqueVotes(question.answers || []),
+	}
+}
+function articleParse(article){
+	const questions = article.questions || []
+	return {
+		...article,
+		questions: questions.map(question2QNA)
 	}
 }
 
 export async function newsFetch(params){
 	const { data } = await axios.get('/news/get', {params})
+
 	return {
 		pagination: data.data.pagination,
 		// eslint-disable-next-line
-		pinned_articles: data.data.pinned_articles?.map(article => {
-			return {
-				...article,
-				questions: (article.questions || []).map(question2QNA)
-			}
-		}),
-		articles: data.data.articles?.map(article => {
-			return {
-				...article,
-				questions: (article.questions || []).map(question2QNA)
-			}
-		})
+		pinned_articles: data.data.pinned_articles?.map(articleParse),
+		articles: data.data.articles?.map(articleParse)
 	}
 }
 
