@@ -650,15 +650,20 @@ export default {
 
 			const loader = this.$loading.show()
 			try {
-				const data = await API.restoreAnalyticsGroup({
+				await API.restoreAnalyticsGroup({
 					id: this.restore_group
 				})
+				const index = this.archived_groups.findIndex(group => group.id === this.restore_group)
+				if(~index){
+					const group = this.archived_groups[index]
+					this.ggroups.push(group)
+					this.archived_groups.splice(index, 1)
+					this.currentGroupId = this.restore_group
+				}
 				this.$toast.success('Восстановлен!')
-				this.currentGroupId = this.restore_group
-				this.ggroups = data.groups
-				this.fetchData()
 				this.restore_group = null
 				this.showArchive = false
+				this.fetchData()
 			}
 			catch (error) {
 				this.$toast.error('Не удалось восстановить аналитику!')
@@ -676,7 +681,13 @@ export default {
 					id: this.currentGroupId
 				})
 				this.$toast.success('Архивирован!')
-				this.currentGroupId = this.ggroups[0].id
+				const index = this.ggroups.findIndex(group => group.id === this.currentGroupId)
+				if(~index){
+					const group = this.ggroups[index]
+					this.archived_groups.push(group)
+					this.ggroups.splice(index, 1)
+				}
+				this.currentGroupId = this.ggroups[0]?.id
 				this.fetchData()
 			}
 			catch (error) {
