@@ -61,7 +61,12 @@ export async function newsFetch(params){
 
 export async function newsNextPage(url){
 	const { data } = await axios.get(url)
-	return data.data
+	return {
+		pagination: data.data.pagination,
+		// eslint-disable-next-line
+		pinned_articles: data.data.pinned_articles?.map(articleParse),
+		articles: data.data.articles?.map(articleParse)
+	}
 }
 
 export async function newsLike(id){
