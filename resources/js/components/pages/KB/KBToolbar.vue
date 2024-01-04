@@ -32,13 +32,6 @@
 				<i class="fa fa-pen" />
 			</button>
 			<template v-if="activeBook">
-				<button
-					v-if="isActiveCategory && isEdit"
-					class="KBToolbar-action KBToolbar-action_info"
-					@click="$emit('settings', activeBook)"
-				>
-					<i class="fa fa-cog" />
-				</button>
 				<template
 					v-if="editBook"
 				>
@@ -98,7 +91,7 @@
 					</button>
 				</template>
 			</template>
-			<!-- <template v-else>
+			<template v-else>
 				<div
 					v-if="canEdit"
 					class="KBToolbar-action"
@@ -108,7 +101,7 @@
 						@click="$emit('settings')"
 					/>
 				</div>
-			</template> -->
+			</template>
 		</div>
 	</nav>
 </template>
