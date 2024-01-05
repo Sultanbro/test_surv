@@ -5,8 +5,6 @@ namespace App\Listeners;
 use App\Events\TrackKpiItemEvent;
 use App\Models\History;
 use App\Models\Kpi\KpiItem;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class TrackKpiItemListener
 {
@@ -23,28 +21,30 @@ class TrackKpiItemListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param TrackKpiItemEvent $event
      * @return void
      */
-    public function handle(TrackKpiItemEvent $event)
+    public function handle(TrackKpiItemEvent $event): void
     {
-        $kpiItem = KpiItem::query()->withTrashed()->with('activity')->findOrFail($event->kpiItemId);
-
+        $data = $event->data;
+        /** @var KpiItem $kpiItem */
+        $kpiItem = KpiItem::withTrashed()->with('activity')->findOrFail($data['id']);
+        $activity = $kpiItem->activity;
 
         History::query()->create([
-            'reference_table'   => 'App\Models\Kpi\KpiItem',
-            'reference_id'      => $kpiItem->id,
-            'actor_id'          => auth()->id() ?? 5,
-            'payload'           => json_encode([
-                'name'          => $kpiItem->name,
-                'kpi_id'        => $kpiItem->kpi_id,
-                'activity_id'   => $kpiItem->activity_id,
-                'plan'          => $kpiItem->plan,
-                'daily_plan'    => $kpiItem->activity ? $kpiItem->activity->daily_plan : null,
-                'share'         => $kpiItem->share,
-                'cell'          => $kpiItem->cell,
-                'method'        => $kpiItem->method,
-                'unit'          => $kpiItem->unit,
+            'reference_table' => 'App\Models\Kpi\KpiItem',
+            'reference_id' => $kpiItem->getKey(),
+            'actor_id' => auth()->id() ?? 5,
+            'payload' => json_encode([
+                'name' => $kpiItem->name,
+                'kpi_id' => $kpiItem->kpi_id,
+                'activity_id' => $data['activity_id'],
+                'plan' => $data['plan'],
+                'daily_plan' => $activity?->daily_plan,
+                'share' => $data['share'],
+                'cell' => $data['cell'],
+                'method' => $data['method'],
+                'unit' => $data['unit'],
             ])
         ]);
     }

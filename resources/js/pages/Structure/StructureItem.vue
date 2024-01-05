@@ -46,7 +46,7 @@
 
 			<!-- Список сотрудников -->
 			<div
-				v-if="manager || isVacant || (card.users && card.users.length)"
+				v-if="manager || isVacant || (users && users.length)"
 				class="structure-card-body"
 			>
 				<template v-if="isVacant">
@@ -345,7 +345,11 @@ export default {
 			if(this.manager && this.manager.id === Laravel.userId) return true
 
 			return this.users.some(user => user.id === Laravel.userId)
-		}
+		},
+		status(){
+			if(!this.manager) return ''
+			return this.manager.referrer_status
+		},
 	},
 	watch: {
 		card(){

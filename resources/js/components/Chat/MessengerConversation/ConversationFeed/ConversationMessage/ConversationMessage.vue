@@ -32,6 +32,7 @@
 					class="messenger__format-message-wrapper"
 					@mouseup.stop="onTextSelect"
 				>
+					<!-- eslint-disable -->
 					<div
 						v-if="message.parent"
 						class="messenger__format-container_parent"
@@ -40,14 +41,16 @@
 						<div class="messenger__format-container_parent-author">
 							{{ message.parent.sender.name }}
 						</div>
-						<div class="messenger__format-container_parent-message">
-							{{ message.parent.body }}
-						</div>
+						<div
+							v-html="parentBody"
+							class="messenger__format-container_parent-message"
+						/>
 					</div>
-					<!-- eslint-disable -->
+
 					<div
-						class="messenger__format-container"
 						v-html="messageBody"
+						class="messenger__format-container"
+						@click.capture="onClickMessage"
 					/>
 					<!-- eslint-enable -->
 					<ConversationMessageGallery
@@ -181,6 +184,7 @@ import JobtronAvatar from '@ui/Avatar'
 import { stringToColor } from '@/composables/stringToColor'
 
 const linkRegExp = /https?:\/\/[^\s]*|\[\s*?https?:\/\/[^\s]*\s*?\|[^\]]*\]/g;
+const mentionRegExp = /@([A-Za-z0-9_А-я\s]+)#(\d+);/gi
 
 export default {
 	name: 'ConversationMessage',
@@ -233,7 +237,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['user', 'chat']),
+		...mapGetters(['user', 'users', 'chat']),
 		messageCardClass() {
 			return {
 				'messenger__message-card': true,
@@ -279,6 +283,15 @@ export default {
 				.join('')
 				.trim()
 				.replace(linkRegExp, '<a href="$&" target="_blank" class="ConversationMessage-link">$&</a>')
+				.replace(mentionRegExp, (match, p1, p2) => `<a href="javascript:void(0)" data-user="${p2}" class="ConversationMessage-mention">${p1}${this.getUserTooltip(+p2)}</a>`)
+		},
+		parent(){
+			return this.message.parent
+		},
+		parentBody(){
+			if(!this.parent) return ''
+			if(typeof this.parent.body !== 'string') return ''
+			return this.parent.body.replace(mentionRegExp, (match, p1) => `<a href="javascript:void(0)" class="ConversationMessage-mention">${p1}</a>`)
 		},
 		name() {
 			return `${this.message.sender.name} ${this.message.sender.last_name}`
@@ -297,7 +310,8 @@ export default {
 			'loadMessages',
 			'loadMoreNewMessages',
 			'requestScroll',
-			'setLoading'
+			'setLoading',
+			'loadChat',
 		]),
 		isImage(file) {
 			const ext = file.name.split('.').pop();
@@ -331,6 +345,11 @@ export default {
 		},
 		trim(value){
 			return ('' + value).trim()
+		},
+		getUserTooltip(userId){
+			const user = this.users.find(user => user.id === userId)
+			if(!user) return ''
+			return `<span class="ConversationMessage-mentionTooltip"><img width="20" src="/users_img/${user.img_url}" class="radius-full"> ${user.name} ${user.last_name}</span>`
 		},
 		onTextSelect(event){
 			setTimeout(() => {
@@ -370,6 +389,11 @@ export default {
 			}
 
 			this.selectedBox = null
+		},
+		onClickMessage(event){
+			const userId = event.target.getAttribute('data-user')
+			if(!userId) return
+			this.loadChat({chatId: 'user' + userId})
 		},
 	},
 }
@@ -446,6 +470,39 @@ $ConversationMessage-radius: 18px;
 		&:hover{
 			color: #007bff;
 			text-decoration: underline;
+		}
+	}
+	&-mentionTooltip{
+		display: none;
+		width: fit-content;
+		padding: 5px 10px;
+		margin-bottom: 10px;
+		border: 1px solid #eee;
+
+		position: absolute;
+		z-index: 10;
+		bottom: 100%;
+		right: 0;
+
+		color: #333;
+		white-space: nowrap;
+
+		background-color: #fff;
+		box-shadow: 0px 10px 30px rgba(38, 51, 77, 0.3);
+		border-radius: 16px;
+	}
+	&-mention{
+		position: relative;
+		color: #007bff;
+		cursor: pointer;
+		&:hover{
+			color: #007bff;
+			text-decoration: underline;
+			.ConversationMessage{
+				&-mentionTooltip{
+					display: block;
+				}
+			}
 		}
 	}
 	&-quote{

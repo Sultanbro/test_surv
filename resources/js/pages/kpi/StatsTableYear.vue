@@ -70,7 +70,11 @@
 							v-for="month, key in $moment.months()"
 							:key="key"
 							class="text-center p-3"
+							:class="{
+								pointer: kpi.type === 1
+							}"
 							:style="`background-color: ${getBacklightForValue(kpi[key+1])}`"
+							@click="onClickCell(kpi, key+1)"
 						>
 							{{ kpi[key+1] | nonFixedFloat }}<sub v-if="typeof kpi[key+1] !== 'undefined'">%</sub>
 						</td>
@@ -95,8 +99,9 @@
 							<td
 								v-for="month, key in $moment.months()"
 								:key="key"
-								class="text-center p-3"
+								class="text-center p-3 pointer"
 								:style="`background-color: ${getBacklightForValue(user[key+1])}`"
+								@click="onClickCellInner(kpi, user, key+1)"
 							>
 								{{ user[key+1] | nonFixedFloat }}<sub v-if="typeof user[key+1] !== 'undefined'">%</sub>
 							</td>
@@ -127,6 +132,27 @@
 				</b-col>
 			</b-row>
 		</b-col>
+
+		<Sidebar
+			v-if="kpiSidebar"
+			width="80vw"
+			title="KPI Статистика"
+			:open="kpiSidebar"
+			@close="kpiSidebar = false"
+		>
+			<div class="px-2 pt-5">
+				<KpiContent
+					v-if="kpiItems.length"
+					class="px-4 TableAccrual-kpi"
+					:items="kpiItems"
+					:groups="groups"
+					:fields="kpiFields"
+				/>
+				<template v-else>
+					У сотрудника нет KPI
+				</template>
+			</div>
+		</Sidebar>
 	</div>
 </template>
 
@@ -135,12 +161,19 @@ import { mapActions, mapState } from 'pinia'
 import { useKPIStore } from '@/stores/KPI'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
+import { kpi_fields as kpiFields, parseKPI } from '@/pages/kpi/kpis.js'
+
+import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 const now = new Date()
 
 export default {
 	name: 'StatsTableYear',
-	components: {},
+	components: {
+		KpiContent,
+		Sidebar,
+	},
 	filters: {
 		nonFixedFloat(value){
 			if(typeof value === 'undefined') return ''
@@ -151,11 +184,18 @@ export default {
 		year:{
 			type: Number,
 			default: now.getFullYear(),
+		},
+		groups: {
+			type: Object,
+			default: () => ({}),
 		}
 	},
 	data(){
 		return {
 			page: 1,
+			kpiSidebar: false,
+			kpiItems: [],
+			kpiFields,
 		}
 	},
 	computed: {
@@ -252,6 +292,60 @@ export default {
 			if(kpi.type === 1 || !kpi.users.length) return
 			this.$set(kpi, 'expanded', !kpi.expanded)
 			this.$forceUpdate()
+		},
+		async onClickCellInner(kpistat, user, month){
+			const loader = this.$loading.show()
+			const [type, targetId] = kpistat.id.split('-')
+
+			this.kpiItems = []
+			const dataFrom = 'data_from'
+			try {
+				const {data: groupData} = await this.axios.post(`/statistics/kpi/groups-and-users/${targetId}`, {
+					filters: {
+						[dataFrom]: {
+							year: this.year,
+							month,
+						}
+					},
+					type,
+				})
+				if(!groupData.message){
+					groupData.kpi.users = groupData.kpi.users.filter(u => u.id === user.id)
+					if(groupData.kpi.users.length) this.kpiItems.push(parseKPI(groupData.kpi))
+				}
+			} catch (error) {
+				console.error(error)
+				this.$toast.error('Ну удалось получить статистику')
+			}
+			this.kpiSidebar = true
+			loader.hide()
+		},
+		async onClickCell(kpistat, month){
+			const [type, targetId] = kpistat.id.split('-')
+			if(+type !== 1) return
+
+			const loader = this.$loading.show()
+			this.kpiItems = []
+			const dataFrom = 'data_from'
+			try {
+				const {data: userData} = await this.axios.post(`/statistics/kpi/groups-and-users/${targetId}`, {
+					filters: {
+						[dataFrom]: {
+							year: this.year,
+							month,
+						}
+					},
+					type: 1
+				})
+				if(!userData.message){
+					this.kpiItems.push(parseKPI(userData.kpi))
+				}
+			} catch (error) {
+				console.error(error)
+				this.$toast.error('Ну удалось получить статистику')
+			}
+			this.kpiSidebar = true
+			loader.hide()
 		},
 	},
 }

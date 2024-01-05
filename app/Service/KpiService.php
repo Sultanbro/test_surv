@@ -16,6 +16,7 @@ use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -31,46 +32,53 @@ class KpiService
     public function fetch($filters): array
     {
         $searchWord = $filters['query'] ?? null;
-
-        $date = $filters['date'] ?? [
-            'year' => now()->year,
-            'month' => now()->month,
+        $dateToFilter = $filters['data_from'] ?? null;
+        $date = [
+            'year' => $dateToFilter['year'] ?? now()->year,
+            'month' => $dateToFilter['month'] ?? now()->month,
         ];
 
         $date = Carbon::createFromDate($date['year'], $date['month']);
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
+        $startOfDate = $date->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
-                    'items' => function (HasMany $query) use ($endOfDate) {
-                        $query->with(['histories' => function (MorphMany $query) use ($endOfDate) {
-                            $query->whereDate('created_at', '<=', $endOfDate);
-                        }]);
-                        $query->whereDate('created_at', '<=', $endOfDate);
-                    },
-                    'user' => fn(HasOne $query) => $query->select('id'),
-                    'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
-                    'creator',
-                    'updater',
-                    'histories' => function (morphMany $query) use ($endOfDate) {
-                        $query->whereDate('created_at', '<=', $endOfDate);
-                    }
-                ]
-            )->get();
-
+                'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
+                    $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
+                        $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+                    }]);
+                    $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $endOfDate);
+                    });
+                },
+                'user' => fn(HasOne $query) => $query->select('id'),
+                'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
+                'creator',
+                'updater',
+                'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
+                    $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+                }
+            ])
+            ->with([
+                'users',
+                'positions',
+                'groups',
+            ])
+            ->get();
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
 
             $item = $kpi->toArray();
 
-
             // remove items if it's not in history
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
-                $items = $kpi->items->whereNull('deleted_at');
+                $items = $kpi->items;
 
                 if (isset($payload['children'])) {
                     $items = $items->whereIn('id', $payload['children']);
@@ -78,7 +86,7 @@ class KpiService
 
                 foreach ($items as $_item) {
 
-                    $history = $_item->histories->first();
+                    $history = $_item->histories->whereBetween('created_at', [$startOfDate, $endOfDate])->first();
 
                     $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
@@ -106,7 +114,6 @@ class KpiService
             $kpis_final[] = $item;
         }
 
-
         return [
             'kpis' => $kpis_final,
             'activities' => Activity::query()
@@ -125,18 +132,16 @@ class KpiService
      */
     public function save(KpiSaveRequest $request): array
     {
-        if ($this->hasDuplicate($request)) {
-            throw new TargetDuplicateException();
-        }
+//        if ($this->hasDuplicate($request)) {
+//            throw new TargetDuplicateException();
+//        }
 
         $kpi_id = 0;
         $kpi_item_ids = [];
-
         try {
             DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
+                /** @var Kpi $kpi */
                 $kpi = Kpi::query()->create([
-                    'targetable_id' => $request->input('targetable_id'),
-                    'targetable_type' => $request->input('targetable_type'),
                     'completed_80' => $request->input('completed_80'),
                     'completed_100' => $request->input('completed_100'),
                     'lower_limit' => $request->input('lower_limit'),
@@ -144,6 +149,9 @@ class KpiService
                     'colors' => json_encode($request->input('colors')),
                     'created_by' => auth()->id()
                 ]);
+                foreach ($request->get('kpiables') as $kpiable) {
+                    $kpi->saveTarget($kpiable);
+                }
 
                 $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
 
@@ -175,23 +183,20 @@ class KpiService
     public function update(KpiUpdateRequest $request): array
     {
         $id = $request->get('id');
-        $kpi_item_ids = [];
-        $kpi = null;
 
-        DB::transaction(function () use ($request, $id, &$kpi_item_ids, &$kpi) {
+        DB::beginTransaction();
+        $kpi_item_ids = $this->updateItems($id, $request->get('items'));
 
-            $kpi_item_ids = $this->updateItems($id, $request->get('items'));
+        $all = $request->all();
 
-            $all = $request->all();
+        $all['updated_by'] = auth()->id();
+        $all['children'] = $kpi_item_ids;
 
-            $all['updated_by'] = auth()->id();
-            $all['children'] = $kpi_item_ids;
+        unset($all['source']);
 
-            unset($all['source']);
-
-            $kpi = Kpi::query()->findOrFail($id);
-            $kpi->update($all);
-        });
+        $kpi = Kpi::query()->findOrFail($id);
+        $kpi->update($all);
+        DB::commit();
 
         $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
         event(new KpiChangedEvent($kpiCreatedDate));
@@ -205,13 +210,12 @@ class KpiService
     }
 
     /**
-     * @param Request $request
+     * @param $id
      * @return void
      */
-    public function delete(Request $request): void
+    public function delete($id): void
     {
-        $kpi = Kpi::query()->find($request->get('id'));
-
+        $kpi = Kpi::query()->find($id);
         if ($kpi) {
             $kpi->updated_by = auth()->id();
             $kpi->save();
@@ -244,7 +248,7 @@ class KpiService
                 'common' => $item['common']
             ]);
 
-            event(new TrackKpiItemEvent($kpi_item->getKey()));
+            event(new TrackKpiItemEvent($kpi_item->toArray()));
 
             $ids[] = $kpi_item->getKey();
         }
@@ -293,10 +297,10 @@ class KpiService
                 } else {
                     unset($item['daily_plan']);
                     unset($item['histories']);
-                    $kpi->items()->where('id', $item['id'])->update($item);
+//                    $kpi->items()->where('id', $item['id'])->update($item); move this to histories
                 }
 
-                event(new TrackKpiItemEvent($item['id']));
+                event(new TrackKpiItemEvent($item));
             }
         }
 
@@ -316,5 +320,23 @@ class KpiService
                 'targetable_type' => $request->get('targetable_type'),
             ])
             ->exists();
+    }
+
+    /**
+     * Change kpi off_limit property, off_limit -> If employee do his activity bigger than 100%, then he will get more kpi_bonus
+     * @param Request $request
+     * @return true
+     */
+    public function setOffLimit(Request $request): bool
+    {
+        $kpi = Kpi::query()->findOrFail($request->get('id'));
+
+        $kpi->update([
+            'off_limit' => $request->get('off_limit')
+        ]);
+
+        event(new TrackKpiUpdatesEvent($kpi->id));
+
+        return true;
     }
 }

@@ -49,11 +49,15 @@ class TaxRepository extends CoreRepository
      */
     public function updateOrDelete($id, array $ids, array $data): void
     {
-        $this->model()->where('user_id', $id)->whereNotIn('id', $ids)->delete();
+        $this->model()
+            ->where('user_id', $id)
+            ->whereNotIn('id', $ids)
+            ->delete();
 
-        foreach ($data as $id => $record)
-        {
-            $this->model()->where('id', $id)->update($record);
+        foreach ($data as $id => $record) {
+            $this->model()
+                ->where('id', $id)
+                ->update($record);
         }
     }
 
@@ -82,6 +86,7 @@ class TaxRepository extends CoreRepository
                 $join->on('user_tax.tax_id', '=', 'taxes.id')
                     ->where('user_tax.user_id', '=', $userId);
             })
-            ->get()->toArray();
+            ->get()
+            ->toArray();
     }
 }

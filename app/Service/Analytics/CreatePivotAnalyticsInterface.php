@@ -4,5 +4,5 @@ namespace App\Service\Analytics;
 
 interface CreatePivotAnalyticsInterface
 {
-    public function create(): void;
+    public function create(?int $groupId): void;
 }

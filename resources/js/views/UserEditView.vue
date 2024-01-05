@@ -106,7 +106,8 @@ export default {
 				group: true,
 				email: true,
 				selectedCityInput: true,
-				zarplata: true
+				zarplata: true,
+				uin: true,
 			},
 			counter: 0,
 			profile_errors: 0,
@@ -420,6 +421,7 @@ export default {
 			const position = formData.get('position');
 			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
+			const iin = formData.get('iin');
 
 			const phone = formData.get('phone').replace(/[^\d]+/g, '')
 			formData.set('phone', phone)
@@ -432,6 +434,11 @@ export default {
 
 			if (name.length < 3) {
 				this.frontValid.name = false;
+				this.showBlock(1);
+			}
+
+			if (iin.length < 6) {
+				this.frontValid.iin = false;
 				this.showBlock(1);
 			}
 
@@ -463,7 +470,7 @@ export default {
 				formData.set('coordinates[geo_lon]', this.cityLon)
 			}
 
-			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
+			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.iin){
 				this.sendForm(formData, isNew);
 			}
 			else {

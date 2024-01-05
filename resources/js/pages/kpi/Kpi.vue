@@ -90,11 +90,11 @@
 						>
 							<div v-if="field.key == 'target'">
 								<SuperSelect
-									v-if="item.target == null || item.id == 0"
+									v-if="item.id == 0"
 									:key="i"
 									class="w-full"
-									:values="item.target == null ? [] : [item.target]"
-									:single="true"
+									:values="item.targets"
+									:open-on-mount="!item.id"
 									@choose="(target) => item.target = target"
 									@remove="() => item.target = null"
 								/>
@@ -102,27 +102,35 @@
 									v-else
 									class="d-flex aic"
 								>
-									<i
-										v-if="item.target.type == 1"
-										class="fa fa-user ml-2"
-									/>
-									<i
-										v-if="item.target.type == 2"
-										class="fa fa-users ml-2"
-									/>
-									<i
-										v-if="item.target.type == 3"
-										class="fa fa-briefcase ml-2"
-									/>
-									<span class="ml-2 kpi-name-rows">
-										{{ item.target.name }}
+									<div class="">
 										<span
-											v-if="item.user"
-											class="kpi-name-row"
+											v-for="target, targetIndex in item.targets"
+											:key="targetIndex"
 										>
-											({{ getUserGourpsString(item.user) }})
+											<i
+												v-if="target.type == 1"
+												class="fa fa-user ml-2"
+											/>
+											<i
+												v-if="target.type == 2"
+												class="fa fa-users ml-2"
+											/>
+											<i
+												v-if="target.type == 3"
+												class="fa fa-briefcase ml-2"
+											/>
+											<span class="ml-2 kpi-name-rows">
+												{{ target.name }}
+												<span
+													v-if="item.user && 0"
+													class="kpi-name-row"
+												>
+													({{ getUserGourpsString(item.user) }})
+												</span>
+											</span>
 										</span>
-									</span>
+									</div>
+
 
 									<b-form-checkbox
 										class="kpi-status-switch"
@@ -179,6 +187,10 @@
 						<td>
 							<div class="d-flex">
 								<i
+									class="fa fa-cog ml-2 mr-1 btn btn-icon"
+									@click="settingsItem = item"
+								/>
+								<i
 									class="fa fa-save ml-2 mr-1 btn btn-success btn-icon"
 									@click="saveKpi(i)"
 								/>
@@ -210,6 +222,7 @@
 										:upper_limit="item.upper_limit"
 										:editable="true"
 										:kpi_page="true"
+										:allow_overfulfillment="!!item.off_limit"
 										@getSum="item.my_sum = $event"
 									/>
 								</div>
@@ -260,6 +273,30 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<SimpleSidebar
+			v-if="settingsItem"
+			title="Настройки kpi"
+			:open="!!settingsItem"
+			width="400px"
+			@close="settingsItem = null"
+		>
+			<template #body>
+				<label class="d-flex aic mb-2">
+					<b-form-checkbox
+						class="kpi-status-switch"
+						switch
+						:checked="!!settingsItem.off_limit"
+						:disabled="statusRequest"
+						@input="changeOffLimit(settingsItem, $event)"
+					>
+						&nbsp;
+					</b-form-checkbox>
+					<p>Доначислять за превышение 100% от плана</p>
+				</label>
+			</template>
+			<template #footer />
+		</SimpleSidebar>
 	</div>
 </template>
 
@@ -270,9 +307,22 @@ import JwPagination from 'jw-vue-pagination'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import KpiItems from '@/pages/kpi/KpiItems'
 import SuperSelect from '@/components/SuperSelect'
+import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 
 import {kpi_fields, newKpi} from './kpis.js'
-import {findModel/* , groupBy */} from './helpers.js'
+
+const classToType = {
+	'App\\User': 1,
+	'App\\ProfileGroup': 2,
+	'App\\Position': 3,
+}
+
+const typeToClass = [
+	'',
+	'App\\User',
+	'App\\ProfileGroup',
+	'App\\Position',
+]
 
 export default {
 	name: 'KPI',
@@ -281,6 +331,7 @@ export default {
 		SuperFilter,
 		SuperSelect,
 		KpiItems,
+		SimpleSidebar,
 	},
 	props: {},
 	data() {
@@ -306,8 +357,10 @@ export default {
 				'updated_by',
 			],
 			statusRequest: false,
+			offLimitRequest: false,
 			timeout: null,
 			filters: null,
+			settingsItem: null,
 		}
 	},
 	watch: {
@@ -366,6 +419,21 @@ export default {
 				this.statusRequest = false
 			})
 		},
+		async changeOffLimit(item){
+			if(this.offLimitRequest) return
+			this.offLimitRequest = true
+			try {
+				await this.axios.put('/kpi/set-off-limit', {
+					id: item.id,
+					off_limit: !item.off_limit
+				})
+				item.off_limit = !item.off_limit
+			}
+			catch (error) {
+				console.error(error)
+			}
+			this.offLimitRequest = false
+		},
 		expand(i) {
 			this.page_items[i].expanded = !this.page_items[i].expanded
 		},
@@ -388,8 +456,8 @@ export default {
 					query: this.searchText
 				}
 			}).then(response => {
-				this.items = response.data.data.kpis;
-				this.all_items = response.data.data.kpis;
+				this.items = response.data.data.kpis.map(this.addKpiTargets);
+				this.all_items = response.data.data.kpis.map(this.addKpiTargets);
 				this.activities = response.data.data.activities;
 				this.groups = response.data.data.groups;
 
@@ -401,6 +469,47 @@ export default {
 				loader.hide()
 				alert(error)
 			});
+		},
+
+		addKpiTargets(kpi){
+			return {
+				...kpi,
+				targets: kpi.target ? [
+					{
+						kpiable_id: kpi.targetable_id,
+						kpiable_type: kpi.targetable_type,
+						name: kpi.target.name,
+						type: classToType[kpi.targetable_type],
+					},
+					...this.combineKpiTargets(kpi)
+				] : this.combineKpiTargets(kpi)
+			}
+		},
+
+		combineKpiTargets(kpi){
+			return [
+				...kpi.users.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[1],
+					type: 1,
+					name: `${item.last_name} ${item.name}`
+				})),
+				...kpi.positions.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[3],
+					type: 3,
+					name: item.position,
+				})),
+				...kpi.groups.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[2],
+					type: 2,
+					name: item.name,
+				})),
+			]
 		},
 
 		setDefaultShowFields() {
@@ -446,15 +555,13 @@ export default {
 
 		addKpi() {
 			this.items.unshift(newKpi());
-			//this.page_items.unshift(newKpi());
-			// this.page_items = this.items.slice(0, this.pageSize);
 			this.$toast.info('Добавлен KPI');
 		},
 
 		validateMsg(item) {
 			let msg = '';
 
-			if(item.target == null) msg = 'Выберите Кому назначить'
+			if(item.target == null && !item.targets.length) msg = 'Выберите Кому назначить'
 
 			// wtf share ???
 			// eslint-disable-next-line no-unused-vars
@@ -505,18 +612,23 @@ export default {
 				return;
 			}
 
-
 			let loader = this.$loading.show();
 
 			let fields = {
 				id: item.id,
-				targetable_id: item.target.id,
-				targetable_type: findModel(item.target.type),
+				// targetable_id: item.target.id,
+				// targetable_type: findModel(item.target.type),
 				completed_80: item.completed_80,
 				completed_100: item.completed_100,
 				upper_limit: item.upper_limit,
 				lower_limit: item.lower_limit,
-				items: item.items
+				items: item.items,
+				off_limit: item.off_limit,
+				kpiables: item.targets.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[item.type],
+				})),
 			};
 
 			let req = this.items[i].id == 0
@@ -562,35 +674,29 @@ export default {
 
 		},
 
-		deleteKpi(i) {
+		async deleteKpi(index) {
+			const item = this.items[index]
+			const allIndex = this.all_items.findIndex(el => el.id == item.id)
 
-			let item = this.items[i]
-			let a = this.all_items.findIndex(el => el.id == item.id);
-
-			if(!confirm('Вы уверены?')) {
-				return;
-			}
+			if(!confirm('Вы уверены?')) return
 
 			if(item.id == 0) {
-				if(a != -1) this.all_items.splice(a, 1);
-				// this.onSearch();
-				this.$toast.info('KPI Удален!');
-				return;
+				if(~allIndex) this.all_items.splice(allIndex, 1)
+				this.$toast.info('KPI Удален')
+				return
 			}
 
-			let loader = this.$loading.show();
-			this.axios.delete(this.uri + '/delete/' + item.id).then(() => {
-
-
-				if(a != -1) this.all_items.splice(a, 1);
-				// this.onSearch();
-
-				this.$toast.info('KPI Удален!');
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			let loader = this.$loading.show()
+			try {
+				await this.axios.delete(this.uri + '/delete/' + item.id)
+				this.items.splice(index)
+				if(allIndex != -1) this.all_items.splice(allIndex, 1)
+				this.$toast.info('KPI Удален')
+			}
+			catch (error) {
 				alert(error)
-			});
+			}
+			loader.hide()
 		},
 
 		showStat() {

@@ -101,6 +101,7 @@ function newKpi() {
 	return {
 		id: 0,
 		target: null,
+		targets: [],
 		completed_80: 10000,
 		completed_100: 30000,
 		lower_limit: 80,
@@ -164,7 +165,7 @@ function calcCompleted(el) {
 	}
 
 	if(el.method == 2) {
-		res = (avg / plan * 100).toFixed(2);
+		res = el.percent
 	}
 
 	if(el.method == 3) {
@@ -219,7 +220,8 @@ function calcSum(el, kpi, completed) {
 
 		if (completed < upper_limit) {
 			result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
-		} else {
+		}
+		else {
 			result = completed_100 * share * completed
 		}
 	}
@@ -246,6 +248,22 @@ function parseKPI(kpi){
 	return kpi
 }
 
+function removeDeletedItems(kpis){
+	kpis.forEach(kpi => {
+		if(!kpi.users) return
+		kpi.users.forEach(user => {
+			if(!user.items) return
+			user.items = user.items.filter(item => !item.deleted_at)
+		})
+	})
+}
+
+const target2type = {
+	'App\\User': 1,
+	'App\\Position': 2,
+	'App\\ProfileGroup': 3,
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
 	kpi_fields,
@@ -256,4 +274,6 @@ module.exports = {
 	formatDate,
 	calcCompleted,
 	parseKPI,
+	removeDeletedItems,
+	target2type,
 };

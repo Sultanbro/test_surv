@@ -267,7 +267,6 @@ final class Analytics
             ->where('date', $date)
             ->where('value', '>', 0)
             ->{$method}('value');
-
         if ($method === 'avg') {
             $total = round($total, 1);
         }

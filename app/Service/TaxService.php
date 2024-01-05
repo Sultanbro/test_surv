@@ -39,21 +39,20 @@ class TaxService
         array $taxArray
     ): void
     {
-        try{
-            $taxes  = $taxArray['taxes'] ?? null;
-            $id     = $taxArray['id'] ?? null;
+        try {
+            $taxes = $taxArray['taxes'] ?? null;
+            $id = $taxArray['id'] ?? null;
 
-            if($taxArray['tax']) {
+            if ($taxArray['tax']) {
                 $this->repository->insertMultipleTaxes($taxArray['tax']);
-            }else if($taxes) {
+            } else if ($taxes) {
                 $taxIds = [];
-                foreach ($taxes as $id => $tax)
-                {
+                foreach ($taxes as $id => $tax) {
                     $taxIds[] = $id;
                 }
 
                 $this->repository->updateOrDelete($taxArray['id'], $taxIds, $taxes);
-            }else $this->repository->deleteAll($id);
+            } else $this->repository->deleteAll($id);
 
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());

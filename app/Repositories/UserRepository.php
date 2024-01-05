@@ -29,7 +29,7 @@ final class UserRepository extends CoreRepository
      */
     public function betweenDate(Carbon $startDate, Carbon $endDate): Collection
     {
-        return User::query()
+        return User::withTrashed()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
             ->with(['salaries' => fn($query) => $query->whereBetween('date', [
                 $startDate->format("Y-m-d"),
@@ -38,10 +38,7 @@ final class UserRepository extends CoreRepository
             ->with('zarplata')
             ->where(fn($query) => $query
                 ->whereNull('deleted_at')
-                ->orWhere(fn($query) => $query->whereBetween('deleted_at', [
-                    $startDate->format("Y-m-d"),
-                    $endDate->format("Y-m-d")
-                ]))
+                ->orWhere(fn($query) => $query->where('deleted_at', '>=', $startDate->format("Y-m-d")))
             )
             ->get();
     }

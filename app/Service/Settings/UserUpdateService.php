@@ -218,6 +218,7 @@ final class UserUpdateService
         $user->first_work_day = $userDTO->firstWorkDay;
         $user->working_country = $userDTO->workingCountry;
         $user->working_city = $userDTO->workingCity;
+        $user->uin = $userDTO->uin;
         if ($userDTO->coordinates) $user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
 //         $this->setCountryAndCity($user, $userDTO->workingCountry);
 

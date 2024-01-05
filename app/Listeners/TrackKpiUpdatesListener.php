@@ -26,10 +26,10 @@ class TrackKpiUpdatesListener
      * @param  TrackKpiUpdatesEvent  $event
      * @return void
      */
-    public function handle(TrackKpiUpdatesEvent $event)
+    public function handle(TrackKpiUpdatesEvent $event): void
     {
         $kpi = Kpi::query()->withTrashed()->findOrFail($event->kpiId);
-    
+
         DB::table('histories')->insert([
             'reference_table'   => 'App\Models\Kpi\Kpi',
             'reference_id'      => $kpi->id,
@@ -40,11 +40,12 @@ class TrackKpiUpdatesListener
                 'lower_limit'   => $kpi->lower_limit ?? null,
                 'upper_limit'   => $kpi->upper_limit ?? null,
                 'colors'        => $kpi->colors ?? null,
-                'children'      => $kpi->children
+                'children'      => $kpi->children,
+                'off_limit'     => $kpi->off_limit
             ]),
             'created_at'         => now(),
             'updated_at'         => now(),
-            
+
         ]);
     }
 }

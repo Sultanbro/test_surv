@@ -15,15 +15,16 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
     }
 
-    public function touch(string $date): void
+    public function touch(string $date, int $groupId = null): void
     {
-        [$endDate, $startDate] = $this->diapason($date);
+        [$startDate, $endDate] = $this->diapason($date);
 
         // Get all users within the date range using whereBetween
         /** @var Collection<User> $users */
         $users = $this->userRepository->betweenDate($startDate, $endDate);
 
         while ($startDate <= $endDate) {
+
             $this->updateDaySalary($users, $startDate);
             $startDate->addDay();
         }
@@ -33,8 +34,8 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
         $date = Carbon::parse($date);
         return [
-            $endDate = $date,
-            $endDate->copy()->subDays(9)
+            Carbon::parse($date)->startOfMonth(),
+            Carbon::parse($date)->endOfMonth()
         ];
     }
 
@@ -55,6 +56,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
             $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
             if ($salary && (int)$salary->amount === 0) {
+
                 $salary->update([
                     'date' => $date,
                     'note' => 'test',

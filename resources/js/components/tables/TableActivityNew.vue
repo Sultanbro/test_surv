@@ -171,7 +171,7 @@
 				</thead>
 				<tbody>
 					<tr
-						v-for="(item, index) in filtered"
+						v-for="(item, index) in table"
 						:key="index"
 					>
 						<td
@@ -182,7 +182,12 @@
 								class="btn btn-light rounded btn-sm"
 								@click="switchAction"
 							>
-								Сумма\Среднее
+								<template v-if="currentAction === 'sum'">
+									<b>Сумма</b>\Среднее
+								</template>
+								<template v-else>
+									Сумма\<b>Среднее</b>
+								</template>
 							</button>
 						</td>
 
@@ -200,12 +205,13 @@
 								</b-badge>
 
 								<JobtronCup
-									:place="sortDir === 'asc' ? (show_headers ? index - 1 : index) : filtered.length - index"
+									v-if="sortField !== 'fullname'"
+									:place="sortDir === 'desc' ? (show_headers ? index : index + 1) : table.length - index"
 									rotate
 								/>
 
 								<img
-									v-if="show_headers ? index > 1 : index"
+									v-if="show_headers ? index : true"
 									v-b-popover.hover.right="item.userType"
 									src="/images/dist/profit-info.svg"
 									width="16"
@@ -482,6 +488,24 @@ import {
 	hideAnalyticsActivityUsers,
 } from '@/stores/api'
 
+const totalMethods = {
+	avg(items, day){
+		const avg = items.reduce((avg, item) => {
+			const value = Number(item[day])
+			if(value){
+				++avg.count
+				avg.value += value
+			}
+			return avg
+		}, {count: 0, value: 0})
+		return parseInt(avg.count ? avg.value / avg.count : 0)
+	},
+	sum(items, day){
+		const result = items.reduce((sum, item) => sum + (Number(item[day]) || 0), 0)
+		return Math.round(result * 100) / 100
+	},
+}
+
 export default {
 	name: 'TableActivityNew',
 	components: {
@@ -530,11 +554,19 @@ export default {
 	},
 	data() {
 		return {
-			holidays: [],
 			items: [],
-			sorts: {},
-			sortField: '',
-			sortDir: 'asc',
+			sorts: {
+				asc: {
+					str: (a, b) => (a[this.sortField] || '').localeCompare(b[this.sortField] || ''),
+					data: (a, b) => (Number(a[this.sortField]) || 0) - (Number(b[this.sortField]) || 0),
+				},
+				desc: {
+					str: (b, a) => (a[this.sortField] || '').localeCompare(b[this.sortField] || ''),
+					data: (b, a) => (Number(a[this.sortField]) || 0) - (Number(b[this.sortField]) || 0),
+				}
+			},
+			sortField: 'plan',
+			sortDir: 'desc',
 			filtered: [],
 			local_activity: {},
 			fields: [],
@@ -616,6 +648,52 @@ export default {
 				return !isShowed
 			})
 		},
+		holidays(){
+			const result = []
+
+			const d = new Date(this.month.currentYear + '-' + this.month.month + '-01')
+			const weekends = [0, 6]
+
+			for(let i = 1; i <= this.month.daysInMonth; i++){
+				const newDate = new Date(d.getFullYear(), d.getMonth(), i)
+				if(weekends.includes(newDate.getDay())) result.push(i)
+			}
+
+			return result
+		},
+		sorted(){
+			if(!this.sortField) return this.filtered
+			const method = this.sortField === 'fullname' ? 'str' : 'data'
+			return this.filtered.slice().sort(this.sorts[this.sortDir][method])
+		},
+		totalRow(){
+			const avg = this.filtered.reduce((avg, item) => {
+				const value = Number(item.avg)
+				if(value){
+					++avg.count
+					avg.value += value
+				}
+				return avg
+			}, {count: 0, value: 0})
+
+			const result = {
+				name: 'SPECIAL_BTN',
+				is_date: false,
+				avg: this.toFloat(avg.count ? avg.value / avg.count : 0),
+				plan: this.filtered.reduce((sum, item) => sum + (Number(item.plan) || 0), 0),
+				month: this.filtered.reduce((sum, item) => sum + (Number(item.month) || 0), 0),
+				_cellVariants: [],
+			}
+			result.percent = this.toFloat(result.plan / (result.month || 0) * 100)
+			for(let i = 1; i < 32; ++i){
+				result[i] = totalMethods[this.currentAction](this.filtered, i)
+			}
+			return result
+		},
+		table(){
+			if(this.show_headers) return [this.totalRow, ...this.sorted]
+			return this.sorted
+		}
 	},
 	watch: {
 		activity: function() {
@@ -637,38 +715,15 @@ export default {
 		// 	this.fetchData()
 		// },
 		hiddenUsers(){
-			this.getWeekends();
 			this.fetchData();
 			this.local_activity = this.activity
 		},
 	},
 	created() {
-		this.getWeekends();
 		this.fetchData();
 		this.local_activity = this.activity
 	},
 	methods: {
-		getWeekends(){
-			var d = new Date(this.month.currentYear +'-'+ this.month.month +'-01');
-
-			for(var i = 1;i <= this.month.daysInMonth; i++){
-				var newDate = new Date(d.getFullYear(),d.getMonth(),i)
-				if(newDate.getDay()==0){   //if Sunday
-					this.holidays.push(i);
-				}
-				if(newDate.getDay()==6){   //if Saturday
-					this.holidays.push(i);
-				}
-			}
-		},
-		setFirstRowAsTotals() {
-			this.totalRowName = 'Итого'
-
-			this.records.unshift({
-				is_date: false,
-				name: this.totalRowName,
-			});
-		},
 		addCellVariantsArrayToRecords(){
 			this.itemsArray.forEach((element, key) => {
 
@@ -687,18 +742,6 @@ export default {
 			});
 		},
 
-		setLeaders() {
-			const arr = this.filtered;
-
-			const first = this.show_headers ? 2 : 1
-
-			if(arr.length > first + 3) {
-				arr[first].show_cup = 1;
-				arr[first + 1].show_cup = 2;
-				arr[first + 2].show_cup = 3;
-			}
-		},
-
 		async fetchData() {
 			let loader = this.$loading.show();
 			this.activityUsersToShowForm = this.accessDictionaries.users.reduce((result, user) => {
@@ -710,13 +753,11 @@ export default {
 				return result
 			}, [])
 
-			this.records = this.activity.records || [];
-			this.accountsNumber = (this.activity.records || []).length
+			this.records = this.activity.records || []
+			this.accountsNumber = this.records.length
 
-			if(this.show_headers) this.setFirstRowAsTotals()
 			this.calculateRecordsValues()
-			if(this.show_headers) this.calculateTotalsRow()
-			this.setLeaders();
+			// if(this.show_headers) this.calculateTotalsRow()
 			this.items = this.itemsArray;
 			this.filtered = this.itemsArray.filter(user => !this.hiddenUsers.includes(user.id));
 			this.addCellVariantsArrayToRecords();
@@ -734,27 +775,27 @@ export default {
 			if(this.currentAction == 'avg') {
 				this.currentAction = 'sum'
 
-				Object.keys(this.sum).forEach((key) => {
-					this.items[0][key] = parseFloat(this.sum[key]) === parseInt(this.sum[key]) ? parseInt(this.sum[key]) : parseFloat(this.sum[key]).toFixed(2);
-				});
+				// Object.keys(this.sum).forEach((key) => {
+				// 	this.items[0][key] = parseFloat(this.sum[key]) === parseInt(this.sum[key]) ? parseInt(this.sum[key]) : parseFloat(this.sum[key]).toFixed(2);
+				// });
 			}
 			else if(this.currentAction == 'sum') {
 				this.currentAction = 'avg'
 
-				Object.keys(this.sum).forEach((key) => {
-					this.items[0][key] = this.percentage[key] > 0
-						? Number(this.sum[key] / this.percentage[key]).toFixed(2)
-						: 0;
-				});
+				// Object.keys(this.sum).forEach((key) => {
+				// 	this.items[0][key] = this.percentage[key] > 0
+				// 		? Number(this.sum[key] / this.percentage[key]).toFixed(2)
+				// 		: 0;
+				// });
 			}
 
 			this.filterTable()
 		},
 
 		addButtonToFirstItem() {
-			if(this.itemsArray.length == 0) return;
+			// if(this.itemsArray.length == 0) return;
 
-			this.itemsArray[0].name = 'SPECIAL_BTN';
+			// this.itemsArray[0].name = 'SPECIAL_BTN';
 		},
 
 		updateTable(items) {
@@ -762,7 +803,7 @@ export default {
 
 			this.records = items;
 			this.calculateRecordsValues();
-			if(this.show_headers)  this.calculateTotalsRow();
+			// if(this.show_headers)  this.calculateTotalsRow();
 			this.updateAvgValuesOfRecords();
 
 			this.items = this.itemsArray;
@@ -813,40 +854,40 @@ export default {
 		calculateTotalsRow() {
 			// вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 
-			let total = 0
+			// let total = 0
 			// let quantity = 0;
 
-			for (let key in this.sum) {
-				if (this.sum.hasOwnProperty(key)) {
-					let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
-					let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
-					if(this.activity.plan_unit == 'minutes') {
-						this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
-						if(sum != 0)  {
-							total += sum;
-							// quantity++;
-						}
-					}
-					else {
-						this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
-						if(percentage != 0 && sum != 0) {
-							total += parseFloat(sum / percentage);
-							// quantity++;
-						}
-					}
-				}
-				else {
-					this.itemsArray[0][key] = 0;
-				}
-			}
+			// for (let key in this.sum) {
+			// 	if (this.sum.hasOwnProperty(key)) {
+			// 		let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
+			// 		let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
+			// 		if(this.activity.plan_unit == 'minutes') {
+			// 			this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
+			// 			if(sum != 0)  {
+			// 				total += sum;
+			// 				// quantity++;
+			// 			}
+			// 		}
+			// 		else {
+			// 			this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
+			// 			if(percentage != 0 && sum != 0) {
+			// 				total += parseFloat(sum / percentage);
+			// 				// quantity++;
+			// 			}
+			// 		}
+			// 	}
+			// 	else {
+			// 		this.itemsArray[0][key] = 0;
+			// 	}
+			// }
 
-			if(this.activity.plan_unit == 'minutes') {
-				this.itemsArray[0]['plan'] = Number(total).toFixed(0);
-			}
+			// if(this.activity.plan_unit == 'minutes') {
+			// 	this.itemsArray[0]['plan'] = Number(total).toFixed(0);
+			// }
 
-			if(this.activity.plan_unit == 'less_sum') {
-				this.itemsArray[0]['plan'] = Number(total).toFixed(0);
-			}
+			// if(this.activity.plan_unit == 'less_sum') {
+			// 	this.itemsArray[0]['plan'] = Number(total).toFixed(0);
+			// }
 		},
 
 		setCellVariants() {
@@ -855,26 +896,24 @@ export default {
 
 				if(this.activity.plan_unit != 'less_sum') {
 					minutes.forEach((account, index) => {
-						if (index > 0 || !this.show_headers) {
-							for (let key in account) {
-								if(this.activity.plan_unit != 'less_avg') {
-									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
-										if (account[key] >= this.activity.daily_plan) {
-											this.filtered[index]._cellVariants[key] = 'success';
-										}
-										else {
-											this.filtered[index]._cellVariants[key] = 'danger';
-										}
+						for (let key in account) {
+							if(this.activity.plan_unit != 'less_avg') {
+								if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
+									if (account[key] >= this.activity.daily_plan) {
+										this.filtered[index]._cellVariants[key] = 'success';
+									}
+									else {
+										this.filtered[index]._cellVariants[key] = 'danger';
 									}
 								}
-								else {
-									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
-										if (account[key] > this.activity.daily_plan) {
-											this.filtered[index]._cellVariants[key] = 'danger';
-										}
-										else {
-											this.filtered[index]._cellVariants[key] = 'success';
-										}
+							}
+							else {
+								if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
+									if (account[key] > this.activity.daily_plan) {
+										this.filtered[index]._cellVariants[key] = 'danger';
+									}
+									else {
+										this.filtered[index]._cellVariants[key] = 'success';
 									}
 								}
 							}
@@ -889,7 +928,7 @@ export default {
 				account.editable = false
 			})
 
-			item.editable = item.name == 'Итого' ? false : true;
+			item.editable = item.name == 'SPECIAL_BTN' ? false : true;
 		},
 		viewMode(item){
 			item.editable = false
@@ -950,15 +989,7 @@ export default {
 
 		calculateRecordsValues() {
 			this.sum = {};
-			if(this.show_headers) {
-				this.itemsArray = [{
-					'plan': '',
-					'avg': '',
-				}];
-			}
-			else {
-				this.itemsArray = [];
-			}
+			this.itemsArray = []
 
 			this.totalCountDays = 0;
 			this.avgOfAverage = 0;
@@ -967,8 +998,8 @@ export default {
 			// let row0_avg = 0;
 			// let row0_avg_items = 0;
 
-			let avg_of_column = 0;
-			let quan_of_column = 0;
+			// let avg_of_column = 0;
+			// let quan_of_column = 0;
 
 			this.records.forEach(account => {
 				if(this.hiddenUsers.includes(account.id)) return
@@ -1012,10 +1043,10 @@ export default {
 						let finishAverage = !isNaN(average) ? average : 0;
 						cellValues['avg'] = finishAverage;
 
-						if(finishAverage != 0) {
-							quan_of_column++;
-							avg_of_column += Number(finishAverage);
-						}
+						// if(finishAverage != 0) {
+						// 	quan_of_column++;
+						// 	avg_of_column += Number(finishAverage);
+						// }
 
 						let wd = Number(this.activity.workdays) || 0;
 						cellValues['month'] = account.appliedFrom ? Number(account.appliedFrom) * daily_plan : Number(wd) * daily_plan;
@@ -1040,10 +1071,10 @@ export default {
 						cellValues['plan'] = finishAverage;
 						cellValues['avg'] = finishAverage;
 
-						if(finishAverage != 0) {
-							quan_of_column++;
-							avg_of_column += Number(finishAverage);
-						}
+						// if(finishAverage != 0) {
+						// 	quan_of_column++;
+						// 	avg_of_column += Number(finishAverage);
+						// }
 
 						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 					}
@@ -1055,10 +1086,10 @@ export default {
 						cellValues['plan'] = finishAverage;
 						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
-						if(finishAverage != 0) {
-							quan_of_column++;
-							avg_of_column += Number(finishAverage);
-						}
+						// if(finishAverage != 0) {
+						// 	quan_of_column++;
+						// 	avg_of_column += Number(finishAverage);
+						// }
 					}
 
 					if(this.activity.plan_unit == 'less_sum') {
@@ -1082,7 +1113,6 @@ export default {
 						editable: false,
 						group: account.group,
 						fired: account.fired,
-						show_cup: 0,
 						appliedFrom: account.appliedFrom,
 						fullTime: account.fullTime,
 						email: account.email,
@@ -1093,16 +1123,16 @@ export default {
 				}
 			});
 
-			let avg = quan_of_column > 0 ? avg_of_column / quan_of_column : '';
+			// let avg = quan_of_column > 0 ? avg_of_column / quan_of_column : '';
 
-			if(this.show_headers)  {
-				if(this.activity.plan_unit == 'minutes') {
-					this.itemsArray[0]['avg'] = Number(avg).toFixed(0);
-				}
-				else {
-					this.itemsArray[0]['plan'] = Number(avg).toFixed(2);
-				}
-			}
+			// if(this.show_headers)  {
+			// 	if(this.activity.plan_unit == 'minutes') {
+			// 		this.itemsArray[0]['avg'] = Number(avg).toFixed(0);
+			// 	}
+			// 	else {
+			// 		this.itemsArray[0]['plan'] = Number(avg).toFixed(2);
+			// 	}
+			// }
 			// this.records.forEach(account => {
 			// 	if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 
@@ -1138,47 +1168,23 @@ export default {
 					}
 				})
 
-				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
+				this.$toast.success('Обновите, чтобы посмотреть новую таблицу')
 			}
 			catch (error) {
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			}
 			loader.hide()
 		},
 
 		sort(field) {
-			if(this.sorts[field] === undefined) {
-				this.sorts[field] = 'asc';
+			if(this.sortField === field){
+				this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc'
 			}
-
-			this.sortField = field
-			this.sortDir = this.sorts[field]
-
-			let item = this.items[0];
-
-			this.items.shift();
-			if(this.sorts[field] === 'desc') {
-				if(field == 'name') {
-					this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
-				}
-				else {
-					this.items.sort((a, b) => (Number(a[field]) > Number(b[field])) ? 1 : -1);
-				}
-
-				this.sorts[field] = 'asc';
+			else{
+				this.sortDir = field === 'fullname' ? 'asc' : 'desc'
+				this.sortField = field
 			}
-			else {
-				if(field == 'name') {
-					this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
-				}
-				else {
-					this.items.sort((a, b) => (Number(a[field]) < Number(b[field])) ? 1 : -1);
-				}
-				this.sorts[field] = 'desc';
-			}
-
-			this.items.unshift(item);
 		},
 
 		onClickImport(){

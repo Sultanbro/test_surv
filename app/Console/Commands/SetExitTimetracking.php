@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Timetracking;
 use App\Timetracking as Model;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class SetExitTimetracking extends Command
 {
-    protected $signature = 'timetracking:check';
+    protected $signature = 'timetracking:check {date?}';
 
     protected $description = 'Автоматическое завершение рабочего дня';
 
@@ -19,40 +21,40 @@ class SetExitTimetracking extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
+        $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
+        $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::with('user')
-            ->where(function($query) {
-                $query->whereDate('enter', now())
-                    ->orWhereDate('enter', now()->subDay());
-            })
-            ->workdayStarted()
+            ->whereHas('user')
+            ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
+//            ->where('status', Model::DAY_STARTED)
             ->get();
 
+        /** @var Timetracking $record */
         foreach ($records as $record) {
-
-            if(!$record->user) {
-                continue;
-			}
-
+            dump($record->user_id);
+            /** @var Carbon $workEndTime */
             $workEndTime = $record->user->schedule()['end'];
 
-            if($record->isWorkEndTimeSetToNextDay($workEndTime)) {
-                $workEndTime->addDays(1);
+
+            if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+                $workEndTime->addDays();
             }
 
-            if (!$workEndTime->isPast()) {
+            if (!$workEndTime->isBefore($currentDate->addDay())) {
                 continue;
             }
+
 
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)
                 ->addTime($workEndTime, $record->user->timezone())
                 ->save();
 
-            $this->line("Для сотрудника с ID ".$record->user_id." рабочий день завершен автоматический в ".$workEndTime->format('H:i'));
+            $this->line("Для сотрудника с ID " . $record->user_id . " рабочий день завершен автоматический в " . $workEndTime->format('H:i'));
         }
     }
 }

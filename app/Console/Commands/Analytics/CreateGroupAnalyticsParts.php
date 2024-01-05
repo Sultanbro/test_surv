@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CreateGroupAnalyticsParts extends Command
 {
@@ -40,9 +41,11 @@ class CreateGroupAnalyticsParts extends Command
      * Execute the console command.
      *
      * @return void
+     * @throws Throwable
      */
     public function handle(): void
     {
+        $this->cleanDuplicates();
         if (Carbon::now()->day !== 1) {
             $this->warn("Cant create pivot tables because today isn't beginning of month");
             return;
@@ -69,20 +72,6 @@ class CreateGroupAnalyticsParts extends Command
             $this->createDecomposition($group->id, $previousDate, $currentDate);
 
         }
-
-        DB::table('top_values')
-            ->whereIn('id', function ($query) {
-                $query->select('id')
-                    ->from(function ($subQuery) {
-                        $subQuery->selectRaw('id, ROW_NUMBER() OVER (PARTITION BY name, group_id, date ORDER BY id) as rn')
-                            ->from('top_values')
-                            ->whereDate('date', now())
-                            ->groupBy('id', 'name', 'group_id', 'date');
-                    }, 'RankedValues')
-                    ->where('rn', '>', 1);
-            })
-            ->delete();
-        $this->cleanDuplicates();
         $this->line('end');
     }
 
@@ -107,23 +96,24 @@ class CreateGroupAnalyticsParts extends Command
 
         foreach ($tops as $top) {
             TopValue::query()
-                ->create([
+                ->updateOrCreate([
                     'name' => $top->name,
                     'group_id' => $top->group_id,
                     'date' => $currentDate,
-                    'value' => 0,
-                    'unit' => $top->unit,
-                    'options' => $top->options,
-                    'min_value' => $top->min_value,
-                    'max_value' => $top->max_value,
-                    'cell' => $top->cell,
                     'activity_id' => $top->activity_id,
-                    'round' => $top->round,
-                    'is_main' => $top->is_main,
-                    'fixed' => $top->fixed,
-                    'value_type' => $top->value_type,
-                    'reversed' => $top->reversed,
-                ]);
+                    'unit' => $top->unit,
+                    'options' => $top->options],
+                    [
+                        'value' => 0,
+                        'min_value' => $top->min_value,
+                        'max_value' => $top->max_value,
+                        'cell' => $top->cell,
+                        'round' => $top->round,
+                        'is_main' => $top->is_main,
+                        'fixed' => $top->fixed,
+                        'value_type' => $top->value_type,
+                        'reversed' => $top->reversed,
+                    ]);
         }
     }
 
@@ -146,29 +136,47 @@ class CreateGroupAnalyticsParts extends Command
 
         foreach ($decompositions as $dec) {
             DecompositionValue::query()
-                ->create([
+                ->updateOrCreate([
                     'date' => $currentDate,
                     'group_id' => $dec->group_id,
                     'name' => $dec->name,
+                ], [
                     'values' => []
                 ]);
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     private function cleanDuplicates(): void
     {
-        // Define the date
-        $targetDate = Carbon::now()->startOfMonth()->format("Y-m-d");
+        DB::transaction(function () {
+            // Select the minimum id for each group
+            $minIds = DB::table('decomposition_values')
+                ->selectRaw('MIN(id) as id')
+                ->groupBy('name', 'group_id', 'date')
+                ->pluck('id');
 
-        $subQuery = DB::table('decomposition_values as ar')
-            ->selectRaw('MIN(ar.id)')
-            ->whereDate('ar.date', $targetDate)
-            ->groupBy('ar.name', 'ar.group_id', DB::raw('DATE(ar.date)'));
+            // Delete records that are not in the set of minimum ids
+            DB::table('decomposition_values')
+                ->whereNotIn('id', $minIds)
+                ->delete();
+        });
+        DB::transaction(function () {
 
-        DB::table('decomposition_values')
-            ->whereNotIn('id', $subQuery)
-            ->orWhere('name', '')
-            ->whereDate('date', $targetDate)
-            ->delete();
+            DB::table('top_values')
+                ->whereIn('id', function ($query) {
+                    $query->select('id')
+                        ->from(function ($subQuery) {
+                            $subQuery->selectRaw('id, ROW_NUMBER() OVER (PARTITION BY name, group_id, date ORDER BY id) as rn')
+                                ->from('top_values')
+                                ->whereDate('date', now())
+                                ->groupBy('id', 'name', 'group_id', 'date');
+                        }, 'RankedValues')
+                        ->where('rn', '>', 1);
+                })
+                ->delete();
+        });
     }
 }

@@ -29,7 +29,7 @@ function referalToUser(ref){
 		}
 	}
 	days.sort((a,b) => moment(a.date).valueOf() - moment(b.date).valueOf()).forEach((day, index) => {
-		if(index < 15) user[index + 1] = day
+		if(index < 31) user[index + 1] = day
 	})
 	user.attest = datetypes['pass_certification'] || datetypes['pass certification']
 	user.firstWeek = datetypes['1_week']

@@ -73,6 +73,7 @@
 			size="md"
 			class="modalle"
 			hide-footer
+			no-enforce-focus
 		>
 			<input
 				v-model="sectionName"
@@ -179,6 +180,7 @@
 			title="Настройки базы знаний"
 			:open="showBookSettings"
 			width="400px"
+			no-enforce-focus
 			@close="showBookSettings = false"
 		>
 			<template #body>
@@ -716,12 +718,29 @@ export default {
 			this.fetchGlossaryAccess()
 
 			await this.fetchData()
-			if(this.$route.query.s) {
+			const bookId = this.$route.query.s
+			const pageId = this.$route.query.b
+
+			if(bookId) {
+				const book = this.booksMap[+bookId]
+				if(!book) {
+					this.routerPush('/kb')
+					return this.$toast.error('Раздел удален')
+				}
+				// const top = this.getTopParent(book)
+				// this.routerPush(`/kb?s=${bookId}${pageId ? '&b=' + pageId : ''}`)
 				this.books = []
-				await this.fetchBook(this.allBooksMap[+this.$route.query.s], true)
+				await this.fetchBook(book, true)
+				// if(book.id !== top.id) this.setParentsOpened(bookId)
 			}
-			if(this.$route.query.b){
-				this.onPage(this.pagesMap[+this.$route.query.b], true)
+			if(this.rootBook && pageId){
+				const page = this.pagesMap[+pageId]
+				if(!page) {
+					this.routerPush(`/kb?s=${bookId}`)
+					return this.$toast.error('Страница удалена')
+				}
+				this.onPage(page, true)
+				this.setParentsOpened(pageId)
 			}
 		},
 		getPages(map, pages){
@@ -750,6 +769,18 @@ export default {
 			links.forEach(link => link.setAttribute('target', '_blank'))
 			book.text = div.innerHTML
 			return book
+		},
+		getTopParent(book){
+			const hasParent = book.parent_id && this.booksMap[book.parent_id]
+			if(hasParent) return this.getTopParent(hasParent)
+			return book
+		},
+		setParentsOpened(pageId){
+			const page = this.pagesMap[pageId]
+			if(page) {
+				page.opened = true
+				this.setParentsOpened(page.parent_id)
+			}
 		},
 		treePluck(books, result = []){
 			books.forEach(book => {
@@ -898,7 +929,7 @@ export default {
 				this.sectionName = ''
 
 				if(this.createParentId){
-					const parent = this.pagesMap[this.createParentId] || this.booksMap[this.createParentId]
+					const parent = this.rootBook ? this.pagesMap[this.createParentId] : this.booksMap[this.createParentId]
 					if(parent){
 						if(!parent.children) parent.children = []
 						parent.children.push(book)
@@ -1097,6 +1128,7 @@ export default {
 			const parent = this.rootBook ? this.pagesMap[this.activeBook.parent_id] :this.booksMap[this.activeBook.parent_id]
 			try {
 				await this.axios.post('/kb/page/delete', { id })
+
 				if(parent){
 					const index = parent.children.findIndex(page => page.id === id)
 					if(~index) parent.children.splice(index, 1)
@@ -1116,7 +1148,7 @@ export default {
 			}
 		},
 		archive(book){
-			const parent = this.pagesMap[book.parent_id] || this.booksMap[book.parent_id]
+			const parent = this.rootBook ? this.pagesMap[book.parent_id] :this.booksMap[book.parent_id]
 
 			if(parent){
 				const index = parent.children.findIndex(children => children.id === book.id)
@@ -1216,9 +1248,15 @@ export default {
 
 			if(parent){
 				if(!parent.children) parent.children = []
+				page.is_category = parent.is_category ? page.factCategory : 0
+				if(!parent.is_category) {
+					page.canEdit = parent.canEdit
+					page.canRead = parent.canRead
+				}
 				parent.children.splice(newIndex, 0, page)
 			}
 			else{
+				page.is_category = page.factCategory
 				this.pages.splice(newIndex, 0, page)
 			}
 			page.parent_id = parentId
@@ -1249,8 +1287,8 @@ export default {
 		async editAccess(book) {
 			const loader = this.$loading.show()
 			this.clearAccess()
+			await this.fetchAccess(book)
 			this.updateBook = book
-			this.fetchAccess(book)
 			this.showEdit = true
 			loader.hide()
 		},

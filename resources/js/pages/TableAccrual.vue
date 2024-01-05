@@ -285,6 +285,7 @@
 						<div
 							v-if="user_types == '1'"
 							class="pointer"
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
 							@click="defineClickNumber('final', finalData)"
 						>
 							{{ finalData.value }}
@@ -293,7 +294,10 @@
 								class="cell-border"
 							/>
 						</div>
-						<div v-else>
+						<div
+							v-else
+							:title="Number(finalData.item.total) + Number(finalData.item.bonus) + Number(finalData.item.kpi)"
+						>
 							{{ finalData.value }}
 						</div>
 					</template>
@@ -329,11 +333,15 @@
 		>
 			<div class="px-2 pt-5">
 				<KpiContent
+					v-if="kpiItems.length"
 					class="px-4 TableAccrual-kpi"
 					:items="kpiItems"
 					:groups="groups"
 					:fields="kpiFields"
 				/>
+				<template v-else>
+					У сотрудника нет KPI
+				</template>
 			</div>
 		</Sidebar>
 
@@ -863,7 +871,7 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import { kpi_fields, parseKPI } from '@/pages/kpi/kpis.js'
+import { kpi_fields, parseKPI, removeDeletedItems, target2type } from '@/pages/kpi/kpis.js'
 import salaryCellType from '@/composables/salaryCellType'
 
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
@@ -989,10 +997,10 @@ export default {
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		showAccruals(){
-			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
 		},
 		showTotals(){
-			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+			return this.activeuserid && [5,18,84,157,27402].includes(Number(this.activeuserid))
 		},
 		actualFOT(){
 			if (!this.items || !this.items[0]) return 0
@@ -1353,14 +1361,6 @@ export default {
 				daySalaries.taxes = Number(personalTaxes).toFixed(0);
 				daySalaries.final = Number(personalFinal).toFixed(0);
 
-				total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
-				total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
-				total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
-				total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
-				total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
-				total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
-				total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
-
 				daySalaries.forEach((amount, day) => {
 					if(isNaN(amount) || isNaN(Number(amount))) {
 						amount = 0;
@@ -1400,12 +1400,26 @@ export default {
 					...daySalaries,
 				};
 
+				let pass = false
+
 				if(this.show_user == 0) {
 					items.push(obj);
+					pass = true
 				}
 				else if(hasMoney > 0) { // show if has salary records
 					items.push(obj);
 					hasMoney = 0
+					pass = true
+				}
+
+				if(pass){
+					total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
+					total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
+					total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+					total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+					total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+					total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
+					total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
 				}
 			});
 
@@ -1728,12 +1742,19 @@ export default {
 
 		// Дичайший костыль, переделать при первой возможности
 		getUserGroups(userId){
-			return this.groups.reduce((result, group) => {
-				if(!group.users) return result
-				const users = JSON.parse(group.users)
-				if(~users.indexOf(userId) && !~result.indexOf(group.id)) result.push(group.id)
+			const user = this.data.users.find(user => user.id === userId)
+			const currentDate = this.$moment(this.dateInfo.date, 'MMMM YYYY')
+			const currentDateFormat = currentDate.format('YYYY-MM')
+			return user.group_users.reduce((result, group) => {
+				const from = this.$moment(group.from)
+				const fromFormat = from.format('YYYY-MM')
+				const to = this.$moment(group.to)
+				const toFormat = to.format('YYYY-MM')
+				if(currentDateFormat == fromFormat || currentDateFormat == toFormat || !group.to || currentDate.isBetween(from, to)){
+					result.push(group.group_id)
+				}
 				return result
-			}, [this.selectedGroup.id])
+			}, [])
 		},
 
 		async fetchKPIStatistics(userId){
@@ -1770,9 +1791,11 @@ export default {
 					})
 					if(!groupData.message){
 						groupData.kpi.users = groupData.kpi.users.filter(user => user.id === userId)
-						this.kpiItems.push(parseKPI(groupData.kpi))
+						if(groupData.kpi.users.length) this.kpiItems.push(parseKPI(groupData.kpi))
 					}
 				}))
+				removeDeletedItems(this.kpiItems)
+				this.kpiItems.sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
 				this.kpiSidebar = true
 			}
 			catch(error){

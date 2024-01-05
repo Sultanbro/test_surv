@@ -20,7 +20,7 @@
 						target="_blank"
 					>{{ group.name }}</a>
 					<div
-						v-if="page == 'top' && group.gauges.length < 4"
+						v-if="page == 'top'"
 						class=" ml-2 pointer"
 						title="Добавить новый спидометр"
 						@click="showAddWindow(group.id, group_index)"
@@ -46,8 +46,8 @@
 							:class="['scale', {
 								'scale-bl': +gauge_index === 0,
 								'scale-br': +gauge_index === 1,
-								'scale-bl': +gauge_index === 2,
-								'scale-br': +gauge_index === 3,
+								'scale-bl': +gauge_index === 2 || !(+gauge_index % 2),
+								'scale-br': +gauge_index === 3 || +gauge_index % 2,
 							}]"
 						>
 							<p
@@ -96,7 +96,7 @@
 								/>
 							</div>
 							<p class="text-center text-14">
-								{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
+								{{ toFloat(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
 							</p>
 						</div>
 						<JobtronOverlay
@@ -262,7 +262,8 @@
 
 		<!-- Modal Create activity -->
 		<JobtronOverlay
-			v-if="newGauge.editable"
+			v-if="isAddMode"
+			:key="skey"
 			@close="newGauge.editable = false"
 		>
 			<div class="mb-5 edit-window">
@@ -421,6 +422,51 @@
 const VGauge = () => import(/* webpackChunkName: "VGauge" */ 'vgauge')
 import JobtronOverlay from '@ui/Overlay.vue'
 
+function getBlankGauge(){
+	return {
+		editable: false,
+		activity_id: null,
+		group_id: null,
+		name: '',
+		cell: '',
+		value_type: 'sum',
+		unit: '',
+		round: '',
+		is_main: false,
+		reversed: false,
+		value: '',
+		min_value: 0,
+		max_value: 100,
+		options: {
+			angle:-0.01,
+			staticLabels:{
+				font: '7px sans-serif',
+				labels: [0,50,75,100],
+				color: '#000000',
+				fractionDigits:0
+			},
+			staticZones:[
+				{strokeStyle:'#F03E3E',min:0,max:50},
+				{strokeStyle:'#fd7e14',min:50,max:75},
+				{strokeStyle:'#FFDD00',min:75,max:100},
+			],
+			pointer:{
+				length:0.5,
+				strokeWidth:0.025,
+				color:'#000000'
+			},
+			limitMax:true,
+			limitMin:true,
+			lineWidth:0.2,
+			radiusScale:0.8,
+			colorStart:'#6FADCF',
+			generateGradient:true,
+			highDpiSupport:true,
+		},
+		sections: '[0,50,75,100]'
+	}
+}
+
 export default {
 	name: 'TopGauges',
 	components:{
@@ -448,48 +494,7 @@ export default {
 		return {
 			utility: [],
 			skey: 1,
-			newGauge: {
-				editable: false,
-				activity_id: null,
-				group_id: null,
-				name: '',
-				cell: '',
-				value_type: 'sum',
-				unit: '',
-				round: 0,
-				is_main: false,
-				reversed: false,
-				value: '',
-				min_value: 0,
-				max_value: 100,
-				options: {
-					angle:-0.01,
-					staticLabels:{
-						font: '7px sans-serif',
-						labels:[0,50,75,100],
-						color: '#000000',
-						fractionDigits:0
-					},
-					staticZones:[
-						{strokeStyle:'#F03E3E',min:0,max:50},
-						{strokeStyle:'#fd7e14',min:50,max:75},
-						{strokeStyle:'#FFDD00',min:75,max:100},
-					],
-					pointer:{
-						length:0.5,
-						strokeWidth:0.025,
-						color:'#000000'
-					},
-					limitMax:true,
-					limitMin:true,
-					lineWidth:0.2,
-					radiusScale:0.8,
-					colorStart:'#6FADCF',
-					generateGradient:true,
-					highDpiSupport:true,
-				},
-				sections: '[0,50,75,100]'
-			},
+			newGauge: getBlankGauge(),
 			showNewGaugeWindow: false,
 			group_activities: [],
 			colors: {
@@ -512,7 +517,11 @@ export default {
 			},
 		}
 	},
-
+	computed: {
+		isAddMode(){
+			return this.newGauge.editable
+		}
+	},
 	watch: {
 		utility_items() {
 			this.utility = this.utility_items;
@@ -673,47 +682,7 @@ export default {
 		},
 
 		clearNewGauge(){
-			this.newGauge = {
-				activity_id: null,
-				group_id: null,
-				name: '',
-				cell: '',
-				value_type: 'sum',
-				unit: '',
-				round: '',
-				is_main: false,
-				reversed: false,
-				value: '',
-				min_value: 0,
-				max_value: 100,
-				options: {
-					angle:-0.01,
-					staticLabels:{
-						font: '7px sans-serif',
-						labels:[0,50,75,100],
-						color: '#000000',
-						fractionDigits:0
-					},
-					staticZones:[
-						{strokeStyle:'#F03E3E',min:0,max:50},
-						{strokeStyle:'#fd7e14',min:50,max:75},
-						{strokeStyle:'#FFDD00',min:75,max:100},
-					],
-					pointer:{
-						length:0.5,
-						strokeWidth:0.025,
-						color:'#000000'
-					},
-					limitMax:true,
-					limitMin:true,
-					lineWidth:0.2,
-					radiusScale:0.8,
-					colorStart:'#6FADCF',
-					generateGradient:true,
-					highDpiSupport:true,
-				},
-				sections: '[0,50,75,100]'
-			}
+			this.newGauge = getBlankGauge()
 		},
 
 		create_gauge() {
@@ -729,7 +698,12 @@ export default {
 			}).catch(error => {
 				alert(error)
 			});
-		}
+		},
+
+		toFloat(num){
+			if(Number(num) !== parseInt(num)) return Number(num).toFixed(2)
+			return parseInt(num)
+		},
 	}
 }
 </script>

@@ -109,7 +109,8 @@ class UpdateUserDTO
         public ?int          $bitrixId,
         public ?float        $timezone,
         public ?string       $firstWorkDay,
-        public ?array        $coordinates
+        public ?array        $coordinates,
+        public ?string       $uin,
     )
     {
     }
@@ -167,6 +168,7 @@ class UpdateUserDTO
             'timezone' => $this->timezone,
             'first_work_day' => $this->firstWorkDay,
             'coordinates' => $this->coordinates,
+            'uin' => $this->uin,
         ];
     }
 }

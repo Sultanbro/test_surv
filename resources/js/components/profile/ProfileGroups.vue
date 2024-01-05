@@ -53,8 +53,13 @@ export default {
 			url: '/timetracking/edit-person/group',
 		}
 	},
+	watch: {
+		in_groups(){
+			this.value = this.in_groups
+		},
+	},
 	created() {
-		this.value = this.in_groups;
+		this.value = this.in_groups
 
 		if(this.user_role === HEAD) {
 			this.url = '/timetracking/edit-person/head_in_groups';

@@ -32,7 +32,7 @@ class SaveUserKpi extends Command
      *
      * @var mixed
      */
-    public $date; // Дата пересчета 
+    public $date; // Дата пересчета
 
     /**
      * Вытащить кпи показатели сотрудника
@@ -143,15 +143,11 @@ class SaveUserKpi extends Command
 
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
-//            dd($kpi['users'][0]['items']);
-//             dd($kpi['users'][0]['items'][2]);
-            foreach ($kpi['users'][0]['items'] as $item) {
+//            dump($kpi['id'] . " " . $kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
 
+            foreach ($kpi['users'][0]['items'] as $item) {
                 $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
 
-//                $workdays = $itemActivityWeekdays == 0
-//                    ? $this->workdays[5]
-//                    : $this->workdays[$itemActivityWeekdays];
                 $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
 
                 $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
@@ -160,19 +156,25 @@ class SaveUserKpi extends Command
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
                     'records_count' => $item['records_count'],
-                    'daily_plan' => (int)$item['daily_plan'],
+                    'daily_plan' => (float)$item['daily_plan'],
                     'full_time' => $item['full_time'],
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
                 ], $item['method']);
 
-                if (
-                    //!$item['allow_overfulfillment']
-                    $completed_percent > 100) {
+                $payload = json_decode($kpi['histories_latest']['payload'], true);
+                $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
+
+//                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
+//                dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
+//                dump($off_limit);
+
+                // off_limit -> check employee can get more kpi bonus with this kpi
+                if ($completed_percent > 100 && !$off_limit) {
                     $completed_percent = 100;
                 }
 
-                $earned += $this->calculator->earned(
+                $earnedActivity = $this->calculator->earned(
                     (int)$kpi['lower_limit'],
                     (int)$kpi['upper_limit'],
                     (float)$completed_percent,
@@ -180,15 +182,11 @@ class SaveUserKpi extends Command
                     (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
                     (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
+//                dump('id=' . $item['id'] . ' ' . $item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
 
+                $earned += $earnedActivity;
 
-                // dump($kpi['lower_limit'],
-                // $kpi['upper_limit'],
-                // $completed_percent,
-                // $item['share'],
-                // $kpi['completed_80'],
-                // $kpi['completed_100']);
-                dump($earned);
+//                dump($earned);
 
             }
         }
@@ -200,7 +198,7 @@ class SaveUserKpi extends Command
      */
     private function updateSavedKpi(array $data): void
     {
-        // save 
+        // save
         $sk = SavedKpi::query()->where('user_id', $data['user_id'])
             ->where('date', $data['date'])
             ->first();

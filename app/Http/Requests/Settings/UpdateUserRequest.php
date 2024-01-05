@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\DTO\Settings\StoreUserDTO;
 use App\DTO\Settings\UpdateUserDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -27,90 +27,91 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'                => ['required', 'numeric', 'exists:users,id'],
-            'name'              => ['string', 'min:3', 'max:60'],
-            'last_name'         => ['string', 'min:3', 'max:60'],
-            'email'             => ['string', 'email'],
-            'description'       => ['nullable'],
-            'position'          => ['numeric', 'exists:position,id'],
-            'user_type'         => ['string', 'in:office,remote'],
-            'birthday'          => ['string','nullable'],
-            'program_type'      => ['numeric'],
-            'working_days'      => ['numeric'],
-            'working_times'     => ['numeric'],
-            'timezone'          => ['numeric'],
-            'phone'             => ['string', 'min:10' , 'nullable'],
-            'phone_home'        => ['string', 'numeric', 'min:10'],
-            'phone_husband'     => ['string', 'numeric', 'min:10'],
-            'phone_relatives'   => ['string', 'numeric', 'min:10'],
-            'phone_children'    => ['string', 'numeric', 'min:10'],
-            'full_time'         => ['required', 'numeric'],
-            'currency'          => ['string'],
-            'weekdays'          => ['required', 'string'],
+            'id' => ['required', 'numeric', 'exists:users,id'],
+            'uin' => ['nullable', 'numeric', Rule::unique('users', 'uin')],
+            'name' => ['string', 'min:3', 'max:60'],
+            'last_name' => ['string', 'min:3', 'max:60'],
+            'email' => ['string', 'email'],
+            'description' => ['nullable'],
+            'position' => ['numeric', 'exists:position,id'],
+            'user_type' => ['string', 'in:office,remote'],
+            'birthday' => ['string', 'nullable'],
+            'program_type' => ['numeric'],
+            'working_days' => ['numeric'],
+            'working_times' => ['numeric'],
+            'timezone' => ['numeric'],
+            'phone' => ['string', 'min:10', 'nullable'],
+            'phone_home' => ['string', 'numeric', 'min:10'],
+            'phone_husband' => ['string', 'numeric', 'min:10'],
+            'phone_relatives' => ['string', 'numeric', 'min:10'],
+            'phone_children' => ['string', 'numeric', 'min:10'],
+            'full_time' => ['required', 'numeric'],
+            'currency' => ['string'],
+            'weekdays' => ['required', 'string'],
             'selectedCityInput' => ['nullable', 'string'],
-            'working_city'      => ['nullable', 'numeric'],
-            'file_name'         => ['file', 'mimes:jpg,png'],
-            'head_group'        => ['numeric', 'exists:profile_groups,id'],
-            'is_trainee'        => ['in:true,false'],
-            'contacts'          => ['array'],
-            'adaptation_talks'  => ['array'],
-            'adaptation_talks.*.day'    => ['string', 'nullable'],
-            'adaptation_talks.*.date'   => ['required_with:adaptation_talks.*.text', 'string', 'nullable'],
-            'adaptation_talks.*.text'   => ['required_with:adaptation_talks.*.date', 'string', 'nullable'],
-            'adaptation_talks.*.inter_id'  => ['required_with:adaptation_talks.*.date', 'string', 'nullable'],
-            'contacts.phone'    => ['required_with:contacts', 'array'],
-            'contacts.phone.*.name'  => ['string'],
+            'working_city' => ['nullable', 'numeric'],
+            'file_name' => ['file', 'mimes:jpg,png'],
+            'head_group' => ['numeric', 'exists:profile_groups,id'],
+            'is_trainee' => ['in:true,false'],
+            'contacts' => ['array'],
+            'adaptation_talks' => ['array'],
+            'adaptation_talks.*.day' => ['string', 'nullable'],
+            'adaptation_talks.*.date' => ['required_with:adaptation_talks.*.text', 'string', 'nullable'],
+            'adaptation_talks.*.text' => ['required_with:adaptation_talks.*.date', 'string', 'nullable'],
+            'adaptation_talks.*.inter_id' => ['required_with:adaptation_talks.*.date', 'string', 'nullable'],
+            'contacts.phone' => ['required_with:contacts', 'array'],
+            'contacts.phone.*.name' => ['string'],
             'contacts.phone.*.value' => ['string'],
-            'cards'             => ['array'],
-            'cards.*.bank'        => [
+            'cards' => ['array'],
+            'cards.*.bank' => [
                 'required_with:cards.*.country,cards.*.cardholder,cards.*.phone,cards.*.number',
                 'string', 'nullable'],
-            'cards.*.country'     => [
+            'cards.*.country' => [
                 'required_with:cards.*.bank,cards.*.cardholder,cards.*.phone,cards.*.number',
                 'string', 'nullable'
             ],
-            'cards.*.cardholder'  => [
+            'cards.*.cardholder' => [
                 'required_with:cards.*.bank,cards.*.country,cards.*.phone,cards.*.number',
                 'string', 'nullable'
             ],
-            'cards.*.phone'       => [
+            'cards.*.phone' => [
                 'required_with:cards.*.bank,cards.*.country,cards.*.cardholder,cards.*.number',
                 'string', 'nullable'
             ],
-            'cards.*.number'      => [
+            'cards.*.number' => [
                 'required_with:cards.*.bank,cards.*.country,cards.*.cardholder,cards.*.phone',
                 'string', 'nullable'
             ],
-            'file1'             => ['file'],
-            'file2'             => ['file'],
-            'file3'             => ['file'],
-            'file4'             => ['file'],
-            'file5'             => ['file'],
-            'file6'             => ['file'],
-            'file7'             => ['file'],
-            'group'             => ['numeric', 'exists:profile_groups,id'],
-            'zarplata'          => ['numeric'],
-            'card_number'       => ['string'],
-            'kaspi'             => ['string'],
-            'jysan'             => ['string'],
-            'card_kaspi'        => ['string'],
-            'card_jysan'        => ['string'],
-            'kaspi_cardholder'  => ['string'],
-            'jysan_cardholder'  => ['string'],
-            'new_pwd'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'nullable'],
-            'tax'               => ['array'],
-            'tax.*.amount'      => ['numeric'],
-            'tax.*.percent'     => ['numeric'],
-            'tax.*.user_id'     => ['numeric', 'exists:users,id'],
-            'tax.*.name'        => ['string'],
-            'taxes'             => ['array'],
-            'taxes.*.amount'    => ['numeric'],
-            'taxes.*.percent'   => ['numeric'],
-            'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
-            'taxes.*.name'      => ['string'],
-            'bitrix_id'         => ['numeric'],
-            'first_work_day'    => ['date', 'nullable'],
-            'coordinates'       => ['array']
+            'file1' => ['file'],
+            'file2' => ['file'],
+            'file3' => ['file'],
+            'file4' => ['file'],
+            'file5' => ['file'],
+            'file6' => ['file'],
+            'file7' => ['file'],
+            'group' => ['numeric', 'exists:profile_groups,id'],
+            'zarplata' => ['numeric'],
+            'card_number' => ['string'],
+            'kaspi' => ['string'],
+            'jysan' => ['string'],
+            'card_kaspi' => ['string'],
+            'card_jysan' => ['string'],
+            'kaspi_cardholder' => ['string'],
+            'jysan_cardholder' => ['string'],
+            'new_pwd' => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'nullable'],
+            'tax' => ['array'],
+            'tax.*.amount' => ['numeric'],
+            'tax.*.percent' => ['numeric'],
+            'tax.*.user_id' => ['numeric', 'exists:users,id'],
+            'tax.*.name' => ['string'],
+            'taxes' => ['array'],
+            'taxes.*.amount' => ['numeric'],
+            'taxes.*.percent' => ['numeric'],
+            'taxes.*.user_id' => ['numeric', 'exists:users,id'],
+            'taxes.*.name' => ['string'],
+            'bitrix_id' => ['numeric'],
+            'first_work_day' => ['date', 'nullable'],
+            'coordinates' => ['array']
         ];
     }
 
@@ -118,6 +119,7 @@ class UpdateUserRequest extends FormRequest
     {
         $validated = $this->validated();
 
+        $uin = Arr::get($validated, 'uin');
         $id = Arr::get($validated, 'id');
         $name = Arr::get($validated, 'name');
         $lastName = Arr::get($validated, 'last_name');
@@ -220,6 +222,7 @@ class UpdateUserRequest extends FormRequest
             $timezone,
             $firstWorkDay,
             $coordinates,
+            $uin,
         );
     }
 }

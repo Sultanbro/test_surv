@@ -295,7 +295,8 @@
 				</template>
 
 				<template #cell(skyped)="data">
-					{{ $moment.utc(data.value, 'DD-MM-YYYY HH:mm').local().format('DD-MM-YYYY HH:mm') }}
+					<!-- {{ $moment.utc(data.value, 'DD-MM-YYYY HH:mm').local().format('DD-MM-YYYY HH:mm') }} -->
+					{{ data.value }}
 				</template>
 			</JobtronTable>
 		</div>

@@ -8,9 +8,11 @@ use Illuminate\Support\Collection;
 
 /**
  * This class is responsible for interact with bitrix api
-*/
+ */
 class BitrixOld
 {
+
+    public $client;
     /**
      * @var string
      */
@@ -19,10 +21,11 @@ class BitrixOld
     /**
      * @param string $line
      */
-    public function __construct(string $line = 'common')
+    public function __construct( $line = 'common')
     {
         $this->link = config('bitrix.host') . config('bitrix.token') . '/';
 
+        $this->client = new Client();
         // Headhunter 
         if ($line == 'hh') {
             $this->link = 'https://infinitys.bitrix24.kz/rest/1/h42tawdhk8sf2m41/';
@@ -39,7 +42,7 @@ class BitrixOld
      * @param array $lead_fields
      * @return mixed
      */
-    public function updateLead(int $lead_id, array $lead_fields): mixed
+    public function updateLead( $lead_id,  $lead_fields): mixed
     {
         $fields = [
             'id' => $lead_id,
@@ -63,7 +66,7 @@ class BitrixOld
      * @param string $search_by
      * @return mixed
      */
-    public function getLeads(int $user_id = 0, string $status = '', string $semantic = 'ALL', string $sort = 'ASC', string $start = '2010-01-01', string $end = '2050-01-01', string $date_type = "DATE_CREATE", int $lead_id = 0, string $search_by = 'title'): mixed
+    public function getLeads( $user_id = 0,  $status = '',  $semantic = 'ALL',  $sort = 'ASC',  $start = '2010-01-01',  $end = '2050-01-01',  $date_type = "DATE_CREATE",  $lead_id = 0,  $search_by = 'title'): mixed
     {
         $filter = [];
 
@@ -81,8 +84,8 @@ class BitrixOld
          * getLeads($user_id = 0, $fields = [])
          *
          * */
-        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
-        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018,1462,3452,2436,2362,2426,3460,1666,1604,3878,2012,1442,3480,3482,3548];
+        if ($search_by == 'title') $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house', 'реферал', 'заполнение'];
+        if ($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018, 1462, 3452, 2436, 2362, 2426, 3460, 1666, 1604, 3878, 2012, 1442, 3480, 3482, 3548];
 
         if ($search_by == 'hh') $filter['UF_CRM_1498210379'] = [1462];
         if ($search_by == 'insta') $filter['UF_CRM_1498210379'] = [1018, 2436];
@@ -126,7 +129,7 @@ class BitrixOld
      * @param ?bool $isNeedCallback
      * @return mixed
      */
-    public function createLead(array $fields, ?bool $isNeedCallback = null): mixed
+    public function createLead( $fields, ?bool $isNeedCallback = null): mixed
     {
         $arrayQuery = [
             'fields' => $fields,
@@ -171,7 +174,7 @@ class BitrixOld
      * @param string $id
      * @return bool
      */
-    public function deleteUser(string $id): bool
+    public function deleteUser( $id): bool
     {
         $query = http_build_query([
             'id' => $id,
@@ -189,7 +192,7 @@ class BitrixOld
      * @param string $id
      * @return bool
      */
-    public function recoverUser(string $id): bool
+    public function recoverUser( $id): bool
     {
         $query = http_build_query([
             'id' => $id,
@@ -207,7 +210,7 @@ class BitrixOld
      * @param string $email
      * @return mixed|null
      */
-    public function searchUser(string $email): mixed
+    public function searchUser( $email): mixed
     {
         $query = http_build_query([
             'FILTER' => [
@@ -229,7 +232,7 @@ class BitrixOld
      * @param array $deal_fields
      * @return mixed
      */
-    public function changeDeal(int $deal_id, array $deal_fields): mixed
+    public function changeDeal( $deal_id,  $deal_fields): mixed
     {
         $fields = [
             'id' => $deal_id,
@@ -430,7 +433,7 @@ class BitrixOld
      * @param int $page
      * @return mixed
      */
-    public function getDeals($user_id, string $status = '', string $sort = 'ASC', string $start = '2020-01-01', string $end = '2050-01-01', string $date_type = "DATE_CREATE", string $type = 'all', int $page = 1): mixed
+    public function getDeals($user_id,  $status = '',  $sort = 'ASC',  $start = '2020-01-01',  $end = '2050-01-01',  $date_type = "DATE_CREATE",  $type = 'all',  $page = 1): mixed
     {
         if (strlen($start) == 10) {
             $start = $start . "T00:00:00+06:00";
@@ -454,7 +457,7 @@ class BitrixOld
         }
 
         if ($type == 'all') {
-            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house','реферал','заполнение'];
+            $filter['?TITLE'] = ['кандидат qr', 'удаленный', 'Job.bp', 'inhouse', 'инхаус', 'ин хаус', 'in house', 'house', 'реферал', 'заполнение'];
         }
 
         if ($type == 'hh') $filter['UF_CRM_1498210393'] = [1466];
@@ -485,7 +488,7 @@ class BitrixOld
      * @param mixed $sort
      * @return mixed
      */
-    public function extracted(string $start, string $end, array $filter, mixed $duration, mixed $sort): mixed
+    public function extracted( $start,  $end,  $filter,  $duration,  $sort): mixed
     {
         if (strlen($start) == 10) {
             $start = $start . "T00:00:00";
@@ -526,5 +529,44 @@ class BitrixOld
         $query = http_build_query($fields);
 
         return $this->curl_post($this->link . 'crm.deal.update.json', $query);
+    }
+
+    public function findLead($id)
+    {
+        $lead = $this->client->get($this->link . 'crm.lead.get', [
+            'query' => [
+                'id' => $id
+            ]
+        ]);
+        $lead = json_decode($lead->getBody()->getContents(), true);
+        usleep(2000000); // 2 sec
+        return $lead['result'];
+    }
+
+    /**
+     * @param string $crm_field
+     * @param string $crm_field_value
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getUserField( $crm_field,  $crm_field_value)
+    {
+        $fields = $this->client->post($this->link . 'crm.lead.userfield.list');
+        usleep(1000000);
+        $fields = json_decode($fields->getBody()->getContents(), true);
+
+        foreach ($fields['result'] as $field) {
+            if ($field['FIELD_NAME'] == $crm_field) {
+                $needFields = $field['LIST'];
+            }
+        }
+
+        foreach ($needFields as $item) {
+            if ($item['ID'] == $crm_field_value) {
+                $value = $item['VALUE'];
+                break;
+            }
+        }
+        return $value;
     }
 }

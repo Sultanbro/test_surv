@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
@@ -88,6 +89,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $phone_2
  * @property string $phone_3
  * @property string $phone_4
+ * @property string $uin
  * @property int $work_chart_id
  * @property int $coordinate_id
  * @property int $referrer_id
@@ -167,7 +169,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         'referrer_id',
         'referrer_status',
         'welcome_message',
-        'inviter_id'
+        'inviter_id',
+        'uin',
     ];
 
     protected $casts = [
@@ -396,6 +399,19 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function kpis(): MorphMany
     {
         return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
+    }
+
+    public function kpisMany(): MorphToMany
+    {
+        return $this->morphToMany(
+            'App\Models\Kpi\Kpi',
+            'kpiable',
+            'kpiables',
+            'kpiable_id',
+            'kpi_id',
+            'id',
+            'id'
+        );
     }
 
     /**
@@ -1403,7 +1419,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         return [
             'start' => $start,
-            'end' => $end
+            'end' => $end,
+            'rest_time' => $workTime['workRestTime']
         ];
     }
 
@@ -1684,11 +1701,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
             $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-            $date1 = date_create(now()->format('Y-m-d'));
-            $date2 = date_create($this->first_work_day);
-            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
+            $date1 = date_create(now()->format('Y-m-d')); // 27
+            $date2 = date_create($this->first_work_day); // 16
+            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days; // 11
 
-            $total = $workingDay + $dayOff;
+            $total = $workingDay + $dayOff; // 2+2=4
 
             if ($workingDay === 1) {
                 $remains = $differBetweenFirstAndLastDay % $total;
@@ -1724,6 +1741,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function getWorkDays($date): int
     {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
         $workChartType = $this->workChart->work_charts_type ?? 0;
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
             $ignore = $this->getCountWorkDays();   // Какие дни не учитывать в месяце

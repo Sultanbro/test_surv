@@ -562,12 +562,12 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::delete('delete/{id}', [Kpi\QuartalPremiumController::class, 'destroy']);
         Route::post('/set/status', [Kpi\QuartalPremiumStatusController::class, 'setActive']);
     });
-
     // Статистика для KPI
     Route::group(['prefix' => 'statistics', 'as' => 'kpi-statistic.'], function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [Kpi\KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [Kpi\KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('kpi-with-currency', [Kpi\KpiStatController::class, 'fetchKpisWithCurrency'])->name('fetchKpisWithCurrency');
         Route::any('kpi/read', [Kpi\KpiStatController::class, 'readKpis'])->name('readKpis');
         Route::any('kpi/groups-and-users', [Kpi\KpiStatController::class, 'fetchKpiGroupsAndUsers'])->name('fetchKpiGroupsAndUsers');
         Route::any('kpi/groups-and-users/{targetable_id}', [Kpi\KpiStatController::class, 'showKpiGroupAndUsers'])
@@ -706,6 +706,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
             Route::post('/get', [Kpi\KpiController::class, 'index'])->name('get');
             Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
             Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+            Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
         });
 
@@ -770,6 +771,7 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/bitrix/create-link', [Services\IntellectController::class, 'bitrixCreateLead']);
         Route::any('/bitrix/change-resp', [Services\IntellectController::class, 'changeResp']);
         Route::any('/bitrix/inhouse', [Services\IntellectController::class, 'inhouse']);
+        Route::any('/bitrix/change-lead',[Services\IntellectController::class,'changeLead']);
 
 
         Route::group(['prefix' => 'statistics'], function () {

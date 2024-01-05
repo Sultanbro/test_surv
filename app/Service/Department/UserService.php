@@ -638,8 +638,7 @@ class UserService
     }
 
 
-    public
-    function getEmployeesAll($group_id, string $date)
+    public function getEmployeesAll($group_id, string $date)
     {
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
@@ -653,8 +652,7 @@ class UserService
         return $this->getGroupEmployeesAll($working->get(), $last_date);
     }
 
-    public
-    function getFiredEmployeesAll($group_id, string $date)
+    public function getFiredEmployeesAll($group_id, string $date)
     {
         $fired = GroupUser::withTrashed()
             ->where('group_id', $group_id)
@@ -664,12 +662,11 @@ class UserService
         return $this->getGroupEmployeesAll($fired->get());
     }
 
-    public
-    function getGroupEmployeesAll($group_users, $last_date = null, $withGroups = false)
+    public function getGroupEmployeesAll($group_users, $last_date = null, $withGroups = false)
     {
         $user_ids = [];
         foreach ($group_users as $key => $groupUser) {
-            array_push($user_ids, $groupUser->user_id);
+            $user_ids[] = $groupUser->user_id;
         }
 
         $usersQuery = User::withTrashed()
@@ -681,12 +678,9 @@ class UserService
         }
 
         if ($last_date) {
-            $usersQuery = $usersQuery
-                ->where(function (Builder $query) use ($last_date) {
-                    $query
-                        ->where('deleted_at', '>', $last_date)
-                        ->orWhereNull('deleted_at');
-                });
+            $usersQuery = $usersQuery->where(function (Builder $query) use ($last_date) {
+                $query->where('deleted_at', '>', $last_date)->orWhereNull('deleted_at');
+            });
         }
 
         return $usersQuery->get();

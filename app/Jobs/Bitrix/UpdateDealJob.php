@@ -48,7 +48,8 @@ class UpdateDealJob implements ShouldQueue
             isset($contact['EMAIL']) => [['email', $contact['EMAIL'][0]['VALUE']]],
             isset($contact['PHONE']) => [['phone', $contact['PHONE'][0]['VALUE']]],
         })->first();
-        if ($user) return;
+
+        if (!$user) return;
 
         $stage_id = $deal['STAGE_ID'];
         $now = now()->setTimezone('Asia/Almaty')->toDateString();
@@ -113,7 +114,11 @@ class UpdateDealJob implements ShouldQueue
                     }
 
                     Lead::query()
-                        ->create($lead_data);
+                        ->updateOrCreate([
+                            'deal_id' => $deal['ID']
+                        ],
+                            $lead_data
+                        );
                 }
                 break;
             }

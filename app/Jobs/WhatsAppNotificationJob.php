@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use stdClass;
 
-class WhatsAppNotificationJob implements ShouldQueue
+class WhatsAppNotificationJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -24,41 +24,52 @@ class WhatsAppNotificationJob implements ShouldQueue
      * @return void
      */
 
+    public $uniqueFor = 1800; // The job is unique for 0.5 hour
+
     /**
      * @var string
      */
     private string $token;
 
-    private $users;
+    private string $phone;
 
     private string $message;
 
-    public function __construct($users,$message)
+    public function __construct($user, $message)
     {
         $this->token = config('wazzup')['token'];
-        $this->users = $users;
+        $this->phone = Phone::normalize($user->phone);
         $this->message = $message;
     }
 
+    /**
+     * Set Job unique with this identifier
+     */
+    public function uniqueId()
+    {
+        return $this->phone . $this->message;
+    }
+
+    /**
+     * @throws HttpClientException
+     */
     public function handle()
     {
-            $this->sendNotification($this->users,$this->message);;
+        $this->sendNotification($this->phone, $this->message);;
     }
 
 
-
     /**
-     * @param User|stdClass $user
+     * @param $phone
      * @param string $message
      * @return void
      * @throws HttpClientException
      */
     private function sendNotification(
-        User|stdClass $user,
+        $phone,
         string $message
     ): void
     {
-        $phone      = Phone::normalize($user->phone);
         $channelId  = config('wazzup')['channel_id'];
         $token  = config('wazzup')['token'];
 
