@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string name
@@ -791,5 +792,13 @@ class TopValue extends Model
     public function scopeUtility(Builder $query, int $groupId): Builder
     {
         return $query->where('type', self::UTILITY)->where('group_id', $groupId);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function groups(): BelongsTo
+    {
+        return $this->belongsTo(ProfileGroup::class, 'group_id', 'id');
     }
 }

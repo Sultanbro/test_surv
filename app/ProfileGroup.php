@@ -5,6 +5,7 @@ namespace App;
 use App\DTO\Top\SwitchTopDTO;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\ReportCard;
+use App\Models\Analytics\TopValue;
 use App\Models\AnalyticsActivitiesSetting;
 use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
@@ -569,7 +570,7 @@ class ProfileGroup extends Model
      */
     public function scopeHasAnalytics(Builder $query): void
     {
-        $query->where('has_analytics', self::HAS_ANALYTICS);
+        $query->whereIn('has_analytics', [self::HAS_ANALYTICS]);
     }
 
     public function scopeIsActive(Builder $query): void
@@ -673,5 +674,13 @@ class ProfileGroup extends Model
     public function reportCards(): HasMany
     {
         return $this->hasMany(ReportCard::class, 'group_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function topValue(): HasMany
+    {
+        return $this->hasMany(TopValue::class, 'group_id');
     }
 }
