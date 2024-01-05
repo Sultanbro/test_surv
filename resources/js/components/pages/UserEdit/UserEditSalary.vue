@@ -58,7 +58,8 @@ export default {
 			myTaxes: [],
 			taxModal: false,
 			deleteTaxObj: null,
-			deleteTaxIdx: null
+			deleteTaxIdx: null,
+			uin: this.user ? this.user.uin : '',
 		}
 	},
 	computed: {
@@ -80,6 +81,7 @@ export default {
 					: 0;
 			this.zarplata = Math.round(zp);
 			this.currency = this.user ? this.user.currency : null
+			this.uin = obj?.uin || ''
 		},
 		taxes() {
 			this.myTaxes = this.taxes.filter(item => item.isAssigned);
@@ -598,6 +600,7 @@ export default {
 				</button>
 			</div>
 		</div>
+
 		<b-modal
 			v-model="taxModal"
 			centered
@@ -626,6 +629,7 @@ export default {
 				</b-button>
 			</template>
 		</b-modal>
+
 		<div class="d-flex aic mb-2 mt-2">
 			<template v-if="zarplata > 0">
 				<button
@@ -648,6 +652,33 @@ export default {
 				v-else
 				class="text-muted"
 			>Поле оклад должно быть больше нуля</span>
+		</div>
+
+
+		<div class="UserEditSalary-other row">
+			<div class="col-sm-6">
+				<div class="form-group row">
+					<label
+						for="uin"
+						class="col-sm-4 col-form-label font-weight-bold"
+					>ИИН</label>
+					<div class="col-sm-8">
+						<input
+							id="uin"
+							v-model="uin"
+							name="uin"
+							type="text"
+							required
+							class="form-control"
+							placeholder="введите ИИН"
+						>
+					</div>
+					<UserEditError
+						:errors="errors"
+						name="uin"
+					/>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
