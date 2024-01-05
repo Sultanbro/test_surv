@@ -520,8 +520,9 @@ export default {
 			const date = this.date != null
 				? this.date
 				: this.$moment(Date.now()).format('YYYY-MM-DD')
-
-			const value = [1,3,5].includes(item.method) ? item.fact : item.avg
+			const isFact = [1,3,5].includes(item.method)
+			const value = isFact ? item.fact : item.avg
+			if(item.method === 2) item.percent = item.avg / item.plan * 100
 
 			this.axios.post('/statistics/update-stat', {
 				user_id: this.kpi_id,
