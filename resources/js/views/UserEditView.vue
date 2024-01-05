@@ -470,7 +470,7 @@ export default {
 				formData.set('coordinates[geo_lon]', this.cityLon)
 			}
 
-			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.iin){
+			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.uin){
 				this.sendForm(formData, isNew);
 			}
 			else {
