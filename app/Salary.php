@@ -1100,8 +1100,8 @@ class Salary extends Model
                 $lunchTime = 1;
 
                 // Проверяем установлена ли время отдыха
-                if ($schedule && $schedule->rest_time != null) {
-                    $lunchTime = $schedule->rest_time;
+                if ($schedule && $schedule['rest_time'] != null) {
+                    $lunchTime = $schedule['rest_time'];
                     $hour = floatval($lunchTime / 60);
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                     $working_hours = round($userWorkHours / 3600, 1) - $hour;
