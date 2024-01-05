@@ -122,7 +122,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->orderBy('order', 'desc')
             ->get();
 
-        dd($prevDate);
 
         foreach ($prevRows as $prevRow) {
             $newRow = $prevRow->replicate();
@@ -293,7 +292,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     private function previousMonth(): string
     {
         return Carbon::now()
-            ->subMonths(2)
+            ->subMonth()
             ->startOfMonth()
             ->format('Y-m-d');
     }
