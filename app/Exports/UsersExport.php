@@ -86,7 +86,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                                 ->getFont()
                                 ->setBold(true);                
 
-                $event->sheet->getDelegate()->getStyle('A3:G3')
+                $event->sheet->getDelegate()->getStyle('A3:F3')
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
@@ -98,13 +98,13 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('3b73c0');
 
-                $event->sheet->getDelegate()->getStyle('M3')
+                $event->sheet->getDelegate()->getStyle('N3')
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ffc000');
 
-                $event->sheet->getDelegate()->getStyle("N3:$coordinateOfStyle")
+                $event->sheet->getDelegate()->getStyle("O3:$coordinateOfStyle")
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
