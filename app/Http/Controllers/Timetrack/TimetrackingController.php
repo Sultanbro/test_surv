@@ -1641,8 +1641,7 @@ class TimetrackingController extends Controller
 
         if ($targetUser == null) return ['success' => 1, 'history' => null];
 
-        $year = date('Y');
-        $date = Carbon::parse($year . '-' . $request->get("month") . '-' . $request->get('day'));
+        $date = Carbon::parse($request->get('year') . '-' . $request->get("month") . '-' . $request->get('day'));
 
         /** @var DayType $daytype */
         $daytype = DayType::query()

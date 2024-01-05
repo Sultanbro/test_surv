@@ -1073,20 +1073,8 @@ class Salary extends Model
 
             /** @var User $user */
             foreach ($users as $user) {
-//                $debug = [];
-//                if ($user->user_description && $user->user_description->is_trainee == 0) {
-//                } else {
-//                    // dump('skip_no_desc');
-//                    continue;
-//                }
-
-//                if (count($user->groups) > 0 && $user->groups[0]->id != $group->id) {
-//                    // dump('skip_no_group');
-//                    continue;
-//                }
 
                 $user->hourly_pay($month->format('Y-m-d'));
-                // dump('hourly_pay '.$hourly_pay);
 
                 $user_applied_at = null;
                 $ud = $user->user_description;
