@@ -75,7 +75,8 @@ class ReportCardService
                 'date'          => $date
             ];
         }
+        ReportCard::query()->where('group_id', $dto->groupId)->delete();
 
-        ReportCard::query()->insert($reportCards);
+        ReportCard::query()->where('group_id', $dto->groupId)->insert($reportCards);
     }
 }

@@ -4,15 +4,11 @@ declare(strict_types=1);
 namespace App\Service\V2\Analytics;
 
 use App\DTO\Analytics\V2\GetRentabilityDto;
-use App\GroupSalary;
 use App\Helpers\DateHelper;
-use App\Models\Analytics\AnalyticStat;
-use App\Models\Analytics\TopEditedValue;
 use App\Models\Analytics\TopValue;
 use App\ProfileGroup;
-use App\Salary;
-use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
 * Класс для работы с Service.
@@ -26,9 +22,15 @@ class GetRentabilityService
      */
     public function handle(GetRentabilityDto $dto): array
     {
-        $gauges = ProfileGroup::withRentability($dto->year, $dto->month)
-            ->map(fn ($group) => TopValue::query()->where('group_id', $group->id)->where('type', 2)->get())
-            ->filter(fn ($group) => $group->count() > 0)->toArray();
+        $gauges = TopValue::query()->whereHas('groups', function (Builder $group) use ($dto){
+            $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
+                ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
+                ->where('active', ProfileGroup::IS_ACTIVE)
+                ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $dto->year)
+                    ->whereMonth('archived_date', '>=', $dto->month)
+                ));
+        })->where('type', TopValue::RENTABILITY)->get();
+
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
         return [
