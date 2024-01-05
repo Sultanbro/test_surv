@@ -1168,10 +1168,10 @@ export default {
 					}
 				})
 
-				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
+				this.$toast.success('Обновите, чтобы посмотреть новую таблицу')
 			}
 			catch (error) {
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			}
 			loader.hide()
