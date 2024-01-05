@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { arrayUniqueKey } from '@/lib/array.js'
 import moment from 'moment'
 
 
@@ -281,7 +282,14 @@ export async function fetchAnalyticsV2(request){
 	})
 
 	if(!data.data?.table) throw new Error('AnalyticsV2: no analytics')
-	return data.data
+	/* eslint-disable camelcase */
+	return {
+		...data.data,
+		report_cards: {
+			report_cards: arrayUniqueKey(data.data.report_cards?.report_cards || [])
+		}
+	}
+	/* eslint-enable camelcase */
 }
 
 export async function fetchRentabilityV2(params){
