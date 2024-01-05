@@ -144,17 +144,10 @@ class SaveUserKpi extends Command
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
             dump($kpi['id'] . " " . $kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
-//            dd($kpi['users'][0]['items']);
-//             dd($kpi['users'][0]['items'][2]);
+
             foreach ($kpi['users'][0]['items'] as $item) {
-                if ($item['id'] == 44 || $item['id'] == 45) {
-                    continue;
-                }
                 $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
 
-//                $workdays = $itemActivityWeekdays == 0
-//                    ? $this->workdays[5]
-//                    : $this->workdays[$itemActivityWeekdays];
                 $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
 
                 $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
@@ -171,13 +164,13 @@ class SaveUserKpi extends Command
 
                 $payload = json_decode($kpi['histories_latest']['payload'], true);
                 $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
-                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
-                dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
-                dump($off_limit);
+
+//                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
+//                dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
+//                dump($off_limit);
+
                 // off_limit -> check employee can get more kpi bonus with this kpi
                 if ($completed_percent > 100 && !$off_limit) {
-                    //!$item['allow_overfulfillment']
-
                     $completed_percent = 100;
                 }
 
@@ -189,17 +182,11 @@ class SaveUserKpi extends Command
                     (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
                     (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
-                dump('id=' . $item['id'] . ' ' . $item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
+//                dump('id=' . $item['id'] . ' ' . $item['name'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' earned=' . $earnedActivity);
 
                 $earned += $earnedActivity;
 
-                // dump($kpi['lower_limit'],
-                // $kpi['upper_limit'],
-                // $completed_percent,
-                // $item['share'],
-                // $kpi['completed_80'],
-                // $kpi['completed_100']);
-                dump($earned);
+//                dump($earned);
 
             }
         }
