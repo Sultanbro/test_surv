@@ -504,7 +504,7 @@ class SalaryController extends Controller
                         z.jysan as jysan,
                         users.currency as currency,
                         CONCAT('KASPI', '') as card,
-                        users.uin as uin,
+                        users.uin as uin
                         ")
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
                 'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
