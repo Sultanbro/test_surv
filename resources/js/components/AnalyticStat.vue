@@ -849,7 +849,7 @@ export default {
 			this.hoursPositions = this.reportCardsFix.map(id => ({
 				id,
 				type: 3,
-			}))
+			})).filter(pos => this.groupPositions.find(groupPos => pos.id === groupPos.id))
 		},
 		async fetchPositions(){
 			try {
