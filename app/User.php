@@ -89,6 +89,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $phone_2
  * @property string $phone_3
  * @property string $phone_4
+ * @property string $uin
  * @property int $work_chart_id
  * @property int $coordinate_id
  * @property int $referrer_id
@@ -168,7 +169,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         'referrer_id',
         'referrer_status',
         'welcome_message',
-        'inviter_id'
+        'inviter_id',
+        'uin',
     ];
 
     protected $casts = [
