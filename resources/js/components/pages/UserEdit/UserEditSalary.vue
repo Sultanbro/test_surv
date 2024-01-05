@@ -655,27 +655,29 @@ export default {
 		</div>
 
 
-		<div class="UserEditSalary-other">
-			<div class="form-group row">
-				<label
-					for="uin"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>ИИН</label>
-				<div class="col-sm-8">
-					<input
-						id="uin"
-						v-model="uin"
+		<div class="UserEditSalary-other row">
+			<div class="col-sm-6">
+				<div class="form-group row">
+					<label
+						for="uin"
+						class="col-sm-4 col-form-label font-weight-bold"
+					>ИИН</label>
+					<div class="col-sm-8">
+						<input
+							id="uin"
+							v-model="uin"
+							name="uin"
+							type="text"
+							required
+							class="form-control"
+							placeholder="введите ИИН"
+						>
+					</div>
+					<UserEditError
+						:errors="errors"
 						name="uin"
-						type="text"
-						required
-						class="form-control"
-						placeholder="введите ИИН"
-					>
+					/>
 				</div>
-				<UserEditError
-					:errors="errors"
-					name="uin"
-				/>
 			</div>
 		</div>
 	</div>
