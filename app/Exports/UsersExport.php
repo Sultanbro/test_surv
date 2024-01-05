@@ -149,7 +149,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('O5:O'. $count_fields)
+                $event->sheet->getDelegate()->getStyle('N5:N'. $count_fields)
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
