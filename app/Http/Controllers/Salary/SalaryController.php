@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Salary;
 use App\Classes\Helpers\Currency;
 use App\Classes\Helpers\Phone;
 use App\DayType;
-use App\Exports\UsersExport;
 use App\Fine;
 use App\GroupSalary;
 use App\Http\Controllers\Controller;
@@ -439,7 +438,7 @@ class SalaryController extends Controller
             'Бонус',
             'ИТОГО',
             'Авансы',
-            'Штрафы'
+            'Штрафы',
         ];
 
         array_push($headings, ...$taxesColumns);
@@ -466,7 +465,7 @@ class SalaryController extends Controller
         if (ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-        $exp = new UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
+        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
         $exp_title = 'Начисления ' . $edate . ' "' . $group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
@@ -505,7 +504,7 @@ class SalaryController extends Controller
                         z.jysan as jysan,
                         users.currency as currency,
                         CONCAT('KASPI', '') as card,
-                        users.uin as uin
+                        users.uin as uin,
                         ")
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
                 'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
@@ -546,7 +545,6 @@ class SalaryController extends Controller
         foreach ($taxColumns as $tax) {
             $allTotal["tax_$tax->id"] = 0;
         }
-
         $allTotal[] = 0;
         $allTotal[] = 0;
         $allTotal[] = 0;
@@ -573,8 +571,7 @@ class SalaryController extends Controller
             }
 
             // Суммы на месяц
-            $month_salary = Salary::query()
-                ->where('user_id', $user->id)
+            $month_salary = Salary::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->select([
@@ -654,7 +651,7 @@ class SalaryController extends Controller
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
 
             // ставка
-            $allTotal[7] += intval($wage) ?? 0;
+            $allTotal[8] += intval($wage) ?? 0;
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id], $group_id);
 
@@ -678,7 +675,7 @@ class SalaryController extends Controller
                 ->whereMonth('date', $date->month)
                 ->first();
 
-            $kpi = $editedKpi ? $editedKpi->amount : $kpi = Kpi::userKpi($user->id, $date->format('Y-m-d'));
+            $kpi = $editedKpi ? $editedKpi->amount : Kpi::userKpi($user->id, $date->format('Y-m-d'));
 
             if (!$edited_salary) {
                 $allTotal[9] += $salary;
@@ -771,7 +768,7 @@ class SalaryController extends Controller
                 2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
                 3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '',
                 4 => $cards, // Номер карты
-                5 => $user->uin ?? '', // ИИн
+                5 => $user->uin ?? '', // иин
                 6 => $workedDays, // отработанные дни
                 7 => $workDays, // рабочие дни
                 8 => $wage ?? 0, // ставка
@@ -802,12 +799,12 @@ class SalaryController extends Controller
                     $allTotal["tax_$taxColumn->id"] += $amount;
                 }
             }
-            $on_currency = number_format((float)$total_payment * $currency_rate, 0, '.', '') . strtoupper($user->currency);
+            $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
             try {
                 if ($edited_salary) {
                     $allTotal[9] += (float)$edited_salary->amount;
-                    $on_currency = number_format((float)$edited_salary->amount * $currency_rate, 0, '.', '') . strtoupper($user->currency);
+                    $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $totalColumns[9] = 15;
                     $totalColumns[13] = (int)$edited_salary->amount;
                     $totalColumns[20] = $this->space($edited_salary->amount, 3, true);
@@ -820,10 +817,10 @@ class SalaryController extends Controller
                     $totalColumns[13] = $total_income;
                     $totalColumns[14] = $prepaid;
                     $totalColumns[15] = $penalty;
-                    $totalColumns[19] = $expense;
-                    $totalColumns[20] = $this->space($total_payment, 3, true);
+                    $totalColumns[18] = $expense;
+                    $totalColumns[19] = $this->space($total_payment, 3, true);
                 }
-                $totalColumns[21] = $this->space($on_currency, 3, true);
+                $totalColumns[20] = $this->space($on_currency, 3, true);
 
                 $data['users'][] = $totalColumns;
             } catch (\Exception $e) {
@@ -836,7 +833,7 @@ class SalaryController extends Controller
 
         // К выдаче сумма форматированная
         $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
-        $allTotal[17] = $this->space(round($allTotal[17]), 3, true);
+        $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
 
         // Итоги в конце таблицы
         $data['users'][] = $allTotal;
