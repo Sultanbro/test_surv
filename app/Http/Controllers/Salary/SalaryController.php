@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Salary;
 use App\Classes\Helpers\Currency;
 use App\Classes\Helpers\Phone;
 use App\DayType;
+use App\Exports\UsersExport;
 use App\Fine;
 use App\GroupSalary;
 use App\Http\Controllers\Controller;
@@ -428,6 +429,7 @@ class SalaryController extends Controller
             'Возраст',
             'Телефон',
             'Карта',
+            'ИИН',
             'Отр. дни',
             'Раб. дни',
             'Ставка',
@@ -437,8 +439,7 @@ class SalaryController extends Controller
             'Бонус',
             'ИТОГО',
             'Авансы',
-            'Штрафы',
-            'ИИН',
+            'Штрафы'
         ];
 
         array_push($headings, ...$taxesColumns);
@@ -465,7 +466,7 @@ class SalaryController extends Controller
         if (ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
+        $exp = new UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
         $exp_title = 'Начисления ' . $edate . ' "' . $group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
@@ -544,6 +545,7 @@ class SalaryController extends Controller
         foreach ($taxColumns as $tax) {
             $allTotal["tax_$tax->id"] = 0;
         }
+
         $allTotal[] = 0;
         $allTotal[] = 0;
         $allTotal[] = 0;
@@ -570,7 +572,8 @@ class SalaryController extends Controller
             }
 
             // Суммы на месяц
-            $month_salary = Salary::where('user_id', $user->id)
+            $month_salary = Salary::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->select([
