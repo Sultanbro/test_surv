@@ -32,7 +32,6 @@ class DailySalaryUpdate extends Command
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
         $groupId = $this->argument('group');
-        dd($groupId);
-        $this->updateSalary->touch($date);
+        $this->updateSalary->touch($date, $groupId);
     }
 }

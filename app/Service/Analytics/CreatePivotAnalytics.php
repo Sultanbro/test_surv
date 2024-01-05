@@ -18,8 +18,13 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     {
     }
 
-    public function create(): void
+    public function create(?int $groupId): void
     {
+        if ($groupId) {
+            $this->createStats($groupId);
+            return;
+        }
+
         $groups = $this->repository->getActiveGroupsWhereHasAnalytics();
         foreach ($groups as $group) {
             $this->createStats($group->id);
