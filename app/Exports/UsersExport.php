@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Sheet;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
@@ -88,25 +89,25 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
                 $event->sheet->getDelegate()->getStyle('A3:F3')
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('c4dbca');
 
                 $event->sheet->getDelegate()->getStyle('H3:L3')
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('3b73c0');
 
                 $event->sheet->getDelegate()->getStyle('N3')
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ffc000');
 
                 $event->sheet->getDelegate()->getStyle("O3:$coordinateOfStyle")
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('8ccf5b');
 
@@ -133,49 +134,49 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
                 $event->sheet->getDelegate()->getStyle('A5:A'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('G5:G'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('K5:K'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('N5:N'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ffc000');
 
                 $event->sheet->getDelegate()->getStyle('U5:U'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('V5:V'. $count_fields)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('G'.(5 + $this->counter).":$coordinate".(5 + $this->counter))
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ddffad');
 
                 $event->sheet->getDelegate()->getStyle($totals)
                         ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ddffad');
 
