@@ -84,7 +84,7 @@
 									title="ФОТ"
 								/>
 								:</b>
-							{{ actualFOT }} тг.
+							{{ group_total }} тг.
 						</p>
 						<p class="mb-0 fz-08 text-black">
 							<b>Итого уволенные ФОТ:</b>
