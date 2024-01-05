@@ -137,29 +137,23 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('F5:F'. $count_fields)
+                $event->sheet->getDelegate()->getStyle('G5:G'. $count_fields)
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('J5:J'. $count_fields)
+                $event->sheet->getDelegate()->getStyle('K5:K'. $count_fields)
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('M5:M'. $count_fields)
+                $event->sheet->getDelegate()->getStyle('O5:O'. $count_fields)
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('ffc000');
-
-                $event->sheet->getDelegate()->getStyle('T5:T'. $count_fields)
-                        ->getFill()
-                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
 
                 $event->sheet->getDelegate()->getStyle('U5:U'. $count_fields)
                         ->getFill()
@@ -167,7 +161,13 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('F'.(5 + $this->counter).":$coordinate".(5 + $this->counter))
+                $event->sheet->getDelegate()->getStyle('V5:V'. $count_fields)
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('e0e0e0');
+
+                $event->sheet->getDelegate()->getStyle('G'.(5 + $this->counter).":$coordinate".(5 + $this->counter))
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
