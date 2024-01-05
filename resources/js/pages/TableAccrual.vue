@@ -1776,7 +1776,8 @@ export default {
 					type: 1
 				})
 				if(!userData.message){
-					this.kpiItems.push(parseKPI(userData.kpi))
+					const kpi = parseKPI(userData.kpi)
+					kpi.is_active && this.kpiItems.push()
 				}
 				const groups = this.getUserGroups(userId)
 				await Promise.all(groups.map(async groupId => {
@@ -1791,7 +1792,10 @@ export default {
 					})
 					if(!groupData.message){
 						groupData.kpi.users = groupData.kpi.users.filter(user => user.id === userId)
-						if(groupData.kpi.users.length) this.kpiItems.push(parseKPI(groupData.kpi))
+						if(groupData.kpi.users.length) {
+							const kpi = parseKPI(groupData.kpi)
+							kpi.is_active && this.kpiItems.push()
+						}
 					}
 				}))
 				removeDeletedItems(this.kpiItems)
