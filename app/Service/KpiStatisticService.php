@@ -1068,10 +1068,12 @@ class KpiStatisticService
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
                 ->format('Y-m-d')
-            )->where(fn($query) => $query->whereNull('deleted_at')->orWhere(
-                fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
-                    ->endOfMonth()
-                    ->format('Y-m-d')))
+            )
+            ->where(fn($query) => $query->whereNull('deleted_at')
+                ->orWhere(
+                    fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                        ->endOfMonth()
+                        ->format('Y-m-d')))
             )
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
@@ -1990,7 +1992,6 @@ class KpiStatisticService
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
 
-
         // query
         $users = User::withTrashed()
             ->select([
@@ -2031,7 +2032,7 @@ class KpiStatisticService
                     }),
                 ];
             });
-
+        dd($users);
         return $users->values(); //array_values($users->toArray());
     }
 

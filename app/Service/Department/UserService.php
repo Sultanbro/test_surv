@@ -512,9 +512,7 @@ class UserService
             ->where(function ($query) use ($date) {
                 $query->whereNull('pivot.to');
                 $query->orWhere(function (Builder $query) use ($date) {
-                    $start = $date->startOfMonth()->format("Y-m-d");
-//                    $end = $date->endOfMonth()->format("Y-m-d");
-                    $query->where('pivot.to', '>=', $start);
+                    $query->where('pivot.to', '>=', $date->startOfMonth()->format('Y-m-d'));
                 });
             })
             ->groupBy('users.id')
