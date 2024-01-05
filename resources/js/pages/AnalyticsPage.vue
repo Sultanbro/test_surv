@@ -635,11 +635,11 @@ export default {
 					year: this.currentYear,
 					group_id: this.currentGroupId,
 				})
-				this.$toast.success('Аналитика для группы добавлена!')
+				this.$toast.success('Аналитика для группы добавлена')
 				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Аналитика для группы не добавлена!')
+				this.$toast.error('Аналитика для группы не добавлена')
 				console.error(error)
 			}
 			loader.hide()
@@ -650,18 +650,23 @@ export default {
 
 			const loader = this.$loading.show()
 			try {
-				const data = await API.restoreAnalyticsGroup({
+				await API.restoreAnalyticsGroup({
 					id: this.restore_group
 				})
-				this.$toast.success('Восстановлен!')
-				this.currentGroupId = this.restore_group
-				this.ggroups = data.groups
-				this.fetchData()
+				const index = this.archived_groups.findIndex(group => group.id === this.restore_group)
+				if(~index){
+					const group = this.archived_groups[index]
+					this.ggroups.push(group)
+					this.archived_groups.splice(index, 1)
+					this.currentGroupId = this.restore_group
+				}
+				this.$toast.success('Восстановлен')
 				this.restore_group = null
 				this.showArchive = false
+				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Не удалось восстановить аналитику!')
+				this.$toast.error('Не удалось восстановить аналитику')
 				console.error(error)
 			}
 			loader.hide()
@@ -675,12 +680,18 @@ export default {
 				await API.archiveAnalyticsGroup({
 					id: this.currentGroupId
 				})
-				this.$toast.success('Архивирован!')
-				this.currentGroupId = this.ggroups[0].id
+				this.$toast.success('Архивирован')
+				const index = this.ggroups.findIndex(group => group.id === this.currentGroupId)
+				if(~index){
+					const group = this.ggroups[index]
+					this.archived_groups.push(group)
+					this.ggroups.splice(index, 1)
+				}
+				this.currentGroupId = this.ggroups[0]?.id
 				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Не удалось архивировать аналитику!')
+				this.$toast.error('Не удалось архивировать аналитику')
 				console.error(error)
 			}
 			loader.hide()

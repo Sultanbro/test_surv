@@ -1107,12 +1107,12 @@ export default {
 				year: this.month.currentYear,
 				activity: this.local_activity,
 			}).then(() => {
-				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
+				this.$toast.success('Обновите, чтобы посмотреть новую таблицу')
 				this.showEditModal = false
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			});
 		},

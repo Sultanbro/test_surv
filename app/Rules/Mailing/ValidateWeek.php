@@ -26,7 +26,7 @@ class ValidateWeek implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        $weekDays = [0, 1, 2, 3, 4, 5, 6];
+        $weekDays = [1, 2, 3, 4, 5, 6, 7];
 
         if ($value['frequency'] == 'weekly')
         {

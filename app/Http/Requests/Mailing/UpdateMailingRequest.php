@@ -60,9 +60,9 @@ class UpdateMailingRequest extends BaseFormRequest
     }
 
     /**
-     * @return BaseDTO<UpdateMailingDTO>
+     * @return UpdateMailingDTO
      */
-    public function toDto(): BaseDTO
+    public function toDto(): UpdateMailingDTO
     {
         $validated  = $this->validated();
 
