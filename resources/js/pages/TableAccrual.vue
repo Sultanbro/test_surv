@@ -192,7 +192,7 @@
 					:class="{'hide-special': special_fields}"
 					:small="true"
 					:bordered="true"
-					:items="items"
+					:items="[totals, ...items]"
 					:fields="fields"
 					show-empty
 					empty-text="Нет данных"
@@ -1008,7 +1008,32 @@ export default {
 		},
 		date(){
 			return this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}-1`, 'YYYY-MMMM-D').format('YYYY-MM-DD')
-		}
+		},
+		totals(){
+			const final = this.items.reduce((result, item) => result + (Number(item.final)|| 0), 0)
+			const kpi = this.items.reduce((result, item) => result + (Number(item.kpi)|| 0), 0)
+			const bonus = this.items.reduce((result, item) => result + (Number(item.bonus)|| 0), 0)
+			const avans = this.items.reduce((result, item) => result + (Number(item.avans)|| 0), 0)
+			const fines = this.items.reduce((result, item) => result + (Number(item.fines)|| 0), 0)
+			const taxes = this.items.reduce((result, item) => result + (Number(item.taxes)|| 0), 0)
+			const total = this.items.reduce((result, item) => result + (Number(item.total)|| 0), 0)
+
+			const totals = {
+				name: 'Общая сумма',
+				final,
+				kpi,
+				bonus,
+				avans,
+				fines,
+				taxes,
+				total,
+			}
+
+			for(let i = 1; i < 32; ++i){
+				totals[i] = this.items.reduce((result, item) => result + (Number(item[i]) || 0), 0)
+			}
+			return totals
+		},
 	},
 	watch: {
 		scrollLeft(value) {
@@ -1256,17 +1281,17 @@ export default {
 			let items = [];
 			let daySalariesSum = [];
 
-			items.push({
-				name: 'Общая сумма',
-			});
+			// items.push({
+			// 	name: 'Общая сумма',
+			// });
 
-			let total_final = 0; // К выдаче сумма
-			let total_kpi = 0; // Кpi total
-			let total_bonus = 0; // Bonus total
-			let total_fines = 0; // fines total
-			let total_avanses = 0; // Avans total
-			let total_taxes = 0; // Taxes total
-			let total_total = 0; // Начислено total
+			// let total_final = 0; // К выдаче сумма
+			// let total_kpi = 0; // Кpi total
+			// let total_bonus = 0; // Bonus total
+			// let total_fines = 0; // fines total
+			// let total_avanses = 0; // Avans total
+			// let total_taxes = 0; // Taxes total
+			// let total_total = 0; // Начислено total
 
 			this.data.users.forEach(item => {
 				var daySalaries = [];
@@ -1400,27 +1425,27 @@ export default {
 					...daySalaries,
 				};
 
-				let pass = false
+				// let pass = false
 
 				if(this.show_user == 0) {
 					items.push(obj);
-					pass = true
+					// pass = true
 				}
 				else if(hasMoney > 0) { // show if has salary records
 					items.push(obj);
 					hasMoney = 0
-					pass = true
+					// pass = true
 				}
 
-				if(pass){
-					total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
-					total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
-					total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
-					total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
-					total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
-					total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
-					total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
-				}
+				// if(pass){
+				// 	total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
+				// 	total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
+				// 	total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+				// 	total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+				// 	total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+				// 	total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
+				// 	total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
+				// }
 			});
 
 
@@ -1432,21 +1457,21 @@ export default {
 				});
 			}
 
-			total_bonus = Number(total_bonus).toFixed(0);
+			// total_bonus = Number(total_bonus).toFixed(0);
 
-			items[0] = {
-				name: 'Общая сумма',
-				final: total_final,
-				kpi: total_kpi,
-				bonus: total_bonus,
-				avans: total_avanses,
-				fines: total_fines,
-				taxes: total_taxes,
-				total: total_total,
-				...daySalariesSum,
-			};
+			// items[0] = {
+			// 	name: 'Общая сумма',
+			// 	final: total_final,
+			// 	kpi: total_kpi,
+			// 	bonus: total_bonus,
+			// 	avans: total_avanses,
+			// 	fines: total_fines,
+			// 	taxes: total_taxes,
+			// 	total: total_total,
+			// 	...daySalariesSum,
+			// };
 
-			this.total = total_final;
+			// this.total = total_final;
 			this.items = items;
 		},
 
