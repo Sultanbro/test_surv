@@ -1099,7 +1099,19 @@ class Salary extends Model
                 $schedule = $user->scheduleFast();
                 $lunchTime = 1;
 
-                $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+                // Проверяем установлена ли время отдыха
+                if ($schedule && $schedule->rest_time != null) {
+                    $lunchTime = $schedule->rest_time;
+                    $hour = floatval($lunchTime / 60);
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
+                } else {
+                    $lunchTime = 1;
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                }
+
+                $worktime = $working_hours;
 
 //                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
 
