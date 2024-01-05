@@ -417,24 +417,28 @@ class SalaryController extends Controller
                 FROM `user_tax`
                 WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )")->get()->pluck('name')->toArray();
+            )")
+            ->get()
+            ->pluck('name')
+            ->toArray();
 
         $headings = [
-            'ФИО', // 0
-            'На карте', // 1
-            'Возраст', // 2
-            'Телефон', // 3
-            'Карта', // 4
-            'Отр. дни', // 5
-            'Раб. дни', // 6
-            'Ставка',  // 7
-            'Начислено', // 9
-            'KPI', // 10
-            'Стажировочные', // 8
-            'Бонус', // 11
-            'ИТОГО', // 12
-            'Авансы', // 13
-            'Штрафы', // 14
+            'ФИО',
+            'На карте',
+            'Возраст',
+            'Телефон',
+            'Карта',
+            'Отр. дни',
+            'Раб. дни',
+            'Ставка',
+            'Начислено',
+            'KPI',
+            'Стажировочные',
+            'Бонус',
+            'ИТОГО',
+            'Авансы',
+            'Штрафы',
+            'ИИН',
         ];
 
         array_push($headings, ...$taxesColumns);
@@ -499,10 +503,11 @@ class SalaryController extends Controller
                         z.kaspi as kaspi,
                         z.jysan as jysan,
                         users.currency as currency,
-                        CONCAT('KASPI', '') as card
+                        CONCAT('KASPI', '') as card,
+                        users.uin as uin
                         ")
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
-                'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'program_id', 'birthday', 'currency', 'working_day_id')
+                'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
             ->get();
 
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
@@ -772,6 +777,7 @@ class SalaryController extends Controller
                 12 => 0, // ИТОГО доход,
                 13 => 0, // Авансы
                 14 => 0, // Штрафы
+                15 => $user->uin ?? '', // ИИн
             ];
 
             /**
