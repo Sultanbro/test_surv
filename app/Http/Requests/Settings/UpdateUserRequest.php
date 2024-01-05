@@ -28,7 +28,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'id' => ['required', 'numeric', 'exists:users,id'],
-            'uin' => ['nullable', 'numeric', Rule::unique('users', 'uin')],
+            'uin' => ['nullable', 'string', Rule::unique('users', 'uin')->ignore($this->get('id'))],
             'name' => ['string', 'min:3', 'max:60'],
             'last_name' => ['string', 'min:3', 'max:60'],
             'email' => ['string', 'email'],
