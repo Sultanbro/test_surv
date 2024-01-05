@@ -122,6 +122,8 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->orderBy('order', 'desc')
             ->get();
 
+        dd($prevRows);
+
         foreach ($prevRows as $prevRow) {
             $newRow = $prevRow->replicate();
             $newRow->date = $currentDate;
@@ -129,10 +131,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newRow->save();
             $newRows[$prevRow->id] = $newRow->getKey();
         }
-        dd($newRows);
+
         /**
          * depend rows
          */
+
         $rows = AnalyticRow::query()
             ->where('date', $currentDate)
             ->where('group_id', $group_id)
