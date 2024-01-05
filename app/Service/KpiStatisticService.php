@@ -1244,7 +1244,9 @@ class KpiStatisticService
         if ($type == 3) {
             $_user_ids = User::withTrashed()
                 ->where('position_id', $kpi->targetable_id)
-                ->whereDate('deleted_at', '>=', $date->startOfMonth()->format('Y-m-d'))
+                ->where(function ($q) use ($date) {
+                    $q->whereNull('deleted_at')->orWhereMonth('deleted_at', '>=', $date->month);
+                })
                 ->pluck('id')
                 ->toArray();
             if ($user_id != 0) $_user_ids = [$user_id];
