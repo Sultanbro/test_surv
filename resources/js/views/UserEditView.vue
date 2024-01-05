@@ -107,7 +107,7 @@ export default {
 				email: true,
 				selectedCityInput: true,
 				zarplata: true,
-				iin: true,
+				uin: true,
 			},
 			counter: 0,
 			profile_errors: 0,
