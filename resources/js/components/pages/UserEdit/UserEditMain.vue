@@ -396,27 +396,27 @@ export default {
 
 			<div
 				class="form-group row"
-				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.iin}"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.uin}"
 			>
 				<label
-					for="iin"
+					for="uin"
 					class="col-sm-4 col-form-label font-weight-bold"
 				>ИИН <span class="red">*</span></label>
 				<div class="col-sm-8">
 					<input
-						id="iin"
-						v-model="iin"
-						name="iin"
+						id="uin"
+						v-model="uin"
+						name="uin"
 						type="text"
 						required
 						class="form-control"
 						placeholder="введите ИИН"
-						@input="checkValid($event, 'iin')"
+						@input="checkValid($event, 'uin')"
 					>
 				</div>
 				<UserEditError
 					:errors="errors"
-					name="iin"
+					name="uin"
 				/>
 			</div>
 		</div>
