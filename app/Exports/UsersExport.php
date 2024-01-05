@@ -229,7 +229,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 );
 
                 $event->sheet->styleCells(
-                    'F'.(5 + $this->counter).":$coordinate".(5 + $this->counter),
+                    'G'.(5 + $this->counter).":$coordinate".(5 + $this->counter),
                     [
                         'borders' => [
                             'allBorders' => [
@@ -252,7 +252,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 );
 
                 $event->sheet->styleCells(
-                    'F'.(count($this->collection) + 3).":$coordinate".(count($this->collection) + 3),
+                    'G'.(count($this->collection) + 3).":$coordinate".(count($this->collection) + 3),
                     [
                         'borders' => [
                             'allBorders' => [
