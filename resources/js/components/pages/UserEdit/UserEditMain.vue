@@ -395,32 +395,6 @@ export default {
 				@valid_change="validChangeGroup"
 			/>
 			<!-- end of groups and books tab -->
-
-			<div
-				class="form-group row"
-				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.uin}"
-			>
-				<label
-					for="uin"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>ИИН <span class="red">*</span></label>
-				<div class="col-sm-8">
-					<input
-						id="uin"
-						v-model="uin"
-						name="uin"
-						type="text"
-						required
-						class="form-control"
-						placeholder="введите ИИН"
-						@input="checkValid($event, 'uin')"
-					>
-				</div>
-				<UserEditError
-					:errors="errors"
-					name="uin"
-				/>
-			</div>
 		</div>
 
 		<div class="col-12 col-xl-6">
