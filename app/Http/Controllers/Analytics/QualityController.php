@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
-use App\Models\Analytics\UserStat;
-use App\Models\CallibroDialer;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+use App\Service\Department\UserService;
 use App\Models\CheckReports;
 use App\ProfileGroup;
+use App\User;
 use App\QualityParam;
 use App\QualityParamValue;
 use App\QualityRecord;
-use App\QualityRecordMonthlyStat;
 use App\QualityRecordWeeklyStat;
-use App\Service\Department\UserService;
-use App\User;
+use App\QualityRecordMonthlyStat;
+use App\Models\Analytics\UserStat;
+use App\Models\CallibroDialer;
 use App\UserNotification;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
 class QualityController extends Controller
 {
@@ -31,20 +31,20 @@ class QualityController extends Controller
     public function index(Request $request)
     {
         $check = isset($request['check']) ? $request['check'] : 1;
-        if (!auth()->user()->can('quality_view')) {
+        if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
 
         $groups = ProfileGroup::where('active', 1)->get();
         $group_id = $groups->count() > 0 ? $groups->first()->id : 0;
-        if (isset($request['user_id'])) {
+        if(isset($request['user_id'])){
             $user = User::find($request['user_id']);
             $userGroups = $user->inGroups();
             $group_id = $userGroups->count() > 0 ? $userGroups->first()->id : 0;
         }
 
         return view('admin.quality_control',
-            compact('groups', 'group_id', 'check'));
+            compact('groups','group_id','check'));
     }
 
     public function getRecords(Request $request)
@@ -52,7 +52,7 @@ class QualityController extends Controller
         $currentUser = auth()->user();
         $group = ProfileGroup::find($request->group_id);
 
-        if (!$group) return [
+        if(!$group)  return [
             'error' => 'access',
         ];
 
@@ -75,28 +75,28 @@ class QualityController extends Controller
 
         $user_ids = array_unique(array_merge($working, $fired));
 
-        $raw_items = User::withTrashed()->whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id', 'last_name', 'name'])->get();
+        $raw_items = User::withTrashed()->whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
 
         $items = [];
 
         // CREATE WEEKS ARRAY
         $weeks = $this->weeksArray($request->month, $request->year);
 
-        foreach ($raw_items as $raw_item) {
+        foreach($raw_items as $raw_item) {
             $item = [];
 
-            $item['name'] = $raw_item->last_name . ' ' . $raw_item->name;
+            $item['name'] = $raw_item->last_name. ' ' . $raw_item->name;
             $item['id'] = $raw_item->id;
 
             // FETCHING WEEKS DATA
             $week_totals = QualityRecordWeeklyStat::where([
-                'user_id' => $raw_item->id,
-                'month' => $request->month,
-                'year' => $request->year,
-                'group_id' => $group->id
-            ])->get();
+                    'user_id' => $raw_item->id,
+                    'month' => $request->month,
+                    'year' => $request->year,
+                    'group_id' => $group->id
+                ])->get();
 
-            foreach ($week_totals as $week) {
+            foreach($week_totals as $week) {
                 $item['weeks'][$week->day] = $week->total;
             }
 
@@ -104,26 +104,26 @@ class QualityController extends Controller
             $item['weeks']['total'] = 0;
             $actual_weeks = 0;
 
-            foreach ($weeks as $key => $value) {
+            foreach($weeks as $key => $value) {
                 $avg = 0;
                 $count = 0;
 
-                foreach ($value as $val) {
-                    if (isset($item['weeks'][$val]) && $item['weeks'][$val] > 0) {
+                foreach($value as $val){
+                    if(isset($item['weeks'][$val]) && $item['weeks'][$val] > 0) {
                         $avg += $item['weeks'][$val];
                         $count++;
                     }
                 }
 
-                if ($count > 0) {
+                if($count > 0) {
                     $result = round($avg / $count);
-                    $item['weeks']['avg' . $key] = $result;
+                    $item['weeks']['avg'.$key] = $result;
                     $item['weeks']['total'] += $result;
                     $actual_weeks++;
                 }
             }
 
-            if ($actual_weeks > 0) {
+            if($actual_weeks > 0) {
                 $item['weeks']['total'] = round($item['weeks']['total'] / $actual_weeks);
 
                 $monthly = QualityRecordMonthlyStat::where([
@@ -133,7 +133,7 @@ class QualityController extends Controller
                     'group_id' => $group->id
                 ])->first();
 
-                if ($monthly) {
+                if($monthly) {
                     $monthly->total = (int)$item['weeks']['total'];
                     $monthly->save();
                 } else {
@@ -155,7 +155,7 @@ class QualityController extends Controller
                 'group_id' => $group->id
             ])->get();
 
-            foreach ($month_totals as $mon) {
+            foreach($month_totals as $mon) {
                 $item['months'][$mon->month] = $mon->total;
             }
             ///// COUNT MONTHS
@@ -164,15 +164,15 @@ class QualityController extends Controller
 
             $count = 0;
             $sum = 0;
-            for ($m = 1; $m <= 12; $m++) {
+            for($m=1;$m<=12;$m++) {
 
-                if (isset($item['months'][$m])) {
+                if(isset($item['months'][$m])) {
                     $sum += $item['months'][$m];
-                    if ($item['months'][$m] > 0) $count++;
+                    if($item['months'][$m] > 0) $count++;
                 }
             }
 
-            if ($count == 0) {
+            if($count == 0) {
                 $item['months']['total'] = 0;
             } else {
                 $item['months']['total'] = round($sum / $count);
@@ -191,20 +191,20 @@ class QualityController extends Controller
         // Quality Record filling tab
         // Only for Kaspi
 
-        if ($group->quality == 'local') {
+        if($group->quality == 'local') {
             $records = QualityRecord::whereYear('listened_on', $request->year)->whereMonth('listened_on', $request->month)->where('group_id', $group->id);
 
-            if ($request->employee_id != 0) {
+            if($request->employee_id != 0) {
                 $records->where('employee_id', $request->employee_id);
             }
 
-            if ($request->day != 0) {
+            if($request->day != 0){
                 $records->whereDay('listened_on', $request->day);
             }
 
             $avg_month = 0;
             $avg_day = 0;
-            if ($request->employee_id != 0) {
+            if($request->employee_id != 0) {
                 $user_month_records = QualityRecord::whereYear('listened_on', $request->year)
                     ->whereMonth('listened_on', $request->month)
                     ->where('employee_id', $request->employee_id)
@@ -215,7 +215,7 @@ class QualityController extends Controller
 
                 $avg_month = $this->countAvgOfTotal($user_month_records);
 
-                if ($request->day != 0) {
+                if($request->day != 0){
                     $user_day_records = QualityRecord::whereYear('listened_on', $request->year)
                         ->whereMonth('listened_on', $request->month)
                         ->whereDay('listened_on', $request->day)
@@ -235,9 +235,9 @@ class QualityController extends Controller
 
             //////
 
-            foreach ($records->items() as $record) {
+            foreach($records->items() as $record) {
                 $_user = User::withTrashed()->find($record->employee_id);
-                if (is_null($_user)) {
+                if(is_null($_user)){
                     continue;
                 }
                 $record->name = $_user->last_name . ' ' . $_user->name;
@@ -254,11 +254,11 @@ class QualityController extends Controller
                 // $record->param4 = (int)$_params[3];
                 // $record->param5 = (int)$_params[4];
 
-                if ($record->comments == null) $record->comments = '';
+                if($record->comments == null) $record->comments = '';
 
 
-                if ($record->segment_id == 1) $record->segment = '1-5';
-                if ($record->segment_id == 2) $record->segment = 'Напоминание';
+                if($record->segment_id == 1) $record->segment = '1-5';
+                if($record->segment_id == 2) $record->segment = 'Напоминание';
                 $record->editable = false;
             }
         }
@@ -273,9 +273,14 @@ class QualityController extends Controller
         $q_params = QualityParam::where('group_id', $group->id)->where('active', 1)->get();
 
 
+
+
         $group = ProfileGroup::find($request->group_id);
         $check_users = CheckReports::getChecklistByGroup($group, $request);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
+
+
+
 
 
         return response()->json([
@@ -302,17 +307,17 @@ class QualityController extends Controller
         $week = [];
         $daysInMonth = Carbon::createFromFormat('m-Y', $month . '-' . $year)->daysInMonth;
 
-        for ($d = 1; $d <= $daysInMonth; $d++) {
+        for($d=1;$d<=$daysInMonth;$d++) {
 
             array_push($week, (int)$d);
 
-            if (Carbon::createFromFormat('d-m-Y', $d . '-' . $month . '-' . $year)->dayOfWeek == Carbon::SUNDAY) {
+            if(Carbon::createFromFormat('d-m-Y', $d . '-' . $month . '-' . $year)->dayOfWeek == Carbon::SUNDAY) {
                 $weeks[$week_number] = $week;
                 $week = [];
                 $week_number++;
             }
 
-            if ($d == $daysInMonth) {
+            if($d == $daysInMonth){
                 $weeks[$week_number] = $week;
             }
         }
@@ -326,7 +331,9 @@ class QualityController extends Controller
         $user_id = auth()->id();
 
 
-        if ($request->id == 0) {
+
+
+        if($request->id == 0) {
 
             $rec = QualityRecord::create([
                 "employee_id" => $request->employee_id,
@@ -354,7 +361,7 @@ class QualityController extends Controller
                 $total += (int)$pv['value'];
             }
 
-            if ($total > 100) {
+            if($total > 100) {
                 $total = 100;
             }
 
@@ -373,16 +380,16 @@ class QualityController extends Controller
 
             $id = 0;
 
-            if ($record) {
+            if($record) {
 
                 $total = 0;
-                if (count($request->param_values) > 0 && array_key_exists('id', $request->param_values[0])) {
-                    ////// total count
+                if(count($request->param_values) > 0 && array_key_exists('id', $request->param_values[0])) {
+                     ////// total count
 
                     foreach ($request->param_values as $key => $pv) {
                         $param = QualityParamValue::find($pv['id']);
 
-                        if ($param) {
+                        if($param) {
                             $param->value = $pv['value'];
                             $param->save();
                         } else {
@@ -400,18 +407,18 @@ class QualityController extends Controller
 
 
                     foreach ($request->param_values as $key => $pv) {
-                        QualityParamValue::create([
-                            'param_id' => $pv['param_id'],
-                            'value' => $pv['value'],
-                            'record_id' => $record->id,
-                        ]);
+                         QualityParamValue::create([
+                                'param_id' => $pv['param_id'],
+                                'value' => $pv['value'],
+                                'record_id' => $record->id,
+                            ]);
 
                         $total += (int)$pv['value'];
                     }
                 }
 
 
-                if ($total > 100) {
+                if($total > 100) {
                     $total = 100;
                 }
                 ///
@@ -438,12 +445,13 @@ class QualityController extends Controller
         }
 
 
+
     }
 
     public function deleteRecord(Request $request)
     {
         $record = QualityRecord::find($request->id);
-        if ($record) $record->delete();
+        if($record) $record->delete();
     }
 
     public function exportExcel(Request $request)
@@ -455,72 +463,74 @@ class QualityController extends Controller
             'День просрочки',
             'Собеседник',
             'Дата прослушки',
+
         ];
 
 
-        $crits = QualityParam::query()
-            ->where('group_id', $request->group_id)
-            ->get();
-        foreach ($crits as $crit) {
-            $headings[] = $crit->name;
+
+        $crits = QualityParam::where('group_id', $request->group_id)->get();
+        foreach ($crits as $key => $crit) {
+            array_push($headings, $crit->name);
         }
 
-        $headings[] = 'Совет';
+        array_push($headings, 'Совет');
         $data['records'] = [];
 
         $records = QualityRecord::whereYear('listened_on', $request->year)
-            ->whereMonth('listened_on', $request->month)
-            ->whereDay('listened_on', $request->day)
-            ->where('group_id', $request->group_id)
-            ->where('comments', '!=', null)
-            ->orderBy('listened_on', 'desc')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->take(20);
+                ->whereMonth('listened_on', $request->month)
+                ->whereDay('listened_on', $request->day)
+                ->where('group_id', $request->group_id)
+                ->where('comments', '!=', null)
+                ->orderBy('listened_on', 'desc')
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->take(20);
 
-        foreach ($records as $record) {
-            $_user = $record->user;
-            $params = json_decode($record->params);
-            $data['records'][] = [
-                0 => $_user->last_name . ' ' . $_user->name,
-                1 => $record->phone,
-                2 => strval($record->day_of_delay),
-                3 => $record->interlocutor,
-                4 => $record->listened_on,
-                5 => strval($params[0]),
-                6 => strval($params[1]),
-                7 => strval($params[2]),
-                8 => strval($params[3]),
-                9 => strval($params[4]),
-                10 => $record->comments ?? '',
-            ];
-        }
+            foreach($records as $record) {
+                $_user = $record->user;
+                $params = json_decode($record->params);
+                $data['records'][] = [
+                    0 => $_user->last_name . ' ' . $_user->name,
+                    1 => $record->phone,
+                    2 => strval($record->day_of_delay),
+                    3 => $record->interlocutor,
+                    4 => $record->listened_on,
+                    5 => strval($params[0]),
+                    6 => strval($params[1]),
+                    7 => strval($params[2]),
+                    8 => strval($params[3]),
+                    9 => strval($params[4]),
+                    10 => $record->comments ? $record->comments : '',
+                ];
+            }
 
 
         // на локале не работала эта функция, если оставил её на случай откатки
         ob_end_clean();
         if (ob_get_length() > 0) ob_clean();
 
-        return Excel::create('Контроль_качества_за_' . $request->day . '.' . $request->month . '.' . $request->year, function ($excel) use ($data, $headings, $request) {
+        return Excel::create('Контроль_качества_за_'.$request->day.'.' .$request->month.'.'.$request->year, function ($excel) use ($data, $headings, $request) {
             $excel->setTitle('Отчет');
             $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
             $excel->setDescription('Экспорт данных в Excel файл');
-            $excel->sheet('Отчет за ' . $request->day . '.' . $request->month . '.' . $request->year, function ($sheet) use ($data, $headings) {
+            $excel->sheet('Отчет за '.$request->day.'.' .$request->month.'.'.$request->year, function ($sheet) use ($data, $headings) {
                 $sheet->fromArray($data['records'], null, 'A1', false, false);
                 $sheet->prependRow(1, $headings);
             });
         })->export('xls');
+
+
     }
 
     private function countAvgOfTotal($records)
     {
         $sum_month = $records->sum('total');
         $count_month = $records->count();
-        if ($count_month == 0) {
-            $avg_month = 0;
-        } else {
-            $avg_month = round($sum_month / $count_month);
-        }
+            if($count_month == 0) {
+                $avg_month = 0;
+            } else {
+                $avg_month = round($sum_month / $count_month);
+            }
         return $avg_month;
     }
 
@@ -534,7 +544,7 @@ class QualityController extends Controller
             'group_id' => $request->group_id,
         ])->first();
 
-        if ($rec) {
+        if($rec) {
             $rec->update(['total' => $request->total]);
         } else {
             $rec = QualityRecordWeeklyStat::create($request->all());
@@ -542,9 +552,9 @@ class QualityController extends Controller
 
         // save user_stats
         UserStat::saveQuality([
-            'date' => Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d'),
-            'user_id' => $request->user_id,
-            'value' => $request->total,
+            'date'     => Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d'),
+            'user_id'  => $request->user_id,
+            'value'    => $request->total,
             'group_id' => $request->group_id,
         ]);
 
@@ -590,53 +600,54 @@ class QualityController extends Controller
         $data['records'] = [];
 
         $records = QualityRecord::whereYear('listened_on', $request->year)
-            ->whereMonth('listened_on', $request->month)
-            ->where('group_id', $request->group_id)
-            ->orderBy('listened_on', 'desc')
-            ->orderBy('created_at', 'asc')
-            ->with('param_values')
-            ->get();
+                ->whereMonth('listened_on', $request->month)
+                ->where('group_id', $request->group_id)
+                ->orderBy('listened_on', 'desc')
+                ->orderBy('created_at', 'asc')
+                ->with('param_values')
+                ->get();
 
-        foreach ($records as $record) {
-            $_user = $record->user;
-            $params = json_decode($record->params);
-
-
-            $arr = [
-                0 => $_user->last_name . ' ' . $_user->name,
-                1 => $segments[$record->segment_id],
-                2 => $record->phone,
-                3 => strval($record->day_of_delay),
-                4 => $record->interlocutor,
-                5 => $record->listened_on,
-            ];
+            foreach($records as $record) {
+                $_user = $record->user;
+                $params = json_decode($record->params);
 
 
-            foreach ($crits as $key => $crit) {
-                $a = $record->param_values->where('param_id', $crit->id)->first();
-                if ($a) {
-                    array_push($arr, strval($a->value));
-                } else {
-                    array_push($arr, strval(0));
+                $arr = [
+                    0 => $_user->last_name . ' ' . $_user->name,
+                    1 => $segments[$record->segment_id],
+                    2 => $record->phone,
+                    3 => strval($record->day_of_delay),
+                    4 => $record->interlocutor,
+                    5 => $record->listened_on,
+                ];
+
+
+
+                foreach ($crits as $key => $crit) {
+                    $a = $record->param_values->where('param_id', $crit->id)->first();
+                    if($a) {
+                        array_push($arr, strval($a->value));
+                    } else {
+                        array_push($arr, strval(0));
+                    }
                 }
+
+                array_push($arr, $record->total);
+                array_push($arr, $record->comments ? $record->comments : '');
+
+                $data['records'][] = $arr;
             }
-
-            array_push($arr, $record->total);
-            array_push($arr, $record->comments ? $record->comments : '');
-
-            $data['records'][] = $arr;
-        }
 
 
         // на локале не работала эта функция, если оставил её на случай откатки
         ob_end_clean();
         if (ob_get_length() > 0) ob_clean();
 
-        return Excel::create('Контроль качества KASPI за ' . $request->month . '.' . $request->year, function ($excel) use ($data, $headings, $request) {
+        return Excel::create('Контроль качества KASPI за '. $request->month.'.'.$request->year, function ($excel) use ($data, $headings, $request) {
             $excel->setTitle('Отчет');
             $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
             $excel->setDescription('Экспорт данных в Excel файл');
-            $excel->sheet('Отчет за ' . $request->day . '.' . $request->month . '.' . $request->year, function ($sheet) use ($data, $headings) {
+            $excel->sheet('Отчет за '.$request->day.'.' .$request->month.'.'.$request->year, function ($sheet) use ($data, $headings) {
                 $sheet->fromArray($data['records'], null, 'A1', false, false);
                 $sheet->prependRow(1, $headings);
             });
@@ -653,7 +664,7 @@ class QualityController extends Controller
 
         $has_crits = QualityParam::where('group_id', $request->group_id)->first();
 
-        if (!$has_crits) {
+        if(!$has_crits) {
             $names = [
                 'Установление контакта',
                 'Выявление потребностей',
@@ -662,7 +673,7 @@ class QualityController extends Controller
                 'Закрытие',
             ];
 
-            foreach ($names as $name) {
+            foreach($names as $name) {
                 QualityParam::create([
                     'name' => $name,
                     'group_id' => $request->group_id,
@@ -676,12 +687,12 @@ class QualityController extends Controller
     {
         $group = ProfileGroup::find($request->group_id);
 
-        if ($request->can_add_records) {
+        if($request->can_add_records) {
 
             foreach ($request->crits as $key => $crit) {
                 $param = QualityParam::find($crit['id']);
 
-                if ($param) {
+                if($param) {
                     $param->name = $crit['name'];
                     $param->active = $crit['active'];
                     $param->save();
@@ -699,7 +710,7 @@ class QualityController extends Controller
 
             $dialer = CallibroDialer::where('group_id', $request->group_id)->first();
 
-            if ($dialer) {
+            if($dialer) {
                 $dialer->dialer_id = $request['dialer_id'];
                 $dialer->script_id = $request['script_id'] ?? 0;
                 $dialer->save();
