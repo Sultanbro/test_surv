@@ -467,7 +467,6 @@ class QualityController extends Controller
 
         $headings[] = 'Совет';
         $data['records'] = [];
-        $headings[] = 'ИИН';
 
         $records = QualityRecord::whereYear('listened_on', $request->year)
             ->whereMonth('listened_on', $request->month)
@@ -494,7 +493,6 @@ class QualityController extends Controller
                 8 => strval($params[3]),
                 9 => strval($params[4]),
                 10 => $record->comments ?? '',
-                11 => $_user->uin ?? '',
             ];
         }
 
