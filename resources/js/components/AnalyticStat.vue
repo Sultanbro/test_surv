@@ -1103,7 +1103,7 @@ export default {
 				id: this.itemy['row_id'],
 				depend_id: this.depend_id
 			}).then(() => {
-				this.$toast.success('Обновите, чтобы подтянуть данные!');
+				this.$toast.success('Обновите, чтобы подтянуть данные');
 
 				this.showDependy = false;
 				this.depend_id = null;
@@ -1118,7 +1118,7 @@ export default {
 			this.axios.post('/timetracking/analytics/dependency/remove', {
 				id: item.row_id,
 			}).then(() => {
-				this.$toast.success('Обновите, чтобы подтянуть данные!');
+				this.$toast.success('Обновите, чтобы подтянуть данные');
 			}).catch(error => {
 				this.$toast.error('Не получилось');
 				console.error(error)
@@ -1258,13 +1258,13 @@ export default {
 				group_id: this.group_id,
 				class: item.class,
 			}).then(() => {
-				this.$toast.success('Обновите чтобы подтянуть данные!')
+				this.$toast.success('Обновите чтобы подтянуть данные')
 
 				this.item = null;
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			});
 		},
@@ -1281,7 +1281,7 @@ export default {
 				group_id: this.group_id,
 				class: item.class,
 			}).then(response => {
-				this.$toast.success('Сумма подтянута!')
+				this.$toast.success('Сумма подтянута')
 
 				this.item.value = response.data
 				this.item.show_value = response.data
@@ -1289,7 +1289,7 @@ export default {
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			});
 		},
@@ -1305,7 +1305,7 @@ export default {
 				group_id: this.group_id,
 				class: item.class,
 			}).then(response => {
-				this.$toast.success('Среднее за месяц подтянута!')
+				this.$toast.success('Среднее за месяц подтянута')
 
 				this.item.value = response.data
 				this.item.show_value = response.data
@@ -1313,7 +1313,7 @@ export default {
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			});
 		},
@@ -1334,7 +1334,7 @@ export default {
 				formula: item.formula,
 				activity_id: this.activity_id
 			}).then(() => {
-				this.$toast.success('Обновите чтобы подтянуть данные!')
+				this.$toast.success('Обновите чтобы подтянуть данные')
 
 				this.item = null;
 
@@ -1342,7 +1342,7 @@ export default {
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 				alert(error)
 			});
 		},
@@ -1488,7 +1488,7 @@ export default {
 				column_id: item.column_id,
 				decimals: item.decimals
 			}).then(() => {
-				this.$toast.success('Сохранено!');
+				this.$toast.success('Сохранено');
 				this.hideContextMenu();
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
@@ -1803,11 +1803,11 @@ export default {
 					positions: this.hoursPositions.map(pos => +pos.id),
 				})
 				this.$emit('cellUpdated')
-				this.$toast.success('Обновите чтобы подтянуть данные!')
+				this.$toast.success('Обновите чтобы подтянуть данные')
 			}
 			catch (error) {
 				console.error('[AnalyticStat.onSubmitHours]', error)
-				this.$toast.error('Ошибка!')
+				this.$toast.error('Ошибка')
 			}
 
 			loader.hide()

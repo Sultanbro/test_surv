@@ -635,11 +635,11 @@ export default {
 					year: this.currentYear,
 					group_id: this.currentGroupId,
 				})
-				this.$toast.success('Аналитика для группы добавлена!')
+				this.$toast.success('Аналитика для группы добавлена')
 				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Аналитика для группы не добавлена!')
+				this.$toast.error('Аналитика для группы не добавлена')
 				console.error(error)
 			}
 			loader.hide()
@@ -660,13 +660,13 @@ export default {
 					this.archived_groups.splice(index, 1)
 					this.currentGroupId = this.restore_group
 				}
-				this.$toast.success('Восстановлен!')
+				this.$toast.success('Восстановлен')
 				this.restore_group = null
 				this.showArchive = false
 				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Не удалось восстановить аналитику!')
+				this.$toast.error('Не удалось восстановить аналитику')
 				console.error(error)
 			}
 			loader.hide()
@@ -680,7 +680,7 @@ export default {
 				await API.archiveAnalyticsGroup({
 					id: this.currentGroupId
 				})
-				this.$toast.success('Архивирован!')
+				this.$toast.success('Архивирован')
 				const index = this.ggroups.findIndex(group => group.id === this.currentGroupId)
 				if(~index){
 					const group = this.ggroups[index]
@@ -691,7 +691,7 @@ export default {
 				this.fetchData()
 			}
 			catch (error) {
-				this.$toast.error('Не удалось архивировать аналитику!')
+				this.$toast.error('Не удалось архивировать аналитику')
 				console.error(error)
 			}
 			loader.hide()
