@@ -122,7 +122,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->orderBy('order', 'desc')
             ->get();
 
-        dd($prevRows);
+        dd($group_id);
 
         foreach ($prevRows as $prevRow) {
             $newRow = $prevRow->replicate();
