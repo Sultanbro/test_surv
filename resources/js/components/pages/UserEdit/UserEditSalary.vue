@@ -446,60 +446,76 @@ export default {
 			<div
 				v-for="(card, key) in cards"
 				:key="card.id"
-				class="d-flex form-group m0 card-row"
+				class="d-flex form-group m0 row"
 			>
-				<input
-					v-model="card.bank"
-					:name="`cards[${key}][bank]`"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Банк/Кошелек/..."
-				>
-				<input
-					v-model="card.country"
-					:name="`cards[${key}][country]`"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Страна"
-				>
-				<input
-					v-model="card.cardholder"
-					:name="`cards[${key}][cardholder]`"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Имя на карте"
-				>
-				<input
-					v-model="card.phone"
-					:name="`cards[${key}][phone]`"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Телефон"
-				>
-				<input
-					v-model="card.number"
-					v-mask="`#### #### #### ####`"
-					:name="`cards[${key}][number]`"
-					type="text"
-					class="form-control mr-1 col-sm-3 card-number"
-					placeholder="Номер карты/счета"
-				>
+				<div class="col-sm-2">
+					<input
+						v-model="card.bank"
+						:name="`cards[${key}][bank]`"
+						type="text"
+						class="form-control"
+						placeholder="Банк/Кошелек/..."
+					>
+				</div>
+				<div class="col-sm-2">
+					<input
+						v-model="card.country"
+						:name="`cards[${key}][country]`"
+						type="text"
+						class="form-control"
+						placeholder="Страна"
+					>
+				</div>
+				<div class="col-sm-2">
+					<input
+						v-model="card.cardholder"
+						:name="`cards[${key}][cardholder]`"
+						type="text"
+						class="form-control"
+						placeholder="Имя на карте"
+					>
+				</div>
+				<div class="col-sm-2">
+					<input
+						v-model="card.phone"
+						:name="`cards[${key}][phone]`"
+						type="text"
+						class="form-control"
+						placeholder="Телефон"
+					>
+				</div>
+				<div class="col-sm-3">
+					<input
+						v-model="card.number"
+						v-mask="`#### #### #### ####`"
+						:name="`cards[${key}][number]`"
+						type="text"
+						class="form-control card-number"
+						placeholder="Номер карты/счета"
+					>
+				</div>
+				<div class="col-sm-1">
+					<button
+						type="button"
+						class="btn btn-danger card-delete rounded"
+						@click="deleteCard(key, card)"
+					>
+						<i class="fa fa-trash" />
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
 				<button
 					type="button"
-					class="btn btn-danger card-delete rounded ml-1"
-					@click="deleteCard(key, card)"
+					class="btn btn-success btn-rounded btn-block mb-2 mt-2"
+					@click="addCard"
 				>
-					<i class="fa fa-trash" />
+					<i class="fa fa-plus mr-2" /> Добавить карту
 				</button>
 			</div>
 		</div>
-		<button
-			type="button"
-			class="btn btn-success btn-rounded mb-2 mt-2"
-			@click="addCard"
-		>
-			<i class="fa fa-plus mr-2" /> Добавить карту
-		</button>
 		<hr>
 
 		<div
@@ -630,39 +646,43 @@ export default {
 			</template>
 		</b-modal>
 
-		<div class="d-flex aic mb-2 mt-2">
+		<div class="row my-2">
 			<template v-if="zarplata > 0">
-				<button
-					type="button"
-					class="btn btn-success btn-rounded mr-3"
-					@click="addTax"
-				>
-					<i class="fa fa-plus mr-2" /> Добавить налог
-				</button>
-				<multiselect
-					:options="taxNotAssignedFiltered"
-					track-by="name"
-					label="name"
-					class="w-50 pt-2"
-					placeholder="Выберите существующий"
-					@select="selectTaxNotAssigned"
-				/>
+				<div class="col-sm-2 d-flex aic">
+					<button
+						type="button"
+						class="btn btn-success btn-rounded btn-block"
+						@click="addTax"
+					>
+						<i class="fa fa-plus mr-2" /> Добавить налог
+					</button>
+				</div>
+				<div class="col-sm-10">
+					<multiselect
+						:options="taxNotAssignedFiltered"
+						track-by="name"
+						label="name"
+						class="pt-2"
+						placeholder="Выберите существующий"
+						@select="selectTaxNotAssigned"
+					/>
+				</div>
 			</template>
 			<span
 				v-else
-				class="text-muted"
+				class="text-muted col-sm-12"
 			>Поле оклад должно быть больше нуля</span>
 		</div>
 
 
 		<div class="UserEditSalary-other row">
-			<div class="col-sm-6">
+			<div class="col-sm-12">
 				<div class="form-group row">
 					<label
 						for="uin"
-						class="col-sm-4 col-form-label font-weight-bold"
+						class="col-sm-2 d-flex aic col-form-label font-weight-bold"
 					>ИИН</label>
-					<div class="col-sm-8">
+					<div class="col-sm-10">
 						<input
 							id="uin"
 							v-model="uin"
