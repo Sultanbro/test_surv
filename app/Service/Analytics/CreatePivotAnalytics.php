@@ -116,13 +116,13 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $newRows = [];
 
         /** @var Collection<AnalyticRow> $prevRows */
-        $prevRows = AnalyticRow::query()
+        $prevRows = DB::table('analytic_rows')
             ->where('date', $prevDate)
             ->where('group_id', $group_id)
             ->orderBy('order', 'desc')
             ->get();
 
-        dd($group_id);
+        dd($prevDate);
 
         foreach ($prevRows as $prevRow) {
             $newRow = $prevRow->replicate();
