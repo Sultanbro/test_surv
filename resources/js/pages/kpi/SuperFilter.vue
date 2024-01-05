@@ -182,6 +182,10 @@
 <script>
 /* eslint-disable camelcase */
 
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+import { useYearOptions } from '@/composables/yearOptions'
+
 export default {
 	name: 'SuperFilter',
 	props: {
@@ -196,7 +200,6 @@ export default {
 			searchText: '',
 
 			// options
-			years: [],
 			dates: {},
 			s_types: {},
 
@@ -219,6 +222,14 @@ export default {
 		}
 	},
 
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
+
 	created() {
 		this.prepare()
 	},
@@ -226,7 +237,6 @@ export default {
 	methods: {
 
 		prepare() {
-			this.fillYears()
 			this.fillFiltersObj()
 
 			this.changeDate('data_from', 'month')
@@ -238,8 +248,6 @@ export default {
 
 		fillFiltersObj() {
 			this.group_id = 0;
-
-
 
 			this.dates = {
 				0: 'Любая дата',
@@ -256,16 +264,6 @@ export default {
 				2: 'Бонусы',
 				3: 'Квартальная премия',
 			}
-
-
-
-		},
-
-		fillYears() {
-			let years = []
-			let currentYear = new Date().getFullYear();
-			for(let i = currentYear; i > 1999; i--) years.push(i)
-			this.years = years
 		},
 
 		applyFilter() {
@@ -292,7 +290,6 @@ export default {
 		close() {
 			this.show = false
 		}
-
 	}
 }
 </script>
