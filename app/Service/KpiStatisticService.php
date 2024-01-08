@@ -2033,7 +2033,6 @@ class KpiStatisticService
                     }),
                 ];
             });
-        dd($users);
         return $users->values();
     }
 
