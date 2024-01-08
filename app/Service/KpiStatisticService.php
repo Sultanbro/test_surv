@@ -2019,7 +2019,6 @@ class KpiStatisticService
         // group collection
         $users = $users->groupBy('id')
             ->map(function ($items) {
-                dd($items);
                 return [
                     'id' => $items[0]->id,
                     'name' => $items[0]->last_name . ' ' . $items[0]->name,
