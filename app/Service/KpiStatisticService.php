@@ -1227,7 +1227,7 @@ class KpiStatisticService
         if (!$kpi->target) return [];
 
         $type = $kpi->target['type'];
-        dd($type);
+
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
@@ -1975,7 +1975,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-
+        dd($activities);
 
         // subquery
         $sum_and_counts = \DB::table('user_stats')
