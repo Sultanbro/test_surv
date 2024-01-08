@@ -1223,7 +1223,6 @@ class KpiStatisticService
         int    $user_id = 0
     ): array
     {
-        dd($kpi);
         // check target exists
         if (!$kpi->target) return [];
 
@@ -1990,7 +1989,7 @@ class KpiStatisticService
             ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
-
+        dd($sum_and_counts);
         // query
         $users = User::withTrashed()
             ->select([
