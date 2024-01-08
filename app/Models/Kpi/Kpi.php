@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -58,9 +59,13 @@ class Kpi extends Model
         'read_by' => 'array',
     ];
 
-    public function kpiable()
+    public function kpiable(): MorphTo
     {
-        return $this->morphTo('kpiable', 'targetable_type', 'targetable_id');
+        return $this->morphTo(
+            'kpiable',
+            'targetable_type',
+            'targetable_id'
+        );
     }
 
     /**---------------------------------------------**/

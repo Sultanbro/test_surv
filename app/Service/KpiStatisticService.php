@@ -952,7 +952,7 @@ class KpiStatisticService
                 '*',
                 function (Builder $query, string $type) use ($start_date, $last_date) {
                     if ($type === 'App\ProfileGroup') {
-                        $query->whereNull('archived_date');
+                        $query->where('is_active', 1);
                     }
                     if ($type === 'App\User') {
                         $query->where(function (Builder $query) use ($start_date, $last_date) {
@@ -968,7 +968,7 @@ class KpiStatisticService
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
             ->when($groupId, fn($query) => $query->where('targetable_id', $groupId))
             ->paginate($limit);
-        dd($kpis);
+
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
 
         foreach ($kpis->items() as $kpi) {
