@@ -1990,7 +1990,7 @@ class KpiStatisticService
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
 
-        $sum_and_counts->dd();
+        dd($sum_and_counts->toSql());
 
         // query
         $users = User::withTrashed()
