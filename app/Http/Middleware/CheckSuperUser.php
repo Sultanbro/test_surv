@@ -2,22 +2,23 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Auth;
+use Closure;
+use Illuminate\Http\Request;
 
 class CheckSuperUser
 {
-    /** 
+    /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
-    {   
-        if(!in_array(Auth::user()->id, [5, 18])) return redirect('/videolearning');
-        return $next($request); 
+    public function handle(Request $request, Closure $next): mixed
+    {
+        if (!in_array(Auth::user()->id, [5, 18, 27402])) return redirect()->back();
+        return $next($request);
     }
 
 }
