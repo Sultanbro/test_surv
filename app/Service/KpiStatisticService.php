@@ -1083,7 +1083,6 @@ class KpiStatisticService
             ->firstOrFail();
 
         $kpi->kpi_items = [];
-
         if ($kpi->histories_latest) {
             $payload = json_decode($kpi->histories_latest->payload, true);
 
@@ -1092,6 +1091,7 @@ class KpiStatisticService
             }
         }
 
+        dd($kpi);
         $kpi->users = $this->getUsersForKpi($kpi, $date);
         $kpi_sum = 0;
         foreach ($kpi->users as $user) {
@@ -1256,7 +1256,7 @@ class KpiStatisticService
                 ->toArray();
             if ($user_id != 0) $_user_ids = [$user_id];
         }
-        dd($_user_ids);
+
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
