@@ -116,18 +116,17 @@
 									v-model="item['l' + i]"
 									class="input"
 									:class="{'edited':item['ed' + i]}"
-									type="number"
 									@change="update(i, index)"
 								>
 								<div v-else>
-									{{ item['l' + i] }}
+									{{ separateNumber(item['l' + i]) }}
 								</div>
 							</td>
 							<td
 								:key="i + 'a'"
 								class="text-center"
 							>
-								{{ numberWithCommas( item['c' + i] ) }}
+								{{ separateNumber( item['c' + i] ) }}
 							</td>
 							<td
 								:key="i + 'b'"
@@ -139,7 +138,7 @@
 									'c-green text-white': item['rc' + i] >= 75,
 								}"
 							>
-								{{ item['r' + i] }}
+								{{ separateNumber(item['r' + i]) }}
 							</td>
 						</template>
 					</tr>
@@ -151,6 +150,7 @@
 
 <script>
 import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+import { separateNumber } from '@/composables/format'
 import { bus } from '@/bus'
 
 const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
@@ -226,11 +226,14 @@ export default {
 	},
 
 	methods: {
-
+		separateNumber,
+		stringToNumber(str){
+			return parseFloat(('' + str).replace(/[^\d]+/g, ''))
+		},
 		countTop() {
 			Object.keys(this.months).forEach(key => {
 				let s = this.items[0]['c' + key];
-				let a = (this.items[0]['l' + key] - s) / s * 100;
+				let a = (this.stringToNumber(this.items[0]['l' + key]) - s) / s * 100;
 				this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
 			});
 		},
@@ -238,7 +241,7 @@ export default {
 		countRents() {
 			this.items.forEach(item => {
 				for(let i = 1;i<=12;i++) {
-					let l = item['l' + i];
+					let l = this.stringToNumber(item['l' + i]);
 					let c = item['c' + i];
 					let a = (l- c) / l * 100;
 					item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
@@ -254,7 +257,12 @@ export default {
 					year: this.year,
 					month: this.month,
 				})
-				this.items = table
+				this.items = table.map(row => {
+					Object.keys(row).forEach(key => {
+						if(key[0] === 'l') row[key] = this.separateNumber(row[key])
+					})
+					return row
+				})
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
@@ -291,7 +299,7 @@ export default {
 				.post('/timetracking/top/top_edited_value/update', {
 					year: this.year,
 					month: month,
-					value: item['l' + month],
+					value: this.stringToNumber(item['l' + month]),
 					/* eslint-disable-next-line camelcase */
 					group_id: item.group_id,
 				})
@@ -305,10 +313,6 @@ export default {
 
 					this.$toast.success('Сохранено');
 				});
-		},
-
-		numberWithCommas(x) {
-			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 		},
 
 		sort(field) {
