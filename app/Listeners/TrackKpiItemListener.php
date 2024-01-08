@@ -36,7 +36,7 @@ class TrackKpiItemListener
             'reference_id' => $kpiItem->getKey(),
             'actor_id' => auth()->id() ?? 5,
             'payload' => json_encode([
-                'name' => $kpiItem->name,
+                'name' => $data['name'],
                 'kpi_id' => $kpiItem->kpi_id,
                 'activity_id' => $data['activity_id'],
                 'plan' => $data['plan'],
