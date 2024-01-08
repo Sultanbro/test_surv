@@ -1328,7 +1328,7 @@ class KpiStatisticService
          * connect user activity facts and avg values with kpi_items
          */
         foreach ($_users as $user) {
-
+            dd($user);
             $kpi_items = [];
             $sumKpiPercent = 0;
 
