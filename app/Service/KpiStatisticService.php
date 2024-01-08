@@ -1992,7 +1992,7 @@ class KpiStatisticService
             ->where('value', '>', 0)
             ->when(count($activities), fn(\Illuminate\Database\Query\Builder $query) => $query->whereIn('activity_id', $activities))
             ->groupBy('user_id', 'activity_id');
-        dd(count($activities));
+        dd($activities);
         // query
         $users = User::withTrashed()
             ->select([
