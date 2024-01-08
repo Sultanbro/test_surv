@@ -1090,7 +1090,6 @@ class KpiStatisticService
         }
 
         $kpi->users = $this->getUsersForKpi($kpi, $date);
-        dd($kpi->users);
         $kpi_sum = 0;
         foreach ($kpi->users as $user) {
             $kpi_sum = $kpi_sum + $user['avg_percent'];
@@ -1228,7 +1227,7 @@ class KpiStatisticService
         if (!$kpi->target) return [];
 
         $type = $kpi->target['type'];
-
+        dd($type);
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
