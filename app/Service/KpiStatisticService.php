@@ -1223,6 +1223,7 @@ class KpiStatisticService
         int    $user_id = 0
     ): array
     {
+        dd($kpi);
         // check target exists
         if (!$kpi->target) return [];
 
@@ -1975,7 +1976,6 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-        dd($activities);
 
         // subquery
         $sum_and_counts = \DB::table('user_stats')
