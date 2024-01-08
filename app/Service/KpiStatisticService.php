@@ -907,6 +907,7 @@ class KpiStatisticService
     {
         $filters = $request->filters;
         $limit = $request->limit ? $request->limit : 10;
+        $groupId = $filters['group_id'] ?? null;
 
         $searchWord = $filters['query'] ?? null;
 
@@ -965,6 +966,7 @@ class KpiStatisticService
             ->where('kpis.created_at', '<=', Carbon::parse($date->endOfMonth()->format('Y-m-d')))
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
+            ->when($groupId, fn($query) => $query->where('targetable_id', $groupId))
             ->paginate($limit);
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
 
