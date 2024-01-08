@@ -1091,8 +1091,8 @@ class KpiStatisticService
             }
         }
 
-        dd($kpi);
         $kpi->users = $this->getUsersForKpi($kpi, $date);
+
         $kpi_sum = 0;
         foreach ($kpi->users as $user) {
             $kpi_sum = $kpi_sum + $user['avg_percent'];
@@ -1979,7 +1979,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-
+        dd($activities);
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
