@@ -1256,6 +1256,7 @@ class KpiStatisticService
                 ->toArray();
             if ($user_id != 0) $_user_ids = [$user_id];
         }
+        dd($_user_ids);
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 

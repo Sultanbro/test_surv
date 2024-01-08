@@ -105,7 +105,6 @@ class KpiStatController extends Controller
      */
     public function showKpiGroupAndUsers(Request $request, $targetableId): JsonResponse
     {
-        dd($targetableId);
         $response = $this->service->fetchKpiGroupOrUser($request, $targetableId);
 
         return response()->json($response);
