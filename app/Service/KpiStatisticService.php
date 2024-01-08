@@ -928,7 +928,7 @@ class KpiStatisticService
             ->get();
 
         $kpis = Kpi::withTrashed()
-            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->when((bool)$searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($start_date, $last_date) {
                     $query->whereBetween('created_at', [$start_date, $last_date]);
@@ -968,6 +968,7 @@ class KpiStatisticService
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
             ->when($groupId, fn($query) => $query->where('targetable_id', $groupId))
             ->paginate($limit);
+        dd($kpis);
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
 
         foreach ($kpis->items() as $kpi) {
