@@ -1978,7 +1978,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-        dd($kpi->items);
+
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
@@ -1992,7 +1992,7 @@ class KpiStatisticService
             ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
-
+        dd($sum_and_counts->get());
         // query
         $users = User::withTrashed()
             ->select([
