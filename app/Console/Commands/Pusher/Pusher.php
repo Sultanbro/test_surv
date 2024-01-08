@@ -20,7 +20,7 @@ class Pusher extends Command
      *
      * @var string
      */
-    protected $signature = 'run:pusher';
+    protected $signature = 'run:pusher {id?}';
 
     /**
      * The console command description.
@@ -39,7 +39,9 @@ class Pusher extends Command
     {
         $notifications = MailingNotification::with('recipients')
             ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
-            ->where('status', 1)->get();
+            ->where('status', 1)
+            ->when($this->argument('id'), fn ($query) => $query->where('id', $this->argument('id')))
+            ->get();
 
         foreach ($notifications as $notification)
         {

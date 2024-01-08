@@ -993,15 +993,16 @@ class Salary extends Model
 
             $user->edited_kpi = null;
             if ($editedKpi) {
-                $user->kpi = $editedKpi->amount;
+                $user->kpi2 = $editedKpi->amount;
 
                 $ku = User::withTrashed()->find($editedKpi->author_id);
                 $editedKpi->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
 
                 $user->edited_kpi = $editedKpi;
-            } else {
-                $user->kpi = Kpi::userKpi($user->id, $date);
             }
+//            else {
+                $user->kpi = Kpi::userKpi($user->id, $date);
+//            }
 
             /**
              * If user has edited Bonus for month take it
