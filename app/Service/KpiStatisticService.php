@@ -1971,6 +1971,7 @@ class KpiStatisticService
      */
     private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
     {
+        dd($kpi);
         $activities = $kpi->items
             ->pluck('activity_id')
             ->unique()
