@@ -1978,7 +1978,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-
+        dd($activities);
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
