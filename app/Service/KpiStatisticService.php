@@ -1328,7 +1328,6 @@ class KpiStatisticService
          * connect user activity facts and avg values with kpi_items
          */
         foreach ($_users as $user) {
-            dd($user);
             $kpi_items = [];
             $sumKpiPercent = 0;
 
@@ -1977,7 +1976,6 @@ class KpiStatisticService
             ->unique()
             ->toArray();
 
-
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
@@ -1991,7 +1989,6 @@ class KpiStatisticService
             ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
-
         // query
         $users = User::withTrashed()
             ->select([
