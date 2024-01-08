@@ -1976,10 +1976,10 @@ class KpiStatisticService
     private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
     {
         $activities = $kpi->items
+            ->where('activity_id', '!=', 0)
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-        dd($activities);
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
@@ -1991,8 +1991,9 @@ class KpiStatisticService
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
             ->where('value', '>', 0)
-            ->when(current($activities), fn(\Illuminate\Database\Query\Builder $query) => $query->whereIn('activity_id', $activities))
+            ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
+        dd($sum_and_counts);
         // query
         $users = User::withTrashed()
             ->select([
