@@ -4,6 +4,7 @@
 		class="JobtronTable"
 	>
 		<slot
+			v-if="!headless"
 			name="thead"
 			:fields="fields"
 		>
@@ -112,6 +113,10 @@ export default {
 			required: true
 		},
 		stickyHeader: {
+			type: Boolean,
+			default: false
+		},
+		headless: {
 			type: Boolean,
 			default: false
 		},
