@@ -1990,7 +1990,7 @@ class KpiStatisticService
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
             ->where('value', '>', 0)
-            ->whereIn('activity_id', $activities)
+            ->when(count($activities), fn(Builder $query) => $query->whereIn('activity_id', $activities))
             ->groupBy('user_id', 'activity_id');
         dd($sum_and_counts->get());
         // query
