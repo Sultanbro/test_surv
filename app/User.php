@@ -271,7 +271,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'user_tax')
-            ->withPivot(['created_at', 'value', 'end_subtraction'])
+            ->withPivot(['created_at', 'value'])
             ->withTimestamps();
     }
 

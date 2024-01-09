@@ -66,7 +66,7 @@ class TimetrackService
                 'times' => $data['times'],
                 'hours' => $data['hours'],
                 'taxes' => $user->taxes()
-                    ->select('taxes.id', 'taxes.name',
+                    ->select('taxes.id', 'taxes.name', 'taxes.end_subtraction',
                         DB::raw('CASE WHEN user_tax.value > 0 THEN user_tax.value ELSE taxes.value END AS value'),
                         'taxes.is_percent')
                     ->wherePivot('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
