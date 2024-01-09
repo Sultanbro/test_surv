@@ -421,7 +421,7 @@ class SalaryController extends Controller
             ->get()
             ->pluck('name')
             ->toArray();
-
+        dd($taxesColumns);
         $headings = [
             'ФИО',
             'На карте',
