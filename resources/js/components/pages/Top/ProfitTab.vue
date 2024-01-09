@@ -325,13 +325,13 @@ export default {
 			const date = `${this.year}_${this.month}`
 
 			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
-			const defaultCCGroups = '[31]'
-			// const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
+			// const defaultCCGroups = '[31]'
+			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
 			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
-			const defaultAdmGroups = '[23]'
-			// const defaultAdmGroups = '[23, 48, 102, 26]'
+			// const defaultAdmGroups = '[23]'
+			const defaultAdmGroups = '[23, 48, 102, 26]'
 			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
 
 			const otherKey = 'profit_other_' + date
