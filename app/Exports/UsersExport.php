@@ -75,7 +75,6 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
         $countOfTaxes = DB::table('user_tax')->select(DB::raw('COUNT(DISTINCT `user_tax`.`tax_id`) as `count`'))
             ->whereDate('created_at', '<=', $lastOfMonth)
             ->first()->count;
-        dd($countOfTaxes);
         $indexOfCell = 18 + $countOfTaxes;
         $coordinate = (new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet)->getCellByColumnAndRow($indexOfCell,0)->getParent()->getCurrentCoordinate();
         $coordinateOfStyle = str_replace('0', '3', $coordinate);

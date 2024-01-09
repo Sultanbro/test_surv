@@ -515,12 +515,14 @@ class SalaryController extends Controller
         // Налоги
         $lastDayOfMonth = $date->lastOfMonth();
 
-        $taxColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
+        $taxColumns = DB::table('taxes')
+            ->whereRaw("`taxes`.`id` IN (
                 SELECT `user_tax`.`tax_id`
                 FROM `user_tax`
                 WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )")->get();
+            )")
+            ->get();
 
         $allTotal = [
             0 => '',
@@ -783,6 +785,7 @@ class SalaryController extends Controller
             /**
              * Расчет налогов.
              */
+            $tax_amount = 0;
             foreach ($taxColumns as $taxColumn) {
                 $userZarplata = $zarplaties->where('user_id', $user->id)->first()->zarplata;
                 $totalColumns["tax_$taxColumn->id"] = 0;
@@ -792,7 +795,7 @@ class SalaryController extends Controller
                 $value = $tax?->value > 0 ? $tax?->value : $taxColumn?->value;
 
                 if ($exist) {
-                    $amount = $taxColumn->is_percent ? $userZarplata * ($value / 100) : $value;
+                    $tax_amount += $amount = $taxColumn->is_percent ? $userZarplata * ($value / 100) : $value;
                     $total_payment -= $amount;
                     $totalColumns["tax_$taxColumn->id"] = $amount;
                     $allTotal["tax_$taxColumn->id"] += $amount;
@@ -813,7 +816,7 @@ class SalaryController extends Controller
                     $totalColumns[10] = $kpi;
                     $totalColumns[11] = $trainee_fees ?? 0;
                     $totalColumns[12] = $bonus;
-                    $totalColumns[13] = $total_income;
+                    $totalColumns[13] = $total_income - $tax_amount;
                     $totalColumns[14] = $prepaid;
                     $totalColumns[15] = $penalty;
                     $totalColumns[18] = $expense;
