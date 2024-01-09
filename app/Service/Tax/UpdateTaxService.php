@@ -28,7 +28,8 @@ class UpdateTaxService
 
                 $tax?->update([
                     'name'       => $dto->name,
-                    'is_percent' => $dto->isPercent
+                    'is_percent' => $dto->isPercent,
+                    'end_subtraction' => $dto->end_subtraction
                 ]);
 
                 $tax?->users()

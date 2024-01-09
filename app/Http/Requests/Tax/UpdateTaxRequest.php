@@ -26,11 +26,12 @@ class UpdateTaxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'         => 'required|integer|exists:taxes,id',
-            'name'       => 'string',
-            'value'      => 'regex:/^\d*(\.\d{2})?$/',
+            'id' => 'required|integer|exists:taxes,id',
+            'name' => 'string',
+            'value' => 'regex:/^\d*(\.\d{2})?$/',
             'is_percent' => 'bool',
-            'user_id'    => 'required|integer|exists:users,id'
+            'user_id' => 'required|integer|exists:users,id',
+            'end_subtraction' => 'bool'
         ];
     }
 
@@ -39,20 +40,22 @@ class UpdateTaxRequest extends FormRequest
      */
     public function toDto(): UpdateTaxDTO
     {
-       $validated   = $this->validated();
+        $validated = $this->validated();
 
-        $id         = Arr::get($validated, 'id');
-        $name       = Arr::get($validated, 'name');
-        $value      = Arr::get($validated, 'value');
-        $isPercent  = Arr::get($validated, 'is_percent');
-        $userId     = Arr::get($validated, 'user_id');
+        $id = Arr::get($validated, 'id');
+        $name = Arr::get($validated, 'name');
+        $value = Arr::get($validated, 'value');
+        $isPercent = Arr::get($validated, 'is_percent');
+        $userId = Arr::get($validated, 'user_id');
+        $end_subtraction = Arr::get($validated, 'end_subtraction');
 
         return new UpdateTaxDTO(
             $id,
             $name,
             $value,
             $isPercent,
-            $userId
+            $userId,
+            $end_subtraction
         );
     }
 }
