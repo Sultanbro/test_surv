@@ -5,7 +5,7 @@
 			:fields="[{key: 0}, {key: 1}, {key: 2}, {key: 3}, {key: 4}]"
 			:items="firstTable"
 			headless
-			class="ProfitTab-table mt-4"
+			class="ProfitTab-table my-5"
 		>
 			<template #thead>
 				<!--  -->
@@ -66,7 +66,7 @@
 		<JobtronTable
 			:fields="secondFields"
 			:items="[...secondTable, totalsSecond]"
-			class="ProfitTab-table mt-4"
+			class="ProfitTab-table my-5"
 		>
 			<template #cell(revenue)="row">
 				{{ separateNumber(numberToCurrency(row.value)) }}
@@ -88,7 +88,7 @@
 		<JobtronTable
 			:fields="thirdFields"
 			:items="[...thirdTable, totalsThird]"
-			class="ProfitTab-table mt-4"
+			class="ProfitTab-table my-5"
 		>
 			<template #cell(approved)="row">
 				<div
@@ -146,6 +146,24 @@ import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
 function percentMinMax(value, min, max){
 	return (value - min) / (max - min)
 }
+
+const colors = [
+	'f8696b',
+	'f87b6e',
+	'f98e72',
+	'faa075',
+	'fbb379',
+	'fcc57c',
+	'fdd880',
+	'ffeb84',
+	'e9e482',
+	'd2de81',
+	'bcd780',
+	'a6d17e',
+	'90cb7d',
+	'79c47c',
+	'63be7b',
+]
 
 export default {
 	name: 'ProfitTab',
@@ -319,13 +337,37 @@ export default {
 	methods: {
 		separateNumber,
 		numberToCurrency,
+		async fetchDataTest(){
+			this.other = 50000
+			this.secondTable = []
+			for(let i = 0; i < 15; ++i){
+				this.secondTable.push({
+					id: i,
+					name: 'Отдел ' + i,
+					revenue: 100000,
+					fot: 100000,
+					percent: i
+				})
+			}
+
+			this.thirdTable = []
+			for(let i = 0; i < 15; ++i){
+				this.thirdTable.push({
+					id: i,
+					name: 'Отдел ' + i,
+					approved: 100000,
+					fact: 100000,
+					plan: 99999
+				})
+			}
+		},
 		async fetchData(){
 			const loader = this.$loading.show()
 
 			const date = `${this.year}_${this.month}`
 
 			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
-			// const defaultCCGroups = '[31]'
+			// const defaultCCGroups = '[31, 71]'
 			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
 			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
 
@@ -428,18 +470,7 @@ export default {
 
 		getCellColor(value) {
 			const perc = percentMinMax(value, this.secondMin, this.secondMax) * 100
-			let r, g, b = 0;
-			if(perc < 50) {
-				r = 235;
-				g = Math.round(5.1 * perc);
-				b = Math.round(113 - 1.13 * perc);
-			}
-			else {
-				g = 225;
-				r = Math.round(510 - 5.1 * perc);
-			}
-			const h = r * 0x10000 + g * 0x100 + b * 0x1;
-			return '#' + ('000000' + h.toString(16)).slice(-6);
+			return '#' + colors[Math.round((colors.length - 1) * perc / 100)]
 		},
 
 		onChangeOther(){
@@ -481,9 +512,9 @@ export default {
 
 <style lang="scss">
 .ProfitTab{
-	$paddingX: 15px;
-	$padding: 12px $paddingX;
-	$margin: -12px -15px;
+	$paddingX: 10px;
+	$padding: 6px $paddingX;
+	$margin: -6px -10px;
 
 	&-table{
 		width: auto;
@@ -534,10 +565,17 @@ export default {
 	}
 
 	&-good{
-		background-color: rgb(0, 225, 0);
+		background-color: #63be7b;
 	}
 	&-bad{
-		background-color: rgb(235, 0, 113);
+		background-color: #f8696b;
+	}
+
+	.JobtronTable{
+		&-td,
+		&-th{
+			padding: $padding;
+		}
 	}
 }
 </style>
