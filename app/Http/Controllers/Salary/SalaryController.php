@@ -443,8 +443,6 @@ class SalaryController extends Controller
         array_push($headings, ...$taxesColumns);
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
 
-        dd($headings);
-
         $data = [];
 
         $date = Carbon::createFromDate($request->year, $request->month, 1);
