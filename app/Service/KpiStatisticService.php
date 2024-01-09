@@ -1357,7 +1357,7 @@ class KpiStatisticService
                     ->where('activity_id', $item['activity_id'])
                     ->first();
 
-                dd_if($user['id'] === 24759 && $item['id'] === 304, $item);
+                dd_if($user['id'] === 24759 && $item['id'] === 304, $exists);
 
                 // assign keys
                 if ($exists) {
