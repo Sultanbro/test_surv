@@ -59,7 +59,7 @@
 				</div>
 
 				<div class="ProfileSidebar-taxes mt-3 text-center">
-					Налоги: {{ user_earnings.taxes }} {{ balance.currency }}
+					Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
 				</div>
 
 				<!-- <b-form-select
