@@ -401,7 +401,6 @@
 				search-position="beforeTabs"
 				submit-button=""
 				absolute
-				single
 			/>
 		</JobtronOverlay>
 
@@ -960,22 +959,27 @@ export default {
 
 		async updateSection(silent) {
 			if (this.updateBook.title.length <= 2) return this.$toast.error('Слишком короткое название!')
-			if(this.whoCanReadGroup.length !== this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
+			if(this.whoCanReadGroup.length > 0 && !this.whoCanReadPosition.length) return this.$toast.error('Заполните должность-отдел')
+			if(this.whoCanReadPosition.length > 0 && !this.whoCanReadGroup.length) return this.$toast.error('Заполните должность-отдел')
 
 			const loader = this.$loading.show()
 			const pairs = []
-			for(let i = 0, l = this.whoCanReadGroup.length; i < l; ++i){
-				pairs.push({
-					position_id: this.whoCanReadPosition[i].id,
-					group_id: this.whoCanReadGroup[i].id
-				})
+			for(let i = 0, l = this.whoCanReadPosition.length; i < l; ++i){
+				for(let ii = 0, ll = this.whoCanReadGroup.length; ii < ll; ++ii){
+					pairs.push({
+						position_id: this.whoCanReadPosition[i].id,
+						group_id: this.whoCanReadGroup[ii].id
+					})
+				}
 			}
 			const editPairs = []
-			for(let i = 0, l = this.whoCanEditGroup.length; i < l; ++i){
-				editPairs.push({
-					position_id: this.whoCanEditPosition[i].id,
-					group_id: this.whoCanEditGroup[i].id
-				})
+			for(let i = 0, l = this.whoCanEditPosition.length; i < l; ++i){
+				for(let ii = 0, ll = this.whoCanEditGroup.length; ii < ll; ++ii){
+					editPairs.push({
+						position_id: this.whoCanEditPosition[i].id,
+						group_id: this.whoCanEditGroup[ii].id
+					})
+				}
 			}
 
 			try {
@@ -1309,25 +1313,27 @@ export default {
 				return
 			}
 
-			const position = this.accessDictionaries.positions.find(pos => pos.id === pairs[0].position_id)
-			const group = this.accessDictionaries.profile_groups.find(group => group.id === pairs[0].group_id)
+			const posIds = pairs.map(pair => pair.position_id)
+			const groupIds = pairs.map(pair => pair.group_id)
+			const positions = this.accessDictionaries.positions.slice().filter(pos => posIds.includes(pos.id))
+			const groups = this.accessDictionaries.profile_groups.slice().filter(group => groupIds.includes(group.id))
 
-			if(!position || !group){
+			if(!positions.length || !groups.length){
 				this.whoCanReadPosition = []
 				this.whoCanReadGroup = []
 				return
 			}
 
-			this.whoCanReadPosition = [{
+			this.whoCanReadPosition = positions.map(position => ({
 				id: position.id,
 				name: position.name,
 				type: 3
-			}]
-			this.whoCanReadGroup = [{
+			}))
+			this.whoCanReadGroup = groups.map(group => ({
 				id: group.id,
 				name: group.name,
 				type: 2
-			}]
+			}))
 		},
 
 		parseEditPairs(pairs){
@@ -1337,25 +1343,28 @@ export default {
 				return
 			}
 
-			const position = this.accessDictionaries.positions.find(pos => pos.id === pairs[0].position_id)
-			const group = this.accessDictionaries.profile_groups.find(group => group.id === pairs[0].group_id)
+			const posIds = pairs.map(pair => pair.position_id)
+			const groupIds = pairs.map(pair => pair.group_id)
+			const positions = this.accessDictionaries.positions.slice().filter(pos => posIds.includes(pos.id))
+			const groups = this.accessDictionaries.profile_groups.slice().filter(group => groupIds.includes(group.id))
 
-			if(!position || !group){
+			if(!positions.length || !groups.length){
 				this.whoCanEditPosition = []
 				this.whoCanEditGroup = []
 				return
 			}
 
-			this.whoCanEditPosition = [{
+			this.whoCanEditPosition = positions.map(position => ({
 				id: position.id,
 				name: position.name,
 				type: 3
-			}]
-			this.whoCanEditGroup = [{
+			}))
+
+			this.whoCanEditGroup = groups.map(group => ({
 				id: group.id,
 				name: group.name,
 				type: 2
-			}]
+			}))
 		},
 
 		pageAccess(page, canRead, canEdit){

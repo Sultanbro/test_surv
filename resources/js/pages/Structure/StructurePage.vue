@@ -414,7 +414,7 @@ export default {
 			for(const card of this.cards){
 				if(card.parent_id !== parent) continue
 				if(!card.group_id) {
-					if(card.manager.user_id) parentManagers.push(card.manager.user_id)
+					// if(card.manager.user_id) parentManagers.push(card.manager.user_id)
 					this.updateManagers(card.id, parentManagers)
 					continue
 				}
@@ -427,7 +427,7 @@ export default {
 				})
 
 				if(parentManagers.includes(manager?.id)){
-					if(card.manager.user_id) parentManagers.push(card.manager.user_id)
+					// if(card.manager.user_id) parentManagers.push(card.manager.user_id)
 					this.updateManagers(card.id, parentManagers)
 					continue
 				}
@@ -454,7 +454,7 @@ export default {
 						},
 						is_vacant: false
 					})
-					parentManagers.push(manager.id)
+					// parentManagers.push(manager.id)
 					/* eslint-enable camelcase */
 				}
 				this.updateManagers(card.id, parentManagers)

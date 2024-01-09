@@ -433,8 +433,7 @@ export default {
 	}
 }
 #StructureGroup{
-	&-1,
-	&-4{
+	&-1{
 		margin-left: -16px;
 	}
 }
