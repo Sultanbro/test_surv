@@ -26,6 +26,7 @@ final class PaymentLead extends Lead
         parent::__construct(new Fields(
             new Field('TITLE', "Jobtron.org - Платеж: $payment->id"),
             new Field('NAME', $user->name),
+            new Field("UF_CRM_1689140803", $user->name),
             new PaymentInfoField($payment, $tenantId),
             new AssignedToAlinaField(),
         ), $bitrix);

@@ -59,7 +59,10 @@
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeds/",
       "Eddir\\Messenger\\": "packages/eddir/messenger/src/"
-    }
+    },
+    "files": [
+      "helpers/helpers.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
