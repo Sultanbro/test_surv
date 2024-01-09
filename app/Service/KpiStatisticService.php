@@ -1357,8 +1357,6 @@ class KpiStatisticService
                     ->where('activity_id', $item['activity_id'])
                     ->first();
 
-                dd_if($user['id'] === 24759 && $item['id'] === 304, $exists);
-
                 // assign keys
                 if ($exists) {
                     $item['fact'] = $exists->fact;
@@ -1497,6 +1495,8 @@ class KpiStatisticService
                  * sum method in kpi_item
                  * change plan
                  */
+                dd_if($user['id'] === 24759 && $item['id'] === 304, $item);
+
                 if ($item['method'] == 1) {
 
                     /**
