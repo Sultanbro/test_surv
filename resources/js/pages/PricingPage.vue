@@ -18,14 +18,12 @@
 				</JobtronButton>
 				<JobtronButton
 					:fade="currency !== '₸'"
-					disabled
 					@click="currency = '₸'"
 				>
 					₸
 				</JobtronButton>
 				<JobtronButton
 					:fade="currency !== '$'"
-					disabled
 					@click="currency = '$'"
 				>
 					$
