@@ -1359,10 +1359,6 @@ export default {
 					item.dayType[tt.day] = isFine | isTraining | isBonus | isAvans
 				});
 
-				item.taxes.forEach(t => {
-					personalTaxes = personalTaxes + t.amount;
-				});
-
 				let personalKpi =  Number(item.kpi);
 				if(item.edited_kpi) {
 					personalKpi = item.edited_kpi.amount
@@ -1371,6 +1367,19 @@ export default {
 				if(item.edited_bonus) {
 					personalBonuses = item.edited_bonus.amount
 				}
+
+				// - shtraf
+				const total = personalKpi + personalTotal + personalBonuses - personalFines
+				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
+				item.taxes.forEach(tax => {
+					if(tax.end_subtraction) return
+					totalAfterTaxes -= tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+					personalTaxes += tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+				})
+				item.taxes.forEach(tax => {
+					if(!tax.end_subtraction) return
+					personalTaxes += tax.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
+				})
 
 				personalFines = Number(item.fines_total);
 				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
