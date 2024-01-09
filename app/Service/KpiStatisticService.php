@@ -1352,12 +1352,12 @@ class KpiStatisticService
                     if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
                 }
 
-                $item['plan'] = $user['full_time'] ? $item['plan'] : $item['plan'] / 2;
-
                 // check user stat exists
                 $exists = collect($user['items'])
                     ->where('activity_id', $item['activity_id'])
                     ->first();
+
+                dd_if($user['id'] === 24759, $item);
 
                 // assign keys
                 if ($exists) {

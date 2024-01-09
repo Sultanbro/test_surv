@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\VarDumper\VarDumper;
+
 if (!function_exists('translit')) {
     function translit($st): ?string
     {
@@ -25,5 +27,26 @@ if (!function_exists('translit')) {
         } while ($st != $prev_st);
 
         return preg_replace("/_{2,}/", " ", $st);
+    }
+}
+
+if (!function_exists('dd_if')) {
+    function dd_if(bool $condition, mixed ...$vars): void
+    {
+        if (!$condition) return;
+
+        if (!\in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
+            header('HTTP/1.1 500 Internal Server Error');
+        }
+
+        if (array_key_exists(0, $vars) && 1 === count($vars)) {
+            VarDumper::dump($vars[0]);
+        } else {
+            foreach ($vars as $k => $v) {
+                VarDumper::dump($v, is_int($k) ? 1 + $k : $k);
+            }
+        }
+
+        exit(1);
     }
 }
