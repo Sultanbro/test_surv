@@ -421,7 +421,6 @@ class SalaryController extends Controller
             ->get()
             ->pluck('name')
             ->toArray();
-        dd($taxesColumns);
         $headings = [
             'ФИО',
             'На карте',
@@ -443,6 +442,8 @@ class SalaryController extends Controller
 
         array_push($headings, ...$taxesColumns);
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
+
+        dd($headings);
 
         $data = [];
 
