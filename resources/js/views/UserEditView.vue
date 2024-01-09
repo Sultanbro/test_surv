@@ -493,6 +493,7 @@ export default {
 							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
 							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
 							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
+							formDataNewTaxes.append('is_additive', this.taxesFillData.newTaxes[i].isAdditive ? 1 : 0);
 							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
 							formDataNewTaxesAssignee.append('user_id', userId);
 							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
@@ -520,6 +521,7 @@ export default {
 							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
 							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
 							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
+							formDataEditTaxes.append('is_additive', this.taxesFillData.editTaxes[i].isAdditive ? 1 : 0);
 							await this.axios.post('/tax', formDataEditTaxes);
 						}
 					}
