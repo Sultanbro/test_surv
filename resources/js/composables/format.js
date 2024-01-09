@@ -3,6 +3,6 @@ export function separateNumber(number, separator = ' '){
 }
 
 export function numberToCurrency(number){
-	if(number - parseInt(number)) return Number(number.toFixed(2))
+	if(number - parseInt(number)) return Number(Number(number).toFixed(2))
 	return number
 }

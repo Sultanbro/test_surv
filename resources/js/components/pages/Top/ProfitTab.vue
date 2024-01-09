@@ -1,0 +1,581 @@
+<template>
+	<div class="ProfitTab">
+		<!-- Ориентир -->
+		<JobtronTable
+			:fields="[{key: 0}, {key: 1}, {key: 2}, {key: 3}, {key: 4}]"
+			:items="firstTable"
+			headless
+			class="ProfitTab-table my-5"
+		>
+			<template #thead>
+				<!--  -->
+			</template>
+			<template #cell(1)="row">
+				<div
+					v-if="row.index === 3"
+					class="ProfitTab-editable"
+				>
+					<input
+						v-model="other"
+						type="number"
+						class="ProfitTab-input ProfitTab-padding text-center"
+						@input="onChangeOther"
+					>
+					<div class="ProfitTab-editableValue ProfitTab-padding">
+						{{ separateNumber(numberToCurrency(other)) }}
+					</div>
+				</div>
+				<template v-else-if="row.index === 2">
+					{{ row.value ? separateNumber(numberToCurrency(row.value)) : '' }}
+				</template>
+				<template v-else>
+					{{ row.value }}
+				</template>
+			</template>
+			<template #cell(2)="row">
+				<template v-if="row.index === 4 || row.index === 2">
+					{{ row.value ? separateNumber(numberToCurrency(row.value)) : '' }}
+				</template>
+				<template v-else-if="row.index === 5">
+					<div
+						:class="resultClass"
+						class="ProfitTab-unpad"
+					>
+						{{ row.value ? separateNumber(numberToCurrency(row.value)) : '' }}
+					</div>
+				</template>
+				<template v-else>
+					{{ row.value }}
+				</template>
+			</template>
+			<template #cell(3)="row">
+				{{ numberToCurrency(row.value) + (row.index === 2 ? '%' : '') }}
+			</template>
+			<template #cell(4)="row">
+				{{ numberToCurrency(row.value) + (row.index === 2 ? '%' : '') }}
+			</template>
+			<template #cell="row">
+				<template v-if="row.index === 2">
+					{{ row.value ? separateNumber(numberToCurrency(row.value)) : '' }}
+				</template>
+				<template v-else />
+			</template>
+		</JobtronTable>
+
+		<!-- выручка/фот -->
+		<JobtronTable
+			:fields="secondFields"
+			:items="[...secondTable, totalsSecond]"
+			class="ProfitTab-table my-5"
+		>
+			<template #cell(revenue)="row">
+				{{ separateNumber(numberToCurrency(row.value)) }}
+			</template>
+			<template #cell(fot)="row">
+				{{ separateNumber(numberToCurrency(row.value)) }}
+			</template>
+			<template #cell(percent)="row">
+				<div
+					class="ProfitTab-unpad"
+					:style="row.item.name ? `background: ${getCellColor(row.value)};` : ''"
+				>
+					{{ numberToCurrency(row.value) }}%
+				</div>
+			</template>
+		</JobtronTable>
+
+		<!-- план -->
+		<JobtronTable
+			:fields="thirdFields"
+			:items="[...thirdTable, totalsThird]"
+			class="ProfitTab-table my-5"
+		>
+			<template #cell(approved)="row">
+				<div
+					v-if="row.item.name"
+					class="ProfitTab-editable"
+				>
+					<input
+						v-model="row.item.approved"
+						type="number"
+						class="ProfitTab-input ProfitTab-padding text-center"
+						@input="onChangeApprove(row.item.approved, row.item.id)"
+					>
+					<div class="ProfitTab-editableValue ProfitTab-padding">
+						{{ separateNumber(numberToCurrency(row.value)) }}
+					</div>
+				</div>
+
+				<template v-else>
+					{{ separateNumber(numberToCurrency(row.value)) }}
+				</template>
+			</template>
+			<template #cell(fact)="row">
+				<div
+					class="ProfitTab-unpad"
+					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-good' : 'ProfitTab-bad']"
+				>
+					{{ separateNumber(numberToCurrency(row.value)) }}
+				</div>
+			</template>
+			<template #cell(plan)="row">
+				<div
+					class="ProfitTab-unpad"
+					:class="[row.item.name ? (row.item.fact < Number(row.item.plan) ? 'ProfitTab-bad' : 'ProfitTab-good') : '']"
+				>
+					{{ separateNumber(numberToCurrency(row.value)) }}
+				</div>
+			</template>
+		</JobtronTable>
+	</div>
+</template>
+
+<script>
+import JobtronTable from '@ui/Table.vue'
+
+import { bus } from '@/bus'
+import { calcGroupFOT } from './helper.js'
+import { numberToCurrency, separateNumber } from '@/composables/format.js'
+import {
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
+import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+
+
+function percentMinMax(value, min, max){
+	return (value - min) / (max - min)
+}
+
+const colors = [
+	'f8696b',
+	'f87b6e',
+	'f98e72',
+	'faa075',
+	'fbb379',
+	'fcc57c',
+	'fdd880',
+	'ffeb84',
+	'e9e482',
+	'd2de81',
+	'bcd780',
+	'a6d17e',
+	'90cb7d',
+	'79c47c',
+	'63be7b',
+]
+
+export default {
+	name: 'ProfitTab',
+	components: {
+		JobtronTable,
+	},
+	props: {
+		year: {
+			type: Number,
+			default: 0
+		},
+		month: {
+			type: Number,
+			default: 0
+		},
+	},
+	data(){
+		return {
+			ccGroups: [],
+			admGroups: [],
+			other: 0,
+			secondFields: [
+				{
+					key: 'name',
+					label: '',
+				},
+				{
+					key: 'revenue',
+					label: 'Выручка',
+				},
+				{
+					key: 'fot',
+					label: 'Факт ФОТ КЦ',
+				},
+				{
+					key: 'percent',
+					label: '',
+				},
+			],
+			thirdFields: [
+				{
+					key: 'name',
+					label: '',
+				},
+				{
+					key: 'approved',
+					label: 'ФОТ утвержденный',
+				},
+				{
+					key: 'fact',
+					label: 'факт ФОТ АДМ',
+				},
+				{
+					key: 'plan',
+					label: 'план ФОТ',
+				},
+			],
+			secondTable: [],
+			thirdTable: [],
+			otherTimeout: null,
+			approveTimeout: null,
+		}
+	},
+	computed: {
+		daysInMonth(){
+			return this.$moment([this.year, this.month]).daysInMonth()
+		},
+		daysPassed(){
+			const now = new Date()
+			if(now.getFullYear() === this.year && now.getMonth() === this.month) return now.getDate()
+			return this.daysInMonth
+		},
+
+		totalsSecond(){
+			return {
+				name: '',
+				revenue: this.secondTable.reduce((result, row) => result + Number(row.revenue), 0),
+				fot: this.secondTable.reduce((result, row) => result + Number(row.fot), 0),
+				percent: this.secondTable.length ? this.secondTable.reduce((result, row) => result + Number(row.percent), 0) / this.secondTable.length : 0,
+			}
+		},
+		totalsThird(){
+			return {
+				name: '',
+				approved: this.thirdTable.reduce((result, row) => result + Number(row.approved), 0),
+				fact: this.thirdTable.reduce((result, row) => result + Number(row.fact), 0),
+				plan: this.thirdTable.reduce((result, row) => result + Number(row.plan), 0),
+			}
+		},
+		firstTable(){
+			const revenue = this.totalsSecond.revenue / this.daysPassed * this.daysInMonth
+			const expenses = ((this.totalsSecond.fot + this.totalsThird.fact) / this.daysPassed * this.daysInMonth) + Number(this.other)
+			const profit = revenue - expenses
+			return [
+				[
+					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
+					this.daysPassed,
+					this.daysInMonth,
+					'',
+					'',
+				],
+				[
+					'Выручка',
+					'Затраты',
+					'Прибыль',
+					'Маржа',
+					'Рентабельность',
+				],
+				[
+					revenue,
+					expenses,
+					profit,
+					revenue ? ((revenue - (Number(this.totalsSecond.fot) / this.daysPassed * this.daysInMonth)) / revenue) * 100 : 0,
+					revenue ? (profit / revenue) * 100 : 0,
+				],
+				[
+					'прочие затраты',
+					this.other,
+					'',
+					'',
+					'',
+				],
+				[
+					'',
+					'Profit PLAN на сегодня',
+					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.plan - Number(this.other),
+					'',
+					'',
+				],
+				[
+					'',
+					'Profit FACT на сегодня',
+					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.fact - Number(this.other),
+					'',
+					'',
+				],
+			]
+		},
+		secondPercents(){
+			return this.secondTable.map(row => row.percent)
+		},
+		secondMin(){
+			return Math.min(...this.secondPercents)
+		},
+		secondMax(){
+			return Math.max(...this.secondPercents)
+		},
+		resultClass(){
+			const plan = this.firstTable[4][2]
+			const fact = this.firstTable[5][2]
+
+			return plan < fact ? 'ProfitTab-bad' : 'ProfitTab-good'
+		}
+	},
+	watch: {
+		year(){
+			this.fetchData()
+		},
+		month(){
+			this.fetchData()
+		},
+	},
+	created(){},
+	mounted(){
+		this.fetchData()
+		bus.$on('tt-top-update', this.fetchData)
+	},
+	beforeUnmount(){
+		bus.$off('tt-top-update', this.fetchData)
+	},
+	methods: {
+		separateNumber,
+		numberToCurrency,
+		async fetchDataTest(){
+			this.other = 50000
+			this.secondTable = []
+			for(let i = 0; i < 15; ++i){
+				this.secondTable.push({
+					id: i,
+					name: 'Отдел ' + i,
+					revenue: 100000,
+					fot: 100000,
+					percent: i
+				})
+			}
+
+			this.thirdTable = []
+			for(let i = 0; i < 15; ++i){
+				this.thirdTable.push({
+					id: i,
+					name: 'Отдел ' + i,
+					approved: 100000,
+					fact: 100000,
+					plan: 99999
+				})
+			}
+		},
+		async fetchData(){
+			const loader = this.$loading.show()
+
+			const date = `${this.year}_${this.month}`
+
+			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
+			// const defaultCCGroups = '[31, 71]'
+			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
+			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
+
+			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
+			// const defaultAdmGroups = '[23]'
+			const defaultAdmGroups = '[23, 48, 102, 26]'
+			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
+
+			const otherKey = 'profit_other_' + date
+			const {settings: other} = await fetchSettings(otherKey)
+			this.other = +other['custom_' + otherKey] || 0
+
+			const admGroupsData = {}
+			for(var group of this.admGroups){
+				const groupKey = 'profit_adm_group_' + date + '_' + group
+				const {settings} = await fetchSettings(groupKey)
+				admGroupsData[group] = +settings['custom_' + groupKey] || 0
+			}
+
+			const {table} = await fetchRentabilityV2({
+				year: this.year,
+				month: this.month + 1,
+			})
+
+			const revenue = table.reduce((result, group) => {
+				if(!group.group_id) return result
+				result[group.group_id] = group['l' + (this.month + 1)]
+				return result
+			}, {})
+
+			/* eslint-disable camelcase */
+			const fot = {}
+			for(var groupId of [...this.ccGroups, ...this.admGroups]){
+				try {
+					const {data: dataActual} = await this.axios.post('/timetracking/salaries', {
+						month: this.month + 1,
+						year: this.year,
+						group_id: groupId,
+						user_types: 0,
+					})
+					const {data: dataTrainee} = await this.axios.post('/timetracking/salaries', {
+						month: this.month + 1,
+						year: this.year,
+						group_id: groupId,
+						user_types: 2,
+					})
+					const {data: dataFired} = await this.axios.post('/timetracking/salaries', {
+						month: this.month + 1,
+						year: this.year,
+						group_id: groupId,
+						user_types: 1,
+					})
+					fot[groupId] = {
+						actual: calcGroupFOT(dataActual),
+						trainee: calcGroupFOT(dataTrainee),
+						fired: calcGroupFOT(dataFired),
+					}
+				}
+				catch (error) {
+					console.error(error)
+				}
+			}
+			/* eslint-enable camelcase */
+
+			function sumFot(fot, daysPassed){
+				const withoutKPI = fot.actual.bonus + fot.trainee.bonus + fot.fired.bonus
+					+ fot.actual.total + fot.trainee.total + fot.fired.total
+				const kpi = fot.actual.kpi + fot.trainee.kpi + fot.fired.kpi
+				return daysPassed > 15 ? withoutKPI + kpi : withoutKPI
+			}
+
+			this.secondTable = this.ccGroups.reduce((result, groupId) => {
+				if(!fot[groupId]) return result
+				const rowfot = sumFot(fot[groupId], this.daysPassed)
+				result.push({
+					id: groupId,
+					name: fot[groupId].actual.name,
+					revenue: revenue[groupId],
+					fot: rowfot,
+					percent: revenue[groupId] ? ((revenue[groupId] - rowfot) / revenue[groupId]) * 100 : 0,
+				})
+				return result
+			}, [])
+
+			this.thirdTable = this.admGroups.reduce((result, groupId) => {
+				if(!fot[groupId]) return result
+				const rowfot = sumFot(fot[groupId], this.daysPassed)
+				result.push({
+					id: groupId,
+					name: fot[groupId].actual.name,
+					approved: admGroupsData[groupId],
+					fact: rowfot,
+					plan: admGroupsData[groupId] / this.daysInMonth * this.daysPassed
+				})
+				return result
+			}, [])
+
+			loader.hide()
+		},
+
+		getCellColor(value) {
+			const perc = percentMinMax(value, this.secondMin, this.secondMax) * 100
+			return '#' + colors[Math.round((colors.length - 1) * perc / 100)]
+		},
+
+		onChangeOther(){
+			clearTimeout(this.otherTimeout)
+			this.otherTimeout = setTimeout(() => {
+				this.saveOther(this.other)
+			}, 500)
+		},
+
+		onChangeApprove(value, groupId){
+			clearTimeout(this.approveTimeout)
+			this.approveTimeout = setTimeout(() => {
+				this.saveApproved(value, groupId)
+			}, 500)
+		},
+
+		async saveOther(value){
+			const date = `${this.year}_${this.month}`
+			const otherKey = 'profit_other_' + date
+			await updateSettings({
+				type: otherKey,
+				[`custom_${otherKey}`]: value
+			})
+			this.$toast.success('Сохранено')
+		},
+
+		async saveApproved(value, groupId){
+			const date = `${this.year}_${this.month}`
+			const groupKey = 'profit_adm_group_' + date + '_' + groupId
+			await updateSettings({
+				type: groupKey,
+				[`custom_${groupKey}`]: value
+			})
+			this.$toast.success('Сохранено')
+		},
+	},
+}
+</script>
+
+<style lang="scss">
+.ProfitTab{
+	$paddingX: 10px;
+	$padding: 6px $paddingX;
+	$margin: -6px -10px;
+
+	&-table{
+		width: auto;
+	}
+
+	&-unpad{
+		padding: $padding;
+		margin: $margin;
+	}
+	&-margin{
+		margin: $margin;
+	}
+	&-padding{
+		padding: $padding;
+	}
+
+	&-editable{
+		margin: $margin;
+		&:hover{
+			.ProfitTab{
+				&-editableValue{
+					display: none;
+				}
+				&-input{
+					display: block;
+				}
+			}
+		}
+	}
+	&-editableValue{}
+	&-input{
+		display: none;
+		width: 150px;
+		height: 1lh;
+		&:focus{
+			display: block;
+			& ~ .ProfitTab{
+				&-editableValue{
+					display: none;
+				}
+			}
+		}
+	}
+
+	&-full{
+		width: calc(100% + $paddingX * 2);
+		height: 1lh;
+	}
+
+	&-good{
+		background-color: #63be7b;
+	}
+	&-bad{
+		background-color: #f8696b;
+	}
+
+	.JobtronTable{
+		&-td,
+		&-th{
+			padding: $padding;
+		}
+	}
+}
+</style>

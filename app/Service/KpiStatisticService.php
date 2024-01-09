@@ -1555,6 +1555,8 @@ class KpiStatisticService
                     if (Arr::exists($historyPayload, 'plan')) $item['plan'] = $historyPayload['plan'];
                 }
 
+                $item['plan'] = $user['full_time'] ? $item['plan'] : $item['plan'] / 2;
+
                 $exists = collect($user['items'])
                     ->where('activity_id', $item['activity_id'])
                     ->first();

@@ -487,6 +487,7 @@ class IntellectController extends Controller
             $res = (new Bitrix('intellect'))->createLead([
                 "TITLE" => "Кандидат QR - " . $request->name,
                 "NAME" => $request->name,
+                "UF_CRM_1689140803" => translit($request->name),
                 "ASSIGNED_BY_ID" => 23900,
                 'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов

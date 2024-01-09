@@ -221,6 +221,7 @@ class HeadhunterNegotiationsApi2 extends Command
             $lead_id = $this->bitrix->createLead([
                 "TITLE" => $title,
                 "NAME" => $negotiation->name,
+                "UF_CRM_1689140803" => translit($negotiation->name),
                 'UF_CRM_1498210379' => HeadHunterApi2::SEGMENT, // сегмент
                 "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
                 "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко

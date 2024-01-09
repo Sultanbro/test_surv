@@ -72,11 +72,13 @@ class ReportCardService
             $reportCards[] = [
                 'position_id'   => $position,
                 'group_id'      => $dto->groupId,
-                'date'          => $date
+                'date'          => $date,
+                'divide_to'     => $dto->divide
             ];
         }
         ReportCard::query()->where('group_id', $dto->groupId)->delete();
 
         ReportCard::query()->where('group_id', $dto->groupId)->insert($reportCards);
+
     }
 }

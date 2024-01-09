@@ -421,7 +421,6 @@ class SalaryController extends Controller
             ->get()
             ->pluck('name')
             ->toArray();
-
         $headings = [
             'ФИО',
             'На карте',

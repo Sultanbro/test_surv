@@ -26,6 +26,7 @@ class LeadTemplate
         $data = [
             "TITLE" => "Реферал: " . $this->request->name,
             "NAME" => $this->request->name,
+            "UF_CRM_1689140803" => translit($this->request->name),
             'UF_CRM_1498210379' => self::SEGMENT_ID, // сегмент
             'UF_CRM_1686025529' => 3072, // есть ли комп
             "UF_CRM_1635442762" => $countries[Phone::getCountry($this->request->phone)], //страна
