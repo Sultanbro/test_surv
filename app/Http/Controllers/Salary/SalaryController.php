@@ -832,10 +832,10 @@ class SalaryController extends Controller
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']);
 
-        dd($tax_amount);
         // К выдаче сумма форматированная
         $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
         $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
+        dd($allTotal[16], $tax_amount);
 
         // Итоги в конце таблицы
         $data['users'][] = $allTotal;
