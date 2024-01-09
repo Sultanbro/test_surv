@@ -143,7 +143,7 @@ class SaveUserKpi extends Command
 
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
-//            dump($kpi['id'] . " " . $kpi['targetable_type'] . $kpi['targetable_id'], $kpi['children']);
+            dump($kpi['id'] . " " . $kpi['completed_80'] . ' ' . $kpi['completed_100']);
 
             foreach ($kpi['users'][0]['items'] as $item) {
                 $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
