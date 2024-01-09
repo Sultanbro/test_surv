@@ -27,7 +27,8 @@ class ReportCard extends Model
     protected $fillable = [
         'group_id',
         'position_id',
-        'date'
+        'date',
+        'divide_to'
     ];
 
     /**

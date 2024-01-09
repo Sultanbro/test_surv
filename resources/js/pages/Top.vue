@@ -240,6 +240,20 @@
 				/>
 			</b-tab>
 
+			<b-tab
+				key="9"
+				card
+				lazy
+			>
+				<template #title>
+					Profit
+				</template>
+				<ProfitTab
+					:year="+currentYear"
+					:month="(+monthInfo.month) - 1"
+				/>
+			</b-tab>
+
 			<template #tabs-end>
 				<JobtronButton
 					v-if="activeTab < 3"
@@ -289,6 +303,7 @@ import TableRentability from '@/components/tables/TableRentability' // ТОП р
 import NPS from '@/components/tables/NPS' // Оценка руководителей
 import TopSwitches from '@/components/pages/Top/TopSwitches'
 import TopPredicts from '@/components/pages/Top/TopPredicts'
+import ProfitTab from '@/components/pages/Top/ProfitTab'
 import JobtronButton from '@ui/Button'
 import SideBar from '@ui/Sidebar'
 
@@ -302,6 +317,7 @@ export default {
 		TopPredicts,
 		JobtronButton,
 		SideBar,
+		ProfitTab,
 	},
 	props: {
 		data: {
