@@ -243,10 +243,10 @@
 			<b-tab
 				key="9"
 				card
+				lazy
 			>
 				<template #title>
 					Profit
-					<b-badge>demo</b-badge>
 				</template>
 				<ProfitTab
 					:year="+currentYear"
