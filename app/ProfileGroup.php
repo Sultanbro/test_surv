@@ -585,7 +585,7 @@ class ProfileGroup extends Model
      */
     public function scopeHasAnalytics(Builder $query): void
     {
-        $query->whereIn('has_analytics', [self::HAS_ANALYTICS]);
+        $query->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED]);
     }
 
     public function scopeIsActive(Builder $query): void

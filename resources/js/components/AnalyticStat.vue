@@ -824,7 +824,10 @@ export default {
 	watch: {
 		reportCards(){
 			this.setReportCards()
-		}
+		},
+		groupPositions(){
+			this.setReportCards()
+		},
 	},
 
 	created() {
@@ -850,6 +853,13 @@ export default {
 				id,
 				type: 3,
 			})).filter(pos => this.groupPositions.find(groupPos => pos.id === groupPos.id))
+
+			try {
+				this.hoursDivider = this.reportCards?.report_cards[0].divide_to
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 		async fetchPositions(){
 			try {
