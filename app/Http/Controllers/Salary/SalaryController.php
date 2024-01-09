@@ -835,7 +835,7 @@ class SalaryController extends Controller
         // К выдаче сумма форматированная
         $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
         $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
-        dd($allTotal, $tax_amount);
+        $allTotal[17] = $this->space(round($allTotal[17] - $tax_amount), 3, true);
 
         // Итоги в конце таблицы
         $data['users'][] = $allTotal;
