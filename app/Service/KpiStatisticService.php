@@ -1495,8 +1495,6 @@ class KpiStatisticService
                  * sum method in kpi_item
                  * change plan
                  */
-                dd_if($user['id'] === 24759 && $item['id'] === 304, $item);
-
                 if ($item['method'] == 1) {
 
                     /**
