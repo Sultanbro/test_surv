@@ -559,7 +559,7 @@ class SalaryController extends Controller
             ->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
             ->whereIn('user_id', $userIds)->get();
 
-
+        $tax_amount = 0;
         foreach ($users as $user) {
             /** @var User $user */
 
@@ -785,7 +785,6 @@ class SalaryController extends Controller
             /**
              * Расчет налогов.
              */
-            $tax_amount = 0;
             foreach ($taxColumns as $taxColumn) {
                 $userZarplata = $zarplaties->where('user_id', $user->id)->first()->zarplata;
                 $totalColumns["tax_$taxColumn->id"] = 0;
@@ -816,7 +815,7 @@ class SalaryController extends Controller
                     $totalColumns[10] = $kpi;
                     $totalColumns[11] = $trainee_fees ?? 0;
                     $totalColumns[12] = $bonus;
-                    $totalColumns[13] = $total_income - $tax_amount;
+                    $totalColumns[13] = $total_income;
                     $totalColumns[14] = $prepaid;
                     $totalColumns[15] = $penalty;
                     $totalColumns[18] = $expense;
@@ -833,6 +832,7 @@ class SalaryController extends Controller
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']);
 
+        dd($tax_amount);
         // К выдаче сумма форматированная
         $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
         $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
