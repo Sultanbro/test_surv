@@ -70,7 +70,7 @@ export default {
 			if(!this.zarplata) return 0
 			let result = +this.zarplata
 			this.myTaxes.forEach(tax => {
-				if(tax.isAdditive) return
+				if(tax.endSubtraction) return
 				result -= tax.isPercent ? Math.round(this.zarplata * tax.value / 100) : tax.value
 			})
 			return result
@@ -176,7 +176,7 @@ export default {
 				exists.name = tax.name
 				exists.value = tax.value
 				exists.isPercent = tax.isPercent
-				exists.isAdditive = tax.isAdditive
+				exists.endSubtraction = tax.endSubtraction
 			}
 			else{
 				this.editTaxes.push(tax)
@@ -558,7 +558,7 @@ export default {
 					class="custom-switch custom-switch-sm ml-2"
 				>
 					<b-form-checkbox
-						v-model="tax.isAdditive"
+						v-model="tax.endSubtraction"
 						switch
 						@change="onEditTax(tax)"
 					>
@@ -595,7 +595,7 @@ export default {
 				</b-form-group>
 
 				<b-form-input
-					v-if="tax.isAdditive && tax.isPercent"
+					v-if="tax.endSubtraction && tax.isPercent"
 					:value="tax.value ? Math.round(salaryAfterTaxes * tax.value / 100) : 0"
 					type="text"
 					disabled
