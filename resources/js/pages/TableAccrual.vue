@@ -1368,6 +1368,8 @@ export default {
 					personalBonuses = item.edited_bonus.amount
 				}
 
+				personalFines = Number(item.fines_total);
+
 				// - shtraf
 				const total = personalKpi + personalTotal + personalBonuses - personalFines
 				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
@@ -1381,7 +1383,6 @@ export default {
 					personalTaxes += tax.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
 				})
 
-				personalFines = Number(item.fines_total);
 				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
 
 				if(item.edited_salary) {

@@ -20,6 +20,7 @@ import {
 import { calcSum } from '@/pages/kpi/kpis.js'
 
 const STORAGE_READED_KEY = 'profileSalaryReadedV2'
+const LOCAL_CACHE_KEY = 'profileSalaryV2'
 
 const now = new Date()
 export const useProfileSalaryStore = defineStore('profileSalary', {
@@ -55,6 +56,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				this.user_earnings.sumBonuses = parseInt(this.user_earnings.sumBonuses)
 				this.user_earnings.sumQuartalPremiums = parseInt(this.user_earnings.sumQuartalPremiums)
 				this.user_earnings.sumNominations = parseInt(this.user_earnings.sumNominations)
+
 				this.has_qp = data.has_qp
 				this.isReady = true
 			}
@@ -168,6 +170,20 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				return result
 			}, 0)
 
+			// taxes
+			const total = sumSalary + sumKpi + sumBonuses
+			let totalAfterTaxes = sumSalary + sumKpi + sumBonuses
+			let taxes = 0
+			salary.taxes.forEach(tax => {
+				if(tax.end_subtraction) return
+				totalAfterTaxes -= tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+				taxes += tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+			})
+			salary.taxes.forEach(tax => {
+				if(!tax.end_subtraction) return
+				taxes += tax.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
+			})
+
 			// set current values
 			const earnings = {
 				sumSalary,
@@ -176,6 +192,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				sumQuartalPremiums,
 				sumNominations: sumAwards,
 				kpiMax: maxKpi,
+				taxes,
 			}
 			this.user_earnings = earnings
 
@@ -193,6 +210,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				sumQuartalPremiums,
 				sumAwards,
 				maxKpi,
+				taxes,
 			}
 
 			this.isReady = true
@@ -256,25 +274,25 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			this.saveReadedPremiums()
 		},
 		hasLocal(){
-			const json = localStorage.getItem('profileSalary')
+			const json = localStorage.getItem(LOCAL_CACHE_KEY)
 			if(!json) return false
 			const local = JSON.parse(json)
 			return local.userId === Laravel.userId
 		},
 		loadLocal(){
-			let json = localStorage.getItem('profileSalary')
+			let json = localStorage.getItem(LOCAL_CACHE_KEY)
 			if(!json){
 				json = JSON.stringify({
 					userId: Laravel.userId,
 					user_earnings: {},
 				})
-				localStorage.setItem('profileSalary', json)
+				localStorage.setItem(LOCAL_CACHE_KEY, json)
 			}
 			const local = JSON.parse(json)
 			this.user_earnings = local.user_earnings
 		},
 		saveLocal(){
-			localStorage.setItem('profileSalary', JSON.stringify({
+			localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({
 				userId: Laravel.userId,
 				user_earnings: this.user_earnings,
 			}))
