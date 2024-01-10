@@ -942,11 +942,18 @@ export default {
 			if(this.activity.plan_unit == 'less_sum') value = parseFloat(clearedValue);
 			if(this.activity.plan_unit == 'percent') value = parseFloat(clearedValue).toFixed(1);
 			if(this.activity.plan_unit == 'less_avg') value = parseFloat(clearedValue).toFixed(1);
-			if(value < 0) this.filtered[index][key] = 0;
 
-			if(value > 999) this.filtered[index][key] = 999;
+			try {
+				if(value < 0) this.filtered[index][key] = 0;
 
-			this.filtered[index][key] = Number(this.filtered[index][key])
+				if(value > 999) this.filtered[index][key] = 999;
+
+				this.filtered[index][key] = Number(this.filtered[index][key])
+			}
+			catch (error) {
+				console.error(error)
+			}
+
 			let employee_id = data.id;
 
 			let filtered = this.filtered;
