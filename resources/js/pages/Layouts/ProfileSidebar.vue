@@ -56,7 +56,22 @@
 					>
 						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
+					<div
+						v-if="user_earnings.taxes"
+						class="ProfileSidebar-taxes mb-3 text-center"
+					>
+						Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
+						<img
+							v-b-popover.click.blur.html="'Сумма вычета налогов'"
+							src="/images/dist/profit-info.svg"
+							class="img-info ml-2"
+							alt="info icon"
+							tabindex="-1"
+						>
+					</div>
 				</div>
+
+
 
 				<!-- <b-form-select
 					v-model="selectedDate"
@@ -655,57 +670,52 @@ export default {
 </script>
 
 <style lang="scss">
-.ProfileSidebar{
-	&-date{
-		width: 100%;
+.modal-youtube{
+	.modal-xl{
+		max-width: 900px;
+	}
+	.modal-body{
+		padding: 0;
+		position: relative;
+		padding-bottom: 56.25%;
+		iframe{
+			position: absolute;
+			width: 100%!important;
+			height: 100%!important;
+		}
 	}
 }
-	.modal-youtube{
-		.modal-xl{
-			max-width: 900px;
+.profile-video-image {
+	position: relative;
+	margin-top: 20px;
+	border-radius: 1rem;
+	overflow: hidden;
+	cursor: pointer;
+	.fa-play {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 22;
+		color: #fff;
+		font-size: 30px;
+		transition: 0.3s all ease;
+	}
+	&:hover{
+		.fa-play{
+			transform: translate(-50%, -50%) scale(1.2);
 		}
-		.modal-body{
-			padding: 0;
-			position: relative;
-			padding-bottom: 56.25%;
-			iframe{
-				position: absolute;
-				width: 100%!important;
-				height: 100%!important;
-			}
+		img{
+			filter: grayscale(0.5);
 		}
 	}
-	.profile-video-image {
-		position: relative;
-		margin-top: 20px;
-		border-radius: 1rem;
-		overflow: hidden;
-		cursor: pointer;
-		.fa-play {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			z-index: 22;
-			color: #fff;
-			font-size: 30px;
-			transition: 0.3s all ease;
-		}
-		&:hover{
-			.fa-play{
-				transform: translate(-50%, -50%) scale(1.2);
-			}
-			img{
-				filter: grayscale(0.5);
-			}
-		}
 
-		img {
-			width: 100%;
-			height: auto;
-			transition: 0.3s all ease;
-		}
+	img {
+		width: 100%;
+		height: auto;
+		transition: 0.3s all ease;
 	}
+}
 .header__profile{
 	margin: 0 auto;
 	padding: 2rem 2rem 1rem;
@@ -996,6 +1006,24 @@ export default {
 		}
 		table{
 			table-layout: auto !important;
+		}
+	}
+}
+
+
+
+.ProfileSidebar{
+	&-date{
+		width: 100%;
+	}
+	&-taxes{
+		display: flex;
+		align-items: center;
+		font-size: 12px;
+		.img-info{
+			width: 20px;
+			background-color: #fff;
+			border-radius: 50em;
 		}
 	}
 }

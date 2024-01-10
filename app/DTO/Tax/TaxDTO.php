@@ -10,12 +10,14 @@ class TaxDTO extends BaseTaxDTO
         float $value,
         bool $isPercent,
         public bool $isAssigned,
+        bool $end_subtraction,
     )
     {
         parent::__construct(
             $name,
             $value,
             $isPercent,
+            $end_subtraction
         );
     }
 }

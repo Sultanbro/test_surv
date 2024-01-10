@@ -1,5 +1,5 @@
 <template>
-	<div class="t-stats">
+	<div class="StatsTable t-stats">
 		<table class="j-table">
 			<thead>
 				<tr class="table-heading">
@@ -167,7 +167,18 @@
 													</div>
 												</td>
 												<td class="p-4">
-													{{ user.name }}
+													<div class="d-flex aic">
+														{{ user.name }}
+														<img
+															v-if="!user.full_time"
+															v-b-popover.click.blur.html="'part-time'"
+															src="/images/dist/profit-info.svg"
+															class="img-info ml-a"
+															alt="info icon"
+															tabindex="-1"
+															width="20"
+														>
+													</div>
 												</td>
 												<td class="p-4">
 													Средний % <b>{{ parseFloat(user.avg_percent).toFixed(2) }}%</b>
@@ -420,6 +431,12 @@ export default {
 
 	.j-table .table-inner {
 		background: #e9eef3;
+	}
+}
+.StatsTable{
+	.img-info{
+		background-color: #fff;
+		border-radius: 50em;
 	}
 }
 </style>
