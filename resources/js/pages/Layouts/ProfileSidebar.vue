@@ -56,11 +56,22 @@
 					>
 						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
+					<div
+						v-if="user_earnings.taxes"
+						class="ProfileSidebar-taxes mb-3 text-center"
+					>
+						Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
+						<img
+							v-b-popover.click.blur.html="'Сумма вычета налогов'"
+							src="/images/dist/profit-info.svg"
+							class="img-info ml-2"
+							alt="info icon"
+							tabindex="-1"
+						>
+					</div>
 				</div>
 
-				<div class="ProfileSidebar-taxes mt-3 text-center">
-					Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
-				</div>
+
 
 				<!-- <b-form-select
 					v-model="selectedDate"
@@ -1006,7 +1017,14 @@ export default {
 		width: 100%;
 	}
 	&-taxes{
-		font-size: 14px;
+		display: flex;
+		align-items: center;
+		font-size: 12px;
+		.img-info{
+			width: 20px;
+			background-color: #fff;
+			border-radius: 50em;
+		}
 	}
 }
 </style>
