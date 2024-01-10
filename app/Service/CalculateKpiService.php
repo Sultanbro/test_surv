@@ -65,7 +65,7 @@ class CalculateKpiService
 
         $fact = $data['fact'];
         $avg = $data['avg'];
-        $plan = $data['plan'];
+        $plan = $data['daily_plan'];
 
         if ($method == 1) {
             $res = number_format($fact / $plan * 100, 2);
