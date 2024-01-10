@@ -555,7 +555,7 @@ class AnalyticStat extends Model
             $exp = explode(':', $match);
             $column_id = $exp[0];
             $row_id = $exp[1];
-            dd_if($stat->column_id == 20672 && $statistic->row_id == 11896, $column_id, $row_id);
+            dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $column_id, $row_id);
 
             /** @var AnalyticStat $cell */
             $cell = AnalyticStat::query()
