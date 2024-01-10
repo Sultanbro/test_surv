@@ -152,7 +152,7 @@ class SaveUserKpi extends Command
 
                 $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
 
-                $completed_percent = $this->calculator->getCompletePercent([
+                $completed_percent = $this->calculator->calcCompleted([
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
                     'records_count' => $item['records_count'],
