@@ -1501,23 +1501,23 @@ class KpiStatisticService
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
-
-                /**
-                 * sum method in kpi_item
-                 * change plan
-                 */
-                if ($item['method'] == 1) {
-
-                    /**
-                     * for part timer reduce plan twice
-                     */
-                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
-
-                    /**
-                     * final plan
-                     */
-                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
-                }
+//
+//                /**
+//                 * sum method in kpi_item
+//                 * change plan
+//                 */
+//                if ($item['method'] == 1) {
+//
+//                    /**
+//                     * for part timer reduce plan twice
+//                     */
+//                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
+//
+//                    /**
+//                     * final plan
+//                     */
+//                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
+//                }
 
                 $kpi_items[] = $item;
             }
