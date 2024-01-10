@@ -1471,8 +1471,14 @@ class KpiStatisticService
 
                 }
 
+                /**
+                 * If the user works part-time, the daily plan needs to be divided by 2.
+                 * In the statistics, if the entire plan is 208 and the actual completed work is 104,
+                 * we calculate the completion percentage as 50% for full-time.
+                 * For part-time, in similar cases, we adjust the plan by dividing it by 2 (208/2=104),
+                 * making the actual completed work 100%, resulting in a 100% completed KPI.
+                 */
                 $item['plan'] = $item['daily_plan'];
-                dd_if($user['id'] == 28606 && $item['id'] == 304, $item['plan'], $item['daily_plan']);
 
                 /**
                  * count workdays
