@@ -1370,7 +1370,6 @@ export default {
 
 				personalFines = Number(item.fines_total);
 
-				// - shtraf
 				const total = personalKpi + personalTotal + personalBonuses - personalFines
 				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
 				item.taxes.forEach(tax => {
