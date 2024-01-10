@@ -547,10 +547,10 @@ class AnalyticStat extends Model
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
         $text = $stat->value;
-        dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $text);
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+        dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $matches);
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
