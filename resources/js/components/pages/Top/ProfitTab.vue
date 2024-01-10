@@ -421,9 +421,9 @@ export default {
 						user_types: 1,
 					})
 					fot[groupId] = {
-						actual: calcGroupFOT(dataActual),
-						trainee: calcGroupFOT(dataTrainee),
-						fired: calcGroupFOT(dataFired),
+						actual: calcGroupFOT(dataActual, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
+						trainee: calcGroupFOT(dataTrainee, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
+						fired: calcGroupFOT(dataFired, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
 					}
 				}
 				catch (error) {
