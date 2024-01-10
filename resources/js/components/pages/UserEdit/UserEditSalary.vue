@@ -65,6 +65,15 @@ export default {
 	computed: {
 		taxNotAssignedFiltered() {
 			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
+		},
+		salaryAfterTaxes(){
+			if(!this.zarplata) return 0
+			let result = +this.zarplata
+			this.myTaxes.forEach(tax => {
+				if(tax.endSubtraction) return
+				result -= tax.isPercent ? Math.round(this.zarplata * tax.value / 100) : tax.value
+			})
+			return result
 		}
 	},
 	watch: {
@@ -167,6 +176,7 @@ export default {
 				exists.name = tax.name
 				exists.value = tax.value
 				exists.isPercent = tax.isPercent
+				exists.endSubtraction = tax.endSubtraction
 			}
 			else{
 				this.editTaxes.push(tax)
@@ -544,6 +554,17 @@ export default {
 						В процентах
 					</b-form-checkbox>
 				</b-form-group>
+				<b-form-group
+					class="custom-switch custom-switch-sm ml-2"
+				>
+					<b-form-checkbox
+						v-model="tax.endSubtraction"
+						switch
+						@change="onEditTax(tax)"
+					>
+						После других налогов
+					</b-form-checkbox>
+				</b-form-group>
 				<b-form-group class="ml-2">
 					<b-form-input
 						v-model="tax.name"
@@ -572,14 +593,24 @@ export default {
 						@input="onEditTax(tax)"
 					/>
 				</b-form-group>
+
 				<b-form-input
-					v-if="tax.isPercent"
+					v-if="tax.endSubtraction && tax.isPercent"
+					:value="tax.value ? Math.round(salaryAfterTaxes * tax.value / 100) : 0"
+					type="text"
+					disabled
+					class="ml-2 w-200px"
+					:class="{'is-invalid' : Math.round(salaryAfterTaxes * tax.value / 100) > salaryAfterTaxes}"
+				/>
+				<b-form-input
+					v-else-if="tax.isPercent"
 					:value="tax.value ? Math.round(zarplata * tax.value / 100) : 0"
 					type="text"
 					disabled
 					class="ml-2 w-200px"
 					:class="{'is-invalid' : Math.round(zarplata * tax.value / 100) > zarplata}"
 				/>
+
 				<button
 					v-if="!tax.isNew"
 					:id="idx + '1'"

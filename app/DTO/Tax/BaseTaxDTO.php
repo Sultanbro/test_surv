@@ -8,9 +8,10 @@ abstract class BaseTaxDTO
         public string $name,
         public float $value,
         public bool $isPercent,
+        public bool $endSubtraction,
     )
     {}
-    
+
     /**
      * @return array
      */
@@ -20,6 +21,7 @@ abstract class BaseTaxDTO
             'name' => $this->name,
             'value' => $this->value,
             'is_percent' => $this->isPercent,
+            'end_subtraction' => $this->endSubtraction,
         ];
-    } 
+    }
 }

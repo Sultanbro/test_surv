@@ -23,7 +23,8 @@ class Tax extends Model
     protected $fillable = [
         'name',
         'value',
-        'is_percent'
+        'is_percent',
+        'end_subtraction'
     ];
 
     protected $dates = [
