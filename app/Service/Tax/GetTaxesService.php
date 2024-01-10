@@ -16,6 +16,7 @@ class GetTaxesService
     ): GetTaxesResponseDTO
     {
         $taxes = (new TaxRepository)->getUserTaxes($userId);
+        dd($taxes);
         return GetTaxesResponseDTO::fromArray($taxes);
     }
 }
