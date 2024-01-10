@@ -801,10 +801,10 @@ class SalaryController extends Controller
 
                 if ($exist) {
                     if (!$taxColumn->end_subtraction) {
-                        $tax_amount += $amount = (int) round($taxColumn->is_percent ? $userZarplata * ($value / 100) : $value);
+                        $tax_amount += $amount = (int) round($tax->is_percent ? $userZarplata * ($value / 100) : $value);
                         $simpleTaxesAmountForUser += $amount;
                     } else {
-                        $tax_amount += $amount = (int) round($taxColumn->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
+                        $tax_amount += $amount = (int) round($tax->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
                     }
                     $total_payment -= $amount;
                     $totalColumns["tax_$taxColumn->id"] = $amount;
