@@ -176,12 +176,12 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			let taxes = 0
 			salary.taxes.forEach(tax => {
 				if(tax.end_subtraction) return
-				totalAfterTaxes -= tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
-				taxes += tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+				totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
+				taxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
 			})
 			salary.taxes.forEach(tax => {
 				if(!tax.end_subtraction) return
-				taxes += tax.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
+				taxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
 			})
 
 			// set current values
