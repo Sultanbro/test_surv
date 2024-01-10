@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class KpiStatisticService
@@ -1471,7 +1472,17 @@ class KpiStatisticService
 
                 }
 
+                /**
+                 * If the user works part-time, the daily plan needs to be divided by 2.
+                 * In the statistics, if the entire plan is 208 and the actual completed work is 104,
+                 * we calculate the completion percentage as 50% for full-time.
+                 * For part-time, in similar cases, we adjust the plan by dividing it by 2 (208/2=104),
+                 * making the actual completed work 100%, resulting in a 100% completed KPI.
+                 */
+                if (!$user['full_time'] && !Str::contains('%', $item['unit'])) $item['daily_plan'] = $item['daily_plan'] / 2;
                 $item['plan'] = $item['daily_plan'];
+
+//                dd_if($user['id'] == 28606 && $item['id'] == 304, $item['plan'], $item['daily_plan']);
 
                 /**
                  * count workdays
@@ -1490,23 +1501,23 @@ class KpiStatisticService
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
-
-                /**
-                 * sum method in kpi_item
-                 * change plan
-                 */
-                if ($item['method'] == 1) {
-
-                    /**
-                     * for part timer reduce plan twice
-                     */
-                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
-
-                    /**
-                     * final plan
-                     */
-                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
-                }
+//
+//                /**
+//                 * sum method in kpi_item
+//                 * change plan
+//                 */
+//                if ($item['method'] == 1) {
+//
+//                    /**
+//                     * for part timer reduce plan twice
+//                     */
+//                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
+//
+//                    /**
+//                     * final plan
+//                     */
+//                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
+//                }
 
                 $kpi_items[] = $item;
             }
