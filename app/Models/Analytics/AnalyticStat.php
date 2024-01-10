@@ -549,11 +549,13 @@ class AnalyticStat extends Model
         $text = $stat->value;
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             $column_id = $exp[0];
             $row_id = $exp[1];
+            dd_if($statistic->column_id == 20672 && $statistic->row_id == 11896, $column_id, $row_id);
 
             /** @var AnalyticStat $cell */
             $cell = AnalyticStat::query()

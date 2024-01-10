@@ -142,7 +142,6 @@ final class Analytics
 
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
-                        dd_if($statistic->column_id == 20672 && $statistic->row_id == 11896, $val);
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
