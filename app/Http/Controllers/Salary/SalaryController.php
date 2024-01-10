@@ -454,6 +454,7 @@ class SalaryController extends Controller
         $_users = array_merge($_users, [[''], [''], ['']]);
         $_users = array_merge($_users, $fired_users['users']);
 
+        dd($_users);
         $data[0] = [
             'name' => 'Действующие и Уволенные',
             'sheet' => $_users,
@@ -525,30 +526,30 @@ class SalaryController extends Controller
             ->get();
 
         $allTotal = [
-            0 => '',
-            1 => '',
-            2 => 0,
-            3 => '',
-            4 => '',
-            5 => 0,
-            6 => 0,
-            7 => 0,
-            8 => 0,
-            9 => 0,
-            10 => 0,
-            11 => 0,
-            12 => 0,
-            13 => 0,
-            14 => 0,
-            15 => 0,
+            0 => '', // name
+            1 => '', // card name
+            2 => 0, // age
+            3 => '', // phone
+            4 => '', // card detail
+            5 => 0, // uin
+            6 => 0, //
+            7 => 0, // working days
+            8 => 0, // stavka
+            9 => 0, // nachisleniya
+            10 => 0, // kpi
+            11 => 0, // trainee
+            12 => 0, // bonus
+            13 => 0, // itog
+            14 => 0, // avans
+            15 => 0, // fine
         ];
 
         foreach ($taxColumns as $tax) {
             $allTotal["tax_$tax->id"] = 0;
         }
-        $allTotal[] = 0;
-        $allTotal[] = 0;
-        $allTotal[] = 0;
+        $allTotal[] = 0; // 16 => ОПВ
+        $allTotal[] = 0; // 17 => ВОСМС
+        $allTotal[] = 0; // 18 => ИПН
 
         $data['users'] = [];
 
