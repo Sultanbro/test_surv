@@ -547,6 +547,8 @@ class AnalyticStat extends Model
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
         $text = $stat->value;
+        dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $text);
+
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
         foreach ($matches[0] as $match) {
@@ -561,7 +563,6 @@ class AnalyticStat extends Model
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
-            dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $cell);
 
             if ($cell) {
                 if ($cell->type == 'formula') {
