@@ -549,7 +549,6 @@ class AnalyticStat extends Model
         $text = $stat->value;
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
