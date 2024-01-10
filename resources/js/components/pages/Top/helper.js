@@ -1,6 +1,6 @@
 import salaryCellType from '@/composables/salaryCellType'
 
-export function calcGroupFOT(data){
+export function calcGroupFOT(data, excludeDays = []){
 	/* eslint-disable camelcase */
 	let items = [];
 	let daySalariesSum = [];
@@ -19,6 +19,7 @@ export function calcGroupFOT(data){
 		item.salaries.forEach(tt => {
 			let salary = 0;
 			let total = 0;
+			if(excludeDays.includes(+tt.day)) return
 
 			if(item.earnings[tt.day] !== null) {
 				salary = Number(item.earnings[tt.day]);
