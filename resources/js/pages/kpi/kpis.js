@@ -237,6 +237,15 @@ function calcSum(el, kpi, completed) {
  * @param {Object} kpi
  */
 function parseKPI(kpi){
+	if(kpi.histories_latest?.payload){
+		if(typeof kpi.histories_latest.payload === 'string') {
+			kpi.histories_latest.payload = JSON.parse(kpi.histories_latest.payload)
+			kpi.lower_limit = kpi.histories_latest.payload.lower_limit
+			kpi.upper_limit = kpi.histories_latest.payload.upper_limit
+			kpi.completed_80 = kpi.histories_latest.payload.completed_80
+			kpi.completed_100 = kpi.histories_latest.payload.completed_100
+		}
+	}
 	kpi.users.forEach(user => {
 		if(!user.items) return
 		user.items.forEach(item => {
