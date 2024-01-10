@@ -522,6 +522,7 @@ class SalaryController extends Controller
                 WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
             )")
+            ->orderBy('end_subtraction')
             ->get();
 
         $allTotal = [
@@ -781,12 +782,17 @@ class SalaryController extends Controller
                 14 => 0, // Авансы
                 15 => 0, // Штрафы
             ];
-
+            $simpleTaxesAmountForUser = 0;
             /**
              * Расчет налогов.
              */
             foreach ($taxColumns as $taxColumn) {
-                $userZarplata = $zarplaties->where('user_id', $user->id)->first()->zarplata;
+                if ($edited_salary) {
+                    $userZarplata = (int)$edited_salary->amount - $penalty;
+                } else {
+                    $userZarplata = $total_income - $penalty;
+                }
+
                 $totalColumns["tax_$taxColumn->id"] = 0;
                 $exist = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->count() > 0;
 
@@ -794,7 +800,12 @@ class SalaryController extends Controller
                 $value = $tax?->value > 0 ? $tax?->value : $taxColumn?->value;
 
                 if ($exist) {
-                    $tax_amount += $amount = $taxColumn->is_percent ? $userZarplata * ($value / 100) : $value;
+                    if (!$taxColumn->end_subtraction) {
+                        $tax_amount += $amount = (int) round($taxColumn->is_percent ? $userZarplata * ($value / 100) : $value);
+                        $simpleTaxesAmountForUser += $amount;
+                    } else {
+                        $tax_amount += $amount = (int) round($taxColumn->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
+                    }
                     $total_payment -= $amount;
                     $totalColumns["tax_$taxColumn->id"] = $amount;
                     $allTotal["tax_$taxColumn->id"] += $amount;
