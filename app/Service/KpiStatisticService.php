@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class KpiStatisticService
@@ -1478,7 +1479,7 @@ class KpiStatisticService
                  * For part-time, in similar cases, we adjust the plan by dividing it by 2 (208/2=104),
                  * making the actual completed work 100%, resulting in a 100% completed KPI.
                  */
-                if (!$user['full_time']) $item['daily_plan'] = $item['daily_plan'] / 2;
+                if (!$user['full_time'] && Str::contains('%', $item['unit'])) $item['daily_plan'] = $item['daily_plan'] / 2;
                 $item['plan'] = $item['daily_plan'];
 
 //                dd_if($user['id'] == 28606 && $item['id'] == 304, $item['plan'], $item['daily_plan']);
