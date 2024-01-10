@@ -115,24 +115,18 @@ class UserService
     public function getEmployeesForSalaries(int $groupId, string $date): array
     {
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
-        $first_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $carbonDate = Carbon::parse($date);
-        $currentMonth = Carbon::now()->month;
         $addCondition = false;
-        if (Carbon::parse($date)->month < $currentMonth) {
+        if (Carbon::parse($date)->month < Carbon::now()->month || Carbon::parse($date)->year < Carbon::now()->year) {
             $addCondition = true;
-            $nextMonth = $carbonDate->copy()->addMonth()->month;
-        } else {
-            $nextMonth = $carbonDate->month;
         }
 
 
-        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($nextMonth, $groupId, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
+        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date, $nextMonthFirstDay, $addCondition) {
             $q->where('group_id', $groupId)
-                ->where(function ($query) use ($nextMonth, $nextMonthFirstDay, $first_date, $last_date, $addCondition) {
-                    $query->where(function ($subQuery) use ($nextMonth, $first_date, $last_date, $nextMonthFirstDay, $addCondition) {
+                ->where(function ($query) use ($nextMonthFirstDay, $last_date, $addCondition) {
+                    $query->where(function ($subQuery) use ($last_date, $nextMonthFirstDay, $addCondition) {
                         // For active users in the selected month
                         $subQuery->where('status', GroupUser::STATUS_ACTIVE);
                         if ($addCondition) {
@@ -142,12 +136,12 @@ class UserService
                             $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
                                 ->orWhereNull('to');
                         });
-                    })->orWhere(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
+                    })->orWhere(function ($subQuery) use ($last_date, $nextMonthFirstDay) {
                         // For users who were active and then dropped in the selected month
                         $subQuery->where('status', GroupUser::STATUS_DROP);
                         $subQuery->whereDate('from', '<=', $last_date);
                         $subQuery->whereDate('to', '>=', $last_date);
-                    })->orWhere(function ($subQuery) use ($first_date, $last_date, $nextMonthFirstDay) {
+                    })->orWhere(function ($subQuery) use ($last_date, $nextMonthFirstDay) {
                         // For users who were active and then dropped in the selected month
                         $subQuery->where('status', GroupUser::STATUS_FIRED);
                         $subQuery->whereDate('from', '<=', $last_date);
