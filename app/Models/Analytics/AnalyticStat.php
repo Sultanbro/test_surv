@@ -550,7 +550,6 @@ class AnalyticStat extends Model
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-        dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $matches);
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -567,7 +566,7 @@ class AnalyticStat extends Model
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
-                    if ($sameStat) return 0;
+                    if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
