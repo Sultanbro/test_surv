@@ -1374,12 +1374,12 @@ export default {
 				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
 				item.taxes.forEach(tax => {
 					if(tax.end_subtraction) return
-					totalAfterTaxes -= tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
-					personalTaxes += tax.is_percent ? Math.round(total * tax.value / 100) : tax.value
+					totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
+					personalTaxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
 				})
 				item.taxes.forEach(tax => {
 					if(!tax.end_subtraction) return
-					personalTaxes += tax.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
+					personalTaxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
 				})
 
 				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
