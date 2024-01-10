@@ -132,14 +132,17 @@ final class Analytics
 
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
+
                     if ($statistic->activity_id != null) {
                         $act = $activities->where('id', $statistic->activity_id)->first();
                         if ($act && $act->unit) {
                             $arr['sign'] = $act->unit;
                         }
                     }
+
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
+                        dd_if($statistic->column_id == 20672 && $statistic->row_id == 11896, $statistic);
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
