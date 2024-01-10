@@ -561,7 +561,7 @@ class AnalyticStat extends Model
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
-            dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $column_id, $row_id);
+            dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $cell);
 
             if ($cell) {
                 if ($cell->type == 'formula') {
