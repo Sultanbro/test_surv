@@ -354,7 +354,7 @@ export default {
 		...mapGetters(['user']),
 		totalBalance(){
 			if(!this.user_earnings) return 0
-			return (this.user_earnings.sumSalary || 0) + (this.user_earnings.sumKpi || 0) + (this.user_earnings.sumBonuses || 0) - (this.user_earnings.taxes || 0)
+			return (this.user_earnings.sumSalary || 0) + (this.user_earnings.sumKpi || 0) + (this.user_earnings.sumBonuses || 0)
 		},
 		userInfo(){
 			return {
