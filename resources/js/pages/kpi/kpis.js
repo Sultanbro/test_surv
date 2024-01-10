@@ -156,10 +156,6 @@ function calcCompleted(el) {
 
 	// if(plan <= 0) return 0;
 
-	if(el.histories_latest?.payload?.plan){
-		plan = el.histories_latest.payload.plan
-	}
-
 	if(el.method == 1) {
 		res = (fact / plan * 100).toFixed(2);
 	}

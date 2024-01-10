@@ -204,16 +204,16 @@
 							{{ i + 1 }}
 						</td>
 						<td class="px-2">
-							{{ item.histories_latest ? item.histories_latest.payload.name : item.name }}
+							{{ item.name }}
 						</td>
 						<td class="text-center">
 							{{ methods[item.method] }}
 						</td>
 						<td class="text-center">
-							<b>{{ item.histories_latest ? item.histories_latest.payload.plan : item.plan }} {{ item.histories_latest ? item.histories_latest.payload.unit : item.unit }}</b>
+							<b>{{ item.plan }} {{ item.unit }}</b>
 						</td>
 						<td class="text-center">
-							{{ item.histories_latest ? item.histories_latest.payload.share : item.share }}
+							{{ item.share }}
 						</td>
 						<td
 							v-if="editable"
@@ -250,7 +250,7 @@
 							{{ item.percent }}
 						</td>
 						<td class="text-center">
-							{{ numberToCurrency(my_sum * (parseInt(item.histories_latest ? item.histories_latest.payload.share : item.share)/100)) }}
+							{{ numberToCurrency(my_sum * (parseInt(item.share)/100)) }}
 						</td>
 						<td class="text-center">
 							{{ numberToCurrency(item.sum) }}
@@ -405,8 +405,6 @@ export default {
 	},
 
 	created() {
-		this.fillSelectOptions()
-
 		this.defineSourcesAndGroups('with_sources_and_group_id');
 
 		this.recalc();
@@ -472,9 +470,6 @@ export default {
 
 		getActivity(id) {
 			return this.activities.find(el => el.id == id)
-		},
-
-		fillSelectOptions() {
 		},
 
 		groupBy(xs, key) {
