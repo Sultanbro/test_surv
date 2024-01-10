@@ -1472,6 +1472,7 @@ class KpiStatisticService
                 }
 
                 $item['plan'] = $item['daily_plan'];
+                dd_if($user['id'] == 28606 && $item['id'] == 304, $item['plan'], $item['daily_plan']);
 
                 /**
                  * count workdays
