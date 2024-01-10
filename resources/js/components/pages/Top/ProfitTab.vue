@@ -516,6 +516,11 @@ export default {
 	$padding: 6px $paddingX;
 	$margin: -6px -10px;
 
+	display: flex;
+  flex-flow: row wrap;
+  gap: 20px;
+  align-items: flex-start;
+
 	&-table{
 		width: auto;
 	}
