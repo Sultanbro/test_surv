@@ -802,7 +802,7 @@ class Salary extends Model
 
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
-                        dd_if($i == 4 && $user->id == 30564, $earnings[$i]);
+                        dd_if($i == 4 && $user->id == 30564, $hourly_pay);
 
                         $hours[$i] = round($total_hours / 60, 1);
 
