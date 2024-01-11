@@ -731,6 +731,8 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
+//                dd_if($i == 4 && $user->id == 30564, $s, $zarplata);
+
                 $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
 
@@ -758,6 +760,7 @@ class Salary extends Model
                 }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
                 // add to array
@@ -799,8 +802,10 @@ class Salary extends Model
                         $hours[$i] = round($working_hours / 2, 1);
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
+
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
+
                         $hours[$i] = round($total_hours / 60, 1);
 
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
@@ -993,8 +998,7 @@ class Salary extends Model
                 $editedKpi->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
 
                 $user->edited_kpi = $editedKpi;
-            }
-            else {
+            } else {
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
 

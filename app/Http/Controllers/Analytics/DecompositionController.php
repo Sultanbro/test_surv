@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Analytics;
 
-use Auth;
-use Illuminate\Http\Request;
-use App\Models\Analytics\DecompositionValue as Value;
 use App\Http\Controllers\Controller;
+use App\Models\Analytics\DecompositionValue;
+use Illuminate\Http\Request;
 
 class DecompositionController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -23,30 +22,21 @@ class DecompositionController extends Controller
         $values = $request->values;
         $group_id = $request->group_id;
 
-        $value = Value::find($id);
+        DecompositionValue::query()->updateOrCreate([
+            'id' => $id
+        ], [
+            'date' => $date,
+            'group_id' => $group_id,
+            'name' => $name,
+            'values' => $values,
+        ]);
 
-        if($value) {
-            $value->values = $values;
-            $value->name = $name;
-            $value->save();
-        } else {
-            $id = Value::create([
-                'date' => $date,
-                'group_id' => $group_id,
-                'name' => $name,
-                'values' => $values,
-            ]);
-        } 
-        
         return $id;
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request): void
     {
-        if(Auth::user()->id == 5) {
-            $value = Value::find($request->id);
-            if($value) $value->delete();
-        }
+        DecompositionValue::query()->find($request->id)?->delete();
     }
 
 }

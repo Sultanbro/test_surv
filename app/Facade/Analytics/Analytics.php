@@ -359,8 +359,7 @@ final class Analytics
 
         $dateFrom = Carbon::createFromDate($firstOfMoth)->endOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
-
-        return $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
+        $users = $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
             ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
                 $query->selectRaw('DAY(date) as day, user_id, value, date')
@@ -368,18 +367,16 @@ final class Analytics
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
             })
-            ->get()
-            ->map(function ($employee) use ($firstOfMoth, $activity) {
-                $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
-                $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
-                $workDays = WorkChartModel::workdaysPerMonth($employee);
+            ->get();
+        return $users->each(function ($employee) use ($firstOfMoth, $activity) {
+            $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
+            $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
+            $workDays = WorkChartModel::workdaysPerMonth($employee);
 
-                $employee->fullname = $employee->full_name;
-                $employee->applied_from = $appliedFrom;
-                $employee->plan = $activity->daily_plan * $workDays;
-
-                return $employee;
-            });
+            $employee->fullname = $employee->full_name;
+            $employee->applied_from = $appliedFrom;
+            $employee->plan = $activity->daily_plan * $workDays;
+        });
     }
 
     public function decompositionTable(
