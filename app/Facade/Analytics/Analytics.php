@@ -368,8 +368,7 @@ final class Analytics
                     ->where('date', '<=', $dateFrom);
             })
             ->get();
-        dd($users->count());
-        return $users->map(function ($employee) use ($firstOfMoth, $dateTo, $activity) {
+        return $users->each(function ($employee) use ($firstOfMoth, $activity) {
             $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
             $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
             $workDays = WorkChartModel::workdaysPerMonth($employee);
@@ -377,7 +376,6 @@ final class Analytics
             $employee->fullname = $employee->full_name;
             $employee->applied_from = $appliedFrom;
             $employee->plan = $activity->daily_plan * $workDays;
-            return $employee;
         });
     }
 
