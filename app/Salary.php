@@ -784,7 +784,6 @@ class Salary extends Model
                         if ($x->count() > 0) {
                             $total_hours = $x->sum('total_hours');
                         }
-                        dd_if($i == 4 && $user->id == 30564, $total_hours);
 
                         $earning = $total_hours / 60 * $hourly_pay * 0.5;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
@@ -800,6 +799,8 @@ class Salary extends Model
                         $hours[$i] = round($working_hours / 2, 1);
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
+                        dd_if($i == 4 && $user->id == 30564, $total_hours);
+
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($total_hours / 60, 1);
