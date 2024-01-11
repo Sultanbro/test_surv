@@ -772,7 +772,6 @@ class Salary extends Model
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
-                dd_if($i == 4 && $user->id == 30564, empty($statTotalHour));
 
                 if (empty($statTotalHour)) {
                     if ($a) {
@@ -785,6 +784,7 @@ class Salary extends Model
                         if ($x->count() > 0) {
                             $total_hours = $x->sum('total_hours');
                         }
+                        dd_if($i == 4 && $user->id == 30564, $total_hours);
 
                         $earning = $total_hours / 60 * $hourly_pay * 0.5;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
