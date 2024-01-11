@@ -376,7 +376,7 @@ final class Analytics
             $employee->fullname = $employee->full_name;
             $employee->applied_from = $appliedFrom;
             $employee->plan = $activity->daily_plan * $workDays;
-//            $employee->fired = $employee->to <= $dateTo;
+            $employee->status = $employee->to <= $dateTo ? 'fired' : 'active';
 
             return $employee;
         });
