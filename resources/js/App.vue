@@ -31,7 +31,10 @@ export default {
 		}
 	},
 	created(){
-		useSnowEffect()
+		const now = new Date()
+		const dec = now.getMonth() === 11 && now.getDate() > 23
+		const jan = now.getMonth() === 0 && now.getDate() < 10
+		if(dec || jan) useSnowEffect()
 	},
 	mounted(){
 		if(window.location.hostname.split('.')[0] === 'bp'){
