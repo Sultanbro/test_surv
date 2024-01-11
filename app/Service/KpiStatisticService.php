@@ -864,9 +864,9 @@ class KpiStatisticService
                     ELSE 4
                 END
             ")
-            ->limit(3)
+            ->limit(1)
             ->get();
-dd($kpis->count());
+
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
 
