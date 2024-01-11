@@ -60,7 +60,10 @@ class KpiService
                 'updater',
                 'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
                     $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                }
+                },
+                'histories_latest' => function ($query) use ($endOfDate) {
+                    $query->whereDate('created_at', '<=', $endOfDate);
+                },
             ])
             ->with([
                 'users',
