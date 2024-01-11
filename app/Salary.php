@@ -731,6 +731,8 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
+                dd_if($i == 4 && $user->id == 30564, $s, $zarplata);
+
                 $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
 
@@ -758,7 +760,6 @@ class Salary extends Model
                 }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
-                dd_if($i == 4 && $user->id == 30564, $zarplata,$workdays,$working_hours);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
