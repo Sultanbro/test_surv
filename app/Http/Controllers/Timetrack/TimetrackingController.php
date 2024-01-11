@@ -1907,8 +1907,10 @@ class TimetrackingController extends Controller
                 ->where('date', $date->subDay())->where('user_id', $targetUser->id)->first();
             /** @var Salary $salary */
             $salary = Salary::query()
-                ->where('date', $date)->where('user_id', $targetUser->id)->first();
-            dd($salaryForTomorrow, $salary, (int)$salary->amount == 0);
+                ->where('date', $date)
+                ->where('user_id', $targetUser->id)
+                ->first();
+            dd($salaryForTomorrow, $salary);
             if ($salaryForTomorrow && $salary && (int)$salary->amount == 0) {
                 $salary->amount = $salaryForTomorrow->amount;
                 $salary->save();
