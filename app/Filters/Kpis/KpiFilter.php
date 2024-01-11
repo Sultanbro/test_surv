@@ -24,11 +24,7 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
-        $this->kpi::targetJoins()->dd();
         return $this->kpi::targetJoins()
-            ->leftJoin('kpiables as morph', function (JoinClause $join) {
-                $join->on('morph.kpi_id', '=', "kpis.id");
-            })
             ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
             ->orWhere(function ($query) use ($searchWord) {
                 $query->where('u.name', 'LIKE', "%$searchWord%")
