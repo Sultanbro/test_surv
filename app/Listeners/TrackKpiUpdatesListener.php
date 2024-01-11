@@ -41,7 +41,8 @@ class TrackKpiUpdatesListener
                 'upper_limit'   => $kpi->upper_limit ?? null,
                 'colors'        => $kpi->colors ?? null,
                 'children'      => $kpi->children,
-                'off_limit'     => $kpi->off_limit
+                'off_limit'     => $kpi->off_limit,
+                'is_active'     => $kpi->is_active
             ]),
             'created_at'         => now(),
             'updated_at'         => now(),
