@@ -800,7 +800,10 @@ class KpiStatisticService
                     $query->orWhere('deleted_at', '>', $last_date);
                 });
             },
-            'items.activity'
+            'items.activity',
+            'groups',
+            'users',
+            'positions'
         ]);
 
         $droppedGroups = array();
@@ -814,18 +817,37 @@ class KpiStatisticService
 
             $groups = array_merge($groups, $droppedGroups);
 
-            $kpis->where(function ($query) use ($user_id, $groups, $position_id) {
-                $query->where(function ($q) use ($user_id) {
-                    $q->where('targetable_id', $user_id)
-                        ->where('targetable_type', 'App\User');
-                })
-                    ->orWhere(function ($q) use ($groups) {
-                        $q->whereIn('targetable_id', $groups)
-                            ->where('targetable_type', 'App\ProfileGroup');
+            $kpis->withCount([
+                'users as has_user' => function ($q) use ($user_id) {
+                    $q->where('kpiables.kpiable_id', $user_id)
+                        ->where('kpiables.kpiable_type', User::class);
+                },
+                'groups as has_group' => function ($q) use ($groups) {
+                    $q->whereIn('kpiables.kpiable_id', $groups)
+                        ->where('kpiables.kpiable_type', ProfileGroup::class);
+                },
+                'positions as has_position' => function ($q) use ($position_id) {
+                    $q->where('kpiables.kpiable_id', $position_id)
+                        ->where('kpiables.kpiable_type', Position::class);
+                }
+            ])->where(function ($query) use ($user_id, $groups, $position_id) {
+                $query->whereHas('users', function ($q) use ($user_id) {
+                        $q->where(function ($q) use ($user_id) {
+                            $q->where('kpiables.kpiable_id', $user_id)
+                                ->where('kpiables.kpiable_type', User::class);
+                        });
                     })
-                    ->orWhere(function ($q) use ($position_id) {
-                        $q->where('targetable_id', $position_id)
-                            ->where('targetable_type', 'App\Position');
+                    ->orWhereHas('groups', function ($q) use ($groups) {
+                        $q->where(function ($q) use ($groups) {
+                            $q->whereIn('kpiables.kpiable_id', $groups)
+                                ->where('kpiables.kpiable_type', ProfileGroup::class);
+                        });
+                    })
+                    ->orWhereHas('positions', function ($q) use ($position_id) {
+                        $q->where(function ($q) use ($position_id) {
+                            $q->where('kpiables.kpiable_id', $position_id)
+                                ->where('kpiables.kpiable_type', Position::class);
+                        });
                     });
             });
         }
@@ -882,6 +904,23 @@ class KpiStatisticService
                 }
                 $kpi->completed_80 = $payload['completed_80'] * $currency_rate;
                 $kpi->completed_100 = $payload['completed_100'] * $currency_rate;
+            }
+
+            // set target
+            if ($user_id != 0) {
+                if ($kpi->has_user > 0) {
+                    $kpi->targetable_id = $user_id;
+                    $kpi->targetable_type = 'App\User';
+                    $kpi->targetable = $kpi->users->where('id', $user_id)->first();
+                } elseif ($kpi->has_position > 0) {
+                    $kpi->targetable_id = $position_id;
+                    $kpi->targetable_type = 'App\Position';
+                    $kpi->targetable = $kpi->positions->where('id', $position_id)->first();
+                } elseif ($kpi->has_group > 0) {
+                    $kpi->targetable_type = 'App\ProfileGroup';
+                    $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first();
+                }
+
             }
 
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
