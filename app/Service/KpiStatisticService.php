@@ -866,7 +866,7 @@ class KpiStatisticService
             ")
             ->limit(3)
             ->get();
-dd($kpis);
+dd($kpis->count());
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
 
