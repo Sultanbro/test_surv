@@ -1904,13 +1904,14 @@ class TimetrackingController extends Controller
         }
         if ($request->get("type") == DayType::DAY_TYPES['DEFAULT']) {
             $salaryForTomorrow = Salary::query()
-                ->where('date', $date->subDay())->where('user_id', $targetUser->id)->first();
+                ->where('date', $date->copy()->subDay()->format("Y-m-d"))
+                ->where('user_id', $targetUser->id)->first();
             /** @var Salary $salary */
             $salary = Salary::query()
-                ->where('date', $date)
+                ->where('date', $date->format("Y-m-d"))
                 ->where('user_id', $targetUser->id)
                 ->first();
-            dd($salaryForTomorrow, $salary);
+            dd($salaryForTomorrow, $salary,(int)$salary->amount == 0);
             if ($salaryForTomorrow && $salary && (int)$salary->amount == 0) {
                 $salary->amount = $salaryForTomorrow->amount;
                 $salary->save();
