@@ -768,11 +768,11 @@ class Salary extends Model
                 $trainings[$i] = null;
 
                 $x = $tts->where('day', $i);
-                dd_if($i == 4 && $user->id == 30564, $x);
                 $y = $tts_before_apply->where('day', $i);
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
+                dd_if($i == 4 && $user->id == 30564, $statTotalHour);
 
                 if (empty($statTotalHour)) {
                     if ($a) {
