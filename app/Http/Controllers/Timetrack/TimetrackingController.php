@@ -1902,6 +1902,17 @@ class TimetrackingController extends Controller
                 }
             }
         }
+        if ($request->get("type") == DayType::DAY_TYPES['DEFAULT']) {
+            $salaryForTomorrow = Salary::query()
+                ->where('date', $date->subDay())->where('user_id', $targetUser->id)->first();
+            /** @var Salary $salary */
+            $salary = Salary::query()
+                ->where('date', $date)->where('user_id', $targetUser->id)->first();
+            if ($salaryForTomorrow && $salary && $salary->amount == 0) {
+                $salary->amount = $salaryForTomorrow->amount;
+                $salary->save();
+            }
+        }
 
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
             /** @var UserDescription $trainee */
