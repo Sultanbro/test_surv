@@ -839,7 +839,15 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
-            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereDoesntHave('histories_latest') // If the histories_latest relation is null
+                ->orWhereHas('histories_latest', function ($subQuery) {
+                    $subQuery->where(function ($query) {
+                        $query->whereJsonContains('payload->is_active', true)
+                            ->orWhereRaw('json_extract(payload, "$.is_active") is null');
+                    });
+                });
+            })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
                     ->whereHas('user', function (Builder $query) use ($date) {
