@@ -758,6 +758,8 @@ class Salary extends Model
                 }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+                dd_if($i == 4 && $user->id == 30564, $zarplata,$workdays,$working_hours);
+
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
                 // add to array
@@ -802,7 +804,6 @@ class Salary extends Model
 
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
-                        dd_if($i == 4 && $user->id == 30564, $hourly_pay);
 
                         $hours[$i] = round($total_hours / 60, 1);
 
