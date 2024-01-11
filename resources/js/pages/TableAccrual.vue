@@ -1834,6 +1834,10 @@ export default {
 				}))
 				removeDeletedItems(this.kpiItems)
 				this.kpiItems.sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
+				this.kpiItems = this.kpiItems.filter(kpi => {
+					const hasHiist = Object.keys(kpi?.histories_latest?.payload || {}).includes('is_active')
+					return hasHiist ? kpi.histories_latest.payload.is_active : true
+				})
 				this.kpiSidebar = true
 			}
 			catch(error){
