@@ -628,7 +628,7 @@ class ProfileGroup extends Model
             ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
             ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->where(function (Builder $query) use ($dateFrom, $dateTo) {
-                $query->whereBetween('p.to', [$dateFrom, $dateTo])
+                $query->where('p.to', '>=', $dateFrom)
                     ->orWhereNull('p.to');
             })
             ->where(function ($query) use ($dateFrom) {
