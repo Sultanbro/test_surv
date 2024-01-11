@@ -1908,7 +1908,7 @@ class TimetrackingController extends Controller
             /** @var Salary $salary */
             $salary = Salary::query()
                 ->where('date', $date)->where('user_id', $targetUser->id)->first();
-            if ($salaryForTomorrow && $salary && $salary->amount == 0) {
+            if ($salaryForTomorrow && $salary && (int)$salary->amount == 0) {
                 $salary->amount = $salaryForTomorrow->amount;
                 $salary->save();
             }
