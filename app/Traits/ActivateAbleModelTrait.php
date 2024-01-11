@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Events\TrackKpiUpdatesEvent;
 use App\Kpi;
 use App\Models\Kpi\Bonus;
 use App\User;
@@ -31,9 +32,12 @@ trait ActivateAbleModelTrait
         {
             throw new Exception("Already on this status");
         }
-
-        return $model->update([
+        $model->update([
             'is_active' => $status
         ]);
+
+        event(new TrackKpiUpdatesEvent($id));
+
+        return true;
     }
 }
