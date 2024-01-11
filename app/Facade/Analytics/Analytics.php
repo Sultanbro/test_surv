@@ -359,7 +359,6 @@ final class Analytics
 
         $dateFrom = Carbon::createFromDate($firstOfMoth)->endOfMonth()->format('Y-m-d');
         $dateTo = Carbon::createFromDate($firstOfMoth)->addMonth()->startOfMonth()->format('Y-m-d');
-        dd($group->actualAndFiredEmployees($firstOfMoth, $dateTo)->find(29352));
         return $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
 //            ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
