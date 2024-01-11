@@ -2,9 +2,9 @@
 
 namespace App\Filters\Kpis;
 
-use App\Filters\QueryFilter;
 use App\Models\Kpi\Kpi;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 
 
 class KpiFilter
@@ -24,23 +24,27 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
+        $this->kpi::targetJoins()->dd();
         return $this->kpi::targetJoins()
-        ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
-        ->orWhere(function ($query) use ($searchWord) {
-            $query->where('u.name', 'LIKE', "%$searchWord%")
-                ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
-        })
-        ->orWhere(function ($query) use ($searchWord) {
-            $query->where('updater.name', 'LIKE', "%$searchWord%")
-                ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
-        })
-        ->orWhere(function ($query) use ($searchWord) {
-            $query->where('creator.name', 'LIKE', "%$searchWord%")
-                ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
-        })
-        ->orWhere('pg.name', 'LIKE', "%$searchWord%")
-        ->orWhere('p.position', 'LIKE', "%$searchWord%")
-        ->orWhere('ki.name', 'LIKE', "%$searchWord%")
-        ->distinct();
+            ->leftJoin('kpiables as morph', function (JoinClause $join) {
+                $join->on('morph.kpi_id', '=', "kpis.id");
+            })
+            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
+            ->orWhere(function ($query) use ($searchWord) {
+                $query->where('u.name', 'LIKE', "%$searchWord%")
+                    ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
+            })
+            ->orWhere(function ($query) use ($searchWord) {
+                $query->where('updater.name', 'LIKE', "%$searchWord%")
+                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
+            })
+            ->orWhere(function ($query) use ($searchWord) {
+                $query->where('creator.name', 'LIKE', "%$searchWord%")
+                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
+            })
+            ->orWhere('pg.name', 'LIKE', "%$searchWord%")
+            ->orWhere('p.position', 'LIKE', "%$searchWord%")
+            ->orWhere('ki.name', 'LIKE', "%$searchWord%")
+            ->distinct();
     }
 }
