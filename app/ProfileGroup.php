@@ -631,10 +631,6 @@ class ProfileGroup extends Model
                 $query->where('p.to', '>=', $dateTo)
                     ->orWhereNull('p.to');
             })
-//            ->where(function ($query) use ($dateFrom) {
-//                $query->where('users.deleted_at', '>=', $dateTo)
-//                    ->orWhereNull('users.deleted_at');
-//            })
             ->where('g.id', $this->getKey())
             ->groupBy([
                 'users.id',
