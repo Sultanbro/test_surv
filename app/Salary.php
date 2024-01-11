@@ -731,7 +731,7 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-                dd_if($i == 4 && $user->id == 30564, $s, $zarplata);
+//                dd_if($i == 4 && $user->id == 30564, $s, $zarplata);
 
                 $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
