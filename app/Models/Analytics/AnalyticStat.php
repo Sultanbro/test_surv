@@ -568,8 +568,6 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
-                    dd_if($stat->column_id == 20672 && $stat->row_id == 11896, $value);
-
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
