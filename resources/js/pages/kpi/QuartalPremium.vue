@@ -388,10 +388,10 @@
 													<template v-else-if="field.key == 'updated_by' && item.updater != null">
 														{{ item.updater.last_name + ' ' + item.updater.name }}
 													</template>
-													<template v-else-if="field.key === 'created_at' && item.updater != null">
+													<template v-else-if="field.key === 'created_at'">
 														{{ $moment.utc(item.created_at, 'DD.MM.YYYY HH:mm').local().format('DD.MM.YYYY HH:mm') }}
 													</template>
-													<template v-else-if="field.key === 'updated_at' && item.updater != null">
+													<template v-else-if="field.key === 'updated_at'">
 														{{ $moment.utc(item.updated_at, 'DD.MM.YYYY HH:mm').local().format('DD.MM.YYYY HH:mm') }}
 													</template>
 													<template v-else-if="non_editable_fields.includes(field.key)">
