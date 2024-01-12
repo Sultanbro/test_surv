@@ -12,8 +12,10 @@ use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
+use App\Position;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
+use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,25 +46,26 @@ class KpiService
 
         $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, fn(Builder $query) => $query->where('group_id', $groupId))
-//            ->where(function ($query) use ($startOfDate, $endOfDate) {
-//                $query->whereHas('targetable', function ($q) use ($endOfDate) {
-//                    if ($q->getModel() instanceof User) {
-//                        $q->whereNull('deleted_at')
-//                            ->orWhereDate('deleted_at', '>', $endOfDate);
-//                    } elseif ($q->getModel() instanceof Position) {
-//                        $q->whereNull('deleted_at')
-//                            ->orWhereDate('deleted_at', '>', $endOfDate);
-//                    } elseif ($q->getModel() instanceof ProfileGroup) {
-//                        $q->where('active', 1);
-//                    }
-//                });
-//                $query->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-//                    ->orWhereDate('deleted_at', '>', $startOfDate));
-//                $query->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-//                    ->orWhereDate('deleted_at', '>', $startOfDate));
-//                $query->orWhereHas('groups', fn($q) => $q->where('active', 1));
-//            })
+            ->where(function ($query) use ($startOfDate, $endOfDate, $groupId) {
+                $query->whereHas('targetable', function ($q) use ($endOfDate, $groupId) {
+                    if ($q->getModel() instanceof User) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
+                    } elseif ($q->getModel() instanceof ProfileGroup) {
+                        $q->when($groupId, fn($subQuery) => $subQuery->where('id', $groupId));
+                        $q->where('active', 1);
+                    }
+                });
+                $query->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $startOfDate));
+                $query->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $startOfDate));
+                $query->orWhereHas('groups', fn($q) => $q->where('active', 1)
+                    ->when($groupId, fn($subQuery) => $subQuery->where('id', $groupId)));
+            })
             ->with([
                 'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                     $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
