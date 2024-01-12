@@ -876,7 +876,7 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->whereHas('histories_latest', function ($subQuery) {
-                    $subQuery->whereJsonContains('payload->is_active', 1);
+                    $subQuery->whereJsonContains('payload->is_active', 0);
             })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
