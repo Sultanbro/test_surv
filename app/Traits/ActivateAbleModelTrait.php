@@ -39,6 +39,7 @@ trait ActivateAbleModelTrait
             'is_active' => $status
         ]);
 
+        dd($model, $model instanceof Kpi);
         if ($model instanceof Kpi) {
             event(new TrackKpiUpdatesEvent($id));
         }
