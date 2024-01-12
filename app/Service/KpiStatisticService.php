@@ -843,11 +843,6 @@ class KpiStatisticService
                     } elseif ($q->getModel() instanceof ProfileGroup) {
                         $q->whereIn('targetable_id', $groups)
                             ->where('targetable_type', ProfileGroup::class);
-                    }
-                    $q->where(function ($q) use ($user_id) {
-                            $q->where('tar', $user_id)
-                                ->where('kpiables.kpiable_type', User::class);
-                        });
                     })
                     ->orWhereHas('users', function ($q) use ($user_id) {
                         $q->where(function ($q) use ($user_id) {
