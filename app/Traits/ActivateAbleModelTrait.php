@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Events\TrackKpiUpdatesEvent;
 use App\Kpi;
+use App\Models\QuartalPremium;
 use App\Models\Scopes\ActiveScope;
 use Exception;;
 
@@ -22,8 +23,13 @@ trait ActivateAbleModelTrait
         bool $status
     ): bool
     {
-        dd(static::class, static::withoutGlobalScope(ActiveScope::class)->get());
-        $model  = self::query()->findOrFail($id);
+        $query = static::query();
+
+        if (static::class == QuartalPremium::class) {
+            $query = $query->withoutGlobalScope(ActiveScope::class);
+        }
+
+        $model  = $query->findOrFail($id);
 
         if ($model->is_active == $status)
         {
