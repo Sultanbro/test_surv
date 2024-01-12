@@ -26,7 +26,7 @@ trait ActivateAbleModelTrait
         bool $status
     ): bool
     {
-        dd(static::class, static::query()->get());
+        dd(static::class, static::withoutGlobalScope()->get());
         $model  = self::query()->findOrFail($id);
 
         if ($model->is_active == $status)
