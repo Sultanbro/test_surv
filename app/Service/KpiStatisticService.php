@@ -435,7 +435,7 @@ class KpiStatisticService
         foreach ($quartalPremiums as $quartalPremium) {
             if ($quartalPremium->targetable_type == self::USER) {
                 $user = $this->getUsersQp($quartalPremium);
-                dd($user);
+
                 if (empty($user)) {
                     continue;
                 }
@@ -604,6 +604,8 @@ class KpiStatisticService
         }
 
         $qps = $qps->with('activity')
+            ->whereDate('from', '<=', $date->format('Y-m-d'))
+            ->whereDate('to', '>=', $date->format('Y-m-d'))
             // ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
             //                                         ->endOfMonth()
             //                                         ->format('Y-m-d')
