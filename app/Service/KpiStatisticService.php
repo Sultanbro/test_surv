@@ -876,7 +876,12 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->where(function ($query) {
-                $query->whereDoesntHave('histories_latest');
+                $query->whereHas('histories_latest', function ($subQuery) {
+                    $subQuery->where(function ($query) {
+                        $query->whereJsonContains('payload->is_active', 1)
+                            ->orWhereRaw('json_extract(payload, "$.is_active") is null');
+                    });
+                });
             })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
