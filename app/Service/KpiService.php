@@ -12,8 +12,10 @@ use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
+use App\Position;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
+use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,7 +73,17 @@ class KpiService
                 'positions',
                 'groups',
             ])
-            ->whereHas('targetable')
+            ->whereHas('targetable', function ($query) use ($endOfDate) {
+                if ($query->getModel() instanceof User) {
+                    $query->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $endOfDate);
+                } elseif ($query->getModel() instanceof Position) {
+                    $query->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $endOfDate);
+                } elseif ($query->getModel() instanceof ProfileGroup) {
+                    $query->where('active', 1);
+                }
+            })
             ->get();
         $kpis_final = [];
 

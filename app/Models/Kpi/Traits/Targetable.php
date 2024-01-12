@@ -40,6 +40,7 @@ trait Targetable
      */
     public function targetable()
     {
-        return $this->morphTo();
+        return $this->morphTo()
+            ->withTrashed();
     }
 }
