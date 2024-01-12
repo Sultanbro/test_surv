@@ -1415,6 +1415,7 @@ export default {
 					kpi: item.kpi,
 					fine: item.fine,
 					user_id: item.id,
+					position_id: item.position_id,
 					hours: item.hours,
 					awards: item.awards,
 					name: `${item.last_name} ${item.name}`,
@@ -1795,6 +1796,8 @@ export default {
 			if(!userId) return
 			if(!this.is_admin) return
 
+			const user = this.data.users.find(user => user.id === userId)
+
 			this.kpiSidebarUserId = userId
 			this.kpiItems = []
 
@@ -1811,6 +1814,19 @@ export default {
 				})
 				if(!userData.message){
 					const kpi = parseKPI(userData.kpi)
+					kpi.is_active && this.kpiItems.push(kpi)
+				}
+				const {data: posData} = await this.axios.post(`/statistics/kpi/groups-and-users/${user.position_id}`, {
+					filters: {
+						data_from: {
+							year: this.dateInfo.currentYear,
+							month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
+						}
+					},
+					type: 3
+				})
+				if(!posData.message){
+					const kpi = parseKPI(posData.kpi)
 					kpi.is_active && this.kpiItems.push(kpi)
 				}
 				const groups = this.getUserGroups(userId)

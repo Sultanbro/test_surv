@@ -241,6 +241,9 @@ function parseKPI(kpi){
 			kpi.completed_80 = kpi.histories_latest.payload.completed_80
 			kpi.completed_100 = kpi.histories_latest.payload.completed_100
 		}
+		if(Object.keys(kpi.histories_latest.payload).includes('is_active')){
+			kpi.is_active = kpi.histories_latest.payload.is_active
+		}
 	}
 	kpi.users.forEach(user => {
 		if(!user.items) return
