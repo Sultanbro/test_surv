@@ -435,7 +435,7 @@ class KpiStatisticService
         foreach ($quartalPremiums as $quartalPremium) {
             if ($quartalPremium->targetable_type == self::USER) {
                 $user = $this->getUsersQp($quartalPremium);
-
+                dd($user);
                 if (empty($user)) {
                     continue;
                 }

@@ -69,9 +69,10 @@ class KpiService
             ])
             ->with([
                 'users' => fn ($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $endOfDate),
-                'positions',
-                'groups',
+                        ->orWhereDate('deleted_at', '>', $startOfDate),
+                'positions' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $startOfDate),
+                'groups' => fn ($q) => $q->where('active', 1),
             ])
             ->whereHas('targetable', function ($query) use ($startOfDate) {
                 if ($query->getModel() instanceof User) {
