@@ -46,9 +46,18 @@ class KpiService
 
         $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, fn($subQuery) => $subQuery->where('targetable_id', $groupId))
-            ->where(function ($query) use ($startOfDate, $endOfDate, $groupId) {
-                $query->whereHas('targetable', function ($q) use ($endOfDate, $groupId) {
+            ->when($groupId, function (Builder $subQuery) use ($groupId) {
+                $subQuery->where('targetable_id', $groupId);
+                $subQuery->orWhereMorphRelation(
+                    relation: 'kpiables',
+                    types: [User::class, ProfileGroup::class, Position::class],
+                    column: 'kpiable_id',
+                    operator: '=',
+                    value: $groupId
+                );
+            })
+            ->where(function (Builder $query) use ($startOfDate, $endOfDate, $groupId) {
+                $query->whereHas('targetable', function (Builder $q) use ($endOfDate, $groupId) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
@@ -59,17 +68,24 @@ class KpiService
                         $q->where('active', 1);
                     }
                 });
+                $query->orWhereHasMorph('kpiables', User::class, function (Builder $query) use ($endOfDate, $groupId) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhereDate('deleted_at', '>', $endOfDate);
+                });
+                $query->orWhereHasMorph('kpiables', ProfileGroup::class, function (Builder $query) use ($endOfDate, $groupId) {
+                    $query->where('is_active', 1);
+                });
+                $query->orWhereHasMorph('kpiables', Position::class);
             })
-            ->with([
-                'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                    $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                        $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                    }]);
-                    $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
-                        $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $endOfDate);
-                    });
-                },
+            ->with(['items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
+                $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
+                    $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+                }]);
+                $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>', $endOfDate);
+                });
+            },
                 'user' => fn(HasOne $query) => $query->select('id'),
                 'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
                 'creator',
@@ -88,8 +104,8 @@ class KpiService
                     ->orWhereDate('deleted_at', '>', $endOfDate),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-//            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
+
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
