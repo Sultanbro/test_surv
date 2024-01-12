@@ -35,56 +35,23 @@ class KpiService
     {
         $dateToFilter = $filters['data_from'] ?? null;
         $date = Carbon::createFromDate($dateToFilter['year'] ?? $dateToFilter['month'] ?? now()->month);
+        $endOfDate = $date->endOfMonth()->format('Y-m-d');
+        $startOfDate = $date->startOfMonth()->format('Y-m-d');
         $searchWord = $filters['query'] ?? null;
-        $startOfDate = $date->copy()
-            ->startOfMonth()
-            ->format('Y-m-d');
-        $endOfDate = $date->copy()
-            ->endOfMonth()
-            ->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
 
-        $kpis = Kpi::withTrashed()
+        $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, function (Builder $subQuery) use ($groupId) {
-                $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereRelation(
-                    relation: 'groups',
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
-            })
-            ->where(function (Builder $query) use ($startOfDate, $endOfDate, $groupId) {
-                $query->whereHas('targetable', function (Builder $q) use ($endOfDate, $groupId) {
-                    if ($q->getModel() instanceof User) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->where('active', 1);
-                    }
-                });
-                $query->orWhereHas('users', function (Builder $query) use ($endOfDate, $groupId) {
-                    $query->whereNull('deleted_at');
-                    $query->orWhereDate('deleted_at', '>', $endOfDate);
-                });
-                $query->orWhereHas('groups', function (Builder $query) use ($endOfDate, $groupId) {
-                    $query->where('is_active', 1);
-                });
-                $query->orWhereHas('positions');
-            })
-            ->with(['items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                    $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                }]);
-                $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
-                    $query->whereNull('deleted_at');
-                    $query->orWhere('deleted_at', '>', $endOfDate);
-                });
-            },
+            ->with([
+                'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
+                    $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
+                        $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+                    }]);
+                    $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $endOfDate);
+                    });
+                },
                 'user' => fn(HasOne $query) => $query->select('id'),
                 'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
                 'creator',
@@ -96,11 +63,29 @@ class KpiService
                     $query->whereDate('created_at', '<=', $endOfDate);
                 }
             ])
+            ->where(function ($query) use ($startOfDate) {
+                $query->whereHas('targetable', function ($q) use ($startOfDate) {
+                    if ($q->getModel() instanceof User) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $startOfDate);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $startOfDate);
+                    } elseif ($q->getModel() instanceof ProfileGroup) {
+                        $q->where('active', 1);
+                    }
+                })
+                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $startOfDate))
+                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $startOfDate))
+                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+            })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $endOfDate),
+                    ->orWhereDate('deleted_at', '>', $startOfDate),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $endOfDate),
+                    ->orWhereDate('deleted_at', '>', $startOfDate),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->whereDate('created_at', '<=', $endOfDate)
