@@ -877,8 +877,8 @@ class KpiStatisticService
             )
             ->where(function ($query) {
                 $query->whereDoesntHave('histories_latest')->orWhereHas('histories_latest', function ($subQuery) {
-                    $subQuery->where(function ($query) {
-                        $query->whereJsonContains('payload->is_active', 1)
+                    $subQuery->where(function ($q) {
+                        $q->whereJsonContains('payload->is_active', 1)
                             ->orWhereRaw('json_extract(payload, "$.is_active") is null');
                     });
                 });
