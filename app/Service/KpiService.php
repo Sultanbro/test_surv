@@ -33,12 +33,16 @@ class KpiService
 
     public function fetch($filters): array
     {
+        $searchWord = $filters['query'] ?? null;
         $dateToFilter = $filters['data_from'] ?? null;
-        $date = Carbon::createFromDate($dateToFilter['year'] ?? $dateToFilter['month'] ?? now()->month);
+        $date = [
+            'year' => $dateToFilter['year'] ?? now()->year,
+            'month' => $dateToFilter['month'] ?? now()->month,
+        ];
+
+        $date = Carbon::createFromDate($date['year'], $date['month']);
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
         $startOfDate = $date->startOfMonth()->format('Y-m-d');
-        $searchWord = $filters['query'] ?? null;
-        $groupId = $filters['group_id'] ?? false;
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
@@ -75,22 +79,21 @@ class KpiService
                         $q->where('active', 1);
                     }
                 })
-                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereHas('users', fn ($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate))
                     ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                    ->orWhereHas('groups', fn ($q) => $q->where('active', 1));
             })
             ->with([
-                'users' => fn($q) => $q->whereNull('deleted_at')
+                'users' => fn ($q) => $q->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $startOfDate),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $startOfDate),
-                'groups' => fn($q) => $q->where('active', 1),
+                'groups' => fn ($q) => $q->where('active', 1),
             ])
             ->whereDate('created_at', '<=', $endOfDate)
             ->get();
-
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
@@ -148,7 +151,6 @@ class KpiService
                 ->toArray(),
         ];
     }
-
     /**
      * @throws Throwable
      * @throws TargetDuplicateException
