@@ -834,15 +834,16 @@ class KpiStatisticService
                 }
             ])->where(function ($query) use ($user_id, $groups, $position_id) {
                 $query->whereHas('targetable', function ($q) use ($position_id, $groups, $user_id) {
-                    if ($q->getModel() instanceof User) {
-                        $q->where('targetable_id', $user_id)
-                            ->where('targetable_type', User::class);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->where('targetable_id', $position_id)
-                            ->where('targetable_type', Position::class);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->whereIn('targetable_id', $groups)
-                            ->where('targetable_type', ProfileGroup::class);
+                        if ($q->getModel() instanceof User) {
+                            $q->where('targetable_id', $user_id)
+                                ->where('targetable_type', User::class);
+                        } elseif ($q->getModel() instanceof Position) {
+                            $q->where('targetable_id', $position_id)
+                                ->where('targetable_type', Position::class);
+                        } elseif ($q->getModel() instanceof ProfileGroup) {
+                            $q->whereIn('targetable_id', $groups)
+                                ->where('targetable_type', ProfileGroup::class);
+                        }
                     })
                     ->orWhereHas('users', function ($q) use ($user_id) {
                         $q->where(function ($q) use ($user_id) {
