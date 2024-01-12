@@ -875,9 +875,6 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
-            ->whereHas('histories_latest', function ($subQuery) {
-                    $subQuery->whereJsonContains('payload->is_active', 0);
-            })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
                     ->whereHas('user', function (Builder $query) use ($date) {
@@ -896,6 +893,15 @@ class KpiStatisticService
             ")
             ->limit(1)
             ->get();
+
+        $kpis = $kpis->filter(function ($model) {
+            $history = $model->histories_latest;
+
+            // If there's no history, or if 'is_active' is 1 or null, include the model
+            return is_null($history) ||
+                $history->payload->is_active === 1 ||
+                !isset($history->payload->is_active);
+        });
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
