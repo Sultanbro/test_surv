@@ -834,17 +834,17 @@ class KpiStatisticService
                 }
             ])->where(function ($query) use ($user_id, $groups, $position_id) {
                 $query->whereHas('targetable', function ($q) use ($position_id, $groups, $user_id) {
-                        if ($q->getModel() instanceof User) {
-                            $q->where('targetable_id', $user_id)
-                                ->where('targetable_type', User::class);
-                        } elseif ($q->getModel() instanceof Position) {
-                            $q->where('targetable_id', $position_id)
-                                ->where('targetable_type', Position::class);
-                        } elseif ($q->getModel() instanceof ProfileGroup) {
-                            $q->whereIn('targetable_id', $groups)
-                                ->where('targetable_type', ProfileGroup::class);
-                        }
-                    })
+                    if ($q->getModel() instanceof User) {
+                        $q->where('targetable_id', $user_id)
+                            ->where('targetable_type', User::class);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->where('targetable_id', $position_id)
+                            ->where('targetable_type', Position::class);
+                    } elseif ($q->getModel() instanceof ProfileGroup) {
+                        $q->whereIn('targetable_id', $groups)
+                            ->where('targetable_type', ProfileGroup::class);
+                    }
+                })
                     ->orWhereHas('users', function ($q) use ($user_id) {
                         $q->where(function ($q) use ($user_id) {
                             $q->where('kpiables.kpiable_id', $user_id)
@@ -893,7 +893,7 @@ class KpiStatisticService
             ")
             ->limit(1)
             ->get();
-dd($kpis->toArray());
+        dd($kpis->toArray());
         $kpis = $kpis->filter(function ($model) {
             $history = $model->histories_latest;
 
@@ -994,6 +994,15 @@ dd($kpis->toArray());
 
         $kpis = Kpi::withTrashed()
             ->when((bool)$searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->when($groupId, function (Builder $subQuery) use ($groupId) {
+                $subQuery->where('targetable_id', $groupId);
+                $subQuery->orWhereRelation(
+                    relation: 'groups',
+                    column: 'kpiable_id',
+                    operator: '=',
+                    value: $groupId
+                );
+            })
             ->with([
                 'histories_latest' => function ($query) use ($start_date, $last_date) {
                     $query->whereBetween('created_at', [$start_date, $last_date]);
@@ -1012,26 +1021,35 @@ dd($kpis->toArray());
                 },
                 'items.activity'
             ])
-            ->whereHasMorph(
-                'kpiable',
-                '*',
-                function (Builder $query, string $type) use ($start_date, $last_date) {
-                    if ($type === 'App\ProfileGroup') {
-                        $query->where('is_active', 1);
+            ->where(function ($query) use ($start_date, $last_date) {
+                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
+                    if ($q->getModel() instanceof User) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                    } elseif ($q->getModel() instanceof ProfileGroup) {
+                        $q->where('active', 1);
                     }
-                    if ($type === 'App\User') {
-                        $query->where(function (Builder $query) use ($start_date, $last_date) {
-                            $query->whereNull('deleted_at')
-                                ->orWhereBetween('deleted_at', [$start_date, $last_date]);
-                        });
-                    }
-                }
-            )
+                })
+                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+            })
+            ->with([
+                'users' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $start_date, $last_date),
+                'positions' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $start_date, $last_date),
+                'groups' => fn($q) => $q->where('active', 1),
+            ])
             ->where('is_active', true)
             ->where('kpis.created_at', '<=', Carbon::parse($date->endOfMonth()->format('Y-m-d')))
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
-            ->when($groupId, fn($query) => $query->where('targetable_id', $groupId))
             ->paginate($limit);
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
