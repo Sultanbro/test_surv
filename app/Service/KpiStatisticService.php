@@ -1051,8 +1051,6 @@ class KpiStatisticService
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
             ->paginate();
 
-        dd($kpis);
-
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
 
         foreach ($kpis->items() as $kpi) {
