@@ -73,13 +73,13 @@ class KpiService
                 'positions',
                 'groups',
             ])
-            ->whereHas('targetable', function ($query) use ($endOfDate) {
+            ->whereHas('targetable', function ($query) use ($startOfDate) {
                 if ($query->getModel() instanceof User) {
                     $query->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $endOfDate);
+                        ->orWhereDate('deleted_at', '>', $startOfDate);
                 } elseif ($query->getModel() instanceof Position) {
                     $query->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $endOfDate);
+                        ->orWhereDate('deleted_at', '>', $startOfDate);
                 } elseif ($query->getModel() instanceof ProfileGroup) {
                     $query->where('active', 1);
                 }
