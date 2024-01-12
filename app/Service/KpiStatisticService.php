@@ -893,7 +893,7 @@ class KpiStatisticService
             ")
             ->limit(1)
             ->get();
-
+dd($kpis->toArray());
         $kpis = $kpis->filter(function ($model) {
             $history = $model->histories_latest;
 
