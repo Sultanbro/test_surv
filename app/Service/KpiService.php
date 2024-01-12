@@ -102,7 +102,7 @@ class KpiService
                     ->orWhereDate('deleted_at', '>', $startOfDate),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->whereDate('created_at', '<=', $endOfDate)
+            ->whereDate('kpis.created_at', '<=', $endOfDate)
             ->get();
         $kpis_final = [];
 
