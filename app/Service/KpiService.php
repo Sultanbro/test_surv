@@ -90,9 +90,7 @@ class KpiService
             ])
 //            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
-        dd( Kpi::withTrashed()
-            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, fn($subQuery) => $subQuery->where('targetable_id', $groupId))->get());
+        dd($kpis);
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
