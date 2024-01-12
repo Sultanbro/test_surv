@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\Events\TrackKpiUpdatesEvent;
-use App\Kpi;
+use App\Models\Kpi\Kpi;
 use App\Models\QuartalPremium;
 use App\Models\Scopes\ActiveScope;
 use Exception;;
