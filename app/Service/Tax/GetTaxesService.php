@@ -13,9 +13,11 @@ class GetTaxesService
 {
     public function handle(
         int $userId
-    ): GetTaxesResponseDTO
+    ): array
     {
-        $taxes = (new TaxRepository)->getUserTaxes($userId);
-        return GetTaxesResponseDTO::fromArray($taxes);
+        return [
+            'user_taxes' => (new TaxRepository)->getUserTaxes($userId),
+            'taxes' => (new TaxRepository)->getArray()
+        ];
     }
 }

@@ -24,13 +24,14 @@ class TaxController extends Controller
     /**
      * @param GetTaxesRequest $request
      * @param GetTaxesService $service
-     * @return TaxGetResponse
+     * @return JsonResponse
      */
-    public function get(GetTaxesRequest $request, GetTaxesService $service): TaxGetResponse
+    public function get(GetTaxesRequest $request, GetTaxesService $service): JsonResponse
     {
-        $response = $service->handle($request->toDto()->userId);
-
-        return TaxGetResponse::success($response);
+        return $this->response(
+            message: "Success",
+            data: $service->handle($request->toDto()->userId)
+        );
     }
 
     /**
