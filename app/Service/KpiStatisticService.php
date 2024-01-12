@@ -876,12 +876,7 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->where(function ($query) {
-                $query->whereDoesntHave('histories_latest') // If the histories_latest relation is null
-                ->orWhereHas('histories_latest', function ($subQuery) {
-                    $subQuery->where(function ($query) {
-                        $query->whereJsonContains('payload->is_active', 1);
-                    });
-                });
+                $query->whereDoesntHave('histories_latest');
             })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
