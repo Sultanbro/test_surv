@@ -12,10 +12,8 @@ use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
-use App\Position;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
-use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,16 +41,28 @@ class KpiService
             ->endOfMonth()
             ->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
-        dd(
-            $groupId,
-            $searchWord,
-            $startOfDate,
-            $endOfDate,
-        );
 
-        $kpis = Kpi::query()
+        $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))
+//            ->where(function ($query) use ($startOfDate, $endOfDate) {
+//                $query->whereHas('targetable', function ($q) use ($endOfDate) {
+//                    if ($q->getModel() instanceof User) {
+//                        $q->whereNull('deleted_at')
+//                            ->orWhereDate('deleted_at', '>', $endOfDate);
+//                    } elseif ($q->getModel() instanceof Position) {
+//                        $q->whereNull('deleted_at')
+//                            ->orWhereDate('deleted_at', '>', $endOfDate);
+//                    } elseif ($q->getModel() instanceof ProfileGroup) {
+//                        $q->where('active', 1);
+//                    }
+//                });
+//                $query->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+//                    ->orWhereDate('deleted_at', '>', $startOfDate));
+//                $query->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+//                    ->orWhereDate('deleted_at', '>', $startOfDate));
+//                $query->orWhereHas('groups', fn($q) => $q->where('active', 1));
+//            })
             ->with([
                 'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                     $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
@@ -74,33 +84,17 @@ class KpiService
                     $query->whereDate('created_at', '<=', $endOfDate);
                 }
             ])
-            ->where(function ($query) use ($startOfDate) {
-                $query->whereHas('targetable', function ($q) use ($startOfDate) {
-                    if ($q->getModel() instanceof User) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $startOfDate);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $startOfDate);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->where('active', 1);
-                    }
-                })
-                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
-            })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
+                    ->orWhereDate('deleted_at', '>', $endOfDate),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
+                    ->orWhereDate('deleted_at', '>', $endOfDate),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->whereDate('created_at', '<=', $endOfDate)
+//            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
+        dd(Kpi::withTrashed()
+            ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))->get());
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
