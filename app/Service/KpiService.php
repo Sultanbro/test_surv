@@ -82,10 +82,10 @@ class KpiService
                 });
                 $query->orWhere('targetable', function ($q) use ($startOfDate) {
                     $q->whereHas('users', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                        ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $startOfDate))
-                        ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                        ->orWhereDate('deleted_at', '>', $startOfDate));
+                    $q->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $startOfDate));
+                    $q->orWhereHas('groups', fn($q) => $q->where('active', 1));
                 });
             })
             ->with([
