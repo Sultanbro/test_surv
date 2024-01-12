@@ -26,8 +26,8 @@ trait ActivateAbleModelTrait
         bool $status
     ): bool
     {
-        dd(static::class, static::find(13));
-        $model  = self::query()->findOrFail($id);
+//        dd(static::class, static::find(13));
+        $model  = static::query()->findOrFail($id);
 
         if ($model->is_active == $status)
         {
@@ -37,7 +37,9 @@ trait ActivateAbleModelTrait
             'is_active' => $status
         ]);
 
-        event(new TrackKpiUpdatesEvent($id));
+        if ($model instanceof Kpi) {
+            event(new TrackKpiUpdatesEvent($id));
+        }
 
         return true;
     }
