@@ -79,10 +79,11 @@ class TaxRepository extends CoreRepository
     ): array
     {
         return Tax::query()
-            ->select('taxes.id', 'taxes.name', 'user_tax.is_percent', 'taxes.end_subtraction',
+            ->select('taxes.id', 'taxes.name', 'taxes.end_subtraction',
+                DB::raw('COALESCE(user_tax.is_percent, taxes.is_percent) as is_percent'),
                 DB::raw('CASE WHEN user_tax.value > 0 THEN user_tax.value ELSE taxes.value END AS value'),
                 DB::raw('(user_tax.user_id IS NOT NULL) as isAssigned'))
-            ->join('user_tax', function ($join) use ($userId) {
+            ->leftJoin('user_tax', function ($join) use ($userId) {
                 $join->on('user_tax.tax_id', '=', 'taxes.id')
                     ->where('user_tax.user_id', '=', $userId);
             })
