@@ -90,7 +90,6 @@ class KpiService
             ])
 //            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
-        dd($kpis);
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
