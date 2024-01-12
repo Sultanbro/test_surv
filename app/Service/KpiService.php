@@ -55,7 +55,7 @@ class KpiService
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $endOfDate, $groupId);
                     } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->when($groupId, fn($subQuery) => $subQuery->where('id', $groupId));
+                        $q->when($groupId, fn($subQuery) => $subQuery->where('targetable_id', $groupId));
                         $q->where('active', 1);
                     }
                 });
@@ -64,7 +64,7 @@ class KpiService
                 $query->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $startOfDate));
                 $query->orWhereHas('groups', fn($q) => $q->where('active', 1)
-                    ->when($groupId, fn($subQuery) => $subQuery->where('id', $groupId)));
+                    ->when($groupId, fn($subQuery) => $subQuery->where('kpiable_id', $groupId)));
             })
             ->with([
                 'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
