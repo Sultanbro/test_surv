@@ -33,17 +33,13 @@ class KpiService
 
     public function fetch($filters): array
     {
-        $searchWord = $filters['query'] ?? null;
         $dateToFilter = $filters['data_from'] ?? null;
-        $date = [
-            'year' => $dateToFilter['year'] ?? now()->year,
-            'month' => $dateToFilter['month'] ?? now()->month,
-        ];
-
-        $date = Carbon::createFromDate($date['year'], $date['month']);
+        $date = Carbon::createFromDate($dateToFilter['year'] ?? $dateToFilter['month'] ?? now()->month);
+        $searchWord = $filters['query'] ?? null;
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
         $startOfDate = $date->startOfMonth()->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
+        dd($groupId);
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
