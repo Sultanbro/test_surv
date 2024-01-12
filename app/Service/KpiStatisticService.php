@@ -897,10 +897,13 @@ class KpiStatisticService
         $kpis = $kpis->filter(function ($model) {
             $history = $model->histories_latest;
 
-            // If there's no history, or if 'is_active' is 1 or null, include the model
-            return is_null($history) ||
-                json_decode($history->payload, 1)->is_active === 1 ||
-                !isset(json_decode($history->payload, 1)->is_active);
+            if (!$history) {
+                return true;
+            }
+
+            $payload = json_decode($history->payload, true) ?? [];
+
+            return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
