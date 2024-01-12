@@ -883,24 +883,30 @@ class KpiStatisticService
                             ->format('Y-m-d'));
                     });
             })
-            ->orderByRaw("
-                CASE
-                    WHEN targetable_type = 'App\\\\User' THEN 1
-                    WHEN targetable_type = 'App\\\\Position' THEN 2
-                    WHEN targetable_type = 'App\\\\ProfileGroup' THEN 3
-                    ELSE 4
-                END
-            ")
-            ->limit(1)
             ->get();
-dd($kpis->toArray());
-        $kpis = $kpis->filter(function ($model) {
-            $history = $model->histories_latest;
 
+        $kpis = $kpis->filter(function ($kpi) use ($user_id) {
+
+//            if ($user_id != 0) {
+//                if ($kpi->has_user > 0) {
+//                    $kpi->targetable_id = $user_id;
+//                    $kpi->targetable_type = 'App\User';
+//                    $kpi->targetable = $kpi->users->where('id', $user_id)->first();
+//                } elseif ($kpi->has_position > 0) {
+//                    $kpi->targetable_id = $position_id;
+//                    $kpi->targetable_type = 'App\Position';
+//                    $kpi->targetable = $kpi->positions->where('id', $position_id)->first();
+//                } elseif ($kpi->has_group > 0) {
+//                    $kpi->targetable_type = 'App\ProfileGroup';
+//                    $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first();
+//                }
+//
+//            }
+
+            $history = $kpi->histories_latest;
             if (!$history) {
                 return true;
             }
-
             $payload = json_decode($history->payload, true) ?? [];
 
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
