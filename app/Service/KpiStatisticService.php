@@ -975,7 +975,7 @@ class KpiStatisticService
         $groupId = $filters['group_id'] ?? null;
 
         $searchWord = $filters['query'] ?? null;
-
+            dd($searchWord);
         $date = Carbon::createFromDate(
             $filters['data_from']['year'] ?? now()->year,
             $filters['data_from']['month'] ?? now()->month
