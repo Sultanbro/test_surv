@@ -65,8 +65,26 @@ class KpiService
                 },
                 'histories_latest' => function ($query) use ($endOfDate) {
                     $query->whereDate('created_at', '<=', $endOfDate);
-                },
+                }
             ])
+            ->where(function ($query) use ($startOfDate) {
+                $query->whereHas('targetable', function ($q) use ($startOfDate) {
+                    if ($q->getModel() instanceof User) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $startOfDate);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $startOfDate);
+                    } elseif ($q->getModel() instanceof ProfileGroup) {
+                        $q->where('active', 1);
+                    }
+                })
+                    ->orWhereHas('users', fn ($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $startOfDate))
+                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $startOfDate))
+                    ->orWhereHas('groups', fn ($q) => $q->where('active', 1));
+            })
             ->with([
                 'users' => fn ($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate),
@@ -74,17 +92,6 @@ class KpiService
                     ->orWhereDate('deleted_at', '>', $startOfDate),
                 'groups' => fn ($q) => $q->where('active', 1),
             ])
-            ->whereHas('targetable', function ($query) use ($startOfDate) {
-                if ($query->getModel() instanceof User) {
-                    $query->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate);
-                } elseif ($query->getModel() instanceof Position) {
-                    $query->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate);
-                } elseif ($query->getModel() instanceof ProfileGroup) {
-                    $query->where('active', 1);
-                }
-            })
             ->get();
         $kpis_final = [];
 
