@@ -36,10 +36,19 @@ class KpiService
         $dateToFilter = $filters['data_from'] ?? null;
         $date = Carbon::createFromDate($dateToFilter['year'] ?? $dateToFilter['month'] ?? now()->month);
         $searchWord = $filters['query'] ?? null;
-        $endOfDate = $date->endOfMonth()->format('Y-m-d');
-        $startOfDate = $date->startOfMonth()->format('Y-m-d');
+        $startOfDate = $date->copy()
+            ->startOfMonth()
+            ->format('Y-m-d');
+        $endOfDate = $date->copy()
+            ->endOfMonth()
+            ->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
-        dd($groupId);
+        dd(
+            $groupId,
+            $searchWord,
+            $startOfDate,
+            $endOfDate,
+        );
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
