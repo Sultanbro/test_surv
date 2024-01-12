@@ -23,7 +23,6 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
-        dd($searchWord);
         return $this->kpi::targetJoins()
             ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
             ->orWhere(function ($query) use ($searchWord) {
