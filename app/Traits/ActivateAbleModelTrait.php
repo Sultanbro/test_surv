@@ -4,12 +4,8 @@ namespace App\Traits;
 
 use App\Events\TrackKpiUpdatesEvent;
 use App\Kpi;
-use App\Models\Kpi\Bonus;
-use App\User;
-use Exception;
-
-use Illuminate\Database\Eloquent\Model;
-use function Symfony\Component\String\s;
+use App\Models\Scopes\ActiveScope;
+use Exception;;
 
 trait ActivateAbleModelTrait
 {
@@ -26,7 +22,7 @@ trait ActivateAbleModelTrait
         bool $status
     ): bool
     {
-        dd(static::class, static::withoutGlobalScope()->get());
+        dd(static::class, static::withoutGlobalScope(ActiveScope::class)->get());
         $model  = self::query()->findOrFail($id);
 
         if ($model->is_active == $status)
