@@ -44,7 +44,7 @@ class KpiService
             ->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
 
-        $kpis = Kpi::query()
+        $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))
             ->with([
