@@ -899,8 +899,8 @@ class KpiStatisticService
 
             // If there's no history, or if 'is_active' is 1 or null, include the model
             return is_null($history) ||
-                $history->payload->is_active === 1 ||
-                !isset($history->payload->is_active);
+                json_decode($history->payload, 1)->is_active === 1 ||
+                !isset(json_decode($history->payload, 1)->is_active);
         });
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
