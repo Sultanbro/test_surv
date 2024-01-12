@@ -43,12 +43,6 @@ class KpiService
             ->endOfMonth()
             ->format('Y-m-d');
         $groupId = $filters['group_id'] ?? false;
-        dd(
-            $groupId,
-            $searchWord,
-            $startOfDate,
-            $endOfDate,
-        );
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
@@ -85,21 +79,23 @@ class KpiService
                     } elseif ($q->getModel() instanceof ProfileGroup) {
                         $q->where('active', 1);
                     }
-                })
-                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                });
+                $query->orWhere('targetable', function ($q) use ($startOfDate) {
+                    $q->whereHas('users', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                        ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $startOfDate))
+                        ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                });
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
+                    ->orWhereDate('deleted_at', '>', $endOfDate),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
+                    ->orWhereDate('deleted_at', '>', $endOfDate),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->whereDate('created_at', '<=', $endOfDate)
+//            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
         $kpis_final = [];
 

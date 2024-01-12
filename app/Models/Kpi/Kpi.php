@@ -12,6 +12,7 @@ use App\ProfileGroup;
 use App\Traits\ActivateAbleModelTrait;
 use App\Traits\TargetJoin;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -96,12 +97,13 @@ class Kpi extends Model
         );
     }
 
-    public function kpiables(): \Illuminate\Database\Eloquent\Collection
+    public function kpiables(): Collection
     {
         $users = $this->users()->get();
         $positions = $this->positions()->get();
         $groups = $this->groups()->get();
-        return $groups->merge($positions)->merge($users);
+        return $groups->merge($positions)
+            ->merge($users);
     }
     /**---------------------------------------------**/
 
