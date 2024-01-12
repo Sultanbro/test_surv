@@ -18,15 +18,15 @@ trait TargetJoin
         return $query->select(
             $table . '.*'
         )
-//            ->leftJoin('kpiables as morph', function (JoinClause $join) use ($table) {
-//                $join->on('morph.kpi_id', '=', "$table.id");
-//            })
+            ->leftJoin('kpiables as morph', function (JoinClause $join) use ($table) {
+                $join->on('morph.kpi_id', '=', "$table.id");
+            })
             ->leftJoin('users as u', function (JoinClause $join) use ($table) {
                 $join->on('u.id', '=', "$table.targetable_id")
                     ->where("$table.targetable_type", '=', 'App\User');
-//                $join->orOn('u.id', '=', "morph.kpiable_id")
-//                    ->where("morph.kpiable_type", '=', 'App\User')
-//                    ->where("morph.kpiable_id", '=', 'u.id');
+                $join->orOn('u.id', '=', "morph.kpiable_id")
+                    ->where("morph.kpiable_type", '=', 'App\User')
+                    ->where("morph.kpiable_id", '=', 'u.id');
             })
             ->leftJoin('profile_groups as pg', function (JoinClause $join) use ($table) {
                 $join->on('pg.id', '=', "$table.targetable_id")
