@@ -4,7 +4,6 @@ namespace App\Filters\Kpis;
 
 use App\Models\Kpi\Kpi;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\JoinClause;
 
 
 class KpiFilter
@@ -24,6 +23,7 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
+        dd($searchWord);
         return $this->kpi::targetJoins()
             ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
             ->orWhere(function ($query) use ($searchWord) {
