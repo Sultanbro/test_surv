@@ -875,11 +875,8 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
-            ->where(function ($query) {
-                $query
-                    ->whereHas('histories_latest', function ($subQuery) {
+            ->whereHas('histories_latest', function ($subQuery) {
                     $subQuery->whereJsonContains('payload->is_active', 1);
-                });
             })
             ->whereNot(function (Builder $query) use ($date) {
                 $query->where('targetable_type', 'App\\User')
