@@ -43,9 +43,11 @@ class KpiService
         $date = Carbon::createFromDate($date['year'], $date['month']);
         $endOfDate = $date->endOfMonth()->format('Y-m-d');
         $startOfDate = $date->startOfMonth()->format('Y-m-d');
+        $groupId = $filters['group_id'] ?? false;
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))
             ->with([
                 'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                     $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
@@ -79,18 +81,18 @@ class KpiService
                         $q->where('active', 1);
                     }
                 })
-                    ->orWhereHas('users', fn ($q) => $q->whereNull('deleted_at')
+                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate))
                     ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('groups', fn ($q) => $q->where('active', 1));
+                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
             })
             ->with([
-                'users' => fn ($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate),
+                'users' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $startOfDate),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $startOfDate),
-                'groups' => fn ($q) => $q->where('active', 1),
+                'groups' => fn($q) => $q->where('active', 1),
             ])
             ->whereDate('created_at', '<=', $endOfDate)
             ->get();
