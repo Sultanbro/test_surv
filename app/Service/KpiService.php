@@ -48,9 +48,8 @@ class KpiService
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereMorphRelation(
-                    relation: 'kpiables',
-                    types: [User::class, ProfileGroup::class, Position::class],
+                $subQuery->orWhereRelation(
+                    relation: 'groups',
                     column: 'kpiable_id',
                     operator: '=',
                     value: $groupId
@@ -68,14 +67,14 @@ class KpiService
                         $q->where('active', 1);
                     }
                 });
-//                $query->orWhereHasMorph('kpiables', User::class, function (Builder $query) use ($endOfDate, $groupId) {
-//                    $query->whereNull('deleted_at');
-//                    $query->orWhereDate('deleted_at', '>', $endOfDate);
-//                });
-//                $query->orWhereHasMorph('kpiables', ProfileGroup::class, function (Builder $query) use ($endOfDate, $groupId) {
-//                    $query->where('is_active', 1);
-//                });
-//                $query->orWhereHasMorph('kpiables', Position::class);
+                $query->orWhereHas('users', function (Builder $query) use ($endOfDate, $groupId) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhereDate('deleted_at', '>', $endOfDate);
+                });
+                $query->orWhereHas('groups', function (Builder $query) use ($endOfDate, $groupId) {
+                    $query->where('is_active', 1);
+                });
+                $query->orWhereHas('positions');
             })
             ->with(['items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
                 $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
