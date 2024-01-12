@@ -48,13 +48,13 @@ class KpiService
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereMorphRelation(
-                    relation: 'kpiables',
-                    types: [User::class, ProfileGroup::class, Position::class],
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
+//                $subQuery->orWhereMorphRelation(
+//                    relation: 'kpiables',
+//                    types: [User::class, ProfileGroup::class, Position::class],
+//                    column: 'kpiable_id',
+//                    operator: '=',
+//                    value: $groupId
+//                );
             })
             ->where(function (Builder $query) use ($startOfDate, $endOfDate, $groupId) {
                 $query->whereHas('targetable', function (Builder $q) use ($endOfDate, $groupId) {
