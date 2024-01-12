@@ -4,10 +4,14 @@
 /* eslint-disable vue/no-mutating-props */
 
 import {mask} from 'vue-the-mask'
+import UserEditError from '@/components/pages/UserEdit/UserEditError'
 
 export default {
 	name: 'UserEditSalary',
 	directives: {mask},
+	components: {
+		UserEditError,
+	},
 	props: {
 		user: {
 			type: Object,
@@ -44,7 +48,15 @@ export default {
 		taxes: {
 			type: Array,
 			default: () => ([])
-		}
+		},
+		allTaxes: {
+			type: Array,
+			default: () => ([])
+		},
+		errors:{
+			type: Object,
+			default: () => ({})
+		},
 	},
 	data() {
 		return {
@@ -540,7 +552,7 @@ export default {
 			</div>
 			<div
 				v-for="(tax, idx) in myTaxes"
-				:key="tax.id"
+				:key="tax.tax_id"
 				class="d-flex tax-row"
 			>
 				<b-form-group
@@ -692,7 +704,7 @@ export default {
 				</div>
 				<div class="col-sm-10">
 					<multiselect
-						:options="taxNotAssignedFiltered"
+						:options="allTaxes"
 						track-by="name"
 						label="name"
 						class="pt-2"

@@ -82,6 +82,7 @@ export default {
 			head_in_groups: [],
 			profile_contacts: [],
 			taxes: [],
+			allTaxes: [],
 			showBlocks: {
 				main: true,
 				additional: true,
@@ -301,8 +302,18 @@ export default {
 			try {
 				const url = this.user ? `/tax?user_id=${this.user.id}` : '/tax/all';
 				const { data } = await axios.get(url);
-				this.taxes = this.user ? data.items : data.data;
-			} catch (error) {
+				this.allTaxes = this.user ? data.data.taxes : data.data;
+				this.taxes = this.user ? data.data.user_taxes.map(userTax => {
+					return {
+						...userTax,
+						name: this.allTaxes.find(tax => tax.id === userTax.tax_id)?.name || '',
+						isPercent: userTax.is_percent,
+						endSubtraction: userTax.end_subtraction,
+						isAssigned: 1,
+					}
+				}) : data.data;
+			}
+			catch (error) {
 				console.error(error);
 			}
 		},
@@ -1006,6 +1017,8 @@ export default {
 								:old_jysan="old_jysan"
 								:old_card_jysan="old_card_jysan"
 								:taxes="taxes"
+								:all-taxes="allTaxes"
+								:errors="fieldErrors"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
 							/>

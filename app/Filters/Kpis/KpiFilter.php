@@ -4,7 +4,6 @@ namespace App\Filters\Kpis;
 
 use App\Models\Kpi\Kpi;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\JoinClause;
 
 
 class KpiFilter
