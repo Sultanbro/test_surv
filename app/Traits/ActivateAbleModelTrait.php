@@ -13,7 +13,7 @@ use function Symfony\Component\String\s;
 
 trait ActivateAbleModelTrait
 {
-    abstract public static function query();
+//    abstract public static function query();
 
     /**
      * @param int $id
@@ -26,7 +26,7 @@ trait ActivateAbleModelTrait
         bool $status
     ): bool
     {
-//        dd(static::class, static::find(13));
+        dd(static::class, static::find(13));
         $model  = static::query()->findOrFail($id);
 
         if ($model->is_active == $status)
