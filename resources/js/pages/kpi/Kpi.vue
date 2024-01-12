@@ -456,8 +456,8 @@ export default {
 					query: this.searchText
 				}
 			}).then(response => {
-				this.items = response.data.data.kpis.map(this.addKpiTargets);
-				this.all_items = response.data.data.kpis.map(this.addKpiTargets);
+				this.items = response.data.data.kpis.map(this.processKpi);
+				this.all_items = response.data.data.kpis.map(this.processKpi);
 				this.activities = response.data.data.activities;
 				this.groups = response.data.data.groups;
 
@@ -471,7 +471,15 @@ export default {
 			});
 		},
 
-		addKpiTargets(kpi){
+		processKpi(kpi){
+			let isActive = kpi.is_active
+			if(kpi?.histories_latest?.payload && typeof kpi.histories_latest.payload === 'string') {
+				kpi.histories_latest.payload = JSON.parse(kpi.histories_latest.payload)
+				if(Object.keys(kpi.histories_latest.payload).includes('is_active')){
+					isActive = kpi.histories_latest.payload.is_active
+				}
+			}
+
 			return {
 				...kpi,
 				targets: kpi.target ? [
@@ -482,7 +490,8 @@ export default {
 						type: classToType[kpi.targetable_type],
 					},
 					...this.combineKpiTargets(kpi)
-				] : this.combineKpiTargets(kpi)
+				] : this.combineKpiTargets(kpi),
+				is_active: isActive,
 			}
 		},
 
