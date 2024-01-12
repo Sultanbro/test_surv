@@ -1049,7 +1049,7 @@ class KpiStatisticService
             ->where('kpis.created_at', '<=', Carbon::parse($date->endOfMonth()->format('Y-m-d')))
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
-            ->get();
+            ->paginate();
 
         dd($kpis);
 
