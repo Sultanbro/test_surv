@@ -12,10 +12,8 @@ use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
-use App\Position;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
-use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -95,7 +93,8 @@ class KpiService
             ])
 //            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
-        dd($kpis);
+        dd(Kpi::withTrashed()
+            ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))->get());
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
