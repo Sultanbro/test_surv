@@ -66,10 +66,12 @@ class KpiService
                 },
             ])
             ->with([
-                'users',
+                'users' => fn ($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $endOfDate),
                 'positions',
                 'groups',
             ])
+            ->whereHas('targetable')
             ->get();
         $kpis_final = [];
 
