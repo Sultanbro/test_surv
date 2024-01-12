@@ -625,6 +625,7 @@ class Salary extends Model
 
         $users = $users->get([
             'users.id',
+            'users.position_id',
             'users.email',
             'users.deleted_at',
             'users.name',
