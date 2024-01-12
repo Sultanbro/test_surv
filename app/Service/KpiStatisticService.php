@@ -877,13 +877,8 @@ class KpiStatisticService
             )
             ->where(function ($query) use ($date) {
                 $query->whereDoesntHave('histories_latest')->orWhereHas('histories_latest', function ($subQuery) use ($date) {
-                    $subQuery->where(function ($q) {
-                        $q->whereJsonContains('payload->is_active', 1)
-                            ->orWhereRaw('json_extract(payload, "$.is_active") is null');
-                    })->whereDate('created_at', '<', Carbon::parse($date->format('Y-m-d'))
-                        ->endOfMonth()
-                        ->format('Y-m-d')
-                    );
+                    $subQuery->whereJsonContains('payload->is_active', 1)
+                        ->orWhereRaw('json_extract(payload, "$.is_active") is null');
                 });
             })
             ->whereNot(function (Builder $query) use ($date) {
