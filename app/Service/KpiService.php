@@ -44,7 +44,7 @@ class KpiService
 
         $kpis = Kpi::withTrashed()
             ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))
+            ->when($groupId, fn(Builder $query) => $query->where('group_id', $groupId))
 //            ->where(function ($query) use ($startOfDate, $endOfDate) {
 //                $query->whereHas('targetable', function ($q) use ($endOfDate) {
 //                    if ($q->getModel() instanceof User) {
@@ -93,8 +93,7 @@ class KpiService
             ])
 //            ->whereDate('created_at', '<=', $endOfDate)
             ->get();
-        dd(Kpi::withTrashed()
-            ->when($groupId, fn(Builder $query) => $query->where('id', $groupId))->get());
+        dd($kpis);
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
