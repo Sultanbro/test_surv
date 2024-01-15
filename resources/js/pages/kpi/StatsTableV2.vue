@@ -331,8 +331,6 @@ export default {
 		...mapActions(usePortalStore, ['getBacklightForValue']),
 		async fetchKPI(id, ttype){
 			const type = this.types[ttype]
-			const item = this.item.find(item => item.id === id)
-			if(item) item.expanded = true
 			this.$set(this.loading[type], id, true)
 			try{
 				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
