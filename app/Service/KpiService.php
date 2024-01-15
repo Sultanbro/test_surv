@@ -109,7 +109,6 @@ class KpiService
         foreach ($kpis as $kpi) {
 
             $item = $kpi->toArray();
-            dd_if($kpi->getKey() === 115, $kpi);
             // remove items if it's not in history
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
