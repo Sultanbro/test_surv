@@ -814,7 +814,7 @@ class KpiStatisticService
         $user = User::with([
             'groups',
             'profile_histories_latest' => function ($query) use ($last_date) {
-                $query->whereDate('created_at', $last_date);
+                $query->whereDate('created_at', '<=', $last_date);
             },
         ])->find($user_id);
         $currency = $user->currency;

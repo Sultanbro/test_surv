@@ -575,6 +575,9 @@ class Salary extends Model
         $users->with([
             'user_description',
             'group_users',
+            'profile_histories_latest' => function ($query) use ($date) {
+                $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
+            },
             'salaries' => function ($q) use ($date) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
                     ->whereMonth('date', $date->month)
