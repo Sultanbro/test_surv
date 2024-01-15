@@ -240,7 +240,7 @@ export default {
 		window.addEventListener('wheel', this.scrollArea, { passive: false })
 		window.addEventListener('storage', this.checkTabEvents, false)
 
-		if(!this.isDemo) await this.autoDeleteCards()
+		// if(!this.isDemo) await this.autoDeleteCards()
 		if(this.settings.autoManager && !this.isDemo) this.updateManagers()
 	},
 	beforeUnmount() {

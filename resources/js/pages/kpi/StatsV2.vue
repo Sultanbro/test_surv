@@ -163,16 +163,30 @@
 <script>
 /* eslint-disable camelcase */
 
-import { mapActions, mapState } from 'pinia'
 import SideBar from '@/components/ui/Sidebar'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import StatsTableV2 from '@/pages/kpi/StatsTableV2'
 import StatsTableBonus from '@/pages/kpi/StatsTableBonus'
 import StatsTableQuartal from '@/pages/kpi/StatsTableQuartal'
 import StatsTableYear from '@/pages/kpi/StatsTableYear'
-import { usePortalStore } from '@/stores/Portal'
 
 // import {formatDate} from './kpis.js';
+
+import { mapActions, mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+
+const classToType = {
+	'App\\User': 1,
+	'App\\ProfileGroup': 2,
+	'App\\Position': 3,
+}
+
+const typeToClass = [
+	'',
+	'App\\User',
+	'App\\ProfileGroup',
+	'App\\Position',
+]
 
 export default {
 	name: 'KPIStatsV2',
@@ -295,7 +309,8 @@ export default {
 					}
 				}).then(({data}) => {
 					// items
-					this.items = data.paginator.data;
+					const items = data.paginator.data || []
+					this.items = items.map(this.processKpi)
 					this.totalRows = data.paginator.total
 					// this.activities = data.activities;
 					this.groups = data.groups;
@@ -337,6 +352,57 @@ export default {
 				alert('error!');
 			}
 		},
+
+		processKpi(kpi){
+			let isActive = kpi.is_active
+			if(kpi?.histories_latest?.payload && typeof kpi.histories_latest.payload === 'string') {
+				kpi.histories_latest.payload = JSON.parse(kpi.histories_latest.payload)
+				if(Object.keys(kpi.histories_latest.payload).includes('is_active')){
+					isActive = kpi.histories_latest.payload.is_active
+				}
+			}
+
+			return {
+				...kpi,
+				targets: kpi.target ? [
+					{
+						kpiable_id: kpi.targetable_id,
+						kpiable_type: kpi.targetable_type,
+						name: kpi.target.name,
+						type: classToType[kpi.targetable_type],
+					},
+					...this.combineKpiTargets(kpi)
+				] : this.combineKpiTargets(kpi),
+				is_active: isActive,
+			}
+		},
+
+		combineKpiTargets(kpi){
+			return [
+				...kpi.users.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[1],
+					type: 1,
+					name: `${item.last_name} ${item.name}`
+				})),
+				...kpi.positions.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[3],
+					type: 3,
+					name: item.position,
+				})),
+				...kpi.groups.map(item => ({
+					...item,
+					kpiable_id: item.id,
+					kpiable_type: typeToClass[2],
+					type: 2,
+					name: item.name,
+				})),
+			]
+		},
+
 		onSearchQuery(){
 			if(this.timeout) clearTimeout(this.timeout)
 			this.timeout = setTimeout(() => {
