@@ -59,16 +59,16 @@
 					>
 						<td
 							class="pointer p-2 text-center"
-							@click="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
+							@click="kpis[wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
 						>
 							<div class="d-flex align-items-center justify-content-center px-2">
 								<span class="mr-2">{{ w + 1 }}</span>
 								<i
-									v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
+									v-if="kpis[wrap_item.targetable_id]"
 									class="fa fa-minus mt-1"
 								/>
 								<i
-									v-else-if="loading[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
+									v-else-if="loading[wrap_item.targetable_id]"
 									class="fa fa-circle-notch fa-spin mt-1"
 								/>
 								<i
@@ -132,19 +132,19 @@
 						</td>
 						<td v-if="editable" />
 					</tr>
-					<template v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]">
+					<template v-if="kpis[wrap_item.targetable_id]">
 						<tr
 							:key="w + 'a'"
 							class="collapsable"
-							:class="{'active': kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] || !editable }"
+							:class="{'active': kpis[wrap_item.targetable_id] || !editable }"
 						>
 							<td :colspan="editable ? 4 : 7">
 								<div class="table__wrapper w-100">
 									<table
-										v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
+										v-if="kpis[wrap_item.targetable_id]"
 										class="child-table"
 									>
-										<template v-for="(user, i) in kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id].users">
+										<template v-for="(user, i) in kpis[wrap_item.targetable_id].users">
 											<tr
 												v-if="editable"
 												:key="i"
@@ -289,16 +289,8 @@ export default {
 				'App\\ProfileGroup': 2,
 				'App\\Position': 3,
 			},
-			kpis: {
-				1: {},
-				2: {},
-				3: {},
-			},
-			loading: {
-				1: {},
-				2: {},
-				3: {},
-			}
+			kpis: {},
+			loading: {}
 		}
 	},
 
@@ -325,13 +317,12 @@ export default {
 		this.prepareFields()
 		this.countAvg()
 	},
-	mounted(){
-	},
+	mounted(){},
 	methods: {
 		...mapActions(usePortalStore, ['getBacklightForValue']),
 		async fetchKPI(id, ttype){
 			const type = this.types[ttype]
-			this.$set(this.loading[type], id, true)
+			this.$set(this.loading, id, true)
 			try{
 				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
 					filters: {
@@ -344,23 +335,18 @@ export default {
 					}
 				})
 				if(!data?.kpi?.users) return this.$toast.error('Ошибка при получении данных kpi')
-				this.$set(this.kpis[type], id, parseKPI(data?.kpi))
+				this.$set(this.kpis, id, parseKPI(data?.kpi))
 			}
 			catch(error){
 				this.$toast.error('Ошибка при получении данных kpi')
 			}
-			this.$delete(this.loading[type], id)
+			this.$delete(this.loading, id)
 		},
-		closeKPI(id, ttype){
-			const type = this.types[ttype]
-			this.$delete(this.kpis[type], id)
+		closeKPI(id){
+			this.$delete(this.kpis, id)
 		},
 		resetKPI(){
-			this.kpis = {
-				1: {},
-				2: {},
-				3: {},
-			}
+			this.kpis = {}
 		},
 
 		prepareFields() {
