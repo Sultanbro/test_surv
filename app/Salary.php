@@ -774,13 +774,28 @@ class Salary extends Model
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
 
-                dd_if($user->id===29748,$tts,empty($statTotalHour));
 
                 if (empty($statTotalHour)) {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
-                    } else if ($r) { // переобучение
+                    }
+                    else if ($x->count() > 0) { // отработанное время есть
+                        $total_hours = $x->sum('total_hours');
+
+                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earnings[$i] = round($earning);
+
+                        $hours[$i] = round($total_hours / 60, 1);
+
+                    }
+                    else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                        $total_hours = $y->sum('total_hours');
+                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earnings[$i] = round($earning);
+                        $hours[$i] = round($total_hours / 60, 1);
+                    }
+                    else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
 
@@ -793,26 +808,14 @@ class Salary extends Model
 
                         $hours[$i] = round($total_hours / 60, 1);
 
-                    } else if ($t) { // день отмечен как стажировка
+                    }
+                    else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
                         $earning = $hourly_pay * $working_hours * $internshipPayRate;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
                         $hours[$i] = round($working_hours / 2, 1);
-                    } else if ($x->count() > 0) { // отработанное время есть
-                        $total_hours = $x->sum('total_hours');
-
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-
-                        $hours[$i] = round($total_hours / 60, 1);
-
-                    } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
-                        $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
                     }
                 } else {
                     if ($a) {
