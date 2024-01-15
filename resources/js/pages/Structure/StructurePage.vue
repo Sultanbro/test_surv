@@ -401,7 +401,7 @@ export default {
 		},
 
 		async autoDeleteCards(){
-			if(!this.dictionaries.profile_groups) return
+			if(!this.dictionaries?.profile_groups?.length) return
 			for(const card of this.cards){
 				if(!card.group_id) continue
 				const cardGroup = this.dictionaries.profile_groups.find(group => group.id === card.group_id)
