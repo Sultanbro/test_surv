@@ -555,6 +555,7 @@ export default {
 			try{
 				const {columns, table, report_cards: reportCards} = await API.fetchAnalyticsV2(request)
 				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
+				if(this.columns[0]?.key !== 'name') this.columns.splice(0, 1)
 				this.table = Array.isArray(table) ? table : Object.values(table)
 				this.reportCards = reportCards || {}
 				this.ready.analytics = true

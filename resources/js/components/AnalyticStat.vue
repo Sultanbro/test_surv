@@ -72,7 +72,7 @@
 						<td class="t-cell rownumber ruler-cells">
 							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
 								<span
-									v-if="editTableMode && i_index > (oldGroup ? 3 : 1)"
+									v-if="editTableMode && i_index > (oldGroup ? 3 : 2)"
 									@click="deleteRow(i_index)"
 								>
 									<IconDelete
@@ -105,7 +105,7 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="field.key == 'name' && [1,2,3].includes(i_index) && oldGroup">
+								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup) || field.key == 'name' && [2].includes(i_index)">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"

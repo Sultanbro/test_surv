@@ -257,6 +257,7 @@ export default {
 			const revenue = this.totalsSecond.revenue / this.daysPassed * this.daysInMonth
 			const expenses = ((this.totalsSecond.fot + this.totalsThird.fact) / this.daysPassed * this.daysInMonth) + Number(this.other)
 			const profit = revenue - expenses
+			const profitFact = Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.plan - Number(this.other)
 			return [
 				[
 					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
@@ -277,7 +278,7 @@ export default {
 					expenses,
 					profit,
 					revenue ? ((revenue - (Number(this.totalsSecond.fot) / this.daysPassed * this.daysInMonth)) / revenue) * 100 : 0,
-					revenue ? (profit / revenue) * 100 : 0,
+					revenue ? (profitFact / revenue) * 100 : 0,
 				],
 				[
 					'прочие затраты',

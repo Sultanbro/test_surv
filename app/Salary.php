@@ -688,13 +688,11 @@ class Salary extends Model
             /////// TTS
             $tts = $user->timetracking
                 ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-
+            $tts_before_apply = $user->timetracking
+                ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
             $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
             $retraining_days = $user->daytypes->whereIn('type', [6]);
             $absent_days = $user->daytypes->whereIn('type', [2]);
-            $tts_before_apply = $user->timetracking
-                ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
-
 
             $earnings = [];
             $hourly_pays = [];
@@ -732,7 +730,6 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-//                dd_if($i == 4 && $user->id == 30564, $s, $zarplata);
 
                 $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
@@ -777,11 +774,28 @@ class Salary extends Model
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
 
+
                 if (empty($statTotalHour)) {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
-                    } else if ($r) { // переобучение
+                    }
+                    else if ($x->count() > 0) { // отработанное время есть
+                        $total_hours = $x->sum('total_hours');
+
+                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earnings[$i] = round($earning);
+
+                        $hours[$i] = round($total_hours / 60, 1);
+
+                    }
+                    else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                        $total_hours = $y->sum('total_hours');
+                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earnings[$i] = round($earning);
+                        $hours[$i] = round($total_hours / 60, 1);
+                    }
+                    else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
 
@@ -794,26 +808,14 @@ class Salary extends Model
 
                         $hours[$i] = round($total_hours / 60, 1);
 
-                    } else if ($t) { // день отмечен как стажировка
+                    }
+                    else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
                         $earning = $hourly_pay * $working_hours * $internshipPayRate;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
                         $hours[$i] = round($working_hours / 2, 1);
-                    } else if ($x->count() > 0) { // отработанное время есть
-                        $total_hours = $x->sum('total_hours');
-
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-
-                        $hours[$i] = round($total_hours / 60, 1);
-
-                    } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
-                        $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
                     }
                 } else {
                     if ($a) {
