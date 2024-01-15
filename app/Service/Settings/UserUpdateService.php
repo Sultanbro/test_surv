@@ -8,6 +8,7 @@ use App\AdaptationTalk;
 use App\DayType;
 use App\DTO\Settings\UpdateUserDTO;
 use App\Enums\ErrorCode;
+use App\Events\UserUpdatedEvent;
 use App\Facade\Referring;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
@@ -224,6 +225,7 @@ final class UserUpdateService
 
         $user->save();
 
+        event(new UserUpdatedEvent($user->id));
         return $user;
     }
 

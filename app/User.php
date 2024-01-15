@@ -14,6 +14,7 @@ use App\Models\Bitrix\Lead;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
+use App\Models\History;
 use App\Models\Permission;
 use App\Models\Referral\ReferralSalary;
 use App\Models\Structure\StructureCard;
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -390,7 +392,17 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function histories(): MorphMany
     {
-        return $this->morphMany('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id');
+        return $this->morphMany('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id')->where('type', History::DEFAULT);
+    }
+
+    /**
+     * @return Model|MorphOne|null
+     */
+    public function profile_histories_latest(): Model|MorphOne|null
+    {
+        return $this->morphOne('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id')
+            ->where('type', History::USER_PROFILE_CHANGED)
+            ->orderBy('created_at', 'desc')->latest();
     }
 
     /**

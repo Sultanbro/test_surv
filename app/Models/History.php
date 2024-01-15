@@ -27,7 +27,10 @@ class History extends Model
         'payload',
     ];
 
-    public function historable() 
+    public const DEFAULT = 1;
+    public const USER_PROFILE_CHANGED = 2; // check for profile changes
+
+    public function historable()
     {
         return $this->morphTo(__FUNCTION__, 'reference_table', 'reference_id');
     }
