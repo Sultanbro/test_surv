@@ -132,7 +132,7 @@
 						</td>
 						<td v-if="editable" />
 					</tr>
-					<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
+					<template v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]">
 						<tr
 							:key="w + 'a'"
 							class="collapsable"
@@ -331,6 +331,8 @@ export default {
 		...mapActions(usePortalStore, ['getBacklightForValue']),
 		async fetchKPI(id, ttype){
 			const type = this.types[ttype]
+			const item = this.item.find(item => item.id === id)
+			if(item) item.expanded = true
 			this.$set(this.loading[type], id, true)
 			try{
 				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
