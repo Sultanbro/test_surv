@@ -26,7 +26,7 @@ if (!function_exists('translit')) {
             $st = preg_replace("/_[a-z0-9]_/", " ", $st);
         } while ($st != $prev_st);
 
-        return preg_replace("/_{2,}/", " ", $st);
+        return ucfirst(preg_replace("/_{2,}/", " ", $st));
     }
 }
 
