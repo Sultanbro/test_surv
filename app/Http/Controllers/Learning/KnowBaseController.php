@@ -729,8 +729,8 @@ class KnowBaseController extends Controller
             $permissions = [];
             foreach ($books as $book) {
                 $permissions[$book->id] = [
-                    'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),
-                    'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'edit'),
+                    'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($book->id, 'read'),
+                    'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($book->id, 'edit'),
                     'who_can_read_pairs' => $book->read_pairs,
                     'who_can_edit_pairs' => $book->edit_pairs
                 ];
