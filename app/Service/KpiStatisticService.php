@@ -927,7 +927,7 @@ class KpiStatisticService
 
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
-
+dd($kpis);
         if ($limitForProfile) {
             $kpis = collect([$kpis->sortBy('priority')->first()]);
         }
