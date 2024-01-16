@@ -48,19 +48,22 @@ class NpsController extends Controller
                 DB::raw('concat(users.last_name," ",users.name) as name'),
                 DB::raw('position_id'),
                 DB::raw('group_name'),
-                DB::raw('ifNULL(group_id,0)'),
+                DB::raw('group_id'),
                 DB::raw('is_head'),
             ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
             ->whereIn('position_id', [45, 55])
+            ->with('position.position')
             ->where('is_trainee', 0)
-            ->orderBy('group_id','desc')
+            ->orderBy('group_id', 'desc')
             ->get();
+
 
         foreach ($_users as $user) {
             $group = $user->group_name ?? '.Без группы';
-            $position = $user->position_id == 45 ? 'Руковод' : 'Cт. спец';
+//            $position = $user->position_id == 45 ? 'Руковод' : 'Cт. спец';
+            $position = $user->position->position;
 
             $arr = [
                 'id' => $user->id,
