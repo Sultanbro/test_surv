@@ -56,7 +56,7 @@ class NpsController extends Controller
             ->where('is_trainee', 0)
             ->get();
 
-        dd($_users);
+        dd($_users->pluck('group_name'));
         foreach ($_users as $user) {
             $group = $user->group_name ?? '.Без группы';
             $position = $user->position_id == 45 ? 'Руковод' : 'Cт. спец';
