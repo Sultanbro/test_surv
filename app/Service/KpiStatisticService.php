@@ -961,6 +961,7 @@ class KpiStatisticService
             } elseif ($kpi->priority == 3) {
                 $kpi->targetable_type = 'App\ProfileGroup';
                 $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
+                $kpi->targetable_id = $kpi->targetable->id;
             }
 
             unset($kpi->users);
