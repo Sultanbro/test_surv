@@ -50,10 +50,10 @@ class NpsController extends Controller
                 DB::raw('group_name'),
                 DB::raw('group_id'),
                 DB::raw('is_head'),
-                DB::raw('positions.position as position_name'),
+                DB::raw('position.position as position_name'),
             ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->join('positions', 'users.position_id', '=', 'positions.id')
+            ->join('position', 'users.position_id', '=', 'position.id')
             ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
             ->whereIn('position_id', [45, 55])
             ->where('is_trainee', 0)
