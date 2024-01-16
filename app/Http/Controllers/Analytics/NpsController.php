@@ -33,23 +33,22 @@ class NpsController extends Controller
     public function fetch(Request $request): JsonResponse
     {
         $groupSubQuery = DB::table('profile_groups')
-            ->select(['group_user.user_id as user_id', 'group_user.group_id as group_id', 'groups.name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
+            ->select(['group_user.user_id as user_id', 'group_user.group_id as group_id', 'profile_groups.name as group_name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
             ->join('group_user', 'group_user.group_id', '=', 'group.id')
-//            ->where('group_user.is_head', true)
             ->where('group_user.status', 'active')
             ->groupByRaw('group_id, user_id, g.name, work_start, work_end, has_analytics, is_head');
 
         $users = [];
 
-        $usersQuery = User::withTrashed()
+        /** @var Collection<User> $user */
+        $_users = User::withTrashed()
             ->select([
                 DB::raw('users.id as id'),
-                DB::raw('users.name as name'),
-                DB::raw('users.last_name as last_name'),
-                DB::raw('users.position_id as position_id'),
-                DB::raw('groups.name as group_name'),
-                DB::raw('groups.group_id as group_id'),
-                DB::raw('group_user.is_head as is_head'),
+                DB::raw('concat(users.name," ",users.last_name) as name'),
+                DB::raw('position_id'),
+                DB::raw('group_name'),
+                DB::raw('group_id'),
+                DB::raw('is_head'),
             ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
@@ -57,20 +56,14 @@ class NpsController extends Controller
             ->where('is_trainee', 0)
             ->get();
 
-        $isHeadUsers = $usersQuery->where('is_head', 1); // Руководитель
-        $notIsHeadUsers = $usersQuery->where('is_head', 0); //старший специалист группы
-        dd($isHeadUsers);
-
-        /** @var Collection<User> $user */
-        $_users = $isHeadUsers->merge($notIsHeadUsers);
-
+        dd($_users);
         foreach ($_users as $user) {
             $group = $user->group_name ?? '.Без группы';
             $position = $user->position_id == 45 ? 'Руковод' : 'Cт. спец';
 
             $arr = [
                 'id' => $user->id,
-                'name' => $user->last_name . ' ' . $user->name,
+                'name' => $user->name,
                 'group_id' => $group,
                 'position' => $position,
                 'texts' => [],
