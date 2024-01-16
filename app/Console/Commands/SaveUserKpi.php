@@ -112,7 +112,7 @@ class SaveUserKpi extends Command
             $this->line($key . ' ' . $user->id);
 
             // fetch kpis of user
-            $repo = $this->repo->fetchKpisWithCurrency(new Request([
+            $repo = $this->repo->fetchKpis(new Request([
                 'filters' => [
                     'data_from' => [
                         'month' => Carbon::parse($date)->month,
@@ -120,7 +120,7 @@ class SaveUserKpi extends Command
                     ],
                     'user_id' => $user->id
                 ]
-            ]), false);
+            ]));
 
 
             // save
