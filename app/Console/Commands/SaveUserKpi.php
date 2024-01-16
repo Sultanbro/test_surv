@@ -163,7 +163,12 @@ class SaveUserKpi extends Command
                     'percent' => $item['percent']
                 ], $item['method']);
 
-                $payload = json_decode($kpi['histories_latest']['payload'], true);
+                if ($kpi['histories_latest']) {
+                    $payload = json_decode($kpi['histories_latest']['payload'], true);
+                } else {
+                    $payload = [];
+                }
+
                 $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
 
 //                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
