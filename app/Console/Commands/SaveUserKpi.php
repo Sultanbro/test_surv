@@ -160,6 +160,7 @@ class SaveUserKpi extends Command
                     'full_time' => $item['full_time'],
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
+                    'percent' => $item['percent']
                 ], $item['method']);
 
                 $payload = json_decode($kpi['histories_latest']['payload'], true);
