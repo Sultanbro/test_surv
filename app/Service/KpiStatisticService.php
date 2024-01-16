@@ -958,7 +958,7 @@ class KpiStatisticService
                 $kpi->targetable_id = $position_id;
                 $kpi->targetable_type = 'App\Position';
                 $kpi->targetable = $kpi->positions->where('id', $position_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->has_group == 3) {
+            } elseif ($kpi->priority == 3) {
                 $kpi->targetable_type = 'App\ProfileGroup';
                 $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
             }
