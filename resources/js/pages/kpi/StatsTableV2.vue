@@ -59,16 +59,16 @@
 					>
 						<td
 							class="pointer p-2 text-center"
-							@click="kpis[wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
+							@click="kpis[wrap_item.id] ? closeKPI(wrap_item.id) : fetchKPI(wrap_item)"
 						>
 							<div class="d-flex align-items-center justify-content-center px-2">
 								<span class="mr-2">{{ w + 1 }}</span>
 								<i
-									v-if="kpis[wrap_item.targetable_id]"
+									v-if="kpis[wrap_item.id]"
 									class="fa fa-minus mt-1"
 								/>
 								<i
-									v-else-if="loading[wrap_item.targetable_id]"
+									v-else-if="loading[wrap_item.id]"
 									class="fa fa-circle-notch fa-spin mt-1"
 								/>
 								<i
@@ -78,20 +78,25 @@
 							</div>
 						</td>
 						<td class="p-4">
-							<i
-								v-if="types[wrap_item.targetable_type] === 1"
-								class="fa fa-user mt-1 mr-1"
-							/>
-							<i
-								v-else-if="types[wrap_item.targetable_type] === 2"
-								class="fa fa-users mt-1 mr-1"
-							/>
-							<i
-								v-else
-								class="fa fa-briefcase mt-1 mr-1"
-							/>
-							<span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
-							<span v-else>---</span>
+							<div
+								v-for="target, index in wrap_item.targets"
+								:key="index"
+								class=""
+							>
+								<i
+									v-if="target.type === 1"
+									class="fa fa-user mt-1 mr-1"
+								/>
+								<i
+									v-else-if="target.type === 2"
+									class="fa fa-users mt-1 mr-1"
+								/>
+								<i
+									v-else
+									class="fa fa-briefcase mt-1 mr-1"
+								/>
+								<span>{{ target.name }}</span>
+							</div>
 						</td>
 						<td
 							v-if="editable"
@@ -132,19 +137,19 @@
 						</td>
 						<td v-if="editable" />
 					</tr>
-					<template v-if="kpis[wrap_item.targetable_id]">
+					<template v-if="kpis[wrap_item.id]">
 						<tr
 							:key="w + 'a'"
 							class="collapsable"
-							:class="{'active': kpis[wrap_item.targetable_id] || !editable }"
+							:class="{'active': kpis[wrap_item.id] || !editable }"
 						>
 							<td :colspan="editable ? 4 : 7">
 								<div class="table__wrapper w-100">
 									<table
-										v-if="kpis[wrap_item.targetable_id]"
+										v-if="kpis[wrap_item.id]"
 										class="child-table"
 									>
-										<template v-for="(user, i) in kpis[wrap_item.targetable_id].users">
+										<template v-for="(user, i) in kpis[wrap_item.id].users">
 											<tr
 												v-if="editable"
 												:key="i"
@@ -294,10 +299,10 @@ export default {
 		}
 	},
 
-	computed:{
+	computed: {
 		reversedItems(){
 			return this.items.slice().reverse()
-		}
+		},
 	},
 
 	watch: {
@@ -320,9 +325,10 @@ export default {
 	mounted(){},
 	methods: {
 		...mapActions(usePortalStore, ['getBacklightForValue']),
-		async fetchKPI(id, ttype){
-			const type = this.types[ttype]
-			this.$set(this.loading, id, true)
+		async fetchKPI(kpi){
+			const type = this.types[kpi.targetable_type] || 0
+			const id = kpi.targetable_id || kpi.id
+			this.$set(this.loading, kpi.id, true)
 			try{
 				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
 					filters: {
@@ -335,12 +341,12 @@ export default {
 					}
 				})
 				if(!data?.kpi?.users) return this.$toast.error('Ошибка при получении данных kpi')
-				this.$set(this.kpis, id, parseKPI(data?.kpi))
+				this.$set(this.kpis, kpi.id, parseKPI(data?.kpi))
 			}
 			catch(error){
 				this.$toast.error('Ошибка при получении данных kpi')
 			}
-			this.$delete(this.loading, id)
+			this.$delete(this.loading, kpi.id)
 		},
 		closeKPI(id){
 			this.$delete(this.kpis, id)
@@ -364,14 +370,11 @@ export default {
 		},
 
 		countAvg() {
-
 			this.items.forEach(kpi => {
-
 				let kpi_sum = 0;
 				let kpi_count = 0;
 
 				kpi.users.forEach(user => {
-
 					let count = 0;
 					let sum = 0;
 					let avg = 0;
@@ -396,7 +399,6 @@ export default {
 				* count avg completed percent of kpi by users
 				*/
 				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-
 			});
 		},
 	}

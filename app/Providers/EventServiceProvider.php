@@ -9,6 +9,7 @@ use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
+use App\Events\UserUpdatedEvent;
 use App\Events\WorkdayEvent;
 use App\Listeners\UserStatUpdatedListener;
 use App\Listeners\EmailNotificationListener;
@@ -17,6 +18,7 @@ use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use App\Listeners\TransferUserInGroupListener;
+use App\Listeners\UserUpdatedListener;
 use App\Listeners\WorkdayListener;
 use App\Models\WorkChart\WorkChartModel;
 use App\Observers\Timetracking\TimetrackingObserver;
@@ -80,6 +82,10 @@ class EventServiceProvider extends ServiceProvider
         UserStatUpdatedEvent::class => [
             UserStatUpdatedListener::class
         ],
+
+        UserUpdatedEvent::class => [
+            UserUpdatedListener::class
+        ]
     ];
 
     /**
