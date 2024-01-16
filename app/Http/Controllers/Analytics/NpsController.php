@@ -44,7 +44,7 @@ class NpsController extends Controller
         $_users = User::withTrashed()
             ->select([
                 DB::raw('users.id as id'),
-                DB::raw('concat(users.name," ",users.last_name) as name'),
+                DB::raw('concat(users.last_name," ",users.name) as name'),
                 DB::raw('position_id'),
                 DB::raw('group_name'),
                 DB::raw('group_id'),
@@ -54,6 +54,7 @@ class NpsController extends Controller
             ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
             ->whereIn('position_id', [45, 55])
             ->where('is_trainee', 0)
+            ->orderBy('group_id', 'desc')
             ->get();
 
         foreach ($_users as $user) {
