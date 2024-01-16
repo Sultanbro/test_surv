@@ -39,6 +39,9 @@ class NpsController extends Controller
             ->whereNull('to')
             ->groupByRaw('group_id, user_id, name, work_start, work_end, has_analytics, is_head');
 
+        $positionSubQuery = DB::table('position')
+            ->select(['id', 'position']);
+
         $users = [];
 
         /** @var Collection<User> $user */
@@ -53,7 +56,7 @@ class NpsController extends Controller
                 DB::raw('position.position as position_name'),
             ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->join('position', 'users.position_id', '=', 'position.id')
+            ->joinSub($positionSubQuery, 'position', 'users.position_id', '=', 'position.id')
             ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
             ->whereIn('position_id', [45, 55])
             ->where('is_trainee', 0)
