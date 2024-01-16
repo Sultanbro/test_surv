@@ -36,6 +36,7 @@ class NpsController extends Controller
             ->select(['user_id as user_id', 'group_id as group_id', 'name as group_name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
             ->join('group_user', 'group_user.group_id', '=', 'profile_groups.id')
             ->where('status', 'active')
+            ->whereNull('to')
             ->groupByRaw('group_id, user_id, name, work_start, work_end, has_analytics, is_head');
 
         $users = [];
