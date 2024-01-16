@@ -1214,6 +1214,7 @@ export default {
 								user.position_id = user.profile_histories_latest.payload.position_id
 							}
 						}
+						return user
 					}) || []
 					response.data.users = users
 					let data = response.data;
