@@ -120,7 +120,7 @@ class SaveUserKpi extends Command
                     ],
                     'user_id' => $user->id
                 ]
-            ]));
+            ]), false);
 
 
             // save

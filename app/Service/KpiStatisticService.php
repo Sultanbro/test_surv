@@ -748,7 +748,7 @@ class KpiStatisticService
         ];
     }
 
-    public function fetchKpisWithCurrency(Request $request): array
+    public function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
     {
         $filters = $request->filters;
         $request->validate([
@@ -928,7 +928,9 @@ class KpiStatisticService
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
 
-        $kpis = collect([$kpis->sortBy('priority')->first()]);
+        if ($limitForProfile && $kpis->count() > 1) {
+            $kpis = collect([$kpis->sortBy('priority')->first()]);
+        }
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
@@ -956,9 +958,10 @@ class KpiStatisticService
                 $kpi->targetable_id = $position_id;
                 $kpi->targetable_type = 'App\Position';
                 $kpi->targetable = $kpi->positions->where('id', $position_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->has_group == 3) {
+            } elseif ($kpi->priority == 3) {
                 $kpi->targetable_type = 'App\ProfileGroup';
                 $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
+                $kpi->targetable_id = $kpi->targetable->id;
             }
 
             unset($kpi->users);
