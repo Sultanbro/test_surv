@@ -1206,7 +1206,16 @@ export default {
 					group_id: this.selectedGroup.id,
 					user_types: this.user_types,
 				})
-				.then((response) => {
+				.then(response => {
+					const users = response.data?.users?.map(user => {
+						if(typeof user.profile_histories_latest?.payload === 'string'){
+							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload)
+							if(user.profile_histories_latest.payload.position_id){
+								user.position_id = user.profile_histories_latest.payload.position_id
+							}
+						}
+					}) || []
+					response.data.users = users
 					let data = response.data;
 					if (data.error && data.error == 'access') {
 						console.error(data.error);
