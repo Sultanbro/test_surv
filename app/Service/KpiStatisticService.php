@@ -962,7 +962,7 @@ class KpiStatisticService
                 $kpi->targetable_type = 'App\ProfileGroup';
                 $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
             }
-
+dd($kpi);
             unset($kpi->users);
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
             $kpi_sum = 0;
