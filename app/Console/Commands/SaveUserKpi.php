@@ -151,7 +151,7 @@ class SaveUserKpi extends Command
                 $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
 
                 $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
-                dump($item['id'], $item['percent']);
+
                 $completed_percent = $this->calculator->calcCompleted([
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
@@ -170,10 +170,6 @@ class SaveUserKpi extends Command
                 }
 
                 $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
-
-//                dump("avg=" . $item['avg'] . " fact=" . $item['fact'] . " method=" . $item['method']);
-//                dump($kpi['histories_latest']['id'] . "payload=" . json_encode($payload) . " off_limit=" . $off_limit);
-//                dump($off_limit);
 
                 // off_limit -> check employee can get more kpi bonus with this kpi
                 if ($completed_percent > 100 && !$off_limit) {
