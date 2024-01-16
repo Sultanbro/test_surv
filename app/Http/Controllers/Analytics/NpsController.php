@@ -34,7 +34,7 @@ class NpsController extends Controller
     {
         $groupSubQuery = DB::table('profile_groups')
             ->select(['group_user.user_id as user_id', 'group_user.group_id as group_id', 'profile_groups.name as group_name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
-            ->join('group_user', 'group_user.group_id', '=', 'group.id')
+            ->join('group_user', 'group_user.group_id', '=', 'profile_groups.id')
             ->where('group_user.status', 'active')
             ->groupByRaw('group_id, user_id, g.name, work_start, work_end, has_analytics, is_head');
 
