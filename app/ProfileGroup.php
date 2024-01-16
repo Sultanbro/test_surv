@@ -628,34 +628,12 @@ class ProfileGroup extends Model
             ->join('profile_groups as g', 'p.group_id', '=', 'g.id')
             ->join('user_descriptions as d', 'd.user_id', '=', 'users.id')
             ->where(function (Builder $query) use ($dateFrom, $dateTo) {
-                $to = Carbon::parse($dateTo);
-                $query->whereRaw("
-                    LAST_DAY(users.deleted_at) >=  ?
-                    AND MONTH(users.deleted_at) >= ?
-                    AND YEAR(users.deleted_at) >= ?
-                    ",
-                    [
-                        $to->day,
-                        $to->month,
-                        $to->year,
-                    ]
-                );
-                $query->orWhereNull('users.deleted_at');
+                $query->where('users.deleted_at', '>=', $dateFrom)
+                    ->orWhereNull('users.deleted_at');
             })
             ->where(function (Builder $query) use ($dateFrom, $dateTo) {
-                $to = Carbon::parse($dateTo);
-                $query->whereRaw("
-                    LAST_DAY(p.to) >=  ?
-                    AND MONTH(p.to) >= ?
-                    AND YEAR(p.to) >= ?
-                    ",
-                    [
-                        $to->day,
-                        $to->month,
-                        $to->year,
-                    ]
-                );
-                $query->orWhereNull('p.to');
+                $query->where('p.to', '>=', $dateFrom)
+                    ->orWhereNull('p.to');
             })
             ->where('g.id', $this->getKey())
             ->groupBy([
