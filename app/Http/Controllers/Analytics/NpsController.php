@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Analytics;
 
 use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use View;
 use Auth;
@@ -31,32 +32,52 @@ class NpsController extends Controller
      */
     public function fetch(Request $request): JsonResponse
     {
+        $groupSubQuery = DB::table('profile_groups')
+            ->select(['group_user.user_id as user_id', 'group_user.group_id as group_id', 'groups.name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
+            ->join('group_user', 'group_user.group_id', '=', 'group.id')
+//            ->where('group_user.is_head', true)
+            ->where('group_user.status', 'active')
+            ->groupByRaw('group_id, user_id, g.name, work_start, work_end, has_analytics, is_head');
+
         $users = [];
 
-        $_users = DB::table('users')
-            ->whereNull('deleted_at')
+        $usersQuery = User::withTrashed()
+            ->select([
+                DB::raw('users.id as id'),
+                DB::raw('users.name as name'),
+                DB::raw('users.last_name as last_name'),
+                DB::raw('users.position_id as position_id'),
+                DB::raw('groups.name as group_name'),
+                DB::raw('groups.group_id as group_id'),
+                DB::raw('group_user.is_head as is_head'),
+            ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
+            ->whereIn('position_id', [45, 55])
             ->where('is_trainee', 0)
-            ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
-            ->get(['users.id', 'users.name', 'users.last_name', 'users.position_id']);
+            ->get();
 
-        foreach($_users as $user) {
-            /** @var User $user */
-            $user = User::withTrashed()->find($user->id);
-            $groups = $user->position_id == 45 ? $user->inGroups(true) : $user->inGroups();
-            $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
+        $isHeadUsers = $usersQuery->where('is_head', 1); // Руководитель
+        $notIsHeadUsers = $usersQuery->where('is_head', 0); //старший специалист группы
+        dd($isHeadUsers);
 
+        /** @var Collection<User> $user */
+        $_users = $isHeadUsers->merge($notIsHeadUsers);
+
+        foreach ($_users as $user) {
+            $group = $user->group_name ?? '.Без группы';
+            $position = $user->position_id == 45 ? 'Руковод' : 'Cт. спец';
 
             $arr = [
                 'id' => $user->id,
-                'name' => $user->last_name . ' '. $user->name,
+                'name' => $user->last_name . ' ' . $user->name,
                 'group_id' => $group,
-                'position' => $user->position_id == 45 ? 'Руковод' : 'Cт. спец',
+                'position' => $position,
                 'texts' => [],
                 'minuses' => [],
             ];
 
-            for($i = 1; $i <=12; $i++) {
+            for ($i = 1; $i <= 12; $i++) {
                 $m = Carbon::createFromDate($request['year'], $i, 1)->format('Y-m-d');
                 $es_grades = EstimateGrade::query()->where('date', $m)
                     ->where('about_id', $user->id)
@@ -66,11 +87,11 @@ class NpsController extends Controller
                 $count_grades = 0;
                 $texts = [];
                 $minuses = [];
-                foreach($es_grades as $es_grade) {
+                foreach ($es_grades as $es_grade) {
                     $count_grades++;
                     $grade += (int)$es_grade->grade;
-                    if($es_grade->text && strlen(trim($es_grade->text)) > 2) $texts[] = $es_grade->text;
-                    if($es_grade->minus && strlen(trim($es_grade->minus)) > 2) $minuses[] = $es_grade->minus;
+                    if ($es_grade->text && strlen(trim($es_grade->text)) > 2) $texts[] = $es_grade->text;
+                    if ($es_grade->minus && strlen(trim($es_grade->minus)) > 2) $minuses[] = $es_grade->minus;
                 }
 
                 $avg = $count_grades > 0 ? round($grade / $count_grades, 1) : '';
@@ -111,11 +132,12 @@ class NpsController extends Controller
         return false;
     }
 
-    public function estimate_your_trainer_get(){
+    public function estimate_your_trainer_get()
+    {
         $user = Auth::user();
         $groups = $user->inGroups();
 
-        if(count($groups) == 0) {
+        if (count($groups) == 0) {
             return redirect('/');
         }
 
@@ -125,7 +147,8 @@ class NpsController extends Controller
         ]);
     }
 
-    public function estimate_your_trainer_post(Request $request){
+    public function estimate_your_trainer_post(Request $request)
+    {
         $user = Auth::user();
         $prev_month = Carbon::now()->subDays(28)->day(1)->format('Y-m-d');
 
@@ -134,15 +157,16 @@ class NpsController extends Controller
         return redirect('/');
     }
 
-    public function saveGrades($grades, $user, $date){
-        foreach($grades as $grade) {
-            if($grade['grade'] != 0) {
+    public function saveGrades($grades, $user, $date)
+    {
+        foreach ($grades as $grade) {
+            if ($grade['grade'] != 0) {
                 $est = EstimateGrade::query()->where('date', $date)
                     ->where('user_id', $user->id)
                     ->where('about_id', $grade['id'])
                     ->first();
 
-                if($est) {
+                if ($est) {
                     $est->grade = $grade['grade'];
                     $est->text = $grade['plus'];
                     $est->minus = $grade['minus'];
@@ -178,8 +202,7 @@ class NpsController extends Controller
             ->pluck('id');
 
 
-
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
             $_users = DB::table('users')
                 ->whereNull('deleted_at')
@@ -189,8 +212,8 @@ class NpsController extends Controller
                 ->whereIn('position_id', $positions)
                 ->get(['users.id', 'users.name', 'users.last_name']);
 
-            foreach($_users as $user) {
-                if(!in_array($user->id, $user_ids)) {
+            foreach ($_users as $user) {
+                if (!in_array($user->id, $user_ids)) {
                     $user_ids[] = $user->id;
                     $users[] = [
                         'id' => $user->id,
@@ -201,7 +224,7 @@ class NpsController extends Controller
             }
         }
 
-        if(count($users) == 0) {
+        if (count($users) == 0) {
             $users[] = [
                 'id' => 0,
                 'name' => 'Без имени',
@@ -220,7 +243,7 @@ class NpsController extends Controller
         $user_ids = [];
         $users = [];
 
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
             $_users = DB::table('users')
                 ->whereNull('deleted_at')
@@ -230,8 +253,8 @@ class NpsController extends Controller
                 ->where('position_id', $position_id) // Руководитель, старший специалист группы
                 ->get(['users.id', 'users.name', 'users.last_name']);
 
-            foreach($_users as $user) {
-                if(!in_array($user->id, $user_ids)) {
+            foreach ($_users as $user) {
+                if (!in_array($user->id, $user_ids)) {
                     $user_ids[] = $user->id;
                     $users[] = [
                         'id' => $user->id,
@@ -242,7 +265,7 @@ class NpsController extends Controller
             }
         }
 
-        if(count($users) == 0) {
+        if (count($users) == 0) {
             $users[] = [
                 'id' => 0,
                 'name' => 'Без имени'
