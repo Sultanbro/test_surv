@@ -927,14 +927,14 @@ class KpiStatisticService
 
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
-dd($kpis);
+
         if ($limitForProfile) {
             $kpis = collect([$kpis->sortBy('priority')->first()]);
         }
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
-
+        dd($kpis);
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
 
