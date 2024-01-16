@@ -151,7 +151,7 @@ class SaveUserKpi extends Command
                 $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
 
                 $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
-
+                dump($item['id'], $item['percent']);
                 $completed_percent = $this->calculator->calcCompleted([
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
