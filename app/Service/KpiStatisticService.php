@@ -1788,12 +1788,12 @@ class KpiStatisticService
         $item['fact'] = floatval($item['fact']);
         if ($item['method'] == 1) {
             if ($item['plan'] != 0) {
-                $item['percent'] = round(($item['fact'] * 100) / $item['plan'], '2');
+                $item['percent'] = round(($item['fact'] * 100) / $item['plan'], 2);
             } else {
                 $item['percent'] = 0;
             }
         } elseif ($item['method'] == 2) {
-            $item['percent'] = round(($item['avg'] * 100) / $item['plan'], '2');
+            $item['percent'] = round(($item['avg'] * 100) / $item['plan'], 2);
         } elseif ($item['method'] == 3 || $item['method'] == 4) {
             $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
         } elseif ($item['method'] == 5 || $item['method'] == 6) {
