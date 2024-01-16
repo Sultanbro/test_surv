@@ -934,7 +934,7 @@ class KpiStatisticService
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
         $currency_rate = (float)(Currency::rates()[$currency] ?? 0.00001);
-
+dd($kpis);
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
 
@@ -962,7 +962,7 @@ class KpiStatisticService
                 $kpi->targetable_type = 'App\ProfileGroup';
                 $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
             }
-dd($kpi);
+
             unset($kpi->users);
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
             $kpi_sum = 0;
