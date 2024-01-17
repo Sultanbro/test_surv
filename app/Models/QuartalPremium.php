@@ -37,6 +37,7 @@ class QuartalPremium extends Model
         'title',
         'text',
         'plan',
+        'cell',
         'from',
         'to',
         'sum',
