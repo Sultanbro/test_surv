@@ -22,14 +22,12 @@ class WhatsAppNotification implements Notification
      */
     public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        if ($recipients == null) {
-            return false;
-        } else {
-            $recipients = $recipients->where('phone', '!=', '');
-            foreach ($recipients as $key => $recipient) {
-                WhatsAppNotificationJob::dispatch($recipient, $message)->delay(now()->addSeconds($key * 2));
-            }
-            return true;
+        if ($recipients == null) return false;
+
+        $recipients = $recipients->where('phone', '!=', '');
+        foreach ($recipients as $key => $recipient) {
+            WhatsAppNotificationJob::dispatch($recipient, $message)->delay(now()->addSeconds($key * 2));
         }
+        return true;
     }
 }
