@@ -143,7 +143,7 @@ class SaveUserKpi extends Command
 
         foreach ($kpis as $key => $kpi) {
             if (!isset($kpi['users'][0])) continue;
-            dump($kpi['id'] . " " . $kpi['completed_80'] . ' ' . $kpi['completed_100']);
+//            dump($kpi['id'] . " " . $kpi['completed_80'] . ' ' . $kpi['completed_100']);
 
             foreach ($kpi['users'][0]['items'] as $item) {
                 $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
@@ -184,11 +184,11 @@ class SaveUserKpi extends Command
                     (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
                     (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
-                dump('id=' . $item['id'] . ' ' . $item['name'] . ' plan=' . $item['plan'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' share=' . $item['share'] . 'earned=' . $earnedActivity);
+//                dump('id=' . $item['id'] . ' ' . $item['name'] . ' plan=' . $item['plan'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' share=' . $item['share'] . 'earned=' . $earnedActivity);
 
                 $earned += $earnedActivity;
 
-                dump($earned);
+//                dump($earned);
 
             }
         }

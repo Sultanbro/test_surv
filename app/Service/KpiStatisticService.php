@@ -811,7 +811,7 @@ class KpiStatisticService
             'positions'
         ]);
 
-        $user = User::with([
+        $user = User::withTrashed()->with([
             'groups',
             'profile_histories_latest' => function ($query) use ($last_date) {
                 $query->whereDate('created_at', '<=', $last_date);
