@@ -1085,6 +1085,7 @@ class KpiStatisticService
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
+
             $kpi->users = $this->getAverageKpiPercent($kpi, $date);
 
             $kpi_sum = 0;
@@ -1376,6 +1377,7 @@ class KpiStatisticService
 
     private function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
+        dd($kpi);
         // check target exists
         if (!$kpi->target) return [];
 
