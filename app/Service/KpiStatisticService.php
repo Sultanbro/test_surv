@@ -1389,7 +1389,6 @@ class KpiStatisticService
 
     private function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
-        dd($kpi);
         $dateFrom = $date->copy()->startOfMonth();
         $dateTo = $date->copy()->endOfMonth();
         // check target exists
