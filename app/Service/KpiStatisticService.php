@@ -996,7 +996,6 @@ class KpiStatisticService
     public function fetchKpiGroupsAndUsers(Request $request): array
     {
         $filters = $request->filters;
-        $limit = $request->limit ? $request->limit : 10;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
 
@@ -1077,7 +1076,7 @@ class KpiStatisticService
             ->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-
+        dd($kpis);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
@@ -1088,7 +1087,6 @@ class KpiStatisticService
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-            dd(1);
             $kpi->users = $this->getAverageKpiPercent($kpi, $date);
 
             $kpi_sum = 0;
