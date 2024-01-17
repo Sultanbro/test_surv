@@ -1408,7 +1408,7 @@ class KpiStatisticService
                 ->get()
                 ->filter(function (User $user) use ($kpi) {
                     $history = $user->profile_histories_latest;
-                    dd_if($user->getKey == 28546, $history);
+                    dd_if($user->getKey() == 28546, $history);
                     if ($history) {
                         $positionsId = json_decode($history->payload, true)['position_id'];
                         return $positionsId == $kpi->targetable_id;
