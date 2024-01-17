@@ -1406,7 +1406,7 @@ class KpiStatisticService
                     $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
                 }])
                 ->get();
-            dd(in_array(28546,$_user_ids->pluck('id')->toArray());
+            dd(in_array(28546,$_user_ids->pluck('id')->toArray()));
 //                ->filter(function (User $user) use ($kpi) {
 //                    $history = $user->profile_histories_latest;
 //                    dd_if($user->getKey == 28546, $history);
