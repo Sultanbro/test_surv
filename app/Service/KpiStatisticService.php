@@ -1397,7 +1397,31 @@ class KpiStatisticService
 
         // Position::class
         if ($type == 3) {
-            $_user_ids = User::withTrashed()->whereNull('deleted_at')->where('position_id', $kpi->targetable_id)->pluck('id')->toArray();
+            $_user_ids = User::withTrashed()
+                ->whereNull('deleted_at')
+                ->with(['profile_histories_latest' => function ($query) use ($date) {
+                    $query->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()]);
+                }])
+//                ->where(function (Builder $query) use ($kpi, $date) {
+//                    $query->where(function (Builder $query) use ($kpi, $date) {
+//                        $query->withWhereHas('profileHistoriesLatest', function (Builder $query) use ($kpi, $date) {
+//                            $query->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()]);
+//                        });
+//                    });
+//                    $query->orWhere('position_id', $kpi->targetable_id);
+//                })
+                ->get()
+                ->filter(function (User $user) use ($kpi) {
+                    $history = $user->profile_histories_latest;
+                    dd_if($user->getKey == 28546, $history);
+                    if ($history) {
+                        $positionsId = json_decode($history->payload, true)['position_id'];
+                        return $positionsId == $kpi->targetable_id;
+                    }
+                    return $user->position_id == $kpi->targetable_id;
+                })
+                ->pluck('id')
+                ->toArray();
         };
 
         $_users = $this->getUserStats($kpi, $_user_ids, $date);

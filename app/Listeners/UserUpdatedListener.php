@@ -41,7 +41,6 @@ class UserUpdatedListener
             'type'              => History::USER_PROFILE_CHANGED,
             'created_at'        => now(),
             'updated_at'        => now(),
-
         ]);
     }
 }

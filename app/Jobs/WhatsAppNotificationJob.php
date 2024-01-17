@@ -24,7 +24,7 @@ class WhatsAppNotificationJob implements ShouldQueue, ShouldBeUnique
      * @return void
      */
 
-    public $uniqueFor = 1800; // The job is unique for 0.5 hour
+    public int $uniqueFor = 1800; // The job is unique for 0.5 hour
 
     /**
      * @var string
