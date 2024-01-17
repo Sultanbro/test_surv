@@ -1088,8 +1088,9 @@ class KpiStatisticService
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-
+            dd(1);
             $kpi->users = $this->getAverageKpiPercent($kpi, $date);
+
             $kpi_sum = 0;
             foreach ($kpi->users as $user) {
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
@@ -1402,14 +1403,6 @@ class KpiStatisticService
                 ->with(['profile_histories_latest' => function ($query) use ($date) {
                     $query->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()]);
                 }])
-//                ->where(function (Builder $query) use ($kpi, $date) {
-//                    $query->where(function (Builder $query) use ($kpi, $date) {
-//                        $query->withWhereHas('profileHistoriesLatest', function (Builder $query) use ($kpi, $date) {
-//                            $query->whereBetween('created_at', [$date->copy()->startOfMonth(), $date->copy()->endOfMonth()]);
-//                        });
-//                    });
-//                    $query->orWhere('position_id', $kpi->targetable_id);
-//                })
                 ->get()
                 ->filter(function (User $user) use ($kpi) {
                     $history = $user->profile_histories_latest;
