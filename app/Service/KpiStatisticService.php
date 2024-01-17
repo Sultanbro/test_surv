@@ -1657,7 +1657,12 @@ class KpiStatisticService
             }
 
             $user['items'] = $kpi_items;
-            $user['avg_percent'] = round($sumKpiPercent / count($kpi_items), 2);
+            if (count($kpi_items) > 0) {
+                $user['avg_percent'] = round($sumKpiPercent / count($kpi_items), 2);
+            } else {
+                $user['avg_percent'] = 0;
+            }
+
 
             $users[] = $user;
         }
