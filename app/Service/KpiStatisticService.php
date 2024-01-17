@@ -1425,7 +1425,6 @@ class KpiStatisticService
             $_users,
             $date,
         );
-        dd($users);
         return $users;
     }
 
