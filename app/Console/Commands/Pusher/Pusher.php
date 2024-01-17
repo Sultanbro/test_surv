@@ -42,6 +42,7 @@ class Pusher extends Command
             ->where('status', 1)
             ->when($this->argument('id'), fn($query) => $query->where('id', $this->argument('id')))
             ->get();
+        dd($notifications);
 
         foreach ($notifications as $notification) {
             $frequency = $notification->frequency;
