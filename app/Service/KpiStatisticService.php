@@ -1417,7 +1417,6 @@ class KpiStatisticService
                 ->pluck('id')
                 ->toArray();
         }
-        dd(in_array(28546, $_user_ids));
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
         // create final users array
@@ -1426,7 +1425,7 @@ class KpiStatisticService
             $_users,
             $date,
         );
-
+        dd($users);
         return $users;
     }
 
