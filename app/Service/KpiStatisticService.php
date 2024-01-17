@@ -1087,14 +1087,13 @@ class KpiStatisticService
             }
 
             $kpi->users = $this->getAverageKpiPercent($kpi, $date);
-            dd($kpi->users);
             $kpi_sum = 0;
             foreach ($kpi->users as $user) {
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
-
+        dd($kpis);
         return [
             'paginator' => $kpis,
             'groups' => ProfileGroup::query()
