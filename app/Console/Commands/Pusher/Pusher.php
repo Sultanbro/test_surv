@@ -83,7 +83,7 @@ class Pusher extends Command
         $mailingSystems = json_decode($notification->type_of_mailing);
         $recipientIds = $this->getUserIds($notification->recipients);
         $recipients = User::query()->find($recipientIds);
-        dd($recipients);
+        dd($recipients->pluck('name'));
         if (!$this->notifyToday($notification)) return;
 
         foreach ($mailingSystems as $mailingSystem) {
