@@ -37,7 +37,8 @@ class NotificationTemplatePusher extends Command
      */
     public function handle()
     {
-        $notifications = MailingNotification::getTemplates()->isActive()
+        $notifications = MailingNotification::getTemplates()
+            ->isActive()
             ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
