@@ -1398,7 +1398,10 @@ class KpiStatisticService
         // Position::class
         if ($type == 3) {
             $_user_ids = User::withTrashed()
-                ->whereNull('deleted_at')
+                ->where(function (Builder $query) use ($dateTo) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>=', $dateTo->format("Y-m-d"));
+                })
                 ->with(['profile_histories_latest' => function ($query) use ($dateFrom, $dateTo) {
                     $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
                 }])
