@@ -124,7 +124,7 @@ class KnowBase extends Model implements CourseInterface
             }
         }
         $books = KnowBase::query()
-            ->with('questions')
+            ->with('questions', 'parent')
             ->where('text', '!=', '')
             ->whereNotNull('text')
             ->whereIn('id', $corp_book_ids)
