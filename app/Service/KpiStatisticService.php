@@ -1093,7 +1093,6 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
-        dd($kpis);
         return [
             'paginator' => $kpis,
             'groups' => ProfileGroup::query()
@@ -1196,7 +1195,7 @@ class KpiStatisticService
         }
 
         $kpi->users = $this->getUsersForKpi($kpi, $date);
-
+        dd($kpi->users);
         $kpi_sum = 0;
         foreach ($kpi->users as $user) {
             $kpi_sum = $kpi_sum + $user['avg_percent'];
@@ -1330,6 +1329,9 @@ class KpiStatisticService
         int    $user_id = 0
     ): array
     {
+        $dateFrom = $date->copy()->startOfMonth();
+        $dateTo = $date->copy()->endOfMonth();
+
         // check target exists
         if (!$kpi->target) return [];
 
@@ -1352,14 +1354,26 @@ class KpiStatisticService
         // Position::class
         if ($type == 3) {
             $_user_ids = User::withTrashed()
-                ->where('position_id', $kpi->targetable_id)
-                ->where(function ($q) use ($date) {
-                    $q->whereNull('deleted_at')->orWhereDate('deleted_at', '>=', $date->startOfMonth()->format('Y-m-d'));
+                ->where(function (Builder $query) use ($dateTo) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>=', $dateTo->format("Y-m-d"));
+                })
+                ->with(['profile_histories_latest' => function ($query) use ($dateFrom, $dateTo) {
+                    $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
+                }])
+                ->get()
+                ->filter(function (User $user) use ($kpi) {
+                    $history = $user->profile_histories_latest;
+                    if ($history) {
+                        $positionsId = json_decode($history->payload, true)['position_id'];
+                        return $positionsId == $kpi->targetable_id;
+                    }
+                    return $user->position_id == $kpi->targetable_id;
                 })
                 ->pluck('id')
                 ->toArray();
-            if ($user_id != 0) $_user_ids = [$user_id];
         }
+
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
