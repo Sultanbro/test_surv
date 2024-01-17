@@ -1402,7 +1402,8 @@ class KpiStatisticService
                 ->with(['profile_histories_latest' => function ($query) use ($dateFrom, $dateTo) {
                     $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
                 }])
-                ->get();
+                ->get()
+                ->pluck('last_name', 'name');
             dd($_user_ids, [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
 //                ->filter(function (User $user) use ($kpi) {
 //                    $history = $user->profile_histories_latest;
