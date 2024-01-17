@@ -37,8 +37,6 @@ class WhatsAppNotification implements Notification
             $jobs[] = $job;
         }
 
-        dd($jobs);
-
         Bus::batch($jobs)->dispatch();
 
         return true;
