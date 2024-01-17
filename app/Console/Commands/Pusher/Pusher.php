@@ -80,15 +80,15 @@ class Pusher extends Command
         MailingNotification $notification
     ): void
     {
+        $notifications = [];
         if (!$this->notifyToday($notification)) return;
-
         $mailingSystems = json_decode($notification->type_of_mailing);
         $recipients = User::query()->find($this->getUserIds($notification->recipients));
-        dd($mailingSystems);
         foreach ($mailingSystems as $mailingSystem) {
-            NotificationFactory::createNotification($mailingSystem)
-                ->send($notification, $notification->title, $recipients);
+            $notifications[] = NotificationFactory::createNotification($mailingSystem);
+//                ->send($notification, $notification->title, $recipients);
         }
+        dd($notifications);
     }
 
     /**
