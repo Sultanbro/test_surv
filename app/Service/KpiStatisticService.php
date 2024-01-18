@@ -1123,6 +1123,13 @@ class KpiStatisticService
         $this->dateFromRequest($request);
         $targetableType = self::TARGET_TYPES[$request->type];
 
+        $this->workdays = collect($this->userWorkdays($request));
+        $this->updatedValues = UpdatedUserStat::query()
+            ->whereMonth('date', $this->from->month)
+            ->whereYear('date', $this->from->year)
+            ->orderBy('date', 'desc')
+            ->get();
+
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
@@ -1151,6 +1158,7 @@ class KpiStatisticService
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
             ->firstOrFail();
+
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
             $payload = json_decode($kpi->histories_latest->payload, true);
