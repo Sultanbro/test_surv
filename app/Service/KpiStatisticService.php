@@ -87,6 +87,12 @@ class KpiStatisticService
      */
     const POSITION = 'App\Position';
 
+    const TARGET_TYPES = [
+        1 => 'App\User',
+        2 => 'App\ProfileGroup',
+        3 => 'App\Position',
+    ];
+
     /**
      * Workdays for kpi_items
      */
@@ -109,6 +115,8 @@ class KpiStatisticService
      * after moving from asi to userstat delete
      */
     public $asis;
+    private Carbon $from;
+    private Carbon $to;
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -1112,74 +1120,33 @@ class KpiStatisticService
      */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
     {
-        $all = $request->all();
-
-        $filters = [
-            'year' => $all['filters']['data_from']['year'] ?? null,
-            'month' => $all['filters']['data_from']['month'] ?? null,
-            'type' => $request->type ? $request->type : 1
-        ];
-
-        $targetableType = 'App\User';
-        switch ($filters['type']) {
-            case 2:
-                $targetableType = 'App\ProfileGroup';
-                break;
-            case 3:
-                $targetableType = 'App\Position';
-                break;
-        }
-
-        if (isset($filters['year']) && isset($filters['month'])) {
-            $date = Carbon::createFromDate(
-                $filters['year'],
-                $filters['month']
-            )->startOfMonth();
-        } else {
-            $date = Carbon::now()->startOfMonth();
-        }
-
-
-        $this->workdays = collect($this->userWorkdays($request));
-        $this->updatedValues = UpdatedUserStat::query()
-            ->whereMonth('date', $date->month)
-            ->whereYear('date', $date->year)
-            ->orderBy('date', 'desc')
-            ->get();
-        /**
-         * get kpis
-         */
-        $start_date = $date->startOfMonth()->format("Y-m-d");
-        $last_date = $date->endOfMonth()->format('Y-m-d');
+        $this->dateFromRequest($request);
+        $targetableType = self::TARGET_TYPES[$request->type];
 
         $kpi = Kpi::withTrashed()
             ->with([
-                'histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                'histories_latest' => function ($query) {
+                    $query->whereBetween('created_at', [$this->from, $this->to]);
                 },
-                'items.histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                'items.histories_latest' => function ($query) {
+                    $query->whereBetween('created_at', [$this->from, $this->to]);
                 },
-                'items' => function (HasMany $query) use ($last_date, $start_date) {
-                    $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
-                        $query->whereBetween('created_at', [$start_date, $last_date]);
+                'items' => function (HasMany $query) {
+                    $query->with(['histories' => function (MorphMany $query) {
+                        $query->whereBetween('created_at', [$this->from, $this->to]);
                     }]);
-                    $query->where(function (Builder $query) use ($start_date, $last_date) {
+                    $query->where(function (Builder $query) {
                         $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $last_date);
+                        $query->orWhere('deleted_at', '>', $this->to);
                     });
                 },
                 'items.activity'
             ])
-            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
-                ->endOfMonth()
-                ->format('Y-m-d')
-            )
+            ->whereDate('created_at', '<=', $this->from)
             ->where(fn($query) => $query->whereNull('deleted_at')
                 ->orWhere(
-                    fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
-                        ->endOfMonth()
-                        ->format('Y-m-d')))
+                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
+                )
             )
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
@@ -1194,11 +1161,13 @@ class KpiStatisticService
             }
         }
 
-        $kpi->users = $this->getUsersForKpi($kpi, $date);
+        $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
+
         foreach ($kpi->users as $user) {
             $kpi_sum = $kpi_sum + $user['avg_percent'];
         }
+
         $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
 
         return [
@@ -2358,5 +2327,13 @@ class KpiStatisticService
             $counter = strtotime("+1 day", $counter);
         }
         return $count;
+    }
+
+    private function dateFromRequest(Request $request): void
+    {
+        $all = $request->all();
+        $date = $all['filters']['data_from']['year'] ?? null;
+        $this->from = Carbon::parse($date)->startOfMonth();
+        $this->to = Carbon::parse($date)->endOfMonth();
     }
 }
