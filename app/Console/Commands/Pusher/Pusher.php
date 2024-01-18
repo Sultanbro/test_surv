@@ -42,7 +42,7 @@ class Pusher extends Command
     {
         $services = MailingNotification::with('recipients')
             ->whereIn('frequency', [
-//                MailingEnum::DAILY,
+                MailingEnum::DAILY,
                 MailingEnum::WEEKLY,
                 MailingEnum::MONTHLY
             ])
@@ -55,8 +55,8 @@ class Pusher extends Command
             if (!method_exists($this, $frequency)) {
                 throw new Exception("Method $frequency does not exist");
             }
-
-            $this->{$frequency}($notification);
+            dump($frequency);
+//            $this->{$frequency}($notification);
         }
     }
 

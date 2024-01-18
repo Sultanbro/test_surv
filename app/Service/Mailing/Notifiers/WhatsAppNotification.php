@@ -3,8 +3,6 @@
 namespace App\Service\Mailing\Notifiers;
 
 use App\Jobs\WhatsAppNotificationJob;
-use Exception;
-use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
@@ -30,7 +28,7 @@ class WhatsAppNotification implements Notification
         $recipients = $recipients->where('phone', '!=', '');
 
         $jobs = [];
-dd($recipients);
+
         foreach ($recipients as $recipient) {
             $job = new WhatsAppNotificationJob($recipient, $message);
             $job->delay(now()->addSeconds(2));
@@ -38,7 +36,6 @@ dd($recipients);
         }
 
         Bus::batch($jobs)->dispatch();
-
         return true;
     }
 }
