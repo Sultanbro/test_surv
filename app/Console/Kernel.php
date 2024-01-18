@@ -63,8 +63,12 @@ class Kernel extends ConsoleKernel
         | Только запускаются у компании Bpartners в bp.jobtron.org
         |
         */
-        $schedule->command('tenants:run run:pusher --tenants=bp')->dailyAt('08:00');
-        $schedule->command('tenants:run run:pusher:template --tenants=bp')->dailyAt('08:00');
+        $schedule->command('tenants:run run:pusher --tenants=bp')
+            ->withoutOverlapping()
+            ->dailyAt('08:00');
+        $schedule->command('tenants:run run:pusher:template --tenants=bp')
+            ->withoutOverlapping()
+            ->dailyAt('08:00');
         $schedule->command('tenants:run check:ref-duplicates --tenants=bp')->everyTenMinutes(); //
         $schedule->command('tenants:run fetch:anviz --tenants=bp')->everyMinute(); // Anviz W1 Pro Учет времени: выгрузка истории отпечатков с базы и запись в Timetracking
         $schedule->command('tenants:run recruiter:attendance --tenants=bp')->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших

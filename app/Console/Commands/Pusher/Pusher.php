@@ -45,7 +45,6 @@ class Pusher extends Command
             ->where('status', 1)
             ->when($this->argument('id'), fn($query) => $query->where('id', $this->argument('id')))
             ->get();
-        dd($services->pluck('name'));
         foreach ($services as $notification) {
             $frequency = $notification->frequency;
 
@@ -66,7 +65,7 @@ class Pusher extends Command
         MailingNotification $notification
     ): void
     {
-        $this->send($notification);
+        $this->notify($notification);
     }
 
     /**
@@ -78,8 +77,8 @@ class Pusher extends Command
         MailingNotification $notification
     ): void
     {
-        if (!$this->notifyToday($notification, self::WEEKLY)) return;
-        $this->send($notification);
+        if (!$this->shouldNotifyToday($notification, self::WEEKLY)) return;
+        $this->notify($notification);
     }
 
     /**
@@ -91,11 +90,11 @@ class Pusher extends Command
         MailingNotification $notification,
     ): void
     {
-        if (!$this->notifyToday($notification, self::MONTHLY)) return;
-        $this->send($notification);
+        if (!$this->shouldNotifyToday($notification, self::MONTHLY)) return;
+        $this->notify($notification);
     }
 
-    function notifyToday(MailingNotification $notification, string $type): bool
+    function shouldNotifyToday(MailingNotification $notification, string $type): bool
     {
         return match ($type) {
             self::WEEKLY => in_array(Carbon::now()->dayOfWeekIso, json_decode($notification->days)),
@@ -108,14 +107,15 @@ class Pusher extends Command
      * @param MailingNotification $notification
      * @throws Throwable
      */
-    private function send(MailingNotification $notification): void
+    private function notify(MailingNotification $notification): void
     {
         $services = [];
+
         $mailingSystems = json_decode($notification->type_of_mailing);
         foreach ($mailingSystems as $mailingSystem) {
             $services[] = NotificationFactory::createNotification($mailingSystem);
         }
-
+        dd($services);
         $recipients = User::query()->find($this->getUserIds($notification->recipients));
         foreach ($services as $service) {
             $service->send($notification, $notification->title, $recipients);
