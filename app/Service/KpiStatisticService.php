@@ -1142,7 +1142,7 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-//            ->where('created_at', '<=', $this->to->format("Y-m-d"))
+            ->where('created_at', '<=', $this->to->format("Y-m-d"))
 //            ->where(fn($query) => $query->whereNull('deleted_at')
 //                ->orWhere(
 //                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
