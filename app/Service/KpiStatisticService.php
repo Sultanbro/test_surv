@@ -2341,7 +2341,8 @@ class KpiStatisticService
         $all = $request->all();
         $year = $all['filters']['data_from']['year'] ?? now()->year;
         $month = $all['filters']['data_from']['moth'] ?? now()->month;
-        $this->from = Carbon::parse($year, $month)->startOfMonth();
-        $this->to = Carbon::parse($year, $month)->endOfMonth();
+        $day = $all['filters']['data_from']['day'] ?? now()->day;
+        $this->from = Carbon::createFromDate($year, $month,$day)->startOfMonth();
+        $this->to = Carbon::createFromDate($year, $month,$day)->endOfMonth();
     }
 }
