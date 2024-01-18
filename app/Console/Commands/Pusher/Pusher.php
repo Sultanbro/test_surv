@@ -55,8 +55,7 @@ class Pusher extends Command
             if (!method_exists($this, $frequency)) {
                 throw new Exception("Method $frequency does not exist");
             }
-            dump($frequency);
-//            $this->{$frequency}($notification);
+            $this->{$frequency}($notification);
         }
     }
 

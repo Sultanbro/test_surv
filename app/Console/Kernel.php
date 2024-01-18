@@ -65,7 +65,7 @@ class Kernel extends ConsoleKernel
         */
         $schedule->command('tenants:run run:pusher --tenants=bp')
             ->withoutOverlapping()
-            ->dailyAt('08:00');
+            ->dailyAt('08:42');
         $schedule->command('tenants:run run:pusher:template --tenants=bp')
             ->withoutOverlapping()
             ->dailyAt('08:00');
