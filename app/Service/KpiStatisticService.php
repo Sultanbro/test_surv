@@ -1142,16 +1142,15 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where('created_at', '<=', $this->to->format("Y-m-d"))
-//            ->where(fn($query) => $query->whereNull('deleted_at')
-//                ->orWhere(
-//                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
-//                )
-//            )
+//            ->where('created_at', '<=', $this->to->format("Y-m-d"))
+            ->where(fn($query) => $query->whereNull('deleted_at')
+                ->orWhere(
+                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
+                )
+            )
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
             ->firstOrFail();
-        dd($kpi);
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
             $payload = json_decode($kpi->histories_latest->payload, true);
