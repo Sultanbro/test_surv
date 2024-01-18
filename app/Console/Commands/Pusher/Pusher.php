@@ -41,7 +41,11 @@ class Pusher extends Command
     public function handle(): void
     {
         $services = MailingNotification::with('recipients')
-            ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
+            ->whereIn('frequency', [
+//                MailingEnum::DAILY,
+                MailingEnum::WEEKLY,
+                MailingEnum::MONTHLY
+            ])
             ->where('status', 1)
             ->when($this->argument('id'), fn($query) => $query->where('id', $this->argument('id')))
             ->get();
