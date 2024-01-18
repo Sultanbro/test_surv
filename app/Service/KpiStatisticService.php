@@ -1122,7 +1122,7 @@ class KpiStatisticService
     {
         $this->dateFromRequest($request);
         $targetableType = self::TARGET_TYPES[$request->type];
-        dd($targetableType);
+
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
@@ -1142,7 +1142,7 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->whereDate('created_at', '<=', $this->from)
+            ->where('created_at', '<=', $this->to)
             ->where(fn($query) => $query->whereNull('deleted_at')
                 ->orWhere(
                     fn($query) => $query->whereDate('deleted_at', '>', $this->from)
@@ -1150,7 +1150,9 @@ class KpiStatisticService
             )
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
-            ->firstOrFail();
+            ->first();
+
+        dd($kpi);
 
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
