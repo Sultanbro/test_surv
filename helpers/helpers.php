@@ -38,7 +38,7 @@ if (!function_exists('translit')) {
         } while ($st != $prev_st);
         $str = preg_replace("/_{2,}/", " ", $st);
         $arr = explode(' ', $str);
-        $str = \Illuminate\Support\Arr::map($arr, fn(string $item) => Str::ucfirst($item));
+        $str = Arr::map($arr, fn(string $item) => Str::ucfirst($item));
         return Arr::join($str, ' ');
     }
 }
