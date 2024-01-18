@@ -1122,7 +1122,7 @@ class KpiStatisticService
     {
         $this->dateFromRequest($request);
         $targetableType = self::TARGET_TYPES[$request->type];
-
+        dd($targetableType);
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
