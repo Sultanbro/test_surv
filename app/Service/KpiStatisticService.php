@@ -1149,7 +1149,7 @@ class KpiStatisticService
                 )
             )
             ->where('targetable_id', $targetableId)
-            ->where('targetable_type', $targetableType)
+//            ->where('targetable_type', $targetableType)
             ->first();
 
         dd($kpi);
