@@ -119,7 +119,7 @@ class Pusher extends Command
         foreach ($mailingSystems as $mailingSystem) {
             $services[] = NotificationFactory::createNotification($mailingSystem);
         }
-        dd($services);
+
         $recipients = User::query()->find($this->getUserIds($notification->recipients));
         foreach ($services as $service) {
             $service->send($notification, $notification->title, $recipients);

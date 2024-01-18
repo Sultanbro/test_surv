@@ -30,7 +30,7 @@ class WhatsAppNotification implements Notification
         $recipients = $recipients->where('phone', '!=', '');
 
         $jobs = [];
-
+dd($recipients);
         foreach ($recipients as $recipient) {
             $job = new WhatsAppNotificationJob($recipient, $message);
             $job->delay(now()->addSeconds(2));
