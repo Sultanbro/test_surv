@@ -1129,7 +1129,7 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-
+        dd($this->from->format("Y-m-d"));
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
