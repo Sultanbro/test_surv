@@ -1129,7 +1129,6 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-        dd($this->from->format("Y-m-d"));
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
@@ -1149,7 +1148,7 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-//            ->where('created_at', '<=', $this->from->format("Y-m-d"))
+            ->where('created_at', '<=', $this->to)
             ->where(fn($query) => $query->whereNull('deleted_at')
                 ->orWhere(
                     fn($query) => $query->whereDate('deleted_at', '>', $this->from)
@@ -2339,8 +2338,9 @@ class KpiStatisticService
     private function dateFromRequest(Request $request): void
     {
         $all = $request->all();
-        $date = $all['filters']['data_from']['year'] ?? null;
-        $this->from = Carbon::parse($date)->startOfMonth();
-        $this->to = Carbon::parse($date)->endOfMonth();
+        $year = $all['filters']['data_from']['year'] ?? now()->year;
+        $month = $all['filters']['data_from']['moth'] ?? now()->month;
+        $this->from = Carbon::parse($year, $month)->startOfMonth();
+        $this->to = Carbon::parse($year, $month)->endOfMonth();
     }
 }
