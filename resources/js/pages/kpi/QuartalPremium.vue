@@ -449,6 +449,11 @@
 																	{{ activity.name }}
 																</option>
 															</select>
+															<input
+																v-if="Number(item.source) === 1 && activity.name === 'Ячейка из сводной'"
+																v-model="item.cell"
+																type="text"
+															>
 														</div>
 													</template>
 													<template v-else-if="field.key == 'unit'">
@@ -502,10 +507,10 @@
 														>
 															&nbsp;
 														</b-form-checkbox>
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveItemFromTable(p, i)"
-														/>
+														/> -->
 														<i
 															class="fa fa-trash btn btn-danger btn-icon"
 															@click="deleteItem(p, i)"
@@ -766,7 +771,7 @@ import SuperSelect from '@/components/SuperSelect'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 import {fields, newQuartalPremium} from './quartal_premiums.js';
-import {findModel, sources} from './helpers.js';
+import { findModel, sources } from './helpers.js';
 
 export default {
 	name: 'QuartalPremiums',
