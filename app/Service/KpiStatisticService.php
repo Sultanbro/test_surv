@@ -1058,10 +1058,10 @@ class KpiStatisticService
                 $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                            ->orWhere('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof Position) {
                         $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                            ->orWhereDate('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof ProfileGroup) {
                         $q->where('active', 1);
                     }
@@ -1156,11 +1156,28 @@ class KpiStatisticService
                     fn($query) => $query->whereDate('deleted_at', '>', $this->from)
                 )
             )
-            ->where('targetable_id', $targetableId)
-            ->where('targetable_type', $targetableType)
-//            ->when($targetableType !== self::TARGET_TYPES[0], function (Builder $query) use ($targetableType) {
-//                $query->where('targetable_type', $targetableType);
-//            })
+            ->where(function (Builder $query) use ($targetableType, $targetableId) {
+                $query->where(function (Builder $query) use ($targetableType, $targetableId) {
+                    $query->where('targetable_id', $targetableId);
+                    $query->where('targetable_type', $targetableType);
+                });
+                $query->orWhere(function (Builder $query) use ($targetableType, $targetableId) {
+                    $query->whereHas('users', fn($q) => $q
+                        ->where('kpiable_type', $targetableType)
+                        ->where('kpiable_id', $targetableId)
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $this->from));
+                    $query->orWhereHas('positions', fn($q) => $q
+                        ->where('kpiable_type', $targetableType)
+                        ->where('kpiable_id', $targetableId)
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $this->from));
+                    $query->orWhereHas('groups', fn($q) => $q
+                        ->where('kpiable_type', $targetableType)
+                        ->where('kpiable_id', $targetableId)
+                        ->where('active', 1));
+                });
+            })
             ->firstOrFail();
 
         $kpi->kpi_items = [];
