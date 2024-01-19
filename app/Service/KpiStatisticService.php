@@ -88,6 +88,7 @@ class KpiStatisticService
     const POSITION = 'App\Position';
 
     const TARGET_TYPES = [
+        0 => 'App\ProfileGroup',
         1 => 'App\User',
         2 => 'App\ProfileGroup',
         3 => 'App\Position',
@@ -1157,6 +1158,9 @@ class KpiStatisticService
             )
             ->where('targetable_id', $targetableId)
             ->where('targetable_type', $targetableType)
+//            ->when($targetableType !== self::TARGET_TYPES[0], function (Builder $query) use ($targetableType) {
+//                $query->where('targetable_type', $targetableType);
+//            })
             ->firstOrFail();
 
         $kpi->kpi_items = [];
@@ -2342,7 +2346,7 @@ class KpiStatisticService
         $year = $all['filters']['data_from']['year'] ?? now()->year;
         $month = $all['filters']['data_from']['moth'] ?? now()->month;
         $day = $all['filters']['data_from']['day'] ?? now()->day;
-        $this->from = Carbon::createFromDate($year, $month,$day)->startOfMonth();
-        $this->to = Carbon::createFromDate($year, $month,$day)->endOfMonth();
+        $this->from = Carbon::createFromDate($year, $month, $day)->startOfMonth();
+        $this->to = Carbon::createFromDate($year, $month, $day)->endOfMonth();
     }
 }
