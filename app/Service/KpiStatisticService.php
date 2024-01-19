@@ -1185,7 +1185,7 @@ class KpiStatisticService
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
         }
-        dd($kpi);
+        $kpi->target['type'] = $request->type;
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -1325,7 +1325,6 @@ class KpiStatisticService
         $dateFrom = $date->copy()->startOfMonth();
         $dateTo = $date->copy()->endOfMonth();
 
-        // check target exists
         if (!$kpi->target) return [];
 
         $type = $kpi->target['type'];
