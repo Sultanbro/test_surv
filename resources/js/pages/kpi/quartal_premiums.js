@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import momentjs from 'moment'
 
-var fields = [
+export const fields = [
 	{
 		name: 'Кому',
 		key: 'target',
@@ -103,8 +103,7 @@ var fields = [
 
 const datestring = momentjs(new Date()).utc().format('DD.MM.YYYY HH:mm')
 
-
-function newQuartalPremium() {
+export function newQuartalPremium() {
 	return  {
 		id: 0,
 		target: null,
@@ -126,8 +125,3 @@ function newQuartalPremium() {
 	};
 }
 
-// eslint-disable-next-line no-undef
-module.exports = {
-	fields: fields,
-	newQuartalPremium: newQuartalPremium
-};
