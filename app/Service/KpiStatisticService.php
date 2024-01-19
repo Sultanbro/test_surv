@@ -1164,17 +1164,17 @@ class KpiStatisticService
                 $query->orWhere(function (Builder $query) use ($targetableType, $targetableId) {
                     $query->whereHas('users', fn($q) => $q
                         ->where('kpiable_type', $targetableType)
-                        ->where('kpiable_id', $targetableId)
+                        ->where('kpi_id', $targetableId)
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('positions', fn($q) => $q
                         ->where('kpiable_type', $targetableType)
-                        ->where('kpiable_id', $targetableId)
+                        ->where('kpi_id', $targetableId)
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('groups', fn($q) => $q
                         ->where('kpiable_type', $targetableType)
-                        ->where('kpiable_id', $targetableId)
+                        ->where('kpi_id', $targetableId)
                         ->where('active', 1));
                 });
             })
