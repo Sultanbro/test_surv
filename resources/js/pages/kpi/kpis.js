@@ -146,38 +146,32 @@ function numberize(a) {
  * @returns
  */
 function calcCompleted(el) {
-	let res = 0;
+	let res = 0
 
-	let fact = numberize(el.fact)
-	let avg = numberize(el.avg)
-	// let records_count = numberize(el.records_count)
-	let plan = el.plan;
-	// let workdays = numberize(el.workdays);
+	const fact = numberize(el.fact)
+	const avg = numberize(el.avg)
+	const plan = Number(el.plan) || 0
+	const method = Number(el.method) || 0
 
-	// if(plan <= 0) return 0;
-
-	if(el.method == 1) {
-		res = (fact / plan * 100).toFixed(2);
-	}
-
-	if(el.method == 2) {
+	switch(method){
+	case 1:
+		res = (fact / plan * 100).toFixed(2)
+		break;
+	case 2:
 		res = el.percent
-	}
-
-	if(el.method == 3) {
-		res = plan - fact >= 0 ? 100 : 0;
-	}
-
-	if(el.method == 4) {
-		res = plan - avg >= 0 ? 100 : 0;
-	}
-
-	if(el.method == 5) {
-		res = fact - plan >= 0 ? 100 : 0;
-	}
-
-	if(el.method == 6) {
-		res = avg - plan >= 0 ? 100 : 0;
+		break;
+	case 3:
+		res = plan - fact >= 0 ? 100 : 0
+		break;
+	case 4:
+		res = plan - avg >= 0 ? 100 : 0
+		break;
+	case 5:
+		res = fact - plan >= 0 ? 100 : 0
+		break;
+	case 6:
+		res = avg - plan >= 0 ? 100 : 0
+		break;
 	}
 
 	return Number(res);
