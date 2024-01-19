@@ -1406,8 +1406,6 @@ class KpiStatisticService
                 (new UserService())->getEmployeesWithFiredByGroupIds($piv_groups, $date)->pluck('id')
                     ->toArray()
             );
-
-            dd($_user_ids);
         }
 
         // get users with user stats
