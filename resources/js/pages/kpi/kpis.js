@@ -100,6 +100,7 @@ var datestring = formatDate(new Date());
 function newKpi() {
 	return {
 		id: 0,
+		is_active: true,
 		target: null,
 		targets: [],
 		completed_80: 10000,
