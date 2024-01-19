@@ -450,7 +450,7 @@
 																</option>
 															</select>
 															<input
-																v-if="Number(item.source) === 1 && activity.name === 'Ячейка из сводной'"
+																v-if="Number(item.source) === 1 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
 																v-model="item.cell"
 																type="text"
 															>
