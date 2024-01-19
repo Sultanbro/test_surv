@@ -1368,13 +1368,13 @@ class KpiStatisticService
             $_user_ids = [];
             $piv_users = $kpi->users()
                 ->select('kpiable_id')
-                ->get(['kpiable_id'])
+                ->pluck('kpiable_id')
                 ->toArray();
             $_user_ids = array_merge($piv_users, $_user_ids);
 
             $piv_positions = $kpi->positions()
                 ->select('kpiable_id')
-                ->get(['kpiable_id'])
+                ->pluck('kpiable_id')
                 ->toArray();
 
             $_user_ids = array_merge($_user_ids, User::withTrashed()
@@ -1399,7 +1399,7 @@ class KpiStatisticService
 
             $piv_groups = $kpi->groups()
                 ->select('kpiable_id')
-                ->get(['kpiable_id'])
+                ->pluck('kpiable_id')
                 ->toArray();
             dd($piv_groups);
             $_user_ids = array_merge($_user_ids,
