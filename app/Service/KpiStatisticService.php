@@ -1367,13 +1367,13 @@ class KpiStatisticService
         if ($type == 0) {
             $_user_ids = [];
             $piv_users = $kpi->users()
-                ->select('id')
+                ->select('kpiable_id')
                 ->get()
                 ->toArray();
             $_user_ids = array_merge($piv_users, $_user_ids);
 
             $piv_positions = $kpi->positions()
-                ->select('id')
+                ->select('kpiable_id')
                 ->get()
                 ->toArray();
 
@@ -1398,7 +1398,7 @@ class KpiStatisticService
                 ->toArray(), $piv_users);
 
             $piv_groups = $kpi->groups()
-                ->select('id')
+                ->select('kpiable_id')
                 ->get()
                 ->toArray();
 
