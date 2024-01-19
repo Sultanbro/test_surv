@@ -1185,7 +1185,7 @@ class KpiStatisticService
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
         }
-
+        dd($kpi);
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -1329,7 +1329,6 @@ class KpiStatisticService
         if (!$kpi->target) return [];
 
         $type = $kpi->target['type'];
-        dd($type);
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
