@@ -1163,17 +1163,14 @@ class KpiStatisticService
                 });
                 $query->orWhere(function (Builder $query) use ($targetableType, $targetableId) {
                     $query->whereHas('users', fn($q) => $q
-                        ->where('kpiable_type', $targetableType)
                         ->where('kpi_id', $targetableId)
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('positions', fn($q) => $q
-                        ->where('kpiable_type', $targetableType)
                         ->where('kpi_id', $targetableId)
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('groups', fn($q) => $q
-                        ->where('kpiable_type', $targetableType)
                         ->where('kpi_id', $targetableId)
                         ->where('active', 1));
                 });
@@ -1332,7 +1329,7 @@ class KpiStatisticService
         if (!$kpi->target) return [];
 
         $type = $kpi->target['type'];
-
+        dd($type);
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
