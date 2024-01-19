@@ -1185,7 +1185,6 @@ class KpiStatisticService
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
         }
-        $kpi->target['type'] = $request->type;
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -1325,9 +1324,8 @@ class KpiStatisticService
         $dateFrom = $date->copy()->startOfMonth();
         $dateTo = $date->copy()->endOfMonth();
 
-        if (!$kpi->target) return [];
 
-        $type = $kpi->target['type'];
+        $type = $kpi->target['type'] ?? 0;
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
@@ -1365,6 +1363,52 @@ class KpiStatisticService
                 ->toArray();
         }
 
+
+        if ($type == 0) {
+            $_user_ids = [];
+            $piv_users = $kpi->users()
+                ->select('id')
+                ->get()
+                ->toArray();
+            $_user_ids = array_merge($piv_users, $_user_ids);
+
+            $piv_positions = $kpi->positions()
+                ->select('id')
+                ->get()
+                ->toArray();
+
+            $_user_ids = array_merge($_user_ids, User::withTrashed()
+                ->where(function (Builder $query) use ($dateTo) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>=', $dateTo->format("Y-m-d"));
+                })
+                ->with(['profile_histories_latest' => function ($query) use ($dateFrom, $dateTo) {
+                    $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
+                }])
+                ->get()
+                ->filter(function (User $user) use ($piv_positions) {
+                    $history = $user->profile_histories_latest;
+                    if ($history) {
+                        $positionsId = json_decode($history->payload, true)['position_id'];
+                        return in_array($positionsId, $piv_positions);
+                    }
+                    return in_array($user->position_id, $piv_positions);
+                })
+                ->pluck('id')
+                ->toArray(), $piv_users);
+
+            $piv_groups = $kpi->groups()
+                ->select('id')
+                ->get()
+                ->toArray();
+
+            $_user_ids = array_merge($_user_ids,
+                (new UserService())->getEmployeesWithFiredByGroupIds($piv_groups, $date)->pluck('id')
+                    ->toArray()
+            );
+
+            dd($_user_ids);
+        }
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
