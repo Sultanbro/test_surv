@@ -1401,7 +1401,7 @@ class KpiStatisticService
                 ->select('kpiable_id')
                 ->pluck('kpiable_id')
                 ->toArray();
-            dd($piv_groups);
+
             $_user_ids = array_merge($_user_ids,
                 (new UserService())->getEmployeesWithFiredByGroupIds($piv_groups, $date)->pluck('id')
                     ->toArray()
