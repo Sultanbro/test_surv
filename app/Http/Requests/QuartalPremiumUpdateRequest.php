@@ -63,6 +63,7 @@ class QuartalPremiumUpdateRequest extends FormRequest
         $from = Arr::get($validated, 'from');
         $to = Arr::get($validated, 'to');
         $sum = Arr::get($validated, 'sum');
+        $cell = Arr::get($validated, 'cell');
 
         return new QuarterPremiumUpdateDTO(
             $id,
@@ -73,7 +74,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
             $plan,
             $from,
             $to,
-            $sum
+            $sum,
+            $cell,
         );
     }
 }
