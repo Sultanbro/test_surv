@@ -512,6 +512,24 @@ class UserService
             ->groupBy('users.id')
             ->get();
     }
+    public function getEmployeesWithFiredByGroupIds(array $groupIds, Carbon|string $date): Collection
+    {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+
+        return User::withTrashed()
+            ->selectRaw('users.id as id, users.deleted_at as deleted_at')
+            ->join('group_user as pivot', 'users.id', '=', 'pivot.user_id')
+            ->join('profile_groups as g', 'g.id', '=', 'pivot.group_id')
+            ->whereIn('g.id', $groupIds)
+            ->where(function ($query) use ($date) {
+                $query->whereNull('pivot.to');
+                $query->orWhere(function (Builder $query) use ($date) {
+                    $query->where('pivot.to', '>=', $date->startOfMonth()->format('Y-m-d'));
+                });
+            })
+            ->groupBy('users.id')
+            ->get();
+    }
 
     /**
      * @param $date

@@ -88,6 +88,7 @@ class KpiStatisticService
     const POSITION = 'App\Position';
 
     const TARGET_TYPES = [
+        0 => 'App\ProfileGroup',
         1 => 'App\User',
         2 => 'App\ProfileGroup',
         3 => 'App\Position',
@@ -1092,10 +1093,10 @@ class KpiStatisticService
                 $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                            ->orWhere('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof Position) {
                         $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $start_date, $last_date);
+                            ->orWhereDate('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof ProfileGroup) {
                         $q->where('active', 1);
                     }
@@ -1190,8 +1191,25 @@ class KpiStatisticService
                     fn($query) => $query->whereDate('deleted_at', '>', $this->from)
                 )
             )
-            ->where('targetable_id', $targetableId)
-            ->where('targetable_type', $targetableType)
+            ->where(function (Builder $query) use ($targetableType, $targetableId) {
+                $query->where(function (Builder $query) use ($targetableType, $targetableId) {
+                    $query->where('targetable_id', $targetableId);
+                    $query->where('targetable_type', $targetableType);
+                });
+                $query->orWhere(function (Builder $query) use ($targetableType, $targetableId) {
+                    $query->whereHas('users', fn($q) => $q
+                        ->where('kpi_id', $targetableId)
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $this->from));
+                    $query->orWhereHas('positions', fn($q) => $q
+                        ->where('kpi_id', $targetableId)
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $this->from));
+                    $query->orWhereHas('groups', fn($q) => $q
+                        ->where('kpi_id', $targetableId)
+                        ->where('active', 1));
+                });
+            })
             ->firstOrFail();
 
         $kpi->kpi_items = [];
@@ -1202,7 +1220,6 @@ class KpiStatisticService
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
         }
-
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -1342,11 +1359,8 @@ class KpiStatisticService
         $dateFrom = $date->copy()->startOfMonth();
         $dateTo = $date->copy()->endOfMonth();
 
-        // check target exists
-        if (!$kpi->target) return [];
 
-        $type = $kpi->target['type'];
-
+        $type = $kpi->target['type'] ?? 0;
         // User::class
         if ($type == 1) {
             $_user_ids = [$kpi->targetable_id];
@@ -1384,6 +1398,50 @@ class KpiStatisticService
                 ->toArray();
         }
 
+
+        if ($type == 0) {
+            $_user_ids = [];
+            $piv_users = $kpi->users()
+                ->select('kpiable_id')
+                ->pluck('kpiable_id')
+                ->toArray();
+            $_user_ids = array_merge($piv_users, $_user_ids);
+
+            $piv_positions = $kpi->positions()
+                ->select('kpiable_id')
+                ->pluck('kpiable_id')
+                ->toArray();
+
+            $_user_ids = array_merge($_user_ids, User::withTrashed()
+                ->where(function (Builder $query) use ($dateTo) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>=', $dateTo->format("Y-m-d"));
+                })
+                ->with(['profile_histories_latest' => function ($query) use ($dateFrom, $dateTo) {
+                    $query->whereBetween('created_at', [$dateFrom->format("Y-m-d"), $dateTo->format("Y-m-d")]);
+                }])
+                ->get()
+                ->filter(function (User $user) use ($piv_positions) {
+                    $history = $user->profile_histories_latest;
+                    if ($history) {
+                        $positionsId = json_decode($history->payload, true)['position_id'];
+                        return in_array($positionsId, $piv_positions);
+                    }
+                    return in_array($user->position_id, $piv_positions);
+                })
+                ->pluck('id')
+                ->toArray(), $piv_users);
+
+            $piv_groups = $kpi->groups()
+                ->select('kpiable_id')
+                ->pluck('kpiable_id')
+                ->toArray();
+
+            $_user_ids = array_merge($_user_ids,
+                (new UserService())->getEmployeesWithFiredByGroupIds($piv_groups, $date)->pluck('id')
+                    ->toArray()
+            );
+        }
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
@@ -2377,7 +2435,7 @@ class KpiStatisticService
         $year = $all['filters']['data_from']['year'] ?? now()->year;
         $month = $all['filters']['data_from']['moth'] ?? now()->month;
         $day = $all['filters']['data_from']['day'] ?? now()->day;
-        $this->from = Carbon::createFromDate($year, $month,$day)->startOfMonth();
-        $this->to = Carbon::createFromDate($year, $month,$day)->endOfMonth();
+        $this->from = Carbon::createFromDate($year, $month, $day)->startOfMonth();
+        $this->to = Carbon::createFromDate($year, $month, $day)->endOfMonth();
     }
 }
