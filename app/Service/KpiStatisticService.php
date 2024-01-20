@@ -835,11 +835,11 @@ class KpiStatisticService
             $position_id = $payload['position_id'];
         }
 
-        $groups = ($user->inGroups())->pluck('id')->toArray();
+        $activeGroups = ($user->inGroups())->pluck('id')->toArray();
         $droppedGroups = $user->droppedGroups($date);
 
 
-        $groups = array_merge($groups, $droppedGroups);
+        $groups = array_merge($activeGroups, $droppedGroups);
 
         //// get user kpis
         $kpis->withCount([
@@ -847,8 +847,12 @@ class KpiStatisticService
                 $q->where('kpiables.kpiable_id', $user_id)
                     ->where('kpiables.kpiable_type', User::class);
             },
-            'groups as has_group' => function ($q) use ($groups) {
-                $q->whereIn('kpiables.kpiable_id', $groups)
+            'groups as has_group' => function ($q) use ($activeGroups) {
+                $q->whereIn('kpiables.kpiable_id', $activeGroups)
+                    ->where('kpiables.kpiable_type', ProfileGroup::class);
+            },
+            'groups as has_dropped_group' => function ($q) use ($droppedGroups) {
+                $q->whereIn('kpiables.kpiable_id', $droppedGroups)
                     ->where('kpiables.kpiable_type', ProfileGroup::class);
             },
             'positions as has_position' => function ($q) use ($position_id) {
@@ -907,22 +911,44 @@ class KpiStatisticService
             })
             ->get();
 
-        $kpis = $kpis->filter(function ($kpi) use ($groups, $position_id, $user_id) {
-
-            // set priority for fetch only latest one
+        $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
+            // This code supports old and new relations
+            // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
             if ($kpi->has_user > 0) {
                 $kpi->priority = 1;
+                $kpi->targetable_id = $user_id;
+                $kpi->targetable_type = 'App\User';
+                $kpi->targetable = $kpi->users->where('id', $user_id)->first();
             } elseif ($kpi->has_position > 0) {
                 $kpi->priority = 2;
+                $kpi->targetable_id = $position_id;
+                $kpi->targetable_type = 'App\Position';
+                $kpi->targetable = $kpi->positions->where('id', $position_id)->first();
             } elseif ($kpi->has_group > 0) {
                 $kpi->priority = 3;
+                $kpi->targetable_type = 'App\ProfileGroup';
+                $kpi->targetable = $kpi->groups->whereIn('id', $activeGroups)->first();
+                $kpi->targetable_id = $kpi->targetable->id;
+            } elseif ($kpi->has_dropped_group > 0) {
+                $kpi->priority = 4;
+                $kpi->targetable_type = 'App\ProfileGroup';
+                $kpi->targetable = $kpi->groups->whereIn('id', $droppedGroups)->first();
+                $kpi->targetable_id = $kpi->targetable->id;
             } elseif ($kpi->targetable) {
+                // This is for previous relation!
                 if ($kpi->targetable_type == 'App\User') {
                     $kpi->priority = 1;
+                    $kpi->targetable_id = $user_id;
                 } elseif ($kpi->targetable_type == 'App\Position') {
                     $kpi->priority = 2;
+                    $kpi->targetable_id = $position_id;
                 } elseif ($kpi->targetable_type == 'App\ProfileGroup') {
-                    $kpi->priority = 3;
+                    $kpi->targetable_id = $kpi->targetable->id;
+                    if (in_array($kpi->targetable_id, $activeGroups)) {
+                        $kpi->priority = 3;
+                    } else {
+                        $kpi->priority = 4;
+                    }
                 }
             }
 
@@ -938,7 +964,13 @@ class KpiStatisticService
         });
 
         if ($limitForProfile && $kpis->count() > 1) {
-            $kpis = collect([$kpis->sortBy('priority')->first()]);
+            $currentKpi = $kpis->sortBy('priority')->first();
+            if ($currentKpi->priority != 4) {
+                $droppedGroupKpis = $kpis->where('priority', 4);// get dropped group kpis
+                $kpis = $droppedGroupKpis->push($currentKpi)->sortBy('priority')->values();
+            } else {
+                $kpis = collect([$currentKpi]);
+            }
         }
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
@@ -956,21 +988,9 @@ class KpiStatisticService
                 }
                 $kpi->completed_80 = $payload['completed_80'] * $currency_rate;
                 $kpi->completed_100 = $payload['completed_100'] * $currency_rate;
-            }
-
-            // set target
-            if ($kpi->priority == 1) {
-                $kpi->targetable_id = $user_id;
-                $kpi->targetable_type = 'App\User';
-                $kpi->targetable = $kpi->users->where('id', $user_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->priority == 2) {
-                $kpi->targetable_id = $position_id;
-                $kpi->targetable_type = 'App\Position';
-                $kpi->targetable = $kpi->positions->where('id', $position_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->priority == 3) {
-                $kpi->targetable_type = 'App\ProfileGroup';
-                $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
-                $kpi->targetable_id = $kpi->targetable->id;
+            } else {
+                $kpi->completed_80 *= $currency_rate;
+                $kpi->completed_100 *= $currency_rate;
             }
 
             unset($kpi->users);
