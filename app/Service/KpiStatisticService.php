@@ -967,8 +967,7 @@ class KpiStatisticService
             $currentKpi = $kpis->sortBy('priority')->first();
             if ($currentKpi->priority != 4) {
                 $droppedGroupKpis = $kpis->where('priority', 4);// get dropped group kpis
-                $kpis = $droppedGroupKpis->push($currentKpi)->sortBy('priority');
-                dd($droppedGroupKpis, $currentKpi);
+                $kpis = $droppedGroupKpis->push($currentKpi)->sortBy('priority')->values();
             } else {
                 $kpis = collect([$currentKpi]);
             }
