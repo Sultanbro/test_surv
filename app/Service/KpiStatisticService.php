@@ -993,21 +993,6 @@ class KpiStatisticService
                 $kpi->completed_100 *= $currency_rate;
             }
 
-
-            if ($kpi->priority == 1) {
-                $kpi->targetable_id = $user_id;
-                $kpi->targetable_type = 'App\User';
-                $kpi->targetable = $kpi->users->where('id', $user_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->priority == 2) {
-                $kpi->targetable_id = $position_id;
-                $kpi->targetable_type = 'App\Position';
-                $kpi->targetable = $kpi->positions->where('id', $position_id)->first() ?? $kpi->targetable;
-            } elseif ($kpi->priority == 3) {
-                $kpi->targetable_type = 'App\ProfileGroup';
-                $kpi->targetable = $kpi->groups->whereIn('id', $groups)->first() ?? $kpi->targetable;
-                $kpi->targetable_id = $kpi->targetable->id;
-            }
-
             unset($kpi->users);
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
             $kpi_sum = 0;
@@ -1021,7 +1006,7 @@ class KpiStatisticService
         }
 
         return [
-            'items' => $kpis->toArray(),
+            'items' => $kpis,
             'activities' => Activity::get(),
             'groups' => ProfileGroup::get()->pluck('name', 'id')->toArray(),
             'user_id' => auth()->user() ? auth()->id() : 1,
