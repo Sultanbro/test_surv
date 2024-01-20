@@ -965,12 +965,12 @@ class KpiStatisticService
 
         if ($limitForProfile && $kpis->count() > 1) {
             $currentKpi = $kpis->sortBy('priority')->first();
-            if ($currentKpi->priority != 4) {
-                $droppedGroupKpis = $kpis->where('priority', 4);// get dropped group kpis
-                $kpis = $droppedGroupKpis->push($currentKpi)->sortBy('priority');
-            } else {
+//            if ($currentKpi->priority != 4) {
+//                $droppedGroupKpis = $kpis->where('priority', 4);// get dropped group kpis
+//                $kpis = $droppedGroupKpis->push($currentKpi)->sortBy('priority');
+//            } else {
                 $kpis = collect([$currentKpi]);
-            }
+//            }
         }
 
         $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
