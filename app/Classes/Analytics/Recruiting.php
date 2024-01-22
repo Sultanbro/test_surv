@@ -1436,6 +1436,7 @@ class Recruiting
             ->whereBetween('date', $range)
             ->groupBy('type')
             ->get();
+        dd($list);
 
         $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
         $result['second_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
