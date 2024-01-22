@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DB;
@@ -9,7 +10,7 @@ use App\User;
 use App\ProfileGroup;
 
 /**@brief test
- * 
+ *
  */
 class UserAbsenceCause extends Model
 {
@@ -25,10 +26,10 @@ class UserAbsenceCause extends Model
     ];
 
     // type
-    CONST FIRST_DAY = 1; // Пропал с обучения: 2 день
-    CONST SECOND_DAY = 2; // Пропал с обучения: 2 день
-    CONST THIRD_DAY = 3; // Пропал с обучения
-    CONST FIRED = 4;
+    const FIRST_DAY = 1; // Пропал с обучения: 2 день
+    const SECOND_DAY = 2; // Пропал с обучения: 2 день
+    const THIRD_DAY = 3; // Пропал с обучения
+    const FIRED = 4;
 
     public static function createOrUpdate($data)
     {
@@ -38,7 +39,7 @@ class UserAbsenceCause extends Model
         $text = $data['text'];
 
         $us = self::where('user_id', $user_id)->where('date', $date)->where('type', $type)->first();
-        if($us) {
+        if ($us) {
             $us->text = $text;
             $us->date = $date;
             $us->save();
@@ -50,6 +51,22 @@ class UserAbsenceCause extends Model
                 'text' => $text
             ]);
         }
+    }
+
+    public static function absenceCauseByType(Collection|array $list, int $type): array
+    {
+        $th = $list->where('type', $type);
+        $result = [];
+        foreach ($th as $key => $th) {
+            $result[] = [
+                'cause' => $key,
+                'count' => $th->count(),
+            ];
+        }
+
+        $DESC = array_column($result, 'count');
+        array_multisort($DESC, SORT_DESC, $result);
+        return $result;
     }
 
 }

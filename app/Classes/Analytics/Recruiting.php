@@ -1296,8 +1296,16 @@ class Recruiting
                 DB::raw('id as lead_id'),
                 DB::raw('invite_group_id as group_id'),
             )
-            ->whereYear('invite_at', $date->year)
-            ->whereMonth('invite_at', $date->month);
+            ->where(function ($query) use ($date) {
+                $query->whereNotNull('skyped')
+                    ->whereMonth('skyped', $date['month'])
+                    ->whereYear('skyped', $date['year']);
+            })
+            ->orWhere(function ($query) use ($date) {
+                $query->whereNotNull('inhouse')
+                    ->whereMonth('inhouse', $date['month'])
+                    ->whereYear('inhouse', $date['year']);
+            });
 
         $groupUserSubQuery = (new UserService())
             ->groupUserSubQuery($date->copy()->format("Y-m-d"))
@@ -1418,80 +1426,22 @@ class Recruiting
 
     /**
      * Причины отсутствия 1 и 2 день стажировки
+     * @param array $date
      * @return array
      */
-    public static function getAbsenceCauses(array $date)
+    public static function getAbsenceCauses(array $date): array
     {
-        $first_day = [];
-        $second_day = [];
-        $third_day = [];
-
-        // First day
-        // $th1 = UserNotification::whereYear('created_at', $date['year'])
-        //     ->whereMonth('created_at', $date['month'])
-        //     ->where('title', 'Пропал с обучения: 1 день')
-        //     ->whereNotNull('note')
-        //     ->whereNotNull('read_at')
-        //     ->get()
-        //     ->groupBy('note');
-
-        $th1 = UserAbsenceCause::whereYear('date', $date['year'])
+        $result = [];
+        $list = UserAbsenceCause::query()
+            ->whereYear('date', $date['year'])
             ->whereMonth('date', $date['month'])
-            ->where('type', UserAbsenceCause::FIRST_DAY)
-            ->get()
-            ->groupBy('text');
+            ->distinct('text')
+            ->get();
 
-        foreach ($th1 as $key => $th) {
-            $first_day[] = [
-                'cause' => $key,
-                'count' => $th->count(),
-            ];
-        }
-
-        $DESC = array_column($first_day, 'count');
-        array_multisort($DESC, SORT_DESC, $first_day);
-
-        // Second day
-
-        $th2 = UserAbsenceCause::whereYear('date', $date['year'])
-            ->whereMonth('date', $date['month'])
-            ->where('type', UserAbsenceCause::SECOND_DAY)
-            ->get()
-            ->groupBy('text');
-
-        foreach ($th2 as $key => $th) {
-            $second_day[] = [
-                'cause' => $key,
-                'count' => $th->count(),
-            ];
-        }
-
-        $DESC = array_column($second_day, 'count');
-        array_multisort($DESC, SORT_DESC, $second_day);
-
-        // Third day
-
-        $th2 = UserAbsenceCause::whereYear('date', $date['year'])
-            ->whereMonth('date', $date['month'])
-            ->where('type', UserAbsenceCause::THIRD_DAY)
-            ->get()
-            ->groupBy('text');
-
-        foreach ($th2 as $key => $th) {
-            $third_day[] = [
-                'cause' => $key,
-                'count' => $th->count(),
-            ];
-        }
-
-        $DESC = array_column($third_day, 'count');
-        array_multisort($DESC, SORT_DESC, $third_day);
-
-        return [
-            'first_day' => $first_day,
-            'second_day' => $second_day,
-            'third_day' => $third_day,
-        ];
+        $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
+        $result['second_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
+        $result['third_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
+        return $result;
     }
 
 

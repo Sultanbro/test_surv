@@ -343,10 +343,10 @@ class HrController extends Controller
             'month' => $request->month,
             'year' => $request->year,
         ];
+        $month = Carbon::create($date['year'], $date['month']);
 
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
-        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
-
+        dd($absence_causes);
         return [
             'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'absents_first' => $absence_causes['first_day'],
