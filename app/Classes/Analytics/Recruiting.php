@@ -1350,9 +1350,9 @@ class Recruiting
             ->select([
                 'id',
                 'name',
-                DB::raw('IFNULL(sent,0)'),// Кол-во переданных стажеров
-                DB::raw('IFNULL(working,0)'),// Кол-во приступивших к работе к нему собираются
-                DB::raw('IFNULL(trainees.active,0)'),// Кол-во стажирующихся активных
+                DB::raw('IFNULL(leads.sent,0) as sent'),// Кол-во переданных стажеров
+                DB::raw('IFNULL(working.working,0) as working'),// Кол-во приступивших к работе к нему собираются
+                DB::raw('IFNULL(trainees.active,0) as active'),// Кол-во стажирующихся активных
             ])
             ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
             ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
