@@ -1429,14 +1429,18 @@ class Recruiting
      */
     public static function getAbsenceCauses(Carbon $date): array
     {
-        $range = [$date->startOfMonth(), $date->endOfMonth()];
+        $range = [
+            $date->startOfMonth()->format("Y-m-d"),
+            $date->endOfMonth()->format("Y-m-d")
+        ];
+
         $result = [];
         $list = UserAbsenceCause::query()
             ->select(DB::raw('count(*) as count'))
             ->whereBetween('date', $range)
             ->groupBy('type')
             ->get();
-        dd($list);
+        dd($range);
 
         $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
         $result['second_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
