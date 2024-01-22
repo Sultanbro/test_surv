@@ -62,7 +62,7 @@ class TraineeReport extends Model
             ->get();
 
         $result = [];
-
+        dd($reports);
         foreach ($reports as $report) {
             $result[] = [
                 'date' => $date->format('d.m.Y'),
