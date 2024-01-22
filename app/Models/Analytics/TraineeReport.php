@@ -50,6 +50,8 @@ class TraineeReport extends Model
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->get();
 
+        $groupIds = $reports;
+
         $groups_key_value = ProfileGroup::query()
             ->where('active', 1)
             ->pluck('name', 'id')
@@ -60,12 +62,11 @@ class TraineeReport extends Model
         $mothDays = $date->daysInMonth;
         for ($i = 1; $i <= $mothDays; $i++) {
             $date->day($i);
-            foreach ($groups as $group) {
+            foreach ($groupIds as $group) {
                 $filteredItem = $reports
                     ->where('date', $date->format('Y-m-d'))
                     ->where('group_id', $group)
                     ->first();
-                dd($filteredItem);
                 if ($filteredItem && $filteredItem->leads > 0) {
                     $result[] = [
                         'day' => $date->day,
