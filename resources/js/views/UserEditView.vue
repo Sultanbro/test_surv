@@ -528,7 +528,7 @@ export default {
 							const formDataEditTaxes = new FormData();
 							formDataEditTaxes.append('_method', 'put');
 							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].id);
+							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id);
 							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
 							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
 							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
