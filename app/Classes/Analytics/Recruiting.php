@@ -1398,12 +1398,6 @@ class Recruiting
             ->where('has_analytics', 1)
             ->get();
 
-        $old_groups = ProfileGroup::query()
-            ->whereIn('id', [42])
-            ->get();
-
-        $groups = $groups->merge($old_groups);
-
         foreach ($groups as $group) {
             $item = [];
 
@@ -1424,7 +1418,7 @@ class Recruiting
             }
 
             $item['applied'] = $rate;
-            $item['left_to_apply'] = $group->required - $rate;
+            $item['left_to_apply'] = $group->required - count($working);
             $arr[] = $item;
         }
 
