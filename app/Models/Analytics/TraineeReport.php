@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TraineeReport extends Model
 {
@@ -45,58 +46,44 @@ class TraineeReport extends Model
         $date = Carbon::parse($date);
 
         $reports = self::query()
-            ->whereYear('date', $date->year)
-            ->whereMonth('date', $date->month)
+            ->selectRaw("
+            trainee_report.*,
+            DAY(trainee_report.date) as day,
+            trainee_report.group_id as group_id,
+            profile_groups.name as group
+            ")
+            ->join('profile_groups', 'profile_groups.id', '=', 'trainee_report.group_id')
+            ->whereYear('trainee_report.date', $date->year)
+            ->whereMonth('trainee_report.date', $date->month)
+            ->where('profile_groups.active', 1)
+            ->where('trainee_report.leads', '>', 0)
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->get();
 
-        $groupIds = $reports;
-
-        $groups_key_value = ProfileGroup::query()
-            ->where('active', 1)
-            ->pluck('name', 'id')
-            ->toArray();
-
         $result = [];
 
-        $mothDays = $date->daysInMonth;
-        for ($i = 1; $i <= $mothDays; $i++) {
-            $date->day($i);
-            foreach ($groupIds as $group) {
-                $filteredItem = $reports
-                    ->where('date', $date->format('Y-m-d'))
-                    ->where('group_id', $group)
-                    ->first();
-                if ($filteredItem && $filteredItem->leads > 0) {
-                    $result[] = [
-                        'day' => $date->day,
-                        'date' => $date->format('d.m.Y'),
-                        'group_id' => $group,
-                        'group' => array_key_exists($group, $groups_key_value) ? $groups_key_value[$group] : 'Отдел №' . $group,
-                        'quiz' => self::formAnswers($filteredItem->data),
-                        'presence' => [
-                            0 => $filteredItem->leads,
-                            1 => $filteredItem->day_1,
-                            2 => $filteredItem->day_2,
-                            3 => $filteredItem->day_3,
-                            4 => $filteredItem->day_4,
-                            5 => $filteredItem->day_5,
-                            6 => $filteredItem->day_6,
-                            7 => $filteredItem->day_7,
-                        ]
-                    ];
-                }
-            }
+        foreach ($reports as $report) {
+            $result[] = [
+                'date' => $date->format('d.m.Y'),
+                'quiz' => self::formAnswers($report->data),
+                'presence' => [
+                    0 => $report->leads,
+                    1 => $report->day_1,
+                    2 => $report->day_2,
+                    3 => $report->day_3,
+                    4 => $report->day_4,
+                    5 => $report->day_5,
+                    6 => $report->day_6,
+                    7 => $report->day_7,
+                ]
+            ];
+            $_sort = array_column($result, 'day');
+            array_multisort($_sort, SORT_DESC, $result);
         }
-
-        $_sort = array_column($result, 'day');
-        array_multisort($_sort, SORT_DESC, $result);
-
         return $result;
     }
 
-    public
-    static function formAnswers($data)
+    public static function formAnswers($data)
     {
         if ($data == null) $data = [];
         $count[1] = 0;
@@ -216,5 +203,11 @@ class TraineeReport extends Model
         }
 
         return $questions;
+    }
+
+    public
+    function group(): BelongsTo
+    {
+        return $this->belongsTo(ProfileGroup::class, 'group_id', 'group');
     }
 }
