@@ -1285,10 +1285,11 @@ class Recruiting
     /**
      * Таблица в HR -> Этап стажировки -> Сводная
      */
-    public static function ocenka_svod(Carbon $date)
+    public static function ocenka_svod(Carbon $date): array
     {
         $arr = [];
         $get_required = self::getPrognozGroups($date);
+        dd($get_required);
         $leadSubQuery = Lead::query()
             ->select(
                 DB::raw('id as lead_id'),
