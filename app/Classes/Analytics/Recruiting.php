@@ -1363,8 +1363,6 @@ class Recruiting
             ->groupBy(['id', 'name'])
             ->get()
             ->toArray();
-        dump(now()->format("H:i:s"));
-        dd($groups);
 
         foreach ($groups as $item) {
             /**
