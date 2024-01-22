@@ -348,6 +348,7 @@ class HrController extends Controller
         dump(now()->format("H:i:s"));
         $trainee_report = TraineeReport::getBlocks($date->format('Y-m-d'));
         dump(now()->format("H:i:s"));
+        dd($trainee_report);
 //        $pivot = RM::ocenka_svod($month->startOfMonth());
         return [
 //            'ocenka_svod' => $pivot, // Анкета уволенных // 4.1 sec
