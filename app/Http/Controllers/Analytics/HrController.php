@@ -348,13 +348,14 @@ class HrController extends Controller
         dump(now()->format("H:i:s"));
         $trainee_report = TraineeReport::getBlocks($date->format('Y-m-d'));
         dump(now()->format("H:i:s"));
+        dd($trainee_report);
 //        $pivot = RM::ocenka_svod($month->startOfMonth());
         return [
 //            'ocenka_svod' => $pivot, // Анкета уволенных // 4.1 sec
             'absents_first' => $absence_causes['first_day'],
             'absents_second' => $absence_causes['second_day'],
             'absents_third' => $absence_causes['third_day'],
-//            'trainee_report' => $trainee_report, // оценки первого дня и присутствие стажеров
+            'trainee_report' => $trainee_report, // оценки первого дня и присутствие стажеров
         ];
     }
 
