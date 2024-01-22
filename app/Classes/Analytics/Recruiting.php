@@ -1314,7 +1314,7 @@ class Recruiting
                 DB::raw('user_id'),
                 DB::raw('group_id'),
             )
-            ->where(function (Builder $query) use ($date) {
+            ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->where('to', '>=', $date);
                 $query->orWhereNull('to');
             })
