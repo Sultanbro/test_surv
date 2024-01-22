@@ -16,8 +16,9 @@ use App\ProfileGroupUser as PGU;
 use App\Service\Department\UserService;
 use App\Timetracking;
 use App\UserAbsenceCause;
+use DB;
 
-class Recruiting 
+class Recruiting
 {
     public $table1 = 'analytics_settings';
     public $table2 = 'analytics_settings_individually';
@@ -25,93 +26,94 @@ class Recruiting
     /**
      * Группа рекрутинг
      */
-    CONST GROUP_ID = 48;
+    const GROUP_ID = 48;
 
     /**
      * Группы рекрутинг
      */
-    CONST GROUPS_IDS = [48, 130];
-    
+    const GROUPS_IDS = [48, 130];
+
     /**
      * Поля сводной таблицы
      */
-    CONST S_CREATED = 0; // Создано новых лидов за день
-    CONST S_CALLS_OUT = 1; // ИСХ успешные соединения
-    CONST S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
-    CONST S_CALLS_IN = 3; // ВХ успешные соединения
-    CONST S_CALLS_MISSED = 4; // Пропущенные звонки
-    CONST S_FAILED = 5; // Забраковано Лидов
-    CONST S_PROCESSED = 6; // Обработанные лиды FAILED + CONVERTED
-    CONST S_ONLINE = 7; // Количество рекрутеров на линии
-    CONST S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
-    CONST S_CONVERTED = 9; // Сконвертировано Лидов
-    CONST S_EMPTY7 = 11;
-    CONST S_EMPTY8 = 12;
-    CONST S_TRAINING_TODAY = 13; // Стажируются сегодня
-    CONST S_EMPTY11 = 14;
-    CONST S_APPLIED = 15; // Приняты на работу
-    CONST S_FIRED = 16; // Уволены
+    const S_CREATED = 0; // Создано новых лидов за день
+    const S_CALLS_OUT = 1; // ИСХ успешные соединения
+    const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
+    const S_CALLS_IN = 3; // ВХ успешные соединения
+    const S_CALLS_MISSED = 4; // Пропущенные звонки
+    const S_FAILED = 5; // Забраковано Лидов
+    const S_PROCESSED = 6; // Обработанные лиды FAILED + CONVERTED
+    const S_ONLINE = 7; // Количество рекрутеров на линии
+    const S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
+    const S_CONVERTED = 9; // Сконвертировано Лидов
+    const S_EMPTY7 = 11;
+    const S_EMPTY8 = 12;
+    const S_TRAINING_TODAY = 13; // Стажируются сегодня
+    const S_EMPTY11 = 14;
+    const S_APPLIED = 15; // Приняты на работу
+    const S_FIRED = 16; // Уволены
 
 
     /**
      * Поля индивидуальной таблицы
      */
-    CONST I_CALL_PLAN = 0; // План наборов с ожиданием 7 гудков
-    CONST I_CALLS_OUT = 1; // Успешные исходящие
-    CONST I_FIRST_CALL = 2; // Время первого звонка
-    CONST I_LAST_CALL = 3; // Время последнего звонка
-    CONST I_CALLS_IN = 4; // Обработано успешных входящих
-    CONST I_CALLS_MISSED = 5; // Пропущенные звонки
-    CONST I_CONVERTED = 6; // Сконвертировано
-    CONST I_APPLIED = 7; // Принято на работу
-    CONST I_FIRST_DAY_TRAINED = 8; // 1 день стажировавшихся
-    CONST I_SECOND_DAY_TRAINED_FROM = 9; // 2+ день стажировавшихся
+    const I_CALL_PLAN = 0; // План наборов с ожиданием 7 гудков
+    const I_CALLS_OUT = 1; // Успешные исходящие
+    const I_FIRST_CALL = 2; // Время первого звонка
+    const I_LAST_CALL = 3; // Время последнего звонка
+    const I_CALLS_IN = 4; // Обработано успешных входящих
+    const I_CALLS_MISSED = 5; // Пропущенные звонки
+    const I_CONVERTED = 6; // Сконвертировано
+    const I_APPLIED = 7; // Принято на работу
+    const I_FIRST_DAY_TRAINED = 8; // 1 день стажировавшихся
+    const I_SECOND_DAY_TRAINED_FROM = 9; // 2+ день стажировавшихся
     /**
      * Поля чатбота
      */
-    CONST B_CREATED = 0; // Создано новых лидов за день
-    CONST B_FAILED = 1; // Забраковано Лидов
-    CONST B_CONVERTED = 2; // Сконвертировано
+    const B_CREATED = 0; // Создано новых лидов за день
+    const B_FAILED = 1; // Забраковано Лидов
+    const B_CONVERTED = 2; // Сконвертировано
 
 
-    public static function defaultSummaryTable() {
+    public static function defaultSummaryTable()
+    {
         return [
-            ['headers' => 'Создано новых лидов за день', 'fact' => 0,'plan' => 100,'conversion' => 0,],
-            ['headers' => 'Наборы','fact' => 0,'plan' => 100,'conversion' => 0,],
-            ['headers' => 'Успешные соединения от 10 сек','fact' => 0,'plan' => 100,'conversion' => 0,],
-            ['headers' => 'ВХ успешные соединения','fact' => 0,'plan' => 50,'conversion' => 0,],
-            ['headers' => 'Пропущенные','fact' => 0,'plan' => 0,'conversion' => 0,],
-            ['headers' => 'Забраковано Лидов','fact' => 0,'plan' => 20,'conversion' => 0,],
-            ['headers' => 'Обработано','fact' => 0,'plan' => 10,'conversion' => 0,],
-            ['headers' => 'Рекрутеры на линии','fact' => 0,'plan' => 10,'conversion' => 0,],
-            ['headers' => 'Конверсия','fact' => 0,'plan' => 10,'conversion' => 0,],
-            ['headers' => 'Сконвертировано','fact' => 0,'plan' => 10,'conversion' => 0,],
+            ['headers' => 'Создано новых лидов за день', 'fact' => 0, 'plan' => 100, 'conversion' => 0,],
+            ['headers' => 'Наборы', 'fact' => 0, 'plan' => 100, 'conversion' => 0,],
+            ['headers' => 'Успешные соединения от 10 сек', 'fact' => 0, 'plan' => 100, 'conversion' => 0,],
+            ['headers' => 'ВХ успешные соединения', 'fact' => 0, 'plan' => 50, 'conversion' => 0,],
+            ['headers' => 'Пропущенные', 'fact' => 0, 'plan' => 0, 'conversion' => 0,],
+            ['headers' => 'Забраковано Лидов', 'fact' => 0, 'plan' => 20, 'conversion' => 0,],
+            ['headers' => 'Обработано', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
+            ['headers' => 'Рекрутеры на линии', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
+            ['headers' => 'Конверсия', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
+            ['headers' => 'Сконвертировано', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
             ['headers' => '',],
             ['headers' => '',],
             ['headers' => '',],
-            ['headers' => 'В общем стажируются','fact' => 0,'plan' => 10,'conversion' => 0,],
+            ['headers' => 'В общем стажируются', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
             ['headers' => ''],
-            ['headers' => 'Приняты в BP','fact' => 0,'plan' => 10,'conversion' => 0,],
-            ['headers' => 'Уволились в этом месяце','fact' => 0,'plan' => 1,'conversion' => 0,],
+            ['headers' => 'Приняты в BP', 'fact' => 0, 'plan' => 10, 'conversion' => 0,],
+            ['headers' => 'Уволились в этом месяце', 'fact' => 0, 'plan' => 1, 'conversion' => 0,],
         ];
     }
 
     public function defaultUserTable(int $user_id)
     {
         $user = User::withTrashed()->find($user_id);
-        if($user) {
+        if ($user) {
             return [
                 'name' => $user->name . ' ' . $user->last_name,
                 'id' => $user->id,
                 'records' => [
-                    ['headers' => 'План наборов с ожиданием 7 гудков','plan' => '200','fact' => '0','conversion' => '',], 
-                    ['headers' => 'Успешные исходящие','plan' => '200','fact' => '0','conversion' => '',],
-                    ['headers' => 'Время первого звонка','plan' => '09:30','fact' => '0','conversion' => '',],
-                    ['headers' => 'Время последнего звонка','plan' => '18:00','fact' => '0','conversion' => '',],
-                    ['headers' => 'Обработано успешных входящих','plan' => '','fact' => '0','conversion' => '',],
-                    ['headers' => 'Пропущенные звонки','plan' => '','fact' => '0','conversion' => '',],
-                    ['headers' => 'Сконвертировано','plan' => '20','fact' => '0','conversion' => '',],
-                    ['headers' => 'Принято на работу','plan' => '3','fact' => '0','conversion' => '',],
+                    ['headers' => 'План наборов с ожиданием 7 гудков', 'plan' => '200', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Успешные исходящие', 'plan' => '200', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Время первого звонка', 'plan' => '09:30', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Время последнего звонка', 'plan' => '18:00', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Обработано успешных входящих', 'plan' => '', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Пропущенные звонки', 'plan' => '', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Сконвертировано', 'plan' => '20', 'fact' => '0', 'conversion' => '',],
+                    ['headers' => 'Принято на работу', 'plan' => '3', 'fact' => '0', 'conversion' => '',],
                 ],
             ];
         } else {
@@ -121,7 +123,7 @@ class Recruiting
                 'records' => []
             ];
         }
-        
+
     }
 
     public static function defaultChatbotTable()
@@ -130,36 +132,39 @@ class Recruiting
             'name' => 'Чатбот',
             'id' => 0,
             'records' => [
-                ['headers' => 'Создано новых лидов за день','plan' => '200','fact' => '0','conversion' => '0',],
-                ['headers' => 'Забраковано Лидов','plan' => '0','fact' => '0','conversion' => '0',],
-                ['headers' => 'Сконвертировано','plan' => '100','fact' => '0','conversion' => '0',],
+                ['headers' => 'Создано новых лидов за день', 'plan' => '200', 'fact' => '0', 'conversion' => '0',],
+                ['headers' => 'Забраковано Лидов', 'plan' => '0', 'fact' => '0', 'conversion' => '0',],
+                ['headers' => 'Сконвертировано', 'plan' => '100', 'fact' => '0', 'conversion' => '0',],
             ],
         ];
-        
-        
+
+
     }
 
     /**
-     * 
-     * $month  Carbon 
+     *
+     * $month  Carbon
      * @return void
      */
-    public function updateSummaryTable($date) {
-        
+    public function updateSummaryTable($date)
+    {
+
         $table = self::getSummaryTable($date);
 
         $data = $this->sumFacts($table->data, $date);
-        
 
-        return ;
+
+        return;
 
     }
 
-    public static function getSummaryTable($date) {
+    public static function getSummaryTable($date)
+    {
         return [];
     }
 
-    public function sumFacts($arr, $date) {
+    public function sumFacts($arr, $date)
+    {
 
         $arr[self::S_CREATED]['fact'] = 0; // Создано новых лидов за день
         $arr[self::S_CALLS_OUT]['fact'] = 0; // ИСХ успешные соединения
@@ -174,8 +179,6 @@ class Recruiting
 
         $arr[self::S_APPLIED]['fact'] = 0; // Приняты в BP
         $arr[self::S_FIRED]['fact'] = 0; // Уволились в этом месяце
-        
-
 
 
         $arr = $this->sumCommons($arr, $date);
@@ -188,51 +191,53 @@ class Recruiting
         $arr = $this->sumFires($arr, $date);
 
         $arr = $this->sumProcessed($arr, $date);
-        
+
         return $arr;
     }
-
 
 
     /**
      * @return String
      */
-    public static function getLastDay($date) {
+    public static function getLastDay($date)
+    {
         return $date->month == date('m') ? date('d') : $date->daysInMonth;
     }
 
     /**
-     * 
+     *
      * $arr   array
      * $date  Carbon month
      * @return void
      */
-    public function sumCommons($arr, $date) {
-     
+    public function sumCommons($arr, $date)
+    {
+
         for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                
+
             $arr[self::S_CREATED]['fact'] += array_key_exists($i, $arr[self::S_CREATED]) ? (int)$arr[self::S_CREATED][$i] : 0;
             //$arr[4]['fact'] += array_key_exists($i, $arr[4]) ? (int)$arr[4][$i] : 0;
             // $arr[6]['fact'] += array_key_exists($i, $arr[6]) ? 0 : 0;
 
         }
-        
+
         return $arr;
     }
 
     /**
-     * 
+     *
      * $arr   array
      * $date  Carbon month
      * @return void
      */
-    public function sumOnline($arr, $date) {
+    public function sumOnline($arr, $date)
+    {
 
         $arr[self::S_ONLINE]['fact'] = 0;
         $arr[self::S_ONLINE]['headers'] = 'Рекрутеры на линии';
 
         $last_day = $date->daysInMonth;
-        if($date->format('m') == date('m') && $date->format('Y') == date('Y')) {
+        if ($date->format('m') == date('m') && $date->format('Y') == date('Y')) {
             $last_day = (int)date('d');
         }
 
@@ -242,7 +247,7 @@ class Recruiting
             $arr[self::S_ONLINE][$i] = $value;
             $arr[self::S_ONLINE]['fact'] += $value;
         }
-        
+
         $date = $date->startOfMonth();
         return $arr;
     }
@@ -253,11 +258,12 @@ class Recruiting
      * $date  format('Y-m-d')
      * @return void
      */
-    public function getOnlineRates($date) {
+    public function getOnlineRates($date)
+    {
         $tabu_users = [5263]; // Те, кого не надо учитывать
 
         $records = RecruiterStat::where('date', $date)
-            ->where(function($query){
+            ->where(function ($query) {
                 $query->where('calls', '>', 0)
                     ->orWhere('minutes', '>', 0)
                     ->orWhere('converts', '>', 0);
@@ -265,42 +271,43 @@ class Recruiting
             ->get()
             //->where('total', '!=', '0')
             ->whereNotIn('user_id', $tabu_users);
-            
+
         $user_ids = [];
         $users = $records->pluck('user_id')->toArray();
         $users = array_unique($users);
 
-        foreach($users as $user_id) {
+        foreach ($users as $user_id) {
             $calls = $records->where('user_id', $user_id)->sum('calls');
 
-            if($calls >= 3) {
+            if ($calls >= 3) {
                 array_push($user_ids, $user_id);
             }
         }
 
         $value = 0;
-        foreach($user_ids as $user_id) {
+        foreach ($user_ids as $user_id) {
             $user = User::withTrashed()->find($user_id);
-            if($user) {
+            if ($user) {
                 $value += $user->full_time == 1 ? 1 : 0.5;
             }
         }
-        
+
         return $value;
     }
 
-    public function sumIndividuals($arr, $date) : array
+    public function sumIndividuals($arr, $date): array
     {
         return $arr;
-    }   
+    }
 
-    public function sumTrainees($arr, $date) {
+    public function sumTrainees($arr, $date)
+    {
         $_i = self::getLastDay($date);
 
         for ($i = 1; $i <= $_i; $i++) {
             $day = $date;
             $trainees = DayType::where('date', $day->day($i)->format('Y-m-d'))
-                ->whereIn('type', [5,7])
+                ->whereIn('type', [5, 7])
                 ->get()
                 ->pluck('user_id')
                 ->toArray();
@@ -308,8 +315,8 @@ class Recruiting
             $trainees = array_unique($trainees);
 
             $c = count($trainees);
-          
-            if($c > 0) {
+
+            if ($c > 0) {
                 $arr[self::S_TRAINING_TODAY][$i] = $c;
                 $arr[self::S_TRAINING_TODAY]['fact'] += $c;
             }
@@ -317,13 +324,14 @@ class Recruiting
         return $arr;
     }
 
-    public function sumApplies($arr, $date) {
+    public function sumApplies($arr, $date)
+    {
         $_i = self::getLastDay($date);
 
         for ($i = 1; $i <= $_i; $i++) {
-            
+
             // Приняты в BP
-            $applied_users_with = \DB::table('users')
+            $applied_users_with = DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereYear('ud.applied', $date->year)
                 ->whereMonth('ud.applied', $date->month)
@@ -332,12 +340,12 @@ class Recruiting
                 ->get();
 
             $count_app = 0;
-            foreach($applied_users_with as $auser) {
-                
+            foreach ($applied_users_with as $auser) {
+
                 $count_app += $auser->full_time == 1 ? 1 : 0.5;
             }
 
-            
+
             // $applied_users_without = User::withTrashed()
             //     
             //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -356,7 +364,7 @@ class Recruiting
             //   //  } 
             // }
 
-            if($count_app > 0) {
+            if ($count_app > 0) {
                 $arr[self::S_APPLIED][$i] = array_key_exists($i, $arr[self::S_APPLIED]) ? $count_app : 0;
                 $arr[self::S_APPLIED]['fact'] += $count_app;
             }
@@ -364,8 +372,9 @@ class Recruiting
 
         return $arr;
     }
-    
-    public function sumFires($arr, $date) {
+
+    public function sumFires($arr, $date)
+    {
         $_i = self::getLastDay($date);
 
         for ($i = 1; $i <= $_i; $i++) {
@@ -375,21 +384,21 @@ class Recruiting
             //     ->whereNotIn('id', $trainees)
             //     ->whereDate('deleted_at', $date->day($i)->format('Y-m-d'))
             //     ->get();
-            
-            $fired = \DB::table('users')
+
+            $fired = DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->whereDate('deleted_at', $date->day($i)->format('Y-m-d'))
                 ->get();
 
             $f_count = 0;
-        
-            foreach($fired as $f_user) {
+
+            foreach ($fired as $f_user) {
                 //dump($f_user->id);
                 $f_count += $f_user->full_time == 1 ? 1 : 0.5;
             }
-            
-            if($f_count > 0) {
+
+            if ($f_count > 0) {
                 $arr[self::S_FIRED][$i] = $f_count;
                 $arr[self::S_FIRED]['fact'] += $f_count;
             }
@@ -399,169 +408,173 @@ class Recruiting
     }
 
 
-
-    public function sumProcessed($arr, $date) {
+    public function sumProcessed($arr, $date)
+    {
         $_i = self::getLastDay($date);
 
-    
+
         $arr[self::S_PROCESSED]['fact'] = 0;
         for ($i = 1; $i <= $_i; $i++) {
-            $conv = array_key_exists($i, $arr[self::S_CONVERTED])? $arr[self::S_CONVERTED][$i] : 0;
-            $failed = array_key_exists($i, $arr[self::S_FAILED])? $arr[self::S_FAILED][$i] : 0;
-            
+            $conv = array_key_exists($i, $arr[self::S_CONVERTED]) ? $arr[self::S_CONVERTED][$i] : 0;
+            $failed = array_key_exists($i, $arr[self::S_FAILED]) ? $arr[self::S_FAILED][$i] : 0;
+
             $arr[self::S_PROCESSED][$i] = (int)$conv + (int)$failed;
             $arr[self::S_PROCESSED]['fact'] += $arr[self::S_PROCESSED][$i];
 
-            if($arr[self::S_PROCESSED][$i] != 0) {
+            if ($arr[self::S_PROCESSED][$i] != 0) {
                 $conversion = ((int)$conv / $arr[self::S_PROCESSED][$i]) * 100;
                 $conversion = number_format((float)$conversion, 2, '.', '');
             } else {
                 $conversion = 0;
             }
-            
+
             $arr[self::S_CONVERTED_CONVERSION][$i] = $conversion . '%';
         }
-       
+
         return $arr;
     }
 
-    /** 
-     * Расчет колво требуемых сотрудников 
+    /**
+     * Расчет колво требуемых сотрудников
      */
-public function planRequired($arr) {
+    public function planRequired($arr)
+    {
         $counter = 0;
         $date = Carbon::now()->startOfMonth();
         $get_required = self::getPrognozGroups($date);
-            foreach($get_required as $req){
-                if($req['left_to_apply'] > 0)
-                    $counter += $req['left_to_apply'];
-            }
+        foreach ($get_required as $req) {
+            if ($req['left_to_apply'] > 0)
+                $counter += $req['left_to_apply'];
+        }
         $arr[self::S_APPLIED]['plan'] = $counter;//$groupsForCount->sum('required') - $count_working_users;
 
         return $arr;
     }
-    
+
 
     /**
      * Получить допики на текущий момент
      * @return array
      */
-    public function getExtra() {
+    public function getExtra()
+    {
         return [
             'working' => self::getWorkerQuantity()
         ];
     }
-    
+
     /**
      * Получить колво работающих на сегодняшний день
      */
-    public static function getWorkerQuantity($date = null) {
+    public static function getWorkerQuantity($date = null)
+    {
         return Timetracking::whereDate('enter', $date)->get()->count();
     }
-        
+
     /**
      * Таблица с ответами из анкеты уволенных
      */
-    public static function getQuizTable(Carbon $date) {
+    public static function getQuizTable(Carbon $date)
+    {
         $answers = [];
         $xarr = [];
-       // $quizes = UserDescription::whereNotNull('quiz_after_fire')->get();
-        
+        // $quizes = UserDescription::whereNotNull('quiz_after_fire')->get();
+
         $start = $date->startOfMonth()->format('Y-m-d');
         $end = $date->endOfMonth()->format('Y-m-d');
 
-       
-        $quizes = \DB::table('users')
-                ->whereNotNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('quiz_after_fire', '!=', '[]')
-                ->whereDate('deleted_at', '>=', $start)
-                ->whereDate('deleted_at', '<=', $end)
-                ->where('is_trainee', 0)
-                ->get();
-             
+
+        $quizes = DB::table('users')
+            ->whereNotNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->where('quiz_after_fire', '!=', '[]')
+            ->whereDate('deleted_at', '>=', $start)
+            ->whereDate('deleted_at', '<=', $end)
+            ->where('is_trainee', 0)
+            ->get();
+
         $quiz = [];
         foreach ($quizes as $key => $quizz) {
-            for($i=1;$i<=9;$i++) {
+            for ($i = 1; $i <= 9; $i++) {
                 $quiz_after_fire = json_decode($quizz->quiz_after_fire, true);
-                if(array_key_exists($i, $quiz_after_fire)) {
+                if (array_key_exists($i, $quiz_after_fire)) {
                     $xarr[$i][] = $quiz_after_fire[$i];
-                } 
+                }
             }
         }
-        
+
         $quiz = LayoffQuiz::getQuestions();
-        
-        
+
+
         for ($x = 1; $x <= count($quiz); $x++) {
             $a = [];
-            
-            if(array_key_exists($x, $xarr)) {
-                
-                if($quiz[$x]['type'] == 'star') {
+
+            if (array_key_exists($x, $xarr)) {
+
+                if ($quiz[$x]['type'] == 'star') {
                     $sum = 1;
                     $count = 0;
-                    foreach($xarr[$x] as $answer) {
-                        if(in_array((int)$answer, [1,2,3,4,5,6,7,8,9,10])) {
+                    foreach ($xarr[$x] as $answer) {
+                        if (in_array((int)$answer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) {
                             $sum += (int)$answer;
                             $count++;
                         }
                     }
-                    
+
                     $quiz[$x]['answers'][0]['count'] = $count;
-                    
+
                     $avg = $count != 0 ? number_format($sum / $count, 0) : 1;
                     $quiz[$x]['answers'][0]['text'] = $avg;
-                    $quiz[$x]['answers'][0]['percent'] =  number_format($avg  / 10 * 100, 0);
-                    
-                } else if($quiz[$x]['type'] == 'variant') {
-                    foreach($xarr[$x] as $answer) {
+                    $quiz[$x]['answers'][0]['percent'] = number_format($avg / 10 * 100, 0);
+
+                } else if ($quiz[$x]['type'] == 'variant') {
+                    foreach ($xarr[$x] as $answer) {
                         $is_another = true;
-                        for($i=0;$i<count($quiz[$x]['answers']);$i++) { // считаем количество ответов по вариантам
-                            if($quiz[$x]['answers'][$i]['text'] == $answer) {
-                                $quiz[$x]['answers'][$i]['count'] += 1; 
+                        for ($i = 0; $i < count($quiz[$x]['answers']); $i++) { // считаем количество ответов по вариантам
+                            if ($quiz[$x]['answers'][$i]['text'] == $answer) {
+                                $quiz[$x]['answers'][$i]['count'] += 1;
                                 $is_another = false;
                                 break;
-                            } 
+                            }
                         }
-                        if($is_another) { // другой вариант
+                        if ($is_another) { // другой вариант
                             $quiz[$x]['answers'][count($quiz[$x]['answers']) - 1]['count'] += 1;
                         }
                     }
-                    
+
                     $count = count($xarr[$x]); // количество ответов
-                    for($i=0;$i<count($quiz[$x]['answers']);$i++) {
+                    for ($i = 0; $i < count($quiz[$x]['answers']); $i++) {
                         $quiz[$x]['answers'][$i]['percent'] = number_format($quiz[$x]['answers'][$i]['count'] / $count * 100, 0);
                     }
-                } else if($quiz[$x]['type'] == 'answer') {
+                } else if ($quiz[$x]['type'] == 'answer') {
                     $quiz[$x]['answers'] = [];
-                    foreach($xarr[$x] as $answer) {
+                    foreach ($xarr[$x] as $answer) {
                         array_push($quiz[$x]['answers'], [
                             'text' => $answer
                         ]);
                     }
-                    
+
                 }
-                
+
             }
         }
 
 
-        foreach($quiz as $key => $question) {
-            if($key == 1) $quiz[$key]['order'] = 1; 
-            if($key == 2) $quiz[$key]['order'] = 3; 
-            if($key == 3) $quiz[$key]['order'] = 5; 
-            if($key == 4) $quiz[$key]['order'] = 7; 
-            if($key == 5) $quiz[$key]['order'] = 2; 
-            if($key == 6) $quiz[$key]['order'] = 4; 
-            if($key == 7) $quiz[$key]['order'] = 6; 
-            if($key == 8) $quiz[$key]['order'] = 8; 
+        foreach ($quiz as $key => $question) {
+            if ($key == 1) $quiz[$key]['order'] = 1;
+            if ($key == 2) $quiz[$key]['order'] = 3;
+            if ($key == 3) $quiz[$key]['order'] = 5;
+            if ($key == 4) $quiz[$key]['order'] = 7;
+            if ($key == 5) $quiz[$key]['order'] = 2;
+            if ($key == 6) $quiz[$key]['order'] = 4;
+            if ($key == 7) $quiz[$key]['order'] = 6;
+            if ($key == 8) $quiz[$key]['order'] = 8;
         }
 
         $_sort = array_column($quiz, 'order');
-        array_multisort($_sort, SORT_ASC, $quiz); 
+        array_multisort($_sort, SORT_ASC, $quiz);
 
-       
+
         return $quiz;
     }
 
@@ -571,30 +584,31 @@ public function planRequired($arr) {
      * @param int $user_id
      * @param String $date 'Y-m-d'
      * @return array
-     */ 
-    public static function getIndicators($user_id, $date) {
+     */
+    public static function getIndicators($user_id, $date)
+    {
 
         $start = Carbon::parse($date)->startOfMonth();
         $end = Carbon::parse($date)->endOfMonth();
 
         $asi = null;
-            
-        $user = User::withTrashed()->find($user_id);
-        if(!$user) return [];
 
-        if($asi) {
+        $user = User::withTrashed()->find($user_id);
+        if (!$user) return [];
+
+        if ($asi) {
             $data = json_decode($asi->data, true);
 
             /////////////////// Count remain days
             $start = Carbon::now()->setDate($start->year, $start->month, 1);
             $end = Carbon::now()->setDate($start->year, $start->month, 1)->endOfMonth();
-            
+
             $holidays = [
-            //     Carbon::create(2014, 2, 2),
+                //     Carbon::create(2014, 2, 2),
             ];
 
-            
-            if($end->timestamp - $start->timestamp >= 0 && $end->month >= $start->month) {
+
+            if ($end->timestamp - $start->timestamp >= 0 && $end->month >= $start->month) {
                 $workDays = $start->diffInDaysFiltered(function (Carbon $date) use ($holidays) {
                     return !$date->isDayOfWeek(Carbon::SUNDAY); //&& !in_array($date, $holidays);
                 }, $end);
@@ -605,30 +619,30 @@ public function planRequired($arr) {
             /////////////////
 
             $arr = [];
-            
+
             // count totals
             $calls = 0;
             $converted = 0;
             $applied = 0;
 
-            for($i = 1;$i<=31;$i++) {
-               // dump($data[self::I_CALL_PLAN]);
-                if(array_key_exists($i, $data[self::I_CALL_PLAN])) {
+            for ($i = 1; $i <= 31; $i++) {
+                // dump($data[self::I_CALL_PLAN]);
+                if (array_key_exists($i, $data[self::I_CALL_PLAN])) {
                     $calls += (int)$data[self::I_CALL_PLAN][$i];
                 }
-                if(array_key_exists($i, $data[self::I_CONVERTED])) {
+                if (array_key_exists($i, $data[self::I_CONVERTED])) {
                     $converted += (int)$data[self::I_CONVERTED][$i];
                 }
-                if(array_key_exists($i, $data[self::I_APPLIED])) {
+                if (array_key_exists($i, $data[self::I_APPLIED])) {
                     $applied += (int)$data[self::I_APPLIED][$i];
                 }
             }
-            
+
             // $arr
             $arr['name'] = $user->name . ' ' . $user->last_name;
             $arr['out']['value'] = $calls; //Исх 
             $arr['out']['plan'] = $data[self::I_CALL_PLAN]['plan'] ? $data[self::I_CALL_PLAN]['plan'] * $workDays : 0;
-            $arr['out']['percent'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10; 
+            $arr['out']['percent'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10;
             $arr['calls'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10;
             $arr['converted']['value'] = $converted; //Сконвертировано
             $arr['converted']['plan'] = $data[self::I_CONVERTED]['plan'] ? $data[self::I_CONVERTED]['plan'] * $workDays : 0;
@@ -644,7 +658,8 @@ public function planRequired($arr) {
         }
     }
 
-    public static function transferTraining($user_id, $date, $time) {
+    public static function transferTraining($user_id, $date, $time)
+    {
 
         // перенос стадии сделки в битриксе
         // время собеседования или обучения в битриксе инхаус / ремоут
@@ -655,52 +670,49 @@ public function planRequired($arr) {
         $bitrix = new Bitrix();
         $datetime = $date . ' ' . $time . ':00';
 
-        if($lead) {
+        if ($lead) {
 
-            if($lead->skyped) {
+            if ($lead->skyped) {
                 $field = 'UF_CRM_1568000119'; //  Время обучения
                 $stage = 'C4:FINAL_INVOICE'; // Remote согласие на обучение
-            } else{
+            } else {
                 $field = 'UF_CRM_1633579757'; // Время стажировки (штатный)
                 $stage = 'C4:27'; // Inhouse на собеседование
             }
 
-            if($lead->deal_id != 0) {
+            if ($lead->deal_id != 0) {
                 $deal_id = $lead->deal_id;
             } else {
                 $deal_id = $bitrix->findDeal($lead->lead_id, false);
             }
-            
-            if($deal_id == 0) {
-                return 'DealNotFound'; 
+
+            if ($deal_id == 0) {
+                return 'DealNotFound';
             }
 
             $bitrix->changeDeal($lead->deal_id, [
-                $field => $datetime, 
+                $field => $datetime,
                 'STAGE_ID' => $stage, // Стадия сделки: Обучается
             ]);
-           
 
-            if($lead->invite_at)  {
+
+            if ($lead->invite_at) {
                 $daytype = DayType::where([
                     'user_id' => $user_id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
-                    'date' => Carbon::parse($lead->invite_at)->format('Y-m-d'), 
+                    'date' => Carbon::parse($lead->invite_at)->format('Y-m-d'),
                 ])->first();
-    
-                if($daytype) $daytype->delete();
+
+                if ($daytype) $daytype->delete();
 
                 $daytype = DayType::create([
                     'user_id' => $user_id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
-                    'date' => Carbon::parse($datetime)->format('Y-m-d'), 
+                    'date' => Carbon::parse($datetime)->format('Y-m-d'),
                     'admin_id' => 5, // Али Суперюзер
                 ]);
             }
-            
-            
-            
-           
+
 
             // ====================
 
@@ -708,28 +720,17 @@ public function planRequired($arr) {
             $lead->save();
 
             // ===================
-            return 1; 
+            return 1;
         } else {
             History::user(\Auth::user()->id, 'Перенос обучения', [
                 'error' => 'Не найден лид',
                 'lead' => $lead,
                 'data' => $request->all(),
             ]);
-            return 'LeadNotFound'; 
+            return 'LeadNotFound';
         }
 
 
-        
-    }
-
-
-    public static function user($user_id, String $action, $data = []) {
-        self::create([
-            'author' => self::USER,
-            'author_id' => $user_id,
-            'action' => $action,
-            'data' => $data,
-        ]);
     }
 
 
@@ -737,48 +738,49 @@ public function planRequired($arr) {
      * Получить подробные таблицы рекрутеров (и чатбота) + Индикаторы рекрутеров
      * $hrs + $recruiters
      */
-    public static function getTableRecruiters(array $users_ids, array $date) {
+    public static function getTableRecruiters(array $users_ids, array $date)
+    {
         $recruiters = [];
         $hrs = [];
 
         $startOfMonth = Carbon::createFromDate($date['year'], $date['month'], 1)->format('Y-m-d');
 
         $users_ids = array_unique($users_ids);
-        foreach($users_ids as $user_id) {
-         
+        foreach ($users_ids as $user_id) {
+
             //  если есть записи у user, тогда берем их, 
             //  если нет берем пустой шаблон.
             $user = User::withTrashed()->find($user_id);
-            if(!$user) continue;
+            if (!$user) continue;
 
             // Какие дни не учитывать в месяце
-            $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+            $ignore = $user->working_day_id == 1 ? [6, 0] : [0];
 
             $workdays = workdays($date['year'], $date['month'], $ignore);
-            
+
 
             $xdate = Carbon::createFromDate($date['year'], $date['month'], 1)->format('Y-m-d');
             $wd = $user->workdays_from_applied($xdate, $user->working_day_id == 1 ? 5 : 6);
 
-            if($wd != 0) {
+            if ($wd != 0) {
                 $workdays = $wd;
             }
 
             $asi = null;
-            
-            if($asi) {
-                
+
+            if ($asi) {
+
                 $data = json_decode($asi->data, true);
 
                 foreach ($data as $index => $row) {
-                    if($index == 0) $data[$index]['headers'] = 'Наборы с ожиданием 7 гудков';
-                    if($index == 1) $data[$index]['headers'] = 'Успешные исходящие';
-                    if($index == 2) $data[$index]['headers'] = 'Время первого звонка';
-                    if($index == 3) $data[$index]['headers'] = 'Время последнего звонка';
-                    if($index == 4) $data[$index]['headers'] = 'Обработано успешных входящих';
-                    if($index == 5) $data[$index]['headers'] = 'Пропущенные звонки';
-                    if($index == 6) $data[$index]['headers'] = 'Сконвертировано';
-                    if($index == 7) $data[$index]['headers'] = 'Принято на работу';
+                    if ($index == 0) $data[$index]['headers'] = 'Наборы с ожиданием 7 гудков';
+                    if ($index == 1) $data[$index]['headers'] = 'Успешные исходящие';
+                    if ($index == 2) $data[$index]['headers'] = 'Время первого звонка';
+                    if ($index == 3) $data[$index]['headers'] = 'Время последнего звонка';
+                    if ($index == 4) $data[$index]['headers'] = 'Обработано успешных входящих';
+                    if ($index == 5) $data[$index]['headers'] = 'Пропущенные звонки';
+                    if ($index == 6) $data[$index]['headers'] = 'Сконвертировано';
+                    if ($index == 7) $data[$index]['headers'] = 'Принято на работу';
                 }
 
                 array_push($hrs, [
@@ -791,15 +793,15 @@ public function planRequired($arr) {
 
                 $arr = self::getIndicators($user->id, $startOfMonth);
 
-                if(count($arr) > 0 && !((int)$arr['out']['value'] == 0 && (int)$arr['converted']['value'] == 0)) {
+                if (count($arr) > 0 && !((int)$arr['out']['value'] == 0 && (int)$arr['converted']['value'] == 0)) {
                     array_push($recruiters, $arr);
-                } 
-                 
-            } 
-            
+                }
+
+            }
+
         }
-        
-        usort($recruiters, function($a, $b) {
+
+        usort($recruiters, function ($a, $b) {
             return $b['calls'] <=> $a['calls'];
         });
 
@@ -815,9 +817,10 @@ public function planRequired($arr) {
      * Подробная таблица чатбота
      * @return array
      */
-    public static function getTableChatbot(array $date) {
+    public static function getTableChatbot(array $date)
+    {
         $asi = null;
-    
+
         return $asi ? [
             'name' => 'Чатбот',
             'id' => 0,
@@ -829,9 +832,10 @@ public function planRequired($arr) {
      * Заказы руководителей
      * @return array
      */
-    public static function getOrders() {
+    public static function getOrders()
+    {
         $orders = [];
-        $orderGroups = ProfileGroup::where('active', 1)->get(); 
+        $orderGroups = ProfileGroup::where('active', 1)->get();
         foreach ($orderGroups as $group) {
 
             $applied = self::getApplied(date('Y-m-d'), $group->id);
@@ -850,17 +854,18 @@ public function planRequired($arr) {
      * Count remain days
      * @return int
      */
-    public static function daysRemain(array $date) {
+    public static function daysRemain(array $date)
+    {
         $start = Carbon::now();
         $end = Carbon::now()->setDate($date['year'], $date['month'], 1)->endOfMonth();
-        
+
         $holidays = [
-        //     Carbon::create(2014, 2, 2),
+            //     Carbon::create(2014, 2, 2),
         ];
 
         $remain_days = 0;
 
-        if($end->timestamp - $start->timestamp >= 0 && $end->month >= $date['month']) {
+        if ($end->timestamp - $start->timestamp >= 0 && $end->month >= $date['month']) {
             $remain_days = $start->diffInDaysFiltered(function (Carbon $date) use ($holidays) {
                 return !$date->isDayOfWeek(Carbon::SUNDAY); //&& !in_array($date, $holidays);
             }, $end);
@@ -874,10 +879,11 @@ public function planRequired($arr) {
      * Причины увольнения
      * @return array
      */
-    public static function fireCauses(array $date) {
+    public static function fireCauses(array $date)
+    {
         $causes = [];
 
-        $uds = \DB::table('users')
+        $uds = DB::table('users')
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
@@ -885,17 +891,16 @@ public function planRequired($arr) {
             ->whereMonth('ud.fire_date', $date['month'])
             ->get()
             ->groupBy('fire_cause');
-     
-        foreach($uds as $key => $ud) {
+
+        foreach ($uds as $key => $ud) {
             $causes[] = [
                 'cause' => $key,
                 'count' => $ud->count(),
             ];
         }
-         
+
         $causes_keys = [];
-        foreach ($causes as $key => $row)
-        {
+        foreach ($causes as $key => $row) {
             $causes_keys[$key] = $row['count'];
         }
 
@@ -907,24 +912,24 @@ public function planRequired($arr) {
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
      */
-    public static function staff(int $year) : array
+    public static function staff(int $year): array
     {
-        $users_on = \DB::table('users')
+        $users_on = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
             ->get()
-            ->groupBy(function($item) {
+            ->groupBy(function ($item) {
                 return (int)Carbon::createFromFormat('Y-m-d H:i:s', $item->applied)->format('m');
             })->toArray();
-        
-        $users_off = \DB::table('users')
+
+        $users_off = DB::table('users')
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereYear('deleted_at', $year)
             ->get()
-            ->groupBy(function($item) {
+            ->groupBy(function ($item) {
                 return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deleted_at)->format('m');
             })->toArray();
 
@@ -935,26 +940,26 @@ public function planRequired($arr) {
         $staff[3]['name'] = '% текучки';
         $staff[4]['name'] = 'Итого';
 
-        for ($i=1; $i <=12; $i++) { 
-            $staff[0]['m'.$i] = 0;
-            if(array_key_exists($i, $users_on)) {
-                foreach($users_on[$i] as $u) {
-                    $staff[0]['m'.$i] += $u->full_time == 1 ? 1 : 0.5;
+        for ($i = 1; $i <= 12; $i++) {
+            $staff[0]['m' . $i] = 0;
+            if (array_key_exists($i, $users_on)) {
+                foreach ($users_on[$i] as $u) {
+                    $staff[0]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
-         
-            $staff[1]['m'.$i] = 0;
-            if(array_key_exists($i, $users_off)) {
-                foreach($users_off[$i] as $u) {
-                    $staff[1]['m'.$i] += $u->full_time == 1 ? 1 : 0.5;
-                }
-            }
-            
-            $staff[2]['m'.$i] =  $staff[0]['m'.$i] - $staff[1]['m'.$i];
-            $staff[4]['m'.$i] =  0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
 
-            $a = $i != 1 ? $staff[4]['m'.($i - 1)] + $staff[0]['m'.$i] : 0;
-            $staff[3]['m'.$i] = $a > 0 ? round(( $staff[1]['m'.$i] / $a ) * 100, 1) . '%' : '0%';
+            $staff[1]['m' . $i] = 0;
+            if (array_key_exists($i, $users_off)) {
+                foreach ($users_off[$i] as $u) {
+                    $staff[1]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
+                }
+            }
+
+            $staff[2]['m' . $i] = $staff[0]['m' . $i] - $staff[1]['m' . $i];
+            $staff[4]['m' . $i] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
+
+            $a = $i != 1 ? $staff[4]['m' . ($i - 1)] + $staff[0]['m' . $i] : 0;
+            $staff[3]['m' . $i] = $a > 0 ? round(($staff[1]['m' . $i] / $a) * 100, 1) . '%' : '0%';
         }
 
         return $staff;
@@ -963,7 +968,7 @@ public function planRequired($arr) {
     /**
      * Таблица кадров в рекрутинг -> Продолжительность жизни сотрудников
      */
-    public static function staff_longevity(int $year) : array
+    public static function staff_longevity(int $year): array
     {
         $staff = [];
         $staff[0]['name'] = 'менее 2 нед';
@@ -975,7 +980,7 @@ public function planRequired($arr) {
         $staff[6]['name'] = 'более 9 мес';
         $staff[7]['name'] = 'более 12 мес';
 
-        for ($i=1; $i <=12; $i++) { 
+        for ($i = 1; $i <= 12; $i++) {
 
             $users = User::withTrashed()
                 ->employees()
@@ -983,14 +988,14 @@ public function planRequired($arr) {
                 ->whereYear('deleted_at', $year)
                 ->get(['id', 'deleted_at']);
 
-            $staff[0]['m'.$i] = 0;
-            $staff[1]['m'.$i] = 0;
-            $staff[2]['m'.$i] = 0;
-            $staff[3]['m'.$i] = 0;
-            $staff[4]['m'.$i] = 0;
-            $staff[5]['m'.$i] = 0;
-            $staff[6]['m'.$i] = 0;
-            $staff[7]['m'.$i] = 0;
+            $staff[0]['m' . $i] = 0;
+            $staff[1]['m' . $i] = 0;
+            $staff[2]['m' . $i] = 0;
+            $staff[3]['m' . $i] = 0;
+            $staff[4]['m' . $i] = 0;
+            $staff[5]['m' . $i] = 0;
+            $staff[6]['m' . $i] = 0;
+            $staff[7]['m' . $i] = 0;
 
             $total_fired = 0;
             foreach ($users as $user) {
@@ -999,58 +1004,58 @@ public function planRequired($arr) {
 
                 // which cat to count user
                 switch ($worked) {
-                    case $worked >=0 && $worked <14:
+                    case $worked >= 0 && $worked < 14:
                         $x = 0;
                         break;
-                    case $worked >=14 && $worked <30:
+                    case $worked >= 14 && $worked < 30:
                         $x = 1;
                         break;
-                    case $worked >=30 && $worked <60:
+                    case $worked >= 30 && $worked < 60:
                         $x = 2;
                         break;
-                    case $worked >=60 && $worked <90:
+                    case $worked >= 60 && $worked < 90:
                         $x = 3;
                         break;
-                    case $worked >=90 && $worked <180:
+                    case $worked >= 90 && $worked < 180:
                         $x = 4;
                         break;
-                    case $worked >=180 && $worked <270:
+                    case $worked >= 180 && $worked < 270:
                         $x = 5;
                         break;
-                    case $worked >=270 && $worked <360:
+                    case $worked >= 270 && $worked < 360:
                         $x = 6;
                         break;
-                    case $worked >=360:
+                    case $worked >= 360:
                         $x = 7;
                         break;
                     default:
                         $x = -1;
                 }
-                
-                if($x >=0) {
-                    $staff[$x]['m'.$i] += 1;
+
+                if ($x >= 0) {
+                    $staff[$x]['m' . $i] += 1;
                     $total_fired++;
-                }  
+                }
             }
 
-            if($total_fired <= 0) {
+            if ($total_fired <= 0) {
                 continue;
             }
-            
-            for($j = 0;$j<=7;$j++) {
-                $percent = floor($staff[$j]['m'.$i] / $total_fired * 100);
-                $staff[$j]['m'.$i] = $staff[$j]['m'.$i] . ' / ' . $percent . '%';
-            } 
-            
+
+            for ($j = 0; $j <= 7; $j++) {
+                $percent = floor($staff[$j]['m' . $i] / $total_fired * 100);
+                $staff[$j]['m' . $i] = $staff[$j]['m' . $i] . ' / ' . $percent . '%';
+            }
+
         }
-           
+
         return $staff;
     }
 
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
      */
-    public static function staff_by_group(int $year) : array
+    public static function staff_by_group(int $year): array
     {
         $date = Carbon::createFromDate($year, 1, 1);
         $groups = ProfileGroup::where('active', 1)->get();
@@ -1061,14 +1066,14 @@ public function planRequired($arr) {
         foreach ($groups as $key => $group) {
             $staffy[$key]['name'] = $group->name;
 
-            for ($i=1; $i <=12; $i++) { 
-                $assigned = count( $userService->getEmployees($group->id, $date->month($i)->format('Y-m-d')) );
-                $fired    = count( $userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')) );
+            for ($i = 1; $i <= 12; $i++) {
+                $assigned = count($userService->getEmployees($group->id, $date->month($i)->format('Y-m-d')));
+                $fired = count($userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')));
 
                 $worked = $assigned + $fired;
-              
-                $percent = $worked > 0 ? round(( $fired / $worked ) * 100, 1) : 0;
-                $staffy[$key]['m'.$i] = $percent . '%';
+
+                $percent = $worked > 0 ? round(($fired / $worked) * 100, 1) : 0;
+                $staffy[$key]['m' . $i] = $percent . '%';
             }
         }
 
@@ -1078,15 +1083,16 @@ public function planRequired($arr) {
     /**
      * Текучка у группы в определенный месяц
      */
-    public static function staff_on_group($date, $group_id) {
+    public static function staff_on_group($date, $group_id)
+    {
 
         $date = Carbon::parse($date)->day(1);
         $group = ProfileGroup::find($group_id);
 
-        if(!$group) return 0;
+        if (!$group) return 0;
 
         //$user_ids = ProfileGroup::employees($group->id, $date, 1) + ProfileGroup::employees($group->id, $date, 2);
-       
+
         $pgu = PGU::where('date', $date->format('Y-m-d'))
             ->where('group_id', $group->id)
             ->first();
@@ -1094,8 +1100,8 @@ public function planRequired($arr) {
         $assigned = 0;
         $fired = 0;
 
-        if($pgu) {
-            $assigned = \DB::table('users')
+        if ($pgu) {
+            $assigned = DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $pgu->assigned)
                 ->where('is_trainee', 0)
@@ -1105,7 +1111,7 @@ public function planRequired($arr) {
             //     $assigned += $us->full_time == 1 ? 1 : 0.5;
             // }
 
-            $fired = \DB::table('users')
+            $fired = DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $pgu->fired)
                 ->where('is_trainee', 0)
@@ -1118,16 +1124,17 @@ public function planRequired($arr) {
         }
 
         $worked = $assigned + $fired;
-        
+
         $staff = 0;
-        if($worked > 0) {
-            $staff = round(( $fired / $worked ) * 100, 1);
-        } 
+        if ($worked > 0) {
+            $staff = round(($fired / $worked) * 100, 1);
+        }
 
         return $staff;
     }
 
-    public static function getFiredInfo($date, $group_id) {
+    public static function getFiredInfo($date, $group_id)
+    {
 
         $prev_date = Carbon::parse($date)->startOfMonth()->subMonth();
         $date = Carbon::parse($date)->startOfMonth();
@@ -1139,109 +1146,110 @@ public function planRequired($arr) {
         $pgu = PGU::where('group_id', $group_id)
             ->where('date', $date->format('Y-m-d'))
             ->first();
-        
+
         $employees = [];
         $employees_fired = [];
         $prev_employees = [];
         $prev_employees_fired = [];
-        if($pgu) {
+        if ($pgu) {
             $employees = $pgu->assigned;
             $employees_fired = $pgu->fired;
-        } 
+        }
 
-        if($pgu_prev) {
+        if ($pgu_prev) {
             $prev_employees = $pgu_prev->assigned;
             $prev_employees_fired = $pgu_prev->fired;
-        } 
-        
-        $users_off_prev = \DB::table('users')
+        }
+
+        $users_off_prev = DB::table('users')
             ->whereNotNull('deleted_at')
-            ->whereMonth('deleted_at','=',$date->month)
+            ->whereMonth('deleted_at', '=', $date->month)
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
             ->get();
-        
-        $users_off = \DB::table('users')
+
+        $users_off = DB::table('users')
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $employees_fired)
             ->get();
 
-        $users_on = \DB::table('users')
+        $users_on = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $employees)
             ->get();
-        
-        $applied_users = \DB::table('users')
+
+        $applied_users = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', array_merge($employees, $prev_employees))
             ->whereYear('ud.applied', $date->year)
             ->whereMonth('ud.applied', $date->month)
-            ->get(); 
+            ->get();
 
-        $users_a = \DB::table('users')
+        $users_a = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
             ->get();
 
-        $working_prev =  0;
-        foreach($users_a as $u) {
+        $working_prev = 0;
+        foreach ($users_a as $u) {
             $working_prev += $u->full_time == 1 ? 1 : 0.5;
         }
 
-        $users_b = \DB::table('users')
+        $users_b = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $employees)
             ->get();
 
-        $working =  0;
-        foreach($users_b as $u) {
+        $working = 0;
+        foreach ($users_b as $u) {
             $working += $u->full_time == 1 ? 1 : 0.5;
         }
 
         $fired_prev = 0;
-        foreach($users_off_prev as $u) {
+        foreach ($users_off_prev as $u) {
             $fired_prev += $u->full_time == 1 ? 1 : 0.5;
         }
-         
+
         $fired = 0;
-        foreach($users_off as $u) {
+        foreach ($users_off as $u) {
             $fired += $u->full_time == 1 ? 1 : 0.5;
         }
-        
+
         $applied = 0;
-        foreach($applied_users as $u) {
+        foreach ($applied_users as $u) {
             $applied += $u->full_time == 1 ? 1 : 0.5;
         }
-        
-        
+
+
         $plus = $working_prev + $working;
         $percent = $plus > 0 ? $fired / ($working_prev + $working) : 0;
 
         $percent = round($percent * 100, 1);
-         
+
         return [
             'fired' => $fired_prev,
             'percent' => $percent,
         ];
-    }   
-    
+    }
+
     /**
      * return number of applied workers
      */
-    public static function getApplied($date, $group_id) {
+    public static function getApplied($date, $group_id)
+    {
 
         $date = Carbon::parse($date)->startOfMonth();
 
         $employees = array_merge(ProfileGroup::employees($group_id, $date, 1), ProfileGroup::employees($group_id, $date, 2));
 
-        $users_off = \DB::table('users')
+        $users_off = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $employees)
@@ -1255,13 +1263,14 @@ public function planRequired($arr) {
     /**
      * return number of fired workers
      */
-    public static function getFired($date, $group_id) {
+    public static function getFired($date, $group_id)
+    {
 
         $date = Carbon::parse($date)->startOfMonth();
 
         $employees = array_merge(ProfileGroup::employees($group_id, $date, 1), ProfileGroup::employees($group_id, $date, 2));
 
-        $users_off = \DB::table('users')
+        $users_off = DB::table('users')
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
@@ -1271,7 +1280,7 @@ public function planRequired($arr) {
             ->get()->count();
 
         return $users_off;
-    }   
+    }
 
     /**
      * Таблица в HR -> Этап стажировки -> Сводная
@@ -1282,48 +1291,63 @@ public function planRequired($arr) {
 
         $date = Carbon::parse($date)->startOfMonth();
 
-        $groups = ProfileGroup::where('active', 1)
-                    ->where('has_analytics', 1)
-                    ->get();
+        $leadSubQuery = Lead::query()
+            ->select(
+                DB::raw('id as lead_id'),
+                DB::raw('invite_group_id as group_id'),
+            )
+            ->whereYear('invite_at', $date->year)
+            ->whereMonth('invite_at', $date->month);
 
-        foreach($groups as $group) {
+        $groupUserSubQuery = (new UserService())
+            ->groupUserSubQuery($date)
+            ->select(
+                DB::raw('user_id'),
+                DB::raw('group_id'),
+            );
 
-            $item = [];
+        $traineesSubQuery = (new UserService())
+            ->traineesSubQuery()
+            ->select(
+                DB::raw('user_id'),
+                DB::raw('group_id'),
+            )
+            ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
+            ->whereHas('daytypes', function ($query) {
+                $query->where('date', Carbon::now()->toDateString());
+                $query->whereIn('type', [5, 7]);
+            });
 
-            /**
-             * Название группы
-             */
-            $item['name'] = $group->name;
-            
-            /**
-             * Кол-во переданных стажеров
-             */
-            $leads = Lead::whereYear('invite_at', $date->year)
-                ->whereMonth('invite_at', $date->month)
-                ->where('invite_group_id', $group->id)
-                ->get();
+        $workingUsersSubQuery = User::withTrashed()
+            ->select([
+                    DB::raw('user_id'),
+                    DB::raw('group_id'),
+                ]
+            )
+            ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
+            ->withWhereHas('user_description', function ($query) use ($date) {
+                $query->whereMonth('applied', $date->month)
+                    ->whereYear('applied', $date->year)
+                    ->where('is_trainee', 0);
+            });
 
-            $item['sent'] = $leads->count();
+        $groups = ProfileGroup::query()
+            ->select([
+                'id',
+                DB::raw('count(lead_id) as sent'),// Кол-во переданных стажеров
+                DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
+                DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
+            ])
+            ->leftJoinSub($leadSubQuery, 'leads', 'group_id', 'id')
+            ->leftJoinSub($workingUsersSubQuery, 'working', 'group_id', 'id')
+            ->leftJoinSub($traineesSubQuery, 'trainees', 'group_id', 'id')
+            ->where('active', 1)
+            ->where('has_analytics', 1)
+            ->groupBy('id')
+            ->get()
+            ->toArray();
 
-            /**
-             * Кол-во приступивших к работе
-             * к нему собираются
-             */
-
-            $users = (new UserService)->getUsers($group->id, $date->format('Y-m-d'));
-            $user_ids = collect($users)->pluck('id')->toArray();
-
-            $item['working'] = User::withTrashed()
-                ->with('user_description')
-                ->whereHas('user_description', function ($query) use ($date){
-                    $query->whereMonth('applied', $date->month)
-                          ->whereYear('applied', $date->year)
-                          ->where('is_trainee',0);
-                })
-                ->whereIn('id', $user_ids)
-                ->get(['id'])
-                ->count();
-            
+        foreach ($groups as $item) {
             /**
              * Процент прохождения стажировки
              */
@@ -1334,37 +1358,22 @@ public function planRequired($arr) {
             $item['percent'] = round($percent, 1) . '%';
 
             /**
-             * Кол-во стажирующихся активных
-             */
-            $users = (new UserService)->getTrainees($group->id, $date->format('Y-m-d'));
-            $user_ids = collect($users)->pluck('id')->toArray();
-
-            $item['active'] = DayType::where('date', Carbon::now()->toDateString())
-                                    ->whereIn('user_id', $user_ids)
-                                    ->whereIn('type', [5, 7])
-                                    ->get()
-                                    ->count();
-
-            /**
-             * Требуется нанять	
+             * Требуется нанять
              */
             $get_required = self::getPrognozGroups($date);
 
-            foreach($get_required as $req){
-                if($req['id'] == $group->id){
+            foreach ($get_required as $req) {
+                if ($req['id'] == $item['id']) {
                     $item['required'] = $req['left_to_apply'];
                 }
             }
-
-
-            array_push($arr, $item);
+            $arr[] = $item;
         }
-
         return $arr;
     }
-    
+
     /**
-     * Требуется нанять	возможно
+     * Требуется нанять    возможно
      */
     public static function getPrognozGroups($date)
     {
@@ -1375,10 +1384,11 @@ public function planRequired($arr) {
         $old_groups = ProfileGroup::whereIn('id', [42])->get();
 
         $groups = $groups->merge($old_groups);
-        foreach($groups as $group) {
+
+        foreach ($groups as $group) {
             $item = [];
 
-            
+
             $item['id'] = $group->id;
             $item['name'] = $group->name;
             $item['plan'] = $group->required;
@@ -1386,9 +1396,9 @@ public function planRequired($arr) {
 
             $rate = 0;
 
-            foreach($working as $user_id) {
+            foreach ($working as $user_id) {
                 $user = User::withTrashed()->find($user_id);
-                if($user) {
+                if ($user) {
 //                    $rate += $user->full_time == 1 ? 1 : 0.5;
                     $rate += 1;
                 }
@@ -1406,7 +1416,8 @@ public function planRequired($arr) {
      * Причины отсутствия 1 и 2 день стажировки
      * @return array
      */
-    public static function getAbsenceCauses(array $date) {
+    public static function getAbsenceCauses(array $date)
+    {
         $first_day = [];
         $second_day = [];
         $third_day = [];
@@ -1426,7 +1437,7 @@ public function planRequired($arr) {
             ->get()
             ->groupBy('text');
 
-        foreach($th1 as $key => $th) {
+        foreach ($th1 as $key => $th) {
             $first_day[] = [
                 'cause' => $key,
                 'count' => $th->count(),
@@ -1440,11 +1451,11 @@ public function planRequired($arr) {
 
         $th2 = UserAbsenceCause::whereYear('date', $date['year'])
             ->whereMonth('date', $date['month'])
-            ->where('type', UserAbsenceCause::SECOND_DAY) 
+            ->where('type', UserAbsenceCause::SECOND_DAY)
             ->get()
             ->groupBy('text');
 
-        foreach($th2 as $key => $th) {
+        foreach ($th2 as $key => $th) {
             $second_day[] = [
                 'cause' => $key,
                 'count' => $th->count(),
@@ -1458,11 +1469,11 @@ public function planRequired($arr) {
 
         $th2 = UserAbsenceCause::whereYear('date', $date['year'])
             ->whereMonth('date', $date['month'])
-            ->where('type', UserAbsenceCause::THIRD_DAY) 
+            ->where('type', UserAbsenceCause::THIRD_DAY)
             ->get()
             ->groupBy('text');
 
-        foreach($th2 as $key => $th) {
+        foreach ($th2 as $key => $th) {
             $third_day[] = [
                 'cause' => $key,
                 'count' => $th->count(),
@@ -1478,17 +1489,16 @@ public function planRequired($arr) {
             'third_day' => $third_day,
         ];
     }
-    
-    
-    
+
 
     /**
-     * Оценка операторов по группам 
+     * Оценка операторов по группам
      * @return array
      */
-    public static function ratingsGroups(array $date) {
+    public static function ratingsGroups(array $date)
+    {
         $ratings = [];
-        
+
         $rleads = Lead::whereYear('skyped', $date['year'])
             ->whereMonth('skyped', $date['month'])
             ->whereNotNull('invite_group_id')
@@ -1496,9 +1506,9 @@ public function planRequired($arr) {
             ->where('rating', '!=', 1)
             ->get()
             ->groupBy('invite_group_id');
-        
+
         $rgroups = ProfileGroup::where('active', 1)->get();
-        
+
         foreach ($rleads as $key => $rlead) {
             $rg = $rgroups->where('id', $key)->first();
 
@@ -1508,11 +1518,11 @@ public function planRequired($arr) {
             foreach ($rlead as $key => $lead) {
                 $rcount++;
                 $rating_sum += $lead->rating;
-                if($lead->rating2) {
+                if ($lead->rating2) {
                     $rcount++;
                     $rating_sum += $lead->rating2;
                 }
-                
+
             }
 
             $ratings[] = [
@@ -1530,43 +1540,44 @@ public function planRequired($arr) {
      * Оценка операторов даты
      * @return array
      */
-    public static function ratingsDates(array $date) {
+    public static function ratingsDates(array $date)
+    {
         $ratings_dates = [];
-        
+
         $_date = Carbon::createFromFormat('m-Y', $date['month'] . '-' . $date['year']);
         $start = $_date->startOfMonth()->timestamp;
         $end = $_date->endOfMonth()->timestamp;
 
-        $ratings_leads = UserDescription::where(function($query) {
+        $ratings_leads = UserDescription::where(function ($query) {
             $query->whereNotNull('rating1')
                 ->orWhereNotNull('rating2');
-        })->get();  
-        
+        })->get();
+
         $users = User::withTrashed()
             ->whereIn('id', $ratings_leads->pluck('user_id')->toArray())
             ->get();
-            
-        foreach($ratings_leads as $rl) {
+
+        foreach ($ratings_leads as $rl) {
             $user = $users->where('id', $rl->user_id)->first();
-            if($user) {
+            if ($user) {
                 $group = ProfileGroup::userIn($user->id, false);
 
-                if($rl->rating2 && array_key_exists('date', $rl->rating2) && $rl->rating2['date'] > $start && $rl->rating2['date'] < $end
-                ||
-                $rl->rating1 && array_key_exists('date', $rl->rating1) && $rl->rating1['date'] > $start && $rl->rating1['date'] < $end) {
+                if ($rl->rating2 && array_key_exists('date', $rl->rating2) && $rl->rating2['date'] > $start && $rl->rating2['date'] < $end
+                    ||
+                    $rl->rating1 && array_key_exists('date', $rl->rating1) && $rl->rating1['date'] > $start && $rl->rating1['date'] < $end) {
                     $ratings_dates[] = [
                         'name' => $user->last_name . ' ' . $user->name,
-                        'rating' => $rl->rating1 && array_key_exists('rating', $rl->rating1) ?  $rl->rating1['rating'] : '-',
-                        'rating_date' => $rl->rating1 && array_key_exists('date', $rl->rating1) ?  date('d.m.Y', $rl->rating1['date']) : '-',
-                        'rating2' => $rl->rating2 && array_key_exists('rating', $rl->rating2) ?  $rl->rating2['rating'] : '-',
-                        'rating2_date' => $rl->rating2 && array_key_exists('date', $rl->rating2) ?  date('d.m.Y', $rl->rating2['date']) : '-',
+                        'rating' => $rl->rating1 && array_key_exists('rating', $rl->rating1) ? $rl->rating1['rating'] : '-',
+                        'rating_date' => $rl->rating1 && array_key_exists('date', $rl->rating1) ? date('d.m.Y', $rl->rating1['date']) : '-',
+                        'rating2' => $rl->rating2 && array_key_exists('rating', $rl->rating2) ? $rl->rating2['rating'] : '-',
+                        'rating2_date' => $rl->rating2 && array_key_exists('date', $rl->rating2) ? date('d.m.Y', $rl->rating2['date']) : '-',
                         'group' => $group->count() > 0 ? $group[0]->name : '-',
                     ];
                 }
-                
+
             }
-           
-        }   
+
+        }
 
         return $ratings_dates;
     }
@@ -1578,6 +1589,6 @@ public function planRequired($arr) {
      * @return int
      */
     // public static function ratingsHeads(array $date) {
-       
+
     // }
 }   

@@ -36,17 +36,30 @@ class UserService
 
         $data = [];
         foreach ($groups as $group) {
-            $groupUser = GroupUser::withTrashed()->select('user_id')->where('group_id', '=', $group->id)
-                ->where(fn($query) => $query->whereYear('from', '<=', $this->getYear($date))->orWhereMonth('from', '<=', $this->getMonth($date)))
-                ->where(fn($query) => $query->whereNull('to')->orWhere(
-                    fn($query) => $query->whereYear('to', '<=', $this->getYear($date))->whereMonth('to', '>', $this->getMonth($date)))
-                )->groupBy(['user_id'])
+            $groupUser = $this->groupUserSubQuery($date)
+                ->select('user_id')
+                ->where('group_id', '=', $group->id)->groupBy(['user_id'])
                 ->havingRaw('count(user_id) >= ?', [1]);
 
             $data = $this->getGroupUsers($groupUser->get(), $date);
         }
 
         return $data;
+    }
+
+    public function traineesSubQuery(): Builder|\Illuminate\Database\Query\Builder
+    {
+        return User::query()
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1));
+    }
+
+    public function groupUserSubQuery($date): Builder|\Illuminate\Database\Query\Builder
+    {
+        return GroupUser::withTrashed()
+            ->where(fn($query) => $query->whereYear('from', '<=', $this->getYear($date))->orWhereMonth('from', '<=', $this->getMonth($date)))
+            ->where(fn($query) => $query->whereNull('to')->orWhere(
+                fn($query) => $query->whereYear('to', '<=', $this->getYear($date))->whereMonth('to', '>', $this->getMonth($date)))
+            );
     }
 
     /**
@@ -378,13 +391,13 @@ class UserService
      * @param $groupUsers
      * @return array
      */
-    public
-    function getGroupsTrainees($groupUsers): array
+    public function getGroupsTrainees($groupUsers): array
     {
         $traineesData = [];
 
         foreach ($groupUsers as $groupUser) {
-            $user = User::query()->where('id', $groupUser->user_id)
+            $user = User::query()
+                ->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
                 ->first();
 
@@ -512,6 +525,7 @@ class UserService
             ->groupBy('users.id')
             ->get();
     }
+
     public function getEmployeesWithFiredByGroupIds(array $groupIds, Carbon|string $date): Collection
     {
         $date = is_string($date) ? Carbon::parse($date) : $date;
