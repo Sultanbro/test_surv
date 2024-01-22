@@ -1285,7 +1285,7 @@ class Recruiting
     /**
      * Таблица в HR -> Этап стажировки -> Сводная
      */
-    public static function ocenka_svod($date)
+    public static function ocenka_svod(Carbon $date)
     {
         $arr = [];
         $get_required = self::getPrognozGroups($date);
@@ -1296,13 +1296,13 @@ class Recruiting
             )
             ->where(function ($query) use ($date) {
                 $query->whereNotNull('skyped')
-                    ->whereMonth('skyped', $date['month'])
-                    ->whereYear('skyped', $date['year']);
+                    ->whereMonth('skyped', $date->month)
+                    ->whereYear('skyped', $date->year);
             })
             ->orWhere(function ($query) use ($date) {
                 $query->whereNotNull('inhouse')
-                    ->whereMonth('inhouse', $date['month'])
-                    ->whereYear('inhouse', $date['year']);
+                    ->whereMonth('inhouse', $date->month)
+                    ->whereYear('inhouse', $date->year);
             });
 
         $groupUserSubQuery = (new UserService())
