@@ -259,7 +259,15 @@ class KnowBase extends Model implements CourseInterface
     public function scopeSearchChildrenIdsByKbId($query, $id)
     {
         if ($id) {
-            $descendantIds = DB::select("
+            $childIds = $this->getAllChildrenIdsByKbId($id);
+            return $query->whereIn('id', $childIds);
+        }
+        return $query;
+    }
+
+    public static function getAllChildrenIdsByKbId($id)
+    {
+        $descendantIds = DB::select("
             WITH RECURSIVE descendant_cte AS (
                 SELECT id, parent_id
                 FROM kb
@@ -270,14 +278,13 @@ class KnowBase extends Model implements CourseInterface
                 INNER JOIN descendant_cte ON kb.parent_id = descendant_cte.id
             )
             SELECT id FROM descendant_cte", ['parent_id' => $id]
-            );
-            $childIds = [];
-            foreach ($descendantIds as $item) {
-                $childIds[] = $item->id;
-            }
-            return $query->whereIn('id', $childIds);
+        );
+        $childIds = [];
+        foreach ($descendantIds as $item) {
+            $childIds[] = $item->id;
         }
-        return $query;
+
+        return $childIds;
     }
 
     /**

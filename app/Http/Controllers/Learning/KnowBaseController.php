@@ -72,8 +72,8 @@ class KnowBaseController extends Controller
             $position_id =  $auth_user->position_id;
             $user_id =  auth()->id();
 
-            $up = KnowBaseModel::
-                where(function($query) use ($group_ids, $access) {
+            $up = KnowBaseModel::query()
+                ->where(function($query) use ($group_ids, $access) {
                     $query->where('model_type', 'App\\ProfileGroup')
                         ->whereIn('model_id', $group_ids);
                     if($access == 2) $query->where('access', 2);
@@ -132,16 +132,20 @@ class KnowBaseController extends Controller
      */
     public function search(Request $request) : array
     {
-        if(!auth()->user()->can('kb_edit')) {
-            return [
-                'items' => [],
-            ];
+        $kbs = $this->getBooks();
+        $allIds = [];
+        foreach ($kbs as $kb) {
+            $children = KnowBase::getAllChildrenIdsByKbId($kb);
+            $allIds = array_merge($allIds, $children);
         }
-
         $phrase = '%' . $request->text . '%';
         $items = KnowBase::query()
-            ->where('title', 'like', $phrase)
-            ->orWhere('text', 'like', $phrase)
+            ->where(function ($q) use ($phrase) {
+                $q->where('title', 'like', $phrase)
+                    ->orWhere('text', 'like', $phrase);
+            })
+
+            ->whereIn('id', $allIds)
             ->searchChildrenIdsByKbId($request->id)
             ->orderBy('order')
             ->limit(10)

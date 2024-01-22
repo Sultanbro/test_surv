@@ -233,8 +233,8 @@ function parseKPI(kpi){
 			kpi.histories_latest.payload = JSON.parse(kpi.histories_latest.payload)
 			kpi.lower_limit = kpi.histories_latest.payload.lower_limit
 			kpi.upper_limit = kpi.histories_latest.payload.upper_limit
-			kpi.completed_80 = kpi.histories_latest.payload.completed_80
-			kpi.completed_100 = kpi.histories_latest.payload.completed_100
+			// kpi.completed_80 = kpi.histories_latest.payload.completed_80
+			// kpi.completed_100 = kpi.histories_latest.payload.completed_100
 		}
 		if(Object.keys(kpi.histories_latest.payload).includes('is_active')){
 			kpi.is_active = kpi.histories_latest.payload.is_active

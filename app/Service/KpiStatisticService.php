@@ -986,11 +986,8 @@ class KpiStatisticService
                 if (isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
-                $kpi->completed_80 = $payload['completed_80'] * $currency_rate;
-                $kpi->completed_100 = $payload['completed_100'] * $currency_rate;
-            } else {
-                $kpi->completed_80 *= $currency_rate;
-                $kpi->completed_100 *= $currency_rate;
+                $kpi->completed_80 = $payload['completed_80'];
+                $kpi->completed_100 = $payload['completed_100'];
             }
 
             unset($kpi->users);
@@ -1012,6 +1009,7 @@ class KpiStatisticService
             'user_id' => auth()->user() ? auth()->id() : 1,
             'read' => $read,
             'currency' => $currency,
+            'currency_rate' => $currency_rate
         ];
     }
 
