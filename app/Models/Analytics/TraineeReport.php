@@ -50,8 +50,8 @@ class TraineeReport extends Model
             trainee_report.*,
             DAY(trainee_report.date) as day,
             trainee_report.group_id as group_id,
-            profile_groups.name as group
-            ")
+            profile_groups.name as `group`
+        ")
             ->join('profile_groups', 'profile_groups.id', '=', 'trainee_report.group_id')
             ->whereYear('trainee_report.date', $date->year)
             ->whereMonth('trainee_report.date', $date->month)
@@ -77,9 +77,13 @@ class TraineeReport extends Model
                     7 => $report->day_7,
                 ]
             ];
-            $_sort = array_column($result, 'day');
-            array_multisort($_sort, SORT_DESC, $result);
         }
+
+        // Sort the result array after the loop
+        usort($result, function ($a, $b) {
+            return $b['day'] <=> $a['day'];
+        });
+
         return $result;
     }
 
