@@ -1433,7 +1433,7 @@ class Recruiting
         $list = UserAbsenceCause::query()
             ->select(DB::raw('count(*) as count'))
             ->where('date', $date)
-            ->groupBy(['text', 'type'])
+            ->groupBy(['type'])
             ->get();
 
         $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
