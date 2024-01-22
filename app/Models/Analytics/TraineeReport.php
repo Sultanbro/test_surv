@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class TraineeReport extends Model
 {
@@ -46,12 +47,12 @@ class TraineeReport extends Model
         $date = Carbon::parse($date);
 
         $reports = self::query()
-            ->selectRaw("
-            trainee_report.*,
-            DAY(trainee_report.date) as day,
-            trainee_report.group_id as group_id,
-            profile_groups.name as `group`
-        ")
+            ->select([
+                DB::raw("trainee_report.*"),
+                DB::raw("DAY(trainee_report.date) as day"),
+                DB::raw("trainee_report.group_id as group_id"),
+                DB::raw("profile_groups.name as `group`")
+            ])
             ->join('profile_groups', 'profile_groups.id', '=', 'trainee_report.group_id')
             ->whereYear('trainee_report.date', $date->year)
             ->whereMonth('trainee_report.date', $date->month)
