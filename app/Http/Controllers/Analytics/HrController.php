@@ -345,9 +345,9 @@ class HrController extends Controller
         ];
         $month = Carbon::create($date['year'], $date['month']);
 
-        dump(time());
+        dump(now()->format("H:i:s"));
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
-        dump(time());
+        dump(now()->format("H:i:s"));
 //        $trainee_report = TraineeReport::getBlocks($month->format('Y-m-d'));
 //        dump(time());
 //        $pivot = RM::ocenka_svod($month->startOfMonth());
