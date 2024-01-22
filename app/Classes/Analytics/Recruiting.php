@@ -1424,16 +1424,16 @@ class Recruiting
 
     /**
      * Причины отсутствия 1 и 2 день стажировки
-     * @param array $date
+     * @param Carbon $date
      * @return array
      */
-    public static function getAbsenceCauses(array $date): array
+    public static function getAbsenceCauses(Carbon $date): array
     {
         $result = [];
         $list = UserAbsenceCause::query()
-            ->whereYear('date', $date['year'])
-            ->whereMonth('date', $date['month'])
-            ->distinct('text')
+            ->select(DB::raw('count(*) as count'))
+            ->where('date', $date)
+            ->groupBy(['text', 'type'])
             ->get();
 
         $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
