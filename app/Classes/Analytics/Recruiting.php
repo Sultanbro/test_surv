@@ -1334,7 +1334,8 @@ class Recruiting
         $groups = ProfileGroup::query()
             ->select([
                 'id',
-                DB::raw('count(lead_id) as sent'),// Кол-во переданных стажеров
+                'name',
+                DB::raw('count(leads.id) as sent'),// Кол-во переданных стажеров
                 DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
                 DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
             ])
@@ -1343,7 +1344,7 @@ class Recruiting
             ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
             ->where('active', 1)
             ->where('has_analytics', 1)
-            ->groupBy('id')
+            ->groupBy(['id', 'name'])
             ->get()
             ->toArray();
 
