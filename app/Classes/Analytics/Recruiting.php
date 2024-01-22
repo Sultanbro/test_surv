@@ -1435,12 +1435,12 @@ class Recruiting
         ];
 
         $result = [];
-        $list = UserAbsenceCause::query()
-            ->select(DB::raw('count(*) as count'))
-            ->whereBetween('date', $range)
-            ->groupBy('type')
-            ->get();
-        dd($range);
+        $list = DB::table('user_absence_causes')
+            ->selectRaw('select count(*) as count')
+            ->whereRaw("date between '2023-12-01' and '2023-12-31'")
+            ->groupBy('type');
+
+        dd($list);
 
         $result['first_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
         $result['second_day'] = UserAbsenceCause::absenceCauseByType($list, UserAbsenceCause::FIRST_DAY);
