@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
+import momentjs from 'moment'
 
-var fields = [
+export const fields = [
 	{
 		name: 'Кому',
 		key: 'target',
@@ -100,22 +101,9 @@ var fields = [
 	}
 ];
 
-// dates
-function formatDate(d) {
-	var day = d.getDate() + '';
-	if(day.length == 1) day = '0' + day;
+const datestring = momentjs(new Date()).utc().format('DD.MM.YYYY HH:mm')
 
-	var month = (d.getMonth() + 1) + '';
-	if(month.length == 1) month = '0' + month;
-
-	return d.getDate()  + '.' + month + '.' + d.getFullYear() + ' ' +
-        d.getHours() + ':' + d.getMinutes();
-}
-
-var datestring = formatDate(new Date());
-
-
-function newQuartalPremium() {
+export function newQuartalPremium() {
 	return  {
 		id: 0,
 		target: null,
@@ -137,8 +125,3 @@ function newQuartalPremium() {
 	};
 }
 
-// eslint-disable-next-line no-undef
-module.exports = {
-	fields: fields,
-	newQuartalPremium: newQuartalPremium
-};

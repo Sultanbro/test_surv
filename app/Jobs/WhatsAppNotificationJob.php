@@ -66,6 +66,6 @@ class WhatsAppNotificationJob implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new WithoutOverlapping($this->phone)];
+        return [(new WithoutOverlapping($this->phone))->dontRelease()];
     }
 }

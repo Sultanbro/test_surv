@@ -14,17 +14,19 @@ class QuarterPremiumUpdateDTO
      * @param string|null $from
      * @param string|null $to
      * @param int|null $sum
+     * @param string|null $cell
      */
     public function __construct(
-        public int $id,
-        public ?int $activityId,
+        public int     $id,
+        public ?int    $activityId,
         public ?string $targetAbleType,
         public ?string $title,
         public ?string $text,
         public ?string $plan,
         public ?string $from,
         public ?string $to,
-        public ?int $sum
+        public ?int    $sum,
+        public ?string $cell,
     )
     {
     }
@@ -35,14 +37,15 @@ class QuarterPremiumUpdateDTO
     public function toArray(): array
     {
         return [
-            'activity_id'       => $this->activityId,
-            'targetable_type'   => $this->targetAbleType,
+            'activity_id' => $this->activityId,
+            'targetable_type' => $this->targetAbleType,
             'title' => $this->title,
-            'text'  => $this->text,
-            'plan'  => $this->plan,
-            'from'  => $this->from,
-            'to'    => $this->to,
-            'sum'   => $this->sum
+            'text' => $this->text,
+            'plan' => $this->plan,
+            'from' => $this->from,
+            'to' => $this->to,
+            'sum' => $this->sum,
+            'cell' => $this->cell,
         ];
     }
 }
