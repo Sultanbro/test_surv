@@ -1358,7 +1358,7 @@ class Recruiting
             ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
             ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
             ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
-            ->where('active', 1)
+            ->where('profile_groups.active', 1)
             ->where('has_analytics', 1)
             ->groupBy(['id', 'name'])
             ->get()
