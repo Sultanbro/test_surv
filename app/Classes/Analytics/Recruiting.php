@@ -1300,7 +1300,7 @@ class Recruiting
             ->whereMonth('invite_at', $date->month);
 
         $groupUserSubQuery = (new UserService())
-            ->groupUserSubQuery($date)
+            ->groupUserSubQuery($date->copy()->format("Y-m-d"))
             ->select(
                 DB::raw('user_id'),
                 DB::raw('group_id'),
