@@ -132,6 +132,7 @@ class KnowBaseController extends Controller
      */
     public function search(Request $request) : array
     {
+        dd( $this->getBooks(1));
         $phrase = '%' . $request->text . '%';
         $items = KnowBase::query()
             ->where(function ($q) use ($phrase) {
