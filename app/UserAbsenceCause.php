@@ -55,7 +55,6 @@ class UserAbsenceCause extends Model
 
     public static function absenceCauseByType(Collection|array $list, int $type): array
     {
-        dd($list);
         $items = $list->where('type', $type);
         $result = [];
         foreach ($items as $key => $th) {

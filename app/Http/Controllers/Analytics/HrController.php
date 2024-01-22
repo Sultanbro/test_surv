@@ -339,8 +339,11 @@ class HrController extends Controller
      */
     public function getInternshipSecondStage(Request $request)
     {
-        $date = Carbon::create($request->get("year"), $request->get("month"));
-
+        $date = Carbon::create(
+            $request->get("year"),
+            $request->get("month")
+        );
+        dd($date);
         dump(now()->format("H:i:s"));
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
         dump(now()->format("H:i:s"));
