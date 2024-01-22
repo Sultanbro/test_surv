@@ -1327,10 +1327,9 @@ class Recruiting
 
         $workingUsersSubQuery = User::withTrashed()
             ->select([
-                    DB::raw('user_id'),
-                    DB::raw('group_id'),
-                ]
-            )
+                DB::raw('user_id'),
+                DB::raw('group_id'),
+            ])
             ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
             ->withWhereHas('user_description', function ($query) use ($date) {
                 $query->whereMonth('applied', $date->month)
@@ -1343,13 +1342,13 @@ class Recruiting
             ->select([
                 'id',
                 'name',
-                DB::raw('count(leads.lead_id) as sent'),// Кол-во переданных стажеров
-                DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
-                DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
+//                DB::raw('count(leads.lead_id) as sent'),// Кол-во переданных стажеров
+//                DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
+//                DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
             ])
-            ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
-            ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
-            ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
+//            ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
+//            ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
+//            ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
             ->where('active', 1)
             ->where('has_analytics', 1)
             ->groupBy(['id', 'name'])
