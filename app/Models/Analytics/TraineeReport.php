@@ -49,7 +49,7 @@ class TraineeReport extends Model
             ->whereMonth('date', $date->month)
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->get();
-
+        dd($reports);
         $groups_key_value = ProfileGroup::query()
             ->where('active', 1)
             ->pluck('name', 'id')
