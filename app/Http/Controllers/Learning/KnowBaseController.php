@@ -132,7 +132,12 @@ class KnowBaseController extends Controller
      */
     public function search(Request $request) : array
     {
-//        dd( $this->getBooks(1));
+        $kbs = $this->getBooks();
+        $allIds = [];
+        foreach ($kbs as $kb) {
+            $children = KnowBase::getAllChildrenIdsByKbId($kb);
+            $allIds = array_merge($allIds, $children);
+        }
         $phrase = '%' . $request->text . '%';
         $items = KnowBase::query()
             ->where(function ($q) use ($phrase) {
@@ -140,7 +145,7 @@ class KnowBaseController extends Controller
                     ->orWhere('text', 'like', $phrase);
             })
 
-            ->whereIn('id', $this->getBooks(1))
+            ->whereIn('id', $allIds)
             ->searchChildrenIdsByKbId($request->id)
             ->orderBy('order')
             ->limit(10)
