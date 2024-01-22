@@ -130,7 +130,12 @@ export default {
 			}).then(({data}) => {
 
 				// items
-				this.items = data.items.map(res=> ({...parseKPI(res), my_sum: 0})).sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
+				this.items = data.items.map(res=> {
+					const kpi = parseKPI(res)
+					kpi.completed_80 = kpi.completed_80 * data.currency_rate
+					kpi.completed_100 = kpi.completed_100 * data.currency_rate
+					return {...kpi, my_sum: 0}
+				}).sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
 				// removeDeletedItems(this.items)
 
 				this.activities = data.activities;
