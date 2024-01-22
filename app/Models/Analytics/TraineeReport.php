@@ -46,7 +46,7 @@ class TraineeReport extends Model
     {
         $date = Carbon::parse($date);
 
-        $reports = self::query()
+        return self::query()
             ->select([
                 DB::raw("trainee_report.*"),
                 DB::raw("DAY(trainee_report.date) as day"),
@@ -61,7 +61,7 @@ class TraineeReport extends Model
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->orderByDesc('day')
             ->get()
-            ->each(function (TraineeReport $report){
+            ->each(function (TraineeReport $report) {
                 $report->quiz = self::formAnswers($report->data);
                 $report->presence = [
                     0 => $report->leads,
@@ -73,9 +73,8 @@ class TraineeReport extends Model
                     6 => $report->day_6,
                     7 => $report->day_7,
                 ];
-            });
-
-        dd($reports);
+            })
+            ->toArray();
     }
 
     public static function formAnswers($data)
