@@ -59,14 +59,11 @@ class TraineeReport extends Model
             ->where('profile_groups.active', 1)
             ->where('trainee_report.leads', '>', 0)
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
-            ->get();
-
-        $result = [];
-        foreach ($reports as $report) {
-            $result[] = [
-                'date' => $date->format('d.m.Y'),
-                'quiz' => self::formAnswers($report->data),
-                'presence' => [
+            ->orderByDesc('day')
+            ->get()
+            ->each(function (TraineeReport $report){
+                $report->quiz = self::formAnswers($report->data);
+                $report->presence = [
                     0 => $report->leads,
                     1 => $report->day_1,
                     2 => $report->day_2,
@@ -75,14 +72,10 @@ class TraineeReport extends Model
                     5 => $report->day_5,
                     6 => $report->day_6,
                     7 => $report->day_7,
-                ]
-            ];
-        }
-        dd($result);
-        $_sort = array_column($result, 'day');
-        array_multisort($_sort, SORT_DESC, $result);
+                ];
+            });
 
-        return $result;
+        dd($reports);
     }
 
     public static function formAnswers($data)
