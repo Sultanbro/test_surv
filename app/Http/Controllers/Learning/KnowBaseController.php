@@ -139,7 +139,7 @@ class KnowBaseController extends Controller
                     ->orWhere('text', 'like', $phrase);
             })
 
-            ->whereIn('id', $this->getBooks())
+            ->whereIn('id', $this->getBooks(1))
             ->searchChildrenIdsByKbId($request->id)
             ->orderBy('order')
             ->limit(10)
