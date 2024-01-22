@@ -1416,10 +1416,10 @@ class Recruiting
                     $rate += 1;
                 }
             }
-
             $item['applied'] = $rate;
             $item['left_to_apply'] = $group->required - count($working);
             $arr[] = $item;
+            dd_if($group->getKey() == 42, $group->required, count($working));
         }
 
         return $arr;
