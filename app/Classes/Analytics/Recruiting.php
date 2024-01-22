@@ -1335,7 +1335,7 @@ class Recruiting
             ->select([
                 'id',
                 'name',
-                DB::raw('count(leads.id) as sent'),// Кол-во переданных стажеров
+                DB::raw('count(leads.lead_id) as sent'),// Кол-во переданных стажеров
                 DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
                 DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
             ])
