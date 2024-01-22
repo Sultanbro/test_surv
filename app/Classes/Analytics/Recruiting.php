@@ -1290,7 +1290,7 @@ class Recruiting
         $arr = [];
 
         $date = Carbon::parse($date)->startOfMonth();
-
+        $get_required = self::getPrognozGroups($date);
         $leadSubQuery = Lead::query()
             ->select(
                 DB::raw('id as lead_id'),
@@ -1361,8 +1361,6 @@ class Recruiting
             /**
              * Требуется нанять
              */
-            $get_required = self::getPrognozGroups($date);
-
             foreach ($get_required as $req) {
                 if ($req['id'] == $item['id']) {
                     $item['required'] = $req['left_to_apply'];
@@ -1376,13 +1374,18 @@ class Recruiting
     /**
      * Требуется нанять    возможно
      */
-    public static function getPrognozGroups($date)
+    public static function getPrognozGroups($date): array
     {
         $arr = [];
 
-        $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
+        $groups = ProfileGroup::query()
+            ->where('active', 1)
+            ->where('has_analytics', 1)
+            ->get();
 
-        $old_groups = ProfileGroup::whereIn('id', [42])->get();
+        $old_groups = ProfileGroup::query()
+            ->whereIn('id', [42])
+            ->get();
 
         $groups = $groups->merge($old_groups);
 
@@ -1407,7 +1410,7 @@ class Recruiting
 
             $item['applied'] = $rate;
             $item['left_to_apply'] = $group->required - $rate;
-            array_push($arr, $item);
+            $arr[] = $item;
         }
 
         return $arr;
