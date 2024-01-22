@@ -35,62 +35,51 @@ class TraineeReport extends Model
     ];
 
     /**
+     * @param $date
+     * @param array $groups
      * @return array
      */
-    public static function getBlocks($date, $groups = [])
+    public static function getBlocks($date, array $groups = []): array
     {
         $date = Carbon::parse($date);
 
         $reports = self::query()
             ->whereYear('date', $date->year)
             ->whereMonth('date', $date->month)
+            ->whereIn('group_id', empty($groups) ? null : $groups)
             ->get();
-
-        if (!count($groups)) $groups = $reports->pluck('group_id')->toArray();
 
         $groups_key_value = ProfileGroup::query()
             ->where('active', 1)
-            ->get()
             ->pluck('name', 'id')
             ->toArray();
 
         $result = [];
 
         for ($i = $date->daysInMonth; $i >= 1; $i--) {
-            foreach ($groups as $group_id) {
-                $date->day($i);
-                $tr = $reports
-                    ->where('date', $date->format('Y-m-d'))
-                    ->where('group_id', $group_id)
-                    ->first();
+            $date->day($i);
 
-                if ($tr && $tr->leads > 0) {
-                    $group = [
-                        'day' => $date->day,
-                        'date' => $date->format('d.m.Y'),
-                        'group_id' => $group_id,
-                        'group' => array_key_exists($group_id, $groups_key_value) ? $groups_key_value[$group_id] : 'Отдел №' . $group_id,
-                        'quiz' => self::formAnswers($tr->data),
-                        'presence' => [
-                            0 => $tr->leads,
-                            1 => $tr->day_1,
-                            2 => $tr->day_2,
-                            3 => $tr->day_3,
-                            4 => $tr->day_4,
-                            5 => $tr->day_5,
-                            6 => $tr->day_6,
-                            7 => $tr->day_7,
-                        ]
-                    ];
-                    $result[] = $group;
-                }
-            }
+            $filteredReports = $reports
+                ->where('date', $date->format('Y-m-d'))
+                ->filter(function ($report) use ($groups) {
+                    return in_array($report->group_id, $groups);
+                });
+
+            $result = $filteredReports->map(function ($tr) use ($date, $groups_key_value) {
+                return [
+                    'day' => $date->day,
+                    'date' => $date->format('d.m.Y'),
+                    'group_id' => $tr->group_id,
+                    'group' => $groups_key_value[$tr->group_id] ?? 'Отдел №' . $tr->group_id,
+                    'quiz' => self::formAnswers($tr->data),
+                    'presence' => array_slice([$tr->leads, $tr->day_1, $tr->day_2, $tr->day_3, $tr->day_4, $tr->day_5, $tr->day_6, $tr->day_7], 0, 8),
+                ];
+            })->merge($result);
         }
 
-        $_sort = array_column($result, 'day');
-        array_multisort($_sort, SORT_DESC, $result);
-
-        return $result;
+        return $result->sortByDesc('day')
+            ->values()
+            ->all();
     }
 
     public static function formAnswers($data)
