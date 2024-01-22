@@ -1289,7 +1289,7 @@ class Recruiting
     {
         $arr = [];
         $get_required = self::getPrognozGroups($date);
-        dd($get_required);
+
         $leadSubQuery = Lead::query()
             ->select(
                 DB::raw('id as lead_id'),
@@ -1338,6 +1338,7 @@ class Recruiting
                     ->where('is_trainee', 0);
             });
 
+        dump(now()->format("H:i:s"));
         $groups = ProfileGroup::query()
             ->select([
                 'id',
@@ -1354,6 +1355,8 @@ class Recruiting
             ->groupBy(['id', 'name'])
             ->get()
             ->toArray();
+        dump(now()->format("H:i:s"));
+        dd($groups);
 
         foreach ($groups as $item) {
             /**

@@ -345,9 +345,7 @@ class HrController extends Controller
         );
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
         $trainee_report = TraineeReport::getBlocks($date->format('Y-m-d'));
-        dump(now()->format("H:i:s"));
         $pivot = RM::ocenka_svod($date->startOfMonth());
-        dump(now()->format("H:i:s"));
         return [
             'ocenka_svod' => $pivot, // Анкета уволенных // 4.1 sec
             'absents_first' => $absence_causes['first_day'],
