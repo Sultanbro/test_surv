@@ -1346,7 +1346,6 @@ class Recruiting
             })
             ->groupBy(['user_id', 'group_id']);
 
-        dump(now()->format("H:i:s"));
         $groups = ProfileGroup::query()
             ->select([
                 'id',
