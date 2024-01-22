@@ -1338,9 +1338,9 @@ class Recruiting
                 DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
                 DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
             ])
-            ->leftJoinSub($leadSubQuery, 'leads', 'group_id', 'id')
-            ->leftJoinSub($workingUsersSubQuery, 'working', 'group_id', 'id')
-            ->leftJoinSub($traineesSubQuery, 'trainees', 'group_id', 'id')
+            ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
+            ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
+            ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
             ->where('active', 1)
             ->where('has_analytics', 1)
             ->groupBy('id')
