@@ -1438,7 +1438,8 @@ class Recruiting
         $list = DB::table('user_absence_causes')
             ->selectRaw('select count(*) as count')
             ->whereRaw("date between '2023-12-01' and '2023-12-31'")
-            ->groupBy('type');
+            ->groupBy('type')
+            ->get();
 
         dd($list);
 
