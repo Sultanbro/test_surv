@@ -49,7 +49,7 @@ class TraineeReport extends Model
             ->whereMonth('date', $date->month)
             ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->get();
-        dd($reports);
+
         $groups_key_value = ProfileGroup::query()
             ->where('active', 1)
             ->pluck('name', 'id')
@@ -65,6 +65,7 @@ class TraineeReport extends Model
                     ->where('date', $date->format('Y-m-d'))
                     ->where('group_id', $group)
                     ->first();
+                dd($filteredItem);
                 if ($filteredItem && $filteredItem->leads > 0) {
                     $result[] = [
                         'day' => $date->day,
