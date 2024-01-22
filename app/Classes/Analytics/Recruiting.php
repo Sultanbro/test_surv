@@ -1288,8 +1288,6 @@ class Recruiting
     public static function ocenka_svod($date)
     {
         $arr = [];
-
-        $date = Carbon::parse($date)->startOfMonth();
         $get_required = self::getPrognozGroups($date);
         $leadSubQuery = Lead::query()
             ->select(
