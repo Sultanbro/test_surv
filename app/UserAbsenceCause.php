@@ -57,7 +57,6 @@ class UserAbsenceCause extends Model
     {
         $result = [];
         $items = $list->where('type', $type);
-        dd($items);
         foreach ($items as $key => $th) {
             $result[] = [
                 'cause' => $key,
