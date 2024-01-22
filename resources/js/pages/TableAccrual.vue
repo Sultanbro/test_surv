@@ -871,7 +871,7 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import { kpi_fields, parseKPI, removeDeletedItems, target2type } from '@/pages/kpi/kpis.js'
+import { kpi_fields, parseKPI, target2type } from '@/pages/kpi/kpis.js'
 import salaryCellType from '@/composables/salaryCellType'
 
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
@@ -1806,70 +1806,23 @@ export default {
 			if(!userId) return
 			if(!this.is_admin) return
 
-			const user = this.data.users.find(user => user.id === userId)
-
-			this.kpiSidebarUserId = userId
-			this.kpiItems = []
-
 			const loader = this.$loading.show();
-			try{
-				const {data: userData} = await this.axios.post(`/statistics/kpi/groups-and-users/${userId}`, {
-					filters: {
-						data_from: {
-							year: this.dateInfo.currentYear,
-							month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
-						}
+			const { data } = await this.axios.post('/statistics/kpi-with-currency', {
+				filters: {
+					data_from: {
+						year: this.dateInfo.currentYear,
+						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					},
-					type: 1
-				})
-				if(!userData.message){
-					const kpi = parseKPI(userData.kpi)
-					kpi.is_active && this.kpiItems.push(kpi)
+					user_id: userId
 				}
-				const {data: posData} = await this.axios.post(`/statistics/kpi/groups-and-users/${user.position_id}`, {
-					filters: {
-						data_from: {
-							year: this.dateInfo.currentYear,
-							month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
-						}
-					},
-					type: 3
-				})
-				if(!posData.message){
-					const kpi = parseKPI(posData.kpi)
-					kpi.is_active && this.kpiItems.push(kpi)
-				}
-				const groups = this.getUserGroups(userId)
-				await Promise.all(groups.map(async groupId => {
-					const {data: groupData} = await this.axios.post(`/statistics/kpi/groups-and-users/${groupId}`, {
-						filters: {
-							data_from: {
-								year: this.dateInfo.currentYear,
-								month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
-							}
-						},
-						type: 2
-					})
-					if(!groupData.message){
-						groupData.kpi.users = groupData.kpi.users.filter(user => user.id === userId)
-						if(groupData.kpi.users.length) {
-							const kpi = parseKPI(groupData.kpi)
-							kpi.is_active && this.kpiItems.push(kpi)
-						}
-					}
-				}))
-				removeDeletedItems(this.kpiItems)
-				this.kpiItems.sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
-				this.kpiItems = this.kpiItems.filter(kpi => {
-					const hasHiist = Object.keys(kpi?.histories_latest?.payload || {}).includes('is_active')
-					return hasHiist ? kpi.histories_latest.payload.is_active : true
-				})
-				this.kpiSidebar = true
-			}
-			catch(error){
-				console.error(error)
-				this.$toast.error('Ну удалось получить статистику')
-			}
+			})
+
+			this.kpiItems = data.items.map(res=> {
+				const kpi = parseKPI(res)
+				kpi.users = kpi.users.filter(user => user.id === userId)
+				return {...kpi, my_sum: 0}
+			}).sort((a, b) => target2type[a.targetable_type] - target2type[b.targetable_type])
+			this.kpiSidebar = true
 			loader.hide()
 		},
 	},
