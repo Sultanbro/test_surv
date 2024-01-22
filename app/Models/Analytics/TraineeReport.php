@@ -62,7 +62,6 @@ class TraineeReport extends Model
             ->get();
 
         $result = [];
-        dd($reports);
         foreach ($reports as $report) {
             $result[] = [
                 'date' => $date->format('d.m.Y'),
@@ -79,11 +78,9 @@ class TraineeReport extends Model
                 ]
             ];
         }
-
-        // Sort the result array after the loop
-        usort($result, function ($a, $b) {
-            return $b['day'] <=> $a['day'];
-        });
+        dd($result);
+        $_sort = array_column($result, 'day');
+        array_multisort($_sort, SORT_DESC, $result);
 
         return $result;
     }
