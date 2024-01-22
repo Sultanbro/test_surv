@@ -307,9 +307,9 @@ export default {
 					return {
 						...userTax,
 						name: this.allTaxes.find(tax => tax.id === userTax.tax_id)?.name || '',
-						isPercent: userTax.is_percent,
-						endSubtraction: userTax.end_subtraction,
-						isAssigned: 1,
+						isPercent: !!userTax.is_percent,
+						endSubtraction: !!(Object.keys(userTax).includes('end_subtraction') ? userTax.end_subtraction : this.allTaxes.find(tax => tax.id === userTax.tax_id)?.end_subtraction),
+						isAssigned: true,
 					}
 				}) : data.data;
 			}
@@ -528,7 +528,7 @@ export default {
 							const formDataEditTaxes = new FormData();
 							formDataEditTaxes.append('_method', 'put');
 							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].id);
+							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id);
 							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
 							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
 							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
