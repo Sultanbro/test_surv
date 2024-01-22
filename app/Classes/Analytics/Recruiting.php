@@ -1320,13 +1320,13 @@ class Recruiting
             })
             ->groupBy(['user_id', 'group_id']);
 
-        $traineesSubQuery = (new UserService())
-            ->traineesSubQuery()
+        $traineesSubQuery = User::withTrashed()
             ->select(
                 DB::raw('group_id'),
-                DB::raw('count(*) as working'),
+                DB::raw('count(*) as active'),
             )
             ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
+            ->whereHas('user_description', fn($description) => $description->where('is_trainee', 1))
             ->whereHas('daytypes', function ($query) {
                 $query->where('date', Carbon::now()->toDateString());
                 $query->whereIn('type', [5, 7]);
@@ -1336,10 +1336,10 @@ class Recruiting
         $workingUsersSubQuery = User::withTrashed()
             ->select([
                 DB::raw('group_id'),
-                DB::raw('count(*) as active'),
+                DB::raw('count(*) as working'),
             ])
             ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
-            ->withWhereHas('user_description', function ($query) use ($date) {
+            ->whereHas('user_description', function ($query) use ($date) {
                 $query->whereMonth('applied', $date->month)
                     ->whereYear('applied', $date->year)
                     ->where('is_trainee', 0);
