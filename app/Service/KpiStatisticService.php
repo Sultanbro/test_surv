@@ -989,8 +989,8 @@ class KpiStatisticService
                 $kpi->completed_80 = $payload['completed_80'] * $currency_rate;
                 $kpi->completed_100 = $payload['completed_100'] * $currency_rate;
             } else {
-                $kpi->completed_80 *= $currency_rate;
-                $kpi->completed_100 *= $currency_rate;
+                $kpi->completed_80 = $kpi->completed_80 * $currency_rate;
+                $kpi->completed_100 = $kpi->completed_100 * $currency_rate;
             }
 
             unset($kpi->users);
