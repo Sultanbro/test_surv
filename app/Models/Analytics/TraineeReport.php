@@ -60,31 +60,41 @@ class TraineeReport extends Model
         $mothDays = $date->daysInMonth;
         for ($i = 1; $i <= $mothDays; $i++) {
             $date->day($i);
-
-            $filteredReports = $reports
-                ->where('date', $date->format('Y-m-d'))
-                ->filter(function ($report) use ($groups) {
-                    return in_array($report->group_id, $groups);
-                });
-
-            $result = $filteredReports->map(function ($tr) use ($date, $groups_key_value) {
-                return [
-                    'day' => $date->day,
-                    'date' => $date->format('d.m.Y'),
-                    'group_id' => $tr->group_id,
-                    'group' => $groups_key_value[$tr->group_id] ?? 'Отдел №' . $tr->group_id,
-                    'quiz' => self::formAnswers($tr->data),
-                    'presence' => array_slice([$tr->leads, $tr->day_1, $tr->day_2, $tr->day_3, $tr->day_4, $tr->day_5, $tr->day_6, $tr->day_7], 0, 8),
-                ];
-            })->merge($result);
+            foreach ($groups as $group) {
+                $filteredItem = $reports
+                    ->where('date', $date->format('Y-m-d'))
+                    ->where('group_id', $group)
+                    ->first();
+                if ($filteredItem && $filteredItem->leads > 0) {
+                    $result[] = [
+                        'day' => $date->day,
+                        'date' => $date->format('d.m.Y'),
+                        'group_id' => $group,
+                        'group' => array_key_exists($group, $groups_key_value) ? $groups_key_value[$group] : 'Отдел №' . $group,
+                        'quiz' => self::formAnswers($filteredItem->data),
+                        'presence' => [
+                            0 => $filteredItem->leads,
+                            1 => $filteredItem->day_1,
+                            2 => $filteredItem->day_2,
+                            3 => $filteredItem->day_3,
+                            4 => $filteredItem->day_4,
+                            5 => $filteredItem->day_5,
+                            6 => $filteredItem->day_6,
+                            7 => $filteredItem->day_7,
+                        ]
+                    ];
+                }
+            }
         }
 
-        return $result->sortByDesc('day')
-            ->values()
-            ->all();
+        $_sort = array_column($result, 'day');
+        array_multisort($_sort, SORT_DESC, $result);
+
+        return $result;
     }
 
-    public static function formAnswers($data)
+    public
+    static function formAnswers($data)
     {
         if ($data == null) $data = [];
         $count[1] = 0;
