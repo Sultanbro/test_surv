@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\User;
@@ -46,7 +47,7 @@ class TraineeReport extends Model
         $reports = self::query()
             ->whereYear('date', $date->year)
             ->whereMonth('date', $date->month)
-            ->whereIn('group_id', empty($groups) ? null : $groups)
+            ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
             ->get();
 
         $groups_key_value = ProfileGroup::query()
@@ -56,7 +57,8 @@ class TraineeReport extends Model
 
         $result = [];
 
-        for ($i = $date->daysInMonth; $i >= 1; $i--) {
+        $mothDays = $date->daysInMonth;
+        for ($i = 1; $i <= $mothDays; $i++) {
             $date->day($i);
 
             $filteredReports = $reports
