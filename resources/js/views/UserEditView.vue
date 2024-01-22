@@ -308,7 +308,7 @@ export default {
 						...userTax,
 						name: this.allTaxes.find(tax => tax.id === userTax.tax_id)?.name || '',
 						isPercent: !!userTax.is_percent,
-						endSubtraction: !!(Object.key(userTax.end_subtraction).includes('end_subtraction') ? userTax.end_subtraction : this.allTaxes.find(tax => tax.id === userTax.tax_id)?.end_subtraction),
+						endSubtraction: !!(Object.keys(userTax.end_subtraction).includes('end_subtraction') ? userTax.end_subtraction : this.allTaxes.find(tax => tax.id === userTax.tax_id)?.end_subtraction),
 						isAssigned: true,
 					}
 				}) : data.data;
