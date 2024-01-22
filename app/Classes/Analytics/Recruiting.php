@@ -1441,9 +1441,9 @@ class Recruiting
             ->groupBy('text')
             ->get();
 
-        $result['first_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY));
-        $result['second_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY));
-        $result['third_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY));
+        $result['first_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY)->toArray());
+        $result['second_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY)->toArray());
+        $result['third_day'] = UserAbsenceCause::absenceCauseByType($list->where('type', UserAbsenceCause::FIRST_DAY)->toArray());
         return $result;
     }
 
