@@ -2,6 +2,7 @@
 
 namespace App\Classes\Analytics;
 
+use App\Models\GroupUser;
 use App\User;
 use App\UserDescription;
 use App\DayType;
@@ -17,6 +18,7 @@ use App\Service\Department\UserService;
 use App\Timetracking;
 use App\UserAbsenceCause;
 use DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class Recruiting
 {
@@ -1292,8 +1294,8 @@ class Recruiting
 
         $leadSubQuery = Lead::query()
             ->select(
-                DB::raw('id as lead_id'),
                 DB::raw('invite_group_id as group_id'),
+                DB::raw('count(*) as sent'),
             )
             ->where(function ($query) use ($date) {
                 $query->whereNotNull('skyped')
@@ -1304,51 +1306,58 @@ class Recruiting
                 $query->whereNotNull('inhouse')
                     ->whereMonth('inhouse', $date->month)
                     ->whereYear('inhouse', $date->year);
-            });
+            })
+            ->groupBy('group_id');
 
-        $groupUserSubQuery = (new UserService())
-            ->groupUserSubQuery($date->copy()->format("Y-m-d"))
+        $groupUserSubQuery = DB::table('group_user')
             ->select(
                 DB::raw('user_id'),
                 DB::raw('group_id'),
-            );
+            )
+            ->where(function (Builder $query) use ($date) {
+                $query->where('to', '>=', $date);
+                $query->orWhereNull('to');
+            })
+            ->groupBy(['user_id', 'group_id']);
 
         $traineesSubQuery = (new UserService())
             ->traineesSubQuery()
             ->select(
-                DB::raw('user_id'),
                 DB::raw('group_id'),
+                DB::raw('count(*) as working'),
             )
             ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
             ->whereHas('daytypes', function ($query) {
                 $query->where('date', Carbon::now()->toDateString());
                 $query->whereIn('type', [5, 7]);
-            });
+            })
+            ->groupBy(['user_id', 'group_id']);
 
         $workingUsersSubQuery = User::withTrashed()
             ->select([
-                DB::raw('user_id'),
                 DB::raw('group_id'),
+                DB::raw('count(*) as active'),
             ])
             ->joinSub($groupUserSubQuery, 'pivot', 'pivot.user_id', 'users.id')
             ->withWhereHas('user_description', function ($query) use ($date) {
                 $query->whereMonth('applied', $date->month)
                     ->whereYear('applied', $date->year)
                     ->where('is_trainee', 0);
-            });
+            })
+            ->groupBy(['user_id', 'group_id']);
 
         dump(now()->format("H:i:s"));
         $groups = ProfileGroup::query()
             ->select([
                 'id',
                 'name',
-//                DB::raw('count(leads.lead_id) as sent'),// Кол-во переданных стажеров
-//                DB::raw('count(working.user_id) as working'),// Кол-во приступивших к работе к нему собираются
-//                DB::raw('count(trainees.user_id) as active'),// Кол-во стажирующихся активных
+                DB::raw('sent'),// Кол-во переданных стажеров
+                DB::raw('working'),// Кол-во приступивших к работе к нему собираются
+                DB::raw('active'),// Кол-во стажирующихся активных
             ])
-//            ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
-//            ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
-//            ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
+            ->leftJoinSub($leadSubQuery, 'leads', 'leads.group_id', 'id')
+            ->leftJoinSub($workingUsersSubQuery, 'working', 'working.group_id', 'id')
+            ->leftJoinSub($traineesSubQuery, 'trainees', 'trainees.group_id', 'id')
             ->where('active', 1)
             ->where('has_analytics', 1)
             ->groupBy(['id', 'name'])
