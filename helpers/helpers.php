@@ -63,3 +63,10 @@ if (!function_exists('dd_if')) {
         exit(1);
     }
 }
+
+if (!function_exists('timer')) {
+    function timer(): void
+    {
+        dump(now()->format("i:s"));
+    }
+}
