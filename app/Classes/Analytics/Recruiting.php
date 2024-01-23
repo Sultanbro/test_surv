@@ -1071,7 +1071,7 @@ class Recruiting
                 'group_id',
                 'user_id',
                 'status',
-                DB::raw('MONTH(to) as month'),
+                DB::raw('MONTH(`to`) as month'),
             ])
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->whereYear('to', $date->year);
