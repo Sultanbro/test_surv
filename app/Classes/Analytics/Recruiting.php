@@ -1071,7 +1071,7 @@ class Recruiting
                 DB::raw('group_id'),
                 DB::raw('group_user.user_id as user_id'),
                 DB::raw('status'),
-                DB::raw('`to` as fired_date')
+                DB::raw('MONTH(`to`) as month')
             ])
             ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
             ->where('is_trainee', 0)
@@ -1080,54 +1080,58 @@ class Recruiting
                 $query->orWhereNull('to');
             });
 
-        $groupsSubQuery = DB::table('profile_groups')
+        $firedUsersSubQuery = DB::table('users')
+            ->select([
+                DB::raw('group_id'),
+                DB::raw('count(*) as count'),
+                DB::raw('month')
+            ])
+            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
+            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
+            ->groupBy(['group_id', 'month']);
+
+        $activeUsersSubQuery = DB::table('users')
+            ->select([
+                DB::raw('group_id'),
+                DB::raw('count(*) as count'),
+                DB::raw('month')
+            ])
+            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
+            ->groupBy(['group_id', 'month']);
+
+        $groups = DB::table('profile_groups')
             ->select([
                 DB::raw('profile_groups.name as name'),
-                DB::raw('pivot.*'),
+                DB::raw('IFNULL(active.count,0) as active_users'),
+                DB::raw('IFNULL(fired.count,0) as fired_users'),
+                DB::raw('fired.month as fired_month'),
+                DB::raw('active.month as active_month')
             ])
-            ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
-            ->where('active', 1);
-
-        $firedUsers = DB::table('users')
-            ->select([
-                DB::raw('group_id'),
-                DB::raw('fired_date'),
-                DB::raw('groups.name as group_name'),
-                DB::raw('count(*) as count'),
-            ])
-            ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
-            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-            ->groupBy(['group_id', 'fired_date', 'groups.name'])
+            ->leftJoinSub($firedUsersSubQuery, 'fired', 'fired.group_id', 'id')
+            ->leftJoinSub($activeUsersSubQuery, 'active', 'active.group_id', 'id')
+            ->where('active', 1)
             ->get();
 
-        $activeUsers = DB::table('users')
-            ->select([
-                DB::raw('group_id'),
-                DB::raw('fired_date'),
-                DB::raw('groups.name as group_name'),
-                DB::raw('count(*) as count'),
-            ])
-            ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
-//            ->where('status', GroupUser::STATUS_ACTIVE)
-            ->groupBy(['group_id', 'fired_date', 'groups.name'])
-            ->get();
-
-        dd($activeUsers);
         $staffy = [];
 
-        foreach ($groups as $key => $group) {
-            $staffy[$key]['name'] = $group->name;
+//        foreach ($groups as $key => $group) {
+//            $staffy[$key]['name'] = $group->name;
 
-            for ($i = 1; $i <= 12; $i++) {
-                $assigned = '';
-                $fired = count($userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')));
+        for ($i = 1; $i <= 12; $i++) {
+            $assigned = $groups
+                ->filter(function ($item) use ($i) {
+                    return $item->active_month > $i || is_null($item->active_month);
+                })
+                ->count();
+            dd($assigned);
+            $fired = $groups->where('fired_month', $i)->count();
 
-                $worked = $assigned + $fired;
+            $worked = $assigned + $fired;
 
-                $percent = $worked > 0 ? round(($fired / $worked) * 100, 1) : 0;
-                $staffy[$key]['m' . $i] = $percent . '%';
-            }
+            $percent = $worked > 0 ? round(($fired / $worked) * 100, 1) : 0;
+//            $staffy[$key]['m' . $i] = $percent . '%';
         }
+//        }
 
         return $staffy;
     }
