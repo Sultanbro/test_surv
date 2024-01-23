@@ -1315,7 +1315,7 @@ class Recruiting
                 DB::raw('group_id'),
             )
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
-                $query->where('to', '>=', $date);
+                $query->where('to', '>=', $date->endOfMonth());
                 $query->orWhereNull('to');
             })
             ->groupBy(['user_id', 'group_id']);
@@ -1331,7 +1331,7 @@ class Recruiting
                 $query->where('date', Carbon::now()->toDateString());
                 $query->whereIn('type', [5, 7]);
             })
-            ->groupBy(['group_id']);
+            ->groupBy('group_id');
 
         $workingUsersSubQuery = User::withTrashed()
             ->select([
@@ -1344,7 +1344,7 @@ class Recruiting
                     ->whereYear('applied', $date->year)
                     ->where('is_trainee', 0);
             })
-            ->groupBy(['group_id']);
+            ->groupBy('group_id');
 
         $groups = ProfileGroup::query()
             ->select([
