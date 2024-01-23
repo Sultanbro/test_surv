@@ -1068,10 +1068,10 @@ class Recruiting
         $date = Carbon::createFromDate($filter['year'], 1, 1);
         $pivotSubQuery = DB::table('group_user')
             ->select([
-                'group_id',
-                'user_id',
-                'status',
-                DB::raw('MONTH(`to`) as month'),
+                DB::raw('group_id'),
+                DB::raw('group_user.user_id as user_id'),
+                DB::raw('status'),
+                DB::raw('MONTH(`to`) as month')
             ])
             ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
             ->where('is_trainee', 0)
@@ -1082,9 +1082,9 @@ class Recruiting
 
         $firedUsersSubQuery = DB::table('users')
             ->select([
-                'group_id',
+                DB::raw('group_id'),
                 DB::raw('count(*) as count'),
-                DB::raw('month as fired_month'),
+                DB::raw('month as fired_month')
             ])
             ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
@@ -1092,9 +1092,9 @@ class Recruiting
 
         $activeUsersSubQuery = DB::table('users')
             ->select([
-                'group_id',
+                DB::raw('group_id'),
                 DB::raw('month as active_month'),
-                DB::raw('count(*) as count'),
+                DB::raw('count(*) as count')
             ])
             ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
