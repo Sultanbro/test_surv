@@ -388,12 +388,11 @@ class HrController extends Controller
             'month' => $date->month
         ];
 
-        timer();
         $staff = RM::staff($filter);
         timer();
-        dd($staff);
-//        $staff_by_group = RM::staff_by_group($filter);
-//        timer();
+        $staff_by_group = RM::staff_by_group($filter);
+        timer();
+        dd($staff_by_group);
 //        $staff_longevity = RM::staff_longevity($filter);
 //        timer();
 //        $quiz = RM::getQuizTable($date->startOfMonth());
