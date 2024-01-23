@@ -1080,13 +1080,15 @@ class Recruiting
                 $query->orWhereNull('to');
             });
 
-        $groups = DB::table('profile_groups')
+        $groupsSubQuery = DB::table('profile_groups')
             ->select([
                 DB::raw('profile_groups.name as name'),
                 DB::raw('pivot.*'),
             ])
             ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
             ->where('active', 1);
+        dd($groupsSubQuery->get());
+
 
         $firedUsers = DB::table('users')
             ->select([
@@ -1094,7 +1096,7 @@ class Recruiting
                 DB::raw('fired_date'),
                 DB::raw('groups.name as group_name'),
             ])
-            ->joinSub($groups, 'groups', 'groups.user_id', 'id')
+            ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
             ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
@@ -1105,7 +1107,7 @@ class Recruiting
                 DB::raw('fired_date'),
                 DB::raw('groups.name as group_name'),
             ])
-            ->joinSub($groups, 'groups', 'groups.user_id', 'id')
+            ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
             ->where('status', GroupUser::STATUS_ACTIVE)
             ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
