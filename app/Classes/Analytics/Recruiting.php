@@ -1092,7 +1092,7 @@ class Recruiting
             ->select([
                 DB::raw('group_id'),
                 DB::raw('fired_date'),
-                DB::raw('groups.name as name'),
+                DB::raw('groups.name as group_name'),
             ])
             ->joinSub($groups, 'groups', 'groups.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
@@ -1103,15 +1103,13 @@ class Recruiting
             ->select([
                 DB::raw('group_id'),
                 DB::raw('fired_date'),
-                DB::raw('groups.name as name'),
+                DB::raw('groups.name as group_name'),
             ])
             ->joinSub($groups, 'groups', 'groups.user_id', 'id')
-            ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
-                $query->whereNull('deleted_at');
-            })
             ->where('status', GroupUser::STATUS_ACTIVE)
             ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
+
         dd($activeUsers);
         $staffy = [];
 
