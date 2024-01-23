@@ -1073,7 +1073,7 @@ class Recruiting
                 'status',
                 DB::raw('MONTH(`to`) as month'),
             ])
-            ->join('user_description', 'user_description.user_id', 'group_user.user_id')
+            ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
             ->where('is_trainee', 0)
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->whereYear('to', $date->year);
