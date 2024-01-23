@@ -384,7 +384,8 @@ class HrController extends Controller
         $filter = [
             'position_id' => $request->get('position_id'),
             'type' => $request->get('formula_type'),
-            'date' => $date,
+            'year' => $date->year,
+            'month' => $date->month
         ];
 
         return [
