@@ -1317,8 +1317,7 @@ class Recruiting
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->where('to', '>=', $date->endOfMonth());
                 $query->orWhereNull('to');
-            })
-            ->groupBy(['user_id', 'group_id']);
+            });
 
         $traineesSubQuery = User::withTrashed()
             ->select(
