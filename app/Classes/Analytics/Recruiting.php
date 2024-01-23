@@ -1121,7 +1121,7 @@ class Recruiting
             $staffy[$key]['name'] = $group->name;
 
             for ($i = 1; $i <= 12; $i++) {
-                $assigned = ;
+                $assigned = '';
                 $fired = count($userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')));
 
                 $worked = $assigned + $fired;
