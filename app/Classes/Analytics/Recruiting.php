@@ -1066,16 +1066,62 @@ class Recruiting
     public static function staff_by_group(array $filter): array
     {
         $date = Carbon::createFromDate($filter['year'], 1, 1);
-        $groups = ProfileGroup::where('active', 1)->get();
-        $userService = new UserService();
+        $pivotSubQuery = DB::table('group_user')
+            ->select([
+                'group_id',
+                'user_id',
+                'status',
+                DB::raw('MONTH(to) as month'),
+            ])
+            ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
+                $query->whereYear('to', $date->year);
+                $query->orWhereNull('to');
+            });
 
+        $firedUsersSubQuery = DB::table('users')
+            ->select([
+                'group_id',
+                DB::raw('count(*) as count'),
+                DB::raw('month as fired_month'),
+            ])
+            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
+            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
+            ->groupBy(['group_id', 'month']);
+
+        $activeUsersSubQuery = DB::table('users')
+            ->select([
+                'group_id',
+                DB::raw('month as active_month'),
+                DB::raw('count(*) as count'),
+            ])
+            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
+            ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
+                $query->whereNull('deleted_at');
+            })
+            ->where('status', GroupUser::STATUS_ACTIVE)
+            ->groupBy(['group_id', 'month']);
+
+        $groups = ProfileGroup::query()
+            ->select([
+                DB::raw('profile_group.name as name'),
+                DB::raw('active.count as active_users'),
+                DB::raw('fired.count as fired_users'),
+                DB::raw('fired.fired_month as fired_month'),
+                DB::raw('active.active_month as active_month')
+            ])
+            ->leftJoinSub($firedUsersSubQuery, 'fired', 'fired.group_id', 'id')
+            ->leftJoinSub($activeUsersSubQuery, 'active', 'active.group_id', 'id')
+            ->where('active', 1)
+            ->get();
+
+        dd($groups);
         $staffy = [];
 
         foreach ($groups as $key => $group) {
             $staffy[$key]['name'] = $group->name;
 
             for ($i = 1; $i <= 12; $i++) {
-                $assigned = count($userService->getEmployees($group->id, $date->month($i)->format('Y-m-d')));
+                $assigned = ;
                 $fired = count($userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')));
 
                 $worked = $assigned + $fired;
