@@ -59,12 +59,12 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
 
                 $salary->update([
                     'date' => $date,
-                    'note' => 'test',
-                    'paid' => 0,
-                    'bonus' => 0,
-                    'comment_paid' => '',
-                    'comment_bonus' => '',
-                    'comment_award' => '',
+//                    'note' => 'test',
+//                    'paid' => 0,
+//                    'bonus' => 0,
+//                    'comment_paid' => '',
+//                    'comment_bonus' => '',
+//                    'comment_award' => '',
                     'amount' => $salary_amount,
                 ]);
             }
