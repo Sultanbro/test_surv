@@ -1083,9 +1083,7 @@ class Recruiting
         $groups = DB::table('profile_groups')
             ->select([
                 DB::raw('profile_groups.name as name'),
-                DB::raw('profile_groups.id as group_id'),
-                DB::raw('pivot.user_id as user_id'),
-                DB::raw('fired_date'),
+                DB::raw('pivot.*'),
             ])
             ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
             ->where('active', 1);
