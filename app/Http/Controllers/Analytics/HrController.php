@@ -188,9 +188,9 @@ class HrController extends Controller
             'funnels' => FunnelTable::getTables($month->startOfMonth()->format('Y-m-d')), // Воронки
 
             //Method - getDismissStatistics. IV Увольнение - 1. Причины и процент текучки
-            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff' => RM::staff(['year' => $request->year]), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group(['year' => $request->year]), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' => RM::staff_longevity(['year' => $request->year]), // Таблица кадров во вкладке причина увольнения
 
             //Method - getDismissBot. IV Увольнение - 2. Причины: Бот
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
@@ -374,17 +374,23 @@ class HrController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getDismissStatistics(Request $request)
+    public function getDismissStatistics(Request $request): array
     {
-        $date = Carbon::create($request->get("year"), $request->get('month'));
-        dump(now()->format("H:i:s"));
-        $staff = RM::staff($date->year);
-        dump(now()->format("H:i:s"));
-        dd($staff);
+        $date = Carbon::create(
+            $request->get("year", now()->year),
+            $request->get('month', now()->month)
+        );
+
+        $filter = [
+            'position_id' => $request->get('position_id'),
+            'type' => $request->get('formula_type'),
+            'date' => $date,
+        ];
+
         return [
-            'staff' => $staff, // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($date->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => RM::staff_longevity($date->year), // Таблица кадров во вкладке причина увольнения
+            'staff' => RM::staff($filter), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($filter), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' => RM::staff_longevity($filter), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($date->startOfMonth()),
             'causes' => RM::fireCauses($date), // причины увольнения
         ];

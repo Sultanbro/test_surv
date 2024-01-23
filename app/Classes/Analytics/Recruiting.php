@@ -918,40 +918,38 @@ class Recruiting
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
      */
-    public static function staff(int $year): array
+    public static function staff(array $filter): array
     {
-        $users = DB::table('users')
-            ->select([
-                DB::raw('MONTH(ud.applied) as month'),
-                'full_time',
-                'users.id as id',
-                'users.deleted_at as deleted_at'
-            ])
+        $year = $filter['year'];
+        $users_on = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
-            ->where(function (\Illuminate\Database\Query\Builder $query) use ($year) {
-                $query->whereYear('users.deleted_at', $year);
-                $query->orWhereNull('users.deleted_at');
-            })
             ->get()
-            ->keyBy('month');
-        dd($users);
-        $users_on = $users->toArray();
-        $users_off = $users
+            ->groupBy(function ($item) {
+                return (int)Carbon::createFromFormat('Y-m-d H:i:s', $item->applied)->format('m');
+            })->toArray();
+
+        $users_off = DB::table('users')
             ->whereNotNull('deleted_at')
-            ->toArray();
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->where('is_trainee', 0)
+            ->whereYear('deleted_at', $year)
+            ->get()
+            ->groupBy(function ($item) {
+                return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deleted_at)->format('m');
+            })->toArray();
 
         $staff = [];
         $staff[0]['name'] = 'Принято';
         $staff[1]['name'] = 'Уволено';
         $staff[2]['name'] = 'Баланс';
-        $staff[3]['name'] = '%';
+        $staff[3]['name'] = '% текучки';
         $staff[4]['name'] = 'Итого';
 
         for ($i = 1; $i <= 12; $i++) {
             $staff[0]['m' . $i] = 0;
-            if ($users_on['month'] = $i) {
+            if (array_key_exists($i, $users_on)) {
                 foreach ($users_on[$i] as $u) {
                     $staff[0]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
                 }
@@ -977,8 +975,9 @@ class Recruiting
     /**
      * Таблица кадров в рекрутинг -> Продолжительность жизни сотрудников
      */
-    public static function staff_longevity(int $year): array
+    public static function staff_longevity(array $filter): array
     {
+        $year = $filter['year'];
         $staff = [];
         $staff[0]['name'] = 'менее 2 нед';
         $staff[1]['name'] = 'до 1 мес';
@@ -1064,9 +1063,9 @@ class Recruiting
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
      */
-    public static function staff_by_group(int $year): array
+    public static function staff_by_group(array $filter): array
     {
-        $date = Carbon::createFromDate($year, 1, 1);
+        $date = Carbon::createFromDate($filter['year'], 1, 1);
         $groups = ProfileGroup::where('active', 1)->get();
         $userService = new UserService();
 
