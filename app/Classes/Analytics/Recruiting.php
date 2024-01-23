@@ -1331,7 +1331,7 @@ class Recruiting
                 $query->where('date', Carbon::now()->toDateString());
                 $query->whereIn('type', [5, 7]);
             })
-            ->groupBy(['user_id', 'group_id']);
+            ->groupBy(['group_id']);
 
         $workingUsersSubQuery = User::withTrashed()
             ->select([
@@ -1344,7 +1344,7 @@ class Recruiting
                     ->whereYear('applied', $date->year)
                     ->where('is_trainee', 0);
             })
-            ->groupBy(['user_id', 'group_id']);
+            ->groupBy(['group_id']);
 
         $groups = ProfileGroup::query()
             ->select([
