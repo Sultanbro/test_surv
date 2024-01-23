@@ -1108,7 +1108,7 @@ class Recruiting
                 DB::raw('count(*) as count'),
             ])
             ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
-            ->where('status', GroupUser::STATUS_ACTIVE)
+//            ->where('status', GroupUser::STATUS_ACTIVE)
             ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
 
