@@ -1105,7 +1105,7 @@ class Recruiting
                 DB::raw('fired_date'),
                 DB::raw('groups.name as name'),
             ])
-            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
+            ->joinSub($groups, 'groups', 'groups.user_id', 'id')
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->whereNull('deleted_at');
             })
