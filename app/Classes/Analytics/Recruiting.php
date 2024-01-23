@@ -1071,7 +1071,7 @@ class Recruiting
                 DB::raw('group_id'),
                 DB::raw('group_user.user_id as user_id'),
                 DB::raw('status'),
-                DB::raw('MONTH(`to`) as fired_date')
+                DB::raw('`to` as fired_date')
             ])
             ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
             ->where('is_trainee', 0)
@@ -1083,6 +1083,7 @@ class Recruiting
         $groups = DB::table('profile_groups')
             ->select([
                 DB::raw('profile_groups.name as name'),
+                DB::raw('profile_groups.id as group_id'),
                 DB::raw('pivot.user_id as user_id'),
                 DB::raw('fired_date'),
             ])
@@ -1102,8 +1103,8 @@ class Recruiting
 
         $activeUsers = DB::table('users')
             ->select([
-                DB::raw('fired_date'),
                 DB::raw('group_id'),
+                DB::raw('fired_date'),
                 DB::raw('groups.name as name'),
             ])
             ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
