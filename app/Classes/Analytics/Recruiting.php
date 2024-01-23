@@ -1071,7 +1071,7 @@ class Recruiting
                 DB::raw('group_id'),
                 DB::raw('group_user.user_id as user_id'),
                 DB::raw('status'),
-                DB::raw('MONTH(`to`) as month')
+                DB::raw('MONTH(`to`) as fired_date')
             ])
             ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
             ->where('is_trainee', 0)
@@ -1084,8 +1084,7 @@ class Recruiting
             ->select([
                 DB::raw('profile_groups.name as name'),
                 DB::raw('pivot.user_id as user_id'),
-                DB::raw('pivot.`to` as `to`'),
-                DB::raw('pivot.`from` as `from`'),
+                DB::raw('fired_date'),
             ])
             ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
             ->where('active', 1);
@@ -1093,17 +1092,17 @@ class Recruiting
         $firedUsers = DB::table('users')
             ->select([
                 DB::raw('group_id'),
-                DB::raw('`to`'),
+                DB::raw('fired_date'),
                 DB::raw('groups.name as name'),
             ])
             ->joinSub($groups, 'groups', 'groups.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-            ->groupBy(['group_id', 'to'])
+            ->groupBy(['group_id', 'fired_date'])
             ->get();
 
         $activeUsers = DB::table('users')
             ->select([
-                DB::raw('`to`'),
+                DB::raw('fired_date'),
                 DB::raw('group_id'),
                 DB::raw('groups.name as name'),
             ])
@@ -1112,7 +1111,7 @@ class Recruiting
                 $query->whereNull('deleted_at');
             })
             ->where('status', GroupUser::STATUS_ACTIVE)
-            ->groupBy(['group_id', 'to'])
+            ->groupBy(['group_id', 'fired_date'])
             ->get();
         dd($activeUsers);
         $staffy = [];
