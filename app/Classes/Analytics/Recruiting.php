@@ -927,16 +927,16 @@ class Recruiting
                 'users.id as id',
                 'users.deleted_at as deleted_at'
             ])
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->where('ud.is_trainee', 0)
+            ->whereYear('applied', $year)
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($year) {
                 $query->whereYear('users.deleted_at', $year);
                 $query->orWhereNull('users.deleted_at');
             })
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', 0)
-            ->whereYear('applied', $year)
-            ->groupBy(['month'])
-            ->get();
-
+            ->get()
+            ->keyBy('month');
+        dd($users);
         $users_on = $users->toArray();
         $users_off = $users
             ->whereNotNull('deleted_at')
@@ -946,12 +946,12 @@ class Recruiting
         $staff[0]['name'] = 'Принято';
         $staff[1]['name'] = 'Уволено';
         $staff[2]['name'] = 'Баланс';
-        $staff[3]['name'] = '% текучки';
+        $staff[3]['name'] = '%';
         $staff[4]['name'] = 'Итого';
 
         for ($i = 1; $i <= 12; $i++) {
             $staff[0]['m' . $i] = 0;
-            if (array_key_exists($i, $users_on)) {
+            if ($users_on['month'] = $i) {
                 foreach ($users_on[$i] as $u) {
                     $staff[0]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
                 }
