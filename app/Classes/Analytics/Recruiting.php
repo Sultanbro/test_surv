@@ -1111,7 +1111,7 @@ class Recruiting
             ->leftJoinSub($activeUsersSubQuery, 'active', 'active.group_id', 'id')
             ->where('active', 1)
             ->get();
-
+        dd($groups);
         $staffy = [];
 
 //        foreach ($groups as $key => $group) {
