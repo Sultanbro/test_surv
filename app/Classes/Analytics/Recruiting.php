@@ -934,10 +934,8 @@ class Recruiting
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
-            ->get()
-            ->groupBy(function ($item) {
-                return (int)Carbon::createFromFormat('Y-m-d H:i:s', $item->applied)->format('m');
-            });
+            ->groupBy(['month'])
+            ->get();
 
         $users_on = $users->toArray();
         $users_off = $users
