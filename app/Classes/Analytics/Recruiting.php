@@ -1106,8 +1106,8 @@ class Recruiting
         $groups = DB::table('profile_groups')
             ->select([
                 DB::raw('profile_groups.name as name'),
-                DB::raw('active.count as active_users'),
-                DB::raw('fired.count as fired_users'),
+                DB::raw('IFNULL(active.count,0) as active_users'),
+                DB::raw('IFNULL(fired.count,0) as fired_users'),
                 DB::raw('fired.fired_month as fired_month'),
                 DB::raw('active.active_month as active_month')
             ])
