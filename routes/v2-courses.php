@@ -1,0 +1,1 @@
+<?phpuse App\Http\Controllers\CourseV2\CourseV2Controller;Route::as('v2.courses')->group(function () {    Route::get('admin/get', [CourseV2Controller::class, 'index']);    Route::get('admin/create', [CourseV2Controller::class, 'create']);    Route::get('admin/update');    Route::get('admin/delete');});
