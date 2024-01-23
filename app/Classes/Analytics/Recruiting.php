@@ -1096,7 +1096,7 @@ class Recruiting
             ])
             ->joinSub($groups, 'groups', 'groups.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-            ->groupBy(['group_id', 'fired_date'])
+            ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
 
         $activeUsers = DB::table('users')
@@ -1110,7 +1110,7 @@ class Recruiting
                 $query->whereNull('deleted_at');
             })
             ->where('status', GroupUser::STATUS_ACTIVE)
-            ->groupBy(['group_id', 'fired_date'])
+            ->groupBy(['group_id', 'fired_date', 'groups.name'])
             ->get();
         dd($activeUsers);
         $staffy = [];
