@@ -1,8 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\CourseV2;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CoursesV2\CreateCourseV2Request;
+use App\Http\Requests\CoursesV2\FilterCourseV2Request;
 use App\Models\CourseV2;
+use App\Service\CourseV2\CourseV2Service;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CourseV2Controller extends Controller
@@ -12,30 +17,27 @@ class CourseV2Controller extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(FilterCourseV2Request $request, CourseV2Service $service)
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->filter($request->toDto())
+        );
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param CreateCourseV2Request $request
+     * @param CourseV2Service $service
+     * @return JsonResponse
      */
-    public function create()
+    public function create(CreateCourseV2Request $request, CourseV2Service $service): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->create($request->toDto())
+        );
     }
 
     /**
