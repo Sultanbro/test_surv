@@ -376,16 +376,16 @@ class HrController extends Controller
      */
     public function getDismissStatistics(Request $request)
     {
-        $date = [
-            'month' => $request->month,
-            'year' => $request->year,
-        ];
-        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+        $date = Carbon::create($request->get("year"), $request->get('month'));
+        dump(now()->format("H:i:s"));
+        $staff = RM::staff($date->year);
+        dump(now()->format("H:i:s"));
+        dd($staff);
         return [
-            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
-            'quiz' => RM::getQuizTable($month->startOfMonth()),
+            'staff' => $staff, // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($date->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' => RM::staff_longevity($date->year), // Таблица кадров во вкладке причина увольнения
+            'quiz' => RM::getQuizTable($date->startOfMonth()),
             'causes' => RM::fireCauses($date), // причины увольнения
         ];
     }

@@ -879,18 +879,22 @@ class Recruiting
 
     /**
      * Причины увольнения
+     * @param array|string|Carbon $date
      * @return array
      */
-    public static function fireCauses(array $date)
+    public static function fireCauses(array|string|Carbon $date): array
     {
+        if (is_array($date)) $date = Carbon::create($date['year'], $date['month']);
+        if (is_string($date)) $date = Carbon::parse($date);
+
         $causes = [];
 
         $uds = DB::table('users')
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->whereYear('ud.fire_date', $date['year'])
-            ->whereMonth('ud.fire_date', $date['month'])
+            ->whereYear('ud.fire_date', $date->year)
+            ->whereMonth('ud.fire_date', $date->month)
             ->get()
             ->groupBy('fire_cause');
 
@@ -916,24 +920,29 @@ class Recruiting
      */
     public static function staff(int $year): array
     {
-        $users_on = DB::table('users')
+        $users = DB::table('users')
+            ->select([
+                DB::raw('MONTH(ud.applied) as month'),
+                'full_time',
+                'users.id as id',
+                'users.deleted_at as deleted_at'
+            ])
+            ->where(function (\Illuminate\Database\Query\Builder $query) use ($year) {
+                $query->whereYear('users.deleted_at', $year);
+                $query->orWhereNull('users.deleted_at');
+            })
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
             ->get()
             ->groupBy(function ($item) {
                 return (int)Carbon::createFromFormat('Y-m-d H:i:s', $item->applied)->format('m');
-            })->toArray();
+            });
 
-        $users_off = DB::table('users')
+        $users_on = $users->toArray();
+        $users_off = $users
             ->whereNotNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('is_trainee', 0)
-            ->whereYear('deleted_at', $year)
-            ->get()
-            ->groupBy(function ($item) {
-                return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deleted_at)->format('m');
-            })->toArray();
+            ->toArray();
 
         $staff = [];
         $staff[0]['name'] = 'Принято';
