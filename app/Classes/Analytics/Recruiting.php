@@ -1087,14 +1087,13 @@ class Recruiting
             ])
             ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
             ->where('active', 1);
-        dd($groupsSubQuery->get());
-
 
         $firedUsers = DB::table('users')
             ->select([
                 DB::raw('group_id'),
                 DB::raw('fired_date'),
                 DB::raw('groups.name as group_name'),
+                DB::raw('count(*) as count'),
             ])
             ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
             ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
@@ -1106,6 +1105,7 @@ class Recruiting
                 DB::raw('group_id'),
                 DB::raw('fired_date'),
                 DB::raw('groups.name as group_name'),
+                DB::raw('count(*) as count'),
             ])
             ->joinSub($groupsSubQuery, 'groups', 'groups.user_id', 'id')
             ->where('status', GroupUser::STATUS_ACTIVE)
