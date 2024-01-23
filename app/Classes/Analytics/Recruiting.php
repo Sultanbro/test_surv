@@ -1080,43 +1080,41 @@ class Recruiting
                 $query->orWhereNull('to');
             });
 
-        $firedUsersSubQuery = DB::table('users')
+        $groups = DB::table('profile_groups')
             ->select([
-                DB::raw('group_id'),
-                DB::raw('count(*) as count'),
-                DB::raw('month as fired_month')
+                DB::raw('profile_groups.name as name'),
+                DB::raw('pivot.user_id as user_id'),
+                DB::raw('pivot.`to` as `to`'),
+                DB::raw('pivot.`from` as `from`'),
             ])
-            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
-            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-            ->groupBy(['group_id', 'month']);
+            ->leftJoinSub($pivotSubQuery, 'pivot', 'pivot.group_id', 'id')
+            ->where('active', 1);
 
-        $activeUsersSubQuery = DB::table('users')
+        $firedUsers = DB::table('users')
             ->select([
                 DB::raw('group_id'),
-                DB::raw('month as active_month'),
-                DB::raw('count(*) as count')
+                DB::raw('`to`'),
+                DB::raw('groups.name as name'),
+            ])
+            ->joinSub($groups, 'groups', 'groups.user_id', 'id')
+            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
+            ->groupBy(['group_id', 'to'])
+            ->get();
+
+        $activeUsers = DB::table('users')
+            ->select([
+                DB::raw('`to`'),
+                DB::raw('group_id'),
+                DB::raw('groups.name as name'),
             ])
             ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
             ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
                 $query->whereNull('deleted_at');
             })
             ->where('status', GroupUser::STATUS_ACTIVE)
-            ->groupBy(['group_id', 'month']);
-
-        $groups = DB::table('profile_groups')
-            ->select([
-                DB::raw('profile_groups.name as name'),
-                DB::raw('IFNULL(active.count,0) as active_users'),
-                DB::raw('IFNULL(fired.count,0) as fired_users'),
-                DB::raw('fired.fired_month as fired_month'),
-                DB::raw('active.active_month as active_month')
-            ])
-            ->leftJoinSub($firedUsersSubQuery, 'fired', 'fired.group_id', 'id')
-            ->leftJoinSub($activeUsersSubQuery, 'active', 'active.group_id', 'id')
-            ->where('active', 1)
+            ->groupBy(['group_id', 'to'])
             ->get();
-
-        dd($groups);
+        dd($activeUsers);
         $staffy = [];
 
         foreach ($groups as $key => $group) {
