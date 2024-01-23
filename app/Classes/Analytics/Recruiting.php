@@ -1101,9 +1101,9 @@ class Recruiting
             ->where('status', GroupUser::STATUS_ACTIVE)
             ->groupBy(['group_id', 'month']);
 
-        $groups = ProfileGroup::query()
+        $groups = DB::table('profile_groups')
             ->select([
-                DB::raw('profile_group.name as name'),
+                DB::raw('profile_groups.name as name'),
                 DB::raw('active.count as active_users'),
                 DB::raw('fired.count as fired_users'),
                 DB::raw('fired.fired_month as fired_month'),
