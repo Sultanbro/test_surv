@@ -389,14 +389,13 @@ class HrController extends Controller
         ];
 
         $staff = RM::staff($filter);
-//        $staff_by_group = RM::staff_by_group($filter);
         timer();
+        $staff_by_group = RM::staff_by_group($filter);
+        timer();
+        dd($staff_by_group);
         $staff_longevity = RM::staff_longevity($filter);
-        timer();
         $quiz = RM::getQuizTable($date->startOfMonth());
-        timer();
         $causes = RM::fireCauses($date);
-        timer();
         return [
 //            'staff' => $staff, // Таблица кадров во вкладке причина увольнения
 //            'staff_by_group' => $staff_by_group, // Таблица кадров во вкладке причина увольнения // 5.2 sec
