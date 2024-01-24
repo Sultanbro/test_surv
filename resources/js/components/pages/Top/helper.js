@@ -1,6 +1,6 @@
 import salaryCellType from '@/composables/salaryCellType'
 
-export function calcGroupFOT(data, excludeDays = []){
+export function calcGroupFOT(data, lastDay = 31, daysInMonth = 31){
 	/* eslint-disable camelcase */
 	let items = [];
 	let daySalariesSum = [];
@@ -19,7 +19,7 @@ export function calcGroupFOT(data, excludeDays = []){
 		item.salaries.forEach(tt => {
 			let salary = 0;
 			let total = 0;
-			if(excludeDays.includes(+tt.day)) return
+			if(+tt.day > lastDay) return
 
 			if(item.earnings[tt.day] !== null) {
 				salary = Number(item.earnings[tt.day]);
@@ -158,6 +158,8 @@ export function calcGroupFOT(data, excludeDays = []){
 	for(let i = 1; i < 32; ++i){
 		totals[i] = items.reduce((result, item) => result + (Number(item[i]) || 0), 0)
 	}
+
+	totals.predict = (daysInMonth - lastDay) * (totals[lastDay] || 0)
 
 	return totals
 	/* eslint-enable camelcase */
