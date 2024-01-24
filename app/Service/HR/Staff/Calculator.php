@@ -31,6 +31,11 @@ class Calculator
 
     private function total_staff_turnover_rate(int $fired, $active): float
     {
-        return round(($fired / $active) * 100, 1);
+        try {
+
+            return round(($fired / $active) * 100, 1);
+        } catch (\DivisionByZeroError) {
+            return 0;
+        }
     }
 }
