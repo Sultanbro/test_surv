@@ -957,9 +957,9 @@ class Recruiting
         $staff[3]['name'] = '%';
         $staff[4]['name'] = 'Итого';
 
-        dd($users_on);
         for ($month = 1; $month <= 12; $month++) {
             $staff[0]['m' . $month] = 0;
+            dd(array_key_exists($month, $users_on));
             if (array_key_exists($month, $users_on)) {
                 foreach ($users_on[$month] as $u) {
                     $staff[0]['m' . $month] += $u->full_time == 1 ? 1 : 0.5;
