@@ -28,6 +28,17 @@
 				<template v-else-if="row.index === 2">
 					{{ row.value ? separateNumber(numberToCurrency(row.value)) : '' }}
 				</template>
+				<template v-else-if="row.index === 0">
+					{{ row.value }}
+					<img
+						v-b-popover.click.blur.html="`Итоги ${row.value} дней`"
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						tabindex="-1"
+						width="20"
+					>
+				</template>
 				<template v-else>
 					{{ row.value }}
 				</template>
@@ -69,12 +80,17 @@
 			class="ProfitTab-table my-5"
 		>
 			<template #cell(revenue)="row">
-				{{ separateNumber(numberToCurrency(row.value)) }}
+				<div
+					class=""
+					:title="`Прогноз: ${row.value.predict}`"
+				>
+					{{ separateNumber(numberToCurrency(row.value.now)) }}
+				</div>
 			</template>
 			<template #cell(fot)="row">
 				<div
 					class=""
-					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}`"
+					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
 				</div>
@@ -119,7 +135,7 @@
 				<div
 					class="ProfitTab-unpad"
 					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-good' : 'ProfitTab-bad']"
-					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}`"
+					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
 				</div>
@@ -145,8 +161,9 @@ import { numberToCurrency, separateNumber } from '@/composables/format.js'
 import {
 	fetchSettings,
 	updateSettings,
+	fetchTop,
 } from '@/stores/api.js'
-import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
+// import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
 
 
 function percentMinMax(value, min, max){
@@ -239,25 +256,34 @@ export default {
 		},
 		daysPassed(){
 			const now = new Date()
-			if(now.getFullYear() === this.year && now.getMonth() === this.month) return now.getDate()
+			if(now.getFullYear() === this.year && now.getMonth() === this.month) return now.getDate() - 1
 			return this.daysInMonth
 		},
 
 		totalsSecond(){
 			return {
 				name: '',
-				revenue: this.secondTable.reduce((result, row) => result + Number(row.revenue), 0),
+				revenue: this.secondTable.reduce((result, row) => {
+					result.now += Number(row.revenue.now)
+					result.predict += Number(row.revenue.predict)
+					return result
+				}, {
+					now: 0,
+					predict: 0,
+				}),
 				fot: this.secondTable.reduce((result, row) => {
 					result.sum += row.fot.sum
 					result.actual += row.fot.actual
 					result.fired += row.fot.fired
 					result.trainee += row.fot.trainee
+					result.predict += row.fot.predict
 					return result
 				}, {
 					sum: 0,
 					actual: 0,
 					fired: 0,
 					trainee: 0,
+					predict: 0,
 				}),
 				percent: this.secondTable.length ? this.secondTable.reduce((result, row) => result + Number(row.percent), 0) / this.secondTable.length : 0,
 			}
@@ -271,21 +297,24 @@ export default {
 					result.actual += row.fact.actual
 					result.fired += row.fact.fired
 					result.trainee += row.fact.trainee
+					result.predict += row.fact.predict
 					return result
 				}, {
 					sum: 0,
 					actual: 0,
 					fired: 0,
 					trainee: 0,
+					predict: 0,
 				}),
 				plan: this.thirdTable.reduce((result, row) => result + Number(row.plan), 0),
 			}
 		},
 		firstTable(){
-			const revenue = this.totalsSecond.revenue / this.daysPassed * this.daysInMonth
-			const expenses = ((this.totalsSecond.fot.sum + this.totalsThird.fact.sum) / this.daysPassed * this.daysInMonth) + Number(this.other)
+			const revenue = this.totalsSecond.revenue.predict
+			const exp = (this.totalsSecond.fot.sum + this.totalsSecond.fot.predict + this.totalsThird.fact.sum + this.totalsThird.fact.predict)
+			const expenses = (exp / this.daysPassed * this.daysInMonth) + Number(this.other)
 			const profit = revenue - expenses
-			const profitFact = Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.plan - Number(this.other)
+			const profitFact = Number(this.totalsSecond.revenue.predict) - Number(this.totalsSecond.fot.sum + this.totalsSecond.fot.predict) - this.totalsThird.plan - Number(this.other)
 			return [
 				[
 					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
@@ -318,14 +347,14 @@ export default {
 				[
 					'',
 					'Profit PLAN на сегодня',
-					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.plan - Number(this.other),
+					Number(this.totalsSecond.revenue.now) - Number(this.totalsSecond.fot.sum) - this.totalsThird.plan - Number(this.other),
 					'',
 					'',
 				],
 				[
 					'',
 					'Profit FACT на сегодня',
-					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other),
+					Number(this.totalsSecond.revenue.now) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other),
 					'',
 					'',
 				],
@@ -344,8 +373,8 @@ export default {
 			const plan = this.firstTable[4][2]
 			const fact = this.firstTable[5][2]
 
-			return plan < fact ? 'ProfitTab-bad' : 'ProfitTab-good'
-		}
+			return plan < fact ? 'ProfitTab-good' : 'ProfitTab-bad'
+		},
 	},
 	watch: {
 		year(){
@@ -373,12 +402,16 @@ export default {
 				this.secondTable.push({
 					id: i,
 					name: 'Отдел ' + i,
-					revenue: 100000,
+					revenue: {
+						now: 100000,
+						predict: 200000,
+					},
 					fot: {
 						sum: 100000,
 						actual: 100000,
 						fired: 0,
-						trainee: 0
+						trainee: 0,
+						predict: 0,
 					},
 					percent: i
 				})
@@ -394,25 +427,27 @@ export default {
 						sum: 100000,
 						actual: 100000,
 						fired: 0,
-						trainee: 0
+						trainee: 0,
+						predict: 0,
 					},
 					plan: 99999
 				})
 			}
 		},
 		async fetchData(){
+			if(this.$debug) return this.fetchDataTest()
 			const loader = this.$loading.show()
 
 			const date = `${this.year}_${this.month}`
 
 			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
-			const defaultCCGroups = '[31, 71]'
-			// const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
+			// const defaultCCGroups = '[31, 71]'
+			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
 			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
-			const defaultAdmGroups = '[23]'
-			// const defaultAdmGroups = '[23, 48, 102, 26]'
+			// const defaultAdmGroups = '[23]'
+			const defaultAdmGroups = '[23, 48, 102, 26]'
 			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
 
 			const otherKey = 'profit_other_' + date
@@ -426,14 +461,34 @@ export default {
 				admGroupsData[group] = +settings['custom_' + groupKey] || 0
 			}
 
-			const {table} = await fetchRentabilityV2({
+			const { proceeds } = await fetchTop({
 				year: this.year,
 				month: this.month + 1,
 			})
 
-			const revenue = table.reduce((result, group) => {
+			const calcRevenue = (group, month) => {
+				let lastRev = 0
+				const result = {
+					now: 0,
+					predict: 0,
+				}
+				for(let i = 1; i <= this.daysPassed; ++i){
+					const field = `${i > 9 ? i : '0' + i}.${month}`
+					lastRev = Number(group[field] || 0)
+					result.now += lastRev
+					result.predict += lastRev
+				}
+				for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
+					result.predict += lastRev
+				}
+				return result
+			}
+
+			const revenue = proceeds.records.reduce((result, group) => {
 				if(!group.group_id) return result
-				result[group.group_id] = group['l' + (this.month + 1)]
+
+				const month = this.month + 1 > 9 ? this.month + 1 : '0' + (this.month + 1)
+				result[group.group_id] = calcRevenue(group, month)
 				return result
 			}, {})
 
@@ -460,9 +515,9 @@ export default {
 						user_types: 1,
 					})
 					fot[groupId] = {
-						actual: calcGroupFOT(dataActual, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
-						trainee: calcGroupFOT(dataTrainee, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
-						fired: calcGroupFOT(dataFired, this.daysPassed === this.daysInMonth ? [] : [this.daysPassed]),
+						actual: calcGroupFOT(dataActual, this.daysPassed, this.daysInMonth),
+						trainee: calcGroupFOT(dataTrainee, this.daysPassed, this.daysInMonth),
+						fired: calcGroupFOT(dataFired, this.daysPassed, this.daysInMonth),
 					}
 				}
 				catch (error) {
@@ -480,18 +535,20 @@ export default {
 					fired: daysPassed > 15 ? fot.fired.bonus + fot.fired.total : fot.fired.bonus + fot.fired.total + fot.fired.kpi,
 					trainee: daysPassed > 15 ? fot.trainee.bonus + fot.trainee.total : fot.trainee.bonus + fot.trainee.total + fot.trainee.kpi,
 					sum: daysPassed > 15 ? withoutKPI + kpi : withoutKPI,
+					predict: fot.actual.predict + fot.trainee.predict
 				}
 			}
 
 			this.secondTable = this.ccGroups.reduce((result, groupId) => {
 				if(!fot[groupId]) return result
 				const rowfot = sumFot(fot[groupId], this.daysPassed)
+				const revNow = revenue[groupId]?.now || 0
 				result.push({
 					id: groupId,
 					name: fot[groupId].actual.name,
-					revenue: revenue[groupId],
+					revenue: revenue[groupId] || {now: 0, predict: 0},
 					fot: rowfot,
-					percent: revenue[groupId] ? ((revenue[groupId] - rowfot.sum) / revenue[groupId]) * 100 : 0,
+					percent: revNow ? ((revNow - rowfot.sum) / revNow) * 100 : 0,
 				})
 				return result
 			}, [])
