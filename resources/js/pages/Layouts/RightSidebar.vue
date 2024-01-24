@@ -147,7 +147,7 @@ export default {
 			localStorage.setItem(NotificationsLastCheck, Date.now())
 		}
 	},
-	beforeUnmount(){
+	beforeDestroy(){
 		clearInterval(this.notificationsInterval)
 	},
 	methods: {

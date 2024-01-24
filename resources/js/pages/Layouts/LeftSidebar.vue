@@ -410,7 +410,7 @@ export default {
 		bus.$on('user-avatar-update', this.updateAvatar)
 	},
 
-	beforeUnmount(){
+	beforeDestroy(){
 		if(this.resizeObserver) this.resizeObserver.disconnect()
 		bus.$off('user-avatar-update', this.updateAvatar)
 	},

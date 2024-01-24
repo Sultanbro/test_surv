@@ -452,6 +452,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
 
     // TOP
     Route::get('/timetracking/top', [Analytics\TopController::class, 'index']);
+    Route::get('/timetracking/top/margin', [User\ProfileController::class, 'newprofile']);
+    Route::get('/timetracking/top/revenue', [User\ProfileController::class, 'newprofile']);
+    Route::get('/timetracking/top/forecast', [User\ProfileController::class, 'newprofile']);
+    Route::get('/timetracking/top/nps', [User\ProfileController::class, 'newprofile']);
+    Route::get('/timetracking/top/profit', [User\ProfileController::class, 'newprofile']);
     Route::post('/timetracking/top', [Analytics\TopController::class, 'fetch']);
     Route::post('/timetracking/top/save_top_value', [Analytics\TopController::class, 'saveTopValue']);
     Route::post('/timetracking/top/get-rentability', [Analytics\TopController::class, 'getRentability']);

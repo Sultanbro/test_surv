@@ -33,7 +33,7 @@ export default {
 	watch: {},
 	created() {},
 	mounted() {},
-	beforeUnmount() {},
+	beforeDestroy() {},
 	methods: {}
 };
 </script>

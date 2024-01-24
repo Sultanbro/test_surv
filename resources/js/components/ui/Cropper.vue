@@ -58,7 +58,7 @@ export default {
 		})
 		this.bindImage()
 	},
-	beforeUnmount(){
+	beforeDestroy(){
 		if(this.croppie) this.croppie.destroy()
 	},
 	methods: {

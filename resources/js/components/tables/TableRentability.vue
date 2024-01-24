@@ -221,7 +221,7 @@ export default {
 		bus.$on('tt-top-update', this.fetchData)
 	},
 
-	beforeUnmount(){
+	beforeDestroy(){
 		bus.$off('tt-top-update', this.fetchData)
 	},
 
