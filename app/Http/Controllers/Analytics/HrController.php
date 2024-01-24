@@ -383,25 +383,22 @@ class HrController extends Controller
 
         $filter = [
             'position_id' => $request->get('position_id'),
-            'type' => $request->get('formula_type'),
+            'type' => $request->get('formula_type', 1),
             'year' => $date->year,
             'month' => $date->month
         ];
 
         $staff = RM::staff($filter);
-        timer();
         $staff_by_group = RM::staff_by_group($filter);
-        timer();
-        dd($staff_by_group);
         $staff_longevity = RM::staff_longevity($filter);
         $quiz = RM::getQuizTable($date->startOfMonth());
         $causes = RM::fireCauses($date);
         return [
-//            'staff' => $staff, // Таблица кадров во вкладке причина увольнения
-//            'staff_by_group' => $staff_by_group, // Таблица кадров во вкладке причина увольнения // 5.2 sec
-//            'staff_longevity' => $staff_longevity, // Таблица кадров во вкладке причина увольнения
-//            'quiz' => $quiz,
-//            'causes' => $causes, // причины увольнения
+            'staff' => $staff, // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => $staff_by_group, // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' => $staff_longevity, // Таблица кадров во вкладке причина увольнения
+            'quiz' => $quiz,
+            'causes' => $causes, // причины увольнения
         ];
     }
 

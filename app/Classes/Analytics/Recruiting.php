@@ -3,6 +3,7 @@
 namespace App\Classes\Analytics;
 
 use App\Models\GroupUser;
+use App\Service\HR\Staff\Calculator;
 use App\User;
 use App\UserDescription;
 use App\DayType;
@@ -920,8 +921,16 @@ class Recruiting
      */
     public static function staff(array $filter): array
     {
+        /** @var Calculator $calculator */
+        $calculator = app(Calculator::class);
+        $calculator->type($filter['type']);
+
         $year = $filter['year'];
+
+        $positionId = $filter['position_id'];
+
         $users_on = DB::table('users')
+            ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
@@ -931,6 +940,7 @@ class Recruiting
             })->toArray();
 
         $users_off = DB::table('users')
+            ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
@@ -944,29 +954,33 @@ class Recruiting
         $staff[0]['name'] = 'Принято';
         $staff[1]['name'] = 'Уволено';
         $staff[2]['name'] = 'Баланс';
-        $staff[3]['name'] = '% текучки';
+        $staff[3]['name'] = '%';
         $staff[4]['name'] = 'Итого';
 
-        for ($i = 1; $i <= 12; $i++) {
-            $staff[0]['m' . $i] = 0;
-            if (array_key_exists($i, $users_on)) {
-                foreach ($users_on[$i] as $u) {
-                    $staff[0]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
+        dd($users_on);
+        for ($month = 1; $month <= 12; $month++) {
+            $staff[0]['m' . $month] = 0;
+            if (array_key_exists($month, $users_on)) {
+                foreach ($users_on[$month] as $u) {
+                    $staff[0]['m' . $month] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
 
-            $staff[1]['m' . $i] = 0;
-            if (array_key_exists($i, $users_off)) {
-                foreach ($users_off[$i] as $u) {
-                    $staff[1]['m' . $i] += $u->full_time == 1 ? 1 : 0.5;
+            $staff[1]['m' . $month] = 0;
+            if (array_key_exists($month, $users_off)) {
+                foreach ($users_off[$month] as $u) {
+                    $staff[1]['m' . $month] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
 
-            $staff[2]['m' . $i] = $staff[0]['m' . $i] - $staff[1]['m' . $i];
-            $staff[4]['m' . $i] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
+            $staff[2]['m' . $month] = $staff[0]['m' . $month] - $staff[1]['m' . $month];
+            $staff[4]['m' . $month] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
 
-            $a = $i != 1 ? $staff[4]['m' . ($i - 1)] + $staff[0]['m' . $i] : 0;
-            $staff[3]['m' . $i] = $a > 0 ? round(($staff[1]['m' . $i] / $a) * 100, 1) . '%' : '0%';
+            $calculator->calculate($staff);
+            $calculator->total();
+            $calculator->percent();
+            $a = $month != 1 ? $staff[4]['m' . ($month - 1)] + $staff[0]['m' . $month] : 0;
+            $staff[3]['m' . $month] = $a > 0 ? round(($staff[1]['m' . $month] / $a) * 100, 1) . '%' : '0%';
         }
 
         return $staff;
@@ -1066,72 +1080,24 @@ class Recruiting
     public static function staff_by_group(array $filter): array
     {
         $date = Carbon::createFromDate($filter['year'], 1, 1);
-        $pivotSubQuery = DB::table('group_user')
-            ->select([
-                DB::raw('group_id'),
-                DB::raw('group_user.user_id as user_id'),
-                DB::raw('status'),
-                DB::raw('MONTH(`to`) as month')
-            ])
-            ->join('user_descriptions', 'user_descriptions.user_id', 'group_user.user_id')
-            ->where('is_trainee', 0)
-            ->where(function (\Illuminate\Database\Query\Builder $query) use ($date) {
-                $query->whereYear('to', $date->year);
-                $query->orWhereNull('to');
-            });
+        $groups = ProfileGroup::where('active', 1)->get();
+        $userService = new UserService();
 
-        $firedUsersSubQuery = DB::table('users')
-            ->select([
-                DB::raw('group_id'),
-                DB::raw('count(*) as count'),
-                DB::raw('month')
-            ])
-            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
-            ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_DROP])
-            ->groupBy(['group_id', 'month']);
-
-        $activeUsersSubQuery = DB::table('users')
-            ->select([
-                DB::raw('group_id'),
-                DB::raw('count(*) as count'),
-                DB::raw('month')
-            ])
-            ->joinSub($pivotSubQuery, 'pivot', 'pivot.user_id', 'id')
-            ->groupBy(['group_id', 'month']);
-
-        $groups = DB::table('profile_groups')
-            ->select([
-                DB::raw('profile_groups.name as name'),
-                DB::raw('IFNULL(active.count,0) as active_users'),
-                DB::raw('IFNULL(fired.count,0) as fired_users'),
-                DB::raw('fired.month as fired_month'),
-                DB::raw('active.month as active_month')
-            ])
-            ->leftJoinSub($firedUsersSubQuery, 'fired', 'fired.group_id', 'id')
-            ->leftJoinSub($activeUsersSubQuery, 'active', 'active.group_id', 'id')
-            ->where('active', 1)
-            ->get();
-        dd($groups);
         $staffy = [];
 
-//        foreach ($groups as $key => $group) {
-//            $staffy[$key]['name'] = $group->name;
+        foreach ($groups as $key => $group) {
+            $staffy[$key]['name'] = $group->name;
 
-        for ($i = 1; $i <= 12; $i++) {
-            $assigned = $groups
-                ->filter(function ($item) use ($i) {
-                    return $item->active_month > $i || is_null($item->active_month);
-                })
-                ->count();
-            dd($assigned);
-            $fired = $groups->where('fired_month', $i)->count();
+            for ($i = 1; $i <= 12; $i++) {
+                $assigned = count($userService->getEmployees($group->id, $date->month($i)->format('Y-m-d')));
+                $fired = count($userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')));
 
-            $worked = $assigned + $fired;
+                $worked = $assigned + $fired;
 
-            $percent = $worked > 0 ? round(($fired / $worked) * 100, 1) : 0;
-//            $staffy[$key]['m' . $i] = $percent . '%';
+                $percent = $worked > 0 ? round(($fired / $worked) * 100, 1) : 0;
+                $staffy[$key]['m' . $i] = $percent . '%';
+            }
         }
-//        }
 
         return $staffy;
     }
