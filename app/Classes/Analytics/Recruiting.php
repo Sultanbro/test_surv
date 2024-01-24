@@ -923,10 +923,9 @@ class Recruiting
     {
         /** @var Calculator $calculator */
         $calculator = app(Calculator::class);
-        $calculator->type($filter['type']);
 
         $year = $filter['year'];
-
+        $isTrainee = $filter['type'] === 3;
         $positionId = $filter['position_id'];
 
         $users_on = DB::table('users')
@@ -938,12 +937,13 @@ class Recruiting
             ])
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', 0)
+            ->where('ud.is_trainee', $isTrainee)
             ->whereYear('applied', $year)
             ->get()
             ->groupBy(function ($item) {
                 return (int)Carbon::createFromFormat('Y-m-d H:i:s', $item->applied)->format('m');
-            })->toArray();
+            })
+            ->toArray();
 
         $users_off = DB::table('users')
             ->select([
@@ -955,12 +955,13 @@ class Recruiting
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('is_trainee', 0)
+            ->where('is_trainee', $isTrainee)
             ->whereYear('deleted_at', $year)
             ->get()
             ->groupBy(function ($item) {
                 return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deleted_at)->format('m');
-            })->toArray();
+            })
+            ->toArray();
 
         $staff = [];
         $staff[0]['name'] = 'Принято';
@@ -970,12 +971,14 @@ class Recruiting
         $staff[4]['name'] = 'Итого';
 
         for ($month = 1; $month <= 12; $month++) {
+
             $staff[0]['m' . $month] = 0;
             if (array_key_exists($month, $users_on)) {
                 foreach ($users_on[$month] as $u) {
                     $staff[0]['m' . $month] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
+
             $staff[1]['m' . $month] = 0;
             if (array_key_exists($month, $users_off)) {
                 foreach ($users_off[$month] as $u) {
@@ -985,10 +988,12 @@ class Recruiting
 
             $staff[2]['m' . $month] = $staff[0]['m' . $month] - $staff[1]['m' . $month];
             $staff[4]['m' . $month] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
+
+            $calculator->type($filter['type']);
             $calculator->calculate($staff, $month);
+
             $staff[3]['m' . $month] = $calculator->percent();
         }
-
         return $staff;
     }
 
