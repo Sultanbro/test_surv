@@ -930,6 +930,10 @@ class Recruiting
         $positionId = $filter['position_id'];
 
         $users_on = DB::table('users')
+            ->select([
+                'full_time',
+                'id'
+            ])
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
@@ -940,6 +944,10 @@ class Recruiting
             })->toArray();
 
         $users_off = DB::table('users')
+            ->select([
+                'full_time',
+                'id'
+            ])
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
