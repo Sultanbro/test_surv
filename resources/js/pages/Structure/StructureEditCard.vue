@@ -301,7 +301,7 @@ export default {
 		}
 	},
 	mounted() {},
-	beforeUnmount() {},
+	beforeDestroy() {},
 	methods: {
 		...mapActions(useStructureStore, [
 			'createCard',

@@ -47,7 +47,7 @@ export default {
 		this.updateTitle()
 		this.updateIcon()
 	},
-	beforeUnmount(){
+	beforeDestroy(){
 		const scriptTag = document.getElementById('bitrix-loader')
 		if(!scriptTag) return
 		scriptTag.remove()

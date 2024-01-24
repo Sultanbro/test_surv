@@ -243,7 +243,7 @@ export default {
 		// if(!this.isDemo) await this.autoDeleteCards()
 		if(this.settings.autoManager && !this.isDemo) this.updateManagers()
 	},
-	beforeUnmount() {
+	beforeDestroy() {
 		window.removeEventListener('wheel', this.scrollArea)
 		window.removeEventListener('storage', this.checkTabEvents, false)
 	},
