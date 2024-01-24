@@ -389,6 +389,7 @@ class HrController extends Controller
         ];
 
         $staff = RM::staff($filter);
+        dd($staff);
         $staff_by_group = RM::staff_by_group($filter);
         $staff_longevity = RM::staff_longevity($filter);
         $quiz = RM::getQuizTable($date->startOfMonth());

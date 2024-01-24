@@ -973,12 +973,8 @@ class Recruiting
 
             $staff[2]['m' . $month] = $staff[0]['m' . $month] - $staff[1]['m' . $month];
             $staff[4]['m' . $month] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
-            dd($staff);
-            $calculator->calculate($staff);
-            $calculator->total();
-            $calculator->percent();
-            $a = $month != 1 ? $staff[4]['m' . ($month - 1)] + $staff[0]['m' . $month] : 0;
-            $staff[3]['m' . $month] = $a > 0 ? round(($staff[1]['m' . $month] / $a) * 100, 1) . '%' : '0%';
+            $calculator->calculate($staff, $month);
+            $staff[3]['m' . $month] = $calculator->percent();
         }
 
         return $staff;

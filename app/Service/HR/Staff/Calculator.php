@@ -10,14 +10,21 @@ class Calculator
         3 => 'trainee_turnover_rate',
     ];
     private string $type;
+    private string $percent;
 
-    public function calculate()
+    public function calculate(array $staff, int $month): void
     {
-
+        $a = $month != 1 ? $staff[4]['m' . ($month - 1)] + $staff[0]['m' . $month] : 0;
+        $this->percent = $a > 0 ? round(($staff[1]['m' . $month] / $a) * 100, 1) . '%' : '0%';
     }
 
     public function type(int $type): void
     {
         $this->type = self::CALC_TYPES[$type];
+    }
+
+    public function percent(): float
+    {
+        return $this->percent;
     }
 }
