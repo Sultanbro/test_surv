@@ -23,7 +23,7 @@ class Calculator
         $this->type = self::CALC_TYPES[$type];
     }
 
-    public function percent(): float
+    public function percent(): string
     {
         return $this->percent;
     }
