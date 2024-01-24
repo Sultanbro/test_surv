@@ -5,6 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    protected $connection = 'mysql';
+
     /**
      * Run the migrations.
      *
@@ -12,12 +14,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::connection('mysql')->create('manager_has_owner', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('manager_id');
-            $table->unsignedBigInteger('owner_id');
-            $table->timestamps();
-        });
+        if (!table_exists('manager_has_owner', $this->getConnection())) {
+            Schema::connection('mysql')->create('manager_has_owner', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('manager_id');
+                $table->unsignedBigInteger('owner_id');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

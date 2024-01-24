@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -13,11 +14,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('central_courses', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('category_id');
-            $table->timestamps();
-        });
+        if (!table_exists('central_courses', $this->getConnection())) {
+            Schema::connection('mysql')->create('central_courses', function (Blueprint $table) {
+                $table->id();
+                $table->string('tenant_id');
+                $table->tinyInteger('for_sale');
+                $table->unsignedBigInteger('cat_id')->nullable();
+                $table->integer('price')->nullable();
+                $table->string('author')->nullable();
+                $table->json('slides')->nullable();
+                $table->unsignedBigInteger('verified_by')->nullable();
+                $table->timestamp('verified_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

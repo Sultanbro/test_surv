@@ -18,14 +18,11 @@ class FilterCourseV2Request extends FormRequest
     {
         return [
             'search' => 'nullable|string',
-            'targets' => 'array',
-            'targets.*' => [
-                'target_type' => ['required', Rule::in(CourseV2::TARGET_TYPES)],
-                'target_id' => 'required',
-            ],
+            'profile_group_id' => 'nullable|int',
+            'position_id' => 'nullable|int',
             'type' => [Rule::in([CourseV2::AUTOMATIC_TYPE, CourseV2::INDIVIDUAL_TYPE])],
             'for_sale' => 'nullable|in:0,1',
-            'created_date' => 'date',
+            'created_date' => 'string',
             'per_page' => 'int'
         ];
     }
@@ -37,7 +34,8 @@ class FilterCourseV2Request extends FormRequest
     {
         return new CourseFilterPropsDto(
             search: $this->get('search'),
-            targets: $this->get('targets'),
+            profile_group_id: $this->get('profile_group_id'),
+            position_id: $this->get('position_id'),
             type: $this->get('type'),
             for_sale: $this->get('for_sale'),
             created_date: $this->get('created_date'),

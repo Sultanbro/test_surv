@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -13,15 +14,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('central_course_comments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('course_id');
-            $table->unsignedBigInteger('parent_id');
-            $table->text('text');
-            $table->
-            $table->timestamps();
-        });
+        if (!table_exists('central_course_comments', $this->getConnection())) {
+            Schema::connection('mysql')->create('central_course_comments', function (Blueprint $table) {
+                $table->id();
+                $table->string('tenant_id');
+                $table->unsignedBigInteger('course_id');
+                $table->unsignedBigInteger('user_id');
+                $table->unsignedBigInteger('parent_id');
+                $table->text('text');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

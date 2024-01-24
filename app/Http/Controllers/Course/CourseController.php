@@ -11,6 +11,7 @@ use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Position;
 use App\ProfileGroup;
+use App\Traits\UploadFileS3;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,6 +19,9 @@ use Illuminate\Support\Facades\View;
 
 class CourseController extends Controller
 {
+    use UploadFileS3;
+
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -96,35 +100,6 @@ class CourseController extends Controller
             $order++;
         }
 
-    }
-
-    /**
-     * Upload file to S3 and return relative and temp link
-     * @param String $path
-     * @param mixed $file
-     *
-     * 'relative' => String
-     * 'temp' => String
-     */
-    private function uploadFile(string $path, $file): array
-    {
-        $disk = \Storage::disk('s3');
-
-        $extension = $file->getClientOriginalExtension();
-        $originalFileName = $file->getClientOriginalName();
-        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
-
-        $disk->putFileAs($path, $file, $fileName);
-
-        $xpath = $path . '/' . $fileName;
-
-        return [
-            'relative' => $xpath,
-
-            'temp' => $disk->temporaryUrl(
-                $xpath, now()->addMinutes(360)
-            )
-        ];
     }
 
     /**
@@ -237,7 +212,7 @@ class CourseController extends Controller
         }
 
 
-        // save course 
+        // save course
         $course->stages = $stages;
         $course->points = $bonuses;
         $course->save();

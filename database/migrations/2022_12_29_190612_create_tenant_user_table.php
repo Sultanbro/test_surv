@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -12,17 +13,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::connection('mysql')->create('tenant_user', function (Blueprint $table) {
-            $table->id();
-            $table->string('tenant_id', 255)
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete();
-            $table->foreignId('user_id')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete();
-        });
+        if (!table_exists('tenant_user', $this->getConnection())) {
+            Schema::connection('mysql')->create('tenant_user', function (Blueprint $table) {
+                $table->id();
+                $table->string('tenant_id', 255)
+                    ->references('id')
+                    ->on('users')
+                    ->cascadeOnDelete();
+                $table->foreignId('user_id')
+                    ->references('id')
+                    ->on('users')
+                    ->cascadeOnDelete();
+            });
+        }
     }
 
     /**

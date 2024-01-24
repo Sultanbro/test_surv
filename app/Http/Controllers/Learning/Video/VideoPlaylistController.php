@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Learning\Video;
 
+use App\Traits\UploadFileS3;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\TestQuestion;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\View;
 
 class VideoPlaylistController extends Controller
 {
+    use UploadFileS3;
+
     const PAGE = '/video_playlists';
 
     public function __construct()
@@ -321,36 +324,6 @@ class VideoPlaylistController extends Controller
 
     }
 
-
-    /**
-     * Upload file to S3 and return relative link
-     * @param String $path
-     * @param mixed $file
-     *
-     * @return array
-     *
-     * 'relative' => String
-     * 'temp' => String
-     */
-    private function uploadFile(String $path, $file)
-    {
-        $disk = \Storage::disk('s3');
-
-        $extension = $file->getClientOriginalExtension();
-        $originalFileName = $file->getClientOriginalName();
-        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
-
-        $disk->putFileAs($path, $file, $fileName);
-
-        $xpath = $path . '/' . $fileName;
-
-        return [
-            'relative' => $xpath,
-            'temp' => $disk->temporaryUrl(
-                $xpath, now()->addMinutes(360)
-            )
-        ];
-    }
 
     public function create() {
         $categories = Category::all();

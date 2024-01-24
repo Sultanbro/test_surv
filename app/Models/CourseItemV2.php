@@ -11,6 +11,10 @@ class CourseItemV2 extends Model
 
     protected $table = 'course_items_v2';
 
+    protected $fillable = [
+        'course_id', 'item_id', 'item_type', 'name', 'order', 'duration'
+    ];
+
     public const BOOK_TYPE = 1;
     public const VIDEO_TYPE = 2;
     public const KB_TYPE = 3;

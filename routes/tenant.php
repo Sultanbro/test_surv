@@ -158,7 +158,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
 
     // Courses V2
 
-    Route::prefix('v2/courses')->group(base_path('routes/v2-courses.php'));
+    Route::prefix('v2/courses')->group(base_path('routes/v2-courses.php'))->middleware(['tenant']);
 
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);

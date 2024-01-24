@@ -10,6 +10,26 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateCourseV2Request extends FormRequest
 {
+    public function prepareForValidation()
+    {
+        $elements = [];
+        $targets = [];
+        $notifications = [];
+        $slides = [];
+
+        if ($this->input('elements') != null) $elements = json_decode($this->input('elements'), true);
+
+        if ($this->input('targets') != null) $targets = json_decode($this->input('targets'), true);
+
+        if ($this->input('slides') != null) $slides = json_decode($this->input('slides'));
+
+        $this->merge([
+            'elements' => $elements,
+            'targets' => $targets,
+            'slides' => $slides
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,31 +42,24 @@ class CreateCourseV2Request extends FormRequest
             'name' => 'required|string',
             'short' => 'required|string',
             'desc' => 'required|string',
-            'icon' => 'required',
-            'background' => 'required',
+            'icon' => 'required|file',
+            'background' => 'required|file',
 
             // Step 2
-            'elements.*' => [
-                'item_type' => [
-                    'required',
-                    Rule::in(CourseItemV2::ITEM_TYPES)
-                ],
-                'item_id' => 'required',
-                'file' => 'required_if:item-type,4', // 4 -> iSpring
-                'order' => ''
-            ],
+            'elements' => 'required|array|min:1',
+            'elements.*.item_type' => ['required', Rule::in(CourseItemV2::ITEM_TYPES)],
+            'elements.*.item_id' => 'required|integer',
+            'elements.*.file' => 'required_with:item_id', // item id will not be while uploading iSpring
+            'elements.*.name' => 'required',
+            'elements.*.order' => 'required',
+            'elements.*.duration' => 'required', // minutes
+
 
             // Step 3
-            'type' => [
-                'required',
-                Rule::in([CourseV2::AUTOMATIC_TYPE, CourseV2::INDIVIDUAL_TYPE])
-            ],
-            'targets.*' => [
-                'target_type' => [
-                    'required', Rule::in(['App\\User', 'App\\ProfileGroup', 'App\\Position', 'All'])
-                ],
-                'target_id' => 'required',
-            ],
+            'type' => ['required', Rule::in([CourseV2::AUTOMATIC_TYPE, CourseV2::INDIVIDUAL_TYPE])],
+            'targets' => 'array',
+            'targets.*.target_type' => ['required', Rule::in(CourseV2::TARGET_TYPES)],
+            'targets.*.target_id' => 'required|int',
 
             // Step 4
             'passing_score' => 'required|int|max:100',
@@ -60,17 +73,18 @@ class CreateCourseV2Request extends FormRequest
             'curator_id' => 'required',
             'curator_group_id' => '',
             'curator_position_id' => '',
-            'notifications',
+            'notifications' => 'array',
             'award_id' => 'required|int',
             'show_as_finished' => 'required|int|in:0,1',
             'bonus' => 'required|int',
 
             // Step 7
             'for_sale' => 'required|int|in:0,1',
-            'cat_id' => 'required|int',
-            'author' => 'required|string',
-            'slides' => 'required|array',
-            'slides.*' => 'required|string',
+            'cat_id' => 'required_if:for_sale,1|int',
+            'price' => 'required_if:for_sale,1|int',
+            'author' => 'required_if:for_sale,1|string',
+            'slides' => 'required_if:for_sale,1|array',
+            'slides.*' => 'required_if:for_sale,1|string',
         ];
     }
 
@@ -103,6 +117,7 @@ class CreateCourseV2Request extends FormRequest
             show_as_finished: $this->get('show_as_finished'),
             bonus: $this->get('bonus'),
             for_sale: $this->get('for_sale'),
+            price: $this->get('price'),
             cat_id: $this->get('cat_id'),
             author: $this->get('author'),
             slides: $this->get('slides')
