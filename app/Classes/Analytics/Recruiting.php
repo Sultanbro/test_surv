@@ -964,7 +964,6 @@ class Recruiting
                     $staff[0]['m' . $month] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
-            dd($staff);
             $staff[1]['m' . $month] = 0;
             if (array_key_exists($month, $users_off)) {
                 foreach ($users_off[$month] as $u) {
@@ -974,7 +973,7 @@ class Recruiting
 
             $staff[2]['m' . $month] = $staff[0]['m' . $month] - $staff[1]['m' . $month];
             $staff[4]['m' . $month] = 0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
-
+            dd($staff);
             $calculator->calculate($staff);
             $calculator->total();
             $calculator->percent();
