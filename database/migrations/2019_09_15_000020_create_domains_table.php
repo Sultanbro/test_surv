@@ -18,7 +18,7 @@ class CreateDomainsTable extends Migration
     public function up(): void
     {
         if (!table_exists('domains', $this->getConnection())) {
-            Schema::create('domains', function (Blueprint $table) {
+            Schema::connection('mysql')->create('domains', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('domain', 255)->unique();
                 $table->string('tenant_id');

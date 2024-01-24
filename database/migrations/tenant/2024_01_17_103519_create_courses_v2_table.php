@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('tenant_id');
             $table->tinyInteger('type');
             $table->integer('order');
-            $table->date('start');
-            $table->date('stop');
+            $table->date('start')->nullable();
+            $table->date('stop')->nullable();
             $table->string('name');
             $table->string('short');
             $table->text('desc');
@@ -35,6 +35,7 @@ return new class extends Migration
             $table->tinyInteger('mix_questions')->default(0);
             $table->tinyInteger('show_answers')->default(0);
             $table->tinyInteger('for_sale')->default(0);
+            $table->integer('price')->default(0);
             $table->integer('attempts');
             $table->integer('passing_score');
             $table->unsignedBigInteger('author_id');

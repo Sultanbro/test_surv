@@ -9,19 +9,22 @@ use App\Models\CourseV2;
 use App\Service\CourseV2\CourseV2Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CourseV2Controller extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param FilterCourseV2Request $request
+     * @param CourseV2Service $service
+     * @return JsonResponse
      */
-    public function index(FilterCourseV2Request $request, CourseV2Service $service)
+    public function getAll(FilterCourseV2Request $request, CourseV2Service $service): JsonResponse
     {
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: $service->filter($request->toDto())
+            data: $service->getAll($request->toDto())
         );
     }
 
@@ -43,18 +46,22 @@ class CourseV2Controller extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\CourseV2  $courseV2
-     * @return \Illuminate\Http\Response
+     * @param $course
+     * @param CourseV2Service $service
+     * @return JsonResponse
      */
-    public function show(CourseV2 $courseV2)
+    public function getOne($course, CourseV2Service $service): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->getOne($course)
+        );
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\CourseV2  $courseV2
+     * @param CourseV2 $courseV2
      * @return \Illuminate\Http\Response
      */
     public function edit(CourseV2 $courseV2)
@@ -66,7 +73,7 @@ class CourseV2Controller extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CourseV2  $courseV2
+     * @param CourseV2 $courseV2
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, CourseV2 $courseV2)
@@ -77,7 +84,7 @@ class CourseV2Controller extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\CourseV2  $courseV2
+     * @param CourseV2 $courseV2
      * @return \Illuminate\Http\Response
      */
     public function destroy(CourseV2 $courseV2)

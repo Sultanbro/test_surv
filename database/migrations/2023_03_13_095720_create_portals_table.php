@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -13,13 +14,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql')->create('portals', function (Blueprint $table) {
-            $table->id();
-            $table->string('tenant_id');
-            $table->unsignedBigInteger('owner_id');
-            $table->string('currency')->default('kzt');
-            $table->timestamps();
-        });
+        if (!table_exists('portals', $this->getConnection())) {
+            Schema::connection('mysql')->create('portals', function (Blueprint $table) {
+                $table->id();
+                $table->string('tenant_id');
+                $table->unsignedBigInteger('owner_id');
+                $table->string('currency')->default('kzt');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
