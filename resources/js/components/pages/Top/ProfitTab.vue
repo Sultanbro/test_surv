@@ -72,7 +72,12 @@
 				{{ separateNumber(numberToCurrency(row.value)) }}
 			</template>
 			<template #cell(fot)="row">
-				{{ separateNumber(numberToCurrency(row.value)) }}
+				<div
+					class=""
+					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}`"
+				>
+					{{ separateNumber(numberToCurrency(row.value.sum)) }}
+				</div>
 			</template>
 			<template #cell(percent)="row">
 				<div
@@ -114,8 +119,9 @@
 				<div
 					class="ProfitTab-unpad"
 					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-good' : 'ProfitTab-bad']"
+					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}`"
 				>
-					{{ separateNumber(numberToCurrency(row.value)) }}
+					{{ separateNumber(numberToCurrency(row.value.sum)) }}
 				</div>
 			</template>
 			<template #cell(plan)="row">
@@ -241,7 +247,18 @@ export default {
 			return {
 				name: '',
 				revenue: this.secondTable.reduce((result, row) => result + Number(row.revenue), 0),
-				fot: this.secondTable.reduce((result, row) => result + Number(row.fot), 0),
+				fot: this.secondTable.reduce((result, row) => {
+					result.sum += row.fot.sum
+					result.actual += row.fot.actual
+					result.fired += row.fot.fired
+					result.trainee += row.fot.trainee
+					return result
+				}, {
+					sum: 0,
+					actual: 0,
+					fired: 0,
+					trainee: 0,
+				}),
 				percent: this.secondTable.length ? this.secondTable.reduce((result, row) => result + Number(row.percent), 0) / this.secondTable.length : 0,
 			}
 		},
@@ -249,15 +266,26 @@ export default {
 			return {
 				name: '',
 				approved: this.thirdTable.reduce((result, row) => result + Number(row.approved), 0),
-				fact: this.thirdTable.reduce((result, row) => result + Number(row.fact), 0),
+				fact: this.thirdTable.reduce((result, row) => {
+					result.sum += row.fact.sum
+					result.actual += row.fact.actual
+					result.fired += row.fact.fired
+					result.trainee += row.fact.trainee
+					return result
+				}, {
+					sum: 0,
+					actual: 0,
+					fired: 0,
+					trainee: 0,
+				}),
 				plan: this.thirdTable.reduce((result, row) => result + Number(row.plan), 0),
 			}
 		},
 		firstTable(){
 			const revenue = this.totalsSecond.revenue / this.daysPassed * this.daysInMonth
-			const expenses = ((this.totalsSecond.fot + this.totalsThird.fact) / this.daysPassed * this.daysInMonth) + Number(this.other)
+			const expenses = ((this.totalsSecond.fot.sum + this.totalsThird.fact.sum) / this.daysPassed * this.daysInMonth) + Number(this.other)
 			const profit = revenue - expenses
-			const profitFact = Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.plan - Number(this.other)
+			const profitFact = Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.plan - Number(this.other)
 			return [
 				[
 					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
@@ -277,7 +305,7 @@ export default {
 					revenue,
 					expenses,
 					profit,
-					revenue ? ((revenue - (Number(this.totalsSecond.fot) / this.daysPassed * this.daysInMonth)) / revenue) * 100 : 0,
+					revenue ? ((revenue - (Number(this.totalsSecond.fot.sum) / this.daysPassed * this.daysInMonth)) / revenue) * 100 : 0,
 					revenue ? (profitFact / revenue) * 100 : 0,
 				],
 				[
@@ -290,14 +318,14 @@ export default {
 				[
 					'',
 					'Profit PLAN на сегодня',
-					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.plan - Number(this.other),
+					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.plan - Number(this.other),
 					'',
 					'',
 				],
 				[
 					'',
 					'Profit FACT на сегодня',
-					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot) - this.totalsThird.fact - Number(this.other),
+					Number(this.totalsSecond.revenue) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other),
 					'',
 					'',
 				],
@@ -346,7 +374,12 @@ export default {
 					id: i,
 					name: 'Отдел ' + i,
 					revenue: 100000,
-					fot: 100000,
+					fot: {
+						sum: 100000,
+						actual: 100000,
+						fired: 0,
+						trainee: 0
+					},
 					percent: i
 				})
 			}
@@ -357,7 +390,12 @@ export default {
 					id: i,
 					name: 'Отдел ' + i,
 					approved: 100000,
-					fact: 100000,
+					fact: {
+						sum: 100000,
+						actual: 100000,
+						fired: 0,
+						trainee: 0
+					},
 					plan: 99999
 				})
 			}
@@ -368,13 +406,13 @@ export default {
 			const date = `${this.year}_${this.month}`
 
 			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
-			// const defaultCCGroups = '[31, 71]'
-			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
+			const defaultCCGroups = '[31, 71]'
+			// const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
 			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
-			// const defaultAdmGroups = '[23]'
-			const defaultAdmGroups = '[23, 48, 102, 26]'
+			const defaultAdmGroups = '[23]'
+			// const defaultAdmGroups = '[23, 48, 102, 26]'
 			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
 
 			const otherKey = 'profit_other_' + date
@@ -437,7 +475,12 @@ export default {
 				const withoutKPI = fot.actual.bonus + fot.trainee.bonus + fot.fired.bonus
 					+ fot.actual.total + fot.trainee.total + fot.fired.total
 				const kpi = fot.actual.kpi + fot.trainee.kpi + fot.fired.kpi
-				return daysPassed > 15 ? withoutKPI + kpi : withoutKPI
+				return {
+					actual: daysPassed > 15 ? fot.actual.bonus + fot.actual.total : fot.actual.bonus + fot.actual.total + fot.actual.kpi,
+					fired: daysPassed > 15 ? fot.fired.bonus + fot.fired.total : fot.fired.bonus + fot.fired.total + fot.fired.kpi,
+					trainee: daysPassed > 15 ? fot.trainee.bonus + fot.trainee.total : fot.trainee.bonus + fot.trainee.total + fot.trainee.kpi,
+					sum: daysPassed > 15 ? withoutKPI + kpi : withoutKPI,
+				}
 			}
 
 			this.secondTable = this.ccGroups.reduce((result, groupId) => {
@@ -448,7 +491,7 @@ export default {
 					name: fot[groupId].actual.name,
 					revenue: revenue[groupId],
 					fot: rowfot,
-					percent: revenue[groupId] ? ((revenue[groupId] - rowfot) / revenue[groupId]) * 100 : 0,
+					percent: revenue[groupId] ? ((revenue[groupId] - rowfot.sum) / revenue[groupId]) * 100 : 0,
 				})
 				return result
 			}, [])
@@ -461,6 +504,7 @@ export default {
 					name: fot[groupId].actual.name,
 					approved: admGroupsData[groupId],
 					fact: rowfot,
+					allFot: fot[groupId],
 					plan: admGroupsData[groupId] / this.daysInMonth * this.daysPassed
 				})
 				return result
