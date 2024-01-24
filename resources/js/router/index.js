@@ -2,6 +2,8 @@ import VueRouter from 'vue-router'
 import {
 	checkVersion
 } from '@/stores/api.js'
+import kpi from './kpi.js'
+import top from './top.js'
 
 import ProfileView from '@/views/ProfileView'
 import CabinetView from '@/views/CabinetView'
@@ -16,7 +18,7 @@ import MyCoursesView from '@/views/MyCoursesView'
 // import StructureView from '@/views/StructureView'
 import EntertimeView from '@/views/EntertimeView'
 import HRView from '@/views/HRView'
-import TopView from '@/views/TopView'
+// import TopView from '@/views/TopView'
 import AnalyticsView from '@/views/AnalyticsView'
 import SalaryView from '@/views/SalaryView'
 import QualityControlView from '@/views/QualityControlView'
@@ -149,15 +151,16 @@ const router = new VueRouter({
 			},
 		},
 		// admin/top.blade.php
-		{
-			path: '/timetracking/top',
-			name: 'TopView',
-			component: TopView,
-			meta: {
-				title: 'ТОП',
-				menuItem: 'reports',
-			},
-		},
+		// {
+		// 	path: '/timetracking/top',
+		// 	name: 'TopView',
+		// 	component: TopView,
+		// 	meta: {
+		// 		title: 'ТОП',
+		// 		menuItem: 'reports',
+		// 	},
+		// },
+		top,
 		// admin/enter-report.blade.php
 		{
 			path: '/timetracking/reports/enter-report',
@@ -218,62 +221,7 @@ const router = new VueRouter({
 				menuItem: 'maps',
 			},
 		},
-		{
-			path: '/kpi',
-			name: 'KPIViewV2',
-			component: () => import(/* webpackChunkName: "KPIViewV2" */ '@/views/KPIViewV2'),
-			meta: {
-				title: 'KPI - показателей',
-				menuItem: 'kpi',
-			},
-			children: [
-				{
-					path: '',
-					name: 'KPIPage',
-					component: () => import(/* webpackChunkName: "KPIPage" */ '@/pages/kpi/Kpi'),
-					meta: {
-						title: 'KPI - показателей',
-						menuItem: 'kpi',
-					},
-				},
-				{
-					path: 'bonus',
-					name: 'KPIBonuses',
-					component: () => import(/* webpackChunkName: "KPIBonuses" */ '@/pages/kpi/Bonuses.vue'),
-					meta: {
-						title: 'KPI - показателей',
-						menuItem: 'kpi',
-					},
-				},
-				{
-					path: 'premium',
-					name: 'KPIQuartalPremium',
-					component: () => import(/* webpackChunkName: "KPIQuartalPremium" */ '@/pages/kpi/QuartalPremium'),
-					meta: {
-						title: 'KPI - показателей',
-						menuItem: 'kpi',
-					},
-				},
-				{
-					path: 'statistics',
-					name: 'KPIStatsV2',
-					component: () => import(/* webpackChunkName: "KPIStatsV2" */ '@/pages/kpi/StatsV2'),
-					meta: {
-						title: 'KPI - показателей',
-						menuItem: 'kpi',
-					},
-				},
-				{
-					path: 'indicators',
-					name: 'KPIIndicators',
-					component: () => import(/* webpackChunkName: "KPIIndicators" */ '@/pages/kpi/Indicators'),
-					meta: {
-						title: 'KPI - показателей',
-						menuItem: 'kpi',
-					},
-				},
-			]
-		},
+		kpi,
 		// admin/info.blade.php
 		{
 			path: '/timetracking/info',

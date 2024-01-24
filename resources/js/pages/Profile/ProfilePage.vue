@@ -229,7 +229,7 @@ export default {
 		if(this.isReady) this.initAnimOnScroll()
 		this.fetchUserStats()
 	},
-	beforeUnmount(){
+	beforeDestroy(){
 		this.intersectionObserver.disconnect()
 		this.intersectionObserver = null
 	},
