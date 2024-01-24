@@ -932,7 +932,7 @@ class Recruiting
         $users_on = DB::table('users')
             ->select([
                 'full_time',
-                'id'
+                'users.id as id'
             ])
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -946,7 +946,7 @@ class Recruiting
         $users_off = DB::table('users')
             ->select([
                 'full_time',
-                'id'
+                'users.id as id'
             ])
             ->when($positionId, fn($query) => $query->where('position_id', $positionId))
             ->whereNotNull('deleted_at')
