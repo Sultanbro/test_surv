@@ -128,45 +128,21 @@ class UserService
     public function getEmployeesForSalaries(int $groupId, string $date): array
     {
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
-        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $addCondition = false;
-        if (Carbon::parse($date)->month < Carbon::now()->month || Carbon::parse($date)->year < Carbon::now()->year) {
-            $addCondition = true;
-        }
-
-
-        $data = User::withTrashed()->with('groups')->whereHas('group_users', function ($q) use ($groupId, $last_date, $nextMonthFirstDay, $addCondition) {
-            $q->where('group_id', $groupId)
-                ->where(function ($query) use ($nextMonthFirstDay, $last_date, $addCondition) {
-                    $query->where(function ($subQuery) use ($last_date, $nextMonthFirstDay, $addCondition) {
-                        // For active users in the selected month
-                        $subQuery->where('status', GroupUser::STATUS_ACTIVE);
-                        if ($addCondition) {
-                            $subQuery->whereDate('from', '<', $nextMonthFirstDay);
-                        }
-                        $subQuery->where(function (Builder $query) use ($last_date, $nextMonthFirstDay) {
-                            $query->whereBetween('to', [$last_date, $nextMonthFirstDay])
-                                ->orWhereNull('to');
-                        });
-                    })->orWhere(function ($subQuery) use ($last_date, $nextMonthFirstDay) {
-                        // For users who were active and then dropped in the selected month
-                        $subQuery->where('status', GroupUser::STATUS_DROP);
-                        $subQuery->whereDate('from', '<=', $last_date);
-                        $subQuery->whereDate('to', '>=', $last_date);
-                    })->orWhere(function ($subQuery) use ($last_date, $nextMonthFirstDay) {
-                        // For users who were active and then dropped in the selected month
-                        $subQuery->where('status', GroupUser::STATUS_FIRED);
-                        $subQuery->whereDate('from', '<=', $last_date);
-                        $subQuery->whereDate('to', '>', $last_date);
+        $data = User::withTrashed()
+            ->with('groups')
+            ->whereHas('group_users', function ($q) use ($groupId, $last_date) {
+                $q->where('group_id', $groupId)
+                    ->where(function (Builder $query) use ($last_date) {
+                        $query->whereDate('to', '>', $last_date);
+                        $query->orWhereNull('to');
+                    })
+                    ->where(function (Builder $query) use ($last_date) {
+                        $query->where('users.deleted_at', '>', $last_date)
+                            ->orWhereNull('users.deleted_at');
                     });
-                });
-        })
-            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-            ->where(function (Builder $query) use ($last_date) {
-                $query->where('deleted_at', '>', $last_date)
-                    ->orWhereNull('deleted_at');
             })
+            ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 
         return $data->unique(fn($u) => $u->id)->toArray();
