@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\CourseV2;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CoursesV2\CreateCourseV2Request;
-use App\Http\Requests\CoursesV2\FilterCourseV2Request;
 use App\Models\CourseV2;
-use App\Service\CourseV2\CourseV2Service;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use App\Service\CourseV2\CourseV2Service;
+use App\Http\Requests\CoursesV2\FilterCourseV2Request;
+use App\Http\Requests\CoursesV2\CreateCourseV2Request;
+use App\Http\Requests\CoursesV2\FilterAssignedCourseV2Request;
 
 class CourseV2Controller extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get all courses
      *
      * @param FilterCourseV2Request $request
      * @param CourseV2Service $service
@@ -29,7 +29,7 @@ class CourseV2Controller extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create course
      *
      * @param CreateCourseV2Request $request
      * @param CourseV2Service $service
@@ -44,7 +44,7 @@ class CourseV2Controller extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get one course
      *
      * @param $course
      * @param CourseV2Service $service
@@ -55,6 +55,21 @@ class CourseV2Controller extends Controller
         return $this->response(
             message: self::SUCCESS_MESSAGE,
             data: $service->getOne($course)
+        );
+    }
+
+    /**
+     * Get assigned courses
+     *
+     * @param FilterAssignedCourseV2Request $request
+     * @param CourseV2Service $service
+     * @return JsonResponse
+     */
+    public function getAssigned(FilterAssignedCourseV2Request $request, CourseV2Service $service): JsonResponse
+    {
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->getAssigned($request->toDto())
         );
     }
 

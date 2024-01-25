@@ -4,10 +4,10 @@ namespace App\Http\Requests\CoursesV2;
 
 use App\Models\CourseV2;
 use Illuminate\Validation\Rule;
-use App\DTO\CoursesV2\CourseFilterPropsDto;
 use Illuminate\Foundation\Http\FormRequest;
+use App\DTO\CoursesV2\AssignedCourseFilterPropsDto;
 
-class FilterCourseV2Request extends FormRequest
+class FilterAssignedCourseV2Request extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,27 +18,27 @@ class FilterCourseV2Request extends FormRequest
     {
         return [
             'search' => 'nullable|string',
-            'profile_group_id' => 'nullable|int',
-            'position_id' => 'nullable|int',
+            'target',
             'type' => [Rule::in([CourseV2::AUTOMATIC_TYPE, CourseV2::INDIVIDUAL_TYPE, CourseV2::PURCHASED_TYPE])],
-            'for_sale' => 'nullable|in:0,1',
+            'curator_id' => 'int',
             'created_date' => 'string',
+            'stop_date' => 'string',
             'per_page' => 'int'
         ];
     }
 
     /**
-     * @return CourseFilterPropsDto
+     * @return AssignedCourseFilterPropsDto
      */
-    public function toDto(): CourseFilterPropsDto
+    public function toDto(): AssignedCourseFilterPropsDto
     {
-        return new CourseFilterPropsDto(
+        return new AssignedCourseFilterPropsDto(
             search: $this->get('search'),
-            profile_group_id: $this->get('profile_group_id'),
-            position_id: $this->get('position_id'),
+            target: $this->get('target'),
             type: $this->get('type'),
-            for_sale: $this->get('for_sale'),
+            curator_id: $this->get('curator_id'),
             created_date: $this->get('created_date'),
+            stop_date: $this->get('stop_date'),
             per_page: $this->get('per_page')
         );
     }

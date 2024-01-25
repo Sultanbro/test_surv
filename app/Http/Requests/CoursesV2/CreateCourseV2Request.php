@@ -58,7 +58,7 @@ class CreateCourseV2Request extends FormRequest
             // Step 3
             'type' => ['required', Rule::in([CourseV2::AUTOMATIC_TYPE, CourseV2::INDIVIDUAL_TYPE])],
             'targets' => 'array',
-            'targets.*.target_type' => ['required', Rule::in(CourseV2::TARGET_TYPES)],
+            'targets.*.target_type' => ['required', Rule::in(array_merge(CourseV2::TARGET_TYPES, [0 /* 0 -> ALL */]))],
             'targets.*.target_id' => 'required|int',
 
             // Step 4
@@ -66,8 +66,8 @@ class CreateCourseV2Request extends FormRequest
             'attempts' => 'required|int',
             'mix_questions' => 'required|int|in:0,1',
             'show_answers' => 'required|int|in:0,1',
-            'start' => 'required_if:type,2', // 2 -> Individual
-            'stop' => 'required_if:type,2', // 2 -> Individual
+            'start' => 'required_if:type,2', // 2 -> Individual type
+            'stop' => 'required_if:type,2', // 2 -> Individual type
 
             // Step 5
             'curator_id' => 'required',
