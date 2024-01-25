@@ -1204,7 +1204,7 @@ class KpiStatisticService
                         ->where('active', 1));
                 });
             })
-            ->firstOrFail();
+            ->first();
         dd($kpi);
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
