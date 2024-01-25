@@ -63,7 +63,16 @@
 				{{ numberToCurrency(row.value) + (row.index === 2 ? '%' : '') }}
 			</template>
 			<template #cell(4)="row">
-				{{ numberToCurrency(row.value) + (row.index === 2 ? '%' : '') }}
+				{{ numberToCurrency(row.value) + ([2,3].includes(row.index) ? '%' : '') }}
+				<img
+					v-if="row.index === 3"
+					v-b-popover.click.blur.html="`Рентабельность на сегодня`"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					alt="info icon"
+					tabindex="-1"
+					width="20"
+				>
 			</template>
 			<template #cell="row">
 				<template v-if="row.index === 2">
@@ -312,7 +321,7 @@ export default {
 		firstTable(){
 			const revenue = this.totalsSecond.revenue.predict
 			const exp = (this.totalsSecond.fot.sum + this.totalsSecond.fot.predict + this.totalsThird.fact.sum + this.totalsThird.fact.predict)
-			const expenses = (exp / this.daysPassed * this.daysInMonth) + Number(this.other)
+			const expenses = exp + Number(this.other)
 			const profit = revenue - expenses
 			const profitFact = Number(this.totalsSecond.revenue.predict) - Number(this.totalsSecond.fot.sum + this.totalsSecond.fot.predict) - this.totalsThird.plan - Number(this.other)
 			return [
@@ -334,15 +343,15 @@ export default {
 					revenue,
 					expenses,
 					profit,
-					revenue ? ((revenue - (Number(this.totalsSecond.fot.sum) / this.daysPassed * this.daysInMonth)) / revenue) * 100 : 0,
-					revenue ? (profitFact / revenue) * 100 : 0,
+					revenue ? ((revenue - (Number(this.totalsSecond.fot.sum) + Number(this.totalsSecond.fot.predict) )) / revenue) * 100 : 0,
+					profit / revenue,
 				],
 				[
 					'прочие затраты',
 					this.other,
 					'',
 					'',
-					'',
+					revenue ? (profitFact / revenue) * 100 : 0,
 				],
 				[
 					'',
