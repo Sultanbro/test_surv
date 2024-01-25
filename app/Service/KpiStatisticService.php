@@ -431,13 +431,13 @@ class KpiStatisticService
     public function fetchQuartalPremiums(Request $request): array
     {
         $all = $request->all();
-        $userId = $all['filters']['user_id'] ?? auth()->id();
+        $userId = $all['filters']['user_id'] ?? null;
 
         $quartalPremiums = $this->getQuartalPremiums($request);
         $users = [];
         $profileGroups = [];
         $positions = [];
-        $authUser = User::getUserById($userId);
+        $authUser = $userId ? User::getUserById($userId) : null;
 
         $read = $quartalPremiums->contains(fn($q) => in_array($userId, $q->read_by ?? []));
 
@@ -469,7 +469,8 @@ class KpiStatisticService
             }
 
             if ($quartalPremium->targetable_type == self::PROFILE_GROUP) {
-                $groupIds = $authUser->groups()->where('status', 'active')->get()->pluck('id')->toArray() ?? [];
+                $query = $authUser ? $authUser->groups() : ProfileGroup::query();
+                $groupIds = $query->where('status', 'active')->get()->pluck('id')->toArray() ?? [];
 
                 if (empty($groupIds)) {
                     continue;
@@ -479,7 +480,7 @@ class KpiStatisticService
             }
 
             if ($quartalPremium->targetable_type == self::POSITION) {
-                $positionId = $authUser->position->id ?? null;
+                $positionId = $authUser?->position->id ?? null;
 
                 if ($positionId == null) {
                     continue;
