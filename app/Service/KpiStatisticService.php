@@ -1179,7 +1179,7 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-//            ->where('created_at', '<=', $this->to)
+            ->where('created_at', '<=', $this->to)
             ->where(fn($query) => $query->whereNull('deleted_at')
                 ->orWhere(
                     fn($query) => $query->whereDate('deleted_at', '>', $this->from)
@@ -1205,7 +1205,7 @@ class KpiStatisticService
                 });
             })
             ->first();
-        dd($kpi);
+        dd($this->to);
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
             $payload = json_decode($kpi->histories_latest->payload, true);
