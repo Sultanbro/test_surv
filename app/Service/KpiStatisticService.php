@@ -431,7 +431,7 @@ class KpiStatisticService
     public function fetchQuartalPremiums(Request $request): array
     {
         $all = $request->all();
-        $userId = $all['filters']['user_id'];
+        $userId = $all['filters']['user_id'] ?? auth()->id();
 
         $quartalPremiums = $this->getQuartalPremiums($request);
         $users = [];
