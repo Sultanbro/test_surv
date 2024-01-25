@@ -1205,7 +1205,7 @@ class KpiStatisticService
                 });
             })
             ->firstOrFail();
-
+        dd($kpi);
         $kpi->kpi_items = [];
         if ($kpi->histories_latest) {
             $payload = json_decode($kpi->histories_latest->payload, true);
