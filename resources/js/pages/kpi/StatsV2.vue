@@ -344,8 +344,8 @@ export default {
 						query: this.searchText,
 					}
 				}).then(response => {
-					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
-					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+					this.quartal_users = response.data.data[0].map(res=> ({...res, expanded: false}))
+					this.quartal_groups = response.data.data[1].map(res=> ({...res, expanded: false}))
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
