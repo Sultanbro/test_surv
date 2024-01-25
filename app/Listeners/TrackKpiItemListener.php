@@ -45,6 +45,10 @@ class TrackKpiItemListener
                 'cell' => $data['cell'],
                 'method' => $data['method'],
                 'unit' => $data['unit'],
+                'common' => $data['common'],
+                'group_id' => $data['group_id'] ?? null,
+                'sum' => $data['sum'] ?? null,
+                'percent' => $data['percent'] ?? null
             ])
         ]);
     }
