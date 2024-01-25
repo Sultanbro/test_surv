@@ -440,7 +440,14 @@ class KpiStatisticService
         $positions = [];
         $authUser = $userId ? User::getUserById($userId) : null;
 
-        $groups = ProfileGroup::query()->where('status', 'active')->get();
+        $groups = ProfileGroup::query()
+            ->select([
+                DB::raw('profile_groups.*'),
+                DB::raw('group_user.status as status'),
+            ])
+            ->join('group_user', 'group_user.group_id', 'profile_groups.id')
+            ->distinct()
+            ->where('status', 'active')->get();
 
         $read = $quartalPremiums->contains(fn($q) => in_array($userId, $q->read_by ?? []));
 
