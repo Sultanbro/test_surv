@@ -19,4 +19,19 @@ class CentralCourse extends Model
     protected $fillable = [
         'tenant_id', 'cat_id', 'price', 'for_sale', 'author', 'slides', 'verified_at', 'verified_by'
     ];
+
+    public function tenantCourse()
+    {
+        return $this->hasOne(CourseV2::class);
+    }
+
+    public function tenantCourseItems()
+    {
+        return $this->hasManyThrough(CourseItemV2::class, CourseV2::class);
+    }
+
+    public function tenantCourseGrades()
+    {
+        return $this->hasManyThrough(CourseGradeV2::class, CourseV2::class);
+    }
 }

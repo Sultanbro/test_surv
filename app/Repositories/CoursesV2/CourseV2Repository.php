@@ -2,12 +2,13 @@
 
 namespace App\Repositories\CoursesV2;
 
-use App\DTO\CoursesV2\CourseFilterPropsDto;
-use App\DTO\CoursesV2\CoursePropsDto;
-use App\Models\CentralCourse;
+use App\DTO\CoursesV2\AssignedCourseFilterPropsDto;
 use App\Models\CourseV2 as Model;
-use App\Repositories\CoreRepository;
 use App\Traits\UploadFileS3;
+use App\Repositories\CoreRepository;
+use App\DTO\CoursesV2\CoursePropsDto;
+use App\DTO\CoursesV2\CourseFilterPropsDto;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
 * Класс для работы с Repository.
@@ -21,17 +22,18 @@ class CourseV2Repository extends CoreRepository
      *
      * @return string
      */
-    protected function getModelClass()
+    protected function getModelClass(): string
     {
         return Model::class;
     }
 
-    public function filter(CourseFilterPropsDto $dto)
+    public function filter(CourseFilterPropsDto $dto): LengthAwarePaginator
     {
         $query = $this->model()->query();
+
         if ($dto->search) $query->where('name', 'LIKE', '%' . $dto->search . '%');
-        if ($dto->profile_group_id) $query->where('');
-        if ($dto->position_id) $query->where('');
+        if ($dto->profile_group_id) $query->whereHas('groups', fn ($q) => $q->where('id', $dto->profile_group_id));
+        if ($dto->position_id) $query->whereHas('positions', fn ($q) => $q->where('id', $dto->position_id));
         if ($dto->type) $query->where('type', $dto->type);
         if ($dto->for_sale) $query->where('for_sale', $dto->for_sale);
         if ($dto->created_date) $query->whereDate('created_at', $dto->created_date);
@@ -73,8 +75,17 @@ class CourseV2Repository extends CoreRepository
             ]);
     }
 
-    public function getCentralCourse($centralCourseId)
+    public function filterAssigned(AssignedCourseFilterPropsDto $dto)
     {
-        return CentralCourse::query()->find($centralCourseId);
+        $query = $this->model()->query()->whereHas('targets');
+
+        if ($dto->search) $query->where('name', 'LIKE', '%' . $dto->search . '%');
+        if ($dto->target) {}//$query->whereHas('groups', fn ($q) => $q->where('id', $dto->profile_group_id));
+        if ($dto->curator_id) $query->whereHas('targetsPivot', fn ($q) => $q->where('curator_id', $dto->curator_id));
+        if ($dto->type) $query->where('type', $dto->type);
+        if ($dto->created_date) $query->whereDate('created_at', $dto->created_date);
+        if ($dto->stop_date) $query->whereDate('stop', $dto->stop_date);
+
+        return $query->paginate($dto->per_page ?? 10);
     }
 }
