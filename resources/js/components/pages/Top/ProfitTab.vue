@@ -63,9 +63,9 @@
 				{{ numberToCurrency(row.value) + (row.index === 2 ? '%' : '') }}
 			</template>
 			<template #cell(4)="row">
-				{{ numberToCurrency(row.value) + ([2,3].includes(row.index) ? '%' : '') }}
+				{{ numberToCurrency(row.value) + ([2,5].includes(row.index) ? '%' : '') }}
 				<img
-					v-if="row.index === 3"
+					v-if="row.index === 5"
 					v-b-popover.click.blur.html="`Рентабельность на сегодня`"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
@@ -143,7 +143,7 @@
 			<template #cell(fact)="row">
 				<div
 					class="ProfitTab-unpad"
-					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-good' : 'ProfitTab-bad']"
+					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-bad' : 'ProfitTab-good']"
 					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
@@ -152,7 +152,7 @@
 			<template #cell(plan)="row">
 				<div
 					class="ProfitTab-unpad"
-					:class="[row.item.name ? (row.item.fact < Number(row.item.plan) ? 'ProfitTab-bad' : 'ProfitTab-good') : '']"
+					:class="[row.item.name ? (row.item.fact < Number(row.item.plan) ? 'ProfitTab-good' : 'ProfitTab-bad') : '']"
 				>
 					{{ separateNumber(numberToCurrency(row.value)) }}
 				</div>
@@ -351,7 +351,7 @@ export default {
 					this.other,
 					'',
 					'',
-					revenue ? (profitFact / revenue) * 100 : 0,
+					'',
 				],
 				[
 					'',
@@ -365,7 +365,7 @@ export default {
 					'Profit FACT на сегодня',
 					Number(this.totalsSecond.revenue.now) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other),
 					'',
-					'',
+					revenue ? (profitFact / revenue) * 100 : 0,
 				],
 			]
 		},
