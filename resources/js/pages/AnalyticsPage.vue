@@ -60,37 +60,49 @@
 			</div>
 			<div
 				v-if="$laravel.is_admin"
-				class="col-2"
+				class="col-4 d-flex justify-end"
 			>
-				<button
-					v-if="noAnGroups.length"
-					class="btn btn-info rounded add-s"
-					title="Создать аналитику"
-					@click="showNoAn = true"
-				>
-					<i class="fa fa-plus-square" />
-				</button>
-
-				<button
-					v-if="table"
-					class="btn btn-info rounded add-s"
-					title="Архивировать"
-					@click="archive()"
-				>
-					<i class="fa fa-trash" />
-				</button>
-
-				<button
-					class="btn btn-info rounded add-s ml-2"
-					title="Восстановить из архива"
-					@click="showArchive = true"
-				>
-					<i class="fa fa-archive" />
-				</button>
+				<div v-click-outside="onClickControlsOutside">
+					<JobtronButton
+						class="ChatIcon-parent"
+						fade
+						small
+						@click="onClickAnControls"
+					>
+						<i
+							class="fa fa-bars"
+							style="font-size:14px"
+						/>
+					</JobtronButton>
+					<PopupMenu
+						v-if="isAnControls"
+					>
+						<div
+							v-if="noAnGroups.length"
+							class="PopupMenu-item"
+							@click="showNoAn = true"
+						>
+							<i class="fa fa-plus-square" /> Создать аналитику
+						</div>
+						<div
+							v-if="table"
+							class="PopupMenu-item"
+							@click="archive()"
+						>
+							<i class="fa fa-trash" /> Архивировать
+						</div>
+						<div
+							class="PopupMenu-item"
+							@click="showArchive = true"
+						>
+							<i class="fa fa-archive" /> Восстановить из архива
+						</div>
+					</PopupMenu>
+				</div>
 			</div>
 			<div
 				v-else
-				class="col-1"
+				class="col-4"
 			/>
 		</div>
 		<template v-if="!firstEnter">
@@ -305,6 +317,9 @@ import CallBase from '@/components/CallBase'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import TableDecomposition from '@/components/tables/TableDecomposition'
 import AnalyticsDetailes from '@/components/pages/AnalyticsPage/AnalyticsDetailes'
+import JobtronButton from '@ui/Button.vue'
+import PopupMenu from '@ui/PopupMenu.vue'
+
 import { useYearOptions } from '../composables/yearOptions'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
@@ -344,6 +359,8 @@ export default {
 		TableDecomposition,
 		TopGauges,
 		AnalyticsDetailes,
+		JobtronButton,
+		PopupMenu,
 	},
 	props: {
 		groups: {
@@ -408,6 +425,9 @@ export default {
 			showNoAn: false,
 			noAnGroups: [],
 			groupForCreate: null,
+
+			isAnControls: false,
+			anControlsTimeout: null,
 		}
 	},
 	computed: {
@@ -752,6 +772,20 @@ export default {
 		},
 		onOrderActivity(){
 			this.fetchData()
+		},
+
+		onClickAnControls(){
+			if(this.isAnControls){
+				this.isAnControls = false
+				return
+			}
+			this.anControlsTimeout = setTimeout(() => {
+				this.isAnControls = true
+			}, 300)
+		},
+		onClickControlsOutside(){
+			this.isAnControls = false
+			if(this.anControlsTimeout) clearTimeout(this.anControlsTimeout)
 		},
 	}
 }
