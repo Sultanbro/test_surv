@@ -65,7 +65,7 @@ class TopController extends Controller
     public function fetch(Request $request): JsonResponse
     {
         $date = Carbon::createFromDate(
-              year: $request->get("year")
+            year: $request->get("year")
             , month: $request->get("month")
             , day: 1)
             ->format('Y-m-d');
@@ -85,7 +85,7 @@ class TopController extends Controller
     public function getRentability(Request $request): array
     {
         return TopValue::getPivotRentability(
-              $request->get("year")
+            $request->get("year")
             , $request->get("month")
         );
     }
@@ -113,10 +113,10 @@ class TopController extends Controller
         $weeks = [];
 
         $start_week = 1;
-        if($days[0]->dayOfWeek == 1) $start_week = 0;
+        if ($days[0]->dayOfWeek == 1) $start_week = 0;
 
-        foreach($days as $key => $date) {
-            if($date->dayOfWeek == '1') {
+        foreach ($days as $key => $date) {
+            if ($date->dayOfWeek == '1') {
                 $start_week++;
             }
             $weeks[$start_week][] = $date;
@@ -132,17 +132,17 @@ class TopController extends Controller
         $total_row['План'] = 0;
         $total_row['Итого'] = 0;
 
-        foreach($weeks as $key => $week) {
-            $total_row['w'.$key] = 0;
+        foreach ($weeks as $key => $week) {
+            $total_row['w' . $key] = 0;
         }
 
-        foreach($days as $date) {
+        foreach ($days as $date) {
             $total_row[$date->format('d.m')] = 0;
         }
 
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
 
-        foreach($this->groups as $group_id) {
+        foreach ($this->groups as $group_id) {
             $group = ProfileGroup::find($group_id);
             $row = [];
 
@@ -152,7 +152,7 @@ class TopController extends Controller
                 $row["deleted_at"] = $firstDayNextMonth;
             }
 
-            if($group) {
+            if ($group) {
 
                 $row['Отдел'] = $group->name;
                 $row['group_id'] = $group->id;
@@ -169,18 +169,17 @@ class TopController extends Controller
                 $total_row['План'] += $plan;
 
 
-
-                foreach($weeks as $key => $week) {
+                foreach ($weeks as $key => $week) {
                     $xsum = 0;
-                    foreach($week as $date) {
+                    foreach ($week as $date) {
                         $row[$date->format('d.m')] = (int)$prs[$date->day];
-                        if((int)$prs[$date->day] > 0) $filled_days++;
+                        if ((int)$prs[$date->day] > 0) $filled_days++;
                         $sum += $prs[$date->day];
                         $total_row[$date->format('d.m')] += $prs[$date->day];
                         $xsum += $prs[$date->day];
                     }
-                    $row['w'. ($key)] = round($xsum);
-                    $total_row['w'. $key] += round($xsum);
+                    $row['w' . ($key)] = round($xsum);
+                    $total_row['w' . $key] += round($xsum);
                 }
 
 
@@ -193,14 +192,13 @@ class TopController extends Controller
                 $row['%'] = '';
                 $total_row['%'] = '';
 
-                if($filled_days > 0 && $plan > 0) {
+                if ($filled_days > 0 && $plan > 0) {
                     $row['+/-'] = (int)$sum / ($plan / $calendar_days * $filled_days) * 100;
-                    $row['+/-'] = (round($row['+/-'],1) - 100) . '%';
+                    $row['+/-'] = (round($row['+/-'], 1) - 100) . '%';
 
                     $row['%'] = ((int)$sum * 100) / $plan;
-                    $row['%'] = round($row['%'],1) . '%';
+                    $row['%'] = round($row['%'], 1) . '%';
                 }
-
 
 
                 array_push($week_proceeds['records'], $row);
@@ -224,9 +222,9 @@ class TopController extends Controller
             $editable_row['План'] = 0;
             $editable_row['Итого'] = 0;
 
-            foreach($weeks as $key => $week) {
+            foreach ($weeks as $key => $week) {
                 $sum = 0;
-                foreach($week as $date) {
+                foreach ($week as $date) {
                     $d = $cpo->where('date', $date->format('Y-m-d'))->first();
 
                     $val = $d ? (int)$d->value : 0;
@@ -236,8 +234,8 @@ class TopController extends Controller
                     $total_row[$date->format('d.m')] += $val;
                 }
 
-                $editable_row['group_id'] =  0 - $order;
-                $editable_row['w'. ($key)] = $sum;
+                $editable_row['group_id'] = 0 - $order;
+                $editable_row['w' . ($key)] = $sum;
 
             }
 
@@ -247,7 +245,7 @@ class TopController extends Controller
             $total_row['Итого'] += $editable_row['Итого'];
         }
 
-        foreach($days as $date) {
+        foreach ($days as $date) {
             $total_row[$date->format('d.m')] = (int)number_format($total_row[$date->format('d.m')], 0);
         }
 
@@ -436,7 +434,8 @@ class TopController extends Controller
     public function deleteGauge(Request $request): Response
     {
         TopValue::query()
-            ->find($request->all()['gauge']['id']);
+            ->find($request->all()['gauge']['id'])
+            ?->delete();
 
         return response()->noContent(200);
     }
