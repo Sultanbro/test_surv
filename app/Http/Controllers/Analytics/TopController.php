@@ -435,7 +435,7 @@ class TopController extends Controller
 
     public function deleteGauge(Request $request): Response
     {
-        dd($request->all());
+        dd($request->all()['gauge']['id']);
         TopValue::query()
             ->find($request->get('gauge.id'));
 
