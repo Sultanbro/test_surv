@@ -395,11 +395,6 @@ export default {
 			restore_group: null,
 			noan: false, // нет аналитики
 			dataLoaded: false,
-			list: [
-				{ name: 'John', id: 0 },
-				{ name: 'Joao', id: 1 },
-				{ name: 'Jean', id: 2 }
-			],
 
 			activities: [],
 			weeks: [],

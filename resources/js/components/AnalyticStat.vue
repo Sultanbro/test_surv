@@ -1,6 +1,9 @@
 <template>
 	<div class="AnalyticStat z-12 relative">
-		<div class="table-header">
+		<div
+			v-if="isMain && [5, 20641].includes(+$laravel.userId)"
+			class="table-header"
+		>
 			<input
 				v-model="coords"
 				type="text"
@@ -29,6 +32,7 @@
 		</div>
 
 		<div class="AnalyticStat-tables d-flex relative">
+			<!-- FirstHalf -->
 			<div
 				id="wow-table"
 				class="relative w551"
@@ -432,9 +436,24 @@
 							</td>
 						</template>
 					</tr>
+					<tr>
+						<td />
+						<td>
+							<div
+								class="AnalyticStat-addRow2"
+								@click="add_row(items.length - 1)"
+							>
+								<i class="fa fa-plus" />
+								добавить строку
+							</div>
+						</td>
+						<td />
+						<td />
+					</tr>
 				</table>
 			</div>
 
+			<!-- SecondHalf -->
 			<div
 				class="table-responsive"
 				@scroll="hideContextMenu"
@@ -1869,6 +1888,16 @@ export default {
 	&-contexts{
 		input{
 			width: 50px;
+		}
+	}
+
+	&-addRow2{
+		padding: 5px;
+		cursor: pointer;
+		font-size: 14px;
+		color: #777;
+		&:hover{
+			color: #000;
 		}
 	}
 }
