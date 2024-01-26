@@ -283,6 +283,7 @@ export default {
 				}, {
 					now: 0,
 					predict: 0,
+					total: 0,
 					lastRev: 0,
 					lastPositive: 0,
 					lastPositiveDate: 0,
