@@ -52,6 +52,7 @@
 			<div class="col-1">
 				<div
 					class="btn btn-primary rounded"
+					title="Обновить данные"
 					@click="fetchData()"
 				>
 					<i class="fa fa-redo-alt" />
@@ -62,16 +63,16 @@
 				class="col-2"
 			>
 				<button
-					v-if="!firstEnter && !dataLoaded"
+					v-if="noAnGroups.length"
 					class="btn btn-info rounded add-s"
 					title="Создать аналитику"
-					@click="add_analytics()"
+					@click="showNoAn = true"
 				>
 					<i class="fa fa-plus-square" />
 				</button>
 
 				<button
-					v-if="!noan"
+					v-if="table"
 					class="btn btn-info rounded add-s"
 					title="Архивировать"
 					@click="archive()"
@@ -260,6 +261,36 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<b-modal
+			v-model="showNoAn"
+			title="Создать аналитику"
+			size="lg"
+			class="modalle"
+			@ok="add_analytics()"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Отдел
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="groupForCreate"
+						class="form-control form-control-sm"
+					>
+						<option
+							v-for="(group, key) in noAnGroups"
+							:key="key"
+							:value="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</b-modal>
 	</div>
 </template>
 
@@ -370,6 +401,10 @@ export default {
 				analytics: false,
 			},
 			reportCards: [],
+
+			showNoAn: false,
+			noAnGroups: [],
+			groupForCreate: null,
 		}
 	},
 	computed: {
@@ -541,7 +576,9 @@ export default {
 		async fetchGroups(request){
 			try{
 				const {is_active, is_archived } = await API.fetchAnalyticsGroupsV2(request)
-				this.ggroups = Array.isArray(is_active) ? is_active : Object.values(is_active)
+				const groups = Array.isArray(is_active) ? is_active : Object.values(is_active)
+				this.ggroups = groups.filter(group => group.has_analytics)
+				this.noAnGroups = groups.filter(group => !group.has_analytics)
 				this.archived_groups = Array.isArray(is_archived) ? is_archived : Object.values(is_archived)
 				this.ready.groups = true
 			}
@@ -634,8 +671,14 @@ export default {
 				await API.createAnalyticsGroup({
 					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 					year: this.currentYear,
-					group_id: this.currentGroupId,
+					group_id: this.groupForCreate,
 				})
+				const index = this.noAnGroups.findIndex(group => group.id === this.groupForCreate)
+				if(~index){
+					const [group] = this.noAnGroups.splice(index, 1)
+					group.has_analytics = 1
+					this.ggroups.push(group)
+				}
 				this.$toast.success('Аналитика для группы добавлена')
 				this.fetchData()
 			}
