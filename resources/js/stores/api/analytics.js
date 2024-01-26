@@ -214,21 +214,24 @@ export async function fetchDecompositionsV2(request){
 
 	if(!data.data?.records) throw new Error('AnalyticsV2: no decompositions')
 	const records = Array.isArray(data.data.records) ? data.data.records : Object.values(data.data.records)
-	return records.reduce((result, rec) => {
+
+	const result = records.reduce((result, rec) => {
 		if(!rec.values || Array.isArray(rec.values)){
 			rec.values = getEmptyDecompositionValues(request.year, request.month)
 		}
 		if(rec.group_id == data.data.group_id) result.push({
+			...rec.values,
 			id: rec.id,
 			name: rec.name,
 			// eslint-disable-next-line
 			group_id: rec.group_id,
 			date: rec.date,
 			editable: false,
-			...rec.values,
 		})
 		return result
 	}, [])
+
+	return result
 }
 
 export async function fetchPerformancesV2(request){

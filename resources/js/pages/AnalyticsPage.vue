@@ -193,6 +193,7 @@
 								:decompositions="decompositions"
 								:group-id="currentGroupId"
 								class="pt-4"
+								@update="onUpdateDecomposition"
 							/>
 							<b-skeleton-table
 								v-else
@@ -545,6 +546,17 @@ export default {
 			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
 		},
 
+		async onUpdateDecomposition(){
+			const loader = this.$loading.show()
+			const request = {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroupId,
+			}
+			this.fetchDecompositions(request)
+			loader.hide()
+		},
+
 		async fetchActivities(request){
 			try{
 				const {activities, weeks} = await API.fetchActivitiesV2(request)
@@ -560,7 +572,8 @@ export default {
 
 		async fetchDecompositions(request){
 			try{
-				this.decompositions = await API.fetchDecompositionsV2(request)
+				const dec = await API.fetchDecompositionsV2(request)
+				this.decompositions = dec
 				this.ready.decompositions = true
 			}
 			catch(error){

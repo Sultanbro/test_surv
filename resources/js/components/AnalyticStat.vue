@@ -1953,7 +1953,7 @@ export default {
 	&-label{
 		display: block;
 	}
-	&-input{}
+	// &-input{}
 
 	// AAAAAAAAA Ебучите селекторы по тэгам!!!
 	.AccessSelectListItem-input{
