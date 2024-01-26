@@ -96,7 +96,10 @@
 		<template v-if="!firstEnter">
 			<template v-if="hasPremission">
 				<template v-if="true">
-					<div class="AnalyticsPage-header wrap mb-4">
+					<div
+						v-if="isMain"
+						class="AnalyticsPage-header wrap mb-4"
+					>
 						<TopGauges
 							v-if="ready.performances"
 							:key="123"
@@ -408,7 +411,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(usePortalStore, ['portal']),
+		...mapState(usePortalStore, ['portal', 'isMain']),
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
