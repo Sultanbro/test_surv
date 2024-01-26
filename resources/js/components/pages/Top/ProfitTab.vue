@@ -91,7 +91,7 @@
 			<template #cell(revenue)="row">
 				<div
 					class=""
-					:title="`Прогноз: ${row.value.predict}`"
+					:title="`Всего: ${row.value.total}, Прогноз: ${row.value.predict}, Последння дата: ${row.value.lastPositiveDate}, За последнюю дату: ${row.value.lastPositive}, За ${daysPassed}: ${row.value.lastRev}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.now)) }}
 				</div>
@@ -275,10 +275,17 @@ export default {
 				revenue: this.secondTable.reduce((result, row) => {
 					result.now += Number(row.revenue.now)
 					result.predict += Number(row.revenue.predict)
+					result.total += Number(row.revenue.total)
+					result.lastRev += Number(row.revenue.lastRev)
+					result.lastPositive += Number(row.revenue.lastPositive)
+					if(Number(row.revenue.lastPositiveDate) > result.lastPositiveDate) result.lastPositiveDate = Number(row.revenue.lastPositiveDate)
 					return result
 				}, {
 					now: 0,
 					predict: 0,
+					lastRev: 0,
+					lastPositive: 0,
+					lastPositiveDate: 0,
 				}),
 				fot: this.secondTable.reduce((result, row) => {
 					result.sum += row.fot.sum
@@ -319,11 +326,11 @@ export default {
 			}
 		},
 		firstTable(){
-			const revenue = this.totalsSecond.revenue.predict
+			const revenue = this.totalsSecond.revenue.total
 			const exp = (this.totalsSecond.fot.sum + this.totalsSecond.fot.predict + this.totalsThird.fact.sum + this.totalsThird.fact.predict)
 			const expenses = exp + Number(this.other)
 			const profit = revenue - expenses
-			const profitFact = Number(this.totalsSecond.revenue.predict) - Number(this.totalsSecond.fot.sum + this.totalsSecond.fot.predict) - this.totalsThird.plan - Number(this.other)
+			const profitFact = Number(this.totalsSecond.revenue.total) - Number(this.totalsSecond.fot.sum + this.totalsSecond.fot.predict) - this.totalsThird.plan - Number(this.other)
 			return [
 				[
 					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
@@ -344,7 +351,7 @@ export default {
 					expenses,
 					profit,
 					revenue ? ((revenue - (Number(this.totalsSecond.fot.sum) + Number(this.totalsSecond.fot.predict) )) / revenue) * 100 : 0,
-					profit / revenue,
+					revenue ? profit / revenue * 100 : 0,
 				],
 				[
 					'прочие затраты',
@@ -412,8 +419,12 @@ export default {
 					id: i,
 					name: 'Отдел ' + i,
 					revenue: {
+						lastRev: 0,
+						lastPositive: 0,
+						lastPositiveDate: 0,
 						now: 100000,
-						predict: 200000,
+						predict: 100000,
+						total: 200000,
 					},
 					fot: {
 						sum: 100000,
@@ -476,19 +487,32 @@ export default {
 			})
 
 			const calcRevenue = (group, month) => {
-				let lastRev = 0
 				const result = {
+					lastRev: 0,
+					lastPositive: 0,
+					lastPositiveDate: 0,
 					now: 0,
 					predict: 0,
+					total: 0,
 				}
 				for(let i = 1; i <= this.daysPassed; ++i){
 					const field = `${i > 9 ? i : '0' + i}.${month}`
-					lastRev = Number(group[field] || 0)
-					result.now += lastRev
-					result.predict += lastRev
+					result.lastRev = Number(group[field] || 0)
+					if(result.lastRev > 0) {
+						result.lastPositive = result.lastRev
+						result.lastPositiveDate = i
+					}
+					result.now += result.lastRev
+					result.total += result.lastRev
+				}
+				result.last = result.lastRev
+				if(!result.lastRev) {
+					result.now += result.lastPositive
+					result.total += result.lastPositive
 				}
 				for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
-					result.predict += lastRev
+					result.predict += result.lastPositive
+					result.total += result.lastPositive
 				}
 				return result
 			}
