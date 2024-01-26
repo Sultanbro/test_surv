@@ -324,7 +324,7 @@
 												>
 													Формула с 1 по 31
 												</li>
-												<li
+												<!-- <li
 													v-if="['name'].includes(field.key)"
 													@click="add_inhouse(item[field.key])"
 													@mouseover="toggleContext2(item[field.key], '')"
@@ -337,7 +337,7 @@
 													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Отсутствие минут remote
-												</li>
+												</li> -->
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_salary(item[field.key])"
