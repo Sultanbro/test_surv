@@ -547,7 +547,7 @@
 							class="contextor"
 						>
 							<ul class="types">
-								<li>
+								<!-- <li>
 									<div class="d-flex decimals">
 										<p>Дробные</p>
 										<input
@@ -556,7 +556,7 @@
 											@change="setDecimals(item[field.key])"
 										>
 									</div>
-								</li>
+								</li> -->
 								<li @click="change_type('initial', i_index, field.key)">
 									Обычный
 								</li>
@@ -1898,6 +1898,12 @@ export default {
 		color: #777;
 		&:hover{
 			color: #000;
+		}
+	}
+
+	.contextor{
+		input{
+			background-color: #fff !important;
 		}
 	}
 }
