@@ -328,10 +328,11 @@ export default {
 		},
 		firstTable(){
 			const revenue = this.totalsSecond.revenue.total
+			const revenueNow = this.totalsSecond.revenue.now
 			const exp = (this.totalsSecond.fot.sum + this.totalsSecond.fot.predict + this.totalsThird.fact.sum + this.totalsThird.fact.predict)
 			const expenses = exp + Number(this.other)
 			const profit = revenue - expenses
-			const profitFact = Number(this.totalsSecond.revenue.total) - Number(this.totalsSecond.fot.sum + this.totalsSecond.fot.predict) - this.totalsThird.plan - Number(this.other)
+			const profitFact = Number(this.totalsSecond.revenue.now) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other)
 			return [
 				[
 					'Ориентир ' + this.$moment([this.year, this.month]).format('MMMM'),
@@ -371,9 +372,9 @@ export default {
 				[
 					'',
 					'Profit FACT на сегодня',
-					Number(this.totalsSecond.revenue.now) - Number(this.totalsSecond.fot.sum) - this.totalsThird.fact.sum - Number(this.other),
+					profitFact,
 					'',
-					revenue ? (profitFact / revenue) * 100 : 0,
+					revenueNow ? (profitFact / revenueNow) * 100 : 0,
 				],
 			]
 		},
