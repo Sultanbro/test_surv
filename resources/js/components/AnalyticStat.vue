@@ -109,7 +109,7 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup) || field.key == 'name' && [2].includes(i_index)">
+								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup)/*  || field.key == 'name' && [2].includes(i_index) */">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"
@@ -416,7 +416,7 @@
 											v-else
 											type="text"
 											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
+											:value="item[field.key].show_value ? item[field.key].show_value : ''"
 											class="in-cell"
 										>
 
@@ -510,7 +510,7 @@
 										v-else-if="i_index != 0"
 										type="text"
 										class="in-cell"
-										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')"
+										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + (item[field.key].sign || '') : '')"
 									>
 									<input
 										v-else
