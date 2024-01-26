@@ -280,6 +280,14 @@
 													@mouseover="toggleContext2(item[field.key], 'hours')"
 												>
 													Часы из табеля
+													<img
+														v-b-popover.hover.html="`Выберите должности часы которых будут считаться`"
+														src="/images/dist/profit-info.svg"
+														class="img-info"
+														alt="info icon"
+														tabindex="-1"
+														width="20"
+													>
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
@@ -381,7 +389,10 @@
 															/>
 															<span v-else>В отделе нет сотрудников с должностями</span>
 														</div>
-														<label class="AnContext2-row AnContext2-field">
+														<label
+															v-if="isMain && [5].includes(+$laravel.userId)"
+															class="AnContext2-row AnContext2-field"
+														>
 															<div class="AnContext2-label">Делить на</div>
 															<input
 																v-model="hoursDivider"
@@ -563,9 +574,9 @@
 								<li @click="change_type('formula', i_index, field.key)">
 									Формула
 								</li>
-								<li @click="add_formula_1_31(item[field.key])">
+								<!-- <li @click="add_formula_1_31(item[field.key])">
 									Формула с 1 по 31
-								</li>
+								</li> -->
 							</ul>
 						</div>
 					</template>
@@ -648,9 +659,7 @@
 		>
 			<div class="row">
 				<div class="col-12">
-					<p>Пишите ряд для выбора в фигурных скобках, 5 ряд это - {5}</p>
-					<p>Пример формулы: {5} * 12 / 1000</p>
-					<p>Станет        : E5  * 12 / 1000</p>
+					<p>Пример формулы: (E5 - E4) * 12 / 1000</p>
 				</div>
 				<div class="col-12 mb-3">
 					<input
@@ -659,7 +668,7 @@
 						class="form-control form-control-sm"
 					>
 				</div>
-				<div class="col-4">
+				<!-- <div class="col-4">
 					Количество цифр после запятой
 				</div>
 				<div class="col-8">
@@ -668,7 +677,7 @@
 						type="text"
 						class="form-control form-control-sm"
 					>
-				</div>
+				</div> -->
 			</div>
 		</b-modal>
 
@@ -1508,26 +1517,34 @@ export default {
 		},
 
 		setDecimals(item) {
-			this.axios.post('/timetracking/analytics/set-decimals', {
-				date: this.$moment(
-					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-					'MMMM YYYY'
-				).format('YYYY-MM-DD'),
-				row_id: item.row_id,
-				column_id: item.column_id,
-				decimals: item.decimals
-			}).then(() => {
-				this.$toast.success('Сохранено');
-				this.hideContextMenu();
-			}).catch(error => {
-				this.$toast.error('Не сохранено');
-				console.error(error)
-			});
+			const rowId = item.row_id
+			const row = this.table.find(row => row.name.row_id === rowId)
+			const dec = item.decimals
+			if(!row) return
+			const requests = []
+			Object.keys(row).forEach(key => {
+				const cell = row[key]
+				requests.push(
+					this.axios.post('/timetracking/analytics/set-decimals', {
+						date: this.$moment(
+							`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+							'MMMM YYYY'
+						).format('YYYY-MM-DD'),
+						row_id: rowId,
+						column_id: cell.column_id,
+						decimals: dec,
+					})
+				)
+			})
+			Promise.allSettled(requests).then(() => {
+				this.$toast.success('Сохранено')
+				this.hideContextMenu()
+			})
 		},
 
 		save_formula_1_31() {
 			// let rows = [];
-			let text =  this.formula_1_31
+			let text =  this.formula_1_31.replace(/[a-z]+([\d])/gi, '{$1}')
 
 			this.items.forEach((item, index) => {
 				index++;
