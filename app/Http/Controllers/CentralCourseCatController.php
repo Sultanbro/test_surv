@@ -2,84 +2,85 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CoursesV2\CentralCourseCatRequest;
+use App\Service\CourseV2\CentralCourseCatService;
+use Illuminate\Http\JsonResponse;
 use App\Models\CentralCourseCat;
-use Illuminate\Http\Request;
 
 class CentralCourseCatController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param CentralCourseCatService $service
+     * @return JsonResponse
      */
-    public function index()
+    public function getAll(CentralCourseCatService $service): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->getAll()
+        );
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param CentralCourseCatRequest $request
+     * @param CentralCourseCatService $service
+     * @return JsonResponse
      */
-    public function create()
+    public function create(CentralCourseCatRequest $request, CentralCourseCatService $service): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\CentralCourseCat  $centralCourseCat
-     * @return \Illuminate\Http\Response
-     */
-    public function show(CentralCourseCat $centralCourseCat)
-    {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->create($request->validated())
+        );
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\CentralCourseCat  $centralCourseCat
-     * @return \Illuminate\Http\Response
+     * @param CentralCourseCat $category
+     * @return JsonResponse
      */
-    public function edit(CentralCourseCat $centralCourseCat)
+    public function getOne(CentralCourseCat $category): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $category
+        );
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CentralCourseCat  $centralCourseCat
-     * @return \Illuminate\Http\Response
+     * @param CentralCourseCatRequest $request
+     * @param CentralCourseCat $category
+     * @param CentralCourseCatService $service
+     * @return JsonResponse
      */
-    public function update(Request $request, CentralCourseCat $centralCourseCat)
+    public function update(CentralCourseCatRequest $request, CentralCourseCat $category, CentralCourseCatService $service): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->update($category, $request->validated())
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\CentralCourseCat  $centralCourseCat
-     * @return \Illuminate\Http\Response
+     * @param CentralCourseCat $category
+     * @param CentralCourseCatService $service
+     * @return JsonResponse
      */
-    public function destroy(CentralCourseCat $centralCourseCat)
+    public function destroy(CentralCourseCat $category, CentralCourseCatService $service): JsonResponse
     {
-        //
+        $service->delete($category);
+
+        return $this->response(
+            message: self::SUCCESS_MESSAGE
+        );
     }
 }
