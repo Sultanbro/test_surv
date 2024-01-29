@@ -153,9 +153,18 @@ export default {
 				const val = event.target.value;
 				if(err === 'email'){
 					!this.validateEmail(val) ? this.$emit('valid_change', {name: 'email', bool: false}) : this.$emit('valid_change', {name: 'email', bool: true});
+					return
 				}
 				if(err === 'position'){
 					!val.length ? this.$emit('valid_change', {name: 'position', bool: false}) : this.$emit('valid_change', {name: 'position', bool: true});
+					return
+				}
+				if(err === 'workchart'){
+					this.$emit('valid_change', {
+						name: 'workchart',
+						bool: !!this.workChartId,
+					})
+					return
 				}
 				if(err !== 'email' && err !== 'position'){
 					val.length < 2 ? this.$emit('valid_change', {name: err, bool: false}) : this.$emit('valid_change', {name: err, bool: true});
@@ -206,7 +215,11 @@ export default {
 		},
 		onChangeCity(city){
 			this.$emit('changeCity', city)
-		}
+		},
+		onChangeChart(workChartId){
+			this.$emit('selectWorkChart', workChartId)
+			this.checkValid({target: {value: ''}}, 'workchart')
+		},
 	}
 }
 </script>
@@ -584,12 +597,14 @@ export default {
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочий график</label>
+				>
+					Рабочий график <span class="red">*</span>
+				</label>
 				<div class="col-sm-8">
 					<b-form-select
 						v-model="workChartId"
 						name="work-chart"
-						@change="$emit('selectWorkChart', workChartId)"
+						@change="onChangeChart(workChartId)"
 					>
 						<b-form-select-option
 							disabled
