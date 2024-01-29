@@ -3,13 +3,14 @@
 namespace App\Repositories\CoursesV2;
 
 use App\DTO\CoursesV2\CoursePropsDto;
-use App\Models\CentralCourse as Model;
+use App\Models\CentralCourseCat;
+use App\Models\CentralCourseCat as Model;
 use App\Repositories\CoreRepository;
 
 /**
  * Класс для работы с Repository.
  */
-class CentralCourseRepository extends CoreRepository
+class CentralCourseCatRepository extends CoreRepository
 {
     /**
      * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
@@ -26,17 +27,27 @@ class CentralCourseRepository extends CoreRepository
         return $this->model()->query()->paginate(10);
     }
 
-    public function createCourse(CoursePropsDto $dto)
+    public function createCat(array $data)
     {
         return $this->model()
             ->query()
             ->create([
-                'tenant_id' => tenant('id'),
-                'cat_id' => $dto->cat_id,
-                'price' => $dto->price,
-                'for_sale' => $dto->for_sale,
-                'author' => $dto->author,
-                'slides' => json_encode($dto->slides),
+                'name' => $data['name'],
+                'order' => $data['order']
             ]);
+    }
+
+    public function updateCat(CentralCourseCat $category, $data)
+    {
+        return $category->update([
+            'name' => $data['name'],
+            'order' => $data['order'],
+        ]);
+    }
+
+    public function delete(CentralCourseCat $category)
+    {
+        $category->delete();
+        return true;
     }
 }
