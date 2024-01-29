@@ -686,7 +686,7 @@ export default {
 			}
 		}
 	}
-	&-editableValue{}
+	// &-editableValue{}
 	&-input{
 		display: none;
 		width: 150px;

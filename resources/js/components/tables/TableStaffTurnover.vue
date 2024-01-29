@@ -156,6 +156,7 @@ export default {
     background: none;
     border: none;
     text-align: center;
+    appearance: textfield;
     -moz-appearance: textfield;
     font-size: .8rem;
     font-weight: normal;

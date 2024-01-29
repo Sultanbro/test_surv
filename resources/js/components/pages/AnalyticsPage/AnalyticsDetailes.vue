@@ -7,6 +7,17 @@
 			@change="showSubTab"
 		>
 			<template #tabs-end>
+				<JobtronButton
+					class="ChatIcon-parent"
+					fade
+					small
+					@click="add_activity()"
+				>
+					<i
+						class="fa fa-plus-square"
+						style="font-size:14px"
+					/>
+				</JobtronButton>
 				<div
 					v-click-outside="onClickOutside"
 					class="AnalyticsDetailes-controls ml-a"

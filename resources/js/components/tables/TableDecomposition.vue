@@ -1,168 +1,176 @@
 <template>
 	<div class="TableDecomposition mb-3">
-		<div class="table-container">
-			<table class="TableDecomposition-table table table-bordered table-responsive">
-				<thead class="TableDecomposition-thead">
-					<tr class="TableDecomposition-tr">
-						<th class="TableDecomposition-th b-table-sticky-column text-left">
-							<div class="wd TableDecomposition-header">
-								Декомпозиция на месяц
-							</div>
-						</th>
-						<th
-							class="TableDecomposition-th text-center px-1 border-r-2"
-							colspan="2"
-						>
-							<b>Итого</b>
-						</th>
-						<th
-							v-for="day in month.daysInMonth"
-							:key="day"
-							class="TableDecomposition-th text-center px-1 border-r-2"
-							:class="{
-								'weekend' : is_weekday[day],
-							}"
-							colspan="2"
-						>
-							<div>{{ day }}</div>
-						</th>
-					</tr>
-					<tr class="TableDecomposition-tr TableDecomposition-subhead">
-						<th class="TableDecomposition-th b-table-sticky-column text-left" />
-						<th class="TableDecomposition-th">
-							план
-						</th>
-						<th class="TableDecomposition-th">
-							факт
-						</th>
-						<template v-for="day in month.daysInMonth">
+		<template v-if="hasItems">
+			<div class="table-container">
+				<table class="TableDecomposition-table table table-bordered table-responsive">
+					<thead class="TableDecomposition-thead">
+						<tr class="TableDecomposition-tr">
+							<th class="TableDecomposition-th b-table-sticky-column text-left">
+								<div class="wd TableDecomposition-header">
+									Декомпозиция на месяц
+								</div>
+							</th>
 							<th
-								:key="day"
-								class="TableDecomposition-th"
+								class="TableDecomposition-th text-center px-1 border-r-2"
+								colspan="2"
 							>
+								<b>Итого</b>
+							</th>
+							<th
+								v-for="day in month.daysInMonth"
+								:key="day"
+								class="TableDecomposition-th text-center px-1 border-r-2"
+								:class="{
+									'weekend' : is_weekday[day],
+								}"
+								colspan="2"
+							>
+								<div>{{ day }}</div>
+							</th>
+						</tr>
+						<tr class="TableDecomposition-tr TableDecomposition-subhead">
+							<th class="TableDecomposition-th b-table-sticky-column text-left" />
+							<th class="TableDecomposition-th">
 								план
 							</th>
-							<th
-								:key="day + 'a'"
-								class="TableDecomposition-th border-r-2"
-							>
+							<th class="TableDecomposition-th">
 								факт
 							</th>
-						</template>
-					</tr>
-				</thead>
-				<tbody
-					:key="updateKey"
-					class="TableDecomposition-tbody"
-				>
-					<tr
-						v-for="(item, index) in items"
-						:key="index"
-						class="TableDecomposition-tr"
+							<template v-for="day in month.daysInMonth">
+								<th
+									:key="day"
+									class="TableDecomposition-th"
+								>
+									план
+								</th>
+								<th
+									:key="day + 'a'"
+									class="TableDecomposition-th border-r-2"
+								>
+									факт
+								</th>
+							</template>
+						</tr>
+					</thead>
+					<tbody
+						:key="updateKey"
+						class="TableDecomposition-tbody"
 					>
-						<!-- name -->
-						<td
-							class="TableDecomposition-td b-table-sticky-column text-left px-2 t-name"
-							:title="item.id"
+						<tr
+							v-for="(item, index) in items"
+							:key="index"
+							class="TableDecomposition-tr"
 						>
-							<div class="wd d-flex align-items-center">
-								<input
-									v-model="item.name"
-									type="text"
-									class="TableDecomposition-inputName w-250 text-left"
-									placeholder="напишите название активности"
-									@change="updateSettings($event, item, index, 'name')"
+							<!-- name -->
+							<td
+								class="TableDecomposition-td b-table-sticky-column text-left px-2 t-name"
+								:title="item.id"
+							>
+								<div class="wd d-flex align-items-center">
+									<input
+										v-model="item.name"
+										type="text"
+										class="TableDecomposition-inputName w-250 text-left"
+										placeholder="напишите название активности"
+										@change="updateSettings($event, item, index, 'name')"
+									>
+									<i
+										v-if="item.id"
+										class="fa fa-pencil pointer mr-2"
+										title="Поставить план"
+										@click="showModal(index)"
+									/>
+									<i
+										class="fa fa-trash pointer"
+										title="Удалить строку"
+										@click="deleteRecord(item.id, index)"
+									/>
+								</div>
+							</td>
+							<!-- total_plan -->
+							<td class="TableDecomposition-td">
+								{{ Number(item.total_plan).toFixed(0) }}
+							</td>
+							<!-- total_fact -->
+							<td class="TableDecomposition-td border-r-2">
+								{{ Number(item.total_fact).toFixed(0) }}
+							</td>
+							<template v-for="day in month.daysInMonth">
+								<td
+									v-if="item.editable"
+									:key="day"
+									class="TableDecomposition-td px-0 day-minute text-center"
+									:class="{
+										'weekend' : is_weekday[day],
+									}"
 								>
-								<i
-									class="fa fa-pencil pointer mr-2"
-									title="Поставить план"
-									@click="showModal(index)"
-								/>
-								<i
-									class="fa fa-trash pointer"
-									title="Удалить строку"
-									@click="deleteRecord(item.id, index)"
-								/>
-							</div>
-						</td>
-
-						<!-- total_plan -->
-						<td class="TableDecomposition-td">
-							{{ Number(item.total_plan).toFixed(0) }}
-						</td>
-
-						<!-- total_fact -->
-						<td class="TableDecomposition-td border-r-2">
-							{{ Number(item.total_fact).toFixed(0) }}
-						</td>
-						<template v-for="day in month.daysInMonth">
-							<td
-								v-if="item.editable"
-								:key="day"
-								class="TableDecomposition-td px-0 day-minute text-center"
-								:class="{
-									'weekend' : is_weekday[day],
-								}"
-							>
-								<input
-									v-model="item[day].plan"
-									type="number"
-									class="TableDecomposition-inputNumber"
-									@change="updateSettings($event, item, index, day)"
+									<input
+										v-model="item[day].plan"
+										type="number"
+										class="TableDecomposition-inputNumber"
+										@change="updateSettings($event, item, index, day)"
+									>
+								</td>
+								<td
+									v-else
+									:key="day + 'a'"
+									class="TableDecomposition-td px-0 day-minute text-center"
+									:class="{
+										'weekend' : is_weekday[day],
+									}"
+									@click="editMode(item)"
 								>
-							</td>
-							<td
-								v-else
-								:key="day + 'a'"
-								class="TableDecomposition-td px-0 day-minute text-center"
-								:class="{
-									'weekend' : is_weekday[day],
-								}"
-								@click="editMode(item)"
-							>
-								<div>{{ item[day].plan }}</div>
-							</td>
-							<td
-								v-if="item.editable"
-								:key="day + 'b'"
-								class="TableDecomposition-td px-0 day-minute text-center border-r-2"
-								:class="{
-									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
-									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
-									'weekend' : is_weekday[day],
-								}"
-							>
-								<input
-									v-model="item[day].fact"
-									type="number"
-									class="TableDecomposition-inputNumber"
-									@change="updateSettings($event, item, index, day)"
+									<div>{{ item[day].plan }}</div>
+								</td>
+								<td
+									v-if="item.editable"
+									:key="day + 'b'"
+									class="TableDecomposition-td px-0 day-minute text-center border-r-2"
+									:class="{
+										'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
+										'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
+										'weekend' : is_weekday[day],
+									}"
 								>
-							</td>
-							<td
-								v-else
-								:key="day + 'c'"
-								class="TableDecomposition-td px-0 day-minute text-center border-r-2"
-								:class="{
-									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
-									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
-									'weekend' : is_weekday[day],
-								}"
-								@click="editMode(item)"
-							>
-								<div>{{ item[day].fact }}</div>
-							</td>
-						</template>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<button
-			class="btn btn-success"
-			@click="addRecord"
+									<input
+										v-model="item[day].fact"
+										type="number"
+										class="TableDecomposition-inputNumber"
+										@change="updateSettings($event, item, index, day)"
+									>
+								</td>
+								<td
+									v-else
+									:key="day + 'c'"
+									class="TableDecomposition-td px-0 day-minute text-center border-r-2"
+									:class="{
+										'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
+										'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
+										'weekend' : is_weekday[day],
+									}"
+									@click="editMode(item)"
+								>
+									<div>{{ item[day].fact }}</div>
+								</td>
+							</template>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<JobtronButton
+				small
+				@click="addRecord"
+			>
+				+ Добавить строку
+			</JobtronButton>
+		</template>
+		<JobtronButton
+			v-else
+			small
+			@click="addDecomposition"
 		>
-			+ Добавить
-		</button>
+			Добавить декомпозицию
+		</JobtronButton>
 
 		<b-modal
 			ref="change-plan-modal"
@@ -217,9 +225,13 @@
 
 <script>
 /* eslint-disable camelcase */
+import JobtronButton from '@ui/Button.vue'
 
 export default {
 	name: 'TableDecomposition',
+	components: {
+		JobtronButton,
+	},
 	props: {
 		month: {
 			type: Object,
@@ -247,6 +259,7 @@ export default {
 				index: null,
 			},
 			updateKey: 0,
+			newId: 0,
 		};
 	},
 	computed: {
@@ -276,10 +289,13 @@ export default {
 					...cellValues,
 				}
 			})
+		},
+		hasItems(){
+			return this.items.length
 		}
 	},
 	watch: {
-		data: function() {
+		decompositions() {
 			this.fetchData();
 		},
 	},
@@ -306,7 +322,7 @@ export default {
 		},
 
 		fetchData() {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show()
 
 			this.records = JSON.parse(JSON.stringify(this.decompositions))
 
@@ -314,12 +330,13 @@ export default {
 		},
 
 		addRecord() {
-			let cells = {
+			const cells = {
 				name:'',
 				plan: 0,
 				editable: false,
 				total_plan: '',
 				total_fact: '',
+				id: --this.newId
 			};
 
 			for (let i = 1; i <= this.month.daysInMonth; i++) {
@@ -329,10 +346,19 @@ export default {
 				}
 			}
 
-			this.items.push(cells)
+			this.records.push(cells)
 			++this.updateKey
 
 			this.$toast.info('Пункт добавлен')
+		},
+
+		addDecomposition(){
+			this.addRecord()
+			this.updateSettings(undefined, {
+				...this.items[0],
+				name: 'напишите название активности',
+			}, 0)
+			this.records = this.records.slice()
 		},
 
 		updateSettings(e, data, index) {
@@ -340,16 +366,16 @@ export default {
 
 			let post_data = {
 				group_id: this.groupId,
-				id: data.id,
+				id: data.id > 0 ? data.id : null,
 				name: data.name,
 				index: index,
 				values: this.items[index],
 			};
 
-			this.reqSave(post_data);
+			this.reqSave(post_data, data.id);
 		},
 
-		reqSave(post_data) {
+		reqSave(post_data/* , id */) {
 			const url = '/timetracking/analytics/decomposition/save';
 			const loader = this.$loading.show();
 			const year = new Date().getFullYear();
@@ -359,10 +385,10 @@ export default {
 				'MMMM YYYY'
 			).format('YYYY-MM-DD');
 
-			this.axios.post(url, post_data).then((response) => {
-				if(post_data.id === undefined) {
-					this.items[post_data.index].id = response.data.id
-				}
+			this.axios.post(url, post_data).then(() => {
+				// const itemIndex = this.records.findIndex(rec => rec.id === id)
+				// this.records[itemIndex].id = response.data.id
+				this.$emit('update')
 			}).catch(error => {
 				alert(error)
 			});
@@ -392,7 +418,7 @@ export default {
 					name: this.items[this.planner.index].name,
 					values: this.items[this.planner.index],
 					index: this.planner.index
-				});
+				}, this.items[this.planner.index].id);
 
 				// Count total plan
 				let total_plan = 0;
@@ -415,10 +441,10 @@ export default {
 			this.$refs['change-plan-modal'].hide();
 		},
 
-		async deleteRecord(id, index) {
+		async deleteRecord(id) {
 			if (!confirm('Вы уверены?')) return
 
-			if(id) {
+			if(id > 0) {
 				const url = '/timetracking/analytics/decomposition/delete'
 				try {
 					await this.axios.delete(url, {
@@ -431,7 +457,9 @@ export default {
 					alert(error)
 				}
 			}
-			this.items.splice(index, 1)
+
+			const itemIndex = this.records.findIndex(rec => rec.id === id)
+			this.records.splice(itemIndex, 1)
 			++this.updateKey
 		},
 
@@ -462,10 +490,12 @@ export default {
 		width: calc(100% + 20px);
 		margin: 0 -10px;
 		background: transparent;
+		appearance: textfield;
 		-moz-appearance: textfield;
 		text-align: center;
 		&::-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
+			appearance: none;
 			-webkit-appearance: none;
 			margin: 0;
 		}
@@ -544,6 +574,7 @@ export default {
 	background: none;
 	border: none;
 	text-align: center;
+	appearance: textfield;
 	-moz-appearance: textfield;
 	font-size: .8rem;
 	font-weight: normal;
