@@ -92,7 +92,7 @@
 						v-for="(item, index) in items"
 						:key="index"
 					>
-						<td class="table-primary b-table-sticky-column text-left px-2 t-name wdf d-flex aic">
+						<td class="table-primary b-table-sticky-column text-left t-name wdf">
 							<div>{{ item.name }}</div>
 							<i
 								v-if="item.archived_date"
@@ -524,17 +524,17 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-    .custom-table-rentability{
-        th,td {
-            padding: 0 15px!important;
-            height: 40px;
-        }
-    }
+.custom-table-rentability{
+	th,td {
+		padding: 4px 8px !important;
+		height: auto;
+	}
+}
 .br1 {
-    border-right: 1px solid #bababa;
+	border-right: 1px solid #bababa;
 }
 .bb1 {
-    border-bottom: 1px solid #a7a7a7;
+	border-bottom: 1px solid #a7a7a7;
 }
 .c-red {background: rgb(247, 88, 88);}
 .c-orange {background: rgb(255, 196, 85);}
@@ -542,13 +542,13 @@ export default {
 .c-green {background: rgb(86, 172, 86);}
 .edited {background: rgb(239, 236, 130);}
 .input{
-        border: 0;
-    margin: 0;
-    width: 110px;
-    padding: 5px 0px 5px 13px;
-    text-align: center;
+	border: 0;
+	margin: -4px -8px;
+	width: 80px;
+	padding: 4px 8px;
+	text-align: center;
 }
 .fz-12 {
-    font-size: 12px;
+	font-size: 12px;
 }
 </style>
