@@ -52,6 +52,7 @@
 			<div class="col-1">
 				<div
 					class="btn btn-primary rounded"
+					title="Обновить данные"
 					@click="fetchData()"
 				>
 					<i class="fa fa-redo-alt" />
@@ -59,52 +60,76 @@
 			</div>
 			<div
 				v-if="$laravel.is_admin"
-				class="col-2"
+				class="col-4 d-flex justify-end"
 			>
-				<button
-					v-if="!firstEnter && !dataLoaded"
-					class="btn btn-info rounded add-s"
-					title="Создать аналитику"
-					@click="add_analytics()"
-				>
-					<i class="fa fa-plus-square" />
-				</button>
-
-				<button
-					v-if="!noan"
-					class="btn btn-info rounded add-s"
-					title="Архивировать"
-					@click="archive()"
-				>
-					<i class="fa fa-trash" />
-				</button>
-
-				<button
-					class="btn btn-info rounded add-s ml-2"
-					title="Восстановить из архива"
-					@click="showArchive = true"
-				>
-					<i class="fa fa-archive" />
-				</button>
+				<div v-click-outside="onClickControlsOutside">
+					<JobtronButton
+						class="ChatIcon-parent"
+						fade
+						small
+						@click="onClickAnControls"
+					>
+						<i
+							class="fa fa-bars"
+							style="font-size:14px"
+						/>
+					</JobtronButton>
+					<PopupMenu
+						v-if="isAnControls"
+					>
+						<div
+							v-if="noAnGroups.length"
+							class="PopupMenu-item"
+							@click="showNoAn = true"
+						>
+							<i class="fa fa-plus-square" /> Создать аналитику
+						</div>
+						<div
+							v-if="table"
+							class="PopupMenu-item"
+							@click="archive()"
+						>
+							<i class="fa fa-trash" /> Архивировать
+						</div>
+						<div
+							class="PopupMenu-item"
+							@click="showArchive = true"
+						>
+							<i class="fa fa-archive" /> Восстановить из архива
+						</div>
+					</PopupMenu>
+				</div>
 			</div>
 			<div
 				v-else
-				class="col-1"
+				class="col-4"
 			/>
 		</div>
 		<template v-if="!firstEnter">
 			<template v-if="hasPremission">
 				<template v-if="true">
-					<div class="AnalyticsPage-header wrap mb-4">
-						<TopGauges
-							v-if="ready.performances"
-							:key="123"
-							:utility_items="gauges"
-							:editable="false"
-							wrapper_class="d-flex"
-							page="analytics"
-							class="AnalyticsPage-gauges"
-						/>
+					<div
+						v-if="isMain"
+						class="AnalyticsPage-header wrap mb-4"
+					>
+						<template v-if="ready.performances">
+							<TopGauges
+								:key="123"
+								:utility_items="gauges"
+								:editable="false"
+								wrapper_class="d-flex"
+								page="analytics"
+								class="AnalyticsPage-gauges"
+							/>
+							<RentabilityGauges
+								:key="124"
+								:items="[{
+									...performances.rentability,
+									name: 'Рентабельность'
+								}]"
+								@save="saveRenabilityGaguge"
+							/>
+						</template>
 						<template v-else>
 							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
 							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
@@ -177,6 +202,7 @@
 								:decompositions="decompositions"
 								:group-id="currentGroupId"
 								class="pt-4"
+								@update="onUpdateDecomposition"
 							/>
 							<b-skeleton-table
 								v-else
@@ -260,6 +286,36 @@
 				</div>
 			</div>
 		</b-modal>
+
+		<b-modal
+			v-model="showNoAn"
+			title="Создать аналитику"
+			size="lg"
+			class="modalle"
+			@ok="add_analytics()"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Отдел
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="groupForCreate"
+						class="form-control form-control-sm"
+					>
+						<option
+							v-for="(group, key) in noAnGroups"
+							:key="key"
+							:value="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</b-modal>
 	</div>
 </template>
 
@@ -269,8 +325,12 @@
 import AnalyticStat from '@/components/AnalyticStat'
 import CallBase from '@/components/CallBase'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 import TableDecomposition from '@/components/tables/TableDecomposition'
 import AnalyticsDetailes from '@/components/pages/AnalyticsPage/AnalyticsDetailes'
+import JobtronButton from '@ui/Button.vue'
+import PopupMenu from '@ui/PopupMenu.vue'
+
 import { useYearOptions } from '../composables/yearOptions'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
@@ -309,7 +369,10 @@ export default {
 		CallBase,
 		TableDecomposition,
 		TopGauges,
+		RentabilityGauges,
 		AnalyticsDetailes,
+		JobtronButton,
+		PopupMenu,
 	},
 	props: {
 		groups: {
@@ -344,11 +407,6 @@ export default {
 			restore_group: null,
 			noan: false, // нет аналитики
 			dataLoaded: false,
-			list: [
-				{ name: 'John', id: 0 },
-				{ name: 'Joao', id: 1 },
-				{ name: 'Jean', id: 2 }
-			],
 
 			activities: [],
 			weeks: [],
@@ -370,10 +428,17 @@ export default {
 				analytics: false,
 			},
 			reportCards: [],
+
+			showNoAn: false,
+			noAnGroups: [],
+			groupForCreate: null,
+
+			isAnControls: false,
+			anControlsTimeout: null,
 		}
 	},
 	computed: {
-		...mapState(usePortalStore, ['portal']),
+		...mapState(usePortalStore, ['portal', 'isMain']),
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
@@ -389,10 +454,10 @@ export default {
 			return [{
 				gauges: [
 					...this.performances.utility,
-					{
-						...this.performances.rentability,
-						name: 'Рентабельность'
-					},
+					// {
+					// 	...this.performances.rentability,
+					// 	name: 'Рентабельность'
+					// },
 				]
 			}]
 		},
@@ -492,6 +557,17 @@ export default {
 			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
 		},
 
+		async onUpdateDecomposition(){
+			const loader = this.$loading.show()
+			const request = {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroupId,
+			}
+			this.fetchDecompositions(request)
+			loader.hide()
+		},
+
 		async fetchActivities(request){
 			try{
 				const {activities, weeks} = await API.fetchActivitiesV2(request)
@@ -507,7 +583,8 @@ export default {
 
 		async fetchDecompositions(request){
 			try{
-				this.decompositions = await API.fetchDecompositionsV2(request)
+				const dec = await API.fetchDecompositionsV2(request)
+				this.decompositions = dec
 				this.ready.decompositions = true
 			}
 			catch(error){
@@ -541,7 +618,9 @@ export default {
 		async fetchGroups(request){
 			try{
 				const {is_active, is_archived } = await API.fetchAnalyticsGroupsV2(request)
-				this.ggroups = Array.isArray(is_active) ? is_active : Object.values(is_active)
+				const groups = Array.isArray(is_active) ? is_active : Object.values(is_active)
+				this.ggroups = groups.filter(group => group.has_analytics)
+				this.noAnGroups = groups.filter(group => !group.has_analytics)
 				this.archived_groups = Array.isArray(is_archived) ? is_archived : Object.values(is_archived)
 				this.ready.groups = true
 			}
@@ -634,8 +713,14 @@ export default {
 				await API.createAnalyticsGroup({
 					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 					year: this.currentYear,
-					group_id: this.currentGroupId,
+					group_id: this.groupForCreate,
 				})
+				const index = this.noAnGroups.findIndex(group => group.id === this.groupForCreate)
+				if(~index){
+					const [group] = this.noAnGroups.splice(index, 1)
+					group.has_analytics = 1
+					this.ggroups.push(group)
+				}
 				this.$toast.success('Аналитика для группы добавлена')
 				this.fetchData()
 			}
@@ -707,6 +792,202 @@ export default {
 		onOrderActivity(){
 			this.fetchData()
 		},
+
+		onClickAnControls(){
+			if(this.isAnControls){
+				this.isAnControls = false
+				return
+			}
+			this.anControlsTimeout = setTimeout(() => {
+				this.isAnControls = true
+			}, 300)
+		},
+		onClickControlsOutside(){
+			this.isAnControls = false
+			if(this.anControlsTimeout) clearTimeout(this.anControlsTimeout)
+		},
+
+		async saveRenabilityGaguge(gauge){
+			const loader = this.$loading.show()
+			if(typeof gauge.options === 'string') gauge.options = JSON.parse(gauge.options)
+			gauge = this.gaugeSectionsCrutch(gauge)
+			const month = +this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M')
+			try {
+				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
+					gauge: {
+						...gauge,
+						reversed: false,
+						date: `${this.currentYear}-${month < 10 ? '0' + month : month}-01`,
+					},
+					type: 2,
+				})
+				this.$toast.success('Успешно сохранено')
+			}
+			catch (error) {
+				console.error('[TableRentability.saveRenabilityGaguge]', error)
+				alert(error)
+			}
+			loader.hide()
+		},
+
+		gaugeSectionsCrutch(gauge){
+			if(!gauge.options) gauge.options = {}
+			if(!gauge.options.staticLabels) gauge.options.staticLabels = {}
+			const sections = JSON.parse(gauge.sections)
+			gauge.options.staticLabels.labels = sections
+			gauge.options.staticZones = this.createZones(sections)
+			return gauge
+		},
+
+		createZones(sections){
+			switch(sections.length){
+			case 2:
+				return [
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[0],
+						max: sections[1],
+					}
+				]
+			case 3:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[1],
+						max: sections[2],
+					},
+				]
+			case 4:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[2],
+						max: sections[3],
+					},
+				]
+			case 5:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[3],
+						max: sections[4],
+					},
+				]
+			case 6:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[4],
+						max: sections[5],
+					},
+				]
+			case 7:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// orange light
+						strokeStyle: '#ffc107',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[4],
+						max: sections[5],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[5],
+						max: sections[6],
+					},
+				]
+			}
+			return []
+		}
 	}
 }
 </script>
@@ -726,9 +1007,9 @@ export default {
 		}
 		.TopGauges-gauge{
 			flex: 0 0 content;
-			&:last-of-type{
-				margin-left: auto;
-			}
+			// &:last-of-type{
+			// 	margin-left: auto;
+			// }
 		}
 	}
 
