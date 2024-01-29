@@ -132,15 +132,15 @@ class UserService
         $data = User::withTrashed()
             ->with('groups')
             ->whereHas('group_users', function ($q) use ($groupId, $last_date) {
-                $q->where('group_id', $groupId)
-                    ->where(function (Builder $query) use ($last_date) {
-                        $query->whereDate('to', '>', $last_date);
-                        $query->orWhereNull('to');
-                    })
-                    ->where(function (Builder $query) use ($last_date) {
-                        $query->where('users.deleted_at', '>', $last_date)
-                            ->orWhereNull('users.deleted_at');
-                    });
+                $q->where('group_id', $groupId);
+                $q->where(function (Builder $query) use ($last_date) {
+                    $query->whereDate('to', '>', $last_date);
+                    $query->orWhereNull('to');
+                });
+                $q->where(function (Builder $query) use ($last_date) {
+                    $query->where('users.deleted_at', '>', $last_date)
+                        ->orWhereNull('users.deleted_at');
+                });
             })
             ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
