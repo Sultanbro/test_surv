@@ -112,15 +112,24 @@
 						v-if="isMain"
 						class="AnalyticsPage-header wrap mb-4"
 					>
-						<TopGauges
-							v-if="ready.performances"
-							:key="123"
-							:utility_items="gauges"
-							:editable="false"
-							wrapper_class="d-flex"
-							page="analytics"
-							class="AnalyticsPage-gauges"
-						/>
+						<template v-if="ready.performances">
+							<TopGauges
+								:key="123"
+								:utility_items="gauges"
+								:editable="false"
+								wrapper_class="d-flex"
+								page="analytics"
+								class="AnalyticsPage-gauges"
+							/>
+							<RentabilityGauges
+								:key="124"
+								:items="[{
+									...performances.rentability,
+									name: 'Рентабельность'
+								}]"
+								@save="saveRenabilityGaguge"
+							/>
+						</template>
 						<template v-else>
 							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
 							<div class="AnalyticsPage-skeletonImg b-skeleton b-skeleton-img b-skeleton-animate-wave ml-4 mb-4" />
@@ -316,6 +325,7 @@
 import AnalyticStat from '@/components/AnalyticStat'
 import CallBase from '@/components/CallBase'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 import TableDecomposition from '@/components/tables/TableDecomposition'
 import AnalyticsDetailes from '@/components/pages/AnalyticsPage/AnalyticsDetailes'
 import JobtronButton from '@ui/Button.vue'
@@ -359,6 +369,7 @@ export default {
 		CallBase,
 		TableDecomposition,
 		TopGauges,
+		RentabilityGauges,
 		AnalyticsDetailes,
 		JobtronButton,
 		PopupMenu,
@@ -443,10 +454,10 @@ export default {
 			return [{
 				gauges: [
 					...this.performances.utility,
-					{
-						...this.performances.rentability,
-						name: 'Рентабельность'
-					},
+					// {
+					// 	...this.performances.rentability,
+					// 	name: 'Рентабельность'
+					// },
 				]
 			}]
 		},
@@ -795,6 +806,188 @@ export default {
 			this.isAnControls = false
 			if(this.anControlsTimeout) clearTimeout(this.anControlsTimeout)
 		},
+
+		async saveRenabilityGaguge(gauge){
+			const loader = this.$loading.show()
+			if(typeof gauge.options === 'string') gauge.options = JSON.parse(gauge.options)
+			gauge = this.gaugeSectionsCrutch(gauge)
+			const month = +this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M')
+			try {
+				await this.axios.post('/v2/analytics-page/rentability/speedometers', {
+					gauge: {
+						...gauge,
+						reversed: false,
+						date: `${this.currentYear}-${month < 10 ? '0' + month : month}-01`,
+					},
+					type: 2,
+				})
+				this.$toast.success('Успешно сохранено')
+			}
+			catch (error) {
+				console.error('[TableRentability.saveRenabilityGaguge]', error)
+				alert(error)
+			}
+			loader.hide()
+		},
+
+		gaugeSectionsCrutch(gauge){
+			if(!gauge.options) gauge.options = {}
+			if(!gauge.options.staticLabels) gauge.options.staticLabels = {}
+			const sections = JSON.parse(gauge.sections)
+			gauge.options.staticLabels.labels = sections
+			gauge.options.staticZones = this.createZones(sections)
+			return gauge
+		},
+
+		createZones(sections){
+			switch(sections.length){
+			case 2:
+				return [
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[0],
+						max: sections[1],
+					}
+				]
+			case 3:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[1],
+						max: sections[2],
+					},
+				]
+			case 4:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[2],
+						max: sections[3],
+					},
+				]
+			case 5:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[3],
+						max: sections[4],
+					},
+				]
+			case 6:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[4],
+						max: sections[5],
+					},
+				]
+			case 7:
+				return [
+					{
+						// red
+						strokeStyle: '#F03E3E',
+						min: sections[0],
+						max: sections[1],
+					},
+					{
+						// orange
+						strokeStyle: '#fd7e14',
+						min: sections[1],
+						max: sections[2],
+					},
+					{
+						// orange light
+						strokeStyle: '#ffc107',
+						min: sections[2],
+						max: sections[3],
+					},
+					{
+						// yellow
+						strokeStyle: '#FFDD00',
+						min: sections[3],
+						max: sections[4],
+					},
+					{
+						// green light
+						strokeStyle: '#fd7e14',
+						min: sections[4],
+						max: sections[5],
+					},
+					{
+						// green
+						strokeStyle: '#30B32D',
+						min: sections[5],
+						max: sections[6],
+					},
+				]
+			}
+			return []
+		}
 	}
 }
 </script>
@@ -814,9 +1007,9 @@ export default {
 		}
 		.TopGauges-gauge{
 			flex: 0 0 content;
-			&:last-of-type{
-				margin-left: auto;
-			}
+			// &:last-of-type{
+			// 	margin-left: auto;
+			// }
 		}
 	}
 

@@ -197,24 +197,18 @@
 									v-if="dataItem.item.dayTypes && dataItem.item.dayTypes[dataItem.field.key] == 10"
 									class="fa fa-flag TableReport-flag"
 								/>
-								<template v-else-if="dataItem.value.hour">
-									<input
-										class="cell-input"
-										type="number"
-										:min="0"
-										:max="24"
-										:step="0.1"
-										:value="dataItem.value.hour"
-										:readonly="true"
-										@mouseover="$event.preventDefault()"
-										@dblclick="readOnlyFix"
-										@change="openModal"
-									>
-								</template>
-
-								<template v-else>
-									{{ dataItem.value.hour ? dataItem.value.hour : dataItem.value }}
-								</template>
+								<input
+									class="cell-input"
+									:value="dataItem.value.hour"
+									:readonly="true"
+									@mouseover="$event.preventDefault()"
+									@dblclick="readOnlyFix"
+									@change="openModal"
+								>
+								<!-- type="number"
+									:min="0"
+									:max="24"
+									:step="0.1" -->
 
 								<div
 									v-if="dataItem.value.tooltip"
@@ -1487,6 +1481,17 @@ export default {
 
 				var variants = {
 					_cellVariants: v
+				}
+
+				for(let i = 1; i < 32; ++i){
+					if(!dayHours[i]){
+						dayHours[i] = {
+							hour: '',
+							tooltip: '',
+							updated: 0,
+							type: 0,
+						}
+					}
 				}
 
 				items.push({
