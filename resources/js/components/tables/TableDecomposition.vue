@@ -157,20 +157,20 @@
 					</tbody>
 				</table>
 			</div>
-			<button
-				class="btn btn-success"
+			<JobtronButton
+				small
 				@click="addRecord"
 			>
 				+ Добавить строку
-			</button>
+			</JobtronButton>
 		</template>
-		<button
+		<JobtronButton
 			v-else
-			class="btn btn-success"
+			small
 			@click="addDecomposition"
 		>
 			Добавить декомпозицию
-		</button>
+		</JobtronButton>
 
 		<b-modal
 			ref="change-plan-modal"
@@ -225,9 +225,13 @@
 
 <script>
 /* eslint-disable camelcase */
+import JobtronButton from '@ui/Button.vue'
 
 export default {
 	name: 'TableDecomposition',
+	components: {
+		JobtronButton,
+	},
 	props: {
 		month: {
 			type: Object,
