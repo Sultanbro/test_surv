@@ -39,4 +39,24 @@ class CentralCourseRepository extends CoreRepository
                 'slides' => json_encode($dto->slides),
             ]);
     }
+
+    public function updateCourse($centralCourseId, CoursePropsDto $dto)
+    {
+        return $this->model()
+            ->query()
+            ->where('id', $centralCourseId)
+            ->update([
+                'cat_id' => $dto->cat_id,
+                'price' => $dto->price,
+                'for_sale' => $dto->for_sale,
+                'author' => $dto->author,
+                'slides' => json_encode($dto->slides),
+            ]);
+    }
+
+    public function delete($id)
+    {
+        $this->model()->query()->where('id', $id)->delete();
+        return true;
+    }
 }

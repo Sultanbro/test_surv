@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\CourseV2;
 
 use App\Models\CourseV2;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Service\CourseV2\CourseV2Service;
@@ -73,37 +72,35 @@ class CourseV2Controller extends Controller
         );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param CourseV2 $courseV2
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CourseV2 $courseV2)
-    {
-        //
-    }
 
     /**
-     * Update the specified resource in storage.
+     * Update course
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param CourseV2 $courseV2
-     * @return \Illuminate\Http\Response
+     * @param CreateCourseV2Request $request
+     * @param CourseV2 $course
+     * @param CourseV2Service $service
+     * @return JsonResponse
      */
-    public function update(Request $request, CourseV2 $courseV2)
+    public function update(CreateCourseV2Request $request, CourseV2 $course, CourseV2Service $service): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->update($course, $request->toDto())
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param CourseV2 $courseV2
-     * @return \Illuminate\Http\Response
+     * @param CourseV2 $course
+     * @param CourseV2Service $service
+     * @return JsonResponse
      */
-    public function destroy(CourseV2 $courseV2)
+    public function destroy(CourseV2 $course, CourseV2Service $service): JsonResponse
     {
-        //
+        return $this->response(
+            message: self::SUCCESS_MESSAGE,
+            data: $service->delete($course)
+        );
     }
 }
