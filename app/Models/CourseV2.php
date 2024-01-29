@@ -4,7 +4,12 @@ namespace App\Models;
 
 use App\{User, Position, ProfileGroup, KnowBase};
 use App\Models\{Books\Book, Award\Award, Videos\VideoPlaylist};
-use Illuminate\Database\Eloquent\{Model, Collection, Relations\BelongsTo, Factories\HasFactory, Relations\MorphToMany};
+use Illuminate\Database\Eloquent\{Model,
+    Collection,
+    Relations\BelongsTo,
+    Factories\HasFactory,
+    Relations\MorphToMany,
+    SoftDeletes};
 
 /**
  * @property int $id
@@ -16,10 +21,12 @@ use Illuminate\Database\Eloquent\{Model, Collection, Relations\BelongsTo, Factor
  * @property int $cat_id
  * @property int $price
  * @property int $for_sale
+ * @property int $central_course_id
+ * @property Collection $targets
  */
 class CourseV2 extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'courses_v2';
 
