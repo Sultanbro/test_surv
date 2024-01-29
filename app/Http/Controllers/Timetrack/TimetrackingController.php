@@ -915,15 +915,23 @@ class TimetrackingController extends Controller
         $userId = $request->user_id;
         $date = Carbon::createFromDate($request->year, $request->month, $request->day);
 
-        $days = Timetracking::where('user_id', intval($userId))
+        $days = Timetracking::query()
+            ->where('user_id', intval($userId))
             ->whereYear('enter', intval($request->year))
             ->whereMonth('enter', intval($request->month))
             ->whereDay('enter', $request->day)
             ->selectRaw('*, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes')
             ->orderBy('id', 'ASC')
             ->get();
-        $day = $days->first();
 
+        $day = $days->first();
+        if (!$day) {
+            $day = Timetracking::query()
+                ->create([
+                    'user_id' => intval($userId),
+                    'enter' => Carbon::create(intval($request->year), intval($request->month), $request->day)
+                ]);
+        }
 
         // Проверка не начинал ли сотрудник работу ранее рабочего времени
         $timeStart = self::checkStartOfDay($request, $day);
