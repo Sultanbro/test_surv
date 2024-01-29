@@ -925,6 +925,7 @@ class TimetrackingController extends Controller
             ->get();
 
         $day = $days->first();
+        dd($day);
         if (!$day) {
             $day = Timetracking::query()
                 ->create([
