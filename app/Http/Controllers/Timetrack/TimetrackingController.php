@@ -952,9 +952,10 @@ class TimetrackingController extends Controller
         //Конец блока
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');
+            dd($items);
             Timetracking::query()->whereIn('id', $items)->delete();
         }
-        dd($days);
+
         if (count($days) > 0) {
             if ($day->exit == null) {
                 $day->exit = $exit;
