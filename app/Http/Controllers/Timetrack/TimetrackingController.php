@@ -940,13 +940,12 @@ class TimetrackingController extends Controller
         // Добавить новый exit
         $exit = Carbon::parse($timeStart)->addMinutes(intval($minutes));
         //Конец блока
-
+        dd($exit);
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');
             Timetracking::whereIn('id', $items)->delete();
         }
 
-        $employee = User::withTrashed()->find($userId);
         if (count($days) > 0) {
             if ($day->exit == null) {
                 $day->exit = $exit;
@@ -1682,7 +1681,6 @@ class TimetrackingController extends Controller
                 'date' => $date,
                 'description' => $desc,
             ]);
-
 
         if ($request->get("type") == DayType::DAY_TYPES['HOLIDAY']) { // Выходной
             $fines = UserFine::query()

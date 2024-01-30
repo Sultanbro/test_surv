@@ -42,6 +42,7 @@ class DayType extends Model
         'APPLIED' => 8,
         'ABCENSE_ON_TRAINING' => 9,
         'TRAINEE_PLANNED' => 10,
+        'BLANK' => 11,
     ];
 
     // 7 Подключился позже
