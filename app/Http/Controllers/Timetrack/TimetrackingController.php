@@ -923,13 +923,13 @@ class TimetrackingController extends Controller
         } else {
             $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
         }
-        dd($enter);
+
         $day = Timetracking::query()
             ->firstOrCreate([
                 'user_id' => intval($userId),
-                'enter' => $enter
+                'enter' => $enter->format("Y-m-d H:i:s")
             ]);
-
+        dd($day);
         $days = Timetracking::query()
             ->where('user_id', intval($userId))
             ->whereYear('enter', intval($request->year))
