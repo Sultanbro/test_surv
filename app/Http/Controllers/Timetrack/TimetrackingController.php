@@ -948,13 +948,13 @@ class TimetrackingController extends Controller
         }
         // Добавить новый exit
         $exit = Carbon::parse($timeStart)->addMinutes(intval($minutes));
+
         //Конец блока
-        dd($exit);
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');
-            Timetracking::whereIn('id', $items)->delete();
+            Timetracking::query()->whereIn('id', $items)->delete();
         }
-
+        dd($days);
         if (count($days) > 0) {
             if ($day->exit == null) {
                 $day->exit = $exit;
