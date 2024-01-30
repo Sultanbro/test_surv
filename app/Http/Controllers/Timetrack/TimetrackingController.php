@@ -938,7 +938,7 @@ class TimetrackingController extends Controller
             ->selectRaw('*, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes')
             ->orderBy('id', 'ASC')
             ->get();
-        dd($days);
+
         // Проверка не начинал ли сотрудник работу ранее рабочего времени
         $timeStart = self::checkStartOfDay($request, $day);
 
