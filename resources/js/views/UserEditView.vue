@@ -104,6 +104,7 @@ export default {
 				lastName: true,
 				position: true,
 				birthday: true,
+				workchart: true,
 				group: true,
 				email: true,
 				selectedCityInput: true,
@@ -475,7 +476,7 @@ export default {
 				formData.set('coordinates[geo_lon]', this.cityLon)
 			}
 
-			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
+			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.workchart){
 				this.sendForm(formData, isNew);
 			}
 			else {

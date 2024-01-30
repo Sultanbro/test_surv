@@ -37,7 +37,7 @@ class EmailNotificationListener
                 'authData' => $event->authData,
             ]));
         } catch (Throwable $e) {
-            throw new Exception('Ошибка при отправке сообщений на email');
+            throw new Exception('Ошибка при отправке сообщений на электронную почту');
         }
     }
 }
