@@ -925,10 +925,18 @@ class TimetrackingController extends Controller
         }
 
         $day = Timetracking::query()
-            ->firstOrCreate([
+            ->where('user_id', intval($userId))
+            ->whereYear('enter', intval($request->year))
+            ->whereMonth('enter', intval($request->month))
+            ->whereDay('enter', $request->day)
+            ->first();
+
+        if (!$day) {
+            $day = Timetracking::query()->create([
                 'user_id' => intval($userId),
-                'enter' => $enter->format("Y-m-d H:i:s")
+                'enter' => $enter,
             ]);
+        }
 
         $days = Timetracking::query()
             ->where('user_id', intval($userId))
