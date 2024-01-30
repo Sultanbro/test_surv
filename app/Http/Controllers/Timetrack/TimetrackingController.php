@@ -923,7 +923,7 @@ class TimetrackingController extends Controller
         } else {
             $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
         }
-
+        dd($enter);
         $day = Timetracking::query()
             ->firstOrCreate([
                 'user_id' => intval($userId),
@@ -952,7 +952,6 @@ class TimetrackingController extends Controller
         //Конец блока
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');
-            dd($items);
             Timetracking::query()->whereIn('id', $items)->delete();
         }
 
