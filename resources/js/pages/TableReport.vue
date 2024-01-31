@@ -2008,6 +2008,12 @@ $bgAccept: #156AE8;
 		background-color: $bgFirst !important;
 	}
 
+	.table-day-11 {
+		// принят на работу
+		color: #fff;
+		background-color: #777 !important;
+	}
+
 	.cell-border {
 		position: absolute;
 		right: -1px;
