@@ -698,7 +698,7 @@
 			/>
 		</b-modal>
 
-		<b-modal
+		<!-- <b-modal
 			v-model="modalVisibleApply"
 			ok-text="Да"
 			cancel-text="Нет"
@@ -720,7 +720,7 @@
 				placeholder="Напишите со скольки и до скольки рабочий день"
 				:required="true"
 			/>
-		</b-modal>
+		</b-modal> -->
 
 		<b-modal
 			v-model="modalVisibleAbsence"
@@ -832,6 +832,19 @@
 				:required="true"
 			/>
 		</b-modal>
+
+		<JobtronOverlay
+			v-if="modalVisibleApply"
+			:z="1000"
+			@close="modalVisibleApply = false"
+		>
+			<ApplyForm
+				v-model="applyForm"
+				:work-charts="workCharts"
+				@close="modalVisibleApply = false"
+				@input="applyPerson"
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -851,10 +864,16 @@ import {
 	triggerAbsentInternship,
 	triggerFiredEmployee,
 } from '@/stores/api.js'
+import {
+	useDataFromResponse,
+} from '../composables/asyncPageData.js'
+import { getShiftType } from '@/composables/shifts'
 
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import TransfersInfo from '@/components/pages/Reports/TransfersInfo.vue'
+import JobtronOverlay from '../components/ui/Overlay.vue'
+import ApplyForm from '../components/pages/Reports/ApplyForm.vue'
 
 
 
@@ -864,6 +883,8 @@ export default {
 		Sidebar,
 		GroupExcelImport,
 		TransfersInfo,
+		JobtronOverlay,
+		ApplyForm,
 	},
 	props: {
 		groups: {
@@ -994,6 +1015,21 @@ export default {
 				schedule: '',
 			},
 			fire_causes: [],
+
+			workCharts: [],
+			applyForm: {
+				name: '',
+				lastName: '',
+				workChart: null,
+				firstDay: null,
+				fullTime: null,
+				userType: '',
+				zarplata: 0,
+				currency: 'kzt',
+				phone: '',
+				phone2: '',
+				userData: null,
+			}
 		}
 	},
 	computed: {
@@ -1036,6 +1072,7 @@ export default {
 			this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
 
 			this.fetchData()
+			this.fetchWorkCharts()
 		},
 		copy() {
 			var Url = this.$refs['mylink' + this.currentGroup];
@@ -1067,9 +1104,19 @@ export default {
 			this.modalVisibleDay = true
 		},
 
-		openModalApply(dayType) {
-			this.currentDayType = dayType
-			this.modalVisibleApply = true
+		async openModalApply(dayType) {
+			const loader = this.$loading.show()
+			try {
+				const {data} = await this.axios.get(`/timetracking/edit-person?id=${this.sidebarContent.user_id}`)
+				const responseData = useDataFromResponse(data)
+				this.resetApply(responseData)
+				this.currentDayType = dayType
+				this.modalVisibleApply = true
+			}
+			catch (error) {
+				this.$toast.error('Не удолось получить информацию о стажере')
+			}
+			loader.hide()
 		},
 
 		openModalAbsence(dayType) {
@@ -1582,17 +1629,90 @@ export default {
 			return JSON.stringify(obj) === JSON.stringify({});
 		},
 
-		applyPerson() {
-			if (this.applyItems.schedule.length == 0) {
-				return '';
-			}
+		resetApply(userdata){
+			this.applyForm.name = userdata.user.name || ''
+			this.applyForm.lastName = userdata.user.last_name || ''
+			const workchart = this.workCharts.find(chart => chart.id === userdata.user.work_chart_id)
+			this.applyForm.workChart = workchart || null
+			this.applyForm.firstDay = userdata.user.first_work_day || null
+			this.applyForm.fullTime = userdata.user.full_time || null
+			this.applyForm.userType = userdata.user.user_type || ''
+			this.applyForm.zarplata = userdata.user.zarplata?.zarplata || 0
+			this.applyForm.currency = userdata.user.currency || 'kzt'
+			this.applyForm.phone = userdata.user.phone || ''
+			this.applyForm.phone2 = userdata.user.phone_2 || ''
+			this.applyForm.userData = userdata
+		},
+		validateApply(){
+			const phone = this.applyForm.phone.replace(/[^\d]+/g, '')
+			if(this.applyForm.name.length < 2) return 'Заполните имя сотрудника'
+			if(this.applyForm.lastName.length < 2) return 'Заполните фамилию сотрудника'
+			if(!this.applyForm.workChart) return 'Выберите график работы'
+			if(getShiftType(this.applyForm.workChart) === 2 && !this.applyForm.firstDay) return 'Выберите первый рабочий день'
+			if(this.applyForm.fullTime === null) return 'Выберите смену'
+			if(!this.applyForm.userType) return 'Выберите тип сотрудника'
+			if(!this.applyForm.zarplata) return 'Заполните оклад'
+			if(phone.length < 10) return 'Заполните основной номер телефона'
+			return ''
+		},
+		async applyPerson() {
+			const error = this.validateApply()
+			if(error) return alert(error)
 
-			this.axios.post('/timetracking/apply-person', {
-				user_id: this.sidebarContent.user_id,
-				schedule: this.applyItems.schedule,
-				group_id: this.currentGroup,
-			}).then(response => {
-				this.apllyPersonResponse = response.data.msg
+			const loader = this.$loading.show()
+
+			try {
+				const request = {
+					id: this.applyForm.userData.user.id,
+					is_trainee: 'true',
+					increment_provided: false,
+					name: this.applyForm.name,
+					last_name: this.applyForm.lastName,
+					email: this.applyForm.userData.user.email,
+					birthday: this.applyForm.userData.user.birthday,
+					position: this.applyForm.userData.user.position_id,
+					user_type: this.applyForm.userType,
+					program_type: this.applyForm.userData.user.program_id,
+					'work-chart': this.applyForm.workChart.id,
+					first_work_day: this.applyForm.firstDay,
+					timezone: this.applyForm.userData.user.timezone,
+					full_time: this.applyForm.fullTime,
+					working_days: this.applyForm.userData.user.working_day_id,
+					working_times: this.applyForm.userData.user.working_time_id,
+					weekdays: this.applyForm.userData.user.weekdays,
+					description: this.applyForm.userData.user.description,
+					// adaptation_talks: this.applyForm.userData.user.adaptation_talks,
+					phone: this.applyForm.phone.replace(/[^\d]+/g, ''),
+					phone_2: this.applyForm.phone2.replace(/[^\d]+/g, ''),
+					zarplata: this.applyForm.zarplata,
+					currency: this.applyForm.currency,
+					cards: this.applyForm.userData.user.cards,
+					uin: this.applyForm.userData.user.uin,
+					recruiter_comment: this.applyForm.userData.user.recruiter_comment,
+					selectedCityInput: this.applyForm.userData.user.working_country,
+				}
+
+				if(this.applyForm.userData.user.coordinate){
+					request.coordinates = {
+						geo_lat: this.applyForm.userData.user.coordinate.geo_lat,
+						geo_lon: this.applyForm.userData.user.coordinate.geo_lon,
+					}
+				}
+
+				await this.axios.post('/timetracking/person/update', request)
+
+				await this.axios.post('/work-chart/user/add', {
+					user_id: this.sidebarContent.user_id,
+					work_chart_id: this.applyForm.workChart.id,
+				})
+
+				const {data} = await this.axios.post('/timetracking/apply-person', {
+					user_id: this.sidebarContent.user_id,
+					schedule: `с ${this.applyForm.workChart.start_time} до ${this.applyForm.workChart.end_time}`,
+					group_id: this.currentGroup,
+				})
+
+				this.apllyPersonResponse = data.msg
 				this.sidebarContent.data.item.requested = this.$moment().format('DD.MM.Y HH:mm')
 				this.modalVisibleApply = false
 
@@ -1600,10 +1720,32 @@ export default {
 
 				setTimeout(() => {
 					this.apllyPersonResponse = ''
-				}, 2000);
-			}).catch(error => {
-				alert(error)
-			});
+				}, 2000)
+			}
+			catch (error) {
+				console.error(error);
+				const msg = 'Не удалось сохранить информацию о сотруднике'
+				const pwdMsg = 'Значения поля "Новый пароль" некорректно.\nПароль должен содержать минимум 8 символов и хотя бы одну строчную и одну заглавную букву'
+				if (error.response) {
+					if (error.response.data?.message) {
+						const respMsg = error.response.data.message.replace('Количество символов в поле new pwd должно быть не меньше 8.', pwdMsg)
+						this.$toast.error(`${msg}\n${respMsg.replace('Значение поля new pwd некорректно.', pwdMsg)}`, {timeout: 10000})
+					}
+					else{
+						this.$toast.error(msg)
+					}
+					if (error.response.data?.errors) {
+						this.fieldErrors = error.response.data?.errors
+					}
+				}
+				else if (error.request) {
+					this.$toast.error(`${msg}\nСервер не отвечает, попробуйте позже`);
+				}
+				else{
+					this.$toast.error(msg);
+				}
+			}
+			loader.hide()
 		},
 
 		setUserAbsent() {
@@ -1688,6 +1830,11 @@ export default {
 				// Otherwise stringify the field data and use String.prototype.localeCompare
 				return (b || '').toString().localeCompare((a || '').toString(), compareLocale, compareOptions)
 			}
+		},
+
+		async fetchWorkCharts(){
+			const {data} = await this.axios.get('/work-chart')
+			this.workCharts = data.data
 		},
 	}
 }
