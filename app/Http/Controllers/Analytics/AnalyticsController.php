@@ -9,6 +9,7 @@ use App\Facade\Analytics\Analytics;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Analytics\Statistics\UpdateUserStatRequest;
 use App\Imports\AnalyticsImport;
+use App\Jobs\Salary\ProcessUpdateSalary;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
@@ -530,6 +531,9 @@ class AnalyticsController extends Controller
         if ($dto->groupId == 31 && $dto->activityId == 21) {
             DM::updateTimesByWorkHours($dto->employeeId, $date, $dto->day, (float)$dto->value);
         }
+
+        ProcessUpdateSalary::dispatch($date, $group->getKey())
+            ->afterCommit();
     }
 
     /**

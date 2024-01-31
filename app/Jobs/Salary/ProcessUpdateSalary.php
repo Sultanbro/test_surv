@@ -3,10 +3,7 @@
 namespace App\Jobs\Salary;
 
 use App\Service\Salary\UpdateSalaryInterface;
-use Carbon\Carbon;
-use Couchbase\Group;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
