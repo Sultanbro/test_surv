@@ -931,14 +931,14 @@ class TimetrackingController extends Controller
             ->whereDay('enter', $request->day)
             ->first();
 
-        dd($day);
-
         if (!$day) {
             $day = Timetracking::query()->create([
                 'user_id' => intval($userId),
                 'enter' => $enter,
             ]);
         }
+
+        dd($day);
 
         $days = Timetracking::query()
             ->where('user_id', intval($userId))
