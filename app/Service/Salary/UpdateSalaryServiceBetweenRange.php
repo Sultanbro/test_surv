@@ -31,9 +31,8 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
                 });
             })
             ->get();
-        dd($users->pluck('name'));
-        while ($startDate <= $endDate) {
 
+        while ($startDate <= $endDate) {
             $this->updateDaySalary($users, $startDate);
             $startDate->addDay();
         }
