@@ -7,6 +7,11 @@ export function getShiftDays(shift){
 	return `Неделя: ${shift.name}`
 }
 
+export function getShiftType(shift){
+	if(!shift.work_charts_type) return 2
+	return (typeof shift.work_charts_type === 'number') ? shift.work_charts_type : shift.work_charts_type.id
+}
+
 export function getBitCount(num, size = 7){
 	let count = 0;
 	let mask = 1;
