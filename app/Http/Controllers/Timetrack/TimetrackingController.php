@@ -918,6 +918,7 @@ class TimetrackingController extends Controller
         /** @var User $user */
         $user = User::with(['workChart', 'groups.workChart'])->find($userId);
         $schedule = $user->scheduleFast();
+        dd($schedule);
         if ($schedule['start']) {
             $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
         } else {
