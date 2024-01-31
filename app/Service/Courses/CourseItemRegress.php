@@ -22,11 +22,12 @@ class CourseItemRegress implements CourseRegress
      */
     public function regress(array $data)
     {
-        $amount = $this->getAmount($data['user_id'], $data['course_item_id']);
+        $amount = 0;
+//            $this->getAmount($data['user_id'], $data['course_item_id']);
         $course = (new CourseItemRepository)->getCourse($data['course_item_id'])->id;
         $progress = $this->getProgress($data['course_item_id'], $data['user_id']);
 
-        DB::transaction(function () use ($data, $amount, $course, $progress){
+        DB::transaction(function () use ($data, $amount, $course, $progress) {
             (new CourseResultRepository)->removeItemPoints($data['user_id'], $course, $amount, $progress);
             (new CourseResultRepository)->setIsRegressed($course, $data['user_id']);
 

@@ -115,10 +115,11 @@ class ObtainedBonus extends Model
             ->whereMonth('date', $month->month)
                 ->get();
 
-        $test_bonuses_all = TestBonus::where('user_id', $user_id)
-            ->whereYear('date', $month->year)
-            ->whereMonth('date', $month->month)
-                ->get();
+        $test_bonuses_all = 0;
+//            TestBonus::where('user_id', $user_id)
+//            ->whereYear('date', $month->year)
+//            ->whereMonth('date', $month->month)
+//                ->get();
 
         $manual_bonus_all = Salary::where('user_id', $user_id)
             ->selectRaw('date, bonus, comment_bonus, day(date) as day')
@@ -193,7 +194,8 @@ class ObtainedBonus extends Model
             ->whereMonth('date', $month->month)
             ->get();
 
-        $test_bonuses_all = TestBonus::where('user_id', $user_id)
+        $test_bonuses_all = 0;
+            TestBonus::where('user_id', $user_id)
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
             ->get();

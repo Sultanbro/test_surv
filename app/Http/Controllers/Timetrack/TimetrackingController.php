@@ -1456,20 +1456,22 @@ class TimetrackingController extends Controller
                 return Carbon::parse($b->date)->format('d');
             });
 
-        $total_bonuses += TestBonus::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', $request->month)
-            ->get()
-            ->sum('amount');
+        $total_bonuses += 0;
+//            TestBonus::where('user_id', $user->id)
+//            ->whereYear('date', date('Y'))
+//            ->whereMonth('date', $request->month)
+//            ->get()
+//            ->sum('amount');
 
-        $test_bonus = TestBonus::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', $request->month)
-            ->where('amount', '>', 0)
-            ->get()
-            ->groupBy(function ($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
+        $test_bonus = 0;
+//            TestBonus::where('user_id', $user->id)
+//            ->whereYear('date', date('Y'))
+//            ->whereMonth('date', $request->month)
+//            ->where('amount', '>', 0)
+//            ->get()
+//            ->groupBy(function ($b) {
+//                return Carbon::parse($b->date)->format('d');
+//            });
         // Бонусы
 
         $editedBonus = EditedBonus::where('user_id', $user->id)
