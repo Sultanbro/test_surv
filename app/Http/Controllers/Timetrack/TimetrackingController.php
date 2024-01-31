@@ -15,6 +15,7 @@ use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
 use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
+use App\Jobs\Salary\ProcessUpdateSalary;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
@@ -997,7 +998,8 @@ class TimetrackingController extends Controller
             }
         }
 
-
+        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $request->group_id)
+            ->afterCommit();
 
         $result = [
             'success' => true,
