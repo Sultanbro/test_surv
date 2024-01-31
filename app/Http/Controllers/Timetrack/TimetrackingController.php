@@ -20,6 +20,7 @@ use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
 use App\Models\GroupUser;
@@ -998,6 +999,12 @@ class TimetrackingController extends Controller
             }
         }
 
+        /** @var UserStat $userStat */
+        $userStat = UserStat::getTimeTrackingActivity($user, $date->day, $user->activeGroup()->time_address);
+        if ($userStat) {
+            $userStat->value = intval($request->minutes) / 60;
+            $userStat->save();
+        }
         ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
             ->afterCommit();
 
@@ -1005,6 +1012,7 @@ class TimetrackingController extends Controller
             'success' => true,
             'history' => $history ?? null
         ];
+
         return response()->json($result);
     }
 
