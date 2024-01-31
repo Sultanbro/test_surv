@@ -997,6 +997,8 @@ class TimetrackingController extends Controller
             }
         }
 
+
+
         $result = [
             'success' => true,
             'history' => $history ?? null
