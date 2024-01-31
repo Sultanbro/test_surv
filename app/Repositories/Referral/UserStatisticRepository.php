@@ -147,8 +147,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             }])
             ->with(['timetracking' => function (HasMany $query) {
                 $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
-                    ->distinct()
-                    ->havingRaw("work_total >= ?", [60 * 3]);
+                    ->distinct();
+//                    ->havingRaw("work_total >= ?", [60 * 3]);
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
