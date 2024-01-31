@@ -986,6 +986,12 @@ export default {
 					type: 6,
 					popover: 'Будет начислено 50% от дневного оклада',
 				},
+				{
+					label: 'Без содержания',
+					color: 'pink',
+					type: 11,
+					popover: '',
+				},
 			],
 			numClicks: 0,
 			currentEditingCell: {},
@@ -2111,6 +2117,17 @@ $bgAccept: #156AE8;
 			}
 		}
 		&_7{
+			border: 1px solid #bf2216;
+			background-color: #df271a;
+			color: #fff;
+			&:hover{
+				background-color: #bf2216;
+			}
+			.img-info{
+				filter: contrast(100);
+			}
+		}
+		&_11{
 			border: 1px solid #bf2216;
 			background-color: #df271a;
 			color: #fff;
