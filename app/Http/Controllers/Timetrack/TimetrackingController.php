@@ -1000,7 +1000,7 @@ class TimetrackingController extends Controller
         }
 
         /** @var UserStat $userStat */
-        $userStat = UserStat::getTimeTrackingActivity($user, $date->day, $user->activeGroup()->time_address);
+        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
         if ($userStat) {
             $userStat->value = intval($request->minutes) / 60;
             $userStat->save();
