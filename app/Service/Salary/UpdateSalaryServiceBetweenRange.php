@@ -56,10 +56,11 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
             // Find the salary for the user
             $salary = $this->getSalary($user, $date);
 
-            dd_if($user->id == 30905 && $date->day == 8, $salary);
-
             // Find the rate for the user
             $amount = $this->getUserRate($user);
+
+            dd_if($user->id == 30905 && $date->day == 8, $amount);
+
 
             if ($salary && (int)$salary->amount === 0) {
                 $salary->update([
