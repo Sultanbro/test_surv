@@ -957,6 +957,7 @@ class TimetrackingController extends Controller
         // Добавить новый exit
         $exit = Carbon::parse($timeStart)->addMinutes(intval($minutes));
 
+        $history = null;
         //Конец блока
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');

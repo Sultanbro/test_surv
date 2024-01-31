@@ -147,8 +147,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             }])
             ->with(['timetracking' => function (HasMany $query) {
                 $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
-                    ->distinct();
-//                    ->havingRaw("work_total >= ?", [60 * 3]);
+                    ->distinct()
+                    ->havingRaw("work_total >= ?", [60 * 3]);
             }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
@@ -164,8 +164,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
-                $days = $referral->daytypes;
-
                 $salaries = $referral->referrerSalaries;
 
                 $this->salaryFilter->forThisCollection($salaries);
@@ -176,7 +174,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $referral->is_trainee = $referral->user_description?->is_trainee;
 
                 $dateTypes = array_merge(
-                    $this->traineesDaily($days, $training),
+                    $this->traineesDaily($referral->daytypes, $training),
                     $this->attestation($attestation),
                     $this->employeeWeekly($working),
                     $this->employeeFirstWeek($firstWork)
