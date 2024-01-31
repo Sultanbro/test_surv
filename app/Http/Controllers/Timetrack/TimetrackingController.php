@@ -998,7 +998,7 @@ class TimetrackingController extends Controller
             }
         }
 
-        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $request->group_id)
+        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
             ->afterCommit();
 
         $result = [

@@ -1487,7 +1487,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function activeGroup(): ?ProfileGroup
     {
-        return $this->groups()->where('status', '=', 'active')->first();
+        return $this->groups()
+            ->where('status', '=', 'active')
+            ->first();
     }
 
     public function activeGroupFast(): ?ProfileGroup
