@@ -918,12 +918,12 @@ class TimetrackingController extends Controller
         /** @var User $user */
         $user = User::with(['workChart', 'groups.workChart'])->find($userId);
         $schedule = $user->scheduleFast();
-        dd($schedule);
         if ($schedule['start']) {
             $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
         } else {
             $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
         }
+        dd($enter->format("Y-m-d"));
 
         $day = Timetracking::query()
             ->where('user_id', intval($userId))
