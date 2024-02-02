@@ -55,7 +55,7 @@ class SaveUserKpi extends Command
     {
         foreach ($kpis as $kpi) {
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
-            dd($users);
+            dd(current($users));
         }
     }
 
