@@ -1905,7 +1905,7 @@ class KpiStatisticService
                 $item['percent'] = 0;
             }
         } elseif ($item['method'] == 2) {
-            $item['percent'] = round(($item['avg'] * 100) / $item['plan'], 2);
+            $item['percent'] = $item['plan'] ? round(($item['avg'] * 100) / $item['plan'], 2) : 0;
         } elseif ($item['method'] == 3 || $item['method'] == 4) {
             $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
         } elseif ($item['method'] == 5 || $item['method'] == 6) {
