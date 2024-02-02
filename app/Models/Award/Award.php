@@ -4,6 +4,7 @@ namespace App\Models\Award;
 
 use App\Helpers\FileHelper;
 use App\Models\Course;
+use App\Models\CourseV2;
 use App\Observers\AwardObserver;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,6 +59,15 @@ class Award extends Model
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'award_course', 'award_id', 'course_id')
+            ->withPivot(['user_id', 'path', 'format'])->withTimestamps();
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function coursesV2(): BelongsToMany
+    {
+        return $this->belongsToMany(CourseV2::class, 'award_course', 'award_id', 'course_id')
             ->withPivot(['user_id', 'path', 'format'])->withTimestamps();
     }
 

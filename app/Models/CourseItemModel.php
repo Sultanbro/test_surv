@@ -17,19 +17,21 @@ class CourseItemModel extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        
-        // element id 
+
+        // element id
         // but in book it represents page number with test
-        'item_id', 
+        'item_id',
         'type', // book video kb
-        'status', 
+        'status',
         'user_id',
-        'course_item_id', 
+        'course_item_id',
     ];
 
+    // statuses
     CONST PASSED = 1;
     CONST NOT_PASSED = 0;
 
+    // types
     const BOOK = 1;
     CONST VIDEO = 2;
     CONST KNOWBASE = 3;
@@ -50,23 +52,23 @@ class CourseItemModel extends Model
 
     /**
      * Прогресс пользователя на этапе курса
-     * 
+     *
      * $courseItemId, этап
-     * 
+     *
      * $element, источник этапа
-     * 
+     *
      * @return \Illuminate\Support\Collection
      */
     public function progress(int $user_id, int $courseItemId, KnowBase|VideoPlaylist|Book $element)
     {
         $elementChildren = $element->getOrder();
         $type = $this->getType( get_class($element) );
-        
+
         return CourseItemModel::whereIn('item_id', $elementChildren)
                         ->where('course_item_id', $courseItemId)
                         ->where('type', $type)
                         ->where('user_id', $user_id)
                         ->get();
     }
-    
+
 }
