@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class SaveUserKpi extends Command
 {
@@ -65,17 +66,23 @@ class SaveUserKpi extends Command
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-            $users = $this->statisticService->getUsersForKpi($kpi, $date);
-            foreach ($users as $user) {
-                $total = 0;
-                foreach ($user['items'] as $item) {
-                    $total += $this->calculator->calcSum($item, $kpi->toArray());
+            try {
+
+                $users = $this->statisticService->getUsersForKpi($kpi, $date);
+                foreach ($users as $user) {
+                    $total = 0;
+                    foreach ($user['items'] as $item) {
+                        $total += $this->calculator->calcSum($item, $kpi->toArray());
+                    }
+                    $this->updateSavedKpi([
+                        'total' => $total,
+                        'user_id' => $user['id'],
+                        'date' => $date->format("Y-m-d")
+                    ]);
                 }
-                $this->updateSavedKpi([
-                    'total' => $total,
-                    'user_id' => $user['id'],
-                    'date' => $date->format("Y-m-d")
-                ]);
+            } catch (\RuntimeException $e) {
+                Log::error($e);
+                continue;
             }
         }
     }
