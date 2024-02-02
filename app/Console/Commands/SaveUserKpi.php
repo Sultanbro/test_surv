@@ -4,12 +4,11 @@ namespace App\Console\Commands;
 
 use App\Events\KpiChangedEvent;
 use App\SavedKpi;
-use App\Service\CalculateKpiService;
+use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Console\Command;
-use Illuminate\Http\Request;
 
 class SaveUserKpi extends Command
 {
@@ -18,15 +17,15 @@ class SaveUserKpi extends Command
     protected $description = 'Сохранить kpi';
     public KpiStatisticService $repo;
 
-    public CalculateKpiService $calculator;
+    public CalculateKpiService2 $calculator;
 
     public array $workdays;
     private KpiStatisticService $statisticService;
 
     public function __construct(
-        KpiStatisticService $repo,
-        CalculateKpiService $calculator,
-        KpiStatisticService $statisticService,
+        KpiStatisticService  $repo,
+        CalculateKpiService2 $calculator,
+        KpiStatisticService  $statisticService,
     )
     {
         parent::__construct();
@@ -51,12 +50,21 @@ class SaveUserKpi extends Command
         $this->calc($kpis, $date);
     }
 
-    private function calc($kpis, $date): void
+    private function calc($kpis, Carbon $date): void
     {
         foreach ($kpis as $kpi) {
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
             foreach ($users as $user) {
-                dd_if($user['id'] == 27966, $user);
+                $total = 0;
+                foreach ($user['items'] as $item)
+                    dd_if($user['id'] == 27966, $item);
+
+                $total += $this->calculator->calcSum($item, $kpi);
+                $this->updateSavedKpi([
+                    'total' => $total,
+                    'user_id' => $user['id'],
+                    'date' => $date->format("Y-m-d")
+                ]);
             }
         }
     }
