@@ -66,18 +66,15 @@ class SaveUserKpi extends Command
             }
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
             foreach ($users as $user) {
-                dd_if($user['id'] == 27966, $user);
+                $total = 0;
+                foreach ($user['items'] as $item)
+                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
+                $this->updateSavedKpi([
+                    'total' => $total,
+                    'user_id' => $user['id'],
+                    'date' => $date->format("Y-m-d")
+                ]);
             }
-//            foreach ($users as $user) {
-//                $total = 0;
-//                foreach ($user['items'] as $item)
-//                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
-//                $this->updateSavedKpi([
-//                    'total' => $total,
-//                    'user_id' => $user['id'],
-//                    'date' => $date->format("Y-m-d")
-//                ]);
-//            }
         }
     }
 
