@@ -43,7 +43,6 @@ class Kpi extends Model
 
             $skpi = SavedKpi::query()
                 ->where('user_id', $user_id);
-            dd_if($user_id == 27966, $skpi);
 
             if ($date != '') {
                 $skpi->where('date', Carbon::parse($date)->day(1)->format('Y-m-d'));
@@ -51,6 +50,7 @@ class Kpi extends Model
                 $skpi->where('date', Carbon::now()->day(1)->format('Y-m-d'));
             }
             $skpi = $skpi->first();
+            dd_if($user_id == 27966, $skpi);
 
             $res = 0;
             if ($skpi) {
