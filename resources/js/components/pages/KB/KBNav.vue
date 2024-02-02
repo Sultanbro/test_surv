@@ -144,7 +144,7 @@
 			>
 				{{ rootBook.title }}
 				<div
-					v-if="mode == 'edit'"
+					v-if="mode == 'edit' && rootBook.canEdit"
 					class="KBNav-itemActions"
 				>
 					<i
@@ -283,6 +283,7 @@
 					<span>Страница</span>
 				</div>
 				<div
+					v-if="$laravel.is_admin"
 					class="btn btn-grey w-full mr-1"
 					@click="$emit('create', rootBook)"
 				>

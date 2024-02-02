@@ -15,10 +15,12 @@ use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
 use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
+use App\Jobs\Salary\ProcessUpdateSalary;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
 use App\Models\GroupUser;
@@ -918,12 +920,11 @@ class TimetrackingController extends Controller
         /** @var User $user */
         $user = User::with(['workChart', 'groups.workChart'])->find($userId);
         $schedule = $user->scheduleFast();
-        dd($schedule);
-        if ($schedule['start']) {
-            $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
-        } else {
-            $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
-        }
+//        if ($schedule['start']) {
+//            $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
+//        } else {
+        $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
+//        }
 
         $day = Timetracking::query()
             ->where('user_id', intval($userId))
@@ -938,8 +939,6 @@ class TimetrackingController extends Controller
                 'enter' => $enter,
             ]);
         }
-
-        dd($day);
 
         $days = Timetracking::query()
             ->where('user_id', intval($userId))
@@ -1000,10 +999,20 @@ class TimetrackingController extends Controller
             }
         }
 
+        /** @var UserStat $userStat */
+        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
+        if ($userStat) {
+            $userStat->value = intval($request->minutes) / 60;
+            $userStat->save();
+        }
+        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
+            ->afterCommit();
+
         $result = [
             'success' => true,
             'history' => $history ?? null
         ];
+
         return response()->json($result);
     }
 
