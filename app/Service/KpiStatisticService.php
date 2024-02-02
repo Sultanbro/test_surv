@@ -514,6 +514,13 @@ class KpiStatisticService
         int    $groupId = null
     )
     {
+        $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
+        $this->updatedValues = UpdatedUserStat::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->orderBy('date', 'desc')
+            ->get();
+
         $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
         return Kpi::withTrashed()
@@ -738,7 +745,7 @@ class KpiStatisticService
 
         $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
 
-        $this->workdays = collect($this->userWorkdays($request));
+        $this->workdays = collect($this->userWorkdays($request->get('filters')));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
@@ -869,7 +876,7 @@ class KpiStatisticService
         $user_id = $filters['user_id'] ?? 0;
         $currency = 'kzt';
 
-        $this->workdays = collect($this->userWorkdays($request));
+        $this->workdays = collect($this->userWorkdays($request->get('filters')));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
@@ -1115,13 +1122,6 @@ class KpiStatisticService
             $filters['data_from']['month'] ?? now()->month
         )->startOfMonth();
 
-        $this->workdays = collect($this->userWorkdays($request));
-        $this->updatedValues = UpdatedUserStat::query()
-            ->whereMonth('date', $date->month)
-            ->whereYear('date', $date->year)
-            ->orderBy('date', 'desc')
-            ->get();
-
         $kpis = $this
             ->kpis($date, $searchWord, $groupId)
             ->paginate();
@@ -1167,7 +1167,7 @@ class KpiStatisticService
         $this->dateFromRequest($request);
         $targetableType = self::TARGET_TYPES[$request->type];
 
-        $this->workdays = collect($this->userWorkdays($request));
+        $this->workdays = collect($this->userWorkdays($request->get('filters')));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $this->from->month)
             ->whereYear('date', $this->from->year)
@@ -2280,11 +2280,10 @@ class KpiStatisticService
      * @param Request $request
      * @return array
      */
-    public
-    function userWorkdays(Request $request): array
+    public function userWorkdays(?array $filter = null): array
     {
         $default_date = ['year' => Carbon::now()->year, 'month' => Carbon::now()->month];
-        $filters = $request->input('filters') ?? ['data_from' => $default_date];
+        $filters = $filter ?? ['data_from' => $default_date];
         if (!array_key_exists('data_from', $filters)) $filters['data_from'] = $default_date;
 
         $users = $this->getUserProfileGroup($filters);

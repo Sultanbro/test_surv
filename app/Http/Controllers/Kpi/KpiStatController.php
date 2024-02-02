@@ -187,7 +187,7 @@ class KpiStatController extends Controller
      */
     public function workdays(Request $request): JsonResponse
     {
-        $response = $this->service->userWorkdays($request);
+        $response = $this->service->userWorkdays($request->get('filter'));
 
         return response()->json($response);
     }
