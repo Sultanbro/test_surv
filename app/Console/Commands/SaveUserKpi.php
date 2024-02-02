@@ -48,44 +48,15 @@ class SaveUserKpi extends Command
 
         // get kpis
         $kpis = $this->statisticService->kpis($date)->get();
-        dd($kpis);
-        /**
-         * working users not trainees
-         */
-        $users = DB::table('users')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where(function ($query) use ($date) {
-                $query->whereDate('deleted_at', '>=', $date)
-                    ->orWhereNull('deleted_at');
-            })
-            ->when($userId, fn($query) => $query->where('users.id', $userId))
-            ->where('is_trainee', 0);
-
-        if ($this->argument('user_id')) {
-            $users->where('users.id', $this->argument('user_id'));
-        }
-
-        $users = $users->select(['users.id', 'users.last_name', 'users.name'])
-            ->get(['users.id']);
-
-        $this->comment($users->count());
-
-        foreach ($users as $key => $user) {
-            $this->line($key . ' ' . $user->id);
-            // fetch kpis of user
-            $repo = $this->repo->fetchKpisWithCurrency(new Request());
-            // save
-            $this->updateSavedKpi([
-                'user_id' => $user->id,
-                'date' => $date,
-                'total' => $this->calc($repo['items']),
-            ]);
-        }
+        $this->calc($kpis, $date);
     }
 
-    private function calc($kpis): float
+    private function calc($kpis, $date): void
     {
-        return 0;
+        foreach ($kpis as $kpi) {
+            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
+            dd($users);
+        }
     }
 
     private function updateSavedKpi(array $data): void

@@ -1125,6 +1125,7 @@ class KpiStatisticService
         $kpis = $this
             ->kpis($date, $searchWord, $groupId)
             ->paginate();
+
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
@@ -1161,8 +1162,7 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public
-    function fetchKpiGroupOrUser(Request $request, int $targetableId): array
+    public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
     {
         $this->dateFromRequest($request);
         $targetableType = self::TARGET_TYPES[$request->type];
@@ -1246,8 +1246,7 @@ class KpiStatisticService
     /**
      * Возвращает процент выполнения KPI по месяцам года
      */
-    public
-    function fetchAnnualKPIPercent(Request $request): array
+    public function fetchAnnualKPIPercent(Request $request): array
     {
         $limit = $request->limit ? $request->limit : 10;
         $year = $request->year ? $request->year : date("Y");
@@ -1359,8 +1358,7 @@ class KpiStatisticService
     /**
      * Helper for fetchKpis()
      */
-    private
-    function getUsersForKpi(
+    private function getUsersForKpi(
         Kpi    $kpi,
         Carbon $date,
         int    $user_id = 0
@@ -1466,8 +1464,7 @@ class KpiStatisticService
         return $users;
     }
 
-    private
-    function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
+    public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
         $dateFrom = $date->copy()->startOfMonth();
         $dateTo = $date->copy()->endOfMonth();
