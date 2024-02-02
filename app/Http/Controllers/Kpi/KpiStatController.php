@@ -65,7 +65,7 @@ class KpiStatController extends Controller
      */
     public function fetchGroups(Request $request): JsonResponse
     {
-        $response = $this->service->fetch($request);
+        $response = $this->service->fetch($request->all());
 
         return response()->json($response);
     }

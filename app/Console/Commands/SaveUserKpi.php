@@ -7,91 +7,59 @@ use App\SavedKpi;
 use App\Service\CalculateKpiService;
 use App\Service\KpiStatisticService;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 
 class SaveUserKpi extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'user:save_kpi {date?} {user_id?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
 
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Сохранить kpi';
+    public KpiStatisticService $repo;
 
-    /**
-     * Variables that used
-     *
-     * @var mixed
-     */
-    public $date; // Дата пересчета
+    public CalculateKpiService $calculator;
 
-    /**
-     * Вытащить кпи показатели сотрудника
-     *
-     * @var KpiStatisticService
-     */
-    public $repo;
-
-    /**
-     * Расчет выполнеия и суммы кпи
-     *
-     * @var CalculateKpiService
-     */
-    public $calculator;
-
-
-    /**
-     * Рабочие дни
-     */
     public array $workdays;
+    private KpiStatisticService $statisticService;
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function __construct(
+        KpiStatisticService $repo,
+        CalculateKpiService $calculator,
+        KpiStatisticService $statisticService,
+    )
     {
         parent::__construct();
-        $this->repo = new KpiStatisticService();
-        $this->calculator = new CalculateKpiService();
+        $this->repo = $repo;
+        $this->calculator = $calculator;
+        $this->statisticService = $statisticService;
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
-        $date = $this->argument('date') ?? date('Y-m-d');
-        $date = Carbon::parse($date)->day(1)->format('Y-m-d');
+        $date = Carbon::parse($this->argument('date') ?? now())
+            ->day(1);
+        $userId = $this->argument('user_id');
 
         // count workdays in month
         $this->workdays = [];
-        $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [6, 0]);
+        $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month);
         $this->workdays[6] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
 
+        // get kpis
+        $kpis = $this->statisticService->kpis($date)->get();
+        dd($kpis);
         /**
          * working users not trainees
          */
-        $users = \DB::table('users')
+        $users = DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where(function ($query) use ($date) {
                 $query->whereDate('deleted_at', '>=', $date)
                     ->orWhereNull('deleted_at');
             })
+            ->when($userId, fn($query) => $query->where('users.id', $userId))
             ->where('is_trainee', 0);
-
 
         if ($this->argument('user_id')) {
             $users->where('users.id', $this->argument('user_id'));
@@ -102,102 +70,24 @@ class SaveUserKpi extends Command
 
         $this->comment($users->count());
 
-        /**
-         * Calc users kpi by order
-         */
-
-
         foreach ($users as $key => $user) {
-
             $this->line($key . ' ' . $user->id);
-
             // fetch kpis of user
-            $repo = $this->repo->fetchKpisWithCurrency(new Request([
-                'filters' => [
-                    'data_from' => [
-                        'month' => Carbon::parse($date)->month,
-                        'year' => Carbon::parse($date)->year,
-                    ],
-                    'user_id' => $user->id
-                ]
-            ]));
-
-
+            $repo = $this->repo->fetchKpisWithCurrency(new Request());
             // save
             $this->updateSavedKpi([
                 'user_id' => $user->id,
                 'date' => $date,
                 'total' => $this->calc($repo['items']),
             ]);
-
         }
-
     }
 
-    /**
-     * calc kpis of user
-     */
     private function calc($kpis): float
     {
-        $earned = 0;
-
-        foreach ($kpis as $key => $kpi) {
-            if (!isset($kpi['users'][0])) continue;
-//            dump($kpi['id'] . " " . $kpi['completed_80'] . ' ' . $kpi['completed_100']);
-
-            foreach ($kpi['users'][0]['items'] as $item) {
-                $itemActivityWeekdays = (int)($item['activity']['weekdays'] ?? 5);
-
-                $defaultWorkdaysKey = 5; // Default key to use when $itemActivityWeekdays is 0
-
-                $workdays = $this->workdays[$itemActivityWeekdays] ?? $this->workdays[$defaultWorkdaysKey];
-
-                $completed_percent = $this->calculator->calcCompleted([
-                    'fact' => $item['fact'],
-                    'avg' => $item['avg'],
-                    'records_count' => $item['records_count'],
-                    'daily_plan' => (float)$item['daily_plan'],
-                    'full_time' => $item['full_time'],
-                    'days_from_user_applied' => 0,
-                    'workdays' => $workdays,
-                    'percent' => $item['percent']
-                ], $item['method']);
-
-                if ($kpi['histories_latest']) {
-                    $payload = json_decode($kpi['histories_latest']['payload'], true);
-                } else {
-                    $payload = [];
-                }
-
-                $off_limit = array_key_exists('off_limit', $payload) ? $payload['off_limit'] : false;
-
-                // off_limit -> check employee can get more kpi bonus with this kpi
-                if ($completed_percent > 100 && !$off_limit) {
-                    $completed_percent = 100;
-                }
-
-                $earnedActivity = $this->calculator->earned(
-                    (int)$kpi['lower_limit'],
-                    (int)$kpi['upper_limit'],
-                    (float)$completed_percent,
-                    (int)$item['share'],
-                    (float)$item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
-                    (float)$item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
-                );
-//                dump('id=' . $item['id'] . ' ' . $item['name'] . ' plan=' . $item['plan'] . ' fact=' . $item['fact'] . ' percent=' . $completed_percent . ' share=' . $item['share'] . 'earned=' . $earnedActivity);
-
-                $earned += $earnedActivity;
-
-//                dump($earned);
-
-            }
-        }
-        return $earned;
+        return 0;
     }
 
-    /**
-     * save kpi
-     */
     private function updateSavedKpi(array $data): void
     {
         // save
@@ -205,13 +95,12 @@ class SaveUserKpi extends Command
             ->where('date', $data['date'])
             ->first();
 
-        $date = null;
         if ($sk) {
             $sk->total = $data['total'];
             $sk->save();
             $date = $sk->date;
         } else {
-            SavedKpi::create($data);
+            SavedKpi::query()->create($data);
             $date = $data['date'];
         }
 
