@@ -670,9 +670,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     /**
      * В каких группах находится user
-     * @return ProfileGroup
+     * @param bool $is_head
+     * @return Collection
      */
-    public function inGroups($is_head = false)
+    public function inGroups($is_head = false): Collection
     {
         $groups = GroupUser::query()
             ->where('user_id', $this->id)
