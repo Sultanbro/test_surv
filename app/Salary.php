@@ -647,7 +647,6 @@ class Salary extends Model
         $data['total_resources'] = 0;
 
         foreach ($users as $key => $user) {
-            dd_if($user->id == 27966, $user);
             /**
              * if internship is paid
              */
