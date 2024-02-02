@@ -993,8 +993,6 @@ class Salary extends Model
                 ->whereMonth('date', $date->month)
                 ->first();
 
-            dd_if($user->id == 27966, $editedKpi);
-
             $user->edited_kpi = null;
             if ($editedKpi) {
                 $user->kpi = $editedKpi->amount;
