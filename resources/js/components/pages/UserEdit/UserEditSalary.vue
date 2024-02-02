@@ -106,7 +106,7 @@ export default {
 			this.uin = obj?.uin || ''
 		},
 		taxes() {
-			this.myTaxes = this.taxes.filter(item => item.isAssigned);
+			this.myTaxes = this.taxes.slice().filter(item => item.isAssigned);
 		}
 	},
 	methods: {
@@ -184,7 +184,7 @@ export default {
 		},
 		onEditTax(tax) {
 			if(tax.isNew) return
-			const exists = this.editTaxes.find(t => t.id === tax.id)
+			const exists = this.editTaxes.find(t => t.tax_id === tax.tax_id)
 			if(exists){
 				exists.name = tax.name
 				exists.value = tax.value
@@ -207,7 +207,7 @@ export default {
 		},
 		async deleteTax() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.id}`);
+			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.tax_id || this.deleteTaxObj.id}`);
 			if (!response.data) {
 				this.$toast.error('Ошибка при удалении');
 				return;
@@ -555,10 +555,7 @@ export default {
 				:key="tax.tax_id"
 				class="d-flex tax-row"
 			>
-				<b-form-group
-					id="input-group-4"
-					class="custom-switch custom-switch-sm"
-				>
+				<b-form-group class="custom-switch custom-switch-sm">
 					<b-form-checkbox
 						v-model="tax.isPercent"
 						switch
@@ -584,6 +581,7 @@ export default {
 						v-model="tax.name"
 						type="text"
 						class="mr-1"
+						:disabled="tax.tax_id"
 						placeholder="Название налога"
 						@input="onEditTax(tax)"
 					/>

@@ -43,7 +43,7 @@ class UpdateTaxService
 
         }catch (Throwable $exception)
         {
-            throw new Exception("При обновлений $dto->id произошла ошибка");
+            throw new Exception("При обновлений $dto->id произошла ошибка" . $exception->getMessage());
         }
     }
 }
