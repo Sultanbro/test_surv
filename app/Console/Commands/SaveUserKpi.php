@@ -65,7 +65,7 @@ class SaveUserKpi extends Command
                 }
             }
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
-            dump($users);
+            dump(current($users));
 //            foreach ($users as $user) {
 //                dd_if($user['id'] == 27966, $user);
 //                $total = 0;
