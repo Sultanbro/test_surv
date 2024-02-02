@@ -6,6 +6,7 @@ use App\Models\AnalyticsActivitiesSetting;
 use App\Models\WorkChart\WorkChartModel;
 use App\Repositories\ActivityRepository;
 use App\WorkingDay;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
 use Carbon\Carbon;
@@ -661,8 +662,10 @@ class UserStat extends Model
         }
     }
 
-    public static function getTimeTrackingActivity($user, $dayInMonth, $timeAddress){
-        return self::where('user_id', $user->id)
+    public static function getTimeTrackingActivity($user, $dayInMonth, $timeAddress): Builder|null
+    {
+        return self::query()
+            ->where('user_id', $user->id)
             ->where('date', $dayInMonth->format('Y-m-d'))
             ->where('activity_id', $timeAddress)
             ->first();
