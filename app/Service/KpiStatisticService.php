@@ -1358,7 +1358,7 @@ class KpiStatisticService
     /**
      * Helper for fetchKpis()
      */
-    private function getUsersForKpi(
+    public function getUsersForKpi(
         Kpi    $kpi,
         Carbon $date,
         int    $user_id = 0

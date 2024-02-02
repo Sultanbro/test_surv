@@ -29,7 +29,7 @@ class CalculateKpiService2
         }
 
         // check overfulfillment
-        if (!$kpi['allow_overfulfillment'] && $completed > 1) $completed = 1;
+        if (!$kpi['off_limit'] && $completed > 1) $completed = 1;
 
         if ($completed > $lower_limit) {
             if ($completed < $upper_limit) {

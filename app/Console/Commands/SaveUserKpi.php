@@ -60,11 +60,12 @@ class SaveUserKpi extends Command
             $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
+
                 if (isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
+            $users = $this->statisticService->getUsersForKpi($kpi, $date);
             foreach ($users as $user) {
                 $total = 0;
                 foreach ($user['items'] as $item)
