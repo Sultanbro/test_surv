@@ -64,7 +64,7 @@ class SaveUserKpi extends Command
                 }
             }
             dd_if($kpi['id'] == 128, $kpi->items);
-//            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
+            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
 //            foreach ($users as $user) {
 //                $total = 0;
 //                foreach ($user['items'] as $item)
