@@ -10,7 +10,6 @@ class CalculateKpiService2
 {
     public function calcSum($el, $kpi): float
     {
-        dd($el);
         $result = 0;
         $completed = $this->calcCompleted($el);
         $lower_limit = floatval($kpi['lower_limit']) / 100.0;
