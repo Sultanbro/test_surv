@@ -6,7 +6,7 @@
 			</div>
 			<div
 				class="ApplyForm-close"
-				@close="$emit('close')"
+				@click="$emit('close')"
 			>
 				<i class="fa fa-times" />
 			</div>
@@ -15,6 +15,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Имя
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-input
@@ -26,6 +27,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Фамилия
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-input
@@ -37,6 +39,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					График работы
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-select
@@ -52,6 +55,7 @@
 			>
 				<span class="ApplyForm-label">
 					Первый рабочий день
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<input
@@ -64,6 +68,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Ставка
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-select
@@ -76,6 +81,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Удаленный/Оффисный
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-select
@@ -88,6 +94,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Оклад
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<b-form-input
@@ -105,6 +112,7 @@
 			<label class="ApplyForm-field">
 				<span class="ApplyForm-label">
 					Основной телефон
+					<span class="red">*</span>
 				</span>
 				<span class="ApplyForm-input">
 					<input
@@ -292,6 +300,11 @@ export default {
 		display: flex;
 		align-items: center;
 		padding: 8px 20px;
+		cursor: pointer;
+		color: #777;
+		&:hover{
+			color: #000;
+		}
 	}
 	&-content{
 		max-height: 100%;
@@ -306,7 +319,7 @@ export default {
 		margin-bottom: 20px;
 	}
 	&-label{
-		flex: 0 0 30%;
+		flex: 0 0 33%;
 		margin-top: 6px;
 	}
 	&-input{
