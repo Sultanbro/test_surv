@@ -53,13 +53,19 @@ class SaveUserKpi extends Command
     private function calc($kpis, Carbon $date): void
     {
         foreach ($kpis as $kpi) {
+            $kpi->kpi_items = [];
+            if ($kpi->histories_latest) {
+                $payload = json_decode($kpi->histories_latest->payload, true);
+
+                if (isset($payload['children'])) {
+                    $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                }
+            }
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
             foreach ($users as $user) {
                 $total = 0;
                 foreach ($user['items'] as $item)
-                    dd_if($user['id'] == 27966, $item->toArray());
-
-                $total += $this->calculator->calcSum($item->toArray(), $kpi);
+                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
                 $this->updateSavedKpi([
                     'total' => $total,
                     'user_id' => $user['id'],
