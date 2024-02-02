@@ -987,10 +987,13 @@ class Salary extends Model
             /**
              * If user has edited KPI take it
              */
-            $editedKpi = EditedKpi::where('user_id', $user->id)
+            $editedKpi = EditedKpi::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
+
+            dd_if($user->id == 27966, $editedKpi);
 
             $user->edited_kpi = null;
             if ($editedKpi) {
