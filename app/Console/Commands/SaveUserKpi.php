@@ -74,11 +74,11 @@ class SaveUserKpi extends Command
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
                 }
-                $this->updateSavedKpi([
-                    'total' => $total,
-                    'user_id' => $user['id'],
-                    'date' => $date->format("Y-m-d")
-                ]);
+//                $this->updateSavedKpi([
+//                    'total' => $total,
+//                    'user_id' => $user['id'],
+//                    'date' => $date->format("Y-m-d")
+//                ]);
             }
         }
     }
