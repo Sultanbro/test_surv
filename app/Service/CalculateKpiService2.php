@@ -40,8 +40,7 @@ class CalculateKpiService2
 
         if ($result < 0) $result = 0;
 
-        dd($result);
-        return (float)number_format($result, 1);
+        return $result;
     }
 
     private function calcCompleted($el): float
