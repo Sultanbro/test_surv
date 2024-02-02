@@ -63,9 +63,7 @@ class SaveUserKpi extends Command
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-            dump($kpi['id']);
-
-//            dd_if($kpi['id'] == 128, $kpi->items);
+            dd_if($kpi['id'] == 128, $kpi->items);
 //            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
 //            foreach ($users as $user) {
 //                $total = 0;
