@@ -207,7 +207,7 @@ export default {
 		},
 		async deleteTax() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.id}`);
+			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.tax_id}`);
 			if (!response.data) {
 				this.$toast.error('Ошибка при удалении');
 				return;
@@ -556,7 +556,7 @@ export default {
 				class="d-flex tax-row"
 			>
 				<b-form-group
-					id="input-group-4"
+					id="input-group-tax-idx"
 					class="custom-switch custom-switch-sm"
 				>
 					<b-form-checkbox
