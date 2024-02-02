@@ -19,10 +19,11 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id');
             $table->unsignedBigInteger('curator_id')->nullable();
             $table->tinyInteger('course_grade');
-            $table->tinyInteger('curator_grade');
+            $table->tinyInteger('curator_grade')->nullable();
             $table->text('course_comment')->nullable();
             $table->text('curator_comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

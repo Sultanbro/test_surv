@@ -123,6 +123,11 @@ class CourseV2 extends Model
         return $books->merge($videos)->merge($kbs);
     }
 
+    public function itemsPivot()
+    {
+        return $this->hasMany(CourseItemV2::class, 'course_id');
+    }
+
     public function centralCourse(): BelongsTo
     {
         return $this->belongsTo(CentralCourse::class);
@@ -130,6 +135,6 @@ class CourseV2 extends Model
 
     public function userCourseProgress()
     {
-        return $this->hasMany(UserCourseProgress::class);
+        return $this->hasMany(UserCourseProgress::class, 'course_id');
     }
 }

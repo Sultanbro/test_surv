@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('user_course_item_progress', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('course_item_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('item_id');
             $table->string('item_type');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(0);
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('item_type');
             $table->string('name');
             $table->integer('order')->default(0);
-            $table->integer('time')->default(0);
             $table->integer('duration')->default(0);
             $table->timestamps();
             $table->softDeletes();

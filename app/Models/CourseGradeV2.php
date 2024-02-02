@@ -5,10 +5,11 @@ namespace App\Models;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseGradeV2 extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'course_grades_v2';
 
@@ -19,5 +20,15 @@ class CourseGradeV2 extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function curator()
+    {
+        return $this->belongsTo(User::class, 'curator_id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(CourseV2::class, 'course_id');
     }
 }
