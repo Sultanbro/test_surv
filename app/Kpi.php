@@ -50,7 +50,6 @@ class Kpi extends Model
                 $skpi->where('date', Carbon::now()->day(1)->format('Y-m-d'));
             }
             $skpi = $skpi->first();
-            dd_if($user_id == 27966, $skpi);
 
             $res = 0;
             if ($skpi) {
@@ -84,7 +83,7 @@ class Kpi extends Model
         }
 
 
-        $sk = SavedKpi::where('user_id', $user_id)
+        $sk = SavedKpi::query()->where('user_id', $user_id)
             ->where('date', $date)
             ->update([
                 'total' => intval($kpi_total)
