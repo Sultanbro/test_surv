@@ -9,6 +9,7 @@ use App\Service\KpiStatisticService;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class SaveUserKpi extends Command
 {
@@ -64,7 +65,7 @@ class SaveUserKpi extends Command
                 }
             }
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
-            dump(\Arr::pluck($users,'id'));
+            dump(Arr::pluck($users,'id'));
 //            foreach ($users as $user) {
 //                dd_if($user['id'] == 27966, $user);
 //                $total = 0;
