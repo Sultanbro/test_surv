@@ -11,7 +11,7 @@ class CentralCourseCat extends Model
     use HasFactory, SoftDeletes;
 
     protected $connection = 'mysql';
-    protected $table = 'central_courses';
+    protected $table = 'central_course_cats';
 
     protected $fillable = [
         'name', 'order'

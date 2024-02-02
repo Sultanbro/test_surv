@@ -2,8 +2,6 @@
 
 namespace App\Repositories\CoursesV2;
 
-use App\DTO\CoursesV2\CoursePropsDto;
-use App\Models\CentralCourseCat;
 use App\Models\CentralCourseCat as Model;
 use App\Repositories\CoreRepository;
 
@@ -37,7 +35,7 @@ class CentralCourseCatRepository extends CoreRepository
             ]);
     }
 
-    public function updateCat(CentralCourseCat $category, $data)
+    public function updateCat(Model $category, $data)
     {
         return $category->update([
             'name' => $data['name'],
@@ -45,7 +43,7 @@ class CentralCourseCatRepository extends CoreRepository
         ]);
     }
 
-    public function delete(CentralCourseCat $category)
+    public function delete(Model $category)
     {
         $category->delete();
         return true;

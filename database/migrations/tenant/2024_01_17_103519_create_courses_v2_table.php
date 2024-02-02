@@ -37,6 +37,7 @@ return new class extends Migration
             $table->tinyInteger('for_sale')->default(0);
             $table->integer('price')->default(0);
             $table->integer('attempts');
+            $table->integer('hold_time')->default(60);
             $table->integer('passing_score');
             $table->unsignedBigInteger('author_id');
             $table->timestamps();

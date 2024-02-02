@@ -117,7 +117,11 @@ class CourseV2Repository extends CoreRepository
 
     public function filterAssigned(AssignedCourseFilterPropsDto $dto)
     {
-        $query = $this->model()->query()->whereHas('targets');
+        $query = $this->model()
+            ->query()
+            ->where(function ($q) {
+                $q->whereHas('users')->orWhereHas('positions')->orWhereHas('groups');
+            });
 
         if ($dto->search) $query->where('name', 'LIKE', '%' . $dto->search . '%');
         if ($dto->target) {

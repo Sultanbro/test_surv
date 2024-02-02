@@ -127,4 +127,9 @@ class CourseV2 extends Model
     {
         return $this->belongsTo(CentralCourse::class);
     }
+
+    public function userCourseProgress()
+    {
+        return $this->hasMany(UserCourseProgress::class);
+    }
 }
