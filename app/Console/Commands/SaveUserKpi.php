@@ -63,18 +63,20 @@ class SaveUserKpi extends Command
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-            dd_if($kpi['id'] == 128, $kpi->items);
-            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
-            foreach ($users as $user) {
-                $total = 0;
-                foreach ($user['items'] as $item)
-                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
-                $this->updateSavedKpi([
-                    'total' => $total,
-                    'user_id' => $user['id'],
-                    'date' => $date->format("Y-m-d")
-                ]);
-            }
+            dump($kpi['id']);
+
+//            dd_if($kpi['id'] == 128, $kpi->items);
+//            $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
+//            foreach ($users as $user) {
+//                $total = 0;
+//                foreach ($user['items'] as $item)
+//                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
+//                $this->updateSavedKpi([
+//                    'total' => $total,
+//                    'user_id' => $user['id'],
+//                    'date' => $date->format("Y-m-d")
+//                ]);
+//            }
         }
     }
 
