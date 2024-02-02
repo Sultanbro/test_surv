@@ -67,19 +67,15 @@ class SaveUserKpi extends Command
             }
             $users = $this->statisticService->getUsersForKpi($kpi, $date);
             foreach ($users as $user) {
-//                dd_if($user['id'] == 27966, $total);
-                if ($user['id'] == 27966) {
-                    $total = 0;
-                    foreach ($user['items'] as $item) {
-                        $total += $this->calculator->calcSum($item, $kpi->toArray());
-                    }
-                    dd($total);
+                $total = 0;
+                foreach ($user['items'] as $item) {
+                    $total += $this->calculator->calcSum($item, $kpi->toArray());
                 }
-//                $this->updateSavedKpi([
-//                    'total' => $total,
-//                    'user_id' => $user['id'],
-//                    'date' => $date->format("Y-m-d")
-//                ]);
+                $this->updateSavedKpi([
+                    'total' => $total,
+                    'user_id' => $user['id'],
+                    'date' => $date->format("Y-m-d")
+                ]);
             }
         }
     }
