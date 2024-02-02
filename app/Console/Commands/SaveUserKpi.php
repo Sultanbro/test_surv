@@ -7,23 +7,20 @@ use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class SaveUserKpi extends Command
 {
 
-    protected $signature = 'user:save_kpi {date?} {user_id?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
+    protected $signature = 'user:save_kpi {date?} {user_id?}';
 
     protected $description = 'Сохранить kpi';
 
     public KpiStatisticService $repo;
 
     public CalculateKpiService2 $calculator;
-
-    public array $workdays;
 
     private KpiStatisticService $statisticService;
 
@@ -43,12 +40,6 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now())
             ->day(1);
-        $userId = $this->argument('user_id');
-
-        // count workdays in month
-        $this->workdays = [];
-        $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month);
-        $this->workdays[6] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
 
         // get kpis
         $kpis = $this->statisticService->kpis($date)->get();
@@ -80,7 +71,7 @@ class SaveUserKpi extends Command
                         'date' => $date->format("Y-m-d")
                     ]);
                 }
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 Log::error($e);
                 continue;
             }
@@ -89,7 +80,7 @@ class SaveUserKpi extends Command
 
     private function updateSavedKpi(array $data): void
     {
-        // save
+        /** @var SavedKpi $sk */
         $sk = SavedKpi::query()->where('user_id', $data['user_id'])
             ->where('date', $data['date'])
             ->first();
