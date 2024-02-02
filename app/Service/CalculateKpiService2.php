@@ -10,9 +10,9 @@ class CalculateKpiService2
 {
     public function calcSum($el, $kpi): float
     {
+        dd($el);
         $result = 0;
         $completed = $this->calcCompleted($el);
-        dd($completed);
         $lower_limit = floatval($kpi['lower_limit']) / 100.0;
         $upper_limit = floatval($kpi['upper_limit']) / 100.0;
         $share = isset($el['share']) ? floatval($el['share']) / 100.0 : 0;
