@@ -12,14 +12,17 @@ use Illuminate\Console\Command;
 
 class SaveUserKpi extends Command
 {
+
     protected $signature = 'user:save_kpi {date?} {user_id?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
 
     protected $description = 'Сохранить kpi';
+
     public KpiStatisticService $repo;
 
     public CalculateKpiService2 $calculator;
 
     public array $workdays;
+
     private KpiStatisticService $statisticService;
 
     public function __construct(
@@ -56,17 +59,16 @@ class SaveUserKpi extends Command
             $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
-
                 if (isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
+            dd_if($kpi['id'] == 128, $kpi->items);
             $users = $this->statisticService->getAverageKpiPercent($kpi, $date);
             foreach ($users as $user) {
                 $total = 0;
                 foreach ($user['items'] as $item)
-                    dd_if($user['id'] == 27966, $item->toArray());
-                $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
+                    $total += $this->calculator->calcSum($item->toArray(), $kpi->toArray());
                 $this->updateSavedKpi([
                     'total' => $total,
                     'user_id' => $user['id'],
@@ -97,5 +99,4 @@ class SaveUserKpi extends Command
             event(new KpiChangedEvent($date));
         }
     }
-
 }
