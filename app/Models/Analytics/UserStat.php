@@ -662,7 +662,7 @@ class UserStat extends Model
         }
     }
 
-    public static function getTimeTrackingActivity($user, $dayInMonth, $timeAddress): Model|null
+    public static function getTimeTrackingActivity($user, $dayInMonth, $timeAddress): ?Model
     {
         return self::query()
             ->where('user_id', $user->id)
