@@ -21,17 +21,6 @@ class CalculateKpiService2
         }
 
         if (!$kpi['off_limit'] && $completed > 1) $completed = 1;
-        if ($kpi['id'] == 94) {
-            dump(
-                $el['id'],
-                $completed,
-                $completed > $lower_limit,
-                PHP_EOL,
-                PHP_EOL,
-                PHP_EOL,
-                PHP_EOL
-            );
-        }
 
         if ($completed > $lower_limit) {
             if ($completed < $upper_limit) {
@@ -40,7 +29,12 @@ class CalculateKpiService2
                 $result = $completed_100 * $share * $completed;
             }
         }
-
+        if ($kpi['id'] == 94) {
+            dump(
+                $el['id'],
+                $result
+            );
+        }
         if ($result < 0) $result = 0;
 
         return $result;
