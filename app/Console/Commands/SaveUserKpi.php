@@ -81,11 +81,20 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        SavedKpi::query()
-            ->updateOrCreate([
+        $exists = SavedKpi::query()
+            ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
-            ], [
+            ])->exists();
+
+        if ($exists && $data['total'] === 0) {
+            return;
+        }
+
+        SavedKpi::query()->updateOrCreate([
+            'date' => $data['date'],
+            'user_id' => $data['user_id']],
+            [
                 'total' => $data['total']
             ]);
 
