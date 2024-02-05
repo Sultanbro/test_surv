@@ -64,9 +64,9 @@ class SaveUserKpi extends Command
                     $total = 0;
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
-                        if ($kpi->id === 94 && $user['id'] == 6401) {
-                            dump($this->calculator->calcSum($item, $kpi->toArray()));
-                        }
+                    }
+                    if ($kpi->id === 94 && $user['id'] == 6401) {
+                        dd($total);
                     }
                     $this->updateSavedKpi([
                         'total' => $total,
