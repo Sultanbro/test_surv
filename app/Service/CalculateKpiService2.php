@@ -8,17 +8,21 @@ class CalculateKpiService2
     {
         $result = 0;
         $completed = $this->calcCompleted($el);
-        if ($kpi['id'] == 94) {
-            dump(
-                $el['id'],
-                $completed
-            );
-        }
+
         $lower_limit = floatval($kpi['lower_limit']) / 100.0;
         $upper_limit = floatval($kpi['upper_limit']) / 100.0;
         $share = isset($el['share']) ? floatval($el['share']) / 100.0 : 0;
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
+
+        if ($kpi['id'] == 94) {
+            dump(
+                $el['id'],
+                $completed,
+                $completed_80,
+                $completed_100
+            );
+        }
 
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
