@@ -2,10 +2,6 @@
 
 namespace App\Service;
 
-use App\Models\Analytics\Activity;
-use Exception;
-use Illuminate\Support\Facades\Log;
-
 class CalculateKpiService2
 {
     public function calcSum($el, $kpi): float
@@ -17,8 +13,6 @@ class CalculateKpiService2
         $share = isset($el['share']) ? floatval($el['share']) / 100.0 : 0;
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
-
-        $share = isset($el['histories_latest']['payload']['share']) ? floatval($el['histories_latest']['payload']['share']) / 100.0 : 0;
 
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
@@ -43,11 +37,19 @@ class CalculateKpiService2
     private function calcCompleted($el): float
     {
         $res = 0;
-
         $fact = $this->number($el['fact']);
         $avg = $this->number($el['avg']);
         $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
         $method = isset($el['method']) ? (int)$el['method'] : 0;
+
+        if ($el['kpi_id'] === 290) {
+            dd(
+                $fact,
+                $avg,
+                $plan,
+                $method
+            );
+        }
 
         switch ($method) {
             case 1:
