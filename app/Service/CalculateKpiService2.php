@@ -8,7 +8,7 @@ class CalculateKpiService2
     {
         $result = 0;
         $completed = $this->calcCompleted($el);
-        if ($kpi['id'] === 290) {
+        if ($kpi['id'] == 94) {
             dump(
                 $el['id'],
                 $completed
