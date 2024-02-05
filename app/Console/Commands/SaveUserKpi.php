@@ -81,16 +81,14 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        $kpi = SavedKpi::query()
+        SavedKpi::query()
             ->updateOrCreate([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ], [
                 'total' => $data['total']
             ]);
-        dd_if($data['user_id'] == 6401, [
-            'kpi' => $kpi
-        ]);
+
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }
