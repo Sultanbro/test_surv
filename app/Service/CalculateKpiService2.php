@@ -89,7 +89,7 @@ class CalculateKpiService2
                 break;
         }
         dd_if($el['id'] == 288, [
-            $el['histories_latest']['payload']
+            $el['histories_latest']
         ]);
         return (float)$res;
     }
