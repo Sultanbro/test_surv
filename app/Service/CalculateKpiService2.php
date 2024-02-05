@@ -15,10 +15,6 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
-        if (isset($el['histories_latest']['payload']['share'])) {
-            $share = floatval($el['histories_latest']['payload']['share']);
-        }
-
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
@@ -41,32 +37,11 @@ class CalculateKpiService2
 
     private function calcCompleted($el): float
     {
-
-        if (isset($el['histories_latest']['payload']['method'])) {
-            $method = floatval($el['histories_latest']['payload']['method']);
-        } else {
-            $method = isset($el['method']) ? (int)$el['method'] : 0;
-        }
-
-        if (isset($el['histories_latest']['payload']['avg'])) {
-            $avg = $this->number($el['histories_latest']['payload']['avg']);
-        } else {
-            $avg = $this->number($el['avg']);
-        }
-
-        if (isset($el['histories_latest']['payload']['fact'])) {
-            $fact = $this->number($el['histories_latest']['payload']['fact']);
-        } else {
-            $fact = $this->number($el['fact']);
-        }
-
-        if (isset($el['histories_latest']['payload']['plan'])) {
-            $plan = $this->number($el['histories_latest']['payload']['plan']);
-        } else {
-            $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
-        }
-
         $res = 0;
+        $fact = $this->number($el['fact']);
+        $avg = $this->number($el['avg']);
+        $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
+        $method = isset($el['method']) ? (int)$el['method'] : 0;
 
         switch ($method) {
             case 1:
@@ -88,9 +63,6 @@ class CalculateKpiService2
                 $res = $avg - $plan >= 0 ? 100 : 0;
                 break;
         }
-        dd_if($el['id'] == 288, [
-            $el['histories']
-        ]);
         return (float)$res;
     }
 
