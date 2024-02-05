@@ -87,7 +87,7 @@ class SaveUserKpi extends Command
                 'user_id' => $data['user_id'],
             ])->exists();
 
-        if ($exists && $data['total'] === 0) {
+        if ($exists && $data['total'] == 0) {
             return;
         }
 
