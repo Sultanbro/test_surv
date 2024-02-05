@@ -24,9 +24,15 @@ class CalculateKpiService2
         if ($kpi['id'] == 94) {
             dump(
                 $el['id'],
-                $completed
+                $completed,
+                $completed > $lower_limit,
+                PHP_EOL,
+                PHP_EOL,
+                PHP_EOL,
+                PHP_EOL
             );
         }
+
         if ($completed > $lower_limit) {
             if ($completed < $upper_limit) {
                 $result = $completed_80 * $share * ($completed - $lower_limit) * $upper_limit / ($upper_limit - $lower_limit);
