@@ -15,6 +15,10 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
+        if (isset($el['histories_latest']['payload']['share'])) {
+            $share = floatval($el['histories_latest']['payload']['share']);
+        }
+
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
@@ -63,7 +67,13 @@ class CalculateKpiService2
                 $res = $avg - $plan >= 0 ? 100 : 0;
                 break;
         }
-
+        dd_if($el['id'] == 288, [
+            'res' => $res,
+            'fact' => $fact,
+            'avg' => $avg,
+            'plan' => $plan,
+            'method' => $method,
+        ]);
         return (float)$res;
     }
 
