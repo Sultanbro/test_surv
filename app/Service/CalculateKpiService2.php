@@ -15,22 +15,18 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
-        if ($kpi['id'] == 94) {
-            dump(
-                $el['id'],
-                $completed,
-                $completed_80,
-                $completed_100
-            );
-        }
-
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
         }
 
         if (!$kpi['off_limit'] && $completed > 1) $completed = 1;
-
+        if ($kpi['id'] == 94) {
+            dump(
+                $el['id'],
+                $completed
+            );
+        }
         if ($completed > $lower_limit) {
             if ($completed < $upper_limit) {
                 $result = $completed_80 * $share * ($completed - $lower_limit) * $upper_limit / ($upper_limit - $lower_limit);
