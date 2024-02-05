@@ -29,13 +29,8 @@ class CalculateKpiService2
                 $result = $completed_100 * $share * $completed;
             }
         }
-        if ($kpi['id'] == 94) {
-            dump(
-                $el['id'],
-                $result
-            );
-        }
-        if ($result < 0) $result = 0;
+
+        if ($result < 0) return 0;
 
         return $result;
     }
