@@ -18,16 +18,13 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
-        if (isset($el['histories_latest']['payload']['share'])) {
-            $share = isset($el['histories_latest']['payload']['share']) ? floatval($el['histories_latest']['payload']['share']) / 100.0 : 0;
-        }
+        $share = isset($el['histories_latest']['payload']['share']) ? floatval($el['histories_latest']['payload']['share']) / 100.0 : 0;
 
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
         }
 
-        // check overfulfillment
         if (!$kpi['off_limit'] && $completed > 1) $completed = 1;
 
         if ($completed > $lower_limit) {
