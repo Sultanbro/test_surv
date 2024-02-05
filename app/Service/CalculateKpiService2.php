@@ -8,6 +8,11 @@ class CalculateKpiService2
     {
         $result = 0;
         $completed = $this->calcCompleted($el);
+        if ($el['kpi_id'] === 290) {
+            dump(
+                $completed
+            );
+        }
         $lower_limit = floatval($kpi['lower_limit']) / 100.0;
         $upper_limit = floatval($kpi['upper_limit']) / 100.0;
         $share = isset($el['share']) ? floatval($el['share']) / 100.0 : 0;
@@ -41,15 +46,6 @@ class CalculateKpiService2
         $avg = $this->number($el['avg']);
         $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
         $method = isset($el['method']) ? (int)$el['method'] : 0;
-
-        if ($el['kpi_id'] === 290) {
-            dd(
-                $fact,
-                $avg,
-                $plan,
-                $method
-            );
-        }
 
         switch ($method) {
             case 1:
