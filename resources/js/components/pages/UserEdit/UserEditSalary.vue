@@ -649,7 +649,7 @@ export default {
 						Отменить налог данному сотруднику
 					</p>
 				</b-popover>
-				<button
+				<!-- <button
 					v-if="!tax.isNew"
 					type="button"
 					class="btn btn-danger tax-delete rounded ml-2"
@@ -664,7 +664,7 @@ export default {
 					@click="deleteNewTax(idx)"
 				>
 					<i class="fa fa-minus" />
-				</button>
+				</button> -->
 			</div>
 		</div>
 
