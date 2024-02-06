@@ -1173,7 +1173,7 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $kpi = $this->kpis()
+        $kpi = $this->kpis($this->from)
             ->where(function (Builder $query) use ($targetableType, $targetableId) {
                 $query->where(function (Builder $query) use ($targetableType, $targetableId) {
                     $query->where('targetable_id', $targetableId);
