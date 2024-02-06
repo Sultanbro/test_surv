@@ -15,6 +15,8 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
+        dd_if($el['id'] === 603 && $el['kpi_id'] === 191, $completed);
+
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
@@ -42,13 +44,6 @@ class CalculateKpiService2
         $avg = $this->number($el['avg']);
         $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
         $method = isset($el['method']) ? (int)$el['method'] : 0;
-
-        dd_if($el['id'] === 603 && $el['kpi_id'] === 191, [
-            'fact' => $fact,
-            'avg' => $avg,
-            'plan' => $plan,
-            'method' => $method,
-        ]);
 
         switch ($method) {
             case 1:
