@@ -846,7 +846,8 @@ class KpiStatisticService
         ];
     }
 
-    public function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
+    public
+    function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
     {
         $filters = $request->filters;
         $request->validate([
@@ -867,12 +868,13 @@ class KpiStatisticService
                 $filters['data_from']['year'],
                 $filters['data_from']['month'],
                 1
-            )->startOfMonth();
+            );
         } else {
-            $date = Carbon::now()->startOfMonth();
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
 
         $user_id = $filters['user_id'] ?? 0;
+        $currency = 'kzt';
 
         $this->workdays = collect($this->userWorkdays($request->get('filters')));
         $this->updatedValues = UpdatedUserStat::query()
@@ -883,7 +885,30 @@ class KpiStatisticService
         /**
          * get kpis
          */
-        $last_date = $date->endOfMonth()->format('Y-m-d');
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::with([
+            'histories_latest' => function ($query) use ($start_date, $last_date) {
+                $query->whereBetween('created_at', [$start_date, $last_date]);
+            },
+            'items.histories_latest' => function ($query) use ($start_date, $last_date) {
+                $query->whereBetween('created_at', [$start_date, $last_date]);
+            },
+            'items' => function (HasMany $query) use ($last_date, $start_date) {
+                $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
+                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                }]);
+                $query->where(function (Builder $query) use ($start_date, $last_date) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>', $last_date);
+                });
+            },
+            'items.activity',
+            'groups',
+            'users',
+            'positions'
+        ]);
 
         $user = User::withTrashed()->with([
             'groups',
@@ -903,112 +928,130 @@ class KpiStatisticService
         $activeGroups = ($user->inGroups())->pluck('id')->toArray();
         $droppedGroups = $user->droppedGroups($date);
 
+
         $groups = array_merge($activeGroups, $droppedGroups);
 
         //// get user kpis
-        $kpis = $this->kpis($date)
-            ->withCount([
-                'users as has_user' => function ($q) use ($user_id) {
-                    $q->where('kpiables.kpiable_id', $user_id)
-                        ->where('kpiables.kpiable_type', User::class);
-                },
-                'groups as has_group' => function ($q) use ($activeGroups) {
-                    $q->whereIn('kpiables.kpiable_id', $activeGroups)
-                        ->where('kpiables.kpiable_type', ProfileGroup::class);
-                },
-                'groups as has_dropped_group' => function ($q) use ($droppedGroups) {
-                    $q->whereIn('kpiables.kpiable_id', $droppedGroups)
-                        ->where('kpiables.kpiable_type', ProfileGroup::class);
-                },
-                'positions as has_position' => function ($q) use ($position_id) {
-                    $q->where('kpiables.kpiable_id', $position_id)
-                        ->where('kpiables.kpiable_type', Position::class);
+        $kpis->withCount([
+            'users as has_user' => function ($q) use ($user_id) {
+                $q->where('kpiables.kpiable_id', $user_id)
+                    ->where('kpiables.kpiable_type', User::class);
+            },
+            'groups as has_group' => function ($q) use ($activeGroups) {
+                $q->whereIn('kpiables.kpiable_id', $activeGroups)
+                    ->where('kpiables.kpiable_type', ProfileGroup::class);
+            },
+            'groups as has_dropped_group' => function ($q) use ($droppedGroups) {
+                $q->whereIn('kpiables.kpiable_id', $droppedGroups)
+                    ->where('kpiables.kpiable_type', ProfileGroup::class);
+            },
+            'positions as has_position' => function ($q) use ($position_id) {
+                $q->where('kpiables.kpiable_id', $position_id)
+                    ->where('kpiables.kpiable_type', Position::class);
+            }
+        ])->where(function ($query) use ($user_id, $groups, $position_id) {
+            $query->whereHas('targetable', function ($q) use ($position_id, $groups, $user_id) {
+                if ($q->getModel() instanceof User) {
+                    $q->where('targetable_id', $user_id)
+                        ->where('targetable_type', User::class);
+                } elseif ($q->getModel() instanceof Position) {
+                    $q->where('targetable_id', $position_id)
+                        ->where('targetable_type', Position::class);
+                } elseif ($q->getModel() instanceof ProfileGroup) {
+                    $q->whereIn('targetable_id', $groups)
+                        ->where('targetable_type', ProfileGroup::class);
                 }
-            ])
-            ->where(function ($query) use ($user_id, $groups, $position_id) {
-                $query->whereHas('targetable', function ($q) use ($position_id, $groups, $user_id) {
-                    if ($q->getModel() instanceof User) {
-                        $q->where('targetable_id', $user_id)
-                            ->where('targetable_type', User::class);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->where('targetable_id', $position_id)
-                            ->where('targetable_type', Position::class);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->whereIn('targetable_id', $groups)
-                            ->where('targetable_type', ProfileGroup::class);
-                    }
+            })
+                ->orWhereHas('users', function ($q) use ($user_id) {
+                    $q->where(function ($q) use ($user_id) {
+                        $q->where('kpiables.kpiable_id', $user_id)
+                            ->where('kpiables.kpiable_type', User::class);
+                    });
                 })
-                    ->orWhereHas('users', function ($q) use ($user_id) {
-                        $q->where(function ($q) use ($user_id) {
-                            $q->where('kpiables.kpiable_id', $user_id)
-                                ->where('kpiables.kpiable_type', User::class);
-                        });
-                    })
-                    ->orWhereHas('groups', function ($q) use ($groups) {
-                        $q->where(function ($q) use ($groups) {
-                            $q->whereIn('kpiables.kpiable_id', $groups)
-                                ->where('kpiables.kpiable_type', ProfileGroup::class);
-                        });
-                    })
-                    ->orWhereHas('positions', function ($q) use ($position_id) {
-                        $q->where(function ($q) use ($position_id) {
-                            $q->where('kpiables.kpiable_id', $position_id)
-                                ->where('kpiables.kpiable_type', Position::class);
-                        });
+                ->orWhereHas('groups', function ($q) use ($groups) {
+                    $q->where(function ($q) use ($groups) {
+                        $q->whereIn('kpiables.kpiable_id', $groups)
+                            ->where('kpiables.kpiable_type', ProfileGroup::class);
+                    });
+                })
+                ->orWhereHas('positions', function ($q) use ($position_id) {
+                    $q->where(function ($q) use ($position_id) {
+                        $q->where('kpiables.kpiable_id', $position_id)
+                            ->where('kpiables.kpiable_type', Position::class);
+                    });
+                });
+        });
+
+        $kpis = $kpis
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                ->endOfMonth()
+                ->format('Y-m-d')
+            )->where(fn($query) => $query->whereNull('deleted_at')->orWhere(
+                fn($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')))
+            )
+            ->whereNot(function (Builder $query) use ($date) {
+                $query->where('targetable_type', 'App\\User')
+                    ->whereHas('user', function (Builder $query) use ($date) {
+                        $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
+                            ->endOfMonth()
+                            ->format('Y-m-d'));
                     });
             })
-            ->get()
-            ->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
-                // This code supports old and new relations
-                // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
-                if ($kpi->has_user > 0) {
+            ->get();
+
+        $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
+            // This code supports old and new relations
+            // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
+            if ($kpi->has_user > 0) {
+                $kpi->priority = 1;
+                $kpi->targetable_id = $user_id;
+                $kpi->targetable_type = 'App\User';
+                $kpi->targetable = $kpi->users->where('id', $user_id)->first();
+            } elseif ($kpi->has_position > 0) {
+                $kpi->priority = 2;
+                $kpi->targetable_id = $position_id;
+                $kpi->targetable_type = 'App\Position';
+                $kpi->targetable = $kpi->positions->where('id', $position_id)->first();
+            } elseif ($kpi->has_group > 0) {
+                $kpi->priority = 3;
+                $kpi->targetable_type = 'App\ProfileGroup';
+                $kpi->targetable = $kpi->groups->whereIn('id', $activeGroups)->first();
+                $kpi->targetable_id = $kpi->targetable->id;
+            } elseif ($kpi->has_dropped_group > 0) {
+                $kpi->priority = 4;
+                $kpi->targetable_type = 'App\ProfileGroup';
+                $kpi->targetable = $kpi->groups->whereIn('id', $droppedGroups)->first();
+                $kpi->targetable_id = $kpi->targetable->id;
+            } elseif ($kpi->targetable) {
+                // This is for previous relation!
+                if ($kpi->targetable_type == 'App\User') {
                     $kpi->priority = 1;
                     $kpi->targetable_id = $user_id;
-                    $kpi->targetable_type = 'App\User';
-                    $kpi->targetable = $kpi->users->where('id', $user_id)->first();
-                }
-                elseif ($kpi->has_position > 0) {
+                } elseif ($kpi->targetable_type == 'App\Position') {
                     $kpi->priority = 2;
                     $kpi->targetable_id = $position_id;
-                    $kpi->targetable_type = 'App\Position';
-                    $kpi->targetable = $kpi->positions->where('id', $position_id)->first();
-                }
-                elseif ($kpi->has_group > 0) {
-                    $kpi->priority = 3;
-                    $kpi->targetable_type = 'App\ProfileGroup';
-                    $kpi->targetable = $kpi->groups->whereIn('id', $activeGroups)->first();
+                } elseif ($kpi->targetable_type == 'App\ProfileGroup') {
                     $kpi->targetable_id = $kpi->targetable->id;
-                }
-                elseif ($kpi->has_dropped_group > 0) {
-                    $kpi->priority = 4;
-                    $kpi->targetable_type = 'App\ProfileGroup';
-                    $kpi->targetable = $kpi->groups->whereIn('id', $droppedGroups)->first();
-                    $kpi->targetable_id = $kpi->targetable->id;
-                }
-                elseif ($kpi->targetable) {
-                    // This is for previous relation!
-                    if ($kpi->targetable_type == 'App\User') {
-                        $kpi->priority = 1;
-                        $kpi->targetable_id = $user_id;
-                    } elseif ($kpi->targetable_type == 'App\Position') {
-                        $kpi->priority = 2;
-                        $kpi->targetable_id = $position_id;
-                    } elseif ($kpi->targetable_type == 'App\ProfileGroup') {
-                        $kpi->targetable_id = $kpi->targetable->id;
-                        if (in_array($kpi->targetable_id, $activeGroups)) {
-                            $kpi->priority = 3;
-                        } else {
-                            $kpi->priority = 4;
-                        }
+                    if (in_array($kpi->targetable_id, $activeGroups)) {
+                        $kpi->priority = 3;
+                    } else {
+                        $kpi->priority = 4;
                     }
                 }
-                $history = $kpi->histories_latest;
-                if (!$history) {
-                    return true;
-                }
-                $payload = json_decode($history->payload, true) ?? [];
-                return !isset($payload['is_active']) || $payload['is_active'] != 0;
-            });
+            }
+
+            $history = $kpi->histories_latest;
+
+            if (!$history) {
+                return true;
+            }
+
+            $payload = json_decode($history->payload, true) ?? [];
+
+            return !isset($payload['is_active']) || $payload['is_active'] != 0;
+        });
 
         if ($limitForProfile && $kpis->count() > 1) {
             $currentKpi = $kpis->sortBy('priority')->first();
@@ -1051,8 +1094,8 @@ class KpiStatisticService
 
         return [
             'items' => $kpis,
-            'activities' => Activity::query()->get(),
-            'groups' => ProfileGroup::query()->get()->pluck('name', 'id')->toArray(),
+            'activities' => Activity::get(),
+            'groups' => ProfileGroup::get()->pluck('name', 'id')->toArray(),
             'user_id' => auth()->user() ? auth()->id() : 1,
             'read' => $read,
             'currency' => $currency,

@@ -50,6 +50,7 @@ class CalculateKpiService2
             'plan' => $plan,
             'method' => $method
         ]);
+
         switch ($method) {
             case 1:
                 $res = ($fact / $plan * 100);
