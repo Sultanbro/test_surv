@@ -846,8 +846,7 @@ class KpiStatisticService
         ];
     }
 
-    public
-    function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
+    public function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
     {
         $filters = $request->filters;
         $request->validate([
