@@ -537,14 +537,17 @@ class KpiStatisticService
             })
             ->with([
                 'histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                    $query->where('created_at','>=', $start_date);
+                    $query->where('created_at','<=', $last_date);
                 },
                 'items.histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+                    $query->where('created_at','>=', $start_date);
+                    $query->where('created_at','<=', $last_date);
                 },
                 'items' => function (HasMany $query) use ($last_date, $start_date) {
                     $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
-                        $query->whereBetween('created_at', [$start_date, $last_date]);
+                        $query->where('created_at','>=', $start_date);
+                        $query->where('created_at','<=', $last_date);
                     }]);
                     $query->where(function (Builder $query) use ($start_date, $last_date) {
                         $query->whereNull('deleted_at');
