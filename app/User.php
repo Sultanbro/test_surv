@@ -720,8 +720,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $groupUser = GroupUser::where('status', 'drop')
             ->where('user_id', $this->id);
 
-        if ($date) $groupUser->whereYear('updated_at', $date->year)
-            ->whereMonth('updated_at', $date->month);
+        if ($date) $groupUser->whereYear('to', $date->year)
+            ->whereMonth('to', $date->month);
 
         return $groupUser->get()
             ->pluck('group_id')
