@@ -1560,7 +1560,6 @@ class KpiStatisticService
                     if (Arr::exists($last_history, 'unit')) $item['unit'] = $last_history['unit'];
                     if (Arr::exists($last_history, 'plan')) $item['plan'] = $last_history['plan'];
                     if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
-                    dd_if($item['id'] === 603 && $item['kpi_id'] === 191, $last_history);
                 }
 
 
@@ -1729,6 +1728,7 @@ class KpiStatisticService
 //                     */
 //                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
 //                }
+                dd_if($item['id'] === 603 && $item['kpi_id'] === 191, $item);
 
                 $kpi_items[] = $item;
             }
