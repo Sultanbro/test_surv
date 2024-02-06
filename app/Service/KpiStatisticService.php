@@ -535,8 +535,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->
-            with([
+            ->with([
                 'histories_latest' => function ($query) use ($start_date, $last_date) {
                     $query->whereBetween('created_at', [$start_date, $last_date]);
                 },
