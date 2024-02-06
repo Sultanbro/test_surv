@@ -58,11 +58,11 @@ class SaveUserKpi extends Command
                 }
             }
             try {
+
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 foreach ($users as $user) {
                     $total = 0;
                     foreach ($user['items'] as $item) {
-
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
 
