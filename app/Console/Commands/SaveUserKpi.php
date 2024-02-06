@@ -63,7 +63,7 @@ class SaveUserKpi extends Command
                 foreach ($users as $user) {
                     $total = 0;
                     foreach ($user['items'] as $item) {
-                    dd_if($user['id'] == 30038, $item[1]);
+                    dd_if($user['id'] == 30038, $user['items'][1]);
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
 
