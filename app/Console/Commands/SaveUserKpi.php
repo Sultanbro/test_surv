@@ -58,7 +58,6 @@ class SaveUserKpi extends Command
                 }
             }
             try {
-                dd_if($kpi->id == 191, $kpi->target);
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 foreach ($users as $user) {
                     $total = 0;

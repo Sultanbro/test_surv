@@ -1173,31 +1173,7 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $kpi = Kpi::withTrashed()
-            ->with([
-                'histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
-                },
-                'items.histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
-                },
-                'items' => function (HasMany $query) {
-                    $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereBetween('created_at', [$this->from, $this->to]);
-                    }]);
-                    $query->where(function (Builder $query) {
-                        $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $this->to);
-                    });
-                },
-                'items.activity'
-            ])
-            ->where('created_at', '<=', $this->to)
-            ->where(fn($query) => $query->whereNull('deleted_at')
-                ->orWhere(
-                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
-                )
-            )
+        $kpi = $this->kpis($this->from)
             ->where(function (Builder $query) use ($targetableType, $targetableId) {
                 $query->where(function (Builder $query) use ($targetableType, $targetableId) {
                     $query->where('targetable_id', $targetableId);
