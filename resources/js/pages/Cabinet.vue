@@ -497,6 +497,14 @@
 									@click="addPayment()"
 								>
 									Добавить карту
+									<img
+										v-b-popover.hover.html="'Добавьте не заблокированную карту на которую вам будет перечисляться зарплата'"
+										src="/images/dist/profit-info.svg"
+										width="20"
+										class="img-info ml-2 img-info-bg"
+										alt="info icon"
+										tabindex="-1"
+									>
 								</button>
 							</div>
 
@@ -1389,6 +1397,10 @@ a.lp-link {
 	}
 	.iti{
 		display: block;
+	}
+	.img-info-bg{
+		background-color: #fff;
+		border-radius: 999em;
 	}
 }
 </style>
