@@ -508,14 +508,16 @@ export default {
 					result.total += result.lastRev
 				}
 				result.last = result.lastRev
-				if(!result.lastRev) {
+				if(!result.lastRev && this.daysPassed !== this.daysInMonth) {
 					result.now += result.lastPositive
 					result.total += result.lastPositive
+
+					for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
+						result.predict += result.lastPositive
+						result.total += result.lastPositive
+					}
 				}
-				for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
-					result.predict += result.lastPositive
-					result.total += result.lastPositive
-				}
+
 				return result
 			}
 

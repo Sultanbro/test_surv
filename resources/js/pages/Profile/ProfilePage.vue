@@ -11,7 +11,14 @@
 				:indicators="intro['indicators']"
 				:class="{ _active: anim.intro }"
 			/>
+			<Courses
+				v-if="coursesBeforeIntro"
+				ref="courses"
+				:class="{ _active: anim.courses }"
+				@init="intro['courses'] = true"
+			/>
 			<IntroStats
+				v-else
 				ref="intro"
 				:class="{ _active: anim.intro }"
 				@pop="pop"
@@ -23,7 +30,14 @@
 			ref="profileSidebar"
 			:class="{ _active: anim.profileSidebar }"
 		/>
+		<IntroStats
+			v-if="coursesBeforeIntro"
+			ref="intro"
+			:class="{ _active: anim.intro }"
+			@pop="pop"
+		/>
 		<Courses
+			v-else
 			ref="courses"
 			:class="{ _active: anim.courses }"
 			@init="intro['courses'] = true"
@@ -131,6 +145,8 @@ import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
 import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
+
+import { mapGetters } from 'vuex'
 import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
@@ -191,13 +207,26 @@ export default {
 		};
 	},
 	computed: {
+		...mapGetters(['user']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
 		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
 		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
+		...mapState(useProfileCoursesStore, ['courses']),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		...mapState(useReferralStore, {refReady: 'isReady'}),
+		isTrainee(){
+			if(!this.user) return false
+			return !this.user.applied_at
+		},
+		coursesFinished(){
+			const completed = this.courses.filter(course => course.all_stages && (course.all_stages === course.completed_stages))
+			return completed.length
+		},
+		coursesBeforeIntro(){
+			return this.isTrainee && (this.courses.length && !this.coursesFinished)
+		},
 		popupWidth(){
 			const w = this.$viewportSize.width
 			if(w < 651) return '100%'
