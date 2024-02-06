@@ -1228,7 +1228,6 @@ class KpiStatisticService
             }
         }
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
-        dd_if($kpi['id'] === 191, $kpi->users);
         $kpi_sum = 0;
 
         foreach ($kpi->users as $user) {
