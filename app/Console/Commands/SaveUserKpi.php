@@ -62,6 +62,7 @@ class SaveUserKpi extends Command
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 foreach ($users as $user) {
                     $total = 0;
+                    dd_if($user['id'] == 30038, $user);
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
