@@ -536,18 +536,18 @@ class KpiStatisticService
                 );
             })
             ->with([
-                'histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->where('created_at','>=', $start_date);
-                    $query->where('created_at','<=', $last_date);
+                'histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 },
-                'items.histories_latest' => function ($query) use ($start_date, $last_date) {
-                    $query->where('created_at','>=', $start_date);
-                    $query->where('created_at','<=', $last_date);
+                'items.histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 },
-                'items' => function (HasMany $query) use ($last_date, $start_date) {
-                    $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
-                        $query->where('created_at','>=', $start_date);
-                        $query->where('created_at','<=', $last_date);
+                'items' => function (HasMany $query) use ($last_date, $start_date, $date) {
+                    $query->with(['histories' => function (MorphMany $query) use ($date) {
+                        $query->whereYear('created_at', $date->year);
+                        $query->whereMonth('created_at', $date->month);
                     }]);
                     $query->where(function (Builder $query) use ($start_date, $last_date) {
                         $query->whereNull('deleted_at');
@@ -1550,7 +1550,7 @@ class KpiStatisticService
 
                 // to array because object changes every loop
                 $item = $_item->toArray();
-                dd_if($item['id'] === 603 && $item['kpi_id'] === 191,$item);
+//                dd_if($item['id'] === 603 && $item['kpi_id'] === 191,$item);
 
                 // get last History
                 if ($_item->histories_latest) {
