@@ -43,12 +43,7 @@ class CalculateKpiService2
         $plan = isset($el['plan']) ? (float)$el['plan'] : 0;
         $method = isset($el['method']) ? (int)$el['method'] : 0;
 
-        dd_if($el['id'] === 603 && $el['kpi_id'] === 191, [
-            'fact' => $fact,
-            'avg' => $avg,
-            'plan' => $plan,
-            'method' => $method,
-        ]);
+        dd_if($el['id'] === 603 && $el['kpi_id'] === 191, json_decode($el['histories_latest'], true));
 
         switch ($method) {
             case 1:
