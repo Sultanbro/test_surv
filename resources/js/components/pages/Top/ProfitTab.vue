@@ -464,7 +464,7 @@ export default {
 
 			const {settings: ccGroups} = await fetchSettings('profit_cc_groups')
 			// const defaultCCGroups = '[31, 71]'
-			const defaultCCGroups = '[31, 42, 71, 132, 136, 137, 142, 151]'
+			const defaultCCGroups = '[31, 42, 132, 136, 137, 142, 151]'
 			this.ccGroups = JSON.parse(ccGroups.custom_profit_cc_groups === '0' ? defaultCCGroups : ccGroups.custom_profit_cc_groups || defaultCCGroups)
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
