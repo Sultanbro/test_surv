@@ -1228,6 +1228,7 @@ class KpiStatisticService
             }
         }
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
+        dd_if($kpi['id'] === 191, $kpi->users);
         $kpi_sum = 0;
 
         foreach ($kpi->users as $user) {
@@ -1524,8 +1525,7 @@ class KpiStatisticService
      * find fact
      * identify actual plan
      */
-    private
-    function connectKpiWithUserStats(
+    private function connectKpiWithUserStats(
         Kpi    $kpi,
         mixed  $_users,
         Carbon $date,
@@ -1728,7 +1728,6 @@ class KpiStatisticService
 //                     */
 //                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
 //                }
-                dd_if($item['id'] === 603 && $item['kpi_id'] === 191, $item);
 
                 $kpi_items[] = $item;
             }
