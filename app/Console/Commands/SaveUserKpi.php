@@ -58,7 +58,7 @@ class SaveUserKpi extends Command
                 }
             }
             try {
-
+                dd($kpi->target['type']);
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 foreach ($users as $user) {
                     $total = 0;
