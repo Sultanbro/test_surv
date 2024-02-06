@@ -576,12 +576,12 @@ class KpiStatisticService
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $start_date, $last_date),
+                    ->orWhereDate('deleted_at', '>', $last_date),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $start_date, $last_date),
+                    ->orWhereDate('deleted_at', '>', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', Carbon::parse($date->endOfMonth()->format('Y-m-d')))
+            ->where('kpis.created_at', '<=', $last_date)
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
                 ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))));
     }
@@ -1173,7 +1173,7 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $kpi = $this->kpis($this->from)
+        $kpi = $this->kpis()
             ->where(function (Builder $query) use ($targetableType, $targetableId) {
                 $query->where(function (Builder $query) use ($targetableType, $targetableId) {
                     $query->where('targetable_id', $targetableId);
