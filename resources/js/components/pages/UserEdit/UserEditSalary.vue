@@ -166,16 +166,24 @@ export default {
 			this.$emit('taxes_update')
 		},
 		selectTaxNotAssigned(val) {
+			const id = val.id || val.tax_id
 			this.assignTaxes.push({
 				...val,
+				id,
+				tax_id: id,
 				value: 0,
 			});
 			this.myTaxes.push({
 				...val,
+				id,
+				tax_id: id,
 				value: 0,
 			});
-			const index = this.taxes.findIndex(t => t.id === val.id);
-			this.taxes[index].isAssigned = true;
+			const index = this.taxes.findIndex(t => t.id === id);
+			if(~index){
+				this.taxes[index].isAssigned = true;
+			}
+
 			this.$emit('taxes_fill', {
 				newTaxes: this.newTaxes,
 				assignTaxes: this.assignTaxes,
@@ -228,7 +236,7 @@ export default {
 			if (!isNaN(value) && Number.isInteger(value)) {
 				this.zarplata = value;
 			}
-		}
+		},
 	},
 }
 </script>
@@ -581,7 +589,7 @@ export default {
 						v-model="tax.name"
 						type="text"
 						class="mr-1"
-						:disabled="tax.tax_id"
+						:disabled="!!tax.tax_id"
 						placeholder="Название налога"
 						@input="onEditTax(tax)"
 					/>
