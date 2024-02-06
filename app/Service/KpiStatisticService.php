@@ -1550,7 +1550,7 @@ class KpiStatisticService
 
                 // to array because object changes every loop
                 $item = $_item->toArray();
-//                dd_if($item['id'] === 603 && $item['kpi_id'] === 191,$item);
+                dd_if($item['id'] === 603 && $item['kpi_id'] === 191,$item);
 
                 // get last History
                 if ($_item->histories_latest) {
