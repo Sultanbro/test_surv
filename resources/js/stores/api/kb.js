@@ -162,8 +162,8 @@ export async function fetchGlossary(){
 	return data
 }
 
-export async function saveGlossaryTerm(word){
-	const {data} = await axios.post('/glossary/save', {word})
+export async function saveGlossaryTerm(id, word){
+	const {data} = await axios.post('/glossary/save', {id, word})
 	return data
 }
 

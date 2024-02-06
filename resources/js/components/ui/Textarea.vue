@@ -1,6 +1,9 @@
 <template>
 	<div
 		class="JobtronTextarea"
+		:class="{
+			'JobtronTextarea_block': block
+		}"
 		:data-value="value"
 	>
 		<textarea
@@ -19,7 +22,8 @@ export default {
 		value: {
 			type: String,
 			default: ''
-		}
+		},
+		block: Boolean,
 	}
 }
 </script>
@@ -35,6 +39,10 @@ export default {
 	border: none;
 
 	position: relative;
+
+	&_block{
+		display: grid;
+	}
 	&:after,
 	&-textarea{
 		grid-area: 2 / 1;
