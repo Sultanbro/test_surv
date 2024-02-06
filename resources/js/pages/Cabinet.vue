@@ -252,7 +252,17 @@
 						<div class="form-group row">
 							<label
 								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>Email <span class="red">*</span></label>
+							>
+								Email <span class="red">*</span>
+								<img
+									v-b-popover.click.blur.html="'При смене адреса email входить нужно через новый email'"
+									src="/images/dist/profit-info.svg"
+									width="20"
+									class="img-info ml-2"
+									alt="info icon"
+									tabindex="-1"
+								>
+							</label>
 							<div class="col-sm-8 p-0">
 								<input
 									id="email"
