@@ -927,7 +927,7 @@ class KpiStatisticService
 
         $activeGroups = ($user->inGroups())->pluck('id')->toArray();
         $droppedGroups = $user->droppedGroups($date);
-
+        dd_if($user->id == 22778, $droppedGroups, $activeGroups);
 
         $groups = array_merge($activeGroups, $droppedGroups);
 
