@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
+use function Psy\debug;
 
 class SaveUserKpi extends Command
 {
@@ -63,6 +64,12 @@ class SaveUserKpi extends Command
                     $total = 0;
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
+                        if ($user['id'] === 6401) {
+                            debug([
+                                'item' => $item['id'],
+                                'total' => $total,
+                            ]);
+                        }
                     }
 
                     $this->updateSavedKpi([
