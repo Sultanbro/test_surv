@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="authRole"
-		class="d-flex"
+		class="d-flex PageCabinet"
 	>
 		<!-- left sidebar -->
 		<div class="lp cabinet-lp">
@@ -272,6 +272,31 @@
 									name="email"
 									required
 									placeholder="email"
+								>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>
+								Телефон <span class="red">*</span>
+								<img
+									v-b-popover.click.blur.html="'Так руководитель сможет с вами связаться, а также этот номер нужен для подписи договоров'"
+									src="/images/dist/profit-info.svg"
+									width="20"
+									class="img-info ml-2"
+									alt="info icon"
+									tabindex="-1"
+								>
+							</label>
+							<div class="col-sm-8 p-0">
+								<input
+									v-model="phone"
+									class="form-control input-surv PageCabinet-phone"
+									type="text"
+									name="phone"
+									required
+									placeholder="телефон"
 								>
 							</div>
 						</div>
@@ -578,6 +603,7 @@ export default {
 			myCroppa: {},
 			user: [],
 			user_card: [],
+			phone: '',
 
 			activeCourse: null,
 			page: 'profile',
@@ -677,6 +703,9 @@ export default {
 		},
 		authRole() {
 			this.init()
+		},
+		page(){
+			setTimeout(this.applyMask, 100)
 		}
 	},
 	mounted() {
@@ -684,8 +713,10 @@ export default {
 			this.videoUrl = res.data.data.main_page_video;
 			this.videoDays = res.data.data.main_page_video_show_days_amount;
 		})
+		this.applyMask()
 	},
 	created() {
+		this.initMask()
 		if(!this.users.length) this.loadCompany()
 		if (this.authRole) {
 			this.init()
@@ -717,6 +748,8 @@ export default {
 			else {
 				this.crop_image.hide = true;
 			}
+
+
 		},
 		drawProfile() {},
 		change({canvas}) {
@@ -884,7 +917,10 @@ export default {
 			if (this.cardValidatre.type) {
 				const request = {
 					cards: this.payments,
-					query: this.user,
+					query: {
+						...this.user,
+						phone: this.phone.replace(/[^\d]+/g, ''),
+					},
 					password: this.password,
 					birthday: this.birthday,
 					working_city: this.working_city,
@@ -929,7 +965,8 @@ export default {
 						name: admin.email,
 						type: 1,
 					}))
-					this.user = data.user;
+					this.user = JSON.parse(JSON.stringify(data.user))
+					this.phone = data.user.phone
 					this.keywords = data.user.working_country;
 					this.working_city = data.user.working_city;
 
@@ -1047,6 +1084,33 @@ export default {
 					email: user.name,
 				}))
 				this.isGeneralChatUsersOpen = false
+			})
+		},
+		initMask(){
+			if(window.intlTelInput) return
+			const el = document.createElement('script')
+			el.setAttribute('src', 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js')
+			document.head.appendChild(el)
+
+			const link = document.createElement('link')
+			link.rel = 'stylesheet'
+			link.href = 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css'
+			document.head.appendChild(link)
+		},
+		applyMask(){
+			if(!window.intlTelInput) return setTimeout(this.applyMask, 100)
+			const phones = this.$el.querySelectorAll('.PageCabinet-phone')
+			phones.forEach(input => {
+				window.intlTelInput(input, {
+					utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js',
+					autoInsertDialCode: true,
+					preferredCountries: ['kz', 'ru', 'kg', 'uz'],
+					nationalMode: false,
+					autoPlaceholder: 'aggressive',
+					numberType: 'MOBILE',
+					// separateDialCode: true,
+					// hiddenInput: true,
+				})
 			})
 		},
 	},
@@ -1317,6 +1381,14 @@ a.lp-link {
 		line-height: 1.3;
 
 		background-color: #F7FAFC;
+	}
+	&-phone{
+		&.PageCabinet-phone{
+			padding-left: 50px !important;
+		}
+	}
+	.iti{
+		display: block;
 	}
 }
 </style>
