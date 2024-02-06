@@ -53,6 +53,7 @@
 						>
 							<JobtronTextarea
 								v-model="term.definition"
+								block
 							/>
 						</div>
 						<p v-else>

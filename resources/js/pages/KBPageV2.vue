@@ -1463,11 +1463,9 @@ export default {
 			})
 		},
 		async saveTerm(saveTerm){
+			const termId = saveTerm.id < 0 ? 0 : saveTerm.id
 			try {
-				const id = await API.saveGlossaryTerm({
-					...saveTerm,
-					id: saveTerm.id < 0 ? 0 : saveTerm.id,
-				})
+				const id = await API.saveGlossaryTerm(termId, saveTerm)
 
 				const term = this.glossary.find(term => term.id === saveTerm.id)
 				if(term) term.id = id
