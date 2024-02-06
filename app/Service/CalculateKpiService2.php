@@ -7,21 +7,13 @@ class CalculateKpiService2
     public function calcSum($el, $kpi): float
     {
         $result = 0;
-        $completed = $this->calcCompleted($el);
+        $completed = $this->calcCompleted($el) / 100.0;
 
         $lower_limit = floatval($kpi['lower_limit']) / 100.0;
         $upper_limit = floatval($kpi['upper_limit']) / 100.0;
         $share = isset($el['share']) ? floatval($el['share']) / 100.0 : 0;
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
-
-        dd_if($el['id'] === 288 && $el['kpi_id'] === 94, [
-            'lower_limit' => $lower_limit,
-            'upper_limit' => $upper_limit,
-            'share' => $share,
-            'completed_80' => $completed_80,
-            'completed_100' => $completed_100
-        ]);
 
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
@@ -71,7 +63,7 @@ class CalculateKpiService2
                 $res = $avg - $plan >= 0 ? 100 : 0;
                 break;
         }
-        return (float)$res;
+        return floor($res);
     }
 
     private function number($value): float|int
