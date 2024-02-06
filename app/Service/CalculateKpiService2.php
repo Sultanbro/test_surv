@@ -15,8 +15,6 @@ class CalculateKpiService2
         $completed_80 = $kpi['completed_80'];
         $completed_100 = $kpi['completed_100'];
 
-        dd_if($el['id'] === 603 && $el['kpi_id'] === 191, $completed);
-
         if ($el['full_time'] == 0) {
             $completed_80 /= 2;
             $completed_100 /= 2;
