@@ -882,9 +882,7 @@ class KpiStatisticService
             ->whereYear('date', $date->year)
             ->orderBy('date', 'desc')
             ->get();
-        /**
-         * get kpis
-         */
+
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
 
