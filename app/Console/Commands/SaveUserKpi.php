@@ -67,7 +67,7 @@ class SaveUserKpi extends Command
                         if ($user['id'] === 6401) {
                             dump([
                                 'item' => $item['id'],
-                                'total' => $total,
+                                'total' => $this->calculator->calcSum($item, $kpi->toArray()),
                             ]);
                         }
                     }
