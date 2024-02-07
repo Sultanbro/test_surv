@@ -156,7 +156,7 @@ function calcCompleted(el) {
 
 	switch(method){
 	case 1:
-		res = (fact / plan * 100).toFixed(2)
+		res = Math.round(fact / plan * 100)
 		break;
 	case 2:
 		res = el.percent
