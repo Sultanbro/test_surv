@@ -717,7 +717,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function droppedGroups(Carbon $date = null): array
     {
-        $groupUser = GroupUser::where('status', 'drop')
+        $groupUser = GroupUser::query()
+            ->whereIn('status', ['drop', 'fired'])
             ->where('user_id', $this->id);
 
         if ($date) $groupUser->whereYear('to', $date->year)
