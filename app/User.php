@@ -702,7 +702,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function firedGroups(): array
     {
-        return GroupUser::where('status', 'fired')
+        return GroupUser::query()
+            ->where('status', 'fired')
             ->where('user_id', $this->id)
             ->get()
             ->pluck('group_id')
