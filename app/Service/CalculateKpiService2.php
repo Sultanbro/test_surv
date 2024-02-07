@@ -45,7 +45,7 @@ class CalculateKpiService2
 
         switch ($method) {
             case 1:
-                $res = ($fact / $plan * 100);
+                $res = round($fact / $plan * 100);
                 break;
             case 2:
                 $res = $el['percent'];
@@ -63,7 +63,7 @@ class CalculateKpiService2
                 $res = $avg - $plan >= 0 ? 100 : 0;
                 break;
         }
-        return round($res);
+        return $res;
     }
 
     private function number($value): float|int
