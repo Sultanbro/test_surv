@@ -63,7 +63,7 @@ class CalculateKpiService2
                 $res = $avg - $plan >= 0 ? 100 : 0;
                 break;
         }
-        return floor($res);
+        return ceil($res);
     }
 
     private function number($value): float|int
