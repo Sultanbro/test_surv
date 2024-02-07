@@ -927,10 +927,9 @@ class KpiStatisticService
         $activeGroups = ($user->inGroups())->pluck('id')->toArray();
         $droppedGroups = $user->droppedGroups($date);
         $firedGroups = $user->firedGroups();
-//        dd_if($user->id == 29263, $activeGroups, $droppedGroups);
-        dd($firedGroups);
 
         $groups = array_merge($activeGroups, $droppedGroups);
+        $groups = array_merge($groups, $firedGroups);
 
         //// get user kpis
         $kpis->withCount([
