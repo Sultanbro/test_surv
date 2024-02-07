@@ -155,11 +155,13 @@ export default {
 		},
 		async unassignTax(tax, idx) {
 			if (!tax.isNew && this.user) {
+				const loader = this.$loading.show()
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
-				formDataAssignTaxes.append('tax_id', tax.id);
+				formDataAssignTaxes.append('tax_id', tax.id || tax.tax_id);
 				formDataAssignTaxes.append('is_assigned', 0);
 				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+				loader.hide()
 			}
 			this.myTaxes.splice(idx, 1);
 			this.$toast.success('Налог отменен');
