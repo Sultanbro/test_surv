@@ -888,17 +888,20 @@ class KpiStatisticService
         $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
-            'histories_latest' => function ($query) use ($start_date, $last_date) {
-                $query->whereBetween('created_at', [$start_date, $last_date]);
+            'histories_latest' => function ($query) use ($date) {
+                $query->whereYear('created_at', $date->year);
+                $query->whereMonth('created_at', $date->month);
             },
-            'items.histories_latest' => function ($query) use ($start_date, $last_date) {
-                $query->whereBetween('created_at', [$start_date, $last_date]);
+            'items.histories_latest' => function ($query) use ($date) {
+                $query->whereYear('created_at', $date->year);
+                $query->whereMonth('created_at', $date->month);
             },
-            'items' => function (HasMany $query) use ($last_date, $start_date) {
-                $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+            'items' => function (HasMany $query) use ($last_date, $date) {
+                $query->with(['histories' => function (MorphMany $query) use ($last_date, $date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 }]);
-                $query->where(function (Builder $query) use ($start_date, $last_date) {
+                $query->where(function (Builder $query) use ($last_date) {
                     $query->whereNull('deleted_at');
                     $query->orWhere('deleted_at', '>', $last_date);
                 });
