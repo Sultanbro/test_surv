@@ -983,7 +983,7 @@ class KpiStatisticService
                     });
                 });
         });
-dd_if($user->id = 22778, $kpis->pluck('id'), $droppedGroups, $groups);
+
         $kpis = $kpis
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
