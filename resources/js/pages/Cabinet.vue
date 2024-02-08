@@ -359,7 +359,7 @@
 								<div
 									v-for="doc, index in documents"
 									:key="index"
-									class="PageCabinet-doc"
+									class="PageCabinet-doc p-2"
 								>
 									<div class="PageCabinet-docIcon">
 										<i class="fa fa-file-pdf" />
@@ -369,7 +369,8 @@
 									</div>
 									<div class="PageCabinet-docControls">
 										<template v-if="doc.signed">
-											{{ Подписан }}
+											<i class="fas fa-check" />
+											Подписан
 										</template>
 										<JobtronButton
 											v-else
@@ -521,7 +522,13 @@ export default {
 					id: 0,
 					name: 'NDA',
 					file: ''
-				}
+				},
+				{
+					id: 0,
+					name: 'TD',
+					file: '',
+					signed: true
+				},
 			],
 		};
 	},
@@ -1201,6 +1208,9 @@ a.lp-link {
 		display: flex;
 		align-items: center;
 		gap: 10px;
+		&:hover{
+			background-color: rgba(#777, 0.25);
+		}
 	}
 	&-docIcon{
 		flex: 0 0 32px;
