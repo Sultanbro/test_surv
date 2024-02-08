@@ -1002,7 +1002,7 @@ class KpiStatisticService
                     });
             })
             ->get();
-
+        dd_if($user->id = 22778, $kpis->pluck('id'), $droppedGroups, $groups);
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
             // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
