@@ -131,7 +131,7 @@
 								:class="{'PageCabinet-tab_active': activeTab === 'documents'}"
 								@click="selectTab('documents')"
 							>
-								<span>Документы</span>
+								<span>Документы</span> <b-badge>demo</b-badge>
 							</li>
 							<li
 								id="bg-this-4"
@@ -139,7 +139,7 @@
 								:class="{'PageCabinet-tab_active': activeTab === 'phones'}"
 								@click="selectTab('phones')"
 							>
-								<span>Контакты</span>
+								<span>Контакты<span class="red">*</span></span>
 							</li>
 						</ul>
 						<div
@@ -352,7 +352,35 @@
 							v-show="activeTab === 'documents'"
 							class="PageCabinet-tabBody"
 						>
-							<!-- docs -->
+							<div
+								v-if="documents.length"
+								class="PageCabinet-docs"
+							>
+								<div
+									v-for="doc, index in documents"
+									:key="index"
+									class="PageCabinet-doc"
+								>
+									<div class="PageCabinet-docIcon">
+										<i class="fa fa-file-pdf" />
+									</div>
+									<div class="PageCabinet-docName">
+										{{ doc.name }}
+									</div>
+									<div class="PageCabinet-docControls">
+										<template v-if="doc.signed">
+											{{ Подписан }}
+										</template>
+										<JobtronButton
+											v-else
+											small
+											@click="onSign(doc)"
+										>
+											Подписать
+										</JobtronButton>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div
 							v-show="activeTab === 'phones'"
@@ -484,6 +512,14 @@ export default {
 			geo_lon: 0,
 
 			activeTab: 'main',
+
+			documents: [
+				{
+					id: 0,
+					name: 'NDA',
+					file: ''
+				}
+			],
 		};
 	},
 	computed: {
@@ -521,7 +557,8 @@ export default {
 	methods: {
 		...mapActions(['loadCompany']),
 		init() {
-			this.fetchData();
+			this.fetchData()
+			this.fetchDocs()
 			this.user = this.authRole;
 			this.format_date(this.user.birthday);
 
@@ -771,6 +808,18 @@ export default {
 				.catch((error) => {
 					alert(error);
 				});
+		},
+		async fetchDocs(){
+			try {
+				// const {data} = await this.axios.get(`/docs/${this.$laravel.userId}`)
+				// this.documents = data.documents || []
+			}
+			catch (error) {
+				console.error(error)
+			}
+		},
+		onSign(doc){
+			window.open(`/docs/sign/${doc.id}`, '_blank')
 		},
 		fetchGeneralChat(){
 			API.getChatInfo(0, ({users}) => {
