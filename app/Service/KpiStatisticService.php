@@ -885,7 +885,6 @@ class KpiStatisticService
             ->get();
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
-        $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
             'histories_latest' => function ($query) use ($date) {
@@ -984,7 +983,7 @@ class KpiStatisticService
                     });
                 });
         });
-
+dd_if($user->id = 22778, $kpis->pluck('id'));
         $kpis = $kpis
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
