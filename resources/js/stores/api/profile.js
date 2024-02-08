@@ -103,6 +103,7 @@ export async function fetchProfileKpi(year, month){
 			user_id: Laravel.userId
 		}
 	})
+	if(!Array.isArray(data.items)) data.items = Object.values(data.items || {})
 	return data
 }
 

@@ -885,20 +885,22 @@ class KpiStatisticService
             ->get();
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
-        $start_date = Carbon::parse($date)->startOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
-            'histories_latest' => function ($query) use ($start_date, $last_date) {
-                $query->whereBetween('created_at', [$start_date, $last_date]);
+            'histories_latest' => function ($query) use ($date) {
+                $query->whereYear('created_at', $date->year);
+                $query->whereMonth('created_at', $date->month);
             },
-            'items.histories_latest' => function ($query) use ($start_date, $last_date) {
-                $query->whereBetween('created_at', [$start_date, $last_date]);
+            'items.histories_latest' => function ($query) use ($date) {
+                $query->whereYear('created_at', $date->year);
+                $query->whereMonth('created_at', $date->month);
             },
-            'items' => function (HasMany $query) use ($last_date, $start_date) {
-                $query->with(['histories' => function (MorphMany $query) use ($last_date, $start_date) {
-                    $query->whereBetween('created_at', [$start_date, $last_date]);
+            'items' => function (HasMany $query) use ($last_date, $date) {
+                $query->with(['histories' => function (MorphMany $query) use ($last_date, $date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 }]);
-                $query->where(function (Builder $query) use ($start_date, $last_date) {
+                $query->where(function (Builder $query) use ($last_date) {
                     $query->whereNull('deleted_at');
                     $query->orWhere('deleted_at', '>', $last_date);
                 });
@@ -926,9 +928,10 @@ class KpiStatisticService
 
         $activeGroups = ($user->inGroups())->pluck('id')->toArray();
         $droppedGroups = $user->droppedGroups($date);
-        dd_if($user->id == 29263, $activeGroups, $droppedGroups);
+        $firedGroups = $user->firedGroups();
 
         $groups = array_merge($activeGroups, $droppedGroups);
+        $groups = array_merge($groups, $firedGroups);
 
         //// get user kpis
         $kpis->withCount([
@@ -1002,7 +1005,7 @@ class KpiStatisticService
 
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
-            // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
+            // set priority and target for fetch only latest one or dropped group kpi (LEARN which kpis should be seen in profile!)
             if ($kpi->has_user > 0) {
                 $kpi->priority = 1;
                 $kpi->targetable_id = $user_id;
@@ -1036,6 +1039,7 @@ class KpiStatisticService
                     if (in_array($kpi->targetable_id, $activeGroups)) {
                         $kpi->priority = 3;
                     } else {
+                        // for dropped group
                         $kpi->priority = 4;
                     }
                 }

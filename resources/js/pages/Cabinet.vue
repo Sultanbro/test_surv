@@ -42,7 +42,7 @@
 		<!-- Cabinet page -->
 		<div
 			v-if="page == 'admin'"
-			class="rp cabinet-page-admin"
+			class="rp cabinet-page-admin PageCabinet-content"
 			style="flex: 1 1 0%"
 		>
 			<div class="hat">
@@ -55,146 +55,7 @@
 
 			<div class="mt-3">
 				<div class="p-3">
-					<div class="form-group d-flex aic">
-						<label class="mr-3 mb-0 w-200px">Субдомен</label>
-						<input
-							id="view_own_orders"
-							v-model="domain"
-							class="form-control mt-1 input-surv"
-							type="text"
-							:disabled="true"
-						>
-					</div>
-
-					<!-- Статус: скрыто. Компонент: pages/Cabinet. Дата скрытия: 21.02.2023 15:30 -->
-					<div
-						v-if="false"
-						class="form-group d-flex aic"
-					>
-						<label class="mb-0 mr-3 w-200px">Часовой пояс</label>
-						<input
-							id="view_own_orders"
-							class="form-control mt-1 input-surv"
-							type="text"
-						>
-					</div>
-
-					<div class="form-group d-flex aic">
-						<label class="mb-0 mr-3 w-200px">Администраторы</label>
-						<div
-							class="PageCabinet-badges form-control"
-							@click="isAdminsSelect = true"
-						>
-							<template v-for="admin, index in admins">
-								<b-badge
-									v-if="admin.email"
-									:key="index"
-								>
-									{{ admin.email }}
-								</b-badge>
-							</template>
-							&nbsp;
-						</div>
-					</div>
-
-					<div class="form-group d-flex aic">
-						<label class="mb-0 mr-3 w-200px">Кто может писать в&nbsp;общий чат</label>
-						<div
-							class="PageCabinet-badges form-control"
-							@click="isGeneralChatUsersOpen = true"
-						>
-							<template v-for="chatUser, index in generalChatUsers">
-								<b-badge
-									v-if="chatUser.email"
-									:key="index"
-								>
-									{{ chatUser.email }}
-								</b-badge>
-							</template>
-							&nbsp;
-						</div>
-					</div>
-
-					<div
-						v-if="authRole.is_admin === 1"
-						class="d-flex aic video-add-content"
-					>
-						<label class="w-200px mb-0 mr-3">Вводное видео</label>
-						<div class="d-flex aic w-100">
-							<div class="form-group w-100">
-								<img
-									id="info1"
-									src="/images/dist/profit-info.svg"
-									class="img-info"
-									alt="info icon"
-								>
-								<b-popover
-									target="info1"
-									triggers="hover"
-									placement="right"
-								>
-									<p style="font-size: 15px">
-										Вставьте ссылку на видео с YouTube. Каждому новому зарегистрированному пользователю будет показываться вступительное видео, которое вы загрузите.
-									</p>
-								</b-popover>
-								<input
-									id="videoUrl"
-									v-model="videoUrl"
-									class="form-control videoDays"
-									type="text"
-									placeholder="Вставьте ссылку на youtube"
-								>
-							</div>
-							<div class="form-group w-25 ml-4">
-								<img
-									id="info2"
-									src="/images/dist/profit-info.svg"
-									class="img-info"
-									alt="info icon"
-								>
-								<b-popover
-									target="info2"
-									triggers="hover"
-									placement="right"
-								>
-									<p style="font-size: 15px">
-										Сколько дней с даты регистрации пользователя отображать выбранное Вами видео в профиле
-									</p>
-								</b-popover>
-								<input
-									id="videoTime"
-									v-model="videoDays"
-									class="form-control"
-									type="number"
-								>
-							</div>
-						</div>
-					</div>
-
-					<hr>
-					<div class="row">
-						<div class="col-12 col-md-6">
-							<button
-								class="btn btn-success"
-								@click="save"
-							>
-								Сохранить
-							</button>
-						</div>
-						<div
-							v-if="videoId"
-							class="col-12 col-md-6"
-						>
-							<div class="youtube-content">
-								<iframe
-									:src="`https://www.youtube.com/embed/${videoId}`"
-									title="YouTube video player"
-									frameborder="0"
-									allowfullscreen
-								/>
-							</div>
-						</div>
-					</div>
+					<CabinetAdmin />
 				</div>
 			</div>
 		</div>
@@ -202,7 +63,7 @@
 		<!-- Profile page -->
 		<div
 			v-if="page == 'profile'"
-			class="rp"
+			class="rp PageCabinet-content"
 		>
 			<div class="hat">
 				<div class="d-flex jsutify-content-between hat-top">
@@ -212,169 +73,9 @@
 				</div>
 			</div>
 
-			<div class="content">
-				<div class="row m-0 mt-2">
-					<!-- profile data -->
-					<div class="col-8">
-						<div class="form-group row mt-3">
-							<label class="col-sm-4 col-form-label font-weight-bold label-surv">
-								Имя <span class="red">*</span>
-							</label>
-
-							<div class="col-sm-8 p-0">
-								<input
-									id="firstName"
-									v-model="user.name"
-									class="form-control input-surv"
-									type="text"
-									name="name"
-									required
-									placeholder="Имя сотрудника"
-								>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>Фамилия <span class="red">*</span></label>
-							<div class="col-sm-8 p-0">
-								<input
-									id="lastName"
-									v-model="user.last_name"
-									class="form-control input-surv"
-									type="text"
-									name="last_name"
-									required
-									placeholder="Фамилия сотрудника"
-								>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>
-								Email <span class="red">*</span>
-								<img
-									v-b-popover.click.blur.html="'При смене адреса email входить нужно через новый email'"
-									src="/images/dist/profit-info.svg"
-									width="20"
-									class="img-info ml-2"
-									alt="info icon"
-									tabindex="-1"
-								>
-							</label>
-							<div class="col-sm-8 p-0">
-								<input
-									id="email"
-									v-model="user.email"
-									class="form-control input-surv"
-									type="text"
-									name="email"
-									required
-									placeholder="email"
-								>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>
-								Телефон <span class="red">*</span>
-								<img
-									v-b-popover.click.blur.html="'Так руководитель сможет с вами связаться, а также этот номер нужен для подписи договоров'"
-									src="/images/dist/profit-info.svg"
-									width="20"
-									class="img-info ml-2"
-									alt="info icon"
-									tabindex="-1"
-								>
-							</label>
-							<div class="col-sm-8 p-0">
-								<input
-									v-model="phone"
-									class="form-control input-surv PageCabinet-phone"
-									type="text"
-									name="phone"
-									required
-									placeholder="телефон"
-								>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>Новый пароль</label>
-							<div class="col-sm-8 p-0">
-								<input
-									id="new_pwd"
-									v-model="password"
-									minlength="5"
-									class="form-control input-surv"
-									type="password"
-									name="new_pwd"
-									placeholder="********"
-								>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>День рождения <span class="red">*</span></label>
-							<div class="col-sm-8 p-0">
-								<input
-									id="birthday"
-									v-model="birthday"
-									class="form-control input-surv"
-									type="date"
-									name="birthday"
-									required
-								>
-							</div>
-						</div>
-						<!-- <div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>Город<span class="red">*</span></label>
-							<div class="col-sm-8 p-0">
-								<input
-									v-model="keywords"
-									class="form-control input-surv"
-									type="text"
-									name="country"
-									id="country"
-									required
-									placeholder="поиск городов"
-								>
-								<ul
-									v-if="country_results.length > 0"
-									class="p-0 countries"
-								>
-									<li
-										v-for="(result, index) in country_results"
-										:key="index"
-									>
-										<a @click="selectedCountry(index, result)">
-											Страна: {{ result.country }} Город: {{ result.city }}
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div> -->
-						<div class="form-group row">
-							<label
-								class="col-sm-4 col-form-label font-weight-bold label-surv"
-							>Город<span class="red">*</span></label>
-							<div class="col-sm-8 p-0">
-								<LocalitySelect
-									:value="keywords"
-									@change="selectCity"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<!-- profile image -->
-					<div class="col-3">
+			<div class="content p-4">
+				<div class="row">
+					<div class="col-2">
 						<div class="form-group mb-0 text-center">
 							<div class="profile-img-wrap hidden-file-wrapper">
 								<img
@@ -403,7 +104,6 @@
 									for="CabinetProfileImage"
 								/>
 							</div>
-
 							<div class="hidden-file-wrapper">
 								<button class="btn btn-success w-100 mt-2">
 									Выбрать фото
@@ -415,110 +115,287 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-12 mt-3">
-						<!-- Cards -->
-						<template v-if="payments_view">
-							<div
-								v-for="(payment, index) in payments"
-								:key="index"
-								class="col-12 p-0 row payment-profile"
+					<div class="col-10">
+						<ul class="PageCabinet-tabs">
+							<li
+								id="bg-this-1"
+								class="PageCabinet-tab"
+								:class="{'PageCabinet-tab_active': activeTab === 'main'}"
+								@click="selectTab('main')"
 							>
-								<div class="col-2">
-									<input
-										v-model="payment.bank"
-										class="form-control input-surv"
-										placeholder="Банк"
-									>
-								</div>
-								<div class="col-2">
-									<input
-										v-model="payment.country"
-										class="form-control input-surv"
-										placeholder="Страна"
-									>
-								</div>
-								<div class="col-2">
-									<input
-										v-model="payment.cardholder"
-										class="form-control input-surv"
-										placeholder="Имя на карте"
-									>
-								</div>
-								<div class="col-2">
-									<input
-										v-model="payment.phone"
-										class="form-control input-surv"
-										placeholder="Телефон"
-									>
-								</div>
-								<div class="col-2">
-									<input
-										v-model="payment.number"
-										v-mask="`#### #### #### ####`"
-										class="form-control card-number input-surv"
-										placeholder="Номер карты"
-									>
-								</div>
-								<div class="col-2 position-relative">
-									<button
-										v-if="payment.id"
-										style="position: absolute; left: 0px"
-										class="btn btn-danger card-delete rounded mt-1"
-										@click="removePaymentCart(index, payment.id)"
-									>
-										<span class="fa fa-trash" />
-									</button>
-									<button
-										v-else
-										style="position: absolute; left: 0px"
-										class="btn btn-primary card-delete rounded mt-1"
-										@click="removePaymentCart(index, 'dev')"
-									>
-										<span class="fa fa-trash" />
-									</button>
-								</div>
-							</div>
-						</template>
-
+								<span>Основные данные <span class="red">*</span></span>
+							</li>
+							<li
+								id="bg-this-9"
+								class="PageCabinet-tab"
+								:class="{'PageCabinet-tab_active': activeTab === 'documents'}"
+								@click="selectTab('documents')"
+							>
+								<span>Документы</span>
+							</li>
+							<li
+								id="bg-this-4"
+								class="PageCabinet-tab"
+								:class="{'PageCabinet-tab_active': activeTab === 'phones'}"
+								@click="selectTab('phones')"
+							>
+								<span>Контакты</span>
+							</li>
+						</ul>
 						<div
-							v-if="cardValidatre.error"
-							class="mt-2 p-0"
+							v-show="activeTab === 'main'"
+							class="PageCabinet-tabBody"
 						>
-							<div class="alert alert-danger">
-								<span>Заполните все поля</span>
-							</div>
-						</div>
+							<div class="form-group row mt-3">
+								<label class="col-sm-4 col-form-label font-weight-bold label-surv">
+									Имя <span class="red">*</span>
+								</label>
 
-						<div class="p-0 row mt-5">
-							<div class="col-3">
-								<button
-									style="color: white"
-									class="btn btn-phone btn-primary"
-									@click="addPayment()"
+								<div class="col-sm-8">
+									<input
+										id="firstName"
+										v-model="user.name"
+										class="form-control input-surv"
+										type="text"
+										name="name"
+										required
+										placeholder="Имя сотрудника"
+									>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>Фамилия <span class="red">*</span></label>
+								<div class="col-sm-8">
+									<input
+										id="lastName"
+										v-model="user.last_name"
+										class="form-control input-surv"
+										type="text"
+										name="last_name"
+										required
+										placeholder="Фамилия сотрудника"
+									>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
 								>
-									Добавить карту
+									Email <span class="red">*</span>
 									<img
-										v-b-popover.hover.html="'Добавьте не заблокированную карту на которую вам будет перечисляться зарплата'"
+										v-b-popover.click.blur.html="'При смене адреса email входить нужно через новый email'"
 										src="/images/dist/profit-info.svg"
 										width="20"
-										class="img-info ml-2 img-info-bg"
+										class="img-info ml-2"
 										alt="info icon"
 										tabindex="-1"
 									>
-								</button>
+								</label>
+								<div class="col-sm-8">
+									<input
+										id="email"
+										v-model="user.email"
+										class="form-control input-surv"
+										type="text"
+										name="email"
+										required
+										placeholder="email"
+									>
+								</div>
 							</div>
 
-							<div class="col-3">
-								<button
-									style="color: white"
-									class="btn btn-success"
-									type="button"
-									@click.prevent="editProfileUser()"
-								>
-									Сохранить
-								</button>
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>Новый пароль</label>
+								<div class="col-sm-8">
+									<input
+										id="new_pwd"
+										v-model="password"
+										minlength="5"
+										class="form-control input-surv"
+										type="password"
+										name="new_pwd"
+										placeholder="********"
+									>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>День рождения <span class="red">*</span></label>
+								<div class="col-sm-8">
+									<input
+										id="birthday"
+										v-model="birthday"
+										class="form-control input-surv"
+										type="date"
+										name="birthday"
+										required
+									>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>Город<span class="red">*</span></label>
+								<div class="col-sm-8">
+									<LocalitySelect
+										:value="keywords"
+										@change="selectCity"
+									/>
+								</div>
+							</div>
+
+							<div class="row mt-2">
+								<div class="col-12 mt-3">
+									<!-- Cards -->
+									<template v-if="payments_view">
+										<div
+											v-for="(payment, index) in payments"
+											:key="index"
+											class="row payment-profile"
+										>
+											<div class="col-2">
+												<input
+													v-model="payment.bank"
+													class="form-control input-surv"
+													placeholder="Банк"
+												>
+											</div>
+											<div class="col-2">
+												<input
+													v-model="payment.country"
+													class="form-control input-surv"
+													placeholder="Страна"
+												>
+											</div>
+											<div class="col-2">
+												<input
+													v-model="payment.cardholder"
+													class="form-control input-surv"
+													placeholder="Имя на карте"
+												>
+											</div>
+											<div class="col-2">
+												<input
+													v-model="payment.phone"
+													class="form-control input-surv"
+													placeholder="Телефон"
+												>
+											</div>
+											<div class="col-2">
+												<input
+													v-model="payment.number"
+													v-mask="`#### #### #### ####`"
+													class="form-control card-number input-surv"
+													placeholder="Номер карты"
+												>
+											</div>
+											<div class="col-2 position-relative">
+												<button
+													v-if="payment.id"
+													class="btn btn-danger card-delete rounded mt-1"
+													@click="removePaymentCart(index, payment.id)"
+												>
+													<span class="fa fa-trash" />
+												</button>
+												<button
+													v-else
+													class="btn btn-danger card-delete rounded mt-1"
+													@click="removePaymentCart(index, 'dev')"
+												>
+													<span class="fa fa-trash" />
+												</button>
+											</div>
+										</div>
+									</template>
+
+									<div
+										v-if="cardValidatre.error"
+										class="mt-2 p-0"
+									>
+										<div class="alert alert-danger">
+											<span>Заполните все поля</span>
+										</div>
+									</div>
+
+									<div class="p-0 row mt-5">
+										<div class="col-3">
+											<button
+												style="color: white"
+												class="btn btn-phone btn-primary"
+												@click="addPayment()"
+											>
+												Добавить карту
+												<img
+													v-b-popover.hover.html="'Добавьте не заблокированную карту на которую вам будет перечисляться зарплата'"
+													src="/images/dist/profit-info.svg"
+													width="20"
+													class="img-info ml-2 img-info-bg"
+													alt="info icon"
+													tabindex="-1"
+												>
+											</button>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
+						<div
+							v-show="activeTab === 'documents'"
+							class="PageCabinet-tabBody"
+						>
+							<!-- docs -->
+						</div>
+						<div
+							v-show="activeTab === 'phones'"
+							class="PageCabinet-tabBody"
+						>
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Телефон <span class="red">*</span>
+									<img
+										v-b-popover.click.blur.html="'Так руководитель сможет с вами связаться, а также этот номер нужен для подписи договоров'"
+										src="/images/dist/profit-info.svg"
+										width="20"
+										class="img-info ml-2"
+										alt="info icon"
+										tabindex="-1"
+									>
+								</label>
+								<div class="col-sm-8">
+									<input
+										v-model="phone"
+										class="form-control input-surv PageCabinet-phone"
+										type="text"
+										name="phone"
+										required
+										placeholder="телефон"
+									>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row mt-4">
+					<div class="col-12">
+						<button
+							style="color: white"
+							class="btn btn-success"
+							type="button"
+							@click.prevent="editProfileUser()"
+						>
+							Сохранить
+						</button>
 					</div>
 				</div>
 			</div>
@@ -532,60 +409,28 @@
 		>
 			<div id="cabinet-croppie" />
 		</b-modal>
-
-		<JobtronOverlay
-			v-if="isAdminsSelect"
-			@close="isAdminsSelect = false"
-		>
-			<AccessSelect
-				:value="adminsForm"
-				:tabs="['Сотрудники']"
-				:access-dictionaries="accessDictionariesAdmins"
-				search-position="beforeTabs"
-				:submit-button="'Применить'"
-				class="PageCabinet-accessSelect"
-				@submit="onSubmitAdmins"
-			/>
-		</JobtronOverlay>
-
-		<JobtronOverlay
-			v-if="isGeneralChatUsersOpen"
-			@close="isGeneralChatUsersOpen = false"
-		>
-			<AccessSelect
-				:value="generalChatUsers"
-				:tabs="[]"
-				:access-dictionaries="accessDictionariesChat"
-				search-position="beforeTabs"
-				:submit-button="'Применить'"
-				class="PageCabinet-accessSelect"
-				@submit="onSubmitGeneralChatUsers"
-			/>
-		</JobtronOverlay>
 	</div>
 </template>
 
 <script>
 /* eslint-disable camelcase */
 
+const CabinetAdmin = () => import(/* webpackChunkName: "CabinetAdmin" */ '@/components/pages/Cabinet/CabinetAdmin.vue')
+
 import { mapGetters, mapActions } from 'vuex'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import LocalitySelect from '@ui/LocalitySelect.vue'
-import JobtronOverlay from '@ui/Overlay'
-import AccessSelect from '@ui/AccessSelect/AccessSelect'
 
 import API from '@/components/Chat/Store/API.vue'
 
-const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
 	name: 'PageCabinet',
 	directives: {mask},
 	components:{
+		CabinetAdmin,
 		LocalitySelect,
-		JobtronOverlay,
-		AccessSelect,
 	},
 	props: {
 		authRole: {
@@ -595,9 +440,6 @@ export default {
 	},
 	data() {
 		return {
-			domain: window.location.hostname.split('.')[0],
-			videoUrl: null,
-			videoDays: 7,
 			crop_image: {
 				canvas: '',
 				image: '',
@@ -641,13 +483,7 @@ export default {
 			geo_lat: 0,
 			geo_lon: 0,
 
-			isAdminsSelect: false,
-			admins: [],
-			adminsForm: [],
-
-			isGeneralChatUsersOpen: false,
-			generalChatUsers: [],
-			generalChatUsersOld: [],
+			activeTab: 'main',
 		};
 	},
 	computed: {
@@ -657,52 +493,8 @@ export default {
 			'profileGroups',
 			'accessDictionaries',
 		]),
-		accessDictionariesAdmins(){
-			const newUsers = JSON.parse(JSON.stringify(this.accessDictionaries.users))
-			this.adminsForm.forEach(admin => {
-				const exists = newUsers.find(user => user.id === admin.id)
-				if(!exists) newUsers.push(admin)
-			})
-			return {
-				positions: this.accessDictionaries.positions,
-				profile_groups: this.accessDictionaries.profile_groups,
-				users: newUsers,
-			}
-		},
-		accessDictionariesChat(){
-			const newUsers = JSON.parse(JSON.stringify(this.accessDictionaries.users))
-			this.generalChatUsers.forEach(admin => {
-				const exists = newUsers.find(user => user.id === admin.id)
-				if(!exists) newUsers.push(admin)
-			})
-			return {
-				positions: this.accessDictionaries.positions,
-				profile_groups: this.accessDictionaries.profile_groups,
-				users: newUsers,
-			}
-		},
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
-		},
-		videoId() {
-			if (!this.videoUrl) return '';
-			return this.getYoutubeVideoId(this.videoUrl)
-		},
-		videoYoutube() {
-			return this.videoId ? `https://www.youtube.com/watch?v=${this.videoId}` : null;
-		},
-		isYoutubeLinkValid() {
-			return regex.test(this.videoUrl);
-		},
-		generalChatUserToAdd(){
-			return this.generalChatUsers.filter(user => {
-				return !this.generalChatUsersOld.find(oldUser => oldUser.id === user.id)
-			})
-		},
-		generalChatUserToRemove(){
-			return this.generalChatUsersOld.filter(oldUser => {
-				return !this.generalChatUsers.find(user => user.id === oldUser.id)
-			})
 		},
 	},
 	watch: {
@@ -717,10 +509,6 @@ export default {
 		}
 	},
 	mounted() {
-		this.axios.get('/portal/current').then(res => {
-			this.videoUrl = res.data.data.main_page_video;
-			this.videoDays = res.data.data.main_page_video_show_days_amount;
-		})
 		this.applyMask()
 	},
 	created() {
@@ -732,13 +520,7 @@ export default {
 	},
 	methods: {
 		...mapActions(['loadCompany']),
-		getYoutubeVideoId(url) {
-			const urlObj = new URL(url)
-			if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
-			return urlObj.searchParams.get('v')
-		},
 		init() {
-			this.fetchGeneralChat();
 			this.fetchData();
 			this.user = this.authRole;
 			this.format_date(this.user.birthday);
@@ -756,8 +538,6 @@ export default {
 			else {
 				this.crop_image.hide = true;
 			}
-
-
 		},
 		drawProfile() {},
 		change({canvas}) {
@@ -868,26 +648,18 @@ export default {
 			});
 		},
 
-		removePaymentCart(index, type_id) {
-			let confirmDelte = confirm(
-				'Вы действительно хотите безвозвратно удалить ?'
-			);
+		async removePaymentCart(index, type_id) {
+			if(!confirm('Вы действительно хотите безвозвратно удалить ?'))  return
+			this.payments.splice(index, 1);
 
-			if (confirmDelte) {
-				this.payments.splice(index, 1);
-
-				if (type_id != 'dev') {
-					this.axios
-						.post('/profile/remove/card/', {
-							card_id: type_id,
-						})
-						.then(() => {
-							this.$toast.success('Успешно Удалено');
-						})
-						.catch((error) => {
-							alert(error);
-						});
-				}
+			if(type_id === 'dev') return
+			try {
+				await this.axios.post('/profile/remove/card/', {
+					card_id: type_id,
+				})
+			}
+			catch (error) {
+				alert(error)
 			}
 		},
 
@@ -967,12 +739,6 @@ export default {
 			this.axios
 				.get('/cabinet/get')
 				.then(({data}) => {
-					this.admins = data.admins;
-					this.adminsForm = data.admins.map(admin => ({
-						...admin,
-						name: admin.email,
-						type: 1,
-					}))
 					this.user = JSON.parse(JSON.stringify(data.user))
 					this.phone = data.user.phone
 					this.keywords = data.user.working_country;
@@ -1016,43 +782,6 @@ export default {
 				this.generalChatUsersOld = JSON.parse(JSON.stringify(users))
 			})
 		},
-		save() {
-			this.saveGeneralChat()
-			try{
-				if ((this.videoDays || this.videoUrl) && this.authRole.is_admin === 1) {
-					if (this.videoDays && this.videoUrl) {
-						const formData = new FormData()
-						formData.append('mainPageVideo', this.videoUrl)
-						formData.append('mainPageVideoShowDaysAmount', this.videoDays)
-						this.isYoutubeLinkValid
-							? this.axios.post('/portal/update', formData)
-							: this.$toast.error('Некорректная ссылка youtube')
-					}
-					else {
-						this.$toast.error('Заполните все поля')
-					}
-				}
-				this.axios.post('/cabinet/save', {
-					admins: this.admins,
-				}).then(() => {
-					this.$toast.success('Сохранено')
-				}).catch((error) => {
-					alert(error)
-				})
-			}
-			catch(err) {
-				console.error(err)
-				this.$toast.err('Ошибка сохранения')
-			}
-		},
-		async saveGeneralChat(){
-			for(const user of this.generalChatUserToAdd){
-				await API.addUserToChat(0, user.id)
-			}
-			for(const user of this.generalChatUserToRemove){
-				await API.removeUserFromChat(0, user.id)
-			}
-		},
 		fetch() {
 			if (this.keywords != null && this.keywords != undefined) {
 				if (this.keywords.length === 0) {
@@ -1069,30 +798,6 @@ export default {
 						});
 				}
 			}
-		},
-		onSubmitAdmins(newAdmins){
-			this.$nextTick(() => {
-				this.admins = newAdmins.map(admin => ({
-					id: admin.id,
-					email: admin.name,
-				}))
-				this.adminsForm = newAdmins.map(admin => ({
-					id: admin.id,
-					email: admin.name,
-					name: admin.name,
-					type: 1,
-				}))
-				this.isAdminsSelect = false
-			})
-		},
-		onSubmitGeneralChatUsers(users){
-			this.$nextTick(() => {
-				this.generalChatUsers = users.map(user => ({
-					id: user.id,
-					email: user.name,
-				}))
-				this.isGeneralChatUsersOpen = false
-			})
 		},
 		initMask(){
 			if(window.intlTelInput) return
@@ -1121,6 +826,9 @@ export default {
 				})
 			})
 		},
+		selectTab(tab){
+			this.activeTab = tab
+		}
 	},
 };
 </script>
@@ -1401,6 +1109,44 @@ a.lp-link {
 	.img-info-bg{
 		background-color: #fff;
 		border-radius: 999em;
+	}
+
+	&-tabs{
+		margin: 0;
+		display: flex;
+		align-items: center;
+	}
+	&-tab{
+		padding: 10px 20px;
+		border-left: 1px solid #ddd;
+		border-top: 1px solid #ddd;
+		cursor: pointer;
+		transition: 0.15s all ease;
+		color: #777;
+		&:first-child{
+			border-radius: 5px 0 0 0;
+		}
+		&:last-child{
+			border-radius: 0 5px 0 0;
+			border-right: 1px solid #ddd;
+		}
+		&_active{
+			background-color: #156AE8;
+			color: #fff;
+			border-color: #156AE8;
+		}
+	}
+	&-tabBody{
+		padding: 20px;
+		border: 1px solid #ddd;
+		border-radius: 0 10px 10px 10px;
+	}
+	&-content{
+		flex: 1;
+	}
+
+	.content{
+		padding: 15px !important;
 	}
 }
 </style>
