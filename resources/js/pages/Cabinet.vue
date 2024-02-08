@@ -449,9 +449,11 @@ import { mapGetters, mapActions } from 'vuex'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
+import API from '@/components/Chat/Store/API.vue'
+
+import JobtronButton from '../components/ui/Button.vue'
 import LocalitySelect from '@ui/LocalitySelect.vue'
 
-import API from '@/components/Chat/Store/API.vue'
 
 export default {
 	name: 'PageCabinet',
@@ -459,6 +461,7 @@ export default {
 	components:{
 		CabinetAdmin,
 		LocalitySelect,
+		JobtronButton,
 	},
 	props: {
 		authRole: {
@@ -819,7 +822,7 @@ export default {
 			}
 		},
 		onSign(doc){
-			window.open(`/docs/sign/${doc.id}`, '_blank')
+			window.open(`/documents/sign/${doc.id}`, '_blank')
 		},
 		fetchGeneralChat(){
 			API.getChatInfo(0, ({users}) => {
@@ -1192,6 +1195,24 @@ a.lp-link {
 	}
 	&-content{
 		flex: 1;
+	}
+
+	&-doc{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	&-docIcon{
+		flex: 0 0 32px;
+		font-size: 24px;
+	}
+	&-docName{
+		flex: 1;
+	}
+	&-docControl{
+		display: flex;
+		align-items: center;
+		gap: 10px;
 	}
 
 	.content{
