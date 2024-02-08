@@ -1046,7 +1046,7 @@ class KpiStatisticService
             }
 
             $history = $kpi->histories_latest;
-            dd_if($kpi->id == 24, $history);
+
             if (!$history) {
                 return true;
             }
