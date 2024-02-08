@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
+use function Psy\debug;
 
 class SaveUserKpi extends Command
 {
@@ -41,11 +42,8 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
-        $userId = $this->argument('user_id');
-
         // get kpis
         $kpis = $this->statisticService->kpis($date)->get();
-        $this->truncate($date, $userId);
         $this->calc($kpis, $date);
     }
 
@@ -86,23 +84,24 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        SavedKpi::query()
-            ->create([
+        $exists = SavedKpi::query()
+            ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
-                'total' => $data['user_id']
+            ])->first();
+
+        if ($exists) {
+            $exists->total += $data['total'];
+            $exists->save();
+        } else {
+            SavedKpi::query()->create([
+                'date' => $data['date'],
+                'user_id' => $data['user_id'],
+                'total' => $data['total']
             ]);
+        }
 
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
-    }
-
-    private function truncate(Carbon $date, $userId = null): void
-    {
-        DB::table('saved_kpi')
-            ->when($userId, fn($query) => $query->where('user_id', $userId))
-            ->where('date', '>=', $date->startOfMonth()->format("Y-m-d"))
-            ->where('date', '<=', $date->endOfMonth()->format("Y-m-d"))
-            ->delete();
     }
 }
