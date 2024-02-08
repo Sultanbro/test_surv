@@ -201,7 +201,7 @@
 			:style="{ backgroundColor: card.color, width: resultWidth > 0 ? `${resultWidth}px` : null }"
 		>
 			<p class="StructureItem-contrast result-title">
-				Результаты
+				Ожидаемый результат работы
 			</p>
 			<p class="StructureItem-contrast result-text">
 				{{ description[0] }}
