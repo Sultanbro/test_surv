@@ -29,7 +29,7 @@ class ReferralController extends Controller
     {
 
         $this->leadService->create($user, $request->toDto());
-//        ProcessCreateLead::dispatch($user, $request->toDto());
+
         return response()->json([
             'message' => 'successfully processed!'
         ]);
