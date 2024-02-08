@@ -1817,7 +1817,12 @@ export default {
 				}
 			})
 
-			this.kpiItems = data.items.map(res=> {
+			let items = data.items || []
+			if(!Array.isArray(items)){
+				items = Object.values(items)
+			}
+
+			this.kpiItems = items.map(res=> {
 				const kpi = parseKPI(res)
 				kpi.users = kpi.users.filter(user => user.id === userId)
 				return {...kpi, my_sum: 0}
