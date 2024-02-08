@@ -8,6 +8,7 @@ use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -43,12 +44,14 @@ class SaveUserKpi extends Command
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
         // get kpis
-        $kpis = $this->statisticService->kpis($date)->get();
+        $kpis = $this->statisticService->fetchKpisWithCurrency([
+            ['data_from']['year'] => $date->year,
+        ]);
         $this->truncate($date, $this->argument('user_id'));
-        $this->calc($kpis, $date);
+        $this->calc($kpis, $date, $this->argument('user_id'));
     }
 
-    private function calc($kpis, Carbon $date): void
+    private function calc($kpis, Carbon $date, $userId = null): void
     {
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
@@ -62,6 +65,10 @@ class SaveUserKpi extends Command
             try {
 
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
+                if ($userId) {
+                    $users = Arr::where($users, fn($item) => $users['id'] == $userId);
+                }
+
                 foreach ($users as $user) {
                     $total = 0;
 

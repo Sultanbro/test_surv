@@ -848,19 +848,8 @@ class KpiStatisticService
         ];
     }
 
-    public function fetchKpisWithCurrency(Request $request, bool $limitForProfile = true): array
+    public function fetchKpisWithCurrency(array $filters = [], bool $limitForProfile = true): array
     {
-        $filters = $request->filters;
-        $request->validate([
-            'filters.user_id' => 'required|int'
-        ]);
-
-        /**
-         * filters
-         *
-         * date_from
-         * user_id
-         */
         if (
             isset($filters['data_from']['year'])
             && isset($filters['data_from']['month'])
@@ -877,7 +866,7 @@ class KpiStatisticService
         $user_id = $filters['user_id'] ?? 0;
         $currency = 'kzt';
 
-        $this->workdays = collect($this->userWorkdays($request->get('filters')));
+        $this->workdays = collect($this->userWorkdays($filters));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)

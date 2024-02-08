@@ -85,7 +85,10 @@ class KpiStatController extends Controller
      */
     public function fetchKpisWithCurrency(Request $request): JsonResponse
     {
-        $response = $this->service->fetchKpisWithCurrency($request);
+        $request->validate([
+            'filters.user_id' => 'required|int'
+        ]);
+        $response = $this->service->fetchKpisWithCurrency($request->get('filters', []));
 
         return response()->json($response);
     }
