@@ -44,6 +44,7 @@ class SaveUserKpi extends Command
             ->startOfMonth();
         // get kpis
         $kpis = $this->statisticService->kpis($date)->get();
+        $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date);
     }
 
@@ -103,5 +104,14 @@ class SaveUserKpi extends Command
 
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
+    }
+
+    private function truncate(Carbon $date, $userId = null): void
+    {
+        DB::table('saved_kpi')
+            ->when($userId, fn($query) => $query->where('user_id', $userId))
+            ->where('date', '>=', $date->startOfMonth()->format("Y-m-d"))
+            ->where('date', '<=', $date->endOfMonth()->format("Y-m-d"))
+            ->delete();
     }
 }
