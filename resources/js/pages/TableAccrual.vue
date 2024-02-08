@@ -1817,7 +1817,10 @@ export default {
 				}
 			})
 
-			const items = data.items || []
+			let items = data.items || []
+			if(!Array.isArray(items)){
+				items = Object.values(items)
+			}
 
 			this.kpiItems = items.map(res=> {
 				const kpi = parseKPI(res)

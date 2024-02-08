@@ -128,7 +128,7 @@ export default {
 			this.axios.post('/statistics/kpi-with-currency', {
 				filters: filters
 			}).then(({data}) => {
-
+				if(!Array.isArray(data.items)) data.items = Object.values(data.items || {})
 				// items
 				this.items = data.items.map(res=> {
 					const kpi = parseKPI(res)
