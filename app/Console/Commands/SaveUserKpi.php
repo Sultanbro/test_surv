@@ -44,9 +44,7 @@ class SaveUserKpi extends Command
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
         // get kpis
-        $kpis = $this->statisticService->fetchKpisWithCurrency([
-            ['data_from']['year'] => $date->year,
-        ]);
+        $kpis = $this->statisticService->kpis($date)->get();
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
@@ -71,7 +69,9 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-
+                    if ($user['id'] == 22778) {
+                        dump($kpi->id);
+                    }
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
