@@ -111,7 +111,7 @@ class SaveUserKpi extends Command
 
     private function truncate(Carbon $date, $userId = null): void
     {
-        DB::table('saved_kpis')
+        DB::table('saved_kpi')
             ->when($userId, fn($query) => $query->where('user_id', $userId))
             ->where('date', '>=', $date->startOfMonth()->format("Y-m-d"))
             ->where('date', '<=', $date->endOfMonth()->format("Y-m-d"))
