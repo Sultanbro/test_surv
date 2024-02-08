@@ -546,7 +546,7 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $group = ProfileGroup::find($group_id);
+        $group = ProfileGroup::query()->find($group_id);
         $groupTimeAddress = false;
         if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
 
@@ -646,7 +646,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-        foreach ($users as $key => $user) {
+        foreach ($users as $user) {
             /**
              * if internship is paid
              */

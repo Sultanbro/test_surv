@@ -9,7 +9,7 @@ use App\User;
 /**
  * @property int $user_id
  * @property string $date
- * @property float $total
+ * @property string $total
  */
 class SavedKpi extends Model
 {
