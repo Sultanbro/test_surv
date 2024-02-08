@@ -51,14 +51,16 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
         foreach ($users as $user) {
 
+            $amount = $this->getUserRate($user);
+
+            dd_if($user['id'] == 5, $amount);
+
             if (!$this->isWorked($date, $user)) continue;
 
             // Find the salary for the user
             $salary = $this->getSalary($user, $date);
 
             // Find the rate for the user
-            $amount = $this->getUserRate($user);
-            dd_if($user['id'] == 5, $amount);
 
             if ($salary && (int)$salary->amount === 0) {
                 $salary->update([
