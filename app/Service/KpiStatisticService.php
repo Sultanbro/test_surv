@@ -1002,10 +1002,10 @@ class KpiStatisticService
                     });
             })
             ->get();
-        dd_if($user->id = 22778, $kpis->pluck('id'), $droppedGroups, $groups);
+
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
-            // set priority and target for fetch only latest one (LEARN which kpis should be seen in profile!)
+            // set priority and target for fetch only latest one or dropped group kpi (LEARN which kpis should be seen in profile!)
             if ($kpi->has_user > 0) {
                 $kpi->priority = 1;
                 $kpi->targetable_id = $user_id;
@@ -1039,13 +1039,14 @@ class KpiStatisticService
                     if (in_array($kpi->targetable_id, $activeGroups)) {
                         $kpi->priority = 3;
                     } else {
+                        // for dropped group
                         $kpi->priority = 4;
                     }
                 }
             }
 
             $history = $kpi->histories_latest;
-
+            dd_if($kpi->id == 24, $history);
             if (!$history) {
                 return true;
             }
