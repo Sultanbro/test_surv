@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="activeuserid"
-		class="groups"
+		class="groups CompanyGroups"
 	>
 		<b-alert
 			v-if="message!=null"
@@ -189,6 +189,59 @@
 						>
 					</b-form-checkbox>
 				</div>
+
+				<div class="mt-4">
+					<div class="CompanyGroups-label">
+						Документы <b-badge>demo</b-badge>
+					</div>
+					<div
+						v-if="documents.length"
+						class="CompanyGroups-docs"
+					>
+						<div
+							v-for="doc, index in documents"
+							:key="index"
+							class="CompanyGroups-doc"
+						>
+							<div class="CompanyGroups-docIcon">
+								<i class="fa fa-file-pdf" />
+							</div>
+							<div class="CompanyGroups-docName">
+								{{ doc.name }}
+							</div>
+							<div class="CompanyGroups-docControls">
+								<JobtronButton
+									small
+									@click="onEditDoc(doc)"
+								>
+									<i class="far fa-edit" />
+								</JobtronButton>
+								<JobtronButton
+									small
+									error
+									@click="onDeleteDoc(doc)"
+								>
+									<i class="fas fa-trash" />
+								</JobtronButton>
+							</div>
+						</div>
+					</div>
+					<div
+						v-else
+						class="CompanyGroups-docsEmpty"
+					>
+						Нет документов
+					</div>
+					<div class="CompanyGroups-add">
+						<JobtronButton
+							small
+							@click="onAddDoc()"
+						>
+							<i class="fas fa-plus" /> Добавить документ
+						</JobtronButton>
+					</div>
+				</div>
+
 				<div class="card groups-card mt-4">
 					<div class="card-header">
 						<b-form-checkbox
@@ -419,17 +472,58 @@
 				</b-form-group>
 			</div>
 		</b-modal>
+
+		<b-modal
+			v-model="docEditDialog"
+			size="md"
+			:title="documentForm.id > 0 ? 'Редактирование документа' : 'Создание  документа'"
+			body-class="CompanyGroups-modal"
+			@ok="onSaveDoc"
+		>
+			<b-row class="mb-4">
+				<b-col cols="3">
+					Название
+				</b-col>
+				<b-col cols="9">
+					<b-form-input
+						v-model="documentForm.name"
+					/>
+				</b-col>
+			</b-row>
+
+			<b-row class="mb-4">
+				<b-col cols="3">
+					Файл
+				</b-col>
+				<b-col cols="9">
+					<InputFile
+						accept=".pdf"
+						@change="uploadDoc"
+					>
+						<div class="form-control">
+							{{ documentForm.file || 'Нет документа' }}
+						</div>
+					</InputFile>
+				</b-col>
+			</b-row>
+		</b-modal>
 	</div>
 </template>
 
 <script>
 /* eslint-disable camelcase */
 /* eslint-disable vue/prop-name-casing */
+import JobtronButton from '../components/ui/Button.vue'
+import InputFile from '../components/ui/InputFile.vue'
 
 import { getShiftDays } from '@/composables/shifts'
 
 export default {
 	name: 'CompanyGroups',
+	components: {
+		JobtronButton,
+		InputFile,
+	},
 	props: {
 		statuseses: {
 			type: Array,
@@ -523,6 +617,20 @@ export default {
 					value: 4,
 				},
 			],
+			documents: [
+				{
+					id: 0,
+					name: 'NDA',
+					file: ''
+				}
+			],
+			documentForm: {
+				id: 0,
+				name: '',
+				file: '',
+			},
+			docId: 0,
+			docEditDialog: false,
 		};
 	},
 	computed: {
@@ -616,48 +724,49 @@ export default {
 		},
 		async selectGroup(value) {
 			let loader = this.$loading.show();
-			await this.axios
-				.post('/timetracking/users-new', {
+			try {
+				const response = await this.axios.post('/timetracking/users-new', {
 					id: value.id,
 				})
-				.then((response) => {
-					if (response.data?.data) {
-						const data = response.data.data;
+				const data = response.data.data
 
-						this.workChartId = data.work_chart_id;
-						this.new_status = data.name;
-						this.value = data.users;
-						this.options = data.users;
-						this.timeon = data.timeon;
-						this.timeoff = data.timeoff;
-						this.group_id = data.group_id;
-						this.zoom_link = data.zoom_link;
-						this.bp_link = data.bp_link;
-						this.dialer_id = data.dialer_id;
-						this.talk_minutes = data.talk_minutes;
-						this.talk_hours = data.talk_hours;
-						this.script_id = data.script_id;
-						this.quality = data.quality;
-						this.activities = data.activities;
-						this.payment_terms = data.payment_terms;
-						this.time_address = data.time_address;
-						this.workdays = data.workdays;
-						this.paid_internship = data.paid_internship;
-						this.show_payment_terms = data.show_payment_terms;
+				this.workChartId = data.work_chart_id;
+				this.new_status = data.name;
+				this.value = data.users;
+				this.options = data.users;
+				this.timeon = data.timeon;
+				this.timeoff = data.timeoff;
+				this.group_id = data.group_id;
+				this.zoom_link = data.zoom_link;
+				this.bp_link = data.bp_link;
+				this.dialer_id = data.dialer_id;
+				this.talk_minutes = data.talk_minutes;
+				this.talk_hours = data.talk_hours;
+				this.script_id = data.script_id;
+				this.quality = data.quality;
+				this.activities = data.activities;
+				this.payment_terms = data.payment_terms;
+				this.time_address = data.time_address;
+				this.workdays = data.workdays;
+				this.paid_internship = data.paid_internship;
+				this.show_payment_terms = data.show_payment_terms;
 
-						this.editable_time = data.editable_time;
-						if (this.time_address != -1 || this.time_address != 0)
-							this.time_address_text = 'Из аналитики';
-						if (this.time_address == -1) this.time_address_text = 'Из U-calls';
-						if (this.time_address == 0) this.time_address_text = 'Не выбран';
+				this.editable_time = data.editable_time;
+				if (this.time_address != -1 || this.time_address != 0)
+					this.time_address_text = 'Из аналитики';
+				if (this.time_address == -1) this.time_address_text = 'Из U-calls';
+				if (this.time_address == 0) this.time_address_text = 'Не выбран';
+				this.addNewGroup = false
 
-						loader.hide();
-					} else {
-						this.value = [];
-					}
-				});
 
-			this.addNewGroup = false;
+				// loadDocuments
+
+				loader.hide()
+			}
+			catch (error) {
+				this.$toast.error(error)
+				console.error(error)
+			}
 		},
 		addGroup() {
 			if (this.$refs.groupsMultiselect) {
@@ -817,6 +926,86 @@ export default {
 			this.showEditTimeAddress = false;
 		},
 		getShiftDays,
+
+		async uploadDoc(files){
+			const file = files ? files[0] : null
+			if(!file) return
+
+			const loader = this.$loading.show()
+
+			const formData = new FormData()
+			formData.append('document', files[0])
+
+			try {
+				const {data} = await this.axios.post('/docs/upload', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				})
+				this.documentForm.file = data.file
+			}
+			catch (error) {
+				console.error(error)
+			}
+			loader.hide()
+		},
+		onEditDoc(doc){
+			this.documentForm = JSON.parse(JSON.stringify(doc))
+			this.docEditDialog = true
+		},
+		onSaveDoc(doc){
+			if(doc.id > 0){
+				this.updateDoc()
+			}
+			else{
+				this.createDoc()
+			}
+		},
+		onAddDoc(){
+			this.documentForm = {
+				id: --this.docId,
+				name: '',
+				file: '',
+			}
+			this.docEditDialog = true
+		},
+		async createDoc(){
+			try {
+				// const {data} = await this.axios.push('/docs', this.documentForm)
+				// this.documents.push({
+				// 	...this.documentForm,
+				// 	id: data.id
+				// })
+				this.docEditDialog = false
+			}
+			catch (error) {
+				this.$toast.error(error)
+				console.error(error)
+			}
+		},
+		async updateDoc(){
+			try {
+				// await this.axios.push(`/docs/${this.documentForm.id}`, this.documentForm)
+				const index = this.documents.findIndex(d => d.id === this.documentForm.id)
+				if(~index) this.documents.splice(index, 1, JSON.parse(JSON.stringify(this.documentForm)))
+				this.docEditDialog = false
+			}
+			catch (error) {
+				this.$toast.error(error)
+				console.error(error)
+			}
+		},
+		async onDeleteDoc(doc){
+			const index = this.documents.findIndex(d => d.id === doc.id)
+			if(~index) this.documents.splice(index, 1)
+			if(doc.id <= 0) return
+			try {
+				// await this.axios.delete(`/docs/${doc.id}`)
+			}
+			catch (error) {
+				console.error(error)
+			}
+		},
 	},
 };
 </script>
@@ -1001,4 +1190,39 @@ export default {
 	.add-grade input {
 		border-radius: 0;
 	}
+</style>
+<style lang="scss">
+.CompanyGroups{
+	// &-label{}
+	&-doc{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	&-docIcon{
+		flex: 0 0 32px;
+		font-size: 24px;
+	}
+	&-docName{
+		flex: 1;
+	}
+	&-docControl{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	&-modal{
+		.form-control{
+			height: 35px !important;
+			padding: 0 20px !important;
+			border: 1px solid #e8e8e8;
+
+			font-size: 14px;
+
+			background-color: #F7FAFC !important;
+			border-radius: 6px !important;
+		}
+	}
+}
 </style>

@@ -5,6 +5,7 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 import UserEditMain from '@/components/pages/UserEdit/UserEditMain'
 import UserEditAdditional from '@/components/pages/UserEdit/UserEditAdditional'
 import UserEditDocuments from '@/components/pages/UserEdit/UserEditDocuments'
+import UserEditDocumentsV2 from '@/components/pages/UserEdit/UserEditDocumentsV2'
 import UserEditAdaptation from '@/components/pages/UserEdit/UserEditAdaptation'
 import UserEditPhones from '@/components/pages/UserEdit/UserEditPhones'
 import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
@@ -40,6 +41,7 @@ export default {
 		UserEditMain,
 		UserEditAdditional,
 		UserEditDocuments,
+		UserEditDocumentsV2,
 		UserEditAdaptation,
 		UserEditPhones,
 		UserEditSalary,
@@ -968,13 +970,28 @@ export default {
 									@changeCity="onChangeCity"
 								/>
 
-								<div class="col-9 add_info">
-									<!-- documents tab -->
-									<UserEditDocuments
-										v-show="showBlocks.documents"
-										:user="user"
-									/>
-									<!-- end of documents -->
+								<div
+									v-show="showBlocks.documents"
+									class="docs row"
+								>
+									<div class="col-6">
+										<div class="mb-4">
+											Новые документы <b-badge>demo</b-badge>
+										</div>
+										<UserEditDocumentsV2
+											:user="user"
+										/>
+									</div>
+									<div class="col-6 add_info">
+										<!-- documents tab -->
+										<div class="mb-4">
+											Старые документы
+										</div>
+										<UserEditDocuments
+											:user="user"
+										/>
+										<!-- end of documents -->
+									</div>
 								</div>
 								<div class="col-md-12 add_info">
 									<UserEditAdaptation

@@ -1,17 +1,26 @@
 <template>
-	<div class="header__left">
+	<div class="header__left LeftSidebar">
 		<!-- avatar  -->
 		<div class="header__avatar">
-			<img
-				:src="avatar"
-				alt="avatar image"
+			<PulseCard
+				class="LeftSidebar-pulseAvatar"
+				style="--card-pulse-interval: 5s"
 			>
+				<img
+					:src="avatar"
+					alt="avatar image"
+					class="LeftSidebar-avatar"
+				>
+			</PulseCard>
 			<template v-if="['activist', 'ambassador'].includes(status)">
 				<img
 					class="LeftSidebar-refIcon"
 					:src="status === 'activist' ? '/images/dist/second-place.png' : '/images/dist/first-place.png'"
 					alt=""
 				>
+			</template>
+			<template v-else-if="isDefaultAvatar">
+				<i class="fas fa-upload LeftSidebar-upload" />
 			</template>
 			<!-- hover menu -->
 			<div class="hover-avatar-area">
@@ -70,16 +79,18 @@
 							>
 							<span class="menu__item-title">Оплата</span>
 						</router-link>
-						<router-link
-							to="/cabinet"
-							class="menu__item"
-						>
-							<img
-								src="/images/dist/icon-settings.svg"
-								alt="settings icon"
+						<PulseCard>
+							<router-link
+								to="/cabinet"
+								class="menu__item"
 							>
-							<span class="menu__item-title">Настройки</span>
-						</router-link>
+								<img
+									src="/images/dist/icon-settings.svg"
+									alt="settings icon"
+								>
+								<span class="menu__item-title">Настройки</span>
+							</router-link>
+						</PulseCard>
 						<form @click.prevent="logout">
 							<button
 								class="menu__item w-full"
@@ -161,11 +172,13 @@ import { mapGetters } from 'vuex'
 import { settingsSubmenu } from './helper.js'
 
 import LeftSidebarItem from './LeftSidebarItem'
+import PulseCard from '@ui/PulseCard.vue'
 
 export default {
 	name: 'LeftSidebar',
 	components: {
-		LeftSidebarItem
+		LeftSidebarItem,
+		PulseCard,
 	},
 	props: {},
 	data: function () {
@@ -184,6 +197,9 @@ export default {
 	},
 	computed: {
 		...mapGetters(['user']),
+		isDefaultAvatar(){
+			return this.avatar === 'https://cp.callibro.org/files/img/8.png'
+		},
 		status(){
 			if(!this.user) return ''
 			return this.user.referrer_status
@@ -797,6 +813,25 @@ export default {
 			position: absolute;
 			right: 5px;
 			bottom: 0;
+		}
+		&-upload{
+			position: absolute;
+			right: 5px;
+			bottom: 0;
+			font-size: 24px;
+			color: #555;
+			text-shadow: 0 0 2px #fff;
+		}
+		&-avatar{
+			display: block;
+			height: auto;
+			border-radius: 10px;
+			width: 100%;
+			-o-object-fit: cover;
+			object-fit: cover;
+		}
+		&-pulseAvatar{
+			border-radius: 10px;
 		}
 	}
 </style>
