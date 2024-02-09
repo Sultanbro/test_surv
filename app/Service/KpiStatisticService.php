@@ -564,7 +564,7 @@ class KpiStatisticService
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->where('active', 1);
+//                        $q->where('active', 1);
                     }
                 })
                     ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
