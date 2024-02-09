@@ -64,9 +64,8 @@ class SaveUserKpi extends Command
             }
             try {
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
-                dd($users);
                 if ($userId) {
-                    $users = Arr::where($users, fn($item) => $users['id'] == $userId);
+                    $users = Arr::where($users, fn($item) => $item['id'] == $userId);
                 }
 
                 foreach ($users as $user) {
