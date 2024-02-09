@@ -510,10 +510,12 @@ class KpiStatisticService
 
     public function kpis(
         Carbon $date = null,
-        string $searchWord = null,
-        int    $groupId = null
+        array  $filter = [],
     )
     {
+        $searchWord = $filter['search_world'] ?? '';
+        $groupId = $filter['group_id'] ?? null;
+        $onlyActive = $filter['only_active'] ?? true;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
@@ -555,8 +557,8 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where(function ($query) use ($start_date, $last_date) {
-                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
+            ->where(function ($query) use ($start_date, $last_date, $onlyActive) {
+                $query->whereHas('targetable', function ($q) use ($start_date, $last_date, $onlyActive) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhere('deleted_at', '>', $start_date);
@@ -564,7 +566,7 @@ class KpiStatisticService
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof ProfileGroup) {
-//                        $q->where('active', 1);
+                        $q->where('active', $onlyActive);
                     }
                 })
                     ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
@@ -1114,7 +1116,11 @@ class KpiStatisticService
         )->startOfMonth();
 
         $kpis = $this
-            ->kpis($date, $searchWord, $groupId)
+            ->kpis($date, [
+                'search_world' => $searchWord,
+                'group_id' => $groupId,
+                'only_active' => true,
+            ])
             ->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);

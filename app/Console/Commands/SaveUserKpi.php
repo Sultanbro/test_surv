@@ -44,7 +44,9 @@ class SaveUserKpi extends Command
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
         // get kpis
-        $kpis = $this->statisticService->kpis($date)->get();
+        $kpis = $this->statisticService->kpis($date, [
+            'only_active' => false
+        ])->get();
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
