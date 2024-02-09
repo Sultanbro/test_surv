@@ -61,17 +61,17 @@ class SaveUserKpi extends Command
                 }
             }
             try {
-
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
+                if ($kpi['id'] == 24) {
+                    dump(Arr::pluck($users, 'id'));
+                }
                 if ($userId) {
                     $users = Arr::where($users, fn($item) => $users['id'] == $userId);
                 }
 
                 foreach ($users as $user) {
                     $total = 0;
-                    if ($user['id'] == 22778) {
-                        dump($kpi->id);
-                    }
+
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }

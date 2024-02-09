@@ -524,7 +524,6 @@ class KpiStatisticService
         $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
         return Kpi::withTrashed()
-//            ->where('is_active', true)
             ->when((bool)$searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
