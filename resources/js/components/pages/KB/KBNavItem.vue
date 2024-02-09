@@ -51,7 +51,7 @@
 					@click.stop="$emit('add-page', item)"
 				/>
 				<i
-					v-if="type === 'book'"
+					v-if="type === 'book' && $laravel.is_admin"
 					title="Добавить раздел"
 					class="KBNavItem-action far fa-plus-square"
 					@click.stop="$emit('add-book', item)"

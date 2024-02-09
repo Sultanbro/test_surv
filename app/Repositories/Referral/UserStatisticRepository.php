@@ -53,7 +53,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             )
             ->leftJoin('users as r', 'users.id', '=', 'r.referrer_id')
             ->leftJoin('user_descriptions as d', 'r.id', '=', 'd.user_id')
-            ->where('d.is_trainee', 0) // Adjust the condition according to your schema
+            ->where('d.is_trainee', 0)
             ->groupBy('users.id', 'users.name', 'users.last_name', 'users.referrer_status', 'users.img_url')
             ->orderBy('applieds', 'desc')
             ->take(5)
@@ -138,7 +138,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 'name',
                 'last_name',
                 'referrer_status',
-                'deleted_at'])
+                'deleted_at'
+            ])
             ->withCount('referrals as referrals_count')
             ->with(['daytypes' => function (HasMany $query) {
                 $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
@@ -164,8 +165,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->get()
             ->map(function (User $referral) use ($referrer, $step) {
 
-                $days = $referral->daytypes;
-
                 $salaries = $referral->referrerSalaries;
 
                 $this->salaryFilter->forThisCollection($salaries);
@@ -176,7 +175,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $referral->is_trainee = $referral->user_description?->is_trainee;
 
                 $dateTypes = array_merge(
-                    $this->traineesDaily($days, $training),
+                    $this->traineesDaily($referral->daytypes, $training),
                     $this->attestation($attestation),
                     $this->employeeWeekly($working),
                     $this->employeeFirstWeek($firstWork)
@@ -248,8 +247,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->first();
     }
 
-    private
-    function countTrainingDays($training, DayType $day): ?array
+    private function countTrainingDays($training, DayType $day): ?array
     {
         $salary = [];
         foreach ($training as $item) {
@@ -265,8 +263,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return $this->parseSalary($salary);
     }
 
-    private
-    function isSameDate(Carbon $first, Carbon $second): bool
+    private function isSameDate(Carbon $first, Carbon $second): bool
     {
         return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
     }

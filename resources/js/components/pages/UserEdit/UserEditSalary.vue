@@ -106,7 +106,7 @@ export default {
 			this.uin = obj?.uin || ''
 		},
 		taxes() {
-			this.myTaxes = this.taxes.filter(item => item.isAssigned);
+			this.myTaxes = this.taxes.slice().filter(item => item.isAssigned);
 		}
 	},
 	methods: {
@@ -155,27 +155,37 @@ export default {
 		},
 		async unassignTax(tax, idx) {
 			if (!tax.isNew && this.user) {
+				const loader = this.$loading.show()
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
-				formDataAssignTaxes.append('tax_id', tax.id);
+				formDataAssignTaxes.append('tax_id', tax.id || tax.tax_id);
 				formDataAssignTaxes.append('is_assigned', 0);
 				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+				loader.hide()
 			}
 			this.myTaxes.splice(idx, 1);
 			this.$toast.success('Налог отменен');
 			this.$emit('taxes_update')
 		},
 		selectTaxNotAssigned(val) {
+			const id = val.id || val.tax_id
 			this.assignTaxes.push({
 				...val,
+				id,
+				tax_id: id,
 				value: 0,
 			});
 			this.myTaxes.push({
 				...val,
+				id,
+				tax_id: id,
 				value: 0,
 			});
-			const index = this.taxes.findIndex(t => t.id === val.id);
-			this.taxes[index].isAssigned = true;
+			const index = this.taxes.findIndex(t => t.id === id);
+			if(~index){
+				this.taxes[index].isAssigned = true;
+			}
+
 			this.$emit('taxes_fill', {
 				newTaxes: this.newTaxes,
 				assignTaxes: this.assignTaxes,
@@ -184,7 +194,7 @@ export default {
 		},
 		onEditTax(tax) {
 			if(tax.isNew) return
-			const exists = this.editTaxes.find(t => t.id === tax.id)
+			const exists = this.editTaxes.find(t => t.tax_id === tax.tax_id)
 			if(exists){
 				exists.name = tax.name
 				exists.value = tax.value
@@ -207,7 +217,7 @@ export default {
 		},
 		async deleteTax() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.id}`);
+			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.tax_id || this.deleteTaxObj.id}`);
 			if (!response.data) {
 				this.$toast.error('Ошибка при удалении');
 				return;
@@ -228,7 +238,7 @@ export default {
 			if (!isNaN(value) && Number.isInteger(value)) {
 				this.zarplata = value;
 			}
-		}
+		},
 	},
 }
 </script>
@@ -555,10 +565,7 @@ export default {
 				:key="tax.tax_id"
 				class="d-flex tax-row"
 			>
-				<b-form-group
-					id="input-group-4"
-					class="custom-switch custom-switch-sm"
-				>
+				<b-form-group class="custom-switch custom-switch-sm">
 					<b-form-checkbox
 						v-model="tax.isPercent"
 						switch
@@ -584,6 +591,7 @@ export default {
 						v-model="tax.name"
 						type="text"
 						class="mr-1"
+						:disabled="!!tax.tax_id"
 						placeholder="Название налога"
 						@input="onEditTax(tax)"
 					/>
@@ -643,7 +651,7 @@ export default {
 						Отменить налог данному сотруднику
 					</p>
 				</b-popover>
-				<button
+				<!-- <button
 					v-if="!tax.isNew"
 					type="button"
 					class="btn btn-danger tax-delete rounded ml-2"
@@ -658,7 +666,7 @@ export default {
 					@click="deleteNewTax(idx)"
 				>
 					<i class="fa fa-minus" />
-				</button>
+				</button> -->
 			</div>
 		</div>
 

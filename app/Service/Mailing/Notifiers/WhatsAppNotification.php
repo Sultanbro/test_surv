@@ -3,9 +3,10 @@
 namespace App\Service\Mailing\Notifiers;
 
 use App\Jobs\WhatsAppNotificationJob;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
 class WhatsAppNotification implements Notification
 {
@@ -18,19 +19,23 @@ class WhatsAppNotification implements Notification
      * @param string $message
      * @param Collection|null $recipients
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
         if ($recipients == null) return false;
 
         $recipients = $recipients->where('phone', '!=', '');
-        $delay = 1;
+
+        $jobs = [];
+
         foreach ($recipients as $recipient) {
-            WhatsAppNotificationJob::dispatch($recipient, $message)
-                ->delay(now()->addSeconds($delay * 2));
-            $delay += 1;
+            $job = new WhatsAppNotificationJob($recipient, $message);
+            $job->delay(now()->addSeconds(2));
+            $jobs[] = $job;
         }
+
+        Bus::batch($jobs)->dispatch();
         return true;
     }
 }

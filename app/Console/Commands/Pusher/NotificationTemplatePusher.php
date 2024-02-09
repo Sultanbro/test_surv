@@ -10,7 +10,6 @@ use App\Classes\Helpers\Phone;
 use Illuminate\Console\Command;
 use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
-use http\Exception\InvalidArgumentException;
 use App\Service\Mailing\Notifiers\NotificationFactory;
 
 class NotificationTemplatePusher extends Command
@@ -37,7 +36,8 @@ class NotificationTemplatePusher extends Command
      */
     public function handle()
     {
-        $notifications = MailingNotification::getTemplates()->isActive()
+        $notifications = MailingNotification::getTemplates()
+            ->isActive()
             ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 

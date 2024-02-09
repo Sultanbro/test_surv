@@ -3,8 +3,10 @@
 namespace App\Service\Salary;
 
 use App\Repositories\UserRepository;
+use App\Salary;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
@@ -21,10 +23,16 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
 
         // Get all users within the date range using whereBetween
         /** @var Collection<User> $users */
-        $users = $this->userRepository->betweenDate($startDate, $endDate);
+        $users = $this->userRepository->betweenDate($startDate, $endDate)
+            ->when($groupId, function (Builder $query) use ($groupId) {
+                $query->whereHas('groups', function (Builder $query) use ($groupId) {
+                    $query->where('id', $groupId);
+                    $query->where('status', 'active');
+                });
+            })
+            ->get();
 
         while ($startDate <= $endDate) {
-
             $this->updateDaySalary($users, $startDate);
             $startDate->addDay();
         }
@@ -43,31 +51,23 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
     {
         foreach ($users as $user) {
 
-            if (!$this->isWorked($date, $user)) continue;
+            $amount = $this->getUserRate($user);
+
+            if ($user['id'] != 5) {
+                if (!$this->isWorked($date, $user)) continue;
+            }
 
             // Find the salary for the user
-            $salary = $user->salaries()
-                ->whereDate('date', $date->format("Y-m-d"))
-                ->first();
+            $salary = $this->getSalary($user, $date);
 
-            // Find the zarplata for the user
-            $zarplata = $user->zarplata;
-
-            $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
+            // Find the rate for the user
 
             if ($salary && (int)$salary->amount === 0) {
-
                 $salary->update([
-                    'date' => $date,
-                    'note' => 'test',
-                    'paid' => 0,
-                    'bonus' => 0,
-                    'comment_paid' => '',
-                    'comment_bonus' => '',
-                    'comment_award' => '',
-                    'amount' => $salary_amount,
+                    'amount' => $amount,
                 ]);
             }
+
             if (!$salary) {
                 $user->salaries()->create([
                     'date' => $date,
@@ -77,7 +77,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
                     'comment_paid' => '',
                     'comment_bonus' => '',
                     'comment_award' => '',
-                    'amount' => $salary_amount,
+                    'amount' => $amount
                 ]);
             }
         }
@@ -90,5 +90,20 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
             ->whereMonth('enter', $date->month)
             ->whereDay('enter', $date->day)
             ->exists();
+    }
+
+    private function getSalary(User $user, Carbon $date): ?Salary
+    {
+        /** @var null|Salary */
+        return $user->salaries()
+            ->whereYear('date', $date->year)
+            ->whereMonth('date', $date->month)
+            ->whereDay('date', $date->day)
+            ->first();
+    }
+
+    private function getUserRate(mixed $user): int
+    {
+        return $user->zarplata?->zarplata ?? 70000;
     }
 }

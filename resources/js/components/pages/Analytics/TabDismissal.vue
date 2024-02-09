@@ -7,7 +7,13 @@
 				card
 			>
 				<div class="pt-4">
+					<FilterStaffTurnover
+						v-model="filterTurnover"
+						class="mb-3"
+						@input="fetchData"
+					/>
 					<TableStaffTurnover
+						:filter="filterTurnover"
 						:staff="staff"
 						:causes="causes"
 						:staff_longevity="staffLongevity"
@@ -46,6 +52,7 @@ import { useHRStore } from '@/stores/ReportsHR.js'
 
 import JobtronTable from '@ui/Table'
 import TableStaffTurnover from '@/components/tables/TableStaffTurnover.vue'
+import FilterStaffTurnover from '@/components/pages/Analytics/FilterStaffTurnover.vue'
 import ReasonsBot from '@/components/pages/Analytics/ReasonsBot'
 
 export default {
@@ -53,6 +60,7 @@ export default {
 	components: {
 		JobtronTable,
 		TableStaffTurnover,
+		FilterStaffTurnover,
 		ReasonsBot,
 	},
 	props: {
@@ -69,12 +77,21 @@ export default {
 			default: 0
 		}
 	},
+	data(){
+		return {
+			filterTurnover: {
+				formula: 1,
+				position: 0,
+			},
+		}
+	},
 	computed: {
 		...mapState(useHRStore, [
 			'isLoading',
 			'isReady',
 			'error',
 			// Dismiss
+			'absentsFirst',
 			'causes',
 			'quiz',
 			'staff',
@@ -98,10 +115,18 @@ export default {
 			this.fetchData()
 		},
 		fetchData(){
-			this.fetchDismiss({
+			const filtersFields = {
+				position: 'position_id',
+				formula: 'formula_type',
+			}
+			const params = {
 				month: this.month + 1,
 				year: this.year,
+			}
+			Object.keys(this.filterTurnover).forEach(key => {
+				params[filtersFields[key]] = this.filterTurnover[key]
 			})
+			this.fetchDismiss(params)
 		},
 	}
 }

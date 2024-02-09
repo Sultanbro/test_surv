@@ -220,7 +220,7 @@
 							class="text-center"
 						>
 							<input
-								v-if="[1,3,5].includes(item.method)"
+								v-if="[1,3,5].includes(+item.method)"
 								v-model="item.fact"
 								type="number"
 								min="0"
@@ -239,7 +239,7 @@
 							class="text-center"
 						>
 							<!-- sum or avg by method -->
-							<div v-if="[1,3,5].includes(item.method)">
+							<div v-if="[1,3,5].includes(+item.method)">
 								{{ item.fact }}
 							</div>
 							<div v-else>
@@ -515,9 +515,9 @@ export default {
 			const date = this.date != null
 				? this.date
 				: this.$moment(Date.now()).format('YYYY-MM-DD')
-			const isFact = [1,3,5].includes(item.method)
+			const isFact = [1,3,5].includes(+item.method)
 			const value = isFact ? item.fact : item.avg
-			if(item.method === 2) item.percent = item.avg / item.plan * 100
+			if(+item.method === 2) item.percent = item.avg / item.plan * 100
 
 			this.axios.post('/statistics/update-stat', {
 				user_id: this.kpi_id,

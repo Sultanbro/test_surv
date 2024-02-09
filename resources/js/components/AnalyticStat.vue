@@ -1,6 +1,9 @@
 <template>
 	<div class="AnalyticStat z-12 relative">
-		<div class="table-header">
+		<div
+			v-if="isMain && [5, 20641].includes(+$laravel.userId)"
+			class="table-header"
+		>
 			<input
 				v-model="coords"
 				type="text"
@@ -29,6 +32,7 @@
 		</div>
 
 		<div class="AnalyticStat-tables d-flex relative">
+			<!-- FirstHalf -->
 			<div
 				id="wow-table"
 				class="relative w551"
@@ -105,7 +109,7 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup) || field.key == 'name' && [2].includes(i_index)">
+								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup)/*  || field.key == 'name' && [2].includes(i_index) */">
 									<div class="d-flex justify-content-between">
 										<div
 											class="inner-div halfy"
@@ -276,6 +280,14 @@
 													@mouseover="toggleContext2(item[field.key], 'hours')"
 												>
 													Часы из табеля
+													<img
+														v-b-popover.hover.html="`Выберите должности часы которых будут считаться`"
+														src="/images/dist/profit-info.svg"
+														class="img-info"
+														alt="info icon"
+														tabindex="-1"
+														width="20"
+													>
 												</li>
 												<li
 													v-if="['name'].includes(field.key)"
@@ -320,7 +332,7 @@
 												>
 													Формула с 1 по 31
 												</li>
-												<li
+												<!-- <li
 													v-if="['name'].includes(field.key)"
 													@click="add_inhouse(item[field.key])"
 													@mouseover="toggleContext2(item[field.key], '')"
@@ -333,7 +345,7 @@
 													@mouseover="toggleContext2(item[field.key], '')"
 												>
 													Отсутствие минут remote
-												</li>
+												</li> -->
 												<li
 													v-if="['name'].includes(field.key)"
 													@click="add_salary(item[field.key])"
@@ -377,7 +389,10 @@
 															/>
 															<span v-else>В отделе нет сотрудников с должностями</span>
 														</div>
-														<label class="AnContext2-row AnContext2-field">
+														<label
+															v-if="isMain && [5].includes(+$laravel.userId)"
+															class="AnContext2-row AnContext2-field"
+														>
 															<div class="AnContext2-label">Делить на</div>
 															<input
 																v-model="hoursDivider"
@@ -412,7 +427,7 @@
 											v-else
 											type="text"
 											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
+											:value="item[field.key].show_value ? item[field.key].show_value : ''"
 											class="in-cell"
 										>
 
@@ -432,9 +447,24 @@
 							</td>
 						</template>
 					</tr>
+					<tr>
+						<td />
+						<td>
+							<div
+								class="AnalyticStat-addRow2"
+								@click="add_row(items.length - 1)"
+							>
+								<i class="fa fa-plus" />
+								добавить строку
+							</div>
+						</td>
+						<td />
+						<td />
+					</tr>
 				</table>
 			</div>
 
+			<!-- SecondHalf -->
 			<div
 				class="table-responsive"
 				@scroll="hideContextMenu"
@@ -491,7 +521,7 @@
 										v-else-if="i_index != 0"
 										type="text"
 										class="in-cell"
-										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')"
+										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + (item[field.key].sign || '') : '')"
 									>
 									<input
 										v-else
@@ -528,7 +558,7 @@
 							class="contextor"
 						>
 							<ul class="types">
-								<li>
+								<!-- <li>
 									<div class="d-flex decimals">
 										<p>Дробные</p>
 										<input
@@ -537,16 +567,16 @@
 											@change="setDecimals(item[field.key])"
 										>
 									</div>
-								</li>
+								</li> -->
 								<li @click="change_type('initial', i_index, field.key)">
 									Обычный
 								</li>
 								<li @click="change_type('formula', i_index, field.key)">
 									Формула
 								</li>
-								<li @click="add_formula_1_31(item[field.key])">
+								<!-- <li @click="add_formula_1_31(item[field.key])">
 									Формула с 1 по 31
-								</li>
+								</li> -->
 							</ul>
 						</div>
 					</template>
@@ -629,9 +659,7 @@
 		>
 			<div class="row">
 				<div class="col-12">
-					<p>Пишите ряд для выбора в фигурных скобках, 5 ряд это - {5}</p>
-					<p>Пример формулы: {5} * 12 / 1000</p>
-					<p>Станет        : E5  * 12 / 1000</p>
+					<p>Пример формулы: (E5 - E4) * 12 / 1000</p>
 				</div>
 				<div class="col-12 mb-3">
 					<input
@@ -640,7 +668,7 @@
 						class="form-control form-control-sm"
 					>
 				</div>
-				<div class="col-4">
+				<!-- <div class="col-4">
 					Количество цифр после запятой
 				</div>
 				<div class="col-8">
@@ -649,7 +677,7 @@
 						type="text"
 						class="form-control form-control-sm"
 					>
-				</div>
+				</div> -->
 			</div>
 		</b-modal>
 
@@ -1489,26 +1517,34 @@ export default {
 		},
 
 		setDecimals(item) {
-			this.axios.post('/timetracking/analytics/set-decimals', {
-				date: this.$moment(
-					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-					'MMMM YYYY'
-				).format('YYYY-MM-DD'),
-				row_id: item.row_id,
-				column_id: item.column_id,
-				decimals: item.decimals
-			}).then(() => {
-				this.$toast.success('Сохранено');
-				this.hideContextMenu();
-			}).catch(error => {
-				this.$toast.error('Не сохранено');
-				console.error(error)
-			});
+			const rowId = item.row_id
+			const row = this.table.find(row => row.name.row_id === rowId)
+			const dec = item.decimals
+			if(!row) return
+			const requests = []
+			Object.keys(row).forEach(key => {
+				const cell = row[key]
+				requests.push(
+					this.axios.post('/timetracking/analytics/set-decimals', {
+						date: this.$moment(
+							`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+							'MMMM YYYY'
+						).format('YYYY-MM-DD'),
+						row_id: rowId,
+						column_id: cell.column_id,
+						decimals: dec,
+					})
+				)
+			})
+			Promise.allSettled(requests).then(() => {
+				this.$toast.success('Сохранено')
+				this.hideContextMenu()
+			})
 		},
 
 		save_formula_1_31() {
 			// let rows = [];
-			let text =  this.formula_1_31
+			let text =  this.formula_1_31.replace(/[a-z]+([\d])/gi, '{$1}')
 
 			this.items.forEach((item, index) => {
 				index++;
@@ -1871,6 +1907,22 @@ export default {
 			width: 50px;
 		}
 	}
+
+	&-addRow2{
+		padding: 5px;
+		cursor: pointer;
+		font-size: 14px;
+		color: #777;
+		&:hover{
+			color: #000;
+		}
+	}
+
+	.contextor{
+		input{
+			background-color: #fff !important;
+		}
+	}
 }
 .AnContext2{
 	width: 320px;
@@ -1901,7 +1953,7 @@ export default {
 	&-label{
 		display: block;
 	}
-	&-input{}
+	// &-input{}
 
 	// AAAAAAAAA Ебучите селекторы по тэгам!!!
 	.AccessSelectListItem-input{

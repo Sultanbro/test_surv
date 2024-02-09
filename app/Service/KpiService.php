@@ -138,6 +138,9 @@ class KpiService
                         if (array_key_exists('unit', $has_edited_plan)) $_item['unit'] = $has_edited_plan['unit'];
                         if (array_key_exists('cell', $has_edited_plan)) $_item['cell'] = $has_edited_plan['cell'];
                         if (array_key_exists('common', $has_edited_plan)) $_item['common'] = $has_edited_plan['common'];
+                        if (array_key_exists('percent', $has_edited_plan)) $_item['percent'] = $has_edited_plan['percent'];
+                        if (array_key_exists('sum', $has_edited_plan)) $_item['sum'] = $has_edited_plan['sum'];
+                        if (array_key_exists('group_id', $has_edited_plan)) $_item['group_id'] = $has_edited_plan['group_id'];
                         if (array_key_exists('activity_id', $has_edited_plan)) $_item['activity_id'] = $has_edited_plan['activity_id'];
                     }
 

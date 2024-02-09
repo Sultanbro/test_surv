@@ -696,12 +696,13 @@ class SalaryController extends Controller
             } else {
                 $ObtainedBonus = ObtainedBonus::onMonth($user->id, $date->format('Y-m-d'));
 
-                $test_bonuses = TestBonus::selectRaw('sum(ROUND(amount,0)) as total')
-                    ->where('user_id', $user->id)
-                    ->whereYear('date', $date->year)
-                    ->whereMonth('date', $date->month)
-                    ->first('total')
-                    ->total;
+                $test_bonuses = 0;
+//                    TestBonus::selectRaw('sum(ROUND(amount,0)) as total')
+//                    ->where('user_id', $user->id)
+//                    ->whereYear('date', $date->year)
+//                    ->whereMonth('date', $date->month)
+//                    ->first('total')
+//                    ->total;
 
                 $bonus = round($month_salary->bonus + $ObtainedBonus + $test_bonuses);
             }
@@ -801,10 +802,10 @@ class SalaryController extends Controller
 
                 if ($exist) {
                     if (!$taxColumn->end_subtraction) {
-                        $tax_amount += $amount = (int) round($tax->is_percent ? $userZarplata * ($value / 100) : $value);
+                        $tax_amount += $amount = (int)round($tax->is_percent ? $userZarplata * ($value / 100) : $value);
                         $simpleTaxesAmountForUser += $amount;
                     } else {
-                        $tax_amount += $amount = (int) round($tax->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
+                        $tax_amount += $amount = (int)round($tax->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
                     }
                     $total_payment -= $amount;
                     $totalColumns["tax_$taxColumn->id"] = $amount;

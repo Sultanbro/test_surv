@@ -546,7 +546,7 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $group = ProfileGroup::find($group_id);
+        $group = ProfileGroup::query()->find($group_id);
         $groupTimeAddress = false;
         if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
 
@@ -646,7 +646,7 @@ class Salary extends Model
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-        foreach ($users as $key => $user) {
+        foreach ($users as $user) {
             /**
              * if internship is paid
              */
@@ -782,8 +782,7 @@ class Salary extends Model
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
-                    }
-                    else if ($x->count() > 0) { // отработанное время есть
+                    } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
 
                         $earning = $total_hours / 60 * $hourly_pay;
@@ -791,14 +790,12 @@ class Salary extends Model
 
                         $hours[$i] = round($total_hours / 60, 1);
 
-                    }
-                    else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                    } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $total_hours = $y->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($total_hours / 60, 1);
-                    }
-                    else if ($r) { // переобучение
+                    } else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
 
@@ -811,8 +808,7 @@ class Salary extends Model
 
                         $hours[$i] = round($total_hours / 60, 1);
 
-                    }
-                    else if ($t) { // день отмечен как стажировка
+                    } else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
                         $earning = $hourly_pay * $working_hours * $internshipPayRate;
@@ -991,7 +987,8 @@ class Salary extends Model
             /**
              * If user has edited KPI take it
              */
-            $editedKpi = EditedKpi::where('user_id', $user->id)
+            $editedKpi = EditedKpi::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();

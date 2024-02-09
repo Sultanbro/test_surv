@@ -703,7 +703,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function firedGroups(): array
     {
-        return GroupUser::where('status', 'fired')
+        return GroupUser::query()
+            ->where('status', 'fired')
             ->where('user_id', $this->id)
             ->get()
             ->pluck('group_id')
@@ -718,11 +719,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function droppedGroups(Carbon $date = null): array
     {
-        $groupUser = GroupUser::where('status', 'drop')
+        $groupUser = GroupUser::query()
+            ->whereIn('status', ['drop', 'fired'])
             ->where('user_id', $this->id);
 
-        if ($date) $groupUser->whereYear('updated_at', $date->year)
-            ->whereMonth('updated_at', $date->month);
+        if ($date) $groupUser->whereYear('to', $date->year)
+            ->whereMonth('to', $date->month);
 
         return $groupUser->get()
             ->pluck('group_id')
@@ -1488,7 +1490,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function activeGroup(): ?ProfileGroup
     {
-        return $this->groups()->where('status', '=', 'active')->first();
+        return $this->groups()
+            ->where('status', '=', 'active')
+            ->first();
     }
 
     public function activeGroupFast(): ?ProfileGroup

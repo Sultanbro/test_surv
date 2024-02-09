@@ -19,7 +19,11 @@ class AnvizService
     {
         $dateToFetch = Carbon::parse($date ?? now()->toDateString());
         $dates = $this->shouldFetchPreviousDays()
-            ? [$dateToFetch, $dateToFetch->subDay()->toDateString(), $dateToFetch->subDays(2)->toDateString()]
+            ? [
+                $dateToFetch,
+                $dateToFetch->subDay()->toDateString(),
+                $dateToFetch->subDays(2)->toDateString()
+            ]
             : [$dateToFetch->toDateString()];
         foreach ($dates as $my_date) {
             $this->date = $my_date;

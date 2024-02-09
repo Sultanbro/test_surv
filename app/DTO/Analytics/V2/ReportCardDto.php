@@ -12,7 +12,7 @@ class ReportCardDto
      * @param int $rowId
      * @param int $year
      * @param int $month
-     * @param int $divide
+     * @param float $divide
      * @param array $positions
      */
     public function __construct(
@@ -20,7 +20,7 @@ class ReportCardDto
         public readonly int $rowId,
         public readonly int $year,
         public readonly int $month,
-        public readonly int $divide,
+        public readonly float $divide,
         public readonly array $positions,
     )
     {}

@@ -245,11 +245,12 @@ class UserService
     {
         if ($isTrainee) {
             (new DayTypeRepository)->createNew($userId);
+        } else {
+            CreateTimeTrackHistoryEvent::dispatch($userId);
         }
 
         $this->descriptionRepository->touchDescription($userId, $isTrainee);
 
-        CreateTimeTrackHistoryEvent::dispatch($userId);
     }
 
     /**

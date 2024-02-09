@@ -330,8 +330,17 @@
 									class="fa fa-briefcase ml-2 color-position"
 								/>
 								<span class="ml-2">{{ page_item.name }}</span>
+								<b-form-checkbox
+									class="kpi-status-switch ml-a"
+									switch
+									:checked="!!page_item.is_active"
+									:disabled="statusRequest"
+									@input="changeStatus(page_item, $event)"
+								>
+									&nbsp;
+								</b-form-checkbox>
 								<i
-									class="fa fa-save btn btn-success btn-icon ml-a"
+									class="fa fa-save btn btn-success btn-icon"
 									@click="saveAll(p)"
 								/>
 							</div>
@@ -449,6 +458,11 @@
 																	{{ activity.name }}
 																</option>
 															</select>
+															<input
+																v-if="Number(item.source) === 1 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
+																v-model="item.cell"
+																type="text"
+															>
 														</div>
 													</template>
 													<template v-else-if="field.key == 'unit'">
@@ -493,19 +507,10 @@
 												</td>
 												<td class="no-hover">
 													<div class="d-flex px-2">
-														<b-form-checkbox
-															class="kpi-status-switch"
-															switch
-															:checked="!!item.is_active"
-															:disabled="statusRequest"
-															@input="changeStatus(item, $event)"
-														>
-															&nbsp;
-														</b-form-checkbox>
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveItemFromTable(p, i)"
-														/>
+														/> -->
 														<i
 															class="fa fa-trash btn btn-danger btn-icon"
 															@click="deleteItem(p, i)"
@@ -766,7 +771,7 @@ import SuperSelect from '@/components/SuperSelect'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 import {fields, newQuartalPremium} from './quartal_premiums.js';
-import {findModel, sources} from './helpers.js';
+import { findModel, sources } from './helpers.js';
 
 export default {
 	name: 'QuartalPremiums',
@@ -862,18 +867,18 @@ export default {
 	},
 
 	methods: {
-		changeStatus(item, e){
+		changeStatus(premium, e){
 			if(this.statusRequest) return
-			if(item.is_active === e) return
-			this.statusRequest = true
-			this.axios.post('/quartal-premiums/set/status', {
-				premium_id: item.id,
-				is_active: e
-			}).then(() => {
+			if(premium.is_active === e) return
+			this.statusRequest = []
+			premium.items.forEach(item => {
+				this.statusRequest.push(this.axios.post('/quartal-premiums/set/status', {
+					premium_id: item.id,
+					is_active: e
+				}))
+			})
+			Promise.allSettled(this.statusRequest).then(() => {
 				this.$toast.success('Статус изменен')
-				this.statusRequest = false
-			}).catch(() => {
-				this.$toast.error('Статус не изменен')
 				this.statusRequest = false
 			})
 		},
@@ -919,8 +924,12 @@ export default {
 					query: this.searchText,
 				}
 			}).then(response => {
-				this.all_items = response.data.items
-				this.items = response.data.items;
+				const items = response.data.items.map(item => ({
+					...item,
+					is_active: item.items.reduce((result, itm) => result && itm.is_active, true)
+				}))
+				this.all_items = items
+				this.items = items
 				this.activities = response.data.activities;
 				this.groups = response.data.groups;
 

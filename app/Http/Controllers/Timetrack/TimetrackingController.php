@@ -15,10 +15,12 @@ use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
 use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
+use App\Jobs\Salary\ProcessUpdateSalary;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
 use App\Models\GroupUser;
@@ -915,15 +917,37 @@ class TimetrackingController extends Controller
         $userId = $request->user_id;
         $date = Carbon::createFromDate($request->year, $request->month, $request->day);
 
-        $days = Timetracking::where('user_id', intval($userId))
+        /** @var User $user */
+        $user = User::with(['workChart', 'groups.workChart'])->find($userId);
+        $schedule = $user->scheduleFast();
+//        if ($schedule['start']) {
+//            $enter = $schedule['start']->setDate(intval($request->year), intval($request->month), intval($request->day))->subHours(6);
+//        } else {
+        $enter = Carbon::create(intval($request->year), intval($request->month), $request->day);
+//        }
+
+        $day = Timetracking::query()
+            ->where('user_id', intval($userId))
+            ->whereYear('enter', intval($request->year))
+            ->whereMonth('enter', intval($request->month))
+            ->whereDay('enter', $request->day)
+            ->first();
+
+        if (!$day) {
+            $day = Timetracking::query()->create([
+                'user_id' => intval($userId),
+                'enter' => $enter,
+            ]);
+        }
+
+        $days = Timetracking::query()
+            ->where('user_id', intval($userId))
             ->whereYear('enter', intval($request->year))
             ->whereMonth('enter', intval($request->month))
             ->whereDay('enter', $request->day)
             ->selectRaw('*, TIMESTAMPDIFF(minute, `enter`, `exit`) as minutes')
             ->orderBy('id', 'ASC')
             ->get();
-        $day = $days->first();
-
 
         // Проверка не начинал ли сотрудник работу ранее рабочего времени
         $timeStart = self::checkStartOfDay($request, $day);
@@ -934,14 +958,14 @@ class TimetrackingController extends Controller
         }
         // Добавить новый exit
         $exit = Carbon::parse($timeStart)->addMinutes(intval($minutes));
-        //Конец блока
 
+        $history = null;
+        //Конец блока
         if (count($days) > 1) {
             $items = $days->except($days->first()->id)->pluck('id');
-            Timetracking::whereIn('id', $items)->delete();
+            Timetracking::query()->whereIn('id', $items)->delete();
         }
 
-        $employee = User::withTrashed()->find($userId);
         if (count($days) > 0) {
             if ($day->exit == null) {
                 $day->exit = $exit;
@@ -975,10 +999,20 @@ class TimetrackingController extends Controller
             }
         }
 
+        /** @var UserStat $userStat */
+        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
+        if ($userStat) {
+            $userStat->value = intval($request->minutes) / 60;
+            $userStat->save();
+        }
+        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
+            ->afterCommit();
+
         $result = [
             'success' => true,
             'history' => $history ?? null
         ];
+
         return response()->json($result);
     }
 
@@ -1435,20 +1469,22 @@ class TimetrackingController extends Controller
                 return Carbon::parse($b->date)->format('d');
             });
 
-        $total_bonuses += TestBonus::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', $request->month)
-            ->get()
-            ->sum('amount');
+        $total_bonuses += 0;
+//            TestBonus::where('user_id', $user->id)
+//            ->whereYear('date', date('Y'))
+//            ->whereMonth('date', $request->month)
+//            ->get()
+//            ->sum('amount');
 
-        $test_bonus = TestBonus::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', $request->month)
-            ->where('amount', '>', 0)
-            ->get()
-            ->groupBy(function ($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
+        $test_bonus = 0;
+//            TestBonus::where('user_id', $user->id)
+//            ->whereYear('date', date('Y'))
+//            ->whereMonth('date', $request->month)
+//            ->where('amount', '>', 0)
+//            ->get()
+//            ->groupBy(function ($b) {
+//                return Carbon::parse($b->date)->format('d');
+//            });
         // Бонусы
 
         $editedBonus = EditedBonus::where('user_id', $user->id)
@@ -1677,7 +1713,6 @@ class TimetrackingController extends Controller
                 'date' => $date,
                 'description' => $desc,
             ]);
-
 
         if ($request->get("type") == DayType::DAY_TYPES['HOLIDAY']) { // Выходной
             $fines = UserFine::query()

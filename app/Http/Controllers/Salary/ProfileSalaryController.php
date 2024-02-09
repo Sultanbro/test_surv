@@ -87,11 +87,12 @@ class ProfileSalaryController extends Controller
         
         $bonus = $bonuses->sum('bonus');
         $bonus += ObtainedBonus::onMonth($user->id, $date->format('Y-m-d'));
-        $bonus += TestBonus::where('user_id', $user->id)
-            ->whereYear('date', $date->year)
-            ->whereMonth('date', $date->month)
-            ->get()
-            ->sum('amount');
+        $bonus +=0;
+//            TestBonus::where('user_id', $user->id)
+//            ->whereYear('date', $date->year)
+//            ->whereMonth('date', $date->month)
+//            ->get()
+//            ->sum('amount');
 
         $bonusHistory = ObtainedBonus::getHistory($user->id, $date->format('Y-m-d'), $currency_rate);
 

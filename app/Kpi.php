@@ -41,7 +41,9 @@ class Kpi extends Model
 
         if ($renew == 0) { // if not require renew, return saved value
 
-            $skpi = SavedKpi::where('user_id', $user_id);
+            $skpi = SavedKpi::query()
+                ->where('user_id', $user_id);
+
             if ($date != '') {
                 $skpi->where('date', Carbon::parse($date)->day(1)->format('Y-m-d'));
             } else {
@@ -81,7 +83,7 @@ class Kpi extends Model
         }
 
 
-        $sk = SavedKpi::where('user_id', $user_id)
+        $sk = SavedKpi::query()->where('user_id', $user_id)
             ->where('date', $date)
             ->update([
                 'total' => intval($kpi_total)

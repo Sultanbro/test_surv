@@ -254,7 +254,7 @@ export default {
 			this.scroll();
 		}
 	},
-	beforeUnmount(){
+	beforeDestroy(){
 		this.ChatApp.$off('FooterResized', this.scrollBottom)
 	},
 	methods: {

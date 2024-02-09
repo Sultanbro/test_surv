@@ -26,7 +26,6 @@ trait TargetJoin
                     ->where("$table.targetable_type", '=', 'App\User');
                 $join->orOn('u.id', '=', "morph.kpiable_id")
                     ->where("morph.kpiable_type", '=', 'App\User');
-//                    ->where("morph.kpiable_id", '=', 'u.id');
             })
             ->leftJoin('profile_groups as pg', function (JoinClause $join) use ($table) {
                 $join->on('pg.id', '=', "$table.targetable_id")

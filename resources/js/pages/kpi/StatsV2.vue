@@ -338,9 +338,14 @@ export default {
 				});
 			}
 			else if(this.s_type_main == 3){
-				this.axios.get('/statistics/quartal-premiums').then(response => {
-					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
-					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+				this.axios.post('/statistics/quartal-premiums', {
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
+				}).then(response => {
+					this.quartal_users = response.data.data[0].map(res=> ({...res, expanded: false}))
+					this.quartal_groups = response.data.data[1].map(res=> ({...res, expanded: false}))
 					loader.hide();
 				}).catch(error => {
 					loader.hide();

@@ -2,10 +2,14 @@
 
 namespace App\Models\Analytics;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+
 class TraineeReport extends Model
 {
     /**
@@ -32,63 +36,50 @@ class TraineeReport extends Model
         'day_7',
         'data',
     ];
-    
+
     /**
+     * @param $date
+     * @param array $groups
      * @return array
      */
-    public static function getBlocks($date, $groups = [])
+    public static function getBlocks($date, array $groups = []): array
     {
         $date = Carbon::parse($date);
 
-        if(count($groups) == 0) {
-            $groups = self::where('date', 'like', $date->format('Y-m') . '%')->get()->pluck('group_id')->toArray();
-            $groups = array_unique($groups);
-        }
-        
-        
-        $groups_key_value = ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray();
-        $result = [];
-
-        foreach ($groups as $key => $group_id) {
-          
-            for($i = $date->daysInMonth;$i>=1;$i--) {
-                $date->day($i);
-                $group = [];
-                $tr = self::where('date', $date->format('Y-m-d'))->where('group_id', $group_id)->first();
-                if($tr && $tr->leads > 0) {
-                    $group = [
-                        'day' => $date->day,
-                        'date' => $date->format('d.m.Y'),
-                        'group_id' => $group_id,
-                        'group' => array_key_exists($group_id, $groups_key_value) ? $groups_key_value[$group_id] : 'Отдел №' . $group_id,
-                        'quiz' => self::formAnswers($tr->data),
-                        'presence' => [
-                            0 => $tr->leads,
-                            1 => $tr->day_1,
-                            2 => $tr->day_2,
-                            3 => $tr->day_3,
-                            4 => $tr->day_4,
-                            5 => $tr->day_5,
-                            6 => $tr->day_6,
-                            7 => $tr->day_7,
-                        ]
-                    ];
-                    $result[] = $group;
-                }
-            }
-
-            
-        }   
-        
-        $_sort = array_column($result, 'day');
-        array_multisort($_sort, SORT_DESC, $result); 
-
-        return $result;
+        return self::query()
+            ->select([
+                DB::raw("trainee_report.*"),
+                DB::raw("DAY(trainee_report.date) as day"),
+                DB::raw("trainee_report.group_id as group_id"),
+                DB::raw("profile_groups.name as `group`")
+            ])
+            ->join('profile_groups', 'profile_groups.id', '=', 'trainee_report.group_id')
+            ->whereYear('trainee_report.date', $date->year)
+            ->whereMonth('trainee_report.date', $date->month)
+            ->where('profile_groups.active', 1)
+            ->where('trainee_report.leads', '>', 0)
+            ->when(count($groups), fn(Builder $query) => $query->whereIn('group_id', $groups))
+            ->orderByDesc('day')
+            ->get()
+            ->each(function (TraineeReport $report) {
+                $report->quiz = self::formAnswers($report->data);
+                $report->presence = [
+                    0 => $report->leads,
+                    1 => $report->day_1,
+                    2 => $report->day_2,
+                    3 => $report->day_3,
+                    4 => $report->day_4,
+                    5 => $report->day_5,
+                    6 => $report->day_6,
+                    7 => $report->day_7,
+                ];
+            })
+            ->toArray();
     }
 
     public static function formAnswers($data)
-    {   
-        if($data == null) $data = [];
+    {
+        if ($data == null) $data = [];
         $count[1] = 0;
         $count[2] = 0;
         $count[3] = 0;
@@ -150,31 +141,31 @@ class TraineeReport extends Model
 
         foreach ($data as $key => $item) {
 
-            for($i = 1;$i<=3;$i++) { // $i is question number
-                if(array_key_exists($i,$item)) {
+            for ($i = 1; $i <= 3; $i++) { // $i is question number
+                if (array_key_exists($i, $item)) {
                     // $answer_index = 1; // yes
                     // if($item[$i] == 0) { // no
                     //     $answer_index = 0;
                     // }
-    
+
                     $questions[$i][$item[$i]]['count'] = $questions[$i][$item[$i]]['count'] + 1;
                     $count[$i] = $count[$i] + 1;
                 }
             }
 
-            if(array_key_exists(4,$item) && $item[4] > 0) {
+            if (array_key_exists(4, $item) && $item[4] > 0) {
                 $questions[4]['count'] = $questions[4]['count'] + 1;
                 $questions[4]['sum'] += (int)$item[4];
             }
 
-            if(array_key_exists(5,$item)) {
+            if (array_key_exists(5, $item)) {
                 $questions[5][] = $item[5];
             }
         }
 
         foreach ($questions as $key => $q) {
-            if($key == 1 || $key == 2) {
-                if($count[$key] > 0) {
+            if ($key == 1 || $key == 2) {
+                if ($count[$key] > 0) {
                     $questions[$key][2]['percent'] = round($questions[$key][2]['count'] / $count[$key] * 100, 1);
                     $questions[$key][1]['percent'] = round($questions[$key][1]['count'] / $count[$key] * 100, 1);
                     $questions[$key][0]['percent'] = round($questions[$key][0]['count'] / $count[$key] * 100, 1);
@@ -185,8 +176,8 @@ class TraineeReport extends Model
                 }
             }
 
-            if($key == 3) {
-                if($count[$key] > 0) {
+            if ($key == 3) {
+                if ($count[$key] > 0) {
                     $questions[$key][3]['percent'] = round($questions[$key][3]['count'] / $count[$key] * 100, 1);
                     $questions[$key][2]['percent'] = round($questions[$key][2]['count'] / $count[$key] * 100, 1);
                     $questions[$key][1]['percent'] = round($questions[$key][1]['count'] / $count[$key] * 100, 1);
@@ -199,12 +190,18 @@ class TraineeReport extends Model
                 }
             }
 
-            if($key == 4 && $questions[4]['count'] > 0) {
+            if ($key == 4 && $questions[4]['count'] > 0) {
                 $questions[4]['avg'] = round($questions[4]['sum'] / $questions[4]['count'], 1);
                 $questions[4]['percent'] = $questions[4]['avg'] * 10;
             }
         }
 
         return $questions;
+    }
+
+    public
+    function group(): BelongsTo
+    {
+        return $this->belongsTo(ProfileGroup::class, 'group_id', 'group');
     }
 }

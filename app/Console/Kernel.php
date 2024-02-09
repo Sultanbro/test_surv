@@ -63,16 +63,14 @@ class Kernel extends ConsoleKernel
         | Только запускаются у компании Bpartners в bp.jobtron.org
         |
         */
-
+        $schedule->command('tenants:run run:pusher --tenants=bp')
+            ->withoutOverlapping()
+            ->dailyAt('08:42');
+        $schedule->command('tenants:run run:pusher:template --tenants=bp')
+            ->withoutOverlapping()
+            ->dailyAt('08:00');
+        $schedule->command('tenants:run check:ref-duplicates --tenants=bp')->everyTenMinutes(); //
         $schedule->command('tenants:run fetch:anviz --tenants=bp')->everyMinute(); // Anviz W1 Pro Учет времени: выгрузка истории отпечатков с базы и запись в Timetracking
-//        $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=0"')->dailyAt('02:00'); // hh вакансиии обновить
-//        $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=1"')->everyFiveMinutes(); // hh отклики запрос откликов
-//        $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=3"')->everyFiveMinutes(); // hh отклики в битрикс
-//        $schedule->command('tenants:run headhunter:fetch --tenants=bp --argument="stage=2"')->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
-//        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=0"')->dailyAt('02:00'); // hh вакансиии обновить
-//        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=1"')->everyFiveMinutes(); // hh отклики запрос откликов
-//        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=3"')->everyFiveMinutes(); // hh отклики в битрикс
-//        $schedule->command('tenants:run headhunterApi2:fetch --tenants=bp --argument="stage=2"')->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
         $schedule->command('tenants:run recruiter:attendance --tenants=bp')->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших
         $schedule->command('tenants:run whatsapp:estimate_first_day --tenants=bp')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('tenants:run recruiting:trainee_report --tenants=bp')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
@@ -85,21 +83,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run usernotification:foreigner --tenants=bp')->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
         $schedule->command('tenants:run start_day:it_department --tenants=bp')->daily(); // Запускается каждый день, начинает день для IT отдела
         $schedule->command('tenants:run logs:access --tenants=bp')->daily()->at('01:00'); // Запускается каждый день, начинает день для IT отдела
-        /**
-         * BITRIX24 crons
-         */
-        //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
         $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
         $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(20); // Данные почасовой таблицы рекрутинга из битрикса
         $schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(40); // Данные почасовой таблицы рекрутинга из битрикса
-//        $schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
-        //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
-
         $schedule->command('tenants:run restart-queue --tenants=bp')->dailyAt('00:10');
-//        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
-//        $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
-//        $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
-
         /*
         |--------------------------------------------------------------------------
         | Команды кабинетов jobtron.org
@@ -108,8 +95,6 @@ class Kernel extends ConsoleKernel
         | Запускаются во всех субдоменах.
         |
         */
-
-        $schedule->command('tenants:run check:ref-duplicates --tenants=bp')->everyTenMinutes(); //
         $schedule->command('tenants:run timetracking:check')->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->everyTenMinutes(); // Сохранить заработанное группой без вычета шт и ав
@@ -119,7 +104,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
-//        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
         $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         $schedule->command('tenants:run usernotification:adaptation')->dailyAt('02:40'); // Уведомление о заполнении адаптации
         $schedule->command('tenants:run salary:indexation')->dailyAt('17:02'); // Индексация зарплаты
@@ -129,14 +113,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run fine:check')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
         $schedule->command('tenants:run analytics:pivots')->withoutOverlapping()->monthly(); // создать сводные таблицы отделов в аналитике
         $schedule->command('tenants:run analytics:parts')->withoutOverlapping()->monthly(); // создать декомпозицию и спидометры в аналитике
-        //$schedule->command('tenants:run checklist:update')->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
-        //$schedule->command('tenants:run trainee:count_days')->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
-
         $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
-        $schedule->command('tenants:run run:pusher --tenants=bp')->dailyAt('08:00');
-        $schedule->command('tenants:run run:pusher:template --tenants=bp')->dailyAt('08:00');
-
         $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
     }
 

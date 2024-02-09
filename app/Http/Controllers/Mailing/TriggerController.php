@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Mailing;
 
-use App\Enums\Mailing\MailingEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Trigger\AbsentInternshipRequest;
 use App\Http\Requests\Trigger\ApplyEmployeeRequest;
-use App\Models\Mailing\MailingNotification;
 use App\Service\Trigger\AbsentInternshipService;
 use App\Service\Trigger\ApplyEmployeeService;
 use App\Service\Trigger\FiredEmployeeService;
 use App\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Throwable;
 
 class TriggerController extends Controller

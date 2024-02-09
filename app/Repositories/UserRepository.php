@@ -13,6 +13,7 @@ use App\Models\UserCoordinate;
 use App\User;
 use App\User as Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -25,9 +26,9 @@ final class UserRepository extends CoreRepository
     /**
      * @param Carbon $startDate
      * @param Carbon $endDate
-     * @return  Collection<User>
+     * @return  Builder|\Illuminate\Database\Query\Builder
      */
-    public function betweenDate(Carbon $startDate, Carbon $endDate): Collection
+    public function betweenDate(Carbon $startDate, Carbon $endDate): Builder|\Illuminate\Database\Query\Builder
     {
         return User::withTrashed()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', false))
@@ -39,8 +40,7 @@ final class UserRepository extends CoreRepository
             ->where(fn($query) => $query
                 ->whereNull('deleted_at')
                 ->orWhere(fn($query) => $query->where('deleted_at', '>=', $startDate->format("Y-m-d")))
-            )
-            ->get();
+            );
     }
 
     /**
@@ -333,12 +333,12 @@ final class UserRepository extends CoreRepository
     /**
      * @param string|null $date
      * @param $isTrainee bool
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function getUsersWithDescription(
         ?string $date,
         bool    $isTrainee = false
-    ): \Illuminate\Database\Eloquent\Builder
+    ): Builder
     {
         return $this->model()
             ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', $isTrainee))

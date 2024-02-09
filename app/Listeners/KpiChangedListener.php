@@ -23,7 +23,7 @@ class KpiChangedListener
      * @param KpiChangedEvent $event
      * @return void
      */
-    public function handle(KpiChangedEvent $event)
+    public function handle(KpiChangedEvent $event): void
     {
         KpiItemsCacheStorage::onKpiChanged($event);
     }

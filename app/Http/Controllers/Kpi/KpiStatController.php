@@ -65,7 +65,7 @@ class KpiStatController extends Controller
      */
     public function fetchGroups(Request $request): JsonResponse
     {
-        $response = $this->service->fetch($request);
+        $response = $this->service->fetch($request->all());
 
         return response()->json($response);
     }
@@ -85,7 +85,10 @@ class KpiStatController extends Controller
      */
     public function fetchKpisWithCurrency(Request $request): JsonResponse
     {
-        $response = $this->service->fetchKpisWithCurrency($request);
+        $request->validate([
+            'filters.user_id' => 'required|int'
+        ]);
+        $response = $this->service->fetchKpisWithCurrency($request->get('filters', []));
 
         return response()->json($response);
     }
@@ -187,7 +190,7 @@ class KpiStatController extends Controller
      */
     public function workdays(Request $request): JsonResponse
     {
-        $response = $this->service->userWorkdays($request);
+        $response = $this->service->userWorkdays($request->get('filter'));
 
         return response()->json($response);
     }

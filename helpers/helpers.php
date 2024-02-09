@@ -38,8 +38,8 @@ if (!function_exists('translit')) {
         } while ($st != $prev_st);
         $str = preg_replace("/_{2,}/", " ", $st);
         $arr = explode(' ', $str);
-        $str = \Illuminate\Support\Arr::map($arr, fn(string $item) => Str::ucfirst($item));
-        return Arr::join($str, ' ');
+        $str = \Illuminate\Support\Arr::map($arr, fn(string $item) => \Illuminate\Support\Str::ucfirst($item));
+        return \Illuminate\Support\Arr::join($str, ' ');
     }
 }
 
@@ -61,5 +61,30 @@ if (!function_exists('dd_if')) {
         }
 
         exit(1);
+    }
+}
+if (!function_exists('dump_if')) {
+    function dump_if(bool $condition, mixed ...$vars): void
+    {
+        if (!$condition) return;
+
+        if (!\in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
+            header('HTTP/1.1 500 Internal Server Error');
+        }
+
+        if (array_key_exists(0, $vars) && 1 === count($vars)) {
+            VarDumper::dump($vars[0]);
+        } else {
+            foreach ($vars as $k => $v) {
+                VarDumper::dump($v, is_int($k) ? 1 + $k : $k);
+            }
+        }
+    }
+}
+
+if (!function_exists('timer')) {
+    function timer(): void
+    {
+        dump(now()->format("i:s"));
     }
 }

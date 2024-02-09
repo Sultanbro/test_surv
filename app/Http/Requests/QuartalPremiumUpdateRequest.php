@@ -28,8 +28,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:quartal_premiums,id',
-            'activity_id'       => 'integer',
-            'targetable_type'    => [
+            'activity_id' => 'integer',
+            'targetable_type' => [
                 'required',
                 Rule::in([
                     'App\User',
@@ -37,12 +37,13 @@ class QuartalPremiumUpdateRequest extends FormRequest
                     'App\Position'
                 ]),
             ],
-            'title'             => 'nullable|max:100',
-            'text'              => 'nullable|max:255',
-            'plan'              => 'nullable',
-            'from'              => 'nullable|date',
-            'to'                => 'nullable|date',
-            'sum'               => 'nullable'
+            'title' => 'nullable|max:100',
+            'text' => 'nullable|max:255',
+            'plan' => 'nullable',
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+            'sum' => 'nullable',
+            'cell' => 'nullable|string',
         ];
     }
 
@@ -53,15 +54,16 @@ class QuartalPremiumUpdateRequest extends FormRequest
     {
         $validated = $this->validated();
 
-        $id             = Arr::get($validated, 'id');
-        $activityId     = Arr::get($validated, 'activity_id');
+        $id = Arr::get($validated, 'id');
+        $activityId = Arr::get($validated, 'activity_id');
         $targetAbleType = Arr::get($validated, 'targetable_type');
-        $title  = Arr::get($validated, 'title');
-        $text   = Arr::get($validated, 'text');
-        $plan   = Arr::get($validated, 'plan');
-        $from   = Arr::get($validated, 'from');
-        $to     = Arr::get($validated, 'to');
-        $sum    = Arr::get($validated, 'sum');
+        $title = Arr::get($validated, 'title');
+        $text = Arr::get($validated, 'text');
+        $plan = Arr::get($validated, 'plan');
+        $from = Arr::get($validated, 'from');
+        $to = Arr::get($validated, 'to');
+        $sum = Arr::get($validated, 'sum');
+        $cell = Arr::get($validated, 'cell');
 
         return new QuarterPremiumUpdateDTO(
             $id,
@@ -72,7 +74,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
             $plan,
             $from,
             $to,
-            $sum
+            $sum,
+            $cell,
         );
     }
 }

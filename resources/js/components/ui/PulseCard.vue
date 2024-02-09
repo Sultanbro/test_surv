@@ -1,11 +1,11 @@
 <template>
 	<div
 		class="PulseCard"
+		:style="[`--card-pulse-size: ${size * 10}px`, `--card-pulse-color: ${color}`].join(';')"
 		@click="$emit('click', $event)"
 	>
 		<div
 			class="PulseCard-pulsor"
-			:style="pulsorStyle"
 		/>
 		<div class="PulseCard-content">
 			<slot />
@@ -27,14 +27,7 @@ export default {
 			default: 1,
 		},
 	},
-	computed: {
-		pulsorStyle(){
-			return [
-				`outline: 1px solid ${this.color}`,
-				`animation: PulseCardPulse-${this.size} infinite 1.5s;`
-			].join(';')
-		}
-	},
+	computed: {},
 }
 </script>
 
@@ -52,8 +45,9 @@ export default {
 		bottom: 0;
 
 		transform-origin: center;
-		animation: PulseCardPulse infinite 1.5s;
+		animation: PulseCardPulse-1 infinite var(--card-pulse-interval, 1.5s);
 		pointer-events: none;
+		outline: 1px solid var(--card-pulse-color, #00aeef)
 	}
 	&-content{
 		border-radius: inherit;
@@ -65,7 +59,7 @@ export default {
 		opacity: 1;
 	}
 	100% {
-		outline-offset: 10px;
+		outline-offset: var(--card-pulse-size, 10px);
 		opacity: 0;
 	}
 }
