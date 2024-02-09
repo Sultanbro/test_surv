@@ -164,6 +164,7 @@
 <script>
 import JobtronTable from '@ui/Table.vue'
 
+import { mapGetters } from 'vuex'
 import { bus } from '@/bus'
 import { calcGroupFOT } from './helper.js'
 import { numberToCurrency, separateNumber } from '@/composables/format.js'
@@ -260,6 +261,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters(['profileGroups']),
 		daysInMonth(){
 			return this.$moment([this.year, this.month]).daysInMonth()
 		},
@@ -534,33 +536,55 @@ export default {
 			/* eslint-disable camelcase */
 			const fot = {}
 			for(var groupId of [...this.ccGroups, ...this.admGroups]){
+				const group = this.profileGroups.find(group => group.id === groupId)
+				var dataActual, dataTrainee, dataFired
+
 				try {
-					const {data: dataActual} = await this.axios.post('/timetracking/salaries', {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 0,
 					})
-					const {data: dataTrainee} = await this.axios.post('/timetracking/salaries', {
+					dataActual = data
+				}
+				catch (error) {
+					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ действующих сотрудников для отдела ' + group?.name)
+				}
+
+				try {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 2,
 					})
-					const {data: dataFired} = await this.axios.post('/timetracking/salaries', {
+					dataTrainee = data
+				}
+				catch (error) {
+					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ стажеров для отдела ' + group?.name)
+				}
+
+				try {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 1,
 					})
-					fot[groupId] = {
-						actual: calcGroupFOT(dataActual, this.daysPassed, this.daysInMonth),
-						trainee: calcGroupFOT(dataTrainee, this.daysPassed, this.daysInMonth),
-						fired: calcGroupFOT(dataFired, this.daysPassed, this.daysInMonth),
-					}
+					dataFired = data
 				}
 				catch (error) {
 					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ уволенных сотрудников для отдела ' + group?.name)
+				}
+
+				fot[groupId] = {
+					actual: dataActual ? calcGroupFOT(dataActual, this.daysPassed, this.daysInMonth) : 0,
+					trainee: dataTrainee ? calcGroupFOT(dataTrainee, this.daysPassed, this.daysInMonth) : 0,
+					fired: dataFired ? calcGroupFOT(dataFired, this.daysPassed, this.daysInMonth) : 0,
 				}
 			}
 			/* eslint-enable camelcase */
