@@ -51,7 +51,6 @@ class SaveUserKpi extends Command
 
     private function calc($kpis, Carbon $date, $userId = null): void
     {
-        dd(Arr::pluck($kpis, 'id'));
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
