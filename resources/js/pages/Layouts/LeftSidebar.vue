@@ -287,7 +287,13 @@ export default {
 							icon: 'icon-nd-courses',
 							to: '/courses',
 							hide: !this.$can('courses_view')
-						}
+						},
+						{
+							name: 'Курсы2',
+							icon: 'icon-nd-courses',
+							to: '/courses-v2',
+							hide: !this.$can('courses_view')
+						},
 					]
 				},
 				{

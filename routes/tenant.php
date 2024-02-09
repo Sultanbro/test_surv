@@ -145,6 +145,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/admin/courses/create', [Course\CourseController::class, 'create']);
     Route::post('/admin/courses/get-item', [Course\CourseController::class, 'getItem']);
     Route::post('/admin/courses/upload-image', [Course\CourseController::class, 'uploadImage']);
+    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/my-courses', [Course\MyCourseController::class, 'index']);
     Route::get('/my-courses/get', [Course\MyCourseController::class, 'getCourses']);

@@ -4,6 +4,7 @@ import {
 } from '@/stores/api.js'
 import kpi from './kpi.js'
 import top from './top.js'
+import courses2 from './courses2.js'
 
 import ProfileView from '@/views/ProfileView'
 import CabinetView from '@/views/CabinetView'
@@ -130,6 +131,7 @@ const router = new VueRouter({
 				menuItem: 'courses',
 			},
 		},
+		courses2,
 		// admin/mycourse.blade.php
 		{
 			path: '/my-courses',

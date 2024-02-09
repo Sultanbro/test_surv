@@ -114,3 +114,27 @@ export async function fetchMyCourseInfo(id){
  * @property {number} completed_stages
  * @property {number} status
  */
+
+
+export async function fetchV2Courses(params){
+	// paer_page
+	// page
+	const { data } = await axios.get('/v2/courses/index', { params })
+	return data
+}
+export async function fetchV2Course(id){
+	const { data } = await axios.get(`/v2/courses/get/${id}`)
+	return data
+}
+export async function createV2Course(courseFormData){
+	const { data } = await axios.post('/v2/courses/create', courseFormData)
+	return data
+}
+export async function updateV2Course(id, courseFormData){
+	const { data } = await axios.post(`/v2/courses/update/${id}`, courseFormData)
+	return data
+}
+export async function deleteV2Course(id){
+	const { data } = await axios.delete(`/v2/courses/delete/${id}`)
+	return data
+}
