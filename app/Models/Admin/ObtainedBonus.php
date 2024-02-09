@@ -194,8 +194,7 @@ class ObtainedBonus extends Model
             ->whereMonth('date', $month->month)
             ->get();
 
-        $test_bonuses_all = 0;
-            TestBonus::where('user_id', $user_id)
+        $test_bonuses_all = TestBonus::where('user_id', $user_id)
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
             ->get();
