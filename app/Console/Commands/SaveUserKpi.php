@@ -51,6 +51,7 @@ class SaveUserKpi extends Command
 
     private function calc($kpis, Carbon $date, $userId = null): void
     {
+        dd(Arr::pluck($kpis, 'id'));
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
@@ -62,9 +63,6 @@ class SaveUserKpi extends Command
             }
             try {
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
-                if ($kpi['id'] == 24) {
-                    dump(Arr::pluck($users, 'id'));
-                }
                 if ($userId) {
                     $users = Arr::where($users, fn($item) => $users['id'] == $userId);
                 }
