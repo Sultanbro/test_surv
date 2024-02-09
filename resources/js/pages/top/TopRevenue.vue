@@ -52,7 +52,8 @@
 								:class="{
 									'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
 									'weekend': isWeekend(field),
-									'text-left b-table-sticky-column': ['Отдел'].includes(field)
+									'text-left b-table-sticky-column': ['Отдел'].includes(field),
+									'text-right': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6', 'План', 'Итого'].includes(field)
 								}"
 							>
 								<template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
@@ -65,7 +66,9 @@
 										>
 									</div>
 									<div v-else>
-										<span v-if="record[field] != 0">{{ record[field] }}</span>
+										<span v-if="record[field] != 0">
+											{{ ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field) ? separateNumber(record[field]) : record[field] }}
+										</span>
 										<span v-else />
 									</div>
 								</template>
@@ -94,7 +97,7 @@
 									</template>
 									<template v-else>
 										<div>
-											{{ record[field] }}
+											{{ ['План', 'Итого'].includes(field) ? separateNumber(record[field]) : record[field] }}
 										</div>
 									</template>
 								</template>
@@ -136,6 +139,7 @@ import TopSwitches from '@/components/pages/Top/TopSwitches'
 import { bus } from '@/bus'
 import { mapState } from 'pinia'
 import { useTopStore } from '@/stores/Top.js'
+import { separateNumber } from '@/composables/format.js'
 import {
 	fetchTop,
 	// fetchArchiveUtility,
@@ -173,6 +177,7 @@ export default {
 		bus.$off('tt-top-update', this.fetchData)
 	},
 	methods: {
+		separateNumber,
 		async fetchData() {
 			const loader = this.$loading.show()
 
@@ -270,6 +275,10 @@ export default {
 		z-index: 1;
 		right: 0;
 		bottom: calc(100% + 24px);
+	}
+
+	.bg-grey{
+		background-color: #eee;
 	}
 }
 </style>
