@@ -497,11 +497,9 @@ export default {
 					predict: 0,
 					total: 0,
 				}
-				/* eslint-disable no-console */
-				console.group('Group: ' + group['Отдел'])
+
 				for(let i = 1; i <= this.daysPassed; ++i){
 					const field = `${i > 9 ? i : '0' + i}.${month}`
-
 
 					result.lastRev = Number(group[field] || 0)
 					if(result.lastRev > 0) {
@@ -510,23 +508,18 @@ export default {
 					}
 					result.now += result.lastRev
 					result.total += result.lastRev
-
-					console.log(field, JSON.parse(JSON.stringify(Number(group[field] || 0))))
 				}
+
 				result.last = result.lastRev
-				if(!result.lastRev && this.daysPassed !== this.daysInMonth) {
-					result.now += result.lastPositive
-					result.total += result.lastPositive
+				if(this.daysPassed !== this.daysInMonth) {
+					if(!result.lastRev) result.total += result.lastPositive
 
 					for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
 						result.predict += result.lastPositive
 						result.total += result.lastPositive
 					}
 				}
-				console.log('result', result)
-				console.groupEnd();
 
-				/* eslint-enable no-console */
 				return result
 			}
 
