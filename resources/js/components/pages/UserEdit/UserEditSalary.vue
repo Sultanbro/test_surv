@@ -575,7 +575,7 @@ export default {
 					</b-form-checkbox>
 				</b-form-group>
 				<b-form-group
-					v-if="isBP && [5, 18, 20641, 27402].includes($laravel.userId)"
+					v-if="isBP && [20641, 27402].includes($laravel.userId)"
 					class="custom-switch custom-switch-sm ml-2"
 				>
 					<b-form-checkbox
