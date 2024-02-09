@@ -17,7 +17,7 @@ import {
 	setReadedAward,
 	fetchAvailableBonuses,
 } from '@/stores/api'
-import { calcSum } from '@/pages/kpi/kpis.js'
+import { calcSum, parseKPI } from '@/pages/kpi/kpis.js'
 
 const STORAGE_READED_KEY = 'profileSalaryReadedV2'
 const LOCAL_CACHE_KEY = 'profileSalaryV2'
@@ -108,7 +108,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			kpis.sort((a, b) => targetables[a.targetable_type] - targetables[b.targetable_type])
 
-			const sumKpi = kpis.slice(0, 1).reduce((result, kpi) => {
+			const sumKpi = kpis.map(res => parseKPI(res)).reduce((result, kpi) => {
 				kpi.users.forEach(user => {
 					user.items.forEach(userItem => {
 						result += calcSum(userItem, kpi, userItem.percent / 100)
