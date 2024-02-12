@@ -696,6 +696,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/all', [Root\Tax\TaxController::class, 'all']);
         Route::post('/', [Root\Tax\TaxController::class, 'create']);
         Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
+        Route::post('/attach', [Root\Tax\TaxController::class, 'attachTax']);
+        Route::post('/detach', [Root\Tax\TaxController::class, 'detachTax']);
         Route::put('/', [Root\Tax\TaxController::class, 'update']);
         Route::delete('/{id}', [Root\Tax\TaxController::class, 'delete']);
     });

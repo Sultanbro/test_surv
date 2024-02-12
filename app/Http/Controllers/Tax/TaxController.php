@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Tax;
 use App\DTO\Tax\GetTaxesResponseDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Tax\Response\TaxGetResponse;
+use App\Http\Requests\Tax\AttachTaxRequest;
 use App\Http\Requests\Tax\CreateTaxRequest;
+use App\Http\Requests\Tax\DetachTaxRequest;
 use App\Http\Requests\Tax\GetTaxesRequest;
 use App\Http\Requests\Tax\TaxSetAssigneeRequest;
 use App\Http\Requests\Tax\UpdateTaxRequest;
@@ -84,6 +86,22 @@ class TaxController extends Controller
         return $this->response(
             message: 'Success',
             data: $service->handle($request->toDto())
+        );
+    }
+
+    public function attachTax(AttachTaxRequest $request, SetAssigneeService $service)
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->attach($request->toDto())
+        );
+    }
+
+    public function detachTax(DetachTaxRequest $request, SetAssigneeService $service)
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->detach($request->toDto())
         );
     }
 
