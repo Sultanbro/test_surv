@@ -53,7 +53,7 @@ class UserDescriptionRepository extends CoreRepository
             ],
             [
                 'is_trainee' => $isTrainee,
-                'applied' => $isTrainee ? now()->format("Y-m-d") : null
+                'applied' => !$isTrainee ? now()->format("Y-m-d") : null
             ]
         );
     }
