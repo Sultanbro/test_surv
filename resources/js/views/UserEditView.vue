@@ -5,6 +5,7 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 import UserEditMain from '@/components/pages/UserEdit/UserEditMain'
 import UserEditAdditional from '@/components/pages/UserEdit/UserEditAdditional'
 import UserEditDocuments from '@/components/pages/UserEdit/UserEditDocuments'
+import UserEditDocumentsV2 from '@/components/pages/UserEdit/UserEditDocumentsV2'
 import UserEditAdaptation from '@/components/pages/UserEdit/UserEditAdaptation'
 import UserEditPhones from '@/components/pages/UserEdit/UserEditPhones'
 import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
@@ -40,6 +41,7 @@ export default {
 		UserEditMain,
 		UserEditAdditional,
 		UserEditDocuments,
+		UserEditDocumentsV2,
 		UserEditAdaptation,
 		UserEditPhones,
 		UserEditSalary,
@@ -518,7 +520,9 @@ export default {
 					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
 						const formDataAssignTaxes = new FormData();
 						formDataAssignTaxes.append('user_id', userId);
-						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id);
+						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id || this.taxesFillData.assignTaxes[i].tax_id);
+						formDataAssignTaxes.append('end_subtraction', this.taxesFillData.assignTaxes[i].endSubtraction ? 1 : 0);
+						formDataAssignTaxes.append('is_percent', this.taxesFillData.assignTaxes[i].isPercent ? 1 : 0);
 						formDataAssignTaxes.append('is_assigned', 1);
 						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
 					}
@@ -529,7 +533,7 @@ export default {
 							const formDataEditTaxes = new FormData();
 							formDataEditTaxes.append('_method', 'put');
 							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id);
+							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id || this.taxesFillData.editTaxes[i].id);
 							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
 							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
 							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
@@ -968,13 +972,28 @@ export default {
 									@changeCity="onChangeCity"
 								/>
 
-								<div class="col-9 add_info">
-									<!-- documents tab -->
-									<UserEditDocuments
-										v-show="showBlocks.documents"
-										:user="user"
-									/>
-									<!-- end of documents -->
+								<div
+									v-show="showBlocks.documents"
+									class="docs row"
+								>
+									<div class="col-6">
+										<div class="mb-4">
+											Новые документы <b-badge>demo</b-badge>
+										</div>
+										<UserEditDocumentsV2
+											:user="user"
+										/>
+									</div>
+									<div class="col-6 add_info">
+										<!-- documents tab -->
+										<div class="mb-4">
+											Старые документы
+										</div>
+										<UserEditDocuments
+											:user="user"
+										/>
+										<!-- end of documents -->
+									</div>
 								</div>
 								<div class="col-md-12 add_info">
 									<UserEditAdaptation

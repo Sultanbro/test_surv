@@ -174,12 +174,16 @@ export default {
 				id,
 				tax_id: id,
 				value: 0,
+				endSubtraction: !!val.end_subtraction,
+				isPercent: !!val.is_percent,
 			});
 			this.myTaxes.push({
 				...val,
 				id,
 				tax_id: id,
 				value: 0,
+				endSubtraction: !!val.end_subtraction,
+				isPercent: !!val.is_percent,
 			});
 			const index = this.taxes.findIndex(t => t.id === id);
 			if(~index){
@@ -575,7 +579,7 @@ export default {
 					</b-form-checkbox>
 				</b-form-group>
 				<b-form-group
-					v-if="isBP && [5, 18, 20641, 27402].includes($laravel.userId)"
+					v-if="isBP && [20641, 27402, 5].includes($laravel.userId)"
 					class="custom-switch custom-switch-sm ml-2"
 				>
 					<b-form-checkbox

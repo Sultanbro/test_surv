@@ -164,6 +164,7 @@
 <script>
 import JobtronTable from '@ui/Table.vue'
 
+import { mapGetters } from 'vuex'
 import { bus } from '@/bus'
 import { calcGroupFOT } from './helper.js'
 import { numberToCurrency, separateNumber } from '@/composables/format.js'
@@ -260,6 +261,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters(['profileGroups']),
 		daysInMonth(){
 			return this.$moment([this.year, this.month]).daysInMonth()
 		},
@@ -497,11 +499,9 @@ export default {
 					predict: 0,
 					total: 0,
 				}
-				/* eslint-disable no-console */
-				console.group('Group: ' + group['Отдел'])
+
 				for(let i = 1; i <= this.daysPassed; ++i){
 					const field = `${i > 9 ? i : '0' + i}.${month}`
-
 
 					result.lastRev = Number(group[field] || 0)
 					if(result.lastRev > 0) {
@@ -510,23 +510,18 @@ export default {
 					}
 					result.now += result.lastRev
 					result.total += result.lastRev
-
-					console.log(field, JSON.parse(JSON.stringify(Number(group[field] || 0))))
 				}
+
 				result.last = result.lastRev
-				if(!result.lastRev && this.daysPassed !== this.daysInMonth) {
-					result.now += result.lastPositive
-					result.total += result.lastPositive
+				if(this.daysPassed !== this.daysInMonth) {
+					if(!result.lastRev) result.total += result.lastPositive
 
 					for(let i = this.daysPassed + 1; i <= this.daysInMonth; ++i){
 						result.predict += result.lastPositive
 						result.total += result.lastPositive
 					}
 				}
-				console.log('result', result)
-				console.groupEnd();
 
-				/* eslint-enable no-console */
 				return result
 			}
 
@@ -541,33 +536,55 @@ export default {
 			/* eslint-disable camelcase */
 			const fot = {}
 			for(var groupId of [...this.ccGroups, ...this.admGroups]){
+				const group = this.profileGroups.find(group => group.id === groupId)
+				var dataActual, dataTrainee, dataFired
+
 				try {
-					const {data: dataActual} = await this.axios.post('/timetracking/salaries', {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 0,
 					})
-					const {data: dataTrainee} = await this.axios.post('/timetracking/salaries', {
+					dataActual = data
+				}
+				catch (error) {
+					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ действующих сотрудников для отдела ' + group?.name)
+				}
+
+				try {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 2,
 					})
-					const {data: dataFired} = await this.axios.post('/timetracking/salaries', {
+					dataTrainee = data
+				}
+				catch (error) {
+					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ стажеров для отдела ' + group?.name)
+				}
+
+				try {
+					const {data} = await this.axios.post('/timetracking/salaries', {
 						month: this.month + 1,
 						year: this.year,
 						group_id: groupId,
 						user_types: 1,
 					})
-					fot[groupId] = {
-						actual: calcGroupFOT(dataActual, this.daysPassed, this.daysInMonth),
-						trainee: calcGroupFOT(dataTrainee, this.daysPassed, this.daysInMonth),
-						fired: calcGroupFOT(dataFired, this.daysPassed, this.daysInMonth),
-					}
+					dataFired = data
 				}
 				catch (error) {
 					console.error(error)
+					this.$toast.error('Не удалось зогрузить значения ФОТ уволенных сотрудников для отдела ' + group?.name)
+				}
+
+				fot[groupId] = {
+					actual: dataActual ? calcGroupFOT(dataActual, this.daysPassed, this.daysInMonth) : 0,
+					trainee: dataTrainee ? calcGroupFOT(dataTrainee, this.daysPassed, this.daysInMonth) : 0,
+					fired: dataFired ? calcGroupFOT(dataFired, this.daysPassed, this.daysInMonth) : 0,
 				}
 			}
 			/* eslint-enable camelcase */
