@@ -243,6 +243,7 @@ class UserService
         ?bool $isTrainee = false
     ): void
     {
+        dd($isTrainee);
         if ($isTrainee) {
             (new DayTypeRepository)->createNew($userId);
         } else {
