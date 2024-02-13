@@ -834,6 +834,11 @@ export default {
 		width: auto !important;
 		min-width: 100% !important;
 	}
+	td.text-center{
+		.form-control{
+			min-width: 64px;
+		}
+	}
 }
 
 </style>
