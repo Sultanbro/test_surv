@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Tax;
 use App\Models\Tax as Model;
+use App\Models\UserTax;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -82,6 +83,10 @@ class TaxRepository extends CoreRepository
         int $userId
     ): array
     {
-        return DB::table('user_tax')->where('user_id', $userId) ->get()->toArray();
+        return UserTax::query()
+            ->where('user_id', $userId)
+            ->where('status', UserTax::ACTIVE)
+            ->get()
+            ->toArray();
     }
 }
