@@ -20,7 +20,8 @@ return new class extends Migration
             $table->date('to')->nullable();
         });
 
-        DB::table('user_tax')->where('tax_id', 93)->update(['end_subtraction' => 1]);
+        $taxes = DB::table('taxes')->where('end_subtraction', 1)->pluck('id')->toArray();
+        DB::table('user_tax')->whereIn('tax_id', $taxes)->update(['end_subtraction' => 1]);
     }
 
     /**
