@@ -14,10 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('user_tax', function (Blueprint $table) {
+            $table->tinyInteger('end_subtraction')->default(0);
             $table->tinyInteger('status')->default(1);
             $table->date('from')->nullable();
             $table->date('to')->nullable();
         });
+
+        DB::table('user_tax')->where('tax_id', 93)->update(['end_subtraction' => 1]);
     }
 
     /**
@@ -28,6 +31,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('user_tax', function (Blueprint $table) {
+            $table->dropColumn('end_subtraction');
             $table->dropColumn('status');
             $table->dropColumn('from');
             $table->dropColumn('to');
