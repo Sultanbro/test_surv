@@ -137,34 +137,17 @@ export default {
 				this.user.headphones_sum = 0
 			}
 		},
-		addTax() {
-			const obj = {
-				id: Date.now(),
-				name: '',
-				value: '',
-				isPercent: false,
-				isNew: true
-			};
-			this.newTaxes.push(obj);
-			this.myTaxes.push(obj);
-			this.$emit('taxes_fill', {
-				newTaxes: this.newTaxes,
-				assignTaxes: this.assignTaxes,
-				editTaxes: this.editTaxes,
-			})
-		},
 		async unassignTax(tax, idx) {
 			if (!tax.isNew && this.user) {
 				const loader = this.$loading.show()
-				const formDataAssignTaxes = new FormData();
-				formDataAssignTaxes.append('user_id', this.user.id);
-				formDataAssignTaxes.append('tax_id', tax.id || tax.tax_id);
-				formDataAssignTaxes.append('is_assigned', 0);
-				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+				await this.axios.post('/tax/detach', {
+					user_id: this.user.id,
+					tax_id: tax.id || tax.tax_id,
+				})
 				loader.hide()
 			}
 			this.myTaxes.splice(idx, 1);
-			this.$toast.success('Налог отменен');
+			this.$toast.success('Налог отменен')
 			this.$emit('taxes_update')
 		},
 		selectTaxNotAssigned(val) {
@@ -706,13 +689,7 @@ export default {
 		<div class="row my-2">
 			<template v-if="zarplata > 0">
 				<div class="col-sm-2 d-flex aic">
-					<button
-						type="button"
-						class="btn btn-success btn-rounded btn-block"
-						@click="addTax"
-					>
-						<i class="fa fa-plus mr-2" /> Добавить налог
-					</button>
+					<!--  -->
 				</div>
 				<div class="col-sm-10">
 					<multiselect
@@ -720,7 +697,7 @@ export default {
 						track-by="name"
 						label="name"
 						class="pt-2"
-						placeholder="Выберите существующий"
+						placeholder="Добавить налог сотруднику"
 						@select="selectTaxNotAssigned"
 					/>
 				</div>

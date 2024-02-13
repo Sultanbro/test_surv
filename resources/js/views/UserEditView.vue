@@ -493,77 +493,50 @@ export default {
 			const loader = this.$loading.show();
 
 			try{
-				const response = await this.axios.post(this.formAction, formData, {
+				const { data } = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
 				});
-				const userId = this.user ? this.user.id : response.data.data.id;
-				if (this.taxesFillData) {
-					// новый налог
-					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
-						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
-							const formDataNewTaxes = new FormData();
-							const formDataNewTaxesAssignee = new FormData();
-							formDataNewTaxes.append('user_id', userId);
-							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
-							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
-							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
-							formDataNewTaxes.append('end_subtraction', this.taxesFillData.newTaxes[i].endSubtraction ? 1 : 0);
-							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
-							formDataNewTaxesAssignee.append('user_id', userId);
-							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
-							formDataNewTaxesAssignee.append('is_assigned', 1);
-							await this.axios.post('/tax/set-assignee', formDataNewTaxesAssignee);
-						}
-					}
+				const userId = this.user ? this.user.id : data.data.id;
 
+				if (this.taxesFillData) {
 					// добавление сущесвующих
-					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
-						const formDataAssignTaxes = new FormData();
-						formDataAssignTaxes.append('user_id', userId);
-						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id || this.taxesFillData.assignTaxes[i].tax_id);
-						formDataAssignTaxes.append('end_subtraction', this.taxesFillData.assignTaxes[i].endSubtraction ? 1 : 0);
-						formDataAssignTaxes.append('is_percent', this.taxesFillData.assignTaxes[i].isPercent ? 1 : 0);
-						formDataAssignTaxes.append('is_assigned', 1);
-						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
-					}
+					// for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
+					// 	await this.axios.post('/tax/attach', {
+					// 		user_id: userId,
+					// 		tax_id: this.taxesFillData.assignTaxes[i].id || this.taxesFillData.assignTaxes[i].tax_id,
+					// 		end_subtraction: this.taxesFillData.assignTaxes[i].endSubtraction ? 1 : 0,
+					// 		is_percent: this.taxesFillData.assignTaxes[i].isPercent ? 1 : 0,
+					// 		value: this.taxesFillData.assignTaxes[i].value,
+					// 	});
+					// }
 
 					// редактирование сущуствующих
 					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
 						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-							const formDataEditTaxes = new FormData();
-							formDataEditTaxes.append('_method', 'put');
-							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id || this.taxesFillData.editTaxes[i].id);
-							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
-							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
-							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
-							formDataEditTaxes.append('end_subtraction', this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0);
-							await this.axios.post('/tax', formDataEditTaxes);
+							await this.axios.post('/tax/attach', {
+								user_id: userId,
+								tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
+								end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
+								is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
+								value: this.taxesFillData.editTaxes[i].value,
+							});
 						}
 					}
 				}
 
 				if (this.workChartId) {
-					const userId = this.user ? this.user.id : response.data.data.id;
-					const formDataWorkChart = new FormData();
-					formDataWorkChart.append('user_id', userId);
-					formDataWorkChart.append('work_chart_id', this.workChartId);
-					await axios.post('/work-chart/user/add', formDataWorkChart);
+					await axios.post('/work-chart/user/add', {
+						user_id: userId,
+						work_chart_id: this.workChartId,
+					});
 				}
 
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
 				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
 
-				if(isApplyTrainee || isNewEmployee){
-					triggerApplyEmployee(userId)
-				}
+				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
-				if (isNew) {
-					this.$toast.success('Информация о сотруднике сохранена');
-				}
-				else {
-					this.$toast.success('Информация о сотруднике обновлена');
-				}
+				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
 			}
 			catch (error){
 				console.error(error);
