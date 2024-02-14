@@ -103,12 +103,15 @@
 		<Popup
 			v-if="popQuartalPremiums"
 			title="Квартальные премии"
-			desc=""
+			:desc="popQPSubTitle"
 			:open="popQuartalPremiums"
 			:width="popupWidth"
 			@close="popQuartalPremiums=false"
 		>
-			<PopupQuartal />
+			<PopupQuartal
+				class="ProfilePage-qp"
+				@title="popQPSubTitle = $event"
+			/>
 		</Popup>
 
 		<Popup
@@ -186,6 +189,7 @@ export default {
 			popBonuses: false,
 			popQuartalPremiums: false,
 			popNominations: false,
+			popQPSubTitle: '',
 			intro: {
 				courses: false,
 				profit: false,
@@ -203,7 +207,7 @@ export default {
 				referals: false,
 			},
 			intersectionObserver: null,
-			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0])
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		};
 	},
 	computed: {
@@ -324,6 +328,19 @@ export default {
 @media(max-width:1910px){
 	#page-profile{
 		padding-right: 0;
+	}
+}
+
+.ProfilePage{
+	&-qp{
+		.popup__header-content{
+			display: flex;
+			align-items: flex-end;
+			gap: 10px;
+		}
+		.popup__subtitle{
+			font-size: 18px;
+		}
 	}
 }
 </style>
