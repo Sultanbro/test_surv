@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace App\Service\Tax;
 
-use App\DTO\Tax\UserTaxDTO;
+use App\DTO\Tax\SetUserTaxDTO;
 use App\DTO\Tax\SetAssignedTaxDTO;
 use App\Models\Tax;
 use App\Models\UserTax;
 use App\User;
+use DB;
 use Exception;
 use Throwable;
 
@@ -39,60 +40,5 @@ class SetAssigneeService
         } catch (Throwable $exception) {
             throw new Exception("При указаний налога для пользователя $dto->userId произошла ошибка");
         }
-    }
-
-
-    public function attach(UserTaxDTO $dto): bool
-    {
-        $exist = UserTax::query()
-            ->where('user_id', $dto->userId)
-            ->where('tax_id', $dto->taxId)
-            ->whereNull('to')
-            ->exists();
-
-        if ($exist) {
-            UserTax::query()
-                ->where('user_id', $dto->userId)
-                ->where('tax_id', $dto->taxId)
-                ->whereNull('to')
-                ->update([
-                    'status' => UserTax::REMOVED,
-                    'to' => now()->toDateString()
-                ]);
-        }
-
-        UserTax::query()->create([
-            'user_id' => $dto->userId,
-            'tax_id' => $dto->taxId,
-            'is_percent' => $dto->taxId,
-            'end_subtraction' => $dto->endSubtraction,
-            'value' => $dto->value,
-            'status' => UserTax::ACTIVE,
-            'from' => now()->toDateString()
-        ]);
-
-        return true;
-    }
-
-    public function detach(UserTaxDTO $dto): bool
-    {
-        $exist = UserTax::query()
-            ->where('user_id', $dto->userId)
-            ->where('tax_id', $dto->taxId)
-            ->whereNull('to')
-            ->exists();
-
-        if ($exist) {
-            UserTax::query()
-                ->where('user_id', $dto->userId)
-                ->where('tax_id', $dto->taxId)
-                ->whereNull('to')
-                ->update([
-                    'status' => UserTax::REMOVED,
-                    'to' => now()->toDateString()
-                ]);
-        }
-
-        return true;
     }
 }

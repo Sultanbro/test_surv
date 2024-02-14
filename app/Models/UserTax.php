@@ -9,12 +9,12 @@ class UserTax extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_tax';
+    protected $table = 'user_taxes';
 
     const ACTIVE = 1;
     const REMOVED = 0;
 
     protected $fillable = [
-        'user_id', 'tax_id', 'is_percent', 'end_subtraction', 'value', 'from', 'to', 'status'
+        'tax_group_id', 'user_id', 'status', 'from', 'to'
     ];
 }

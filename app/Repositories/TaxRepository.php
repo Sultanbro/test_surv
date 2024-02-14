@@ -83,7 +83,7 @@ class TaxRepository extends CoreRepository
         int $userId
     ): array
     {
-        return UserTax::query()
+        return DB::table('user_tax')
             ->where('user_id', $userId)
             ->where('status', UserTax::ACTIVE)
             ->get()
