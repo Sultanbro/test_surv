@@ -1,32 +1,58 @@
 <template>
 	<div class="PopupQuartalItem">
-		<div
-			:key="'title-' + idxUser"
-			class="award__title popup__content-title"
-		>
+		<div class="award__title popup__content-title">
 			{{ item.text }}
 		</div>
-		<table
-			:key="'table-' + idxUser"
-			class="award__table"
-		>
-			<tr>
-				<td class="blue">
-					Сумма премии
-				</td>
-				<td>{{ item.items.sum }}</td>
-			</tr>
-			<tr v-if="item.items.activity">
-				<td class="blue">
-					План
-				</td>
-				<td>
-					<div>
-						<b>Активность: {{ item.items.activity.name }}</b>
-					</div>
-					<div>{{ item.items.plan }}</div>
-				</td>
-			</tr>
+		<table class="table table-inner">
+			<thead>
+				<tr>
+					<th />
+					<th>Наименование активности</th>
+					<!-- <th>Вид плана</th> -->
+					<th>Целевое значение на месяц</th>
+					<!-- <th>Удельный вес, %</th> -->
+					<th>
+						Факт
+					</th>
+					<th>
+						% выполнения
+					</th>
+					<th>Сумма премии при выполнении плана, KZT</th>
+					<th>Заработано</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr class="jt-row">
+					<td class="text-center">
+						{{ index + 1 }}
+					</td>
+					<td class="px-2">
+						{{ item.title }}
+					</td>
+					<!-- <td class="text-center">
+						{{ methods[item.method] }}
+					</td> -->
+					<td class="text-center">
+						<b>{{ item.plan }} {{ item.unit || '' }}</b>
+					</td>
+					<!-- <td class="text-center">
+						{{ item.share }}
+					</td> -->
+					<td class="text-center">
+						{{ item.fact }}
+					</td>
+					<td class="text-center">
+						{{ item.plan <= item.fact ? 'Выполнено' : 'Не выполнено' }}
+					</td>
+					<td class="text-center">
+						{{ item.sum }}
+					</td>
+					<td class="text-center">
+						{{ item.plan <= item.fact ? item.sum : 0 }}
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
 </template>
@@ -39,6 +65,10 @@ export default {
 		item: {
 			type: Object,
 			required: true,
+		},
+		index: {
+			type: Number,
+			default: 0
 		}
 	},
 	data(){
@@ -54,5 +84,13 @@ export default {
 </script>
 
 <style lang="scss">
-//.PopupQuartalItem{}
+.PopupQuartalItem{
+	th{
+		font-size: 1.2rem;
+		text-align: center;
+	}
+	td{
+		vertical-align: middle;
+	}
+}
 </style>
