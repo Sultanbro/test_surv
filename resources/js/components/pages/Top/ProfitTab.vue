@@ -91,10 +91,25 @@
 			<template #cell(revenue)="row">
 				<div
 					class=""
-					:title="`Всего: ${row.value.total}, Прогноз: ${row.value.predict}, Последння дата: ${row.value.lastPositiveDate}, За последнюю дату: ${row.value.lastPositive}, За ${daysPassed}: ${row.value.lastRev}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.now)) }}
 				</div>
+			</template>
+			<template #cell(revenue2)="row">
+				<div
+					v-b-popover.click.blur.html="[
+						`Последння дата: ${row.value.lastPositiveDate}`,
+						`За последнюю дату: ${row.value.lastPositive}`,
+						`За ${daysPassed}: ${row.value.lastRev}`,
+						`Расчет: ${daysInMonth - daysPassed}*${row.value.lastPositive}`
+					].join('<br>')"
+					class=""
+				>
+					{{ row.item.revenue.predict }}
+				</div>
+			</template>
+			<template #cell(revenue3)="row">
+				{{ row.item.revenue.total }}
 			</template>
 			<template #cell(fot)="row">
 				<div
@@ -228,8 +243,20 @@ export default {
 					label: 'Выручка',
 				},
 				{
+					key: 'revenue2',
+					label: 'Выручка прогноз',
+				},
+				{
+					key: 'revenue3',
+					label: 'Выручка всего',
+				},
+				{
 					key: 'fot',
 					label: 'Факт ФОТ КЦ',
+				},
+				{
+					key: 'fot2',
+					label: 'Прогноз ФОТ КЦ',
 				},
 				{
 					key: 'percent',
