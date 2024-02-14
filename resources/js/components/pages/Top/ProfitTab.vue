@@ -105,7 +105,7 @@
 					].join('<br>') : ''"
 					class=""
 				>
-					{{ row.item.revenue.predict }}
+					{{ separateNumber(row.item.revenue.predict) }}
 				</div>
 			</template>
 			<template #cell(revenue3)="row">
@@ -113,10 +113,28 @@
 			</template>
 			<template #cell(fot)="row">
 				<div
+					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+						`Работающие: ${row.value.actual}`,
+						`Уволенные: ${row.value.fired}`,
+						`Стажеры: ${row.value.trainee}`,
+					].join('<br>') : ''"
 					class=""
-					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
+				</div>
+			</template>
+			<template #cell(fot2)="row">
+				<div
+					class=""
+				>
+					{{ separateNumber(numberToCurrency(row.item.fot.predict)) }}
+				</div>
+			</template>
+			<template #cell(fot3)="row">
+				<div
+					class=""
+				>
+					{{ separateNumber(numberToCurrency(row.item.fot.predict + row.value.sum)) }}
 				</div>
 			</template>
 			<template #cell(percent)="row">
@@ -159,7 +177,7 @@
 				<div
 					class="ProfitTab-unpad"
 					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-bad' : 'ProfitTab-good']"
-					:title="`Работающие: ${row.itemrow.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
+					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
 				</div>
@@ -243,20 +261,8 @@ export default {
 					label: 'Выручка',
 				},
 				{
-					key: 'revenue2',
-					label: 'Выручка прогноз',
-				},
-				{
-					key: 'revenue3',
-					label: 'Выручка всего',
-				},
-				{
 					key: 'fot',
 					label: 'Факт ФОТ КЦ',
-				},
-				{
-					key: 'fot2',
-					label: 'Прогноз ФОТ КЦ',
 				},
 				{
 					key: 'percent',
@@ -435,6 +441,10 @@ export default {
 	mounted(){
 		this.fetchData()
 		bus.$on('tt-top-update', this.fetchData)
+
+		if(window.admin){
+			window.addAdminTool('profitAdvanced', this.profitAdvanced)
+		}
 	},
 	beforeDestroy(){
 		bus.$off('tt-top-update', this.fetchData)
@@ -697,6 +707,43 @@ export default {
 				[`custom_${groupKey}`]: value
 			})
 			this.$toast.success('Сохранено')
+		},
+
+		profitAdvanced(){
+			this.secondFields = [
+				{
+					key: 'name',
+					label: '',
+				},
+				{
+					key: 'revenue',
+					label: 'Выручка',
+				},
+				{
+					key: 'revenue2',
+					label: 'Выручка прогноз',
+				},
+				{
+					key: 'revenue3',
+					label: 'Выручка всего',
+				},
+				{
+					key: 'fot',
+					label: 'Факт ФОТ КЦ',
+				},
+				{
+					key: 'fot2',
+					label: 'Прогноз ФОТ КЦ',
+				},
+				{
+					key: 'fot3',
+					label: 'Всего ФОТ КЦ',
+				},
+				{
+					key: 'percent',
+					label: '',
+				},
+			]
 		},
 	},
 }
