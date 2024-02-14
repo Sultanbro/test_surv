@@ -42,7 +42,8 @@ class UCallApiClient implements ApiClientInterface
         $request = Http::baseUrl($this->baseUrl);
         $request->setClient($client);
         try {
-            return $request->{$method}($this->endpoint($url), $data)->json();
+            $response = $request->{$method}($this->endpoint($url), $data);
+            return $response->json();
         } catch (Exception|RuntimeException $e) {
             Debugger::error($e);
             die($e);

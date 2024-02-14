@@ -30,9 +30,8 @@ class TestingCommand extends Command
     public function handle(SmsInterface $sms): void
     {
         $receiver = new ReceiverDto(
-            '37493270709',
-            'Vahagn',
-            'Ghukasyan',
+            '77470456852',
+            'Aziz'
         );
         $sms->send($receiver, 'hello');
     }

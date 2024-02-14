@@ -137,6 +137,18 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/progress', [Course\CourseProgressController::class, 'progress']);
     });
 
+    // docs
+    Route::group([
+        'prefix' => 'signature',
+        'as' => 'signature.'
+    ], function () {
+        Route::post('/groups/{group}/files', [Root\Signature\SignatureController::class, 'upload']);
+        Route::get('/groups/{group}/files', [Root\Signature\SignatureController::class, 'list']);
+        Route::get('/users/{user}/files', [Root\Signature\SignatureController::class, 'signedFiles']);
+        Route::post('/users/{user}/sms', [Root\Signature\SignatureController::class, 'sendSms']);
+        Route::post('/users/{user}/files/{file}/verification', [Root\Signature\SignatureController::class, 'verify']);
+    });
+
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
     Route::get('/admin/courses/get', [Course\CourseController::class, 'get']);
@@ -491,7 +503,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
-    Route::post('/get/deals',[Analytics\HrController::class,'createDeal'])->name('create.deal');
+    Route::post('/get/deals', [Analytics\HrController::class, 'createDeal'])->name('create.deal');
 
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
@@ -776,7 +788,7 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/bitrix/create-link', [Services\IntellectController::class, 'bitrixCreateLead']);
         Route::any('/bitrix/change-resp', [Services\IntellectController::class, 'changeResp']);
         Route::any('/bitrix/inhouse', [Services\IntellectController::class, 'inhouse']);
-        Route::any('/bitrix/change-lead',[Services\IntellectController::class,'changeLead']);
+        Route::any('/bitrix/change-lead', [Services\IntellectController::class, 'changeLead']);
 
 
         Route::group(['prefix' => 'statistics'], function () {

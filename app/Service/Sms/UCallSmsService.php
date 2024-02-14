@@ -17,7 +17,7 @@ class UCallSmsService implements SmsInterface
                 $receiver->toArray()
             ],
             'text' => $message,
-            'appId' => config('services.u-call.app_id')
+            'appid' => config('services.u-call.app_id')
         ];
         $this->apiClient->post('/api/sms/add', $params);
     }

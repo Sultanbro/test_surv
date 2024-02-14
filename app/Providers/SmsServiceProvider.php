@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Service\Sms\ApiClientInterface;
+use App\Service\Sms\CodeGenerator;
+use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\SmsInterface;
 use App\Service\Sms\UCallApiClient;
 use App\Service\Sms\UCallSmsService;
@@ -16,6 +18,7 @@ class SmsServiceProvider extends ServiceProvider
             return new UCallApiClient(config('services.u-call.api_key'));
         });
         $this->app->bind(SmsInterface::class, UCallSmsService::class);
+        $this->app->bind(CodeGeneratorInterface::class, CodeGenerator::class);
     }
 
 }
