@@ -11,6 +11,7 @@ use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
+use App\Service\Tax\UserTaxService;
 use Auth;
 use Carbon\Carbon;
 use DB;
@@ -575,6 +576,7 @@ class Salary extends Model
         $users->with([
             'user_description',
             'group_users',
+            'taxGroup.items',
             'profile_histories_latest' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
             },
@@ -816,7 +818,8 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                } else {
+                }
+                else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
@@ -844,6 +847,15 @@ class Salary extends Model
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($statTotalHour, 1);
+                    }
+                }
+
+                // Taxes
+                $dateNewTaxesReleased = Carbon::createFromDate(2024, 3, 1)->startOfMonth();
+                if ($date->gt($dateNewTaxesReleased)) {
+                    // if $date greater than 1st march, so calculate new method for taxes with new structure
+                    if ($earnings[$i] && $s) {
+                        UserTaxService::calculateTax();
                     }
                 }
             }

@@ -1,0 +1,1 @@
+<?phpnamespace App\Service\Tax;class UserTaxService{    public static function calculateTax($taxGroupItems, $earning)    {    }}
