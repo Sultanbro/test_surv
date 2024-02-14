@@ -120,7 +120,7 @@
 					].join('<br>') : ''"
 					class=""
 				>
-					{{ separateNumber(numberToCurrency(row.value.sum)) }}
+					{{ separateNumber(numberToCurrency(row.item.fot.sum)) }}
 				</div>
 			</template>
 			<template #cell(fot2)="row">
