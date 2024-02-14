@@ -97,12 +97,12 @@
 			</template>
 			<template #cell(revenue2)="row">
 				<div
-					v-b-popover.click.blur.html="[
-						`Последння дата: ${row.value.lastPositiveDate}`,
-						`За последнюю дату: ${row.value.lastPositive}`,
-						`За ${daysPassed}: ${row.value.lastRev}`,
-						`Расчет: ${daysInMonth - daysPassed}*${row.value.lastPositive}`
-					].join('<br>')"
+					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+						`Последння дата: ${row.item.revenue.lastPositiveDate}`,
+						`За последнюю дату: ${row.item.revenue.lastPositive}`,
+						`За ${daysPassed}: ${row.item.revenue.lastRev}`,
+						`Расчет: ${daysInMonth - daysPassed}*${row.item.revenue.lastPositive}`
+					].join('<br>') : ''"
 					class=""
 				>
 					{{ row.item.revenue.predict }}
@@ -159,7 +159,7 @@
 				<div
 					class="ProfitTab-unpad"
 					:class="[row.item.fact < Number(row.item.plan) ? 'ProfitTab-bad' : 'ProfitTab-good']"
-					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
+					:title="`Работающие: ${row.itemrow.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.sum)) }}
 				</div>
