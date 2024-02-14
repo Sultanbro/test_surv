@@ -134,6 +134,10 @@ export default {
 			cityLon: 0,
 			file8: null,
 			loading: false,
+
+			// v2TaxesList: [],
+			// v2TaxesCurrent: [],
+			// v2TaxesNew: [],
 		}
 	},
 	computed: {
@@ -216,7 +220,7 @@ export default {
 			})
 			hist.sort((a, b) => this.$moment(a, 'DD.MM.YYYY').diff(this.$moment(b, 'DD.MM.YYYY')))
 			return hist
-		}
+		},
 	},
 	watch: {
 		activeUserId(){
@@ -320,6 +324,23 @@ export default {
 				console.error(error);
 			}
 		},
+		// async fetchTaxes(){
+		// 	try {
+		// 		const { data } = this.axios.get('/taxes')
+		// 		this.v2TaxesList = data?.data || []
+		// 	}
+		// 	catch (error) {
+		// 		window.onerror && window.onerror(error)
+		// 		console.error('fetchTaxes', error)
+		// 	}
+
+		// 	try {
+
+		// 	}
+		// 	catch (error) {
+
+		// 	}
+		// },
 		updatePageData(){
 			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
 				console.error('useAsyncPageData', error)
@@ -499,23 +520,13 @@ export default {
 				const userId = this.user ? this.user.id : data.data.id;
 
 				if (this.taxesFillData) {
-					// добавление сущесвующих
-					// for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
-					// 	await this.axios.post('/tax/attach', {
-					// 		user_id: userId,
-					// 		tax_id: this.taxesFillData.assignTaxes[i].id || this.taxesFillData.assignTaxes[i].tax_id,
-					// 		end_subtraction: this.taxesFillData.assignTaxes[i].endSubtraction ? 1 : 0,
-					// 		is_percent: this.taxesFillData.assignTaxes[i].isPercent ? 1 : 0,
-					// 		value: this.taxesFillData.assignTaxes[i].value,
-					// 	});
-					// }
-
 					// редактирование сущуствующих
 					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
 						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-							await this.axios.post('/tax/attach', {
+							await this.axios.post('/tax/set-assignee', {
 								user_id: userId,
 								tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
+								is_assigned: 1,
 								end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
 								is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
 								value: this.taxesFillData.editTaxes[i].value,

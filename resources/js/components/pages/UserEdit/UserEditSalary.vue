@@ -140,9 +140,10 @@ export default {
 		async unassignTax(tax, idx) {
 			if (!tax.isNew && this.user) {
 				const loader = this.$loading.show()
-				await this.axios.post('/tax/detach', {
+				await this.axios.post('/tax/is_assigned', {
 					user_id: this.user.id,
 					tax_id: tax.id || tax.tax_id,
+					is_assigned: 0,
 				})
 				loader.hide()
 			}
