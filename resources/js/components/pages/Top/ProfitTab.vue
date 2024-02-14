@@ -134,7 +134,7 @@
 				<div
 					class=""
 				>
-					{{ separateNumber(numberToCurrency(row.item.fot.predict + row.value.sum)) }}
+					{{ separateNumber(numberToCurrency(row.item.fot.predict + row.item.fot.sum)) }}
 				</div>
 			</template>
 			<template #cell(percent)="row">
