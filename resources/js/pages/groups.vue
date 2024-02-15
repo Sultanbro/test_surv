@@ -1001,17 +1001,16 @@ export default {
 				console.error(error)
 			}
 		},
-		async onDeleteDoc(/* doc */){
-			alert('Не реализовано')
-			// const index = this.documents.findIndex(d => d.id === doc.id)
-			// if(~index) this.documents.splice(index, 1)
-			// if(doc.id <= 0) return
-			// try {
-			// 	// await this.axios.delete(`/docs/${doc.id}`)
-			// }
-			// catch (error) {
-			// 	console.error(error)
-			// }
+		async onDeleteDoc(doc){
+			const index = this.documents.findIndex(d => d.id === doc.id)
+			if(~index) this.documents.splice(index, 1)
+			if(doc.id <= 0) return
+			try {
+				await this.axios.delete(`/signature/files/${doc.id}`)
+			}
+			catch (error) {
+				console.error(error)
+			}
 		},
 	},
 };
