@@ -617,13 +617,7 @@ export default {
 					value: 4,
 				},
 			],
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				}
-			],
+			documents: [],
 			documentForm: {
 				id: 0,
 				name: '',
@@ -760,6 +754,7 @@ export default {
 
 
 				// loadDocuments
+				this.fetchDocs(value.id)
 
 				loader.hide()
 			}
@@ -927,6 +922,21 @@ export default {
 		},
 		getShiftDays,
 
+		async fetchDocs(groupId){
+			try {
+				const {data} = await this.axios.get(`/signature/groups/${groupId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.name || 'Без названия',
+					file: doc.url,
+				}))
+			}
+			catch (error) {
+				window.onerror && window.onerror(error)
+				alert(error)
+			}
+		},
 		async uploadDoc(files){
 			const file = files ? files[0] : null
 			if(!file) return
@@ -934,10 +944,10 @@ export default {
 			const loader = this.$loading.show()
 
 			const formData = new FormData()
-			formData.append('document', files[0])
+			formData.append('file', file)
 
 			try {
-				const {data} = await this.axios.post('/docs/upload', formData, {
+				const {data} = await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data'
 					}
