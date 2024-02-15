@@ -18,6 +18,7 @@ use Tests\TenantTestCase;
 /**
  * @url POST signature/groups/{group}/files
  * @url GET signature/groups/{group}/files
+ * @url PUT signature/files/{file}
  * @url GET signature/users/{user}/files
  * @url POST signature/users/{user}/sms
  * @url POST signature/users/{user}/files/{file}/verification
