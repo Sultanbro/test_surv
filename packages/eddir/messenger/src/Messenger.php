@@ -389,7 +389,8 @@ class Messenger
     {
         $messages = MessengerMessage::query()->withWhereHas('files')->where('chat_id', $chatId);
 
-        return $messages->orderBy('created_at', 'desc')->paginate(abs($count));
+        return $messages->orderBy('created_at', 'desc')
+            ->paginate(abs($count));
     }
 
     /**
