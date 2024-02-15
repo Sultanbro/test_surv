@@ -71,6 +71,9 @@ export default {
 			}
 		}
 	},
+	mounted(){
+		this.fetchIntegrations()
+	},
 	methods: {
 		async fetchIntegrations(){
 			const {data} = await this.axios.get('/signature/integrations')
