@@ -10,7 +10,7 @@ class UCallSmsService implements SmsInterface
     {
     }
 
-    public function send(ReceiverDto $receiver, string|int $message): void
+    public function send(ReceiverDto $receiver, string|int $message): array
     {
         $params = [
             'phones' => [
@@ -19,6 +19,6 @@ class UCallSmsService implements SmsInterface
             'text' => (string)$message,
             'appid' => config('services.u-call.app_id')
         ];
-        $this->apiClient->post('/api/sms/add', $params);
+        return $this->apiClient->post('/api/sms/add', $params);
     }
 }

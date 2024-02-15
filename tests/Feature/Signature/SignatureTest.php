@@ -138,7 +138,13 @@ class SignatureTest extends TenantTestCase
         // Mock the send method
         $mockSmsService->shouldReceive('send')
             ->once()
-            ->andReturnNull();
+            ->andReturn([
+                "success" => true,
+                "code" => 200,
+                "results" => [
+                    "actionId" => 22207570,
+                    "phone" => '4554545878'
+                ]]);
         // Replace the real SMS service with the mock
         $this->app->instance(SmsInterface::class, $mockSmsService);
 
@@ -154,10 +160,7 @@ class SignatureTest extends TenantTestCase
             'phone' => '45454545454'
         ];
         $response = $this->json('post', "/signature/users/$user->id/sms", $params);
-        $response->assertStatus(201);
-        $response->assertJsonFragment(
-            ['code' => $fakeCode]
-        );
+        $response->assertStatus(200);
         $this->assertDatabaseHas('sms_codes', [
             'code' => $fakeCode,
             'user_id' => $user->id

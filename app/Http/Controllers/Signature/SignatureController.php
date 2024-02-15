@@ -62,7 +62,7 @@ class SignatureController extends Controller
         return FileResource::make($file);
     }
 
-    public function sendSms(NewVerificationCodeRequest $request, User $user): SmsCodeResource
+    public function sendSms(NewVerificationCodeRequest $request, User $user): JsonResponse
     {
         /**
          * @var SmsCode $code
@@ -73,7 +73,7 @@ class SignatureController extends Controller
             $user->name,
         );
         $this->sms->send($receiver, 'код подтверждение для подписание документа ' . $code->code);
-        return SmsCodeResource::make($code);
+        return $this->response('Отправлен код подтверждение для подписание документа');
     }
 
     public function verify(VerificationRequest $request, User $user, File $file): JsonResponse
