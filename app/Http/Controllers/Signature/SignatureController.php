@@ -74,7 +74,7 @@ class SignatureController extends Controller
         /**
          * @var SmsCode $code
          */
-        $code = $user->smsCodes()->where(['code' => $this->codeGenerator->generate()]);
+        $code = $user->smsCodes()->where(['code' => $this->codeGenerator->generate()])->first();
         $receiver = new ReceiverDto(
             Phone::normalize($request->validated('phone')),
             $user->name,
