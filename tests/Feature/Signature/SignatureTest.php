@@ -19,6 +19,7 @@ use Tests\TenantTestCase;
  * @url POST signature/groups/{group}/files
  * @url GET signature/groups/{group}/files
  * @url PUT signature/files/{file}
+ * @url DELETE signature/files/{file}
  * @url GET signature/users/{user}/files
  * @url POST signature/users/{user}/sms
  * @url POST signature/users/{user}/files/{file}/verification
@@ -61,6 +62,20 @@ class SignatureTest extends TenantTestCase
         $this->assertDatabaseHas('files', [
             'id' => $file->id,
             'local_name' => 'after edit'
+        ]);
+    }
+
+    public function test_user_can_delete_document_by_id()
+    {
+        $this->authenticate();
+        $file = File::factory()->create([
+            'local_name' => 'before edit'
+        ]);
+
+        $response = $this->json('delete', "/signature/files/$file->id");
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('files', [
+            'id' => $file->id
         ]);
     }
 
@@ -143,7 +158,7 @@ class SignatureTest extends TenantTestCase
                 "code" => 200,
                 "results" => [
                     "actionId" => 22207570,
-                    "phone" => '4554545878'
+                    "phone" => '45454545454'
                 ]]);
         // Replace the real SMS service with the mock
         $this->app->instance(SmsInterface::class, $mockSmsService);

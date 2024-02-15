@@ -19,7 +19,9 @@ use App\Service\Sms\SmsInterface;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Normalizer;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SignatureController extends Controller
 {
@@ -60,6 +62,12 @@ class SignatureController extends Controller
     {
         $file->update($request->validated());
         return FileResource::make($file);
+    }
+
+    public function delete(File $file): JsonResponse
+    {
+        $file->delete();
+        return $this->response('файл удалень', [], ResponseAlias::HTTP_NO_CONTENT);
     }
 
     public function sendSms(NewVerificationCodeRequest $request, User $user): JsonResponse
