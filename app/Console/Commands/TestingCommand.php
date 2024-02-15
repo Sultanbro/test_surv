@@ -34,6 +34,6 @@ class TestingCommand extends Command
             'Вайчеслав'
         );
 
-        $sms->send($receiver, 454545);
+        $sms->send($receiver, 'код подтверждение для подписание документа 454545');
     }
 }
