@@ -18,6 +18,7 @@ use Tests\TenantTestCase;
 /**
  * @url POST signature/groups/{group}/files
  * @url GET signature/groups/{group}/files
+ * @url PUT signature/files/{file}
  * @url GET signature/users/{user}/files
  * @url POST signature/users/{user}/sms
  * @url POST signature/users/{user}/files/{file}/verification
@@ -32,14 +33,34 @@ class SignatureTest extends TenantTestCase
         $fileName = 'test_file.pdf';
         $fakeFile = UploadedFile::fake()->create($fileName, 1, 'pdf');
         $params = [
-            'file' => $fakeFile
+            'file' => $fakeFile,
+            'local_name' => 'some name'
         ];
         $group = ProfileGroup::factory()->create();
         $response = $this->json('post', "/signature/groups/$group->id/files", $params);
         $response->assertStatus(200);
         $this->assertDatabaseHas('files', [
             'fileable_id' => $group->id,
-            'fileable_type' => ProfileGroup::class
+            'fileable_type' => ProfileGroup::class,
+            'local_name' => 'some name',
+        ]);
+    }
+
+    public function test_user_can_update_document_by_id()
+    {
+        $this->authenticate();
+        $file = File::factory()->create([
+            'local_name' => 'before edit'
+        ]);
+
+        $params = [
+            'local_name' => 'after edit'
+        ];
+        $response = $this->json('put', "/signature/files/$file->id", $params);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('files', [
+            'id' => $file->id,
+            'local_name' => 'after edit'
         ]);
     }
 
@@ -118,7 +139,6 @@ class SignatureTest extends TenantTestCase
         $mockSmsService->shouldReceive('send')
             ->once()
             ->andReturnNull();
-
         // Replace the real SMS service with the mock
         $this->app->instance(SmsInterface::class, $mockSmsService);
 
