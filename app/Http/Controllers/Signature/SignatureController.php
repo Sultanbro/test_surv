@@ -47,8 +47,17 @@ class SignatureController extends Controller
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
     {
         $this->fileManager->apply($request->validated('file'), 'signature');
-        $group->addFile($this->fileManager->url());
+        $group->addFile([
+            'url' => $this->fileManager->url(),
+            'local_name' => $request->validated('local_name'),
+        ]);
         return FileResource::collection($group->files);
+    }
+
+    public function update(FileStoreRequest $request, File $file): FileResource
+    {
+        $file->update($request->validated());
+        return FileResource::make($file);
     }
 
     public function sendSms(NewVerificationCodeRequest $request, User $user): SmsCodeResource

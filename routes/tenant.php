@@ -143,6 +143,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'signature.'
     ], function () {
         Route::post('/groups/{group}/files', [Root\Signature\SignatureController::class, 'upload']);
+        Route::put('/files/{file}', [Root\Signature\SignatureController::class, 'update']);
         Route::get('/groups/{group}/files', [Root\Signature\SignatureController::class, 'list']);
         Route::get('/users/{user}/files', [Root\Signature\SignatureController::class, 'signedFiles']);
         Route::post('/users/{user}/sms', [Root\Signature\SignatureController::class, 'sendSms']);

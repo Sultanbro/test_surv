@@ -23,19 +23,8 @@ trait HasFiles
         );
     }
 
-    public function addFile(string $url): Model
+    public function addFile(array $data): Model
     {
-        return $this->files()->create([
-            'url' => $url
-        ]);
-    }
-
-    public function addFiles(array $urls): array
-    {
-        $models = [];
-        foreach ($urls as $url) {
-            $models [] = $this->addFile($url);
-        }
-        return $models;
+        return $this->files()->create($data);
     }
 }
