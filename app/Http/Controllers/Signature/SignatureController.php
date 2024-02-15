@@ -12,7 +12,6 @@ use App\Http\Resources\Files\FileResource;
 use App\Models\File\File;
 use App\Models\SmsCode;
 use App\ProfileGroup;
-use App\Service\Custom\Files\FileManagerInterface;
 use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
@@ -24,7 +23,6 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 class SignatureController extends Controller
 {
     public function __construct(
-        private readonly FileManagerInterface   $fileManager,
         private readonly CodeGeneratorInterface $codeGenerator,
         private readonly SmsInterface           $sms,
     )
@@ -72,10 +70,11 @@ class SignatureController extends Controller
 
     public function sendSms(NewVerificationCodeRequest $request, User $user): JsonResponse
     {
+        $user->smsCodes()->delete();
         /**
          * @var SmsCode $code
          */
-        $code = $user->smsCodes()->create(['code' => $this->codeGenerator->generate()]);
+        $code = $user->smsCodes()->where(['code' => $this->codeGenerator->generate()]);
         $receiver = new ReceiverDto(
             Phone::normalize($request->validated('phone')),
             $user->name,
