@@ -48,8 +48,8 @@ class SignatureController extends Controller
 
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
     {
+//        $this->fileManager->apply($request->validated('file'), 'signature');
         $fileName = FileHelper::save($request->validated('file'), 'signature');
-        $this->fileManager->apply($request->validated('file'), 'signature');
         $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
             'local_name' => $request->validated('local_name'),
