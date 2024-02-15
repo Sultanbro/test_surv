@@ -50,10 +50,11 @@ class SignatureController extends Controller
     {
 //        $this->fileManager->apply($request->validated('file'), 'signature');
         $fileName = FileHelper::save($request->validated('file'), 'signature');
-        $group->addFile([
+        $file = $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
             'local_name' => $request->validated('local_name'),
         ]);
+        dd($file);
         return FileResource::collection($group->files);
     }
 
