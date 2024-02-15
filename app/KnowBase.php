@@ -148,7 +148,7 @@ class KnowBase extends Model implements CourseInterface
             if ($item->model_type == 'App\\ProfileGroup') {
                 $group = \App\ProfileGroup::find($item->model_id);
                 if (!$group) continue;
-                $arr = array_merge($arr, json_decode($group->users));
+                $arr = array_merge($arr, $group->usersWithTrashed()->pluck('id')->toArray() ?? []);
             }
 
             if ($item->model_type == 'App\\Position') {
