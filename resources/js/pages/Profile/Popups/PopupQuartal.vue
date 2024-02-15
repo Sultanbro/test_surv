@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="popup__content mt-3"
+		class="popup__content mt-3 kpi__activities"
 		:class="{'v-loading': loading}"
 	>
 		<div class="popup__filter pb-4">
@@ -22,7 +22,8 @@
 					<template v-for="(item, idxUser) in itemsUser">
 						<PopupQuartalItem
 							:key="idxUser"
-							:item="item"
+							:item="item.items"
+							:index="idxUser"
 						/>
 					</template>
 				</b-tab>
@@ -33,7 +34,8 @@
 					<template v-for="(item, idxGroup) in itemsGroup">
 						<PopupQuartalItem
 							:key="idxGroup"
-							:item="item"
+							:item="item.items"
+							:index="idxGroup"
 						/>
 					</template>
 				</b-tab>
@@ -44,7 +46,8 @@
 					<template v-for="(item, idxPosition) in itemsPosition">
 						<PopupQuartalItem
 							:key="idxPosition"
-							:item="item"
+							:item="item.items"
+							:index="idxPosition"
 						/>
 					</template>
 				</b-tab>
@@ -186,28 +189,9 @@ export default {
 		setSubtitle(){
 			const group = this.showedTabs[this.tabIndex]
 			if(group) {
-				const item = [0]
-				this.$emit('title', `За период с ${ new Date(item.from).toLocaleDateString('RU') } до ${ new Date(item.to).toLocaleDateString('RU') }`)
+				const item = group[0]
+				this.$emit('title', `За период с ${ new Date(item.items?.from).toLocaleDateString('RU') } до ${ new Date(item.items?.to).toLocaleDateString('RU') }`)
 			}
-		},
-
-		defineSourcesAndGroups() {
-			/* eslint-disable camelcase */
-			this.items.forEach(p => {
-				p.items.forEach(el => {
-					el.source = 0;
-					el.group_id = 0;
-
-					if(el.activity_id != 0) {
-						let i = this.activities.findIndex(a => a.id == el.activity_id);
-						if(i != -1) {
-							el.source = this.activities[i].source
-							if(el.source == 1) el.group_id = this.activities[i].group_id
-						}
-					}
-				});
-			})
-			/* eslint-enable camelcase */
 		},
 	}
 };
