@@ -266,13 +266,6 @@ export default {
 				|| !this.user.email
 				|| !this.user.birthday
 				|| !this.user.working_country
-				|| !this.user.payments
-				|| !this.user.payments[0]
-				|| !this.user.payments[0].bank
-				|| !this.user.payments[0].cardholder
-				|| !this.user.payments[0].country
-				|| !this.user.payments[0].number
-				|| !this.user.payments[0].phone
 		}
 	},
 	watch: {
