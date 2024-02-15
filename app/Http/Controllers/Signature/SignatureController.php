@@ -72,7 +72,7 @@ class SignatureController extends Controller
             Phone::normalize($request->validated('phone')),
             $user->name,
         );
-        $this->sms->send($receiver, $code->code);
+        $this->sms->send($receiver, 'код подтверждение для подписание документа ' . $code->code);
         return SmsCodeResource::make($code);
     }
 
