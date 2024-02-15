@@ -821,15 +821,21 @@ export default {
 		},
 		async fetchDocs(){
 			try {
-				// const {data} = await this.axios.get(`/docs/${this.$laravel.userId}`)
-				// this.documents = data.documents || []
+				const {data} = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.local_name || 'Без названия',
+					file: doc.url,
+					signed: doc.signed,
+				}))
 			}
 			catch (error) {
 				console.error(error)
 			}
 		},
 		onSign(doc){
-			window.open(`/documents/sign/${doc.id}`, '_blank')
+			window.open(`/signature/verification?doc=${doc.id}`, '_blank')
 		},
 		fetchGeneralChat(){
 			API.getChatInfo(0, ({users}) => {

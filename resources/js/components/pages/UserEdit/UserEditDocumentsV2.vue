@@ -1,7 +1,7 @@
 <template>
 	<div class="UserEditDocumentsV2">
 		<div
-			v-if="documents.length"
+			v-if="userId"
 			class="UserEditDocumentsV2-docs"
 		>
 			<div
@@ -23,6 +23,12 @@
 				</div>
 			</div>
 		</div>
+		<div
+			v-else
+			class="UserEditDocumentsV2-nouser"
+		>
+			Список документов появится после создания пользователя
+		</div>
 	</div>
 </template>
 
@@ -30,31 +36,46 @@
 export default {
 	name: 'UserEditDocumentsV2',
 	components: {},
-	props: {},
+	props: {
+		userId: {
+			type: Number,
+			default: 0,
+		}
+	},
 	data(){
 		return {
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				},
-				{
-					id: 0,
-					name: 'TD',
-					file: '',
-					signed: true
-				},
-			],
+			documents: [],
 		}
 	},
 	computed: {},
-	watch: {},
+	watch: {
+		userId(){
+			this.fetchDocs()
+		},
+	},
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
-		async fetchDocs(){},
+		clearDocs(){
+			this.documents = []
+		},
+		async fetchDocs(){
+			if(!this.userId) return this.clearDocs()
+			try {
+				const {data} = await this.axios.get(`/signature/users/${this.userId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.name || 'Без названия',
+					file: doc.url,
+					signed: doc.signed,
+				}))
+			}
+			catch (error) {
+				console.error(error)
+			}
+		},
 	},
 }
 </script>
