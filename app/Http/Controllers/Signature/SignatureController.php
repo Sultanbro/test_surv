@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Signature;
 
 use App\Classes\Helpers\Phone;
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Requests\Signature\NewVerificationCodeRequest;
@@ -47,9 +48,10 @@ class SignatureController extends Controller
 
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
     {
+        $fileName = FileHelper::save($request->validated('file'), 'signature');
         $this->fileManager->apply($request->validated('file'), 'signature');
         $group->addFile([
-            'url' => $this->fileManager->url(),
+            'url' => FileHelper::getUrl('signature', $fileName),
             'local_name' => $request->validated('local_name'),
         ]);
         return FileResource::collection($group->files);
