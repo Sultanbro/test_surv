@@ -15,6 +15,7 @@ class FileResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'original_name' => $this->resource->original_name,
+            'local_name' => $this->resource->local_name,
             'extension' => $this->resource->extension,
             'url' => $this->resource->url,
             'signed' => $this->resource->signed,
