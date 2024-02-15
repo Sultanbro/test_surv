@@ -4,7 +4,9 @@ namespace App\Models\File;
 
 use App\Helpers\FileHelper;
 use Eloquent;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
@@ -20,19 +22,22 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @property-read string $url
+ * @property string $url
  * @property-read string $path
  *
  * @mixin Eloquent
  */
 class File extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'fileable_id',
         'fileable_type',
         'original_name',
         'local_name',
         'extension',
+        'url'
     ];
 
     protected $casts = [
@@ -53,5 +58,15 @@ class File extends Model
     public function getPathAttribute(): string
     {
         return FileHelper::getPath(config('app.file.path'), $this->local_name);
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            File::class,
+            'user_signed_file',
+            'file_id',
+            'user_id'
+        );
     }
 }

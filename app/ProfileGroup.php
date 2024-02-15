@@ -9,6 +9,7 @@ use App\Models\Analytics\TopValue;
 use App\Models\AnalyticsActivitiesSetting;
 use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
+use App\Models\MorphRelations\HasFiles;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
@@ -63,6 +64,7 @@ use Spatie\Permission\Traits\HasRoles;
 class ProfileGroup extends Model
 {
     use HasRoles, HasFactory;
+    use HasFiles;
 
     protected $table = 'profile_groups';
 
