@@ -101,7 +101,7 @@ export default {
 				}
 				this.status.sms = true
 				this.selectedIntegration = null
-				this.$toast.error('Интегрция сохранена')
+				this.$toast.success('Интегрция сохранена')
 			}
 			catch (error) {
 				this.$toast.error('Не удалось сохранить интеграцию')
