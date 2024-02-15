@@ -151,6 +151,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/users/{user}/files/{file}/verification', [Root\Signature\SignatureController::class, 'verify']);
         Route::get('/verification', [User\ProfileController::class, 'newprofile']);
         Route::post('/integrations', [Root\Signature\IntegrationController::class, 'setIntegration']);
+        Route::get('/integrations', [Root\Signature\IntegrationController::class, 'getIntegration']);
     });
 
     Route::get('/courses', [Course\CourseController::class, 'index']);

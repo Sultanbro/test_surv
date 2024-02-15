@@ -36,4 +36,10 @@ class IntegrationController extends Controller
 
         return $this->response('u-call', $integration->toArray());
     }
+
+    public function getIntegration(): JsonResponse
+    {
+        $integration = Integration::query()->where('reference', 'u-call')->first();
+        return $this->response('', $integration->toArray());
+    }
 }

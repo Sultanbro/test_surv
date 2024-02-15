@@ -3,6 +3,7 @@
 namespace Tests\Feature\Signature;
 
 use App\Models\File\File;
+use App\Models\Integration\Integration;
 use App\Models\SmsCode;
 use App\ProfileGroup;
 use App\Service\Sms\CodeGenerator;
@@ -17,6 +18,7 @@ use Tests\TenantTestCase;
 
 /**
  * @url POST signature/integrations
+ * @url GET signature/integrations
  */
 class IntegrationTest extends TenantTestCase
 {
@@ -34,6 +36,21 @@ class IntegrationTest extends TenantTestCase
         $response = $this->json('post', "/signature/integrations", $params);
         $response->assertStatus(200);
         $this->assertDatabaseHas('integrations', [
+            'reference' => 'u-call'
+        ]);
+    }
+
+    public function test_user_can_get_ucall_integration()
+    {
+        $this->authenticate();
+
+        Integration::factory()->create([
+            'reference' => 'u-call'
+        ]);
+
+        $response = $this->json('get', "/signature/integrations");
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
             'reference' => 'u-call'
         ]);
     }
