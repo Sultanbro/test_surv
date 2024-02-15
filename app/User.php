@@ -13,10 +13,12 @@ use App\Models\Award\Award;
 use App\Models\Bitrix\Lead;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
+use App\Models\File\File;
 use App\Models\GroupUser;
 use App\Models\History;
 use App\Models\Permission;
 use App\Models\Referral\ReferralSalary;
+use App\Models\SmsCode;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
 use App\Models\TaxGroup;
@@ -1818,5 +1820,24 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function activities()
     {
         return $this->belongsToMany(Activity::class, 'activity_user', 'user_id', 'activity_id');
+    }
+
+    public function signedFiles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            File::class,
+            'user_signed_file',
+            'user_id',
+            'file_id'
+        );
+    }
+
+    public function smsCodes(): HasMany
+    {
+        return $this->hasMany(
+            SmsCode::class,
+            'user_id',
+            'id'
+        );
     }
 }

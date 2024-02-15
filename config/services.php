@@ -52,4 +52,9 @@ return [
         'contract_link' => 'https://bpartners.kz/bcontract?hash=',
         'time_link' => 'https://bpartners.kz/btime?hash=',
     ],
+
+    'u-call' => [
+        'api_key' => '43f499f2afc066932de75ac379bb4688',
+        'app_id' => 4570705,
+    ],
 ];

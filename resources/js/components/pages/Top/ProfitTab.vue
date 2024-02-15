@@ -91,17 +91,50 @@
 			<template #cell(revenue)="row">
 				<div
 					class=""
-					:title="`Всего: ${row.value.total}, Прогноз: ${row.value.predict}, Последння дата: ${row.value.lastPositiveDate}, За последнюю дату: ${row.value.lastPositive}, За ${daysPassed}: ${row.value.lastRev}`"
 				>
 					{{ separateNumber(numberToCurrency(row.value.now)) }}
 				</div>
 			</template>
+			<template #cell(revenue2)="row">
+				<div
+					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+						`Последння дата: ${row.item.revenue.lastPositiveDate}`,
+						`За последнюю дату: ${row.item.revenue.lastPositive}`,
+						`За ${daysPassed}: ${row.item.revenue.lastRev}`,
+						`Расчет: ${daysInMonth - daysPassed}*${row.item.revenue.lastPositive}`
+					].join('<br>') : ''"
+					class=""
+				>
+					{{ separateNumber(row.item.revenue.predict) }}
+				</div>
+			</template>
+			<template #cell(revenue3)="row">
+				{{ row.item.revenue.total }}
+			</template>
 			<template #cell(fot)="row">
 				<div
+					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+						`Работающие: ${row.value.actual}`,
+						`Уволенные: ${row.value.fired}`,
+						`Стажеры: ${row.value.trainee}`,
+					].join('<br>') : ''"
 					class=""
-					:title="`Работающие: ${row.value.actual}, Уволенные: ${row.value.fired}, Стажеры: ${row.value.trainee}, Прогноз: ${row.value.sum + row.value.predict}`"
 				>
-					{{ separateNumber(numberToCurrency(row.value.sum)) }}
+					{{ separateNumber(numberToCurrency(row.item.fot.sum)) }}
+				</div>
+			</template>
+			<template #cell(fot2)="row">
+				<div
+					class=""
+				>
+					{{ separateNumber(numberToCurrency(row.item.fot.predict)) }}
+				</div>
+			</template>
+			<template #cell(fot3)="row">
+				<div
+					class=""
+				>
+					{{ separateNumber(numberToCurrency(row.item.fot.predict + row.item.fot.sum)) }}
 				</div>
 			</template>
 			<template #cell(percent)="row">
@@ -408,6 +441,10 @@ export default {
 	mounted(){
 		this.fetchData()
 		bus.$on('tt-top-update', this.fetchData)
+
+		if(window.admin){
+			window.addAdminTool('profitAdvanced', this.profitAdvanced)
+		}
 	},
 	beforeDestroy(){
 		bus.$off('tt-top-update', this.fetchData)
@@ -670,6 +707,43 @@ export default {
 				[`custom_${groupKey}`]: value
 			})
 			this.$toast.success('Сохранено')
+		},
+
+		profitAdvanced(){
+			this.secondFields = [
+				{
+					key: 'name',
+					label: '',
+				},
+				{
+					key: 'revenue',
+					label: 'Выручка',
+				},
+				{
+					key: 'revenue2',
+					label: 'Выручка прогноз',
+				},
+				{
+					key: 'revenue3',
+					label: 'Выручка всего',
+				},
+				{
+					key: 'fot',
+					label: 'Факт ФОТ КЦ',
+				},
+				{
+					key: 'fot2',
+					label: 'Прогноз ФОТ КЦ',
+				},
+				{
+					key: 'fot3',
+					label: 'Всего ФОТ КЦ',
+				},
+				{
+					key: 'percent',
+					label: '',
+				},
+			]
 		},
 	},
 }

@@ -29,11 +29,11 @@ class FileManager implements FileManagerInterface
      * @return FileManagerInterface
      */
     public function apply(
-        UploadedFile $file
-        ,            $directory
-        , bool       $usOriginalName = false
-        , string     $prefix = ''
-        , string     $access = 'public'
+        UploadedFile $file,
+                     $directory,
+        bool         $usOriginalName = false,
+        string       $prefix = '',
+        string       $access = 'public'
     ): static
     {
         $this->setFile($file);

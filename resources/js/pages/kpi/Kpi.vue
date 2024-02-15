@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="$can('kpi_edit')"
-		class="kpi"
+		class="kpi KPI"
 	>
 		<!-- top line -->
 		<div class="d-flex my-4 jcsb aifs">
@@ -820,7 +820,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .kpi-name-rows{
 	display: inline-flex;
 	flex-flow: column;
@@ -829,4 +829,17 @@ export default {
 	font-size: 1.2rem;
 	color: #777;
 }
+.KPI{
+	.j-table{
+		width: auto !important;
+		min-width: 100% !important;
+	}
+	td.text-center{
+		.form-control{
+			min-width: 64px;
+		}
+	}
+}
+
 </style>
+
