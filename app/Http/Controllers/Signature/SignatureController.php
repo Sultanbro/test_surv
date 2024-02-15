@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Signature;
 
+use App\Classes\Helpers\Phone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Requests\Signature\NewVerificationCodeRequest;
@@ -18,6 +19,7 @@ use App\Service\Sms\SmsInterface;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Normalizer;
 
 class SignatureController extends Controller
 {
@@ -67,7 +69,7 @@ class SignatureController extends Controller
          */
         $code = $user->smsCodes()->create(['code' => $this->codeGenerator->generate()]);
         $receiver = new ReceiverDto(
-            $request->validated('phone'),
+            Phone::normalize($request->validated('phone')),
             $user->name,
         );
         $this->sms->send($receiver, $code->code);

@@ -17,7 +17,6 @@ class Phone
         if ($phone[0] == '8') $phone = '7' . substr($phone, 1, strlen($phone));
 
         return preg_replace('/[^0-9]/', '', $phone);
-
     }
 
     public static function getCountry($phone = null): string
