@@ -40,6 +40,6 @@ class IntegrationController extends Controller
     public function getIntegration(): JsonResponse
     {
         $integration = Integration::query()->where('reference', 'u-call')->first();
-        return $this->response('', $integration->toArray());
+        return $this->response('', $integration);
     }
 }
