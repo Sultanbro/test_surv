@@ -825,7 +825,7 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.name || 'Без названия',
+					name: doc.local_name || 'Без названия',
 					file: doc.url,
 					signed: doc.signed,
 				}))

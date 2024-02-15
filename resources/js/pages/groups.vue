@@ -491,7 +491,10 @@
 				</b-col>
 			</b-row>
 
-			<b-row class="mb-4">
+			<b-row
+				v-if="documentForm.id <= 0"
+				class="mb-4"
+			>
 				<b-col cols="3">
 					Файл
 				</b-col>
@@ -501,7 +504,7 @@
 						@change="uploadDoc"
 					>
 						<div class="form-control">
-							{{ documentForm.file || 'Нет документа' }}
+							{{ documentForm.upload || 'Нет документа' }}
 						</div>
 					</InputFile>
 				</b-col>
@@ -622,6 +625,7 @@ export default {
 				id: 0,
 				name: '',
 				file: '',
+				upload: null,
 			},
 			docId: 0,
 			docEditDialog: false,
@@ -928,7 +932,7 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.name || 'Без названия',
+					name: doc.local_name || 'Без названия',
 					file: doc.url,
 				}))
 			}
@@ -937,30 +941,17 @@ export default {
 				alert(error)
 			}
 		},
-		async uploadDoc(files){
+		uploadDoc(files){
 			const file = files ? files[0] : null
 			if(!file) return
 
-			const loader = this.$loading.show()
-
-			const formData = new FormData()
-			formData.append('file', file)
-
-			try {
-				const {data} = await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				})
-				this.documentForm.file = data.file
-			}
-			catch (error) {
-				console.error(error)
-			}
-			loader.hide()
+			this.documentForm.upload = file
 		},
 		onEditDoc(doc){
-			this.documentForm = JSON.parse(JSON.stringify(doc))
+			this.documentForm = {
+				...JSON.parse(JSON.stringify(doc)),
+				upload: null,
+			}
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
@@ -976,28 +967,33 @@ export default {
 				id: --this.docId,
 				name: '',
 				file: '',
+				upload: null,
 			}
 			this.docEditDialog = true
 		},
 		async createDoc(){
 			try {
-				// const {data} = await this.axios.push('/docs', this.documentForm)
-				// this.documents.push({
-				// 	...this.documentForm,
-				// 	id: data.id
-				// })
-				this.docEditDialog = false
+				const formData = new FormData()
+				formData.append('file', this.documentForm.upload)
+				formData.append('local_name', this.documentForm.name)
+				await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				})
+				this.fetchDocs(this.activebtn.id)
 			}
 			catch (error) {
-				this.$toast.error(error)
 				console.error(error)
 			}
+			this.docEditDialog = false
 		},
 		async updateDoc(){
 			try {
-				// await this.axios.push(`/docs/${this.documentForm.id}`, this.documentForm)
-				const index = this.documents.findIndex(d => d.id === this.documentForm.id)
-				if(~index) this.documents.splice(index, 1, JSON.parse(JSON.stringify(this.documentForm)))
+				await this.axios.put(`/signature/files/${this.documentForm.id}`, {
+					local_name: this.documentForm.name
+				})
+				this.fetchDocs()
 				this.docEditDialog = false
 			}
 			catch (error) {
@@ -1005,16 +1001,17 @@ export default {
 				console.error(error)
 			}
 		},
-		async onDeleteDoc(doc){
-			const index = this.documents.findIndex(d => d.id === doc.id)
-			if(~index) this.documents.splice(index, 1)
-			if(doc.id <= 0) return
-			try {
-				// await this.axios.delete(`/docs/${doc.id}`)
-			}
-			catch (error) {
-				console.error(error)
-			}
+		async onDeleteDoc(/* doc */){
+			alert('Не реализовано')
+			// const index = this.documents.findIndex(d => d.id === doc.id)
+			// if(~index) this.documents.splice(index, 1)
+			// if(doc.id <= 0) return
+			// try {
+			// 	// await this.axios.delete(`/docs/${doc.id}`)
+			// }
+			// catch (error) {
+			// 	console.error(error)
+			// }
 		},
 	},
 };
