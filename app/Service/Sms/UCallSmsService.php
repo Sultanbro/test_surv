@@ -16,7 +16,10 @@ class UCallSmsService implements SmsInterface
     {
         /** @var Integration $integration */
         $integration = Integration::query()->where('reference', 'u-call')->first();
-        $credentials = json_decode($integration->data, true);
+        $credentials = [];
+        if ($integration) {
+            $credentials = json_decode($integration->data, true);
+        }
         $apiKey = $credentials['api_key'] ?? config('services.u-call.api_key');
         $appId = $credentials['app_id'] ?? config('services.u-call.app_id');
         $this->apiClient->setApiKey($apiKey);
