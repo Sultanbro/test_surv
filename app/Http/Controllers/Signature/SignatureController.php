@@ -8,7 +8,6 @@ use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Requests\Signature\NewVerificationCodeRequest;
 use App\Http\Requests\Signature\VerificationRequest;
 use App\Http\Resources\Files\FileResource;
-use App\Http\Resources\Signature\SmsCodeResource;
 use App\Models\File\File;
 use App\Models\SmsCode;
 use App\ProfileGroup;
@@ -19,8 +18,6 @@ use App\Service\Sms\SmsInterface;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
-use Normalizer;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SignatureController extends Controller
@@ -91,4 +88,6 @@ class SignatureController extends Controller
         $sms->delete(); // delete sms verification after using
         return $this->response('verified');
     }
+
+
 }

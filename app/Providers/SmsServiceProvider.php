@@ -20,5 +20,4 @@ class SmsServiceProvider extends ServiceProvider
         $this->app->bind(SmsInterface::class, UCallSmsService::class);
         $this->app->bind(CodeGeneratorInterface::class, CodeGenerator::class);
     }
-
 }
