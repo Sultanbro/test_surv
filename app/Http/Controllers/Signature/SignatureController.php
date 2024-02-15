@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Signature;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Files\FileRequest;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Requests\Signature\NewVerificationCodeRequest;
 use App\Http\Requests\Signature\VerificationRequest;
@@ -13,7 +12,6 @@ use App\Models\File\File;
 use App\Models\SmsCode;
 use App\ProfileGroup;
 use App\Service\Custom\Files\FileManagerInterface;
-use App\Service\Sms\CodeGenerator;
 use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
@@ -69,7 +67,7 @@ class SignatureController extends Controller
 
     public function verify(VerificationRequest $request, User $user, File $file): JsonResponse
     {
-        $sms = $user->smsCodes()->where('code', $request->validated('code'))->firstOrFail();
+        $sms = $user->smsCodes()->where('code', $request->validated('code'))->first();
         $user->signedFiles()->attach($file);
         $sms->delete(); // delete sms verification after using
         return $this->response('verified');

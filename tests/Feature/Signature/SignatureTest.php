@@ -118,7 +118,6 @@ class SignatureTest extends TenantTestCase
         $mockSmsService->shouldReceive('send')
             ->once()
             ->andReturnNull();
-
         // Replace the real SMS service with the mock
         $this->app->instance(SmsInterface::class, $mockSmsService);
 
