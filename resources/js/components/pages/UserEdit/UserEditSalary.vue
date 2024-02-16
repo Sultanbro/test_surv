@@ -238,10 +238,10 @@ export default {
 		<div class="form-group row">
 			<label
 				for="zarplata"
-				class="col-sm-3 col-form-label font-weight-bold"
+				class="col-sm-2 col-form-label font-weight-bold"
 			>Оклад</label>
 
-			<div class="col-sm-3">
+			<div class="col-sm-4">
 				<input
 					id="zarplata"
 					v-model.number="zarplata"
@@ -255,7 +255,7 @@ export default {
 			</div>
 
 
-			<div class="col-sm-3">
+			<div class="col-sm-5">
 				<select
 					id="currency"
 					v-model="currency"
@@ -308,7 +308,7 @@ export default {
 				</select>
 			</div>
 
-			<div class="col-sm-3 pl-0">
+			<div class="col-sm-1">
 				<img
 					id="user-currency"
 					src="/images/dist/profit-info.svg"
@@ -326,7 +326,7 @@ export default {
 				</b-popover>
 			</div>
 		</div>
-		<template v-if="user">
+		<template v-if="false && user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
 				<div class="form-group row">
 					<label
@@ -412,48 +412,9 @@ export default {
 				</div>
 			</template>
 		</template>
-		<div
-			v-if="user"
-			class="form-group row"
-		>
-			<div class="col-sm-3">
-				<div class="custom-control custom-checkbox">
-					<input
-						id="headphones_amount_checkbox"
-						type="checkbox"
-						:checked="headphonesState"
-						class="custom-control-input"
-						@change="changeHeadphonesState"
-					>
-					<label
-						for="headphones_amount_checkbox"
-						class="custom-control-label"
-					>
-						Выдано оборудование в счет зарплаты <br>
-						{{ user.headphones_date }}
-					</label>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<label
-					for="headphones_amount"
-					class="font-weight-bold"
-				>На сумму</label>
-			</div>
-			<div class="col-sm-3">
-				<input
-					id="headphones_amount"
-					name="headphones_amount"
-					class="form-control"
-					type="number"
-					:value="user.headphones_sum"
-					:disabled="!headphonesState"
-				>
-			</div>
-			<div class="col-sm-3" />
-		</div>
 
 		<hr>
+
 		<div
 			v-if="user"
 			class="cards"
@@ -464,69 +425,74 @@ export default {
 			>
 				Нет ни одной карты
 			</div>
-			<div
-				v-for="(card, key) in cards"
-				:key="card.id"
-				class="d-flex form-group m0 row"
-			>
-				<div class="col-sm-2">
-					<input
-						v-model="card.bank"
-						:name="`cards[${key}][bank]`"
-						type="text"
-						class="form-control"
-						placeholder="Банк/Кошелек/..."
-					>
+			<template v-for="(card, key) in cards">
+				<div
+					v-if="key < 1"
+					:key="card.id"
+					class="d-flex form-group m0 row"
+				>
+					<div class="col-sm-2">
+						<input
+							v-model="card.bank"
+							:name="`cards[${key}][bank]`"
+							type="text"
+							class="form-control"
+							placeholder="Банк/Кошелек/..."
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.country"
+							:name="`cards[${key}][country]`"
+							type="text"
+							class="form-control"
+							placeholder="Страна"
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.cardholder"
+							:name="`cards[${key}][cardholder]`"
+							type="text"
+							class="form-control"
+							placeholder="Имя на карте"
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.phone"
+							:name="`cards[${key}][phone]`"
+							type="text"
+							class="form-control"
+							placeholder="Телефон"
+						>
+					</div>
+					<div class="col-sm-3">
+						<input
+							v-model="card.number"
+							v-mask="`#### #### #### ####`"
+							:name="`cards[${key}][number]`"
+							type="text"
+							class="form-control card-number"
+							placeholder="Номер карты/счета"
+						>
+					</div>
+					<div class="col-sm-1">
+						<button
+							type="button"
+							class="btn btn-danger card-delete rounded"
+							@click="deleteCard(key, card)"
+						>
+							<i class="fa fa-trash" />
+						</button>
+					</div>
 				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.country"
-						:name="`cards[${key}][country]`"
-						type="text"
-						class="form-control"
-						placeholder="Страна"
-					>
-				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.cardholder"
-						:name="`cards[${key}][cardholder]`"
-						type="text"
-						class="form-control"
-						placeholder="Имя на карте"
-					>
-				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.phone"
-						:name="`cards[${key}][phone]`"
-						type="text"
-						class="form-control"
-						placeholder="Телефон"
-					>
-				</div>
-				<div class="col-sm-3">
-					<input
-						v-model="card.number"
-						v-mask="`#### #### #### ####`"
-						:name="`cards[${key}][number]`"
-						type="text"
-						class="form-control card-number"
-						placeholder="Номер карты/счета"
-					>
-				</div>
-				<div class="col-sm-1">
-					<button
-						type="button"
-						class="btn btn-danger card-delete rounded"
-						@click="deleteCard(key, card)"
-					>
-						<i class="fa fa-trash" />
-					</button>
-				</div>
-			</div>
+			</template>
 		</div>
-		<div class="row">
+		<div
+			v-if="false"
+			class="row"
+		>
 			<div class="col-sm-2">
 				<button
 					type="button"
@@ -537,6 +503,7 @@ export default {
 				</button>
 			</div>
 		</div>
+
 		<hr>
 
 		<div
