@@ -67,7 +67,7 @@
 				role="tabpanel"
 				aria-labelledby="nav-profile-tab"
 			>
-				<CompanyTaxes />
+				<CompanyTaxesV2 />
 			</div>
 		</div>
 	</div>
@@ -77,7 +77,7 @@
 import Professions from '@/pages/professions.vue';
 import Groups from '@/pages/groups.vue';
 import Shifts from '@/pages/shifts.vue';
-import CompanyTaxes from '@/pages/Company/CompanyTaxes.vue';
+import CompanyTaxesV2 from '@/pages/Company/CompanyTaxesV2.vue';
 import {useAsyncPageData} from '@/composables/asyncPageData'
 
 export default {
@@ -86,7 +86,7 @@ export default {
 		Professions,
 		Groups,
 		Shifts,
-		CompanyTaxes,
+		CompanyTaxesV2,
 	},
 	data() {
 		return {
