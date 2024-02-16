@@ -17,4 +17,9 @@ class UserTax extends Model
     protected $fillable = [
         'tax_group_id', 'user_id', 'status', 'from', 'to'
     ];
+
+    public function taxGroup()
+    {
+        return $this->belongsTo(TaxGroup::class);
+    }
 }

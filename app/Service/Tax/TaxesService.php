@@ -22,6 +22,14 @@ class TaxesService
         return TaxGroup::with('items')->get();
     }
 
+    public function getUserTaxes($userId)
+    {
+        return UserTax::with('taxGroup.items')
+            ->where('status', UserTax::ACTIVE)
+            ->where('user_id', $userId)
+            ->first()->taxGroup;
+    }
+
     public function getOne($id)
     {
         return TaxGroup::with('items')->where('id', $id)->firstOrFail();
