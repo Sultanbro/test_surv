@@ -6,6 +6,7 @@ use App\DTO\Tax\CreateTaxDTO;
 use App\DTO\Tax\TaxGroupDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class TaxGroupRequest extends FormRequest
 {
@@ -17,8 +18,13 @@ class TaxGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('tax_groups')->ignore($this->route('id'))
+            ],
             // tax group items
+            'items' => 'required|array|min:1',
             'items.*.name' => 'required|string',
             'items.*.is_percent' => 'required|bool',
             'items.*.end_subtraction' => 'required|bool',
@@ -33,7 +39,6 @@ class TaxGroupRequest extends FormRequest
     public function toDto(): TaxGroupDTO
     {
         return new TaxGroupDTO(
-            id: null,
             name: $this->get('name'),
             items: $this->get('items')
         );

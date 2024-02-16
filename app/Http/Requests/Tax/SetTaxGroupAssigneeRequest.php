@@ -29,7 +29,7 @@ class SetTaxGroupAssigneeRequest extends FormRequest
     public function toDto(): SetUserTaxDTO
     {
         return new SetUserTaxDTO(
-            taxGroupId: $this->get('tax_id'),
+            taxGroupId: $this->get('tax_group_id'),
             userId: $this->get('user_id'),
             assigned: $this->get('assigned')
         );

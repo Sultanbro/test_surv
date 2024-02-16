@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('value');
             $table->integer('order')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

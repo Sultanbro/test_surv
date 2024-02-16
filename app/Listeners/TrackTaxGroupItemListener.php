@@ -28,7 +28,7 @@ class TrackTaxGroupItemListener
     {
         $data = $event->item;
         /** @var TaxGroupItem $taxGroupItem */
-        $taxGroupItem = TaxGroupItem::withTrashed()->with('activity')->findOrFail($data['id']);
+        $taxGroupItem = TaxGroupItem::withTrashed()->findOrFail($data['id']);
 
         History::query()->create([
             'reference_table' => 'App\Models\TaxGroupItem',
