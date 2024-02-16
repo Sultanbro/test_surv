@@ -23,11 +23,11 @@ class TaxGroupController extends Controller
         );
     }
 
-    public function getUserTaxes(): JsonResponse
+    public function getUserTaxes($id): JsonResponse
     {
         return $this->response(
             message: 'Success',
-            data: $this->service->getUserTaxes(auth()->id())
+            data: $this->service->getUserTaxes($id)
         );
     }
 

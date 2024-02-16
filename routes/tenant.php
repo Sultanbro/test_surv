@@ -718,8 +718,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'taxes.'
     ], function () {
         Route::get('/', [TaxGroupController::class, 'getAll']);
-        Route::get('/user', [TaxGroupController::class, 'getUserTaxes']);
         Route::get('/{id}', [TaxGroupController::class, 'getOne']);
+        Route::get('/{id}/user', [TaxGroupController::class, 'getUserTaxes']);
         Route::post('/', [TaxGroupController::class, 'create']);
         Route::put('/{id}', [TaxGroupController::class, 'update']);
         Route::delete('/{id}', [TaxGroupController::class, 'delete']);

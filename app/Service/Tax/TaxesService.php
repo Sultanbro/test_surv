@@ -27,7 +27,7 @@ class TaxesService
         return UserTax::with('taxGroup.items')
             ->where('status', UserTax::ACTIVE)
             ->where('user_id', $userId)
-            ->first()->taxGroup;
+            ->first()?->taxGroup;
     }
 
     public function getOne($id)
