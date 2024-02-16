@@ -576,7 +576,10 @@ class Salary extends Model
         $users->with([
             'user_description',
             'group_users',
-            'taxGroup.items',
+            'userTax.taxGroup.items' => function ($query) use ($date) {
+                $query->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year);
+            },
             'profile_histories_latest' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
             },
@@ -700,6 +703,7 @@ class Salary extends Model
             $absent_days = $user->daytypes->whereIn('type', [2]);
 
             $earnings = [];
+            $allTotal = 0;
             $hourly_pays = [];
             $hours = [];
             $trainings = [];
@@ -712,6 +716,16 @@ class Salary extends Model
             } else {
                 $worktime = 9;
             }
+
+            /**
+             * Данные для колонки Налоги.
+             */
+            $oldTaxes = $user->taxes()
+                ->select('taxes.id', 'taxes.name', 'taxes.end_subtraction',
+                    DB::raw('CASE WHEN user_tax.value > 0 THEN user_tax.value ELSE taxes.value END AS value'),
+                    'taxes.is_percent')
+                ->wherePivot('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
+                ->get();
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $statTotalHour = null;
@@ -850,13 +864,9 @@ class Salary extends Model
                     }
                 }
 
-                // Taxes
-                $dateNewTaxesReleased = Carbon::createFromDate(2024, 3, 1)->startOfMonth();
-                if ($date->gt($dateNewTaxesReleased)) {
-                    // if $date greater than 1st march, so calculate new method for taxes with new structure
-                    if ($earnings[$i] && $s) {
-                        UserTaxService::calculateTax();
-                    }
+                // Sum earnings
+                if ($earnings[$i] && $s) {
+                    $allTotal += $earnings[$i];
                 }
             }
 
@@ -965,19 +975,10 @@ class Salary extends Model
             $user->fine = $fines;
             $user->avanses = $avanses;
             $user->earnings = $earnings;
+            $user->taxes = $oldTaxes;
             $user->bonuses = $bonuses;
             $user->test_bonus = $test_bonus;
             $user->awards = $awards;
-
-            /**
-             * Данные для колонки Налоги.
-             */
-            $user->taxes = $user->taxes()
-                ->select('taxes.id', 'taxes.name', 'taxes.end_subtraction',
-                    DB::raw('CASE WHEN user_tax.value > 0 THEN user_tax.value ELSE taxes.value END AS value'),
-                    'taxes.is_percent')
-                ->wherePivot('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
-                ->get();
 
 
             /**
@@ -994,6 +995,7 @@ class Salary extends Model
                 $ku = User::withTrashed()->find($editedSalary->author_id);
                 $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
                 $user->edited_salary = $editedSalary;
+                $allTotal = $editedSalary->amount;
             }
 
             /**
@@ -1016,7 +1018,10 @@ class Salary extends Model
             } else {
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
-
+            $allTotal += $user->kpi;
+            $allTotal += array_sum($test_bonus);
+            $allTotal += array_sum($awards);
+            $allTotal -= $fines_total;
             /**
              * If user has edited Bonus for month take it
              */
@@ -1031,7 +1036,22 @@ class Salary extends Model
                 $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
 
                 $user->edited_bonus = $editedBonus;
+                $allTotal += $editedBonus->amount;
+            } else {
+                $allTotal += array_sum($bonuses);
             }
+
+
+            if ($user->userTax && $user->userTax->taxGroup && count($user->userTax->taxGroup->items) > 0) {
+                $taxItems = $user->userTax->taxGroup->items;
+                $method = 'new';
+            }
+            else {
+                $taxItems = $oldTaxes;
+                $method = 'old';
+            }
+
+            $user->totalTaxes = UserTaxService::calculateTax($taxItems, $allTotal, $method);
 
             // add to array
             $data['users'][] = $user;

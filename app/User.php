@@ -281,9 +281,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             ->withTimestamps();
     }
 
-    public function taxGroup()
+    public function userTax()
     {
-        return $this->hasOneThrough(TaxGroup::class, UserTax::class);
+        return $this->hasOne(UserTax::class)->orderBy('created_at', 'desc')->latest();
     }
 
     public function awards(): BelongsToMany
