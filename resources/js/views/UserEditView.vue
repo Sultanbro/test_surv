@@ -326,7 +326,9 @@ export default {
 			}
 		},
 		onTaxChange($event){
-			this.taxGroup = $event.target.value
+			const taxId = +$event.target.value
+			if(taxId === -1) return window.open('/timetracking/settings?tab=2#nav-home', '_blank')
+			this.taxGroup = taxId
 		},
 		async updateTaxes(){
 			try {
@@ -2538,6 +2540,10 @@ input[type="radio"] {
 	}
 }
 
+
+.UserEdit-new-position {
+	color: green;
+}
 .UserEditView{
 	&-scrollCard{
 		height: 200px;

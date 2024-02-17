@@ -109,6 +109,7 @@ export default {
 						cardholder: '',
 						phone: '',
 						number: '',
+						iban: '',
 					})
 				}
 			}
@@ -141,6 +142,7 @@ export default {
 				cardholder: '',
 				phone: '',
 				number: '',
+				iban: '',
 			};
 			this.cards.push(card);
 		},
@@ -391,6 +393,12 @@ export default {
 					>
 						{{ tax.name }}
 					</option>
+					<option
+						value="-1"
+						class="UserEdit-new-position"
+					>
+						Добавить группу налогов
+					</option>
 				</select>
 			</div>
 		</div>
@@ -548,7 +556,7 @@ export default {
 							placeholder="Телефон"
 						>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<input
 							v-model="card.number"
 							v-mask="`#### #### #### ####`"
@@ -556,6 +564,15 @@ export default {
 							type="text"
 							class="form-control card-number"
 							placeholder="Номер карты/счета"
+						>
+					</div>
+					<div class="col-sm-1">
+						<input
+							v-model="card.number"
+							:name="`cards[${key}][iban]`"
+							type="text"
+							class="form-control"
+							placeholder="счет IBAN"
 						>
 					</div>
 					<div class="col-sm-1">
@@ -818,5 +835,9 @@ export default {
 	.custom-control-label{
 		height: 15px;
 	}
+}
+.iban-info{
+	position: relative;
+	left: -30px;
 }
 </style>
