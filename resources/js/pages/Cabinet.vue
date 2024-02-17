@@ -104,15 +104,6 @@
 									for="CabinetProfileImage"
 								/>
 							</div>
-							<div class="hidden-file-wrapper">
-								<button class="btn btn-success w-100 mt-2">
-									Выбрать фото
-								</button>
-								<label
-									class="hidden-file-label"
-									for="CabinetProfileImage"
-								/>
-							</div>
 						</div>
 					</div>
 					<div class="col-10">
