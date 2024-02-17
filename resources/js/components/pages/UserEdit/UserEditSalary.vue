@@ -57,6 +57,14 @@ export default {
 			type: Object,
 			default: () => ({})
 		},
+		taxGroups: {
+			type: Array,
+			default: () => [],
+		},
+		taxGroup: {
+			type: Number,
+			default: 0
+		},
 	},
 	data() {
 		return {
@@ -72,6 +80,7 @@ export default {
 			deleteTaxObj: null,
 			deleteTaxIdx: null,
 			uin: this.user ? this.user.uin : '',
+			isNalog: !!this.taxGroup,
 			isBP: ['test', 'bp'].includes(location.hostname.split('.')[0])
 		}
 	},
@@ -93,6 +102,15 @@ export default {
 		user(obj) {
 			if (obj.cards) {
 				this.cards = obj.cards
+				if(!this.cards.length){
+					this.cards.push({
+						bank: '',
+						country: '',
+						cardholder: '',
+						phone: '',
+						number: '',
+					})
+				}
 			}
 			const zp = this.user && this.user.zarplata
 				? this.user.zarplata.zarplata
@@ -107,7 +125,13 @@ export default {
 		},
 		taxes() {
 			this.myTaxes = this.taxes.slice().filter(item => item.isAssigned);
-		}
+		},
+		isNalog(){
+			if(!this.isNalog) this.$emit('tax', {target: {value: 0}})
+		},
+		taxGroup(){
+			this.isNalog = !!this.taxGroup
+		},
 	},
 	methods: {
 		addCard() {
@@ -122,14 +146,14 @@ export default {
 		},
 		async deleteCard(key, card) {
 			this.cards.splice(key, 1);
-			if (card.hasOwnProperty('id')) {
+			if (card.id) {
 				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
 				if (!response.data) {
 					this.$toast.error('Ошибка при удалении карты');
 					return;
 				}
-				this.$toast.success('Карта удалена');
 			}
+			this.$toast.success('Карта удалена');
 		},
 		changeHeadphonesState() {
 			this.headphonesState = !this.headphonesState
@@ -326,6 +350,52 @@ export default {
 				</b-popover>
 			</div>
 		</div>
+
+		<div class="row">
+			<div class="col-sm-2 font-weight-bold d-flex aic">
+				<label class="d-inline-flex aic gap-3">
+					Налог с сотрудника
+					<b-form-checkbox
+						v-model="isNalog"
+						switch
+						@change="onEditTax(tax)"
+					/>
+				</label>
+				<img
+					v-b-popover.click.blur.html="'Включение функции удержания % или суммы налога от его оклада'"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					width="20"
+					alt="info icon"
+					tabindex="-1"
+				>
+			</div>
+			<div class="col-sm-4">
+				<select
+					v-if="isNalog"
+					:value="taxGroup"
+					class="form-control form-control-sm"
+					@change="$emit('tax', $event)"
+				>
+					<option
+						value="0"
+						selected
+						disabled
+					>
+						Выберите группу налогов
+					</option>
+					<option
+						v-for="tax in taxGroups"
+						:key="tax.id"
+						:value="tax.id"
+					>
+						{{ tax.name }}
+					</option>
+				</select>
+			</div>
+		</div>
+
+
 		<template v-if="false && user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
 				<div class="form-group row">
@@ -425,6 +495,17 @@ export default {
 			>
 				Нет ни одной карты
 			</div>
+			<div class="bold mb-2">
+				Банковская карта
+				<img
+					v-b-popover.click.blur.html="'Укажите данные карты на которую будет начисляться зарплата'"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					width="20"
+					alt="info icon"
+					tabindex="-1"
+				>
+			</div>
 			<template v-for="(card, key) in cards">
 				<div
 					v-if="key < 1"
@@ -478,13 +559,13 @@ export default {
 						>
 					</div>
 					<div class="col-sm-1">
-						<button
+						<!-- <button
 							type="button"
 							class="btn btn-danger card-delete rounded"
 							@click="deleteCard(key, card)"
 						>
 							<i class="fa fa-trash" />
-						</button>
+						</button> -->
 					</div>
 				</div>
 			</template>
@@ -507,6 +588,7 @@ export default {
 		<hr>
 
 		<div
+			v-if="false"
 			class="taxes"
 		>
 			<div
@@ -654,7 +736,10 @@ export default {
 			</template>
 		</b-modal>
 
-		<div class="row my-2">
+		<div
+			v-if="false"
+			class="row my-2"
+		>
 			<template v-if="zarplata > 0">
 				<div class="col-sm-2 d-flex aic">
 					<!--  -->
@@ -683,8 +768,8 @@ export default {
 					<label
 						for="uin"
 						class="col-sm-2 d-flex aic col-form-label font-weight-bold"
-					>ИИН</label>
-					<div class="col-sm-10">
+					>ИНН</label>
+					<div class="col-sm-9">
 						<input
 							id="uin"
 							v-model="uin"
@@ -692,7 +777,7 @@ export default {
 							type="text"
 							required
 							class="form-control"
-							placeholder="введите ИИН"
+							placeholder="введите ИНН"
 						>
 					</div>
 					<UserEditError
@@ -725,4 +810,13 @@ export default {
 		font-weight: 700;
 		line-height: 1;
 	}
+
+</style>
+
+<style lang="scss">
+.custom-switch{
+	.custom-control-label{
+		height: 15px;
+	}
+}
 </style>

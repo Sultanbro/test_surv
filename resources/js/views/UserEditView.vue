@@ -135,9 +135,8 @@ export default {
 			file8: null,
 			loading: false,
 
-			// v2TaxesList: [],
-			// v2TaxesCurrent: [],
-			// v2TaxesNew: [],
+			taxGroups: [],
+			taxGroup: 0,
 		}
 	},
 	computed: {
@@ -239,6 +238,7 @@ export default {
 	},
 	created(){
 		loadMapsApi()
+		this.fetchTaxes()
 	},
 	mounted(){
 		this.updatePageData();
@@ -303,7 +303,30 @@ export default {
 					console.error(error)
 				}
 			}
+			if(data?.user){
+				try {
+					const { data: taxData } = await this.axios.get(`/taxes/${data.user.id}/user`)
+					this.taxGroup = taxData.data?.id || 0
+					this.currentTaxGroup = taxData.data?.id || 0
+				}
+				catch (error) {
+					this.$onError(error, 1)
+				}
+
+			}
 			this.user = this.user ? {...this.user} : null
+		},
+		async fetchTaxes(){
+			try {
+				const { data } = await this.axios.get('/taxes')
+				this.taxGroups = data.data
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		onTaxChange($event){
+			this.taxGroup = $event.target.value
 		},
 		async updateTaxes(){
 			try {
@@ -324,23 +347,6 @@ export default {
 				console.error(error);
 			}
 		},
-		// async fetchTaxes(){
-		// 	try {
-		// 		const { data } = this.axios.get('/taxes')
-		// 		this.v2TaxesList = data?.data || []
-		// 	}
-		// 	catch (error) {
-		// 		window.onerror && window.onerror(error)
-		// 		console.error('fetchTaxes', error)
-		// 	}
-
-		// 	try {
-
-		// 	}
-		// 	catch (error) {
-
-		// 	}
-		// },
 		updatePageData(){
 			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
 				console.error('useAsyncPageData', error)
@@ -519,21 +525,37 @@ export default {
 				});
 				const userId = this.user ? this.user.id : data.data.id;
 
-				if (this.taxesFillData) {
-					// редактирование сущуствующих
-					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
-						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-							await this.axios.post('/tax/set-assignee', {
-								user_id: userId,
-								tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
-								is_assigned: 1,
-								end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
-								is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
-								value: this.taxesFillData.editTaxes[i].value,
-							});
-						}
-					}
+				if(this.currentTaxGroup !== this.taxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.currentTaxGroup,
+						assigned: 0,
+					})
 				}
+
+				if(this.taxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.taxGroup,
+						assigned: (this.taxGroup && 1) || 0,
+					})
+				}
+
+				// if (this.taxesFillData) {
+				// 	// редактирование сущуствующих
+				// 	for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
+				// 		if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
+				// 			await this.axios.post('/tax/set-assignee', {
+				// 				user_id: userId,
+				// 				tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
+				// 				is_assigned: 1,
+				// 				end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
+				// 				is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
+				// 				value: this.taxesFillData.editTaxes[i].value,
+				// 			});
+				// 		}
+				// 	}
+				// }
 
 				if (this.workChartId) {
 					await axios.post('/work-chart/user/add', {
@@ -1023,6 +1045,9 @@ export default {
 								:taxes="taxes"
 								:all-taxes="allTaxes"
 								:errors="fieldErrors"
+								:tax-groups="taxGroups"
+								:tax-group="taxGroup"
+								@tax="onTaxChange"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
 							/>

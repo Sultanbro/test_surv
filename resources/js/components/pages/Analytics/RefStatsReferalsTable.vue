@@ -379,23 +379,23 @@ $bgtd: #dde9ff;
 		}
 	}
 
-	&_firstLayer{
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					// border-color: darken(#E7EAEA, 5);
-				}
-				.JobtronTable-th{
-					// background-color: darken(#f8f9fd, 5);
-				}
-				.JobtronTable-td{
-					// background-color: #dde9ff;
-				}
-			}
-		}
-	}
+	// &_firstLayer{
+	// 	> .JobtronTable-head,
+	// 	> .JobtronTable-body{
+	// 		> tr:not(.JobtronTable-afterRow){
+	// 			.JobtronTable-th,
+	// 			.JobtronTable-td{
+	// 				// border-color: darken(#E7EAEA, 5);
+	// 			}
+	// 			.JobtronTable-th{
+	// 				// background-color: darken(#f8f9fd, 5);
+	// 			}
+	// 			.JobtronTable-td{
+	// 				// background-color: #dde9ff;
+	// 			}
+	// 		}
+	// 	}
+	// }
 	&_secondLayer{
 		.RefStatsReferalsTable{
 			&-switch{
@@ -423,21 +423,21 @@ $bgtd: #dde9ff;
 				}
 			}
 		}
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					// border-color: darken(#E7EAEA, 10);
-				}
-				.JobtronTable-th{
-					// background-color: darken(#f8f9fd, 10);
-				}
-				.JobtronTable-td{
-					// background-color: darken(#dde9ff, 5);
-				}
-			}
-		}
+		// > .JobtronTable-head,
+		// > .JobtronTable-body{
+		// 	> tr:not(.JobtronTable-afterRow){
+		// 		.JobtronTable-th,
+		// 		.JobtronTable-td{
+		// 			// border-color: darken(#E7EAEA, 10);
+		// 		}
+		// 		.JobtronTable-th{
+		// 			// background-color: darken(#f8f9fd, 10);
+		// 		}
+		// 		.JobtronTable-td{
+		// 			// background-color: darken(#dde9ff, 5);
+		// 		}
+		// 	}
+		// }
 	}
 	&_thirdLayer{
 		.RefStatsReferalsTable{
@@ -466,21 +466,21 @@ $bgtd: #dde9ff;
 				}
 			}
 		}
-		> .JobtronTable-head,
-		> .JobtronTable-body{
-			> tr:not(.JobtronTable-afterRow){
-				.JobtronTable-th,
-				.JobtronTable-td{
-					// border-color: darken(#E7EAEA, 15);
-				}
-				.JobtronTable-th{
-					// background-color: darken(#f8f9fd, 15);
-				}
-				.JobtronTable-td{
-					// background-color: darken(#dde9ff, 10);
-				}
-			}
-		}
+		// > .JobtronTable-head,
+		// > .JobtronTable-body{
+		// 	> tr:not(.JobtronTable-afterRow){
+		// 		.JobtronTable-th,
+		// 		.JobtronTable-td{
+		// 			// border-color: darken(#E7EAEA, 15);
+		// 		}
+		// 		.JobtronTable-th{
+		// 			// background-color: darken(#f8f9fd, 15);
+		// 		}
+		// 		.JobtronTable-td{
+		// 			// background-color: darken(#dde9ff, 10);
+		// 		}
+		// 	}
+		// }
 	}
 	&-scale{
 		&-enter-active,

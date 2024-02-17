@@ -250,6 +250,11 @@ if(process.env.NODE_ENV === 'production') {
 	(() => import(/* webpackChunkName: "Firebase" */ './firebase.js'))()
 }
 Vue.prototype.$debug = process.env.NODE_ENV !== 'production'
+Vue.prototype.$onError = (error, prefix = '', silent) => {
+	window.onerror && window.onerror(error)
+	console.error(prefix, error)
+	!silent && Vue.$toast.error(error)
+}
 
 if(Laravel.is_admin){
 	window.admin = {}
