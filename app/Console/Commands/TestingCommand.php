@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Throwable;
 
 class TestingCommand extends Command
@@ -30,9 +31,12 @@ class TestingCommand extends Command
     public function handle(SmsInterface $sms): void
     {
         $receiver = new ReceiverDto(
-            '77470456852',
-            'Aziz'
+            '77073572802',
+            'Вайчеслав'
         );
-        $sms->send($receiver, 'hello');
+
+        $data = $sms->send($receiver, 'код подтверждение: 12555');
+        $this->newLine();
+        $this->alert(Str::replace([',', '{', '}'], PHP_EOL, json_encode($data)));
     }
 }

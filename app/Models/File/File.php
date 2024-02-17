@@ -50,11 +50,6 @@ class File extends Model
         return $this->morphTo();
     }
 
-    public function getUrlAttribute(): string
-    {
-        return FileHelper::getUrl(config('app.file.path'), $this->local_name);
-    }
-
     public function getPathAttribute(): string
     {
         return FileHelper::getPath(config('app.file.path'), $this->local_name);

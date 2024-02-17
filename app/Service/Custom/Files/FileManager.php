@@ -104,7 +104,7 @@ class FileManager implements FileManagerInterface
     public function url(array $parameters = [], bool $secure = false): string
     {
         $secure = app()->isProduction();
-        return url('tenant' . tenant('id') . '/' . $this->path, $parameters, $secure);
+        return url('tenant' . tenant('id') . '/' . $this->path, $parameters, true);
     }
 
     /**

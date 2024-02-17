@@ -3,6 +3,13 @@
 		v-if="isVisible"
 		id="page-profile"
 	>
+		<router-link
+			v-if="profileUnfilled"
+			to="/cabinet"
+			class="ProfilePage-fillProfile"
+		>
+			Поздравляем вы приняты на работу, заполните свой профиль
+		</router-link>
 		<div class="intro">
 			<IntroTop
 				:courses="intro['courses']"
@@ -251,6 +258,14 @@ export default {
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
+		},
+		profileUnfilled(){
+			return !this.user.phone
+				|| !this.user.name
+				|| !this.user.last_name
+				|| !this.user.email
+				|| !this.user.birthday
+				|| !this.user.working_country
 		}
 	},
 	watch: {
@@ -340,6 +355,21 @@ export default {
 		}
 		.popup__subtitle{
 			font-size: 18px;
+		}
+	}
+	&-fillProfile{
+		display: block;
+		padding: 20px;
+
+		font-size: 20px;
+		color: #fff;
+		text-decoration: none;
+		text-align: center;
+
+		background-color: #dc3545;
+		&:hover{
+			color: #fff;
+			text-decoration: underline;
 		}
 	}
 }

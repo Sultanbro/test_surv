@@ -13,7 +13,7 @@ class UCallApiClient implements ApiClientInterface
     protected string $baseUrl = 'https://cp.u-marketing.org';
 
     public function __construct(
-        private readonly string $apiKey
+        private ?string $apiKey
     )
     {
     }
@@ -67,5 +67,10 @@ class UCallApiClient implements ApiClientInterface
     private function endpoint(string $url): string
     {
         return $url . '?apiKey=' . $this->apiKey;
+    }
+
+    public function setApiKey(string $apiKey): void
+    {
+        $this->apiKey = $apiKey;
     }
 }

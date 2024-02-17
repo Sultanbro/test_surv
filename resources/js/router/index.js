@@ -290,6 +290,14 @@ const router = new VueRouter({
 			},
 		},
 		{
+			path: '/signature/verification',
+			name: 'SignatureVerification',
+			component: () => import(/* webpackChunkName: "SignatureVerification" */ '@/views/SignatureVerification'),
+			meta: {
+				title: 'SignatureVerification',
+			},
+		},
+		{
 			path: '/awards/fix-preview',
 			name: 'FixAwardView',
 			component: () => import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),
