@@ -3,6 +3,7 @@
 		<!-- avatar  -->
 		<div class="header__avatar">
 			<PulseCard
+				v-if="profileUnfilled"
 				class="LeftSidebar-pulseAvatar"
 				style="--card-pulse-interval: 5s"
 			>
@@ -12,6 +13,12 @@
 					class="LeftSidebar-avatar"
 				>
 			</PulseCard>
+			<img
+				v-else
+				:src="avatar"
+				alt="avatar image"
+				class="LeftSidebar-avatar"
+			>
 			<template v-if="['activist', 'ambassador'].includes(status)">
 				<img
 					class="LeftSidebar-refIcon"
@@ -79,7 +86,7 @@
 							>
 							<span class="menu__item-title">Оплата</span>
 						</router-link>
-						<PulseCard>
+						<PulseCard v-if="profileUnfilled">
 							<router-link
 								to="/cabinet"
 								class="menu__item"
@@ -91,6 +98,17 @@
 								<span class="menu__item-title">Настройки</span>
 							</router-link>
 						</PulseCard>
+						<router-link
+							v-else
+							to="/cabinet"
+							class="menu__item"
+						>
+							<img
+								src="/images/dist/icon-settings.svg"
+								alt="settings icon"
+							>
+							<span class="menu__item-title">Настройки</span>
+						</router-link>
 						<form @click.prevent="logout">
 							<button
 								class="menu__item w-full"
@@ -416,6 +434,14 @@ export default {
 				result.push(item)
 				return result
 			}, [])
+		},
+		profileUnfilled(){
+			return !this.user.phone
+				|| !this.user.name
+				|| !this.user.last_name
+				|| !this.user.email
+				|| !this.user.birthday
+				|| !this.user.working_country
 		},
 	},
 	mounted(){
