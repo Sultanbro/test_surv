@@ -385,6 +385,24 @@
 									>
 								</div>
 							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Дополнительный
+								</label>
+								<div class="col-sm-8">
+									<input
+										v-model="phone1"
+										class="form-control input-surv PageCabinet-phone"
+										type="text"
+										name="phone"
+										required
+										placeholder="телефон"
+									>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -459,6 +477,7 @@ export default {
 			user: [],
 			user_card: [],
 			phone: '',
+			phone1: '',
 
 			activeCourse: null,
 			page: 'profile',
@@ -721,6 +740,7 @@ export default {
 					query: {
 						...this.user,
 						phone: this.phone.replace(/[^\d]+/g, ''),
+						phone_1: this.phone1.replace(/[^\d]+/g, ''),
 					},
 					password: this.password,
 					birthday: this.birthday,
@@ -762,6 +782,7 @@ export default {
 				.then(({data}) => {
 					this.user = JSON.parse(JSON.stringify(data.user))
 					this.phone = data.user.phone
+					this.phone1 = data.user.phone_1
 					this.keywords = data.user.working_country;
 					this.working_city = data.user.working_city;
 
