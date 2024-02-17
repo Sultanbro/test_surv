@@ -527,7 +527,7 @@ export default {
 				});
 				const userId = this.user ? this.user.id : data.data.id;
 
-				if(this.currentTaxGroup !== this.taxGroup){
+				if(this.currentTaxGroup !== this.taxGroup && this.currentTaxGroup){
 					await this.axios.post('/taxes/set-assigned', {
 						user_id: userId,
 						tax_group_id: this.currentTaxGroup,
