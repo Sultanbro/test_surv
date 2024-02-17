@@ -69,13 +69,23 @@
 			>
 				+ Добавить налог
 			</JobtronButton>
-			<hr>
-			<JobtronButton
-				small
-				@click="$emit('submit', value)"
-			>
-				Сохранить
-			</JobtronButton>
+			<hr class="my-4">
+			<div class="text-right">
+				<JobtronButton
+					small
+					@click="$emit('submit', value)"
+				>
+					Сохранить
+				</JobtronButton>
+				<JobtronButton
+					v-if="value.id"
+					error
+					small
+					@click="$emit('remove', value)"
+				>
+					Удалить
+				</JobtronButton>
+			</div>
 		</b-col>
 	</div>
 </template>

@@ -6,7 +6,7 @@
 					small
 					@click="newTax"
 				>
-					Добавить налог
+					Добавить группу налогов
 				</JobtronButton>
 			</b-col>
 		</b-row>
@@ -54,6 +54,14 @@
 							<template v-else-if="field.key === 'index'">
 								<span :title="tax.id">
 									{{ index }}
+								</span>
+							</template>
+							<template v-else-if="field.key === 'name'">
+								<span
+									class="pointer"
+									@click="editTax(tax)"
+								>
+									{{ tax[field.key] }}
 								</span>
 							</template>
 							<template v-else-if="field.key === 'created_at'">
@@ -104,6 +112,7 @@
 			<TexesEditForm
 				:tax="editedTax"
 				@submit="saveTax"
+				@remove="removeTax"
 			/>
 		</SideBar>
 	</div>
@@ -160,10 +169,10 @@ export default {
 				key: 'created_at',
 				title: 'Дата создания',
 			})
-			fields.push({
-				key: 'actions',
-				title: '',
-			})
+			// fields.push({
+			// 	key: 'actions',
+			// 	title: '',
+			// })
 			return fields
 		}
 	},
@@ -196,6 +205,7 @@ export default {
 			const loader = this.$loading.show()
 			try {
 				await this.axios.delete(`/taxes/${tax.id}`)
+				this.clearForm()
 				this.fetchTaxes()
 				this.$toast.success('Группа налогов удалена')
 			}
