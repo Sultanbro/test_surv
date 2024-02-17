@@ -995,7 +995,6 @@ class Salary extends Model
                 $ku = User::withTrashed()->find($editedSalary->author_id);
                 $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
                 $user->edited_salary = $editedSalary;
-                $allTotal = $editedSalary->amount;
             }
 
             /**
@@ -1041,7 +1040,9 @@ class Salary extends Model
                 $allTotal += array_sum($bonuses);
             }
 
-
+            if ($editedSalary) {
+                $allTotal = $editedSalary->amount; // Edited salary ignores kpi,bonus,...
+            }
             if ($user->userTax && $user->userTax->taxGroup && count($user->userTax->taxGroup->items) > 0) {
                 $taxItems = $user->userTax->taxGroup->items;
                 $method = 'new';
