@@ -14,6 +14,7 @@ class Card extends Model
         'country',
         'cardholder',
         'phone',
+        'iban',
         'number',
     ];
 
