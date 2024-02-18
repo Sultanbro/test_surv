@@ -568,7 +568,7 @@ export default {
 					</div>
 					<div class="col-sm-1">
 						<input
-							v-model="card.number"
+							v-model="card.iban"
 							:name="`cards[${key}][iban]`"
 							type="text"
 							class="form-control"
