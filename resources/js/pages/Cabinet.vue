@@ -735,12 +735,14 @@ export default {
 			}
 
 			if (this.cardValidatre.type) {
+				const phone = this.phone || ''
+				const phone1 = this.phone1 || ''
 				const request = {
 					cards: this.payments,
 					query: {
 						...this.user,
-						phone: this.phone.replace(/[^\d]+/g, ''),
-						phone_1: this.phone1.replace(/[^\d]+/g, ''),
+						phone: phone.replace(/[^\d]+/g, ''),
+						phone_1: phone1.replace(/[^\d]+/g, ''),
 					},
 					password: this.password,
 					birthday: this.birthday,
