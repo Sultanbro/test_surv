@@ -104,15 +104,6 @@
 									for="CabinetProfileImage"
 								/>
 							</div>
-							<div class="hidden-file-wrapper">
-								<button class="btn btn-success w-100 mt-2">
-									Выбрать фото
-								</button>
-								<label
-									class="hidden-file-label"
-									for="CabinetProfileImage"
-								/>
-							</div>
 						</div>
 					</div>
 					<div class="col-10">
@@ -254,43 +245,70 @@
 							</div>
 
 							<div class="row mt-2">
-								<div class="col-12 mt-3">
-									<!-- Cards -->
-									<template v-if="payments_view">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Карта для выплат
+									<img
+										v-b-popover.click.blur.html="'Добавьте назаблокированную карту на которую Вам будет перечисляться зарплата'"
+										src="/images/dist/profit-info.svg"
+										class="img-info iban-info"
+										width="20"
+										alt="info icon"
+										tabindex="-1"
+									>
+								</label>
+								<div class="col-sm-8">
+									<template v-for="(payment, index) in payments">
 										<div
-											v-for="(payment, index) in payments"
+											v-if="index < 1"
 											:key="index"
-											class="row payment-profile"
+											class="row"
 										>
-											<div class="col-2">
+											<div class="col-4 mb-2">
 												<input
 													v-model="payment.bank"
 													class="form-control input-surv"
 													placeholder="Банк"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.country"
 													class="form-control input-surv"
 													placeholder="Страна"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.cardholder"
 													class="form-control input-surv"
 													placeholder="Имя на карте"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.phone"
 													class="form-control input-surv"
 													placeholder="Телефон"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4 relative">
+												<input
+													v-model="payment.iban"
+													class="form-control card-number input-surv"
+													placeholder="счет IBAN"
+												>
+												<img
+													v-b-popover.click.blur.html="'(internationalk bank account number) - международный номер барноквского счета. Позвоните в свой банк и Вам скажут какой у Вас.<br> IBAN может выглядеть так: KZ75 125K ZT10 0130 0335'"
+													src="/images/dist/profit-info.svg"
+													class="img-info iban-info"
+													width="20"
+													alt="info icon"
+													tabindex="-1"
+												>
+											</div>
+											<div class="col-4 position-relative">
 												<input
 													v-model="payment.number"
 													v-mask="`#### #### #### ####`"
@@ -298,53 +316,8 @@
 													placeholder="Номер карты"
 												>
 											</div>
-											<div class="col-2 position-relative">
-												<button
-													v-if="payment.id"
-													class="btn btn-danger card-delete rounded mt-1"
-													@click="removePaymentCart(index, payment.id)"
-												>
-													<span class="fa fa-trash" />
-												</button>
-												<button
-													v-else
-													class="btn btn-danger card-delete rounded mt-1"
-													@click="removePaymentCart(index, 'dev')"
-												>
-													<span class="fa fa-trash" />
-												</button>
-											</div>
 										</div>
 									</template>
-
-									<div
-										v-if="cardValidatre.error"
-										class="mt-2 p-0"
-									>
-										<div class="alert alert-danger">
-											<span>Заполните все поля</span>
-										</div>
-									</div>
-
-									<div class="p-0 row mt-5">
-										<div class="col-3">
-											<button
-												style="color: white"
-												class="btn btn-phone btn-primary"
-												@click="addPayment()"
-											>
-												Добавить карту
-												<img
-													v-b-popover.hover.html="'Добавьте не заблокированную карту на которую вам будет перечисляться зарплата'"
-													src="/images/dist/profit-info.svg"
-													width="20"
-													class="img-info ml-2 img-info-bg"
-													alt="info icon"
-													tabindex="-1"
-												>
-											</button>
-										</div>
-									</div>
 								</div>
 							</div>
 						</div>
@@ -404,6 +377,24 @@
 								<div class="col-sm-8">
 									<input
 										v-model="phone"
+										class="form-control input-surv PageCabinet-phone"
+										type="text"
+										name="phone"
+										required
+										placeholder="телефон"
+									>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Дополнительный
+								</label>
+								<div class="col-sm-8">
+									<input
+										v-model="phone1"
 										class="form-control input-surv PageCabinet-phone"
 										type="text"
 										name="phone"
@@ -486,6 +477,7 @@ export default {
 			user: [],
 			user_card: [],
 			phone: '',
+			phone1: '',
 
 			activeCourse: null,
 			page: 'profile',
@@ -692,6 +684,7 @@ export default {
 				country: '',
 				number: '',
 				phone: '',
+				iban: '',
 			});
 		},
 
@@ -747,6 +740,7 @@ export default {
 					query: {
 						...this.user,
 						phone: this.phone.replace(/[^\d]+/g, ''),
+						phone_1: this.phone1.replace(/[^\d]+/g, ''),
 					},
 					password: this.password,
 					birthday: this.birthday,
@@ -788,6 +782,7 @@ export default {
 				.then(({data}) => {
 					this.user = JSON.parse(JSON.stringify(data.user))
 					this.phone = data.user.phone
+					this.phone1 = data.user.phone_1
 					this.keywords = data.user.working_country;
 					this.working_city = data.user.working_city;
 
@@ -796,15 +791,19 @@ export default {
 						this.geo_lon = data.user.coordinate.geo_lon
 					}
 
-					if (data.user_payment) {
-						if (data.user_payment.length > 0) {
-							this.payments = data.user_payment;
-							this.payments_view = true
-						}
-						else {
-							this.payments = [];
-							this.payments_view = false
-						}
+					if (data.user_payment?.length > 0) {
+						this.payments = data.user_payment;
+						this.payments_view = true
+					}
+					else {
+						this.payments = [{
+							bank: '',
+							cardholder: '',
+							country: '',
+							number: '',
+							phone: '',
+							iban: '',
+						}]
 					}
 
 					if (this.user.img_url) {
@@ -1130,6 +1129,13 @@ a.lp-link {
 }
 .cabinet-lp{
 	padding: 4px 10px 10px 10px;
+}
+
+.iban-info{
+	position: absolute;
+	top: 50%;
+	right: 20px;
+	transform: translateY(-50%);
 }
 
 .PageCabinet{

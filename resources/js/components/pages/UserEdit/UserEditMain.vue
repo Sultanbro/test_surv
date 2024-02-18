@@ -853,10 +853,6 @@ export default {
 		margin-right: 7px;
 	}
 }
-
-.UserEdit-new-position {
-	color: green;
-}
 </style>
 
 <style lang="scss">

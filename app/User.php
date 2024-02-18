@@ -21,11 +21,13 @@ use App\Models\Referral\ReferralSalary;
 use App\Models\SmsCode;
 use App\Models\Structure\StructureCard;
 use App\Models\Tax;
+use App\Models\TaxGroup;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
 use App\Models\User\Referral\Referrer;
 use App\Models\UserCoordinate;
 use App\Models\UserRestored;
+use App\Models\UserTax;
 use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
@@ -277,6 +279,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->belongsToMany(Tax::class, 'user_tax')
             ->withPivot(['created_at', 'value', 'is_percent'])
             ->withTimestamps();
+    }
+
+    public function userTax()
+    {
+        return $this->hasOne(UserTax::class)->orderBy('created_at', 'desc')->latest();
     }
 
     public function awards(): BelongsToMany

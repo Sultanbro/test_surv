@@ -16,12 +16,9 @@
 							class="nav-link"
 							:class="{active: tab.id === activeTab}"
 							@click="activeTab = tab.id"
-						>{{ tab.title }}
+						>
+							{{ tab.title }}
 						</span>
-						<span
-							v-if="tab.id === 4"
-							class="beta"
-						>beta</span>
 					</li>
 				</template>
 			</ul>
@@ -63,6 +60,15 @@
 			>
 				<Shifts />
 			</div>
+			<div
+				v-if="activeTab === 5 && can(['settings_view'])"
+				id="nav-taxes"
+				class="tab-pane fade show active py-3"
+				role="tabpanel"
+				aria-labelledby="nav-profile-tab"
+			>
+				<CompanyTaxesV2 />
+			</div>
 		</div>
 	</div>
 </template>
@@ -71,6 +77,7 @@
 import Professions from '@/pages/professions.vue';
 import Groups from '@/pages/groups.vue';
 import Shifts from '@/pages/shifts.vue';
+import CompanyTaxesV2 from '@/pages/Company/CompanyTaxesV2.vue';
 import {useAsyncPageData} from '@/composables/asyncPageData'
 
 export default {
@@ -78,7 +85,8 @@ export default {
 	components: {
 		Professions,
 		Groups,
-		Shifts
+		Shifts,
+		CompanyTaxesV2,
 	},
 	data() {
 		return {
@@ -103,6 +111,13 @@ export default {
 					path: '???',
 					title: 'Смены',
 					access: ['settings_view']
+				},
+				{
+					id: 5,
+					htmlId: 'nav-tax',
+					path: '????',
+					title: 'Налоги',
+					access: ['settings_view'],
 				},
 			],
 			activeTab: 2,

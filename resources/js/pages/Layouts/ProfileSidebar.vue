@@ -57,14 +57,12 @@
 						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 					<div
-						v-if="user_earnings.taxes"
+						v-if="user_earnings.taxValue"
 						class="ProfileSidebar-taxes mb-3 text-center"
 					>
-						Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
+						Сумма вычета налогов: {{ user_earnings.taxValue }} {{ balance.currency }}
 						<img
-							v-b-popover.click.blur.html="`Обязательные Пенсионные Взносы (ОПВ) - 10% от получаемого дохода (ст.248 Социального кодекса).<br><br>
-Индивидуальный Подоходный Налог (ИПН) - 10%  у источника выплаты согласно( п.1 ст. 317 Налогового Кодекса РК ) <br><br>
-Взносы на ОСМС (ВОСМС) - 2 % (п. 1, п. 5 ст. 28 Закона «Об обязательном социальном медицинском страховании»`"
+							v-b-popover.click.blur.html="`${taxInfo}<br><br>За подробностями обратитесь к своему руководителю`"
 							src="/images/dist/profit-info.svg"
 							class="img-info ml-2"
 							alt="info icon"
@@ -441,6 +439,12 @@ export default {
 		isDeveloper(){
 			if(!this.position) return false
 			return this.isBP && ([31, 105].includes(this.position.id) || [28546].includes(this.user.id))
+		},
+		taxInfo(){
+			if(!this.user_earnings.taxGroup) return ''
+			const result = [`<b>${this.user_earnings.taxGroup}</b>`]
+			this.user_earnings.taxes.forEach(tax => result.push(`${tax.name} - ${tax.value}${tax.is_percent ? '%' : ''}`))
+			return result.join('<br>')
 		}
 	},
 	watch: {

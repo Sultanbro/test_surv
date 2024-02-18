@@ -134,6 +134,9 @@ export default {
 			cityLon: 0,
 			file8: null,
 			loading: false,
+
+			taxGroups: [],
+			taxGroup: 0,
 		}
 	},
 	computed: {
@@ -216,7 +219,7 @@ export default {
 			})
 			hist.sort((a, b) => this.$moment(a, 'DD.MM.YYYY').diff(this.$moment(b, 'DD.MM.YYYY')))
 			return hist
-		}
+		},
 	},
 	watch: {
 		activeUserId(){
@@ -235,6 +238,7 @@ export default {
 	},
 	created(){
 		loadMapsApi()
+		this.fetchTaxes()
 	},
 	mounted(){
 		this.updatePageData();
@@ -299,7 +303,32 @@ export default {
 					console.error(error)
 				}
 			}
+			if(data?.user){
+				try {
+					const { data: taxData } = await this.axios.get(`/taxes/${data.user.id}/user`)
+					this.taxGroup = taxData.data?.id || 0
+					this.currentTaxGroup = taxData.data?.id || 0
+				}
+				catch (error) {
+					this.$onError(error, 1)
+				}
+
+			}
 			this.user = this.user ? {...this.user} : null
+		},
+		async fetchTaxes(){
+			try {
+				const { data } = await this.axios.get('/taxes')
+				this.taxGroups = data.data
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		onTaxChange($event){
+			const taxId = +$event.target.value
+			if(taxId === -1) return window.open('/timetracking/settings?tab=2#nav-home', '_blank')
+			this.taxGroup = taxId
 		},
 		async updateTaxes(){
 			try {
@@ -493,77 +522,56 @@ export default {
 			const loader = this.$loading.show();
 
 			try{
-				const response = await this.axios.post(this.formAction, formData, {
+				const { data } = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
 				});
-				const userId = this.user ? this.user.id : response.data.data.id;
-				if (this.taxesFillData) {
-					// новый налог
-					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
-						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
-							const formDataNewTaxes = new FormData();
-							const formDataNewTaxesAssignee = new FormData();
-							formDataNewTaxes.append('user_id', userId);
-							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
-							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
-							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
-							formDataNewTaxes.append('end_subtraction', this.taxesFillData.newTaxes[i].endSubtraction ? 1 : 0);
-							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
-							formDataNewTaxesAssignee.append('user_id', userId);
-							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
-							formDataNewTaxesAssignee.append('is_assigned', 1);
-							await this.axios.post('/tax/set-assignee', formDataNewTaxesAssignee);
-						}
-					}
+				const userId = this.user ? this.user.id : data.data.id;
 
-					// добавление сущесвующих
-					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
-						const formDataAssignTaxes = new FormData();
-						formDataAssignTaxes.append('user_id', userId);
-						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id || this.taxesFillData.assignTaxes[i].tax_id);
-						formDataAssignTaxes.append('end_subtraction', this.taxesFillData.assignTaxes[i].endSubtraction ? 1 : 0);
-						formDataAssignTaxes.append('is_percent', this.taxesFillData.assignTaxes[i].isPercent ? 1 : 0);
-						formDataAssignTaxes.append('is_assigned', 1);
-						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
-					}
-
-					// редактирование сущуствующих
-					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
-						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-							const formDataEditTaxes = new FormData();
-							formDataEditTaxes.append('_method', 'put');
-							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id || this.taxesFillData.editTaxes[i].id);
-							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
-							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
-							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
-							formDataEditTaxes.append('end_subtraction', this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0);
-							await this.axios.post('/tax', formDataEditTaxes);
-						}
-					}
+				if(this.currentTaxGroup !== this.taxGroup && this.currentTaxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.currentTaxGroup,
+						assigned: 0,
+					})
 				}
 
+				if(this.taxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.taxGroup,
+						assigned: (this.taxGroup && 1) || 0,
+					})
+				}
+
+				// if (this.taxesFillData) {
+				// 	// редактирование сущуствующих
+				// 	for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
+				// 		if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
+				// 			await this.axios.post('/tax/set-assignee', {
+				// 				user_id: userId,
+				// 				tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
+				// 				is_assigned: 1,
+				// 				end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
+				// 				is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
+				// 				value: this.taxesFillData.editTaxes[i].value,
+				// 			});
+				// 		}
+				// 	}
+				// }
+
 				if (this.workChartId) {
-					const userId = this.user ? this.user.id : response.data.data.id;
-					const formDataWorkChart = new FormData();
-					formDataWorkChart.append('user_id', userId);
-					formDataWorkChart.append('work_chart_id', this.workChartId);
-					await axios.post('/work-chart/user/add', formDataWorkChart);
+					await axios.post('/work-chart/user/add', {
+						user_id: userId,
+						work_chart_id: this.workChartId,
+					});
 				}
 
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
 				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
 
-				if(isApplyTrainee || isNewEmployee){
-					triggerApplyEmployee(userId)
-				}
+				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
-				if (isNew) {
-					this.$toast.success('Информация о сотруднике сохранена');
-				}
-				else {
-					this.$toast.success('Информация о сотруднике обновлена');
-				}
+				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
 			}
 			catch (error){
 				console.error(error);
@@ -1039,6 +1047,9 @@ export default {
 								:taxes="taxes"
 								:all-taxes="allTaxes"
 								:errors="fieldErrors"
+								:tax-groups="taxGroups"
+								:tax-group="taxGroup"
+								@tax="onTaxChange"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
 							/>
@@ -2529,6 +2540,10 @@ input[type="radio"] {
 	}
 }
 
+
+.UserEdit-new-position {
+	color: green;
+}
 .UserEditView{
 	&-scrollCard{
 		height: 200px;
