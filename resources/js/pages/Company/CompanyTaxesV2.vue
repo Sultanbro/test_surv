@@ -1,6 +1,9 @@
 <template>
 	<div class="CompanyTaxes">
-		<b-row class="mb-4">
+		<b-row
+			v-if="$can('taxes_edit')"
+			class="mb-4"
+		>
 			<b-col>
 				<JobtronButton
 					small
@@ -58,7 +61,9 @@
 							</template>
 							<template v-else-if="field.key === 'name'">
 								<span
-									class="pointer"
+									:class="{
+										'pointer': $can('taxes_edit')
+									}"
 									@click="editTax(tax)"
 								>
 									{{ tax[field.key] }}
@@ -255,10 +260,12 @@ export default {
 		},
 
 		editTax(tax){
+			if(!this.$can('taxes_edit')) return
 			this.editedTax = tax
 		},
 
 		newTax(){
+			if(!this.$can('taxes_edit')) return
 			this.editedTax = {
 				name: '',
 				items: []
