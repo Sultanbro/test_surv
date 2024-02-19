@@ -1119,6 +1119,7 @@ class KpiStatisticService
             ->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
+        dd($kpis->data);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
