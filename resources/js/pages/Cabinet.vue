@@ -122,7 +122,7 @@
 								:class="{'PageCabinet-tab_active': activeTab === 'documents'}"
 								@click="selectTab('documents')"
 							>
-								<span>Документы</span> <b-badge>demo</b-badge>
+								<span>Документы</span>
 							</li>
 							<li
 								id="bg-this-4"
