@@ -587,8 +587,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий групповые.
      */
-    private
-    function getProfileGroupQp($quartalPremium)
+    private function getProfileGroupQp($quartalPremium)
     {
         return ProfileGroup::query()
             ->select(DB::raw('CONCAT(u.name,\' \',u.last_name) as full_name'), 'us.user_id', 'us.activity_id', 'profile_groups.name', DB::raw('SUM(us.value) as fact'))
@@ -617,8 +616,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий индивидуальные.
      */
-    private
-    function getUsersQp($quartalPremium)
+    private function getUsersQp($quartalPremium)
     {
         return User::query()->leftJoin('user_stats as us', 'us.user_id', '=', 'users.id')
             ->select(['users.id', 'user_id', 'activity_id', 'name', DB::raw('SUM(value) as fact'), DB::raw("CONCAT_WS(' ', users.last_name, users.name) as full_name")])
@@ -634,8 +632,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий.
      */
-    private
-    function getQuartalPremiums(Request $request)
+    private function getQuartalPremiums(Request $request)
     {
         $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
         $id = $request->targetable_id ?? null;
@@ -1110,16 +1107,14 @@ class KpiStatisticService
             $filters['data_from']['month'] ?? now()->month
         )->startOfMonth();
 
-        $kpis = $this
-            ->kpis($date, [
-                'search_world' => $searchWord,
-                'group_id' => $groupId,
-                'only_active' => true,
-            ])
-            ->paginate();
+        $params = [
+            'search_world' => $searchWord,
+            'group_id' => $groupId,
+            'only_active' => true
+        ];
+        $kpis = $this->kpis($date, $params)->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-        dd($kpis->data);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
@@ -1138,6 +1133,7 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
+
         return [
             'paginator' => $kpis,
             'groups' => ProfileGroup::query()
