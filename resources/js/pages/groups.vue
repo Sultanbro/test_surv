@@ -517,6 +517,14 @@
 					</InputFile>
 				</b-col>
 			</b-row>
+
+			<b-progress
+				v-if="uploadProgress"
+				:value="uploadProgress"
+				:max="100"
+				show-progress
+				animated
+			/>
 		</b-modal>
 	</div>
 </template>
@@ -637,6 +645,7 @@ export default {
 			},
 			docId: 0,
 			docEditDialog: false,
+			uploadProgress: 0,
 		};
 	},
 	computed: {
@@ -960,6 +969,7 @@ export default {
 				...JSON.parse(JSON.stringify(doc)),
 				upload: null,
 			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
@@ -977,24 +987,29 @@ export default {
 				file: '',
 				upload: null,
 			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		async createDoc(){
 			try {
+				const onUploadProgress = event => {
+					this.uploadProgress = Math.round((event.loaded * 100) / event.total);
+				}
 				const formData = new FormData()
 				formData.append('file', this.documentForm.upload)
 				formData.append('local_name', this.documentForm.name)
 				await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data'
-					}
+					},
+					onUploadProgress,
 				})
 				this.fetchDocs(this.activebtn.id)
+				this.docEditDialog = false
 			}
 			catch (error) {
 				console.error(error)
 			}
-			this.docEditDialog = false
 		},
 		async updateDoc(){
 			try {
