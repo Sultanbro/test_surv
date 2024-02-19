@@ -218,7 +218,10 @@
 					</div>
 				</div>
 
-				<div class="card groups-card mt-4">
+				<div
+					v-if="!addNewGroup"
+					class="card groups-card mt-4"
+				>
 					<div class="CompanyGroups-label card-header">
 						Документы
 					</div>
@@ -740,6 +743,7 @@ export default {
 		async selectGroup(value) {
 			let loader = this.$loading.show();
 			try {
+				this.documents = []
 				const response = await this.axios.post('/timetracking/users-new', {
 					id: value.id,
 				})
@@ -795,37 +799,42 @@ export default {
 			if (!this.new_status.length) return this.$toast.error('Введите название группы');
 			if (!this.workChartId) return this.$toast.error('Выберите график работы');
 			// save group data
-			let loader = this.$loading.show();
+			let loader = this.$loading.show()
+
 			if (this.addNewGroup) {
-				await this.axios.post('/timetracking/group/save-new', {
-					name: this.new_status,
-				})
-					.then((response) => {
-						if (response.data.status == 200) {
-							const dataPush = {
-								id: response.data.data.id,
-								group: response.data.data.name
-							};
-							this.statuses.push(dataPush);
-							this.activebtn = dataPush;
-						} else {
-							this.$toast.error(
-								'Название "' +
-									this.new_status +
-									'" не свободно, выберите другое имя для группы'
-							);
-							loader.hide();
-						}
-					});
+				try {
+					const {data} = await this.axios.post('/timetracking/group/save-new', {
+						name: this.new_status,
+					})
+					if (data.status == 200) {
+						const dataPush = {
+							id: data.data.id,
+							group: data.data.name
+						};
+						this.statuses.push(dataPush);
+						this.activebtn = dataPush;
+					}
+					else {
+						this.$toast.error(`Название "${this.new_status}" не свободно, выберите другое имя для группы`);
+					}
+				}
+				catch (error) {
+					this.$onError(error)
+				}
 			}
 
-			await this.axios.post('/work-chart/group/add', {
-				group_id: this.activebtn.id,
-				work_chart_id: this.workChartId
-			})
+			try {
+				await this.axios.post('/work-chart/group/add', {
+					group_id: this.activebtn.id,
+					work_chart_id: this.workChartId
+				})
+			}
+			catch (error) {
+				this.onError(error)
+			}
 
-			await this.axios
-				.post('/timetracking/users/group/save-new', {
+			try {
+				await this.axios.post('/timetracking/users/group/save-new', {
 					group_id: this.activebtn.id,
 					users: this.value,
 					group_info: {
@@ -846,19 +855,14 @@ export default {
 					talk_hours: this.talk_hours,
 					talk_minutes: this.talk_minutes,
 				})
-				.then(() => {
-					// this.statuses = response.data.groups;
-					// this.activebtn = response.data.group;
-					this.$toast.info('Успешно сохранено');
-					this.messageoff();
+				this.$toast.info('Успешно сохранено');
+				this.messageoff()
+			}
+			catch (error) {
+				this.$onError(error)
+			}
 
-					loader.hide();
-				})
-				.catch((error) => {
-					console.error(error.response);
-					this.$toast.info(error.response);
-					loader.hide();
-				});
+			loader.hide()
 		},
 
 		deleted() {
