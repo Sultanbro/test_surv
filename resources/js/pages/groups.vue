@@ -504,7 +504,7 @@
 				class="mb-4"
 			>
 				<b-col cols="3">
-					Файл
+					Файл pdf
 				</b-col>
 				<b-col cols="9">
 					<InputFile
