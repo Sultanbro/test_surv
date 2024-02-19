@@ -191,68 +191,22 @@
 				</div>
 
 				<div class="mt-4">
-					<div class="CompanyGroups-label">
-						Документы <b-badge>demo</b-badge>
-					</div>
-					<div
-						v-if="documents.length"
-						class="CompanyGroups-docs"
+					<b-form-checkbox
+						v-model="show_payment_terms"
+						:value="1"
+						:unchecked-value="0"
+						switch
 					>
-						<div
-							v-for="doc, index in documents"
-							:key="index"
-							class="CompanyGroups-doc"
-						>
-							<div class="CompanyGroups-docIcon">
-								<i class="fa fa-file-pdf" />
-							</div>
-							<div class="CompanyGroups-docName">
-								{{ doc.name }}
-							</div>
-							<div class="CompanyGroups-docControls">
-								<JobtronButton
-									small
-									@click="onEditDoc(doc)"
-								>
-									<i class="far fa-edit" />
-								</JobtronButton>
-								<JobtronButton
-									small
-									error
-									@click="onDeleteDoc(doc)"
-								>
-									<i class="fas fa-trash" />
-								</JobtronButton>
-							</div>
-						</div>
-					</div>
-					<div
-						v-else
-						class="CompanyGroups-docsEmpty"
-					>
-						Нет документов
-					</div>
-					<div class="CompanyGroups-add">
-						<JobtronButton
-							small
-							@click="onAddDoc()"
-						>
-							<i class="fas fa-plus" /> Добавить документ
-						</JobtronButton>
-					</div>
+						Показывать в профиле
+					</b-form-checkbox>
 				</div>
 
-				<div class="card groups-card mt-4">
+				<div
+					v-if="show_payment_terms"
+					class="card groups-card mt-4"
+				>
 					<div class="card-header">
-						<b-form-checkbox
-							v-model="show_payment_terms"
-							class="mt-3"
-							:value="1"
-							:unchecked-value="0"
-							switch
-						>
-							Показывать в профиле
-						</b-form-checkbox>
+						Информация в профиле
 					</div>
 					<div class="card-body">
 						<b-form-group label="Условия оплаты труда">
@@ -261,6 +215,60 @@
 								style="min-height: 150px;"
 							/>
 						</b-form-group>
+					</div>
+				</div>
+
+				<div class="card groups-card mt-4">
+					<div class="CompanyGroups-label card-header">
+						Документы
+					</div>
+					<div class="card-body">
+						<div
+							v-if="documents.length"
+							class="CompanyGroups-docs"
+						>
+							<div
+								v-for="doc, index in documents"
+								:key="index"
+								class="CompanyGroups-doc mb-2"
+							>
+								<div class="CompanyGroups-docIcon">
+									<i class="fa fa-file-pdf" />
+								</div>
+								<div class="CompanyGroups-docName">
+									{{ doc.name }}
+								</div>
+								<div class="CompanyGroups-docControls">
+									<JobtronButton
+										small
+										@click="onEditDoc(doc)"
+									>
+										<i class="far fa-edit" />
+									</JobtronButton>
+									<JobtronButton
+										small
+										error
+										@click="onDeleteDoc(doc)"
+									>
+										<i class="fas fa-trash" />
+									</JobtronButton>
+								</div>
+							</div>
+						</div>
+						<div
+							v-else
+							class="CompanyGroups-docsEmpty"
+						>
+							Нет документов
+						</div>
+						<div class="CompanyGroups-add mt-4">
+							<JobtronButton
+								small
+								@click="onAddDoc()"
+							>
+								<i class="fas fa-plus" /> Добавить документ
+							</JobtronButton>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -496,7 +504,7 @@
 				class="mb-4"
 			>
 				<b-col cols="3">
-					Файл
+					Файл pdf
 				</b-col>
 				<b-col cols="9">
 					<InputFile
@@ -1204,6 +1212,9 @@ export default {
 		display: flex;
 		align-items: center;
 		gap: 10px;
+		&:hover{
+			background-color: #eef;
+		}
 	}
 	&-docIcon{
 		flex: 0 0 32px;

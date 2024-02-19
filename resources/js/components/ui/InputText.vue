@@ -96,6 +96,7 @@ export default {
 
 	&-input{
 		flex: 1;
+		max-width: 100%;
 		padding: 15px 0;
 		border: none;
 		font-size: 15px;
