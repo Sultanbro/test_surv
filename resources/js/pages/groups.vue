@@ -1025,6 +1025,8 @@ export default {
 			}
 		},
 		async onDeleteDoc(doc){
+			if(!confirm('Вы действительно хотите удалить документ?')) return
+
 			const index = this.documents.findIndex(d => d.id === doc.id)
 			if(~index) this.documents.splice(index, 1)
 			if(doc.id <= 0) return
