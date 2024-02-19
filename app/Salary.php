@@ -576,9 +576,8 @@ class Salary extends Model
         $users->with([
             'user_description',
             'group_users',
-            'userTax.taxGroup.items' => function ($query) use ($date) {
-                $query->whereMonth('created_at', $date->month)
-                    ->whereYear('created_at', $date->year);
+            'userTax' => function ($query) use ($date) {
+                $query->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))->with('taxGroup.items');
             },
             'profile_histories_latest' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
