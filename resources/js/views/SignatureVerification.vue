@@ -14,6 +14,7 @@ export default {
 			isVerifyModal: false,
 			userCode: '',
 			user: null,
+			buttonPressed: false,
 		}
 	},
 	computed: {
@@ -53,11 +54,13 @@ export default {
 		},
 		async onSign(){
 			if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
+			if(this.buttonPressed) return
+			this.buttonPressed = true
 			try {
 				const {data} = await this.axios.post(`/signature/users/${this.user.id}/sms`, {
 					phone: this.user.phone
 				})
-				this.isVerifyModal = data.data.code
+				this.isVerifyModal = data.status
 			}
 			catch (error) {
 				alert(error)
@@ -89,7 +92,10 @@ export default {
 				:source="doc.file"
 			/>
 			<div class="SignatureVerification-actions">
-				<JobtronButton @click="onSign">
+				<JobtronButton
+					:disabled="buttonPressed"
+					@click="onSign"
+				>
 					Подписать
 				</JobtronButton>
 			</div>

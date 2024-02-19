@@ -410,17 +410,6 @@ class SalaryController extends Controller
             }
         }
 
-        $lastDayOfMonth = $date->lastOfMonth();
-
-        $taxesColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
-                SELECT `user_tax`.`tax_id`
-                FROM `user_tax`
-                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
-                GROUP BY `user_tax`.`tax_id`
-            )")
-            ->get()
-            ->pluck('name')
-            ->toArray();
         $headings = [
             'ФИО',
             'На карте',
@@ -438,9 +427,9 @@ class SalaryController extends Controller
             'ИТОГО',
             'Авансы',
             'Штрафы',
+            'Налоги'
         ];
 
-        array_push($headings, ...$taxesColumns);
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
 
         $data = [];
@@ -512,19 +501,6 @@ class SalaryController extends Controller
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
-        // Налоги
-        $lastDayOfMonth = $date->lastOfMonth();
-
-        $taxColumns = DB::table('taxes')
-            ->whereRaw("`taxes`.`id` IN (
-                SELECT `user_tax`.`tax_id`
-                FROM `user_tax`
-                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
-                GROUP BY `user_tax`.`tax_id`
-            )")
-            ->orderBy('end_subtraction')
-            ->get();
-
         $allTotal = [
             0 => '', // name
             1 => '', // card name
@@ -542,23 +518,14 @@ class SalaryController extends Controller
             13 => 0, // itog
             14 => 0, // avans
             15 => 0, // fine
+            16 => 0, // taxes,
+            17 => 0, // ИТОГО расход
+            18 => 0, // К выдаче
+            19 => 0 // В валюте
         ];
-
-        foreach ($taxColumns as $tax) {
-            $allTotal["tax_$tax->id"] = 0;
-        }
-        $allTotal[] = 0; // 18 => ИТОГО расход
-        $allTotal[] = 0; // 19 => К выдаче
-        $allTotal[] = 0; // 20 => В валюте
 
         $data['users'] = [];
 
-        $userIds = $users->pluck('id')->toArray();
-        $zarplaties = Zarplata::getSalaryByUserIds($userIds);
-
-        $userTaxes = DB::table('user_tax')
-            ->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
-            ->whereIn('user_id', $userIds)->get();
 
         $tax_amount = 0;
         foreach ($users as $user) {
@@ -635,10 +602,11 @@ class SalaryController extends Controller
                 ->toArray();
 
             // отработанные дни
-            $workedHours = Timetracking::select([
-                'total_hours',
-                DB::raw('DAY(enter) as day')
-            ])
+            $workedHours = Timetracking::query()
+                ->select([
+                    'total_hours',
+                    DB::raw('DAY(enter) as day')
+                ])
                 ->whereYear('enter', $date->year)
                 ->whereMonth('enter', $date->month)
                 ->where('user_id', $user->id)
@@ -659,9 +627,11 @@ class SalaryController extends Controller
 
             $salary = 0;
             $trainee_fees = 0;
+            $totalTaxesUser = 0;
 
             if (count($salary_table['users']) > 0) {
                 $arrs = $salary_table['users'][0];
+                $totalTaxesUser = $arrs['totalTaxes'];
                 for ($i = 1; $i <= $date->daysInMonth; $i++) {
                     if ($arrs->trainings[$i]) {
                         $trainee_fees += $arrs->earnings[$i] ?? 0;
@@ -754,12 +724,12 @@ class SalaryController extends Controller
 
             // Итого расход
             $expense = $prepaid + $penalty;
-            if (!$edited_salary) $allTotal[16] += $expense;
+            if (!$edited_salary) $allTotal[17] += $expense;
 
             // К выдаче
             $total_payment = round($total_income - $expense);
 
-            if (!$edited_salary) $allTotal[17] += max($total_payment, 0);
+            if (!$edited_salary) $allTotal[18] += max($total_payment, 0);
 
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
@@ -782,36 +752,18 @@ class SalaryController extends Controller
                 13 => 0, // ИТОГО доход,
                 14 => 0, // Авансы
                 15 => 0, // Штрафы
+                16 => $totalTaxesUser, // taxes,
+                17 => 0, // ИТОГО расход
+                18 => 0, // К выдаче
+                19 => 0 // В валюте
+
             ];
-            $simpleTaxesAmountForUser = 0;
+
             /**
              * Расчет налогов.
              */
-            foreach ($taxColumns as $taxColumn) {
-                if ($edited_salary) {
-                    $userZarplata = (int)$edited_salary->amount - $penalty;
-                } else {
-                    $userZarplata = $total_income - $penalty;
-                }
+            $allTotal[16] += $totalTaxesUser;
 
-                $totalColumns["tax_$taxColumn->id"] = 0;
-                $exist = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->count() > 0;
-
-                $tax = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->first();
-                $value = $tax?->value > 0 ? $tax?->value : $taxColumn?->value;
-
-                if ($exist) {
-                    if (!$taxColumn->end_subtraction) {
-                        $tax_amount += $amount = (int)round($tax->is_percent ? $userZarplata * ($value / 100) : $value);
-                        $simpleTaxesAmountForUser += $amount;
-                    } else {
-                        $tax_amount += $amount = (int)round($tax->is_percent ? ($userZarplata - $simpleTaxesAmountForUser) * ($value / 100) : $value);
-                    }
-                    $total_payment -= $amount;
-                    $totalColumns["tax_$taxColumn->id"] = $amount;
-                    $allTotal["tax_$taxColumn->id"] += $amount;
-                }
-            }
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
             try {
@@ -820,7 +772,7 @@ class SalaryController extends Controller
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $totalColumns[9] = 15;
                     $totalColumns[13] = (int)$edited_salary->amount;
-                    $totalColumns[20] = $this->space($edited_salary->amount, 3, true);
+                    $totalColumns[19] = $this->space($edited_salary->amount, 3, true);
 
                 } else {
                     $totalColumns[9] = (int)$salary;
@@ -830,11 +782,10 @@ class SalaryController extends Controller
                     $totalColumns[13] = $total_income;
                     $totalColumns[14] = $prepaid;
                     $totalColumns[15] = $penalty;
-                    $totalColumns[18] = $expense;
-                    $totalColumns[19] = $this->space($total_payment, 3, true);
+                    $totalColumns[17] = $expense;
+                    $totalColumns[18] = $this->space($total_payment, 3, true);
                 }
-                $totalColumns[20] = $this->space($on_currency, 3, true);
-
+                $totalColumns[19] = $this->space($on_currency, 3, true);
                 $data['users'][] = $totalColumns;
             } catch (\Exception $e) {
                 dd($e);
@@ -846,8 +797,8 @@ class SalaryController extends Controller
 
         // К выдаче сумма форматированная
         $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
-        $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
-        $allTotal[17] = $this->space(round($allTotal[17] - $tax_amount), 3, true);
+        $allTotal[17] = $this->space(round($allTotal[17]), 3, true);
+        $allTotal[18] = $this->space(round($allTotal[18] - $tax_amount), 3, true);
 
         // Итоги в конце таблицы
         $data['users'][] = $allTotal;

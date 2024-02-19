@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers\Tax;
 
-use App\DTO\Tax\GetTaxesResponseDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Tax\Response\TaxGetResponse;
 use App\Http\Requests\Tax\CreateTaxRequest;
 use App\Http\Requests\Tax\GetTaxesRequest;
 use App\Http\Requests\Tax\TaxSetAssigneeRequest;
 use App\Http\Requests\Tax\UpdateTaxRequest;
-use App\Models\Tax;
 use App\Service\Tax\CreateTaxService;
 use App\Service\Tax\DeleteTaxService;
 use App\Service\Tax\GetTaxesService;
 use App\Service\Tax\SetAssigneeService;
 use App\Service\Tax\UpdateTaxService;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
+use App\Models\Tax;
+use Exception;
 
 class TaxController extends Controller
 {

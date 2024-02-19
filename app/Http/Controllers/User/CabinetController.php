@@ -39,7 +39,7 @@ class CabinetController extends Controller
             ->with('coordinate')
             ->first();
 
-        $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number','phone')->get()->toArray();
+        $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number', 'iban', 'phone')->get()->toArray();
 
         return [
             // 'users' => $users,
@@ -89,6 +89,8 @@ class CabinetController extends Controller
             'birthday' => $request->birthday,
             'name' => $request['query']['name'],
             'last_name' =>  $request['query']['last_name'],
+            'phone' => $request['query']['phone'],
+            'phone_1' => $request['query']['phone_1'],
             'coordinates' =>  isset($request->coordinates) ? $request->coordinates : null,
         ]);
 
@@ -102,6 +104,7 @@ class CabinetController extends Controller
                     'country'=> $card['country'],
                     'cardholder'=> $card['cardholder'],
                     'phone' => $card['phone'],
+                    'iban' => $card['iban'],
                     'number'=> $card['number'],
                 ]);
             }

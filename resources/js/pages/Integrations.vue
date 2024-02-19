@@ -17,7 +17,7 @@
 		/> -->
 
 		<IntegrationsPageItem
-			title="u-call"
+			title="СМС интеграция"
 			name="sms"
 			:status="status.sms"
 			@click="selectedIntegration = 'sms'"

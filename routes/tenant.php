@@ -16,6 +16,7 @@ use App\Http\Controllers\Learning as Learning;
 use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
+use App\Http\Controllers\TaxGroupController;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
@@ -715,6 +716,20 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
         Route::put('/', [Root\Tax\TaxController::class, 'update']);
         Route::delete('/{id}', [Root\Tax\TaxController::class, 'delete']);
+    });
+
+    Route::group([
+        'prefix' => 'taxes',
+        'as' => 'taxes.'
+    ], function () {
+        Route::get('/', [TaxGroupController::class, 'getAll']);
+        Route::get('/{id}', [TaxGroupController::class, 'getOne']);
+        Route::get('/{id}/user', [TaxGroupController::class, 'getUserTaxes']);
+        Route::post('/', [TaxGroupController::class, 'create']);
+        Route::put('/{id}', [TaxGroupController::class, 'update']);
+        Route::delete('/{id}', [TaxGroupController::class, 'delete']);
+        // Assign tax to user
+        Route::post('/set-assigned', [TaxGroupController::class, 'setAssigned']);
     });
 
     Route::middleware(['check_tariff'])->group(function () {

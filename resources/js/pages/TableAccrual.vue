@@ -795,19 +795,18 @@
 			@close="isTaxesSidebar = false"
 		>
 			<div class="px-2">
+				<div class="bold">
+					{{ editedField.item.taxGroup }}
+				</div>
 				<div
-					v-for="taxItem, taxIndex in texes_history"
+					v-for="taxItem, taxIndex in editedField.item.taxinfo"
 					:key="taxIndex"
 					class="AvansHistoryItem"
 				>
-					<div class="AvansHistoryItem-date">
-						<b>{{ $moment(taxItem.pivot.created_at).format('DD.MM.YYYY') }}</b> {{ taxItem.pivot.value }}{{ taxItem.is_percent ? '%' : '' }}
-					</div>
-					<!-- eslint-disable vue/no-v-html -->
-					<div
-						class="AvansHistoryItem-text"
-						v-html="taxItem.name"
-					/>
+					<div>Налог: {{ taxItem.name }}</div>
+					<div>Объем: {{ taxItem.value }}</div>
+					<div>Сумма: {{ taxItem.amount }}</div>
+					<div>{{ taxItem.before }} > {{ taxItem.after }}</div>
 					<hr>
 					<!-- eslint-enable vue/no-v-html -->
 				</div>
@@ -1404,7 +1403,7 @@ export default {
 				daySalaries.avans = Number(personalAvanses).toFixed(0);
 				daySalaries.fines = Number(personalFines).toFixed(0);
 				daySalaries.total = Number(personalTotal).toFixed(0);
-				daySalaries.taxes = Number(personalTaxes).toFixed(0);
+				daySalaries.taxes = item.totalTaxes
 				daySalaries.final = Number(personalFinal).toFixed(0);
 
 				daySalaries.forEach((amount, day) => {
@@ -1422,6 +1421,28 @@ export default {
 						hasMoney = 1;
 					}
 				});
+
+				const final = item.edited_salary ? personalFinal : total
+				const taxes = item.user_tax?.tax_group?.items || []
+				const taxinfo = []
+				let afterTaxes = final
+				taxes.forEach(tax => {
+					if(!tax.value) return
+					let amount
+					if(!tax.is_percent) {
+						amount = tax.value
+					}
+					amount = tax.end_subtraction ? Math.round(afterTaxes * tax.value / 100) : Math.round(final * tax.value / 100)
+					taxinfo.push({
+						name: tax.name,
+						value: tax.value + (tax.is_percent ? '%' : ''),
+						amount,
+						before: afterTaxes,
+						after: afterTaxes - amount,
+					})
+
+					afterTaxes -= amount
+				})
 
 				let obj = {
 					kpi: item.kpi,
@@ -1444,6 +1465,8 @@ export default {
 					dayType: item.dayType,
 					salaries: daySalariesOnly,
 					groupUsers: item.group_users,
+					taxGroup: item.user_tax?.tax_group?.name,
+					taxinfo,
 					...daySalaries,
 				};
 
