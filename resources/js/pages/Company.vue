@@ -61,7 +61,7 @@
 				<Shifts />
 			</div>
 			<div
-				v-if="activeTab === 5 && can(['settings_view'])"
+				v-if="activeTab === 5 && can(['taxes_view'])"
 				id="nav-taxes"
 				class="tab-pane fade show active py-3"
 				role="tabpanel"
@@ -117,7 +117,7 @@ export default {
 					htmlId: 'nav-tax',
 					path: '????',
 					title: 'Налоги',
-					access: ['settings_view'],
+					access: ['taxes_view'],
 				},
 			],
 			activeTab: 2,

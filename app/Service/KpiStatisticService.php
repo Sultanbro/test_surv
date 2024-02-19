@@ -1103,13 +1103,11 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public
-    function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(Request $request): array
     {
         $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
-
         $date = Carbon::createFromDate(
             $filters['data_from']['year'] ?? now()->year,
             $filters['data_from']['month'] ?? now()->month
