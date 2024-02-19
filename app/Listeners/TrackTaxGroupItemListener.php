@@ -41,6 +41,7 @@ class TrackTaxGroupItemListener
                 'end_subtraction' => $data['end_subtraction'],
                 'value' => $data['value'],
                 'order' => $data['order'],
+                'is_deduction' => $data['is_deduction']
             ])
         ]);
     }

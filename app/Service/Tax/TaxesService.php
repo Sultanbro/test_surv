@@ -80,6 +80,7 @@ class TaxesService
                 'end_subtraction' => $item['end_subtraction'],
                 'value' => $item['value'],
                 'order' => $item['order'],
+                'is_deduction' => $item['is_deduction'] ?? 0
             ]);
 
             event(new TrackTaxGroupItemEvent($taxItem->toArray()));
