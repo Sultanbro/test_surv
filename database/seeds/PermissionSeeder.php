@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Page;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class PermissionSeeder extends Seeder
 {
@@ -30,7 +31,13 @@ class PermissionSeeder extends Seeder
                 'name' => 'Налоги', 'parent_id' => $settingsPage->id, 'key' => 'taxes'
             ]);
         } else {
-            dump(tenant('id'));
+            $tenants = Cache::get('settings_tenants');
+            if ($tenants == null) {
+                Cache::put('settings_tenants', [tenant('id')]);
+            } else {
+                $tenants[] = tenant('id');
+                Cache::put('settings_tenants', $tenants);
+            }
         }
     }
 }
