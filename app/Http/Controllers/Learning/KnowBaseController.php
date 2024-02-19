@@ -655,6 +655,8 @@ class KnowBaseController extends Controller
     {
         $kb = KnowBase::find($request->id);
         if ($kb) {
+            $children = KnowBase::getAllChildrenIdsByKbId($kb->id);
+            KnowBase::query()->whereIn('id', $children)->delete();
             $kb->delete();
         }
 

@@ -20,6 +20,6 @@ class TaxGroupItem extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'tax_group_id', 'name', 'is_percent', 'end_subtraction', 'value', 'order'
+        'tax_group_id', 'name', 'is_percent', 'end_subtraction', 'value', 'order', 'is_deduction'
     ];
 }

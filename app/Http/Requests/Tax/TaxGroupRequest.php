@@ -30,6 +30,7 @@ class TaxGroupRequest extends FormRequest
             'items.*.end_subtraction' => 'required|bool',
             'items.*.value' => 'required|integer',
             'items.*.order' => 'required|integer',
+            'items.*.is_deduction' => 'bool',
         ];
     }
 
