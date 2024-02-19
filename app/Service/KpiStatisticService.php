@@ -513,7 +513,8 @@ class KpiStatisticService
         array  $filter = [],
     )
     {
-        $searchWord = $filter['search_world'] ?? '';
+        $searchWord = $filter['query'] ?? '';
+        dd($searchWord);
         $groupId = $filter['group_id'] ?? null;
         $onlyActive = $filter['only_active'] ?? true;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
