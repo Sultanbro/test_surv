@@ -37,8 +37,8 @@ trait TargetJoin
                 $join->orOn('p.id', '=', "morph.kpiable_id")
                     ->where("morph.kpiable_type", '=', 'App\Position');
             })
-            ->leftJoin('users as updater', 'updater.id', '=', "$table.updated_by")
-            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
-            ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by");
+            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id');
+//            ->leftJoin('users as updater', 'updater.id', '=', "$table.updated_by")
+//            ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by");
     }
 }
