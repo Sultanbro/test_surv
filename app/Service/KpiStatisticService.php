@@ -515,7 +515,6 @@ class KpiStatisticService
     {
         $searchWord = $filter['search_world'] ?? '';
         $groupId = $filter['group_id'] ?? null;
-        $onlyActive = $filter['only_active'] ?? true;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
@@ -535,6 +534,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
+            ->where(fn(Builder $query) => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
@@ -556,17 +556,14 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where(fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->where(function ($query) use ($start_date, $last_date, $onlyActive) {
-                $query->whereHas('targetable', function ($q) use ($start_date, $last_date, $onlyActive) {
+            ->where(function ($query) use ($start_date, $last_date) {
+                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhere('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof Position) {
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $start_date);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-//                        $q->where('active', $onlyActive);
                     }
                 })
                     ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')

@@ -20,7 +20,7 @@ class KpiFilter
      * @return Builder
      */
     public function globalSearch(
-        string $searchWord
+        string  $searchWord
     ): Builder
     {
         return $this->kpi::targetJoins()
@@ -32,10 +32,10 @@ class KpiFilter
 //                $query->where('updater.name', 'LIKE', "%$searchWord%")
 //                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
 //            })
-            ->orWhere(function ($query) use ($searchWord) {
-                $query->where('creator.name', 'LIKE', "%$searchWord%")
-                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
-            })
+//            ->orWhere(function ($query) use ($searchWord) {
+//                $query->where('creator.name', 'LIKE', "%$searchWord%")
+//                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
+//            })
             ->orWhere('pg.name', 'LIKE', "%$searchWord%")
             ->orWhere('p.position', 'LIKE', "%$searchWord%")
             ->orWhere('ki.name', 'LIKE', "%$searchWord%")
