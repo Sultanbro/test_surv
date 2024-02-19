@@ -514,7 +514,6 @@ class KpiStatisticService
     )
     {
         $searchWord = $filter['query'] ?? '';
-        dd($searchWord);
         $groupId = $filter['group_id'] ?? null;
         $onlyActive = $filter['only_active'] ?? true;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
@@ -1104,13 +1103,12 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public
-    function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(Request $request): array
     {
         $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
-
+        dd($searchWord);
         $date = Carbon::createFromDate(
             $filters['data_from']['year'] ?? now()->year,
             $filters['data_from']['month'] ?? now()->month
