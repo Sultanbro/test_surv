@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Salary;
 use App\Classes\Helpers\Currency;
 use App\Classes\Helpers\Phone;
 use App\DayType;
+use App\Exports\UsersExport;
 use App\Fine;
 use App\GroupSalary;
 use App\Http\Controllers\Controller;
@@ -14,7 +15,6 @@ use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedSalary;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\GroupUser;
-use App\Models\TestBonus;
 use App\Models\User\Card;
 use App\ProfileGroup;
 use App\Salary;
@@ -26,7 +26,6 @@ use App\User;
 use App\UserDescription;
 use App\UserFine;
 use App\UserNotification;
-use App\Zarplata;
 use Artisan;
 use Auth;
 use Carbon\Carbon;
@@ -44,6 +43,59 @@ class SalaryController extends Controller
         View::share('title', 'Начисления');
         View::share('menu', 'timetrackingaccruals');
         $this->middleware('auth');
+    }
+
+    public static function convertCardNumberWithDots($card_number)
+    {
+        if (empty($card_number) || $card_number == '') return '';
+        for ($i = 0; $i <= 12; $i += 4) $card_arr[] = substr($card_number, $i, 4);
+        return implode('.', $card_arr);
+    }
+
+    // Проверка не уволен ли сотрудник
+
+    public static function countDays($year, $month, $type)
+    {
+        $day_count = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $result = 0;
+        for ($i = 1; $i <= $day_count; $i++) {
+
+            $date = $year . '/' . $month . '/' . $i; //format date
+            $get_name = date('l', strtotime($date)); //get week day
+            $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
+
+            //if not a weekend add day to array
+            switch ($type) {
+                case '6-1':
+                    if ($day_name != 'Sun') {
+                        $result += 1;
+                    }
+                    break;
+                case '5-2':
+                default:
+                    if ($day_name != 'Sun' && $day_name != 'Sat') {
+                        $result += 1;
+                    }
+                    break;
+            }
+
+        }
+        return $result;
+    }
+
+    public static function getWorkingDays($workDayType, $month, $year)
+    {
+        $date = date();// Carbon::now()->setDate($year, $month, 1);
+        switch ($workDayType) {
+            case '6-1':
+                $wd = $date;//Carbon::createFromDate($year, $month);
+                break;
+            case '5-2':
+            default:
+                $wd = 1;//Carbon::createFromDate($year, $month);
+                break;
+        }
+        return $wd;
     }
 
     public function index()
@@ -92,26 +144,6 @@ class SalaryController extends Controller
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
         return view('admin.salary', compact('groups', 'years'));
-    }
-
-    // Проверка не уволен ли сотрудник
-    private function showFiredEmployee($user, $month, $year)
-    {
-        if ($user->deleted_at == '0000-00-00 00:00:00' || $user->deleted_at == null) { // Проверка не уволен ли сотрудник
-            return true;
-        } else {
-
-            $dt1 = Carbon::parse($user->deleted_at); // День увольнения
-            $dt2 = Carbon::create($year, $month, 30, 0, 0, 0); // Выбранный период
-
-            if ($dt1 >= $dt2) {
-                if (count($user->fines) != 0) { // Проверка есть ли хоть одна fine user-a
-                    return true;
-                }
-            } else if ($dt1->month == $dt2->month && $dt1->year == $dt2->year) { // Проверка совпадают ли месяцы
-                return true;
-            }
-        }
     }
 
     /**
@@ -260,7 +292,6 @@ class SalaryController extends Controller
         return $data;
     }
 
-
     public function recalc(Request $request)
     {
         $period = $request->period;
@@ -290,7 +321,7 @@ class SalaryController extends Controller
         $amount = $request->amount;
         $comment = $request->comment;
         $user_id = $request->user_id;
-
+        $realType = null;
         $date = Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
 
         $salary = Salary::query()
@@ -304,33 +335,39 @@ class SalaryController extends Controller
             if ($type == 'avans') {
                 $salary->comment_paid = $comment;
                 $salary->paid = $amount;
+                $realType = 'paid';
             }
 
             if ($type == 'bonus') {
                 $salary->comment_bonus = $comment;
                 $salary->bonus = $amount;
+                $realType = 'bonus';
             }
 
             $salary->save();
         } else {
             if ($type == 'avans') {
-                Salary::create([
+                $salary = Salary::query()->create([
                     'user_id' => $user_id,
                     'date' => $date,
                     'amount' => 0,
                     'comment_paid' => $comment,
                     'paid' => $amount,
                 ]);
+                $realType = 'paid';
+
             }
 
             if ($type == 'bonus') {
-                Salary::create([
+                $salary = Salary::query()->create([
                     'user_id' => $user_id,
                     'date' => $date,
                     'amount' => 0,
                     'comment_bonus' => $comment,
                     'bonus' => $amount,
                 ]);
+                $realType = 'bonus';
+
             }
 
         }
@@ -353,12 +390,18 @@ class SalaryController extends Controller
         if ($type == 'bonus') $type = 'бонус';
 
         $editor = Auth::user();
-        $history = TimetrackingHistory::create([
+
+        TimetrackingHistory::query()->create([
             'user_id' => $user_id,
             'author_id' => $editor->id,
             'author' => $editor->last_name . ' ' . $editor->name,
             'date' => $date,
-            'description' => 'Добавлен <b>' . $type . '</b> на сумму ' . $amount . '<br> Комментарии: ' . $comment
+            'description' => 'Добавлен <b>' . $type . '</b> на сумму ' . $amount . '<br> Комментарии: ' . $comment,
+            'payload' => json_encode([
+                'type' => $realType,
+                'amount' => $amount,
+                'salary_id' => $salary->getKey()
+            ])
         ]);
 
         return json_encode([
@@ -453,18 +496,10 @@ class SalaryController extends Controller
         if (ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
+        $exp = new UsersExport($data[0]['name'], $data[0]['headings'], $data[0]['sheet'], $group, $data[0]['counter'], $date);
         $exp_title = 'Начисления ' . $edate . ' "' . $group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
-    }
-
-    public function getTransfers(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|int'
-        ]);
-        return GroupUser::with('profile_group:id,name')->where('user_id', $request['id'])->where('status', GroupUser::STATUS_DROP)->get()->toArray();
     }
 
     /**
@@ -787,7 +822,7 @@ class SalaryController extends Controller
                 }
                 $totalColumns[19] = $this->space($on_currency, 3, true);
                 $data['users'][] = $totalColumns;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 dd($e);
             }
         }
@@ -806,15 +841,6 @@ class SalaryController extends Controller
         return $data;
     }
 
-    private function space($str, $step, $reverse = false)
-    {
-
-        if ($reverse)
-            return strrev(chunk_split(strrev($str), $step, ' '));
-
-        return chunk_split($str, $step, ' ');
-    }
-
     private function phone_space($phone)
     {
         if ($phone == null) return '';
@@ -823,12 +849,6 @@ class SalaryController extends Controller
         if (in_array($str, ['77', '87'])) $phone = $this->add_space($string, [1, 4, 7, 9, 11]);
         if (in_array($str, ['99', '33', '38'])) $phone = $this->add_space($string, [3]);
         return $phone;
-    }
-
-    private function card_space($card)
-    {
-        $card = preg_replace('/\s+/', '', $card);
-        return $this->add_space($card, [4, 8, 12, 16]);
     }
 
     private function add_space($str, array $spaces)
@@ -841,55 +861,27 @@ class SalaryController extends Controller
         return $result;
     }
 
-    public static function convertCardNumberWithDots($card_number)
+    private function card_space($card)
     {
-        if (empty($card_number) || $card_number == '') return '';
-        for ($i = 0; $i <= 12; $i += 4) $card_arr[] = substr($card_number, $i, 4);
-        return implode('.', $card_arr);
+        $card = preg_replace('/\s+/', '', $card);
+        return $this->add_space($card, [4, 8, 12, 16]);
     }
 
-    public static function countDays($year, $month, $type)
+    private function space($str, $step, $reverse = false)
     {
-        $day_count = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $result = 0;
-        for ($i = 1; $i <= $day_count; $i++) {
 
-            $date = $year . '/' . $month . '/' . $i; //format date
-            $get_name = date('l', strtotime($date)); //get week day
-            $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
+        if ($reverse)
+            return strrev(chunk_split(strrev($str), $step, ' '));
 
-            //if not a weekend add day to array
-            switch ($type) {
-                case '6-1':
-                    if ($day_name != 'Sun') {
-                        $result += 1;
-                    }
-                    break;
-                case '5-2':
-                default:
-                    if ($day_name != 'Sun' && $day_name != 'Sat') {
-                        $result += 1;
-                    }
-                    break;
-            }
-
-        }
-        return $result;
+        return chunk_split($str, $step, ' ');
     }
 
-    public static function getWorkingDays($workDayType, $month, $year)
+    public function getTransfers(Request $request)
     {
-        $date = date();// Carbon::now()->setDate($year, $month, 1);
-        switch ($workDayType) {
-            case '6-1':
-                $wd = $date;//Carbon::createFromDate($year, $month);
-                break;
-            case '5-2':
-            default:
-                $wd = 1;//Carbon::createFromDate($year, $month);
-                break;
-        }
-        return $wd;
+        $request->validate([
+            'id' => 'required|int'
+        ]);
+        return GroupUser::with('profile_group:id,name')->where('user_id', $request['id'])->where('status', GroupUser::STATUS_DROP)->get()->toArray();
     }
 
     /**
@@ -1063,7 +1055,6 @@ class SalaryController extends Controller
             ->get();
     }
 
-
     /**
      * @param Request $request
      * @return mixed
@@ -1108,5 +1099,24 @@ class SalaryController extends Controller
             ->whereYear('user_tax.created_at', $date->year)
             ->whereMonth('user_tax.created_at', $date->month)
             ->get();
+    }
+
+    private function showFiredEmployee($user, $month, $year)
+    {
+        if ($user->deleted_at == '0000-00-00 00:00:00' || $user->deleted_at == null) { // Проверка не уволен ли сотрудник
+            return true;
+        } else {
+
+            $dt1 = Carbon::parse($user->deleted_at); // День увольнения
+            $dt2 = Carbon::create($year, $month, 30, 0, 0, 0); // Выбранный период
+
+            if ($dt1 >= $dt2) {
+                if (count($user->fines) != 0) { // Проверка есть ли хоть одна fine user-a
+                    return true;
+                }
+            } else if ($dt1->month == $dt2->month && $dt1->year == $dt2->year) { // Проверка совпадают ли месяцы
+                return true;
+            }
+        }
     }
 }

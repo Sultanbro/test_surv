@@ -27,33 +27,6 @@ class UserFine extends Model
         'status'
     ];
 
-    /**
-     * Добавление штрафа к пользователю
-     *
-     * @param array $data
-     * @return integer
-     */
-    public function addUserFine(array $data)
-    {
-        $userFine = new UserFine;
-        $userFine->user_id = $data['user_id'];
-        $userFine->fine_id = $data['fine_id'];
-        $userFine->day = $data['day'];
-        $userFine->note = $data['note'];
-        $userFine->save();
-
-        $title = 'Добавлен штраф на ' . Carbon::parse($data['day'])->format('d.m.Y');
-        self::setNotificationAboutFine($data['user_id'], $data['fine_id'], $title);
-
-        return $userFine->id;
-    }
-
-    public function fine()
-    {
-        return $this->hasOne('App\Fine', 'id', 'fine_id');
-    }
-
-
     public static function getFinesByUser($request, $id, $name)
     {
         $fines = [];
@@ -104,19 +77,6 @@ class UserFine extends Model
 
     /**
      * @param int $userId
-     * @param string $date
-     * @return mixed
-     */
-    public function getAmountUserFines(int $userId, string $date)
-    {
-        $fines = UserFine::whereDate('day', $date)
-            ->where('user_id', $userId)
-            ->count();
-        return $fines;
-    }
-
-    /**
-     * @param int $userId
      * @param int $fineId
      * @param string $date
      * @return void
@@ -140,10 +100,11 @@ class UserFine extends Model
      * @param int $userId
      * @param int $fineId
      * @param string $date
-     * @return void
+     * @return ?UserFine
      */
-    public static function turnOnFine(int $userId, int $fineId, string $date)
+    public static function turnOnFine(int $userId, int $fineId, string $date): ?UserFine
     {
+        /** @var UserFine $fine */
         $fine = (new UserFineRepository)->getUserFine($userId, $fineId, $date)
             ->where('status', self::STATUS_INACTIVE)
             ->first();
@@ -155,7 +116,9 @@ class UserFine extends Model
 
             $title = 'Добавлен штраф на ' . Carbon::parse($date)->format('d.m.Y');
             self::setNotificationAboutFine($userId, $fineId, $title);
+
         }
+        return $fine;
     }
 
     /**
@@ -184,6 +147,27 @@ class UserFine extends Model
         }
         $timeTrackingDay->updated = 1;
         $timeTrackingDay->save();
+    }
+
+    /**
+     * Добавление штрафа к пользователю
+     *
+     * @param array $data
+     * @return UserFine
+     */
+    public function addUserFine(array $data): UserFine
+    {
+        $userFine = new UserFine;
+        $userFine->user_id = $data['user_id'];
+        $userFine->fine_id = $data['fine_id'];
+        $userFine->day = $data['day'];
+        $userFine->note = $data['note'];
+        $userFine->save();
+
+        $title = 'Добавлен штраф на ' . Carbon::parse($data['day'])->format('d.m.Y');
+        self::setNotificationAboutFine($data['user_id'], $data['fine_id'], $title);
+
+        return $userFine;
     }
 
     public static function setNotificationAboutFine($userId, $fineId, $title, $data = [])
@@ -242,5 +226,23 @@ class UserFine extends Model
         }
 
 
+    }
+
+    public function fine()
+    {
+        return $this->hasOne('App\Fine', 'id', 'fine_id');
+    }
+
+    /**
+     * @param int $userId
+     * @param string $date
+     * @return mixed
+     */
+    public function getAmountUserFines(int $userId, string $date)
+    {
+        $fines = UserFine::whereDate('day', $date)
+            ->where('user_id', $userId)
+            ->count();
+        return $fines;
     }
 }
