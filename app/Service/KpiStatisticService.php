@@ -526,7 +526,6 @@ class KpiStatisticService
         $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
         return Kpi::withTrashed()
-            ->when((bool)$searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
                 $subQuery->orWhereRelation(
@@ -557,6 +556,7 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
+            ->where(fn() => (new KpiFilter)->globalSearch($searchWord))
             ->where(function ($query) use ($start_date, $last_date, $onlyActive) {
                 $query->whereHas('targetable', function ($q) use ($start_date, $last_date, $onlyActive) {
                     if ($q->getModel() instanceof User) {

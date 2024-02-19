@@ -15,9 +15,7 @@ trait TargetJoin
         $query = self::query();
         $table = $query->getModel()->getTable();
 
-        return $query->select(
-            $table . '.*'
-        )
+        return $query->select($table . '.*')
             ->leftJoin('kpiables as morph', function (JoinClause $join) use ($table) {
                 $join->on('morph.kpi_id', '=', "$table.id");
             })
@@ -40,6 +38,7 @@ trait TargetJoin
                     ->where("morph.kpiable_type", '=', 'App\Position');
             })
             ->leftJoin('users as updater', 'updater.id', '=', "$table.updated_by")
+            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
             ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by");
     }
 }

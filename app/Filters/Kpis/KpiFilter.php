@@ -24,15 +24,14 @@ class KpiFilter
     ): Builder
     {
         return $this->kpi::targetJoins()
-            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
-            ->orWhere(function ($query) use ($searchWord) {
+            ->where(function ($query) use ($searchWord) {
                 $query->where('u.name', 'LIKE', "%$searchWord%")
                     ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
             })
-            ->orWhere(function ($query) use ($searchWord) {
-                $query->where('updater.name', 'LIKE', "%$searchWord%")
-                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
-            })
+//            ->orWhere(function ($query) use ($searchWord) {
+//                $query->where('updater.name', 'LIKE', "%$searchWord%")
+//                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
+//            })
             ->orWhere(function ($query) use ($searchWord) {
                 $query->where('creator.name', 'LIKE', "%$searchWord%")
                     ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
