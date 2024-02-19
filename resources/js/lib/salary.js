@@ -1,12 +1,19 @@
 export function calcTaxes(total, taxes, rate = 1){
 	let result = total
+	let sum = total
+
 	taxes.sort((a,b) => a.order - b.order).forEach(tax => {
 		if(!tax.value) return
+		let value
 		if(!tax.is_percent) {
-			result -= Math.round(tax.value * rate)
-			return
+			value = Math.round(tax.value * rate)
 		}
-		result -= tax.end_subtraction ? Math.round(result * tax.value / 100) : Math.round(total * tax.value / 100)
+		else{
+			value = tax.end_subtraction ? Math.round(sum * tax.value / 100) : Math.round(total * tax.value / 100)
+		}
+		sum -= value
+		if(!tax.is_deduction) result -= value
 	})
+
 	return result
 }
