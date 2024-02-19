@@ -23,6 +23,7 @@ class KpiFilter
         string  $searchWord
     ): Builder
     {
+        dd($searchWord);
         return $this->kpi::targetJoins()
             ->where(function ($query) use ($searchWord) {
                 $query->where('u.name', 'LIKE', "%$searchWord%")
