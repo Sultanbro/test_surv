@@ -335,7 +335,11 @@
 									class="PageCabinet-doc p-2"
 								>
 									<div class="PageCabinet-docIcon">
-										<i class="fa fa-file-pdf" />
+										<img
+											src="/icon/doc-pdf.png"
+											alt="pdf"
+											width="24"
+										>
 									</div>
 									<div class="PageCabinet-docName">
 										{{ doc.name }}
