@@ -1426,22 +1426,24 @@ export default {
 				const taxes = item.user_tax?.tax_group?.items || []
 				const taxinfo = []
 				let afterTaxes = final
+				let taxesSum = final
 				taxes.forEach(tax => {
 					if(!tax.value) return
 					let amount
 					if(!tax.is_percent) {
 						amount = tax.value
 					}
-					amount = tax.end_subtraction ? Math.round(afterTaxes * tax.value / 100) : Math.round(final * tax.value / 100)
+					amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
 					taxinfo.push({
 						name: tax.name,
 						value: tax.value + (tax.is_percent ? '%' : ''),
 						amount,
 						before: afterTaxes,
-						after: afterTaxes - amount,
+						after: tax.is_deduction ? afterTaxes : afterTaxes - amount,
 					})
 
-					afterTaxes -= amount
+					taxesSum -= amount
+					if(!tax.is_deduction) afterTaxes -= amount
 				})
 
 				let obj = {

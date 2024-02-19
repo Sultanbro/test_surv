@@ -31,14 +31,29 @@
 						v-model="item.name"
 						small
 						primary
-						placeholder="Название налога"
+						:placeholder="item.is_deduction ? 'Название вычета' : 'Название налога'"
 					/>
 					<InputText
 						v-model="item.value"
 						small
 						primary
 						placeholder="Сумма/процент"
-					/>
+						class="relative"
+					>
+						<template
+							v-if="item.is_deduction"
+							#after
+						>
+							<img
+								v-b-popover.hover.html="'Вычет учитывается при расчете налога, но в саму сумму налога не попадает'"
+								src="/images/dist/profit-info.svg"
+								class="img-info TexesEditForm-infoInput"
+								alt="info icon"
+								width="20"
+								tabindex="-1"
+							>
+						</template>
+					</InputText>
 					<InputPercentValue
 						v-model="item.is_percent"
 					/>
@@ -68,6 +83,22 @@
 				@click="addItem"
 			>
 				+ Добавить налог
+			</JobtronButton>
+			<JobtronButton
+				small
+				@click="addItem(1)"
+			>
+				+ Добавить вычет
+				<span class="TexesEditForm-infoBtn">
+					<img
+						v-b-popover.hover.html="'Вычет учитывается при расчете налога, но в саму сумму налога не попадает'"
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						width="20"
+						tabindex="-1"
+					>
+				</span>
 			</JobtronButton>
 			<hr class="my-4">
 			<div class="text-right">
@@ -138,13 +169,14 @@ export default {
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
-		addItem(){
+		addItem(isDeduction = 0){
 			/* eslint-disable camelcase */
 			this.value.items.push({
 				name: '',
 				value: 0,
 				is_percent: 0,
 				end_subtraction: 0,
+				is_deduction: isDeduction,
 				order: this.value.items.length,
 			})
 			/* eslint-enable camelcase */
@@ -171,6 +203,21 @@ export default {
 				}
 			}
 		}
+	}
+	&-infoBtn{
+		display: inline-flex;
+		align-items: center;
+		height: 12px;
+		.img-info{
+			background-color: #fff;
+			border-radius: 999rem;
+		}
+	}
+	&-infoInput{
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
 	}
 }
 </style>

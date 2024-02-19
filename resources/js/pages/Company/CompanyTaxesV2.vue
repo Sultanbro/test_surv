@@ -89,6 +89,15 @@
 							<template v-else-if="field.key.includes('tax')">
 								<template v-if="tax.items[field.item]">
 									{{ tax.items[field.item].name }}
+									<img
+										v-if="tax.items[field.item].is_deduction"
+										v-b-popover.click.blur.html="'Вычет учитывается при расчете налога, но в саму сумму налога не попадает'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+										alt="info icon"
+										width="20"
+										tabindex="-1"
+									>
 								</template>
 							</template>
 							<template v-else>
