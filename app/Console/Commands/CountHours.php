@@ -54,9 +54,10 @@ class CountHours extends Command
         $date   = $this->argument('date') ?? now()->format('Y-m-d');
 
         $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUserByDate($userId, $date)->get();
-
+        dd($timeTrackRecords->toArray());
         foreach($timeTrackRecords as $record)
         {
+
             $user = $record->user;
             if ($user)
             {
@@ -85,6 +86,7 @@ class CountHours extends Command
     ): float
     {
         $lunchTime      = 60;
+        dd($schedule);
         $maxWorkMinutesPerDay= max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
