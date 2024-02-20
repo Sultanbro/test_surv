@@ -312,7 +312,7 @@ export default {
 					this.currentTaxGroup = taxData.data?.id || 0
 				}
 				catch (error) {
-					this.$onError(error, 1)
+					this.$onError(error, '', 1)
 				}
 
 			}
