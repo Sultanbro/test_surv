@@ -83,7 +83,7 @@ class SalaryService
 
         if ($salary) {
             $salary->comment_paid = $comment;
-            $salary->$key = $amount;
+            $salary->$key = $amount + $giftAmount;
             $salary->save();
         } else {
             Salary::query()->create([
@@ -91,7 +91,7 @@ class SalaryService
                 'date' => $date,
                 'amount' => 0,
                 'comment_paid' => $comment,
-                $key => $amount
+                $key => $amount + $giftAmount
             ]);
         }
 
