@@ -626,6 +626,7 @@ export default {
 				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
 				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
+				location.assign('/timetracking/settings')
 			}
 			catch (error){
 				console.error(error);
