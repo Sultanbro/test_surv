@@ -109,7 +109,11 @@
 							class="text-center wsnw"
 							@click="openEditSidebar(notification)"
 						>
-							{{ notification.creator.name }} {{ notification.creator.last_name }}
+							<div
+								v-if="notification.creator"
+							>
+								{{ notification.creator.name }} {{ notification.creator.last_name }}
+							</div>
 						</b-td>
 						<b-td class="text-center">
 							<div class="d-flex gap-3">
