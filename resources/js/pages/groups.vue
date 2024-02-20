@@ -218,7 +218,10 @@
 					</div>
 				</div>
 
-				<div class="card groups-card mt-4">
+				<div
+					v-if="!addNewGroup"
+					class="card groups-card mt-4"
+				>
 					<div class="CompanyGroups-label card-header">
 						Документы
 					</div>
@@ -233,7 +236,11 @@
 								class="CompanyGroups-doc mb-2"
 							>
 								<div class="CompanyGroups-docIcon">
-									<i class="fa fa-file-pdf" />
+									<img
+										src="/icon/doc-pdf.png"
+										alt="pdf"
+										width="24"
+									>
 								</div>
 								<div class="CompanyGroups-docName">
 									{{ doc.name }}
@@ -517,6 +524,14 @@
 					</InputFile>
 				</b-col>
 			</b-row>
+
+			<b-progress
+				v-if="uploadProgress"
+				:value="uploadProgress"
+				:max="100"
+				show-progress
+				animated
+			/>
 		</b-modal>
 	</div>
 </template>
@@ -637,6 +652,7 @@ export default {
 			},
 			docId: 0,
 			docEditDialog: false,
+			uploadProgress: 0,
 		};
 	},
 	computed: {
@@ -731,6 +747,7 @@ export default {
 		async selectGroup(value) {
 			let loader = this.$loading.show();
 			try {
+				this.documents = []
 				const response = await this.axios.post('/timetracking/users-new', {
 					id: value.id,
 				})
@@ -786,37 +803,42 @@ export default {
 			if (!this.new_status.length) return this.$toast.error('Введите название группы');
 			if (!this.workChartId) return this.$toast.error('Выберите график работы');
 			// save group data
-			let loader = this.$loading.show();
+			let loader = this.$loading.show()
+
 			if (this.addNewGroup) {
-				await this.axios.post('/timetracking/group/save-new', {
-					name: this.new_status,
-				})
-					.then((response) => {
-						if (response.data.status == 200) {
-							const dataPush = {
-								id: response.data.data.id,
-								group: response.data.data.name
-							};
-							this.statuses.push(dataPush);
-							this.activebtn = dataPush;
-						} else {
-							this.$toast.error(
-								'Название "' +
-									this.new_status +
-									'" не свободно, выберите другое имя для группы'
-							);
-							loader.hide();
-						}
-					});
+				try {
+					const {data} = await this.axios.post('/timetracking/group/save-new', {
+						name: this.new_status,
+					})
+					if (data.status == 200) {
+						const dataPush = {
+							id: data.data.id,
+							group: data.data.name
+						};
+						this.statuses.push(dataPush);
+						this.activebtn = dataPush;
+					}
+					else {
+						this.$toast.error(`Название "${this.new_status}" не свободно, выберите другое имя для группы`);
+					}
+				}
+				catch (error) {
+					this.$onError(error)
+				}
 			}
 
-			await this.axios.post('/work-chart/group/add', {
-				group_id: this.activebtn.id,
-				work_chart_id: this.workChartId
-			})
+			try {
+				await this.axios.post('/work-chart/group/add', {
+					group_id: this.activebtn.id,
+					work_chart_id: this.workChartId
+				})
+			}
+			catch (error) {
+				this.onError(error)
+			}
 
-			await this.axios
-				.post('/timetracking/users/group/save-new', {
+			try {
+				await this.axios.post('/timetracking/users/group/save-new', {
 					group_id: this.activebtn.id,
 					users: this.value,
 					group_info: {
@@ -837,19 +859,14 @@ export default {
 					talk_hours: this.talk_hours,
 					talk_minutes: this.talk_minutes,
 				})
-				.then(() => {
-					// this.statuses = response.data.groups;
-					// this.activebtn = response.data.group;
-					this.$toast.info('Успешно сохранено');
-					this.messageoff();
+				this.$toast.info('Успешно сохранено');
+				this.messageoff()
+			}
+			catch (error) {
+				this.$onError(error)
+			}
 
-					loader.hide();
-				})
-				.catch((error) => {
-					console.error(error.response);
-					this.$toast.info(error.response);
-					loader.hide();
-				});
+			loader.hide()
 		},
 
 		deleted() {
@@ -960,6 +977,7 @@ export default {
 				...JSON.parse(JSON.stringify(doc)),
 				upload: null,
 			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
@@ -977,24 +995,29 @@ export default {
 				file: '',
 				upload: null,
 			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		async createDoc(){
 			try {
+				const onUploadProgress = event => {
+					this.uploadProgress = Math.round((event.loaded * 100) / event.total);
+				}
 				const formData = new FormData()
 				formData.append('file', this.documentForm.upload)
 				formData.append('local_name', this.documentForm.name)
 				await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data'
-					}
+					},
+					onUploadProgress,
 				})
 				this.fetchDocs(this.activebtn.id)
+				this.docEditDialog = false
 			}
 			catch (error) {
 				console.error(error)
 			}
-			this.docEditDialog = false
 		},
 		async updateDoc(){
 			try {
@@ -1010,6 +1033,8 @@ export default {
 			}
 		},
 		async onDeleteDoc(doc){
+			if(!confirm('Вы действительно хотите удалить документ?')) return
+
 			const index = this.documents.findIndex(d => d.id === doc.id)
 			if(~index) this.documents.splice(index, 1)
 			if(doc.id <= 0) return
