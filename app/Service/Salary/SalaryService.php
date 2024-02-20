@@ -58,19 +58,21 @@ class SalaryService
     /**
      * @throws \Exception
      */
-    public static function updateSalary(Carbon $date, $type, $amount, $giftAmount, $comment, $user)
+    public static function updateSalary(
+        string $date,
+        string $type,
+               $amount,
+               $giftAmount,
+               $comment,
+               $user): void
     {
-        $day = $date->day;
-        $date = $date->format('Y-m-d');
         if ($type == 'avans') {
             $text = 'аванс';
             $key = 'paid';
-        }
-        elseif ($type == 'bonus') {
+        } elseif ($type == 'bonus') {
             $text = 'бонус';
             $key = 'bonus';
-        }
-        else {
+        } else {
             throw new \Exception('Unexpected type salary');
         }
 
@@ -81,16 +83,15 @@ class SalaryService
 
         if ($salary) {
             $salary->comment_paid = $comment;
-            $salary->$key = $amount;
+            $salary->$key = $amount + $giftAmount;
             $salary->save();
-        }
-        else {
+        } else {
             Salary::query()->create([
                 'user_id' => $user->id,
                 'date' => $date,
                 'amount' => 0,
                 'comment_paid' => $comment,
-                $key => $amount
+                $key => $amount + $giftAmount
             ]);
         }
 

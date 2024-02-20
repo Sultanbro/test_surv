@@ -986,7 +986,7 @@ export default {
 								>
 									<div class="col-6">
 										<div class="mb-4">
-											Новые документы <b-badge>demo</b-badge>
+											Новые документы
 										</div>
 										<UserEditDocumentsV2
 											:user-id="user ? user.id : 0"

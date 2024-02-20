@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Api\HeadHunter;
 use App\Http\Controllers as Root;
 use App\Http\Controllers\Admin as Admin;
 use App\Http\Controllers\Analytics as Analytics;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Features\UserImpersonation;
 
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
@@ -61,7 +63,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
     Route::get('/impersonate/{token}', function ($token) {
-        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+        return UserImpersonation::makeResponse($token);
     });
 
     Route::middleware('auth')->get('/me', [User\UserController::class, 'me']);
@@ -420,6 +422,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     #==================================
 
     // salaries
+    Route::post('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'restore']);
+    Route::delete('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'delete']);
     Route::get('/timetracking/salaries', [Salary\SalaryController::class, 'index']);
     Route::get('/timetracking/salaries/export', [Salary\SalaryController::class, 'exportExcel']);
     Route::get('/timetracking/salaries/get-transfers', [Salary\SalaryController::class, 'getTransfers']);
@@ -798,8 +802,8 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/intellect/save_quiz_after_fire', [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
         Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
-        Route::any('/headhunter/create_lead', [\App\Api\HeadHunter::class, 'createLead'])->name('create-lead');
-        Route::any('/headhunter/check_lead', [\App\Api\HeadHunter::class, 'checkLead'])->name('check-lead');
+        Route::any('/headhunter/create_lead', [HeadHunter::class, 'createLead'])->name('create-lead');
+        Route::any('/headhunter/check_lead', [HeadHunter::class, 'checkLead'])->name('check-lead');
         // Bitrix -> Admin
         Route::any('/bitrix/new-lead', [Services\IntellectController::class, 'newLead']);
         Route::any('/bitrix/edit-lead', [Services\IntellectController::class, 'editLead']);
