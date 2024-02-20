@@ -385,12 +385,8 @@ export default {
 						frequency: notification.frequency,
 						days: JSON.parse(notification.days || '[]') || []
 					},
-					creator: this.getCreator(notification)
 				}
 			})
-		},
-		getCreator(notification){
-			return this.users.find(user => user.id === notification.created_by)
 		},
 		getUserName(recipient){
 			const user = this.users.find(user => user.id === recipient.notificationable_id)
