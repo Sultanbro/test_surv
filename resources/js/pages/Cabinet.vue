@@ -79,9 +79,9 @@
 						<div class="form-group mb-0 text-center">
 							<div class="profile-img-wrap hidden-file-wrapper">
 								<img
-									v-if="!crop_image.hide"
+									v-if="user && user.img_url"
 									alt="Profile image"
-									:src="crop_image.image"
+									:src="`/users_img/${user.img_url}`"
 									class="profile-img"
 								>
 								<div
@@ -473,6 +473,8 @@ import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import API from '@/components/Chat/Store/API.vue'
+import { mapState, mapActions as mapPiniaActions } from 'pinia'
+import { useUserStore } from '@/stores/User'
 
 
 
@@ -505,7 +507,6 @@ export default {
 			test: 'dsa',
 			items: [],
 			myCroppa: {},
-			user: [],
 			user_card: [],
 			phone: '',
 			phone1: '',
@@ -564,6 +565,7 @@ export default {
 			'profileGroups',
 			'accessDictionaries',
 		]),
+		...mapState(useUserStore, ['user']),
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
@@ -583,6 +585,7 @@ export default {
 		this.applyMask()
 	},
 	created() {
+		this.fetchUser()
 		this.initMask()
 		if(!this.users.length) this.loadCompany()
 		if (this.authRole) {
@@ -591,10 +594,10 @@ export default {
 	},
 	methods: {
 		...mapActions(['loadCompany']),
+		...mapPiniaActions(useUserStore, ['fetchUser']),
 		init() {
 			this.fetchData()
 			this.fetchDocs()
-			this.user = this.authRole;
 			this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
@@ -615,20 +618,21 @@ export default {
 		change({canvas}) {
 			this.crop_image.canvas = canvas;
 		},
-		save_picture(){
-			this.croppie.result({
+		async save_picture(){
+			const blob = await this.croppie.result({
 				type: 'blob',
 				format: 'jpeg',
 				quality: 0.8
-			}).then(blob => {
-				const formData = new FormData();
-				formData.append('file', blob);
-				this.axios.post('/profile/upload/image/profile/', formData).then((response) => {
-					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
-				});
 			})
 
-			this.saveCropped();
+			const formData = new FormData();
+			formData.append('file', blob);
+
+			const {data} = await this.axios.post('/profile/upload/image/profile/', formData)
+			bus.$emit('user-avatar-update', '/users_img/' + data.filename)
+			this.fetchUser(true)
+
+			this.saveCropped()
 		},
 		chooseProfileImage(){
 			this.showChooseProfileModal = true;
@@ -815,7 +819,6 @@ export default {
 
 		fetchData() {
 			this.axios.get('/cabinet/get').then(({data}) => {
-				this.user = JSON.parse(JSON.stringify(data.user))
 				this.phone = data.user.phone
 				this.phone1 = data.user.phone_1
 				this.keywords = data.user.working_country;
@@ -1178,12 +1181,7 @@ a.lp-link {
 	padding: 4px 10px 10px 10px;
 }
 
-.iban-info{
-	position: absolute;
-	top: 50%;
-	right: 20px;
-	transform: translateY(-50%);
-}
+
 
 .PageCabinet{
 	&-accessSelect{
@@ -1289,6 +1287,12 @@ a.lp-link {
 
 	.content{
 		padding: 15px !important;
+	}
+	.iban-info{
+		position: absolute;
+		top: 50%;
+		right: 20px;
+		transform: translateY(-50%);
 	}
 }
 </style>

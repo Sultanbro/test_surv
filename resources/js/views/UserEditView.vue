@@ -732,7 +732,7 @@ export default {
 <template>
 	<DefaultLayout
 		:has-bg="true"
-		class="profile-edit"
+		class="profile-edit UserEditView"
 	>
 		<div class="old__content">
 			<div class="user-page py-4">
@@ -2603,6 +2603,10 @@ input[type="radio"] {
 	&-scrollCard{
 		height: 200px;
 		max-height: 200px;
+	}
+	.iban-info{
+		position: relative;
+		left: -30px;
 	}
 }
 </style>
