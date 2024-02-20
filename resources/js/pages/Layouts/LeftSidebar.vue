@@ -27,7 +27,7 @@
 				>
 			</template>
 			<template v-else-if="isDefaultAvatar">
-				<i class="fas fa-upload LeftSidebar-upload" />
+				<i class="fas fa-camera LeftSidebar-upload" />
 			</template>
 			<!-- hover menu -->
 			<div class="hover-avatar-area">
@@ -841,12 +841,18 @@ export default {
 			bottom: 0;
 		}
 		&-upload{
+			padding: 4px;
+			border: 1px solid #fff;
+
 			position: absolute;
 			right: 5px;
 			bottom: 0;
-			font-size: 24px;
+
+			font-size: 16px;
 			color: #555;
-			text-shadow: 0 0 2px #fff;
+
+			background-color: #ddf;
+			border-radius: 999rem;
 		}
 		&-avatar{
 			display: block;
