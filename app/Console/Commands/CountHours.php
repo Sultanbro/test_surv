@@ -54,10 +54,9 @@ class CountHours extends Command
         $date   = $this->argument('date') ?? now()->format('Y-m-d');
 
         $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUserByDate($userId, $date)->get();
-        dd($timeTrackRecords->toArray());
+//        dd($timeTrackRecords->toArray());
         foreach($timeTrackRecords as $record)
         {
-
             $user = $record->user;
             if ($user)
             {
