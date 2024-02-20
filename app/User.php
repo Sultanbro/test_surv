@@ -1423,7 +1423,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         return [
             'start' => $start,
-            'end' => $end
+            'end' => $end,
+            'rest_time' => $workTime['workRestTime']
         ];
     }
 
