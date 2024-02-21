@@ -10,7 +10,11 @@
 				class="UserEditDocumentsV2-doc p-2"
 			>
 				<div class="UserEditDocumentsV2-docIcon">
-					<i class="fa fa-file-pdf" />
+					<img
+						src="/icon/doc-pdf.png"
+						alt="pdf"
+						width="24"
+					>
 				</div>
 				<div class="UserEditDocumentsV2-docName">
 					{{ doc.name }}
@@ -67,7 +71,7 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.name || 'Без названия',
+					name: doc.local_name || 'Без названия',
 					file: doc.url,
 					signed: doc.signed,
 				}))

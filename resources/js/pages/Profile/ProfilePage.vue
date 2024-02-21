@@ -69,6 +69,7 @@
 		/>
 
 		<RefStat
+			v-if="isBP"
 			ref="referals"
 			:class="{ _active: anim.referals }"
 			@init="intro['referals'] = true"
@@ -254,7 +255,7 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
-				&& this.refReady
+				&& (this.refReady || !this.isBP)
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
@@ -275,7 +276,7 @@ export default {
 	},
 	mounted(){
 		if(this.isReady) this.initAnimOnScroll()
-		this.fetchUserStats()
+		if(this.isBP) this.fetchUserStats()
 	},
 	beforeDestroy(){
 		this.intersectionObserver.disconnect()
@@ -307,7 +308,7 @@ export default {
 					this.$refs.profit.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.$refs.estimation.$el instanceof Element && this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.$refs.indicators.$el instanceof Element && this.intersectionObserver.observe(this.$refs.indicators.$el)
-					this.$refs.referals.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals.$el)
+					this.$refs.referals?.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals?.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {
@@ -319,7 +320,7 @@ export default {
 			entries.forEach(entry => {
 				if(entry.isIntersecting){
 					Object.keys(this.anim).forEach(key => {
-						if(this.$refs[key].$el === entry.target){
+						if(this.$refs[key]?.$el === entry.target){
 							this.anim[key] = true
 						}
 					})
@@ -359,6 +360,7 @@ export default {
 	}
 	&-fillProfile{
 		display: block;
+		margin-top: 20px;
 		padding: 20px;
 
 		font-size: 20px;
@@ -366,10 +368,12 @@ export default {
 		text-decoration: none;
 		text-align: center;
 
-		background-color: #dc3545;
+		background-color: #e84f71;
+		border-radius: 16px;
+		transition: 0.3s;
 		&:hover{
 			color: #fff;
-			text-decoration: underline;
+			transform: translateY(-2px);
 		}
 	}
 }

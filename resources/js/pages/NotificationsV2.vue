@@ -109,7 +109,11 @@
 							class="text-center wsnw"
 							@click="openEditSidebar(notification)"
 						>
-							{{ notification.creator.name }} {{ notification.creator.last_name }}
+							<div
+								v-if="notification.creator"
+							>
+								{{ notification.creator.name }} {{ notification.creator.last_name }}
+							</div>
 						</b-td>
 						<b-td class="text-center">
 							<div class="d-flex gap-3">
@@ -381,12 +385,8 @@ export default {
 						frequency: notification.frequency,
 						days: JSON.parse(notification.days || '[]') || []
 					},
-					creator: this.getCreator(notification)
 				}
 			})
-		},
-		getCreator(notification){
-			return this.users.find(user => user.id === notification.created_by)
 		},
 		getUserName(recipient){
 			const user = this.users.find(user => user.id === recipient.notificationable_id)

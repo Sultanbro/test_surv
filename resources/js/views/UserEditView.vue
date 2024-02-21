@@ -25,6 +25,7 @@ import {
 	fire_employee_causes,
 } from '@/composables/fire_causes'
 import parsePhoneNumber from 'libphonenumber-js'
+import { arrayIntersects } from '@/lib/array.js'
 
 import axios from 'axios'
 import { mapState } from 'pinia'
@@ -33,6 +34,7 @@ import { usePortalStore } from '@/stores/Portal'
 const DATE_YMD = 'YYYY-MM-DD';
 const DATE_DMY = 'DD.MM.YYYY';
 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
 	name: 'UserEditView',
@@ -310,7 +312,7 @@ export default {
 					this.currentTaxGroup = taxData.data?.id || 0
 				}
 				catch (error) {
-					this.$onError(error, 1)
+					this.$onError(error, '', 1)
 				}
 
 			}
@@ -443,6 +445,39 @@ export default {
 		selectWorkChart(val) {
 			this.workChartId = val;
 		},
+		validateForm(formData){
+			const errors = {}
+
+			if(formData.get('name').length < 2){
+				errors.name = 'Введите имя'
+			}
+			if(formData.get('last_name').length < 2){
+				errors.last_name = 'Введите фамилию'
+			}
+			if(emailReg.test(formData.get('email'))){
+				errors.email = 'Введите корректный email'
+			}
+			if(!formData.get('position')){
+				errors.position = 'Выберите должность'
+			}
+			if(!formData.get('zarplata')){
+				errors.zarplata = 'Укажите оклад'
+			}
+			if(formData.get('phone').replace(/[^\d]+/g, '') < 10){
+				errors.phone = 'Ввведите корректный номер телефона'
+			}
+			if(formData.get('new_pwd') && formData.get('new_pwd').length < 8){
+				errors.new_pwd = 'Длинна пароля должна бытб не менее 8 символов'
+			}
+			if(formData.get('new_pwd') && !/[a-z]/.test(formData.get('new_pwd')) && !/[A-Z]/.test(formData.get('new_pwd'))){
+				errors.new_pwd = 'Пароль должен содержать минимум одну строчную и одну заглавную буквы'
+			}
+			if(!this.workChartId){
+				errors.workChart = 'Укажите график работы'
+			}
+
+			return errors
+		},
 		async submit(isTrainee, increment_provided, isNew){
 			const loader = this.$loading.show();
 			this.frontValid.formSubmitted = true;
@@ -507,6 +542,24 @@ export default {
 				formData.set('coordinates[geo_lon]', this.cityLon)
 			}
 
+			const errors = this.validateForm(formData)
+			const errorKeys = Object.keys(errors)
+			if(errorKeys.length){
+				this.$toast.error('Заполните обязательные поля')
+				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'workChartId']).length){
+					this.showBlock(1)
+				}
+				else if(arrayIntersects(errorKeys || [], ['zarplata']).length){
+					this.showBlock(5)
+				}
+				else if(arrayIntersects(errorKeys || [], ['phone']).length){
+					this.showBlock(4)
+				}
+				else{
+					this.showBlock(7)
+				}
+			}
+
 			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.workchart){
 				this.sendForm(formData, isNew);
 			}
@@ -517,6 +570,7 @@ export default {
 		},
 
 		async sendForm(formData, isNew){
+
 			this.fieldErrors = {}
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
 			const loader = this.$loading.show();
@@ -572,6 +626,7 @@ export default {
 				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
 				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
+				location.assign('/timetracking/settings')
 			}
 			catch (error){
 				console.error(error);
@@ -677,7 +732,7 @@ export default {
 <template>
 	<DefaultLayout
 		:has-bg="true"
-		class="profile-edit"
+		class="profile-edit UserEditView"
 	>
 		<div class="old__content">
 			<div class="user-page py-4">
@@ -986,7 +1041,7 @@ export default {
 								>
 									<div class="col-6">
 										<div class="mb-4">
-											Новые документы <b-badge>demo</b-badge>
+											Подписанные через смс
 										</div>
 										<UserEditDocumentsV2
 											:user-id="user ? user.id : 0"
@@ -995,7 +1050,7 @@ export default {
 									<div class="col-6 add_info">
 										<!-- documents tab -->
 										<div class="mb-4">
-											Старые документы
+											Загруженные вручную
 										</div>
 										<UserEditDocuments
 											:user="user"
@@ -2548,6 +2603,10 @@ input[type="radio"] {
 	&-scrollCard{
 		height: 200px;
 		max-height: 200px;
+	}
+	.iban-info{
+		position: relative;
+		left: -30px;
 	}
 }
 </style>

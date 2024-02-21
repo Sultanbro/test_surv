@@ -76,9 +76,16 @@ class CountHours extends Command
         Carbon $exitTime
     ): float
     {
+<<<<<<< HEAD
         $lunchTime = 60;
         $maxWorkMinutesPerDay = max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes = $enterTime->diffInMinutes($exitTime) - $lunchTime;
+=======
+        $lunchTime = $schedule['rest_time'] ?? 60;
+
+        $maxWorkMinutesPerDay= max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
+        $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
+>>>>>>> refs/remotes/origin/main
 
         return min($diffInMinutes, $maxWorkMinutesPerDay);
     }

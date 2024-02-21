@@ -27,7 +27,7 @@
 				>
 			</template>
 			<template v-else-if="isDefaultAvatar">
-				<i class="fas fa-upload LeftSidebar-upload" />
+				<i class="fas fa-camera LeftSidebar-upload" />
 			</template>
 			<!-- hover menu -->
 			<div class="hover-avatar-area">
@@ -185,8 +185,8 @@
 /* global Laravel */
 import { bus } from '../../bus'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
-import { mapActions } from 'pinia'
-import { mapGetters } from 'vuex'
+import { useUserStore } from '@/stores/User'
+import { mapActions, mapState } from 'pinia'
 import { settingsSubmenu } from './helper.js'
 
 import LeftSidebarItem from './LeftSidebarItem'
@@ -203,7 +203,6 @@ export default {
 		return {
 			height: 300,
 			fields: [],
-			avatar: Laravel.avatar,
 			token: Laravel.csrfToken,
 			isAdmin: this.$laravel.is_admin,
 			project: window.location.hostname.split('.')[0],
@@ -214,7 +213,12 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['user']),
+		...mapState(useUserStore, ['user']),
+		avatar(){
+			const blank = 'https://cp.callibro.org/files/img/8.png'
+			if(!this.user) return blank
+			return this.user.img_url ? `/users_img/${this.user.img_url}` : blank
+		},
 		isDefaultAvatar(){
 			return this.avatar === 'https://cp.callibro.org/files/img/8.png'
 		},
@@ -444,6 +448,9 @@ export default {
 				|| !this.user.working_country
 		},
 	},
+	created(){
+		this.fetchUser()
+	},
 	mounted(){
 		this.onResize()
 		this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
@@ -459,6 +466,7 @@ export default {
 
 	methods: {
 		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
+		...mapActions(useUserStore, ['fetchUser']),
 		onResize(){
 			if(!this.$refs.nav) return
 			this.height = this.$refs.nav.offsetHeight
@@ -841,12 +849,18 @@ export default {
 			bottom: 0;
 		}
 		&-upload{
+			padding: 4px;
+			border: 1px solid #fff;
+
 			position: absolute;
 			right: 5px;
 			bottom: 0;
-			font-size: 24px;
+
+			font-size: 16px;
 			color: #555;
-			text-shadow: 0 0 2px #fff;
+
+			background-color: #ddf;
+			border-radius: 999rem;
 		}
 		&-avatar{
 			display: block;

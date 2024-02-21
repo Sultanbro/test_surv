@@ -7,3 +7,7 @@ export function arrayUniqueKey(array, key){
 export function arrayUniqueFn(array, fn){
 	return array.filter(item => fn(array, item))
 }
+
+export function arrayIntersects(array1, array2){
+	return array1.filter(value => array2.includes(value))
+}

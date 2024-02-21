@@ -2,27 +2,23 @@
 import { mapState, mapActions } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
-import JobtronButton from '@ui/Button.vue';
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import InputText from '@ui/InputText.vue'
-import InputFile from '@ui/InputFile.vue'
 
 export default {
 	name: 'SignatureVerification',
 	components: {
 		VuePdfEmbed,
-		JobtronButton,
 		InputText,
-		InputFile,
 	},
 	data(){
 		return {
-			isDebug: false,
 			documents: [],
 			isVerifyModal: false,
 			userCode: '',
 			user: null,
 			buttonPressed: false,
+			isDebug: true,
 			activeDoc: 0,
 			requisites: {
 				fio: '',
@@ -32,13 +28,8 @@ export default {
 				uin: '',
 				file1: '',
 				file2: '',
-				upload1: null,
-				upload2: null,
 			},
 			isFinish: false,
-			timer: 0,
-			timerLink: null,
-			signCount: 0,
 		}
 	},
 	computed: {
@@ -47,17 +38,13 @@ export default {
 			return this.documents.filter(doc => !doc.signed)
 		},
 		doc(){
-			return this.documents[this.activeDoc] || null
+			return this.documents.find(doc => doc.id === (+this.$route?.query?.doc || ''))
 		},
 	},
 	mounted(){
 		this.fetchSettings()
 		this.fetchDocs()
 		this.fetchUser()
-		this.timerLink = setInterval(this.countTimer, 1000)
-	},
-	beforeDestroy(){
-		clearInterval(this.timerLink)
 	},
 	methods: {
 		...mapActions(useSettingsStore, ['fetchSettings']),
@@ -90,20 +77,14 @@ export default {
 			if(this.buttonPressed) return
 			this.buttonPressed = true
 			try {
-				/* const {data} =  */await this.axios.post(`/signature/users/${this.user.id}/sms`, {
+				const {data} = await this.axios.post(`/signature/users/${this.user.id}/sms`, {
 					phone: this.user.phone
 				})
-				this.isVerifyModal = true
-				this.timer = 60
+				this.isVerifyModal = data.status
 			}
 			catch (error) {
 				this.$onError(error)
 			}
-		},
-		onSignAgain(){
-			this.buttonPressed = false
-			++this.signCount
-			this.onSign()
 		},
 		async onVerify(){
 			try {
@@ -111,29 +92,12 @@ export default {
 					code: this.userCode
 				})
 				this.isVerifyModal = false
-				++this.activeDoc
-				if(this.documents[this.activeDoc]){
-					this.signCount = 0
-					this.buttonPressed
-				}
-				else{
-					this.isFinish = true
-				}
-				// window.close()
+				window.close()
 			}
 			catch (error) {
 				this.$onError(error)
 			}
 		},
-		onFile1(file){
-			this.requisites.upload1 = file
-		},
-		onFile2(file){
-			this.requisites.upload2 = file
-		},
-		countTimer(){
-			if(this.timer) --this.timer
-		}
 	},
 }
 </script>
@@ -141,13 +105,7 @@ export default {
 <template>
 	<div class="SignatureVerification">
 		<div
-			v-if="isFinish"
-			class="SignatureVerification-finish"
-		>
-			Вы подписали все необходимые документы
-		</div>
-		<div
-			v-else-if="doc && user"
+			v-if="user && doc"
 			class="SignatureVerification-body"
 		>
 			<div class="SignatureVerification-header">
@@ -156,12 +114,9 @@ export default {
 					class="SignatureVerification-logo"
 				>
 				<div class="SignatureVerification-title">
-					Шаг {{ activeDoc + 1 }}: {{ unsigned[activeDoc].name || 'Без названия' }}
+					{{ unsigned[activeDoc].name || 'Без названия' }}
 				</div>
-				<div
-					class="SignatureVerification-bar"
-					:style="[`width: ${(activeDoc + 1) / unsigned.length * 100}%`].join(';')"
-				/>
+				<div class="SignatureVerification-bar" />
 			</div>
 			<VuePdfEmbed
 				:source="doc.file"
@@ -178,6 +133,7 @@ export default {
 							v-model="requisites.fio"
 							primary
 							small
+							disabled
 						/>
 					</b-col>
 				</b-row>
@@ -193,6 +149,7 @@ export default {
 							v-model="requisites.pasport"
 							primary
 							small
+							disabled
 						/>
 					</b-col>
 				</b-row>
@@ -208,6 +165,7 @@ export default {
 							v-model="requisites.uin"
 							primary
 							small
+							disabled
 						/>
 					</b-col>
 				</b-row>
@@ -223,6 +181,7 @@ export default {
 							v-model="requisites.phone"
 							primary
 							small
+							disabled
 						/>
 					</b-col>
 				</b-row>
@@ -238,6 +197,7 @@ export default {
 							v-model="requisites.address"
 							primary
 							small
+							disabled
 						/>
 					</b-col>
 				</b-row>
@@ -247,47 +207,39 @@ export default {
 						<div class="SignatureVerification-label text-center">
 							Лицевая сторона удостоверения / паспорта
 						</div>
-						<InputFile @change="onFile1">
-							<div
-								class="SignatureVerification-file"
-								:class="{
-									'SignatureVerification-file_check': requisites.file1 || requisites.upload1
-								}"
-							>
-								<i
-									v-if="requisites.file1 || requisites.upload1"
-									class="fa fa-check"
-								/>
-							</div>
-						</InputFile>
+						<a
+							:href="requisites.file1"
+							target="_blank"
+							class="SignatureVerification-file"
+							:class="{
+								'SignatureVerification-file_check': requisites.file1
+							}"
+						>
+							<i
+								v-if="requisites.file1"
+								class="fa fa-check"
+							/>
+						</a>
 					</b-col>
 					<b-col cols="6">
 						<div class="SignatureVerification-label text-center">
 							Вторая сторона удостоверения / паспорта
 						</div>
-						<InputFile @change="onFile2">
-							<div
-								class="SignatureVerification-file"
-								:class="{
-									'SignatureVerification-file_check': requisites.file2 || requisites.upload2
-								}"
-							>
-								<i
-									v-if="requisites.file2 || requisites.upload2"
-									class="fa fa-check"
-								/>
-							</div>
-						</InputFile>
+						<a
+							:href="requisites.file2"
+							target="_blank"
+							class="SignatureVerification-file"
+							:class="{
+								'SignatureVerification-file_check': requisites.file2
+							}"
+						>
+							<i
+								v-if="requisites.file2"
+								class="fa fa-check"
+							/>
+						</a>
 					</b-col>
 				</b-row>
-
-				<JobtronButton
-					:disabled="buttonPressed"
-					class="mt-4"
-					@click="onSign"
-				>
-					Подписать
-				</JobtronButton>
 			</div>
 		</div>
 		<div
@@ -302,45 +254,6 @@ export default {
 		>
 			Не удалось получит информацию о сотруднике
 		</div>
-		<!--  -->
-		<b-modal
-			v-model="isVerifyModal"
-			@ok="onVerify"
-		>
-			<div class="">
-				На ваш основной номер было отпревлено смс с кодом подверждения
-			</div>
-			<b-input
-				v-model="userCode"
-				class="form-control mr-2"
-			/>
-			<template #modal-footer>
-				<template v-if="signCount < 2">
-					<span
-						v-if="timer"
-						class="mr-4"
-					>
-						{{ timer }}
-					</span>
-					<b-btn
-						v-else
-						variant="primary"
-						class="mr-4"
-						@click="onSignAgain"
-					>
-						Отправить заного
-					</b-btn>
-				</template>
-
-				<b-btn
-					variant="primary"
-					:disabled="buttonPressed"
-					@click="onVerify"
-				>
-					OK
-				</b-btn>
-			</template>
-		</b-modal>
 	</div>
 </template>
 
@@ -381,6 +294,7 @@ export default {
 		color: #023b6d;
 	}
 	&-bar{
+		width: 100%;
 		height: 3px;
 		transform: translateY(3px);
 		background-color: #009bd9;
