@@ -1041,7 +1041,7 @@ export default {
 								>
 									<div class="col-6">
 										<div class="mb-4">
-											Новые документы
+											Подписанные через смс
 										</div>
 										<UserEditDocumentsV2
 											:user-id="user ? user.id : 0"
@@ -1050,7 +1050,7 @@ export default {
 									<div class="col-6 add_info">
 										<!-- documents tab -->
 										<div class="mb-4">
-											Старые документы
+											Загруженные вручную
 										</div>
 										<UserEditDocuments
 											:user="user"
