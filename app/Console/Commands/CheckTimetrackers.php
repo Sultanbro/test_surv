@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Service\Referral\ForReferrerDaily;
 use App\Timetracking;
+use App\User;
 use Illuminate\Console\Command;
 
 class CheckTimetrackers extends Command
@@ -48,6 +49,7 @@ class CheckTimetrackers extends Command
             ->get();
 
         foreach ($recordsFromTimeTrack as $recordFromTimeTrack) {
+            /**@var User $user */
             $user = $recordFromTimeTrack->user;
 
             if ($user) {

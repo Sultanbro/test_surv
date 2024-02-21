@@ -2,15 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\ProfileGroup;
-use App\Repositories\Timetrack\TimetrackRepository;
 use App\Repositories\TimeTrackingRepository;
-use App\Timetracking;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 class CountHours extends Command
 {
@@ -50,20 +44,18 @@ class CountHours extends Command
      */
     public function handle(): void
     {
-        $userId = (int) $this->argument('user_id') ?? null;
-        $date   = $this->argument('date') ?? now()->format('Y-m-d');
+        $userId = (int)$this->argument('user_id') ?? null;
+        $date = $this->argument('date') ?? now()->format('Y-m-d');
 
         $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUserByDate($userId, $date)->get();
 
-        foreach($timeTrackRecords as $record)
-        {
+        foreach ($timeTrackRecords as $record) {
             $user = $record->user;
-            if ($user)
-            {
+            if ($user) {
                 $userSchedule = $user->schedule();
-                $enterTime  = $record->enter;
-                $exitTime   = $record->exit;
-                $minutes    = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
+                $enterTime = $record->enter;
+                $exitTime = $record->exit;
+                $minutes = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
 
                 $record->update([
                     'total_hours' => $minutes
@@ -79,14 +71,14 @@ class CountHours extends Command
      * @return float
      */
     private function calculateMinutes(
-        array $schedule,
+        array  $schedule,
         Carbon $enterTime,
         Carbon $exitTime
     ): float
     {
-        $lunchTime      = 60;
-        $maxWorkMinutesPerDay= max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
-        $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
+        $lunchTime = 60;
+        $maxWorkMinutesPerDay = max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
+        $diffInMinutes = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
         return min($diffInMinutes, $maxWorkMinutesPerDay);
     }

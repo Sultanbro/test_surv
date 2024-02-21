@@ -3,10 +3,12 @@
 namespace App\Models\File;
 
 use App\Helpers\FileHelper;
+use App\Models\UserSignatureHistory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
@@ -62,6 +64,15 @@ class File extends Model
             'user_signed_file',
             'file_id',
             'user_id'
+        );
+    }
+
+    public function signatureHistories(): HasMany
+    {
+        return $this->hasMany(
+            UserSignatureHistory::class,
+            'file_id',
+            'id'
         );
     }
 }
