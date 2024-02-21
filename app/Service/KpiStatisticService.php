@@ -515,7 +515,6 @@ class KpiStatisticService
     {
         $searchWord = $filter['search_world'] ?? '';
         $groupId = $filter['group_id'] ?? null;
-        $onlyActive = $filter['only_active'] ?? true;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
@@ -526,7 +525,6 @@ class KpiStatisticService
         $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
         return Kpi::withTrashed()
-            ->when((bool)$searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
                 $subQuery->orWhereRelation(
@@ -536,6 +534,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
+            ->where(fn(Builder $query) => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
@@ -557,16 +556,14 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where(function ($query) use ($start_date, $last_date, $onlyActive) {
-                $query->whereHas('targetable', function ($q) use ($start_date, $last_date, $onlyActive) {
+            ->where(function ($query) use ($start_date, $last_date) {
+                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhere('deleted_at', '>', $start_date);
                     } elseif ($q->getModel() instanceof Position) {
                         $q->whereNull('deleted_at')
                             ->orWhereDate('deleted_at', '>', $start_date);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-//                        $q->where('active', $onlyActive);
                     }
                 })
                     ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
@@ -590,8 +587,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий групповые.
      */
-    private
-    function getProfileGroupQp($quartalPremium)
+    private function getProfileGroupQp($quartalPremium)
     {
         return ProfileGroup::query()
             ->select(DB::raw('CONCAT(u.name,\' \',u.last_name) as full_name'), 'us.user_id', 'us.activity_id', 'profile_groups.name', DB::raw('SUM(us.value) as fact'))
@@ -620,8 +616,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий индивидуальные.
      */
-    private
-    function getUsersQp($quartalPremium)
+    private function getUsersQp($quartalPremium)
     {
         return User::query()->leftJoin('user_stats as us', 'us.user_id', '=', 'users.id')
             ->select(['users.id', 'user_id', 'activity_id', 'name', DB::raw('SUM(value) as fact'), DB::raw("CONCAT_WS(' ', users.last_name, users.name) as full_name")])
@@ -637,8 +632,7 @@ class KpiStatisticService
     /**
      * Получаем кв-премий.
      */
-    private
-    function getQuartalPremiums(Request $request)
+    private function getQuartalPremiums(Request $request)
     {
         $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
         $id = $request->targetable_id ?? null;
@@ -1103,25 +1097,22 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public
-    function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(Request $request): array
     {
         $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
-
         $date = Carbon::createFromDate(
             $filters['data_from']['year'] ?? now()->year,
             $filters['data_from']['month'] ?? now()->month
         )->startOfMonth();
 
-        $kpis = $this
-            ->kpis($date, [
-                'search_world' => $searchWord,
-                'group_id' => $groupId,
-                'only_active' => true,
-            ])
-            ->paginate();
+        $params = [
+            'search_world' => $searchWord,
+            'group_id' => $groupId,
+            'only_active' => true
+        ];
+        $kpis = $this->kpis($date, $params)->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
         foreach ($kpis->items() as $kpi) {
@@ -1142,6 +1133,7 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
+
         return [
             'paginator' => $kpis,
             'groups' => ProfileGroup::query()

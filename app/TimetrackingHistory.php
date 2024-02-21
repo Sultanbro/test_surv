@@ -3,9 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $user_id
+ * @property int $author_id
+ * @property string $author
+ * @property string $date
+ * @property string $description
+ * @property string $payload
+ */
 class TimetrackingHistory extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'timetracking_history';
 
     protected $fillable = [
@@ -14,5 +25,10 @@ class TimetrackingHistory extends Model
         'author',
         'date',
         'description',
+        'payload'
+    ];
+
+    protected $casts = [
+        'data' => 'payload'
     ];
 }

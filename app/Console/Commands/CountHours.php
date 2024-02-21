@@ -84,7 +84,8 @@ class CountHours extends Command
         Carbon $exitTime
     ): float
     {
-        $lunchTime      = 60;
+        $lunchTime = $schedule['rest_time'] ?? 60;
+
         $maxWorkMinutesPerDay= max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
