@@ -8,16 +8,16 @@
 
 namespace Eddir\Messenger;
 
-use Eddir\Messenger\Models\MessengerUserOnline;
-use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Models\MessengerChat;
 use Eddir\Messenger\Models\MessengerEvent;
 use Eddir\Messenger\Models\MessengerMessage;
+use Eddir\Messenger\Models\MessengerUserOnline;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Schema;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
+use function request;
 
 class Messenger
 {
@@ -37,16 +38,6 @@ class Messenger
         'image' => '',
         'private' => 0,
     ];
-
-    /**
-     * Get max file's upload size in MB.
-     *
-     * @return float|int
-     */
-    public function getMaxUploadSize(): float|int
-    {
-        return config('messenger.attachments.max_upload_size') * 1048576;
-    }
 
     /**
      * Constructor.
@@ -63,14 +54,15 @@ class Messenger
         );
     }
 
-    public function getGeneralChat(): MessengerChat
+    /**
+     * Get max file's upload size in MB.
+     *
+     * @return float|int
+     */
+    public function getMaxUploadSize(): float|int
     {
-        $generalChat = new MessengerChat($this->generalChat);
-        $generalChat->id = 0;
-        return $generalChat;
+        return config('messenger.attachments.max_upload_size') * 1048576;
     }
-
-    // API v2
 
     /**
      * Get user's chats with last message and unread messages count for each chat.
@@ -101,6 +93,8 @@ class Messenger
 
         return $chats;
     }
+
+    // API v2
 
     /**
      * Get chat attributes.
@@ -151,6 +145,13 @@ class Messenger
         return $chat;
     }
 
+    public function getGeneralChat(): MessengerChat
+    {
+        $generalChat = new MessengerChat($this->generalChat);
+        $generalChat->id = 0;
+        return $generalChat;
+    }
+
     /**
      * Search chat by name.
      *
@@ -187,7 +188,7 @@ class Messenger
             ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere('last_name', 'like', "%$name%"))
             ->limit($limit)
             ->get()->map(function ($item) {
-                $item->image = 'https://' . \request()->getHost() . '/users_img/' . $item->img_url;
+                $item->image = 'https://' . request()->getHost() . '/users_img/' . $item->img_url;
                 return $item;
             });
     }
@@ -352,6 +353,7 @@ class Messenger
             ->whereDoesntHave('deletedMessage', fn($query) => $query->where('user_id', $user->id))
             ->with('deletedMessage')
             ->where('chat_id', $chatId)
+            ->where('created_at', '<=', $user->created_at)
             ->where('deleted', false);
 
         // if start_message_id is 0, get last messages
@@ -425,6 +427,84 @@ class Messenger
         }
 
         return $messages;
+    }
+
+    /**
+     * Create event
+     *
+     * @param MessengerChat $chat
+     * @param User $user
+     * @param string $type
+     * @param array|null $payload
+     *
+     * @return MessengerEvent
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
+     */
+    public function createEvent(MessengerChat $chat, User $user, string $type, array $payload = null): MessengerEvent
+    {
+        $message = new MessengerMessage();
+        if ($chat->id == 0) {
+            $message->chat_id = 0;
+        } else {
+            $message->chat()->associate($chat);
+        }
+        $message->sender()->associate($user);
+        $message->body = 'Event';
+
+        $event = new MessengerEvent();
+        $event->type = $type;
+        $event->message()->associate($message);
+        $event->setPayloadAttribute($payload);
+
+
+        if (in_array($type, MessengerEvent::$save_events)) {
+            if ($chat->id == 0) Schema::disableForeignKeyConstraints();
+            $message->save();
+            $event->message()->associate($message);
+            $event->save();
+            if ($chat->id == 0) Schema::enableForeignKeyConstraints();
+            /** @noinspection PhpExpressionResultUnusedInspection */
+            $message->event;
+            $messageData = $message->toArray();
+        } else {
+            $messageData = $message->toArray();
+            $messageData['event'] = $event->toArray();
+            $messageData['chat'] = $chat->toArray();
+        }
+        $messageData['chat']['users'] = $chat->users->toArray();
+
+        if ($chat->id == 0) {
+            $users = MessengerUserOnline::all()->unique('user_id');
+        } else {
+            $users = MessengerUserOnline::getOnlineMembers($chat->id);
+        }
+
+        $users->each(function ($user) use ($messageData) {
+            $this->push('messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
+                'message' => $messageData,
+            ]);
+        });
+
+        return $event;
+    }
+
+    /**
+     * Trigger an event using Pusher
+     *
+     * @param string $channel
+     * @param string $event
+     * @param array $data
+     *
+     * @return object
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
+     */
+    public function push(string $channel, string $event, array $data): object
+    {
+        return $this->pusher->trigger("private-" . $channel, $event, $data);
     }
 
     /**
@@ -526,21 +606,6 @@ class Messenger
                 $query->where('user_id', $userId);
             })
             ->exists();
-    }
-
-    /**
-     * Check if user is already deleted message.
-     *
-     * @param MessengerMessage $message
-     * @param int $userId
-     * @return bool
-     */
-    public function isAlreadyDeleted(
-        MessengerMessage $message,
-        int              $userId
-    ): bool
-    {
-        return $message->deletedMessage()->get()->contains($userId);
     }
 
     /**
@@ -767,8 +832,7 @@ class Messenger
             $this->createEvent($message->chat, $promote, MessengerEvent::TYPE_DELETE, [
                 'message_id' => $messageId,
             ]);
-        }
-        else {
+        } else {
             if (self::isAlreadyDeleted($message, $promote->id)) {
                 return response()->json(['message' => 'You are already delete this message.'], 400);
             }
@@ -776,10 +840,24 @@ class Messenger
         }
 
 
-
         if ($message->chat_id == 0) $message->chat = self::getGeneralChat();
 
         return true;
+    }
+
+    /**
+     * Check if user is already deleted message.
+     *
+     * @param MessengerMessage $message
+     * @param int $userId
+     * @return bool
+     */
+    public function isAlreadyDeleted(
+        MessengerMessage $message,
+        int              $userId
+    ): bool
+    {
+        return $message->deletedMessage()->get()->contains($userId);
     }
 
     /**
@@ -947,7 +1025,7 @@ class Messenger
         $messages = MessengerMessage::query()->where('chat_id', $chatId)->get();
 
         if (is_int($userId)) {
-            if ( $messages->count() > 0 ) {
+            if ($messages->count() > 0) {
                 // set messages as read
                 $user = User::query()->find($userId);
                 if ($user) {
@@ -1079,84 +1157,6 @@ class Messenger
         $this->createEvent($chat, $chat->owner, MessengerEvent::TYPE_CHAT_PHOTO);
 
         return $chat;
-    }
-
-    /**
-     * Create event
-     *
-     * @param MessengerChat $chat
-     * @param User $user
-     * @param string $type
-     * @param array|null $payload
-     *
-     * @return MessengerEvent
-     * @throws ApiErrorException
-     * @throws GuzzleException
-     * @throws PusherException
-     */
-    public function createEvent(MessengerChat $chat, User $user, string $type, array $payload = null): MessengerEvent
-    {
-        $message = new MessengerMessage();
-        if ($chat->id == 0) {
-            $message->chat_id = 0;
-        } else {
-            $message->chat()->associate($chat);
-        }
-        $message->sender()->associate($user);
-        $message->body = 'Event';
-
-        $event = new MessengerEvent();
-        $event->type = $type;
-        $event->message()->associate($message);
-        $event->setPayloadAttribute($payload);
-
-
-        if (in_array($type, MessengerEvent::$save_events)) {
-            if ($chat->id == 0) Schema::disableForeignKeyConstraints();
-            $message->save();
-            $event->message()->associate($message);
-            $event->save();
-            if ($chat->id == 0) Schema::enableForeignKeyConstraints();
-            /** @noinspection PhpExpressionResultUnusedInspection */
-            $message->event;
-            $messageData = $message->toArray();
-        } else {
-            $messageData = $message->toArray();
-            $messageData['event'] = $event->toArray();
-            $messageData['chat'] = $chat->toArray();
-        }
-        $messageData['chat']['users'] = $chat->users->toArray();
-
-        if ($chat->id == 0) {
-            $users = MessengerUserOnline::all()->unique('user_id');
-        } else {
-            $users = MessengerUserOnline::getOnlineMembers($chat->id);
-        }
-
-        $users->each(function ($user) use ($messageData) {
-            $this->push('messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
-                'message' => $messageData,
-            ]);
-        });
-
-        return $event;
-    }
-
-    /**
-     * Trigger an event using Pusher
-     *
-     * @param string $channel
-     * @param string $event
-     * @param array $data
-     *
-     * @return object
-     * @throws ApiErrorException
-     * @throws GuzzleException
-     * @throws PusherException
-     */
-    public function push(string $channel, string $event, array $data): object
-    {
-        return $this->pusher->trigger("private-" . $channel, $event, $data);
     }
 
     /**
