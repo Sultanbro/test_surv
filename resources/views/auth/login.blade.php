@@ -146,7 +146,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname === '/login' && window.location.protocol === 'https:') {
         const hostArr = window.location.hostname.split('.');
-        if(hostArr.length > 2 && !~['bp', 'admin'].indexOf(hostArr[0])){
+        if(hostArr.length > 2 && !~['bp', 'admin', 'dev'].indexOf(hostArr[0])){
             window.location.href = `https://${hostArr[1]}.${hostArr[2]}/login`;
         }
     }
