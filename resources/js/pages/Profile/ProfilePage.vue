@@ -359,6 +359,7 @@ export default {
 	}
 	&-fillProfile{
 		display: block;
+		margin-top: 20px;
 		padding: 20px;
 
 		font-size: 20px;
@@ -366,10 +367,12 @@ export default {
 		text-decoration: none;
 		text-align: center;
 
-		background-color: #dc3545;
+		background-color: #e84f71;
+		border-radius: 16px;
+		transition: 0.3s;
 		&:hover{
 			color: #fff;
-			text-decoration: underline;
+			transform: translateY(-2px);
 		}
 	}
 }
