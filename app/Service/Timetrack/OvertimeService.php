@@ -13,7 +13,9 @@ class OvertimeService
 {
     public function handle($data){
         $user = Auth::user();
-        $groupId =  $user->inGroups()->first()->id;
+        $groupId =  $user->inGroups()->first()?->id;
+
+        if (!$groupId) throw new Exception("У вас нет группа");
 
         $groupHead = GroupUser::getHeadInGroup($groupId);
         if (!$groupHead) throw new Exception("Руководитель группы не найден");
