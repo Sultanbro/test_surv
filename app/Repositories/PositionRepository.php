@@ -88,6 +88,11 @@ class PositionRepository extends CoreRepository
      * @param int|null $indexation
      * @param int|null $sum
      * @param array|null $description
+     * @param bool|null $is_head
+     * @param bool|null $is_spec
+     * @param bool|null $ckp_status
+     * @param string|null $ckp
+     * @param string|null $ckp_link
      * @return bool
      */
     public function updatePositionWithDescription(
@@ -98,6 +103,9 @@ class PositionRepository extends CoreRepository
         ?array $description,
         ?bool $is_head,
         ?bool $is_spec,
+        ?bool $ckp_status,
+        ?string $ckp,
+        ?string $ckp_link,
     )
     {
          $positionUpdated = $this->model()->findOrFail($id)->update([
@@ -106,6 +114,9 @@ class PositionRepository extends CoreRepository
              'sum' => $sum,
              'is_head' => $is_head,
              'is_spec' => $is_spec,
+             'ckp_status' => $ckp_status,
+             'ckp' => $ckp,
+             'ckp_lin' => $ckp_link,
          ]);
 
          if ($positionUpdated && isset($description))
