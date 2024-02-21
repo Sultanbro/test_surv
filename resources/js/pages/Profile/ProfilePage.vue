@@ -308,7 +308,7 @@ export default {
 					this.$refs.profit.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.$refs.estimation.$el instanceof Element && this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.$refs.indicators.$el instanceof Element && this.intersectionObserver.observe(this.$refs.indicators.$el)
-					this.$refs.referals.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals.$el)
+					this.$refs.referals?.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals?.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {
@@ -320,7 +320,7 @@ export default {
 			entries.forEach(entry => {
 				if(entry.isIntersecting){
 					Object.keys(this.anim).forEach(key => {
-						if(this.$refs[key].$el === entry.target){
+						if(this.$refs[key]?.$el === entry.target){
 							this.anim[key] = true
 						}
 					})
