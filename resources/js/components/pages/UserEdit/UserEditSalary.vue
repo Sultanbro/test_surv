@@ -836,8 +836,4 @@ export default {
 		height: 15px;
 	}
 }
-.iban-info{
-	position: relative;
-	left: -30px;
-}
 </style>

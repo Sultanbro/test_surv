@@ -79,9 +79,9 @@
 						<div class="form-group mb-0 text-center">
 							<div class="profile-img-wrap hidden-file-wrapper">
 								<img
-									v-if="!crop_image.hide"
+									v-if="user && user.img_url"
 									alt="Profile image"
-									:src="crop_image.image"
+									:src="`/users_img/${user.img_url}`"
 									class="profile-img"
 								>
 								<div
@@ -220,15 +220,38 @@
 								<label
 									class="col-sm-4 col-form-label font-weight-bold label-surv"
 								>День рождения <span class="red">*</span></label>
-								<div class="col-sm-8">
-									<input
-										id="birthday"
+								<div
+									v-click-outside="onClickOutsideBirthday"
+									class="col-sm-8 relative"
+								>
+									<InputText
+										:value="birthday[0]"
+										readonly
+										small
+										clear
+										placeholder="День рождения"
+										class="PageCabinet-birthday"
+										@clear="onClearBirthday"
+										@focus="onFocusBirthday"
+										@blur="onBlurBirthday"
+										@click="onClickBirthday"
+									/>
+									<CalendarInput
+										v-show="isOpenBirthday"
 										v-model="birthday"
-										class="form-control input-surv"
-										type="date"
-										name="birthday"
-										required
+										:tabs="[]"
+										:open="isOpenBirthday"
+										popup
 									>
+										<template #footerAfter>
+											<JobtronButton
+												class="ml-a"
+												@click="onClickOutsideBirthday"
+											>
+												ок
+											</JobtronButton>
+										</template>
+									</CalendarInput>
 								</div>
 							</div>
 
@@ -440,15 +463,19 @@
 /* eslint-disable camelcase */
 
 const CabinetAdmin = () => import(/* webpackChunkName: "CabinetAdmin" */ '@/components/pages/Cabinet/CabinetAdmin.vue')
+import InputText from '@ui/InputText.vue'
+import CalendarInput from '@ui/CalendarInput/CalendarInput.vue'
+import JobtronButton from '../components/ui/Button.vue'
+import LocalitySelect from '@ui/LocalitySelect.vue'
 
 import { mapGetters, mapActions } from 'vuex'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import API from '@/components/Chat/Store/API.vue'
+import { mapState, mapActions as mapPiniaActions } from 'pinia'
+import { useUserStore } from '@/stores/User'
 
-import JobtronButton from '../components/ui/Button.vue'
-import LocalitySelect from '@ui/LocalitySelect.vue'
 
 
 export default {
@@ -458,6 +485,8 @@ export default {
 		CabinetAdmin,
 		LocalitySelect,
 		JobtronButton,
+		InputText,
+		CalendarInput,
 	},
 	props: {
 		authRole: {
@@ -478,7 +507,6 @@ export default {
 			test: 'dsa',
 			items: [],
 			myCroppa: {},
-			user: [],
 			user_card: [],
 			phone: '',
 			phone1: '',
@@ -489,7 +517,9 @@ export default {
 			success: '',
 			password: '',
 			working_city: '',
-			birthday: '',
+			birthday: [''],
+			// touchpadfix: null,
+			isOpenBirthday: false,
 			cardValidatre: {
 				error: false,
 				type: false,
@@ -535,6 +565,7 @@ export default {
 			'profileGroups',
 			'accessDictionaries',
 		]),
+		...mapState(useUserStore, ['user']),
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
@@ -554,6 +585,7 @@ export default {
 		this.applyMask()
 	},
 	created() {
+		this.fetchUser()
 		this.initMask()
 		if(!this.users.length) this.loadCompany()
 		if (this.authRole) {
@@ -562,10 +594,10 @@ export default {
 	},
 	methods: {
 		...mapActions(['loadCompany']),
+		...mapPiniaActions(useUserStore, ['fetchUser']),
 		init() {
 			this.fetchData()
 			this.fetchDocs()
-			this.user = this.authRole;
 			this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
@@ -586,20 +618,21 @@ export default {
 		change({canvas}) {
 			this.crop_image.canvas = canvas;
 		},
-		save_picture(){
-			this.croppie.result({
+		async save_picture(){
+			const blob = await this.croppie.result({
 				type: 'blob',
 				format: 'jpeg',
 				quality: 0.8
-			}).then(blob => {
-				const formData = new FormData();
-				formData.append('file', blob);
-				this.axios.post('/profile/upload/image/profile/', formData).then((response) => {
-					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
-				});
 			})
 
-			this.saveCropped();
+			const formData = new FormData();
+			formData.append('file', blob);
+
+			const {data} = await this.axios.post('/profile/upload/image/profile/', formData)
+			bus.$emit('user-avatar-update', '/users_img/' + data.filename)
+			this.fetchUser(true)
+
+			this.saveCropped()
 		},
 		chooseProfileImage(){
 			this.showChooseProfileModal = true;
@@ -675,7 +708,7 @@ export default {
 
 		format_date(value) {
 			if (value) {
-				return (this.birthday = this.$moment(String(value)).format('YYYY-MM-DD'));
+				return (this.birthday[0] = this.$moment(String(value)).format('DD.MM.YYYY'));
 			}
 		},
 
@@ -707,7 +740,7 @@ export default {
 			}
 		},
 
-		editProfileUser() {
+		async editProfileUser() {
 			this.cardValidatre.type = false;
 			this.cardValidatre.error = false;
 
@@ -749,7 +782,7 @@ export default {
 						phone_1: phone1.replace(/[^\d]+/g, ''),
 					},
 					password: this.password,
-					birthday: this.birthday,
+					birthday: this.$moment(this.birthday[0], 'DD.MM.YYYY').format('YYYY-MM-DD'),
 					working_city: this.working_city,
 					working_country: this.keywords,
 				}
@@ -761,13 +794,15 @@ export default {
 					}
 				}
 
-				this.axios
-					.post('/profile/edit/user/cart/', request)
-					.then(({data}) => {
-						if (data.success) {
-							this.$toast.success('Успешно Сохранено');
-						}
-					});
+				try {
+					const {data} = await this.axios.post('/profile/edit/user/cart/', request)
+					if (data.success) {
+						this.$toast.success('Успешно Сохранено');
+					}
+				}
+				catch (error) {
+					this.$onError(error)
+				}
 			}
 			else {
 				this.cardValidatre.error = true;
@@ -783,46 +818,42 @@ export default {
 		},
 
 		fetchData() {
-			this.axios
-				.get('/cabinet/get')
-				.then(({data}) => {
-					this.user = JSON.parse(JSON.stringify(data.user))
-					this.phone = data.user.phone
-					this.phone1 = data.user.phone_1
-					this.keywords = data.user.working_country;
-					this.working_city = data.user.working_city;
+			this.axios.get('/cabinet/get').then(({data}) => {
+				this.phone = data.user.phone
+				this.phone1 = data.user.phone_1
+				this.keywords = data.user.working_country;
+				this.working_city = data.user.working_city;
 
-					if(data.user.coordinate){
-						this.geo_lat = data.user.coordinate.geo_lat
-						this.geo_lon = data.user.coordinate.geo_lon
-					}
+				if(data.user.coordinate){
+					this.geo_lat = data.user.coordinate.geo_lat
+					this.geo_lon = data.user.coordinate.geo_lon
+				}
 
-					if (data.user_payment?.length > 0) {
-						this.payments = data.user_payment;
-						this.payments_view = true
-					}
-					else {
-						this.payments = [{
-							bank: '',
-							cardholder: '',
-							country: '',
-							number: '',
-							phone: '',
-							iban: '',
-						}]
-					}
+				if (data.user_payment?.length > 0) {
+					this.payments = data.user_payment;
+					this.payments_view = true
+				}
+				else {
+					this.payments = [{
+						bank: '',
+						cardholder: '',
+						country: '',
+						number: '',
+						phone: '',
+						iban: '',
+					}]
+				}
 
-					if (this.user.img_url) {
-						this.img = '/users_img/' + data.user.img_url;
-					}
-					else {
-						this.img = '/users_img/noavatar.png';
-					}
-					this.drawProfile();
-				})
-				.catch((error) => {
-					alert(error);
-				});
+				if (this.user.img_url) {
+					this.img = '/users_img/' + data.user.img_url;
+				}
+				else {
+					this.img = '/users_img/noavatar.png';
+				}
+				this.drawProfile();
+			}).catch((error) => {
+				alert(error);
+			});
 		},
 		async fetchDocs(){
 			try {
@@ -898,7 +929,20 @@ export default {
 		},
 		selectTab(tab){
 			this.activeTab = tab
-		}
+		},
+
+		onClearBirthday(){
+			this.birthday = ['']
+		},
+		onFocusBirthday(){},
+		onBlurBirthday(){},
+		onClickBirthday(){
+			this.isOpenBirthday = !this.isOpenBirthday
+		},
+		onClickOutsideBirthday(){
+			this.isOpenBirthday = false
+			// if(this.touchpadfix) clearTimeout(this.touchpadfix)
+		},
 	},
 };
 </script>
@@ -1137,12 +1181,7 @@ a.lp-link {
 	padding: 4px 10px 10px 10px;
 }
 
-.iban-info{
-	position: absolute;
-	top: 50%;
-	right: 20px;
-	transform: translateY(-50%);
-}
+
 
 .PageCabinet{
 	&-accessSelect{
@@ -1242,9 +1281,18 @@ a.lp-link {
 		align-items: center;
 		gap: 10px;
 	}
+	&-birthday{
+		border: 1px solid #ddd;
+	}
 
 	.content{
 		padding: 15px !important;
+	}
+	.iban-info{
+		position: absolute;
+		top: 50%;
+		right: 20px;
+		transform: translateY(-50%);
 	}
 }
 </style>
