@@ -69,6 +69,7 @@
 		/>
 
 		<RefStat
+			v-if="isBP"
 			ref="referals"
 			:class="{ _active: anim.referals }"
 			@init="intro['referals'] = true"
@@ -254,7 +255,7 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
-				&& this.refReady
+				&& (this.refReady || !this.isBP)
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
@@ -275,7 +276,7 @@ export default {
 	},
 	mounted(){
 		if(this.isReady) this.initAnimOnScroll()
-		this.fetchUserStats()
+		if(this.isBP) this.fetchUserStats()
 	},
 	beforeDestroy(){
 		this.intersectionObserver.disconnect()
