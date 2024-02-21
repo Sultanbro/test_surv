@@ -49,8 +49,10 @@ window.onerror = function(msg, url, line, col, error){
 const AXIOS_SEPARATOR = '#️⃣'
 
 axios.interceptors.response.use((response) => response, (error) => {
-	const msg = `${error?.response?.data?.message}` || ''
+	let msg = `${error?.response?.data?.message}` || ''
 	if(msg === 'Unauthenticated.') return location.assign('/')
+	const trace = error?.response?.data?.trace
+	if(trace) msg += ` ${trace[0]} ${trace[1]}`
 	const reqData = error?.response?.config?.data
 	const data = reqData instanceof FormData ? JSON.stringify(Object.fromEntries(reqData)) : JSON.stringify(reqData)
 	weblog('axios: ' + (~msg.indexOf('logs/laravel') ? 'LARAVEL LOGS' : msg), (error?.response?.config?.method || '') + AXIOS_SEPARATOR + (error?.response?.config?.url || '') + AXIOS_SEPARATOR + data)

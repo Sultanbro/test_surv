@@ -913,6 +913,7 @@ export default {
 		},
 		applyMask(){
 			if(!window.intlTelInput) return setTimeout(this.applyMask, 100)
+			if(!this.$el) return setTimeout(this.applyMask, 100)
 			const phones = this.$el.querySelectorAll('.PageCabinet-phone')
 			phones.forEach(input => {
 				window.intlTelInput(input, {
