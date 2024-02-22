@@ -1020,7 +1020,6 @@ class Salary extends Model
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
             $allTotal += $user->kpi;
-//            $allTotal += array_sum($test_bonus);
             $allTotal += array_sum($awards);
             $allTotal -= $fines_total;
             /**
@@ -1055,9 +1054,6 @@ class Salary extends Model
             }
 
             $user->totalTaxes = UserTaxService::calculateTax($taxItems, $allTotal, $method);
-//            if ($user->id == 31290) {
-//                dd($taxItems->toArray(), $allTotal, $method, $user->totalTaxes);
-//            }
 
             // add to array
             $data['users'][] = $user;
