@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -34,6 +35,7 @@ use Illuminate\Support\Carbon;
 class File extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'fileable_id',

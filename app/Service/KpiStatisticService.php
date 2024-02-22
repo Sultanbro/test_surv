@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\CacheStorage\KpiItemsCacheStorage;
 use App\Classes\Helpers\Currency;
+use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
@@ -1844,55 +1845,55 @@ class KpiStatisticService
                     operator: '=',
                     value: $groupId
                 );
-            });
-//            ->where(fn(Builder $query) => (new KpiFilter)->globalSearch($searchWord));
-//            ->with([
-//                'histories_latest' => function ($query) use ($date) {
-//                    $query->whereYear('created_at', $date->year);
-//                    $query->whereMonth('created_at', $date->month);
-//                },
-//                'items.histories_latest' => function ($query) use ($date) {
-//                    $query->whereYear('created_at', $date->year);
-//                    $query->whereMonth('created_at', $date->month);
-//                },
-//                'items' => function (HasMany $query) use ($last_date, $start_date, $date) {
-//                    $query->with(['histories' => function (MorphMany $query) use ($date) {
-//                        $query->whereYear('created_at', $date->year);
-//                        $query->whereMonth('created_at', $date->month);
-//                    }]);
-//                    $query->where(function (Builder $query) use ($start_date, $last_date) {
-//                        $query->whereNull('deleted_at');
-//                        $query->orWhere('deleted_at', '>', $last_date);
-//                    });
-//                },
-//                'items.activity'
-//            ])
-//            ->where(function ($query) use ($start_date, $last_date) {
-//                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
-//                    if ($q->getModel() instanceof User) {
-//                        $q->whereNull('deleted_at')
-//                            ->orWhere('deleted_at', '>', $start_date);
-//                    } elseif ($q->getModel() instanceof Position) {
-//                        $q->whereNull('deleted_at')
-//                            ->orWhereDate('deleted_at', '>', $start_date);
-//                    }
-//                })
-//                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-//                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
-//                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-//                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
-//                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
-//            })
-//            ->with([
-//                'users' => fn($q) => $q->whereNull('deleted_at')
-//                    ->orWhereDate('deleted_at', '>=', $last_date),
-//                'positions' => fn($q) => $q->whereNull('deleted_at')
-//                    ->orWhereDate('deleted_at', '>=', $last_date),
-//                'groups' => fn($q) => $q->where('active', 1),
-//            ])
-//            ->where('kpis.created_at', '>=', $last_date)
-//            ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-//                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '<=', $date->format('Y-m-d'))));
+            })
+            ->where(fn(Builder $query) => (new KpiFilter($query))->globalSearch($searchWord))
+            ->with([
+                'histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
+                },
+                'items.histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
+                },
+                'items' => function (HasMany $query) use ($last_date, $start_date, $date) {
+                    $query->with(['histories' => function (MorphMany $query) use ($date) {
+                        $query->whereYear('created_at', $date->year);
+                        $query->whereMonth('created_at', $date->month);
+                    }]);
+                    $query->where(function (Builder $query) use ($start_date, $last_date) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $last_date);
+                    });
+                },
+                'items.activity'
+            ])
+            ->where(function ($query) use ($start_date, $last_date) {
+                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
+                    if ($q->getModel() instanceof User) {
+                        $q->whereNull('deleted_at')
+                            ->orWhere('deleted_at', '>', $start_date);
+                    } elseif ($q->getModel() instanceof Position) {
+                        $q->whereNull('deleted_at')
+                            ->orWhereDate('deleted_at', '>', $start_date);
+                    }
+                })
+                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+            })
+            ->with([
+                'users' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>=', $last_date),
+                'positions' => fn($q) => $q->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>=', $last_date),
+                'groups' => fn($q) => $q->where('active', 1),
+            ])
+            ->where('kpis.created_at', '>=', $last_date)
+            ->where(fn($query) => $query->whereNull('kpis.deleted_at')
+                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '<=', $date->format('Y-m-d'))));
     }
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
