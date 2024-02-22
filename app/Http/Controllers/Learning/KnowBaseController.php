@@ -230,7 +230,7 @@ class KnowBaseController extends Controller
             $favouriteIds = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->whereIn('kb_id', $children_ids)->pluck('kb_id')->toArray();
 
             foreach ($trees as $tree) {
-                $tree->parent_id = null;
+//                $tree->parent_id = null;
             }
 
             $trees->toArray();
