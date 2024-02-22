@@ -13,7 +13,7 @@ class FileStoreRequest extends FormRequest
     {
         return [
             'file' => [Rule::requiredIf(Str::lower($this->method()) !== 'put'), 'file'],
-            'local_name' => ['nullable', 'string']
+            'original_name' => ['nullable', 'string']
         ];
     }
 
