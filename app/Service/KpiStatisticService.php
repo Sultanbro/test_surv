@@ -1787,10 +1787,11 @@ class KpiStatisticService
             'only_active' => true
         ];
 
+        dd($this->kpis($date, $params)->toSql());
+
         $kpis = $this->kpis($date, $params)->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-        dd($this->kpis($date, $params)->toSql());
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
