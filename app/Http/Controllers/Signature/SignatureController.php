@@ -98,7 +98,7 @@ class SignatureController extends Controller
     {
         $signedFiles = $user->signedFiles()->get();
         $groupFiles = $user->activeGroup()->files()->get();
-        $signedFiles->merge($groupFiles)->unique('id');
-        return FileResource::collection($signedFiles);
+        $groupFiles->merge($signedFiles)->unique('id');
+        return FileResource::collection($groupFiles);
     }
 }
