@@ -112,7 +112,6 @@ class KpiService
             // remove items if it's not in history
             if ($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
-                $kpi->updated_at = $kpi->histories->first()->update_at;
 
                 $items = $kpi->items;
 
@@ -205,6 +204,8 @@ class KpiService
 
         $kpi = Kpi::query()->findOrFail($id);
         $kpi->update($all);
+        $kpi->updated_at = now();
+        $kpi->save();
         DB::commit();
 
         $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
@@ -265,7 +266,8 @@ class KpiService
                 event(new TrackKpiItemEvent($item));
             }
         }
-
+        $kpi->updated_at = now();
+        $kpi->save();
         return $item_ids;
     }
 
@@ -313,10 +315,10 @@ class KpiService
                 $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
 
                 $kpi->children = $kpi_item_ids;
+                $kpi->updated_at = now();
                 $kpi->save();
 
                 $kpi_id = $kpi->id;
-
             });
 
             event(new TrackKpiUpdatesEvent($kpi_id));
