@@ -459,6 +459,7 @@ class SalaryController extends Controller
             'Возраст',
             'Телефон',
             'Карта',
+            'Тип',
             'ИИН',
             'Отр. дни',
             'Раб. дни',
