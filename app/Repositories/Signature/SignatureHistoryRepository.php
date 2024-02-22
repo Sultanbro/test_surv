@@ -23,16 +23,18 @@ class SignatureHistoryRepository implements SignatureHistoryRepositoryInterface
                 $signature->addImage([
                     'url' => $image->url,
                     'local_name' => $image->local_name,
-                    'original_name' => $image->original_name
+                    'original_name' => $image->original_name,
+                    'original_path' => $image->original_path,
                 ]);
             }
         } else {
             foreach ($images as $image) {
                 $fileName = FileHelper::save($image, 'signature/history');
                 $signature->addImage([
-                    'url' => FileHelper::getUrl('signature/history/', $fileName),
+                    'url' => FileHelper::getUrl('signature/history', $fileName),
                     'local_name' => $fileName,
-                    'original_name' => $fileName
+                    'original_name' => $fileName,
+                    'original_path' => 'signature/history'
                 ]);
             }
         }

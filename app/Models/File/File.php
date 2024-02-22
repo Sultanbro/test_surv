@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @property string $url
+ * @property string $original_path
  * @property-read string $path
  *
  * @mixin Eloquent
@@ -37,9 +38,10 @@ class File extends Model
         'fileable_id',
         'fileable_type',
         'original_name',
+        'original_path',
         'local_name',
         'extension',
-        'url'
+        'url',
     ];
 
     protected $casts = [
@@ -54,7 +56,7 @@ class File extends Model
 
     public function getPathAttribute(): string
     {
-        return FileHelper::getPath(config('app.file.path'), $this->local_name);
+        return FileHelper::getPath($this->original_path ?? config('app.file.path'), $this->local_name);
     }
 
     public function users(): BelongsToMany

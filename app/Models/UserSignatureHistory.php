@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $name
  * @property string $phone
  * @property string $address
- * @property string $contract_number,
- * @property string $password_number,
+ * @property string $contract_number
+ * @property string $password_number
  * @property string $created_at
  */
 class UserSignatureHistory extends Model
@@ -31,7 +31,7 @@ class UserSignatureHistory extends Model
         'phone',
         'address',
         'contract_number',
-        'password_number',
+        'password_number'
     ];
 
     public function user(): BelongsTo

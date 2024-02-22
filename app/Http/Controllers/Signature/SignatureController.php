@@ -39,7 +39,7 @@ class SignatureController extends Controller
 
     public function histories(User $user): AnonymousResourceCollection
     {
-        return SignatureHistoryResource::collection($user->signatureHistories()->orderByDesc('created_at')->get());
+        return SignatureHistoryResource::collection($user->signatureHistories()->with('images')->orderByDesc('created_at')->get());
     }
 
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
@@ -47,8 +47,9 @@ class SignatureController extends Controller
         $fileName = FileHelper::save($request->validated('file'), 'signature');
         $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
-            'local_name' => $request->validated('local_name'),
-            'original_name' => $fileName,
+            'local_name' => $fileName,
+            'original_name' => $request->validated('local_name'),
+            'original_path' => 'signature'
         ]);
         return FileResource::collection($group->files);
     }
@@ -71,7 +72,7 @@ class SignatureController extends Controller
             Phone::normalize($data['phone']),
             $user->name
         );
-        $this->sms->send($receiver, 'код подтверждение для подписание документа ' . $code->code);
+        $this->sms->send($receiver, 'Kod podtverzhdeniye dlya podpisaniya dokumenta ' . $code->code);
         $this->signatureHistoryRepository->addHistory($user, $data);
 
         return $this->response('Отправлен код подтверждение для подписание документа');
