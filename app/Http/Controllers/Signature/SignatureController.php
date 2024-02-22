@@ -99,7 +99,7 @@ class SignatureController extends Controller
         $signedFiles = $user->signedFiles()->get();
         $groupFiles = $user->activeGroup()->files()->get();
         foreach ($groupFiles as $file) {
-            $file->signed_at = $signedFiles->where('id', $file->id)->first()?->signed_at;
+            $file->signed_at = $signedFiles->where('id', $file->id)->first()?->pivot?->signed_at;
         }
         return FileResource::collection($groupFiles);
     }

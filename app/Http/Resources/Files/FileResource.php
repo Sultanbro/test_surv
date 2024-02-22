@@ -19,7 +19,7 @@ class FileResource extends JsonResource
             'local_name' => $this->resource->local_name,
             'extension' => $this->resource->extension,
             'url' => $this->resource->s3_url,
-            'signed_at' => $this->resource->pivot?->signed_at,
+            'signed_at' => $this->resource->signed_at,
         ];
     }
 }
