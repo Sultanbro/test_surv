@@ -471,8 +471,7 @@ class SalaryController extends Controller
             'ИТОГО',
             'Авансы',
             'Штрафы',
-            'Налоги',
-            'Тип',
+            'Налоги'
         ];
 
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
