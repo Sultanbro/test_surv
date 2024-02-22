@@ -364,7 +364,18 @@
 											width="24"
 										>
 									</div>
-									<div class="PageCabinet-docName">
+									<a
+										v-if="doc.signed"
+										:href="`/signature/view?doc=${doc.id}`"
+										target="_blank"
+										class="PageCabinet-docName"
+									>
+										{{ doc.name }}
+									</a>
+									<div
+										v-else
+										class="PageCabinet-docName"
+									>
 										{{ doc.name }}
 									</div>
 									<div class="PageCabinet-docControls">
@@ -543,19 +554,7 @@ export default {
 
 			activeTab: 'main',
 
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				},
-				{
-					id: 0,
-					name: 'TD',
-					file: '',
-					signed: true
-				},
-			],
+			documents: [],
 		};
 	},
 	computed: {

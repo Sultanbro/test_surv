@@ -242,9 +242,13 @@
 										width="24"
 									>
 								</div>
-								<div class="CompanyGroups-docName">
+								<a
+									:href="`/signature/view?group=${group_id}&doc=${doc.id}`"
+									target="_blank"
+									class="CompanyGroups-docName"
+								>
 									{{ doc.name }}
-								</div>
+								</a>
 								<div class="CompanyGroups-docControls">
 									<JobtronButton
 										small

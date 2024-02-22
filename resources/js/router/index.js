@@ -298,6 +298,14 @@ const router = new VueRouter({
 			},
 		},
 		{
+			path: '/signature/view',
+			name: 'SignatureView',
+			component: () => import(/* webpackChunkName: "SignatureView" */ '@/views/SignatureView'),
+			meta: {
+				title: 'SignatureView',
+			},
+		},
+		{
 			path: '/awards/fix-preview',
 			name: 'FixAwardView',
 			component: () => import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),

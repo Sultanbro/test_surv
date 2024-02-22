@@ -16,9 +16,13 @@
 						width="24"
 					>
 				</div>
-				<div class="UserEditDocumentsV2-docName">
+				<a
+					:href="`/signature/view?user=${userId}&doc=${doc.id}`"
+					target="_blank"
+					class="UserEditDocumentsV2-docName"
+				>
 					{{ doc.name }}
-				</div>
+				</a>
 				<div class="UserEditDocumentsV2-docControls">
 					<template v-if="doc.signed">
 						<i class="fas fa-check" />
