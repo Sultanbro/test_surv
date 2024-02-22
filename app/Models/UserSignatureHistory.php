@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $address
  * @property string $contract_number,
  * @property string $password_number,
+ * @property string $created_at
  */
 class UserSignatureHistory extends Model
 {
