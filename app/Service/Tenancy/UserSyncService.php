@@ -19,6 +19,7 @@ final class UserSyncService
 
     public function update(string $email, array $data)
     {
+        dd($data);
         $currentTenant = tenant('id');
 
         $owner = CentralUser::with('tenants')->where('email', $email)->first();
@@ -38,7 +39,6 @@ final class UserSyncService
             }
 
             $users = User::withTrashed()->where('email', $email)->first();
-            dd($data);
             $users?->update($data);
         }
 
