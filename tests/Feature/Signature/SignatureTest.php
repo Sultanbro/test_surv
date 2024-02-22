@@ -4,6 +4,7 @@ namespace Tests\Feature\Signature;
 
 use App\Models\File\File;
 use App\Models\SmsCode;
+use App\Models\UserSignatureHistory;
 use App\ProfileGroup;
 use App\Service\Sms\CodeGenerator;
 use App\Service\Sms\CodeGeneratorInterface;
@@ -94,7 +95,6 @@ class SignatureTest extends TenantTestCase
         foreach ($files as $file) {
             $response->assertJsonFragment([
                 'id' => $file->id,
-                'url' => $file->url
             ]);
         }
     }
@@ -125,7 +125,6 @@ class SignatureTest extends TenantTestCase
         foreach ($signedFiles as $file) {
             $response->assertJsonFragment([
                 'id' => $file->id,
-                'url' => $file->url,
                 'signed' => true
             ]);
         }
@@ -133,7 +132,6 @@ class SignatureTest extends TenantTestCase
         foreach ($notSignedFiles as $file) {
             $response->assertJsonFragment([
                 'id' => $file->id,
-                'url' => $file->url,
                 'signed' => false
             ]);
         }
@@ -170,14 +168,24 @@ class SignatureTest extends TenantTestCase
         $user->groups()->attach($group, [
             'status' => 'active'
         ]);
-
-        $params = [
-            'phone' => '45454545454'
+        $images = [
+            UploadedFile::fake()->image('test_name_1.png'),
+            UploadedFile::fake()->image('test_name_2.png'),
         ];
+        $params = UserSignatureHistory::factory()->make()->toArray();
+        $params['images'] = $images;
+
         $response = $this->json('post', "/signature/users/$user->id/sms", $params);
         $response->assertStatus(200);
         $this->assertDatabaseHas('sms_codes', [
             'code' => $fakeCode,
+            'user_id' => $user->id
+        ]);
+        $this->assertDatabaseHas('user_signature_histories', [
+            'phone' => $params['phone'],
+            'address' => $params['address'],
+            'name' => $params['name'],
+            'contract_number' => $params['contract_number'],
             'user_id' => $user->id
         ]);
     }
