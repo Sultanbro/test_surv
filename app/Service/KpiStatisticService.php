@@ -1790,7 +1790,7 @@ class KpiStatisticService
         $kpis = $this->kpis($date, $params)->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-        dd($kpis->data);
+        dd($kpis->data->toArray());
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
