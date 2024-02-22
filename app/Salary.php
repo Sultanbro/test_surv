@@ -1052,6 +1052,9 @@ class Salary extends Model
             }
 
             $user->totalTaxes = UserTaxService::calculateTax($taxItems, $allTotal, $method);
+            if ($user->id == 28911) {
+                dd($taxItems->toArray(), $allTotal, $method, $user->totalTaxes);
+            }
 
             // add to array
             $data['users'][] = $user;
