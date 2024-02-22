@@ -1690,7 +1690,6 @@ class TimetrackingController extends Controller
         $userFinesInformation = $this->fineService->getUserFines($date->month, $user, $currency_rate);
         $salaryBonuses = $this->salaryService->getUserBonuses($date, $user);
         $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date, $user);
-        $testBonuses = $this->testBonusService->getUserBonuses($date, $user);
         $advances = $this->salaryService->getUserAdvances($date, $user);
 
         return (new TimetrackService())->getUserFinalSalary(
