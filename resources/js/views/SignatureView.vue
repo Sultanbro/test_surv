@@ -37,6 +37,12 @@ export default {
 		unsigned(){
 			return this.documents.filter(doc => !doc.signed)
 		},
+		userId(){
+			return +this.$route?.query?.user || this.$laravel.userId
+		},
+		groupId(){
+			return +this.$route?.query?.group || 0
+		},
 		doc(){
 			return this.documents.find(doc => doc.id === (+this.$route?.query?.doc || ''))
 		},
@@ -44,22 +50,13 @@ export default {
 	mounted(){
 		this.fetchSettings()
 		this.fetchDocs()
-		this.fetchUser()
 	},
 	methods: {
 		...mapActions(useSettingsStore, ['fetchSettings']),
-		async fetchUser(){
-			try {
-				const {data} = await this.axios.get('/profile/personal-info')
-				this.user = data.user
-			}
-			catch (error) {
-				this.$onError(error)
-			}
-		},
 		async fetchDocs(){
 			try {
-				const {data} = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
+				const url = this.groupId ? `/signature/groups/${this.groupId}/files` : `/signature/users/${this.userId}/files`
+				const {data} = await this.axios.get(url)
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
@@ -72,32 +69,6 @@ export default {
 				this.$onError(error)
 			}
 		},
-		async onSign(){
-			if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
-			if(this.buttonPressed) return
-			this.buttonPressed = true
-			try {
-				const {data} = await this.axios.post(`/signature/users/${this.user.id}/sms`, {
-					phone: this.user.phone
-				})
-				this.isVerifyModal = data.status
-			}
-			catch (error) {
-				this.$onError(error)
-			}
-		},
-		async onVerify(){
-			try {
-				await this.axios.post(`/signature/users/${this.user.id}/files/${this.doc.id}/verification`, {
-					code: this.userCode
-				})
-				this.isVerifyModal = false
-				window.close()
-			}
-			catch (error) {
-				this.$onError(error)
-			}
-		},
 	},
 }
 </script>
@@ -105,7 +76,7 @@ export default {
 <template>
 	<div class="SignatureVerification">
 		<div
-			v-if="user && doc"
+			v-if="doc"
 			class="SignatureVerification-body"
 		>
 			<div class="SignatureVerification-header">
@@ -114,7 +85,7 @@ export default {
 					class="SignatureVerification-logo"
 				>
 				<div class="SignatureVerification-title">
-					{{ unsigned[activeDoc].name || 'Без названия' }}
+					{{ doc.name || 'Без названия' }}
 				</div>
 				<div class="SignatureVerification-bar" />
 			</div>
@@ -133,7 +104,7 @@ export default {
 							v-model="requisites.fio"
 							primary
 							small
-							disabled
+							readonly
 						/>
 					</b-col>
 				</b-row>
@@ -149,7 +120,7 @@ export default {
 							v-model="requisites.pasport"
 							primary
 							small
-							disabled
+							readonly
 						/>
 					</b-col>
 				</b-row>
@@ -165,7 +136,7 @@ export default {
 							v-model="requisites.uin"
 							primary
 							small
-							disabled
+							readonly
 						/>
 					</b-col>
 				</b-row>
@@ -181,7 +152,7 @@ export default {
 							v-model="requisites.phone"
 							primary
 							small
-							disabled
+							readonly
 						/>
 					</b-col>
 				</b-row>
@@ -197,12 +168,15 @@ export default {
 							v-model="requisites.address"
 							primary
 							small
-							disabled
+							readonly
 						/>
 					</b-col>
 				</b-row>
 
-				<b-row class="SignatureVerification-row">
+				<b-row
+					v-if="!groupId"
+					class="SignatureVerification-row"
+				>
 					<b-col cols="6">
 						<div class="SignatureVerification-label text-center">
 							Лицевая сторона удостоверения / паспорта
@@ -247,12 +221,6 @@ export default {
 			class="SignatureVerification-error"
 		>
 			Нет не подписанных документов
-		</div>
-		<div
-			v-else-if="!user"
-			class="SignatureVerification-error"
-		>
-			Не удалось получит информацию о сотруднике
 		</div>
 	</div>
 </template>
