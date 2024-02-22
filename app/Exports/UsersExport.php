@@ -2,20 +2,16 @@
 
 namespace App\Exports;
 
-use App\Models\Tax;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Sheet;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -40,7 +36,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
         $this->name = $group['name'];
         //dd(array_unique($users_ids));
         $this->title = $title;
-       //dd($group['name']);
+        //dd($group['name']);
 
         $this->date = $date;
 
@@ -54,7 +50,8 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
         return $this->title;
     }
 
-    public function collection(){
+    public function collection()
+    {
 
         return collect($this->collection);
     }
@@ -76,108 +73,108 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
             ->whereDate('created_at', '<=', $lastOfMonth)
             ->first()->count;
         $indexOfCell = 18 + $countOfTaxes;
-        $coordinate = (new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet)->getCellByColumnAndRow($indexOfCell,0)->getParent()->getCurrentCoordinate();
+        $coordinate = (new Worksheet)->getCellByColumnAndRow($indexOfCell, 0)->getParent()->getCurrentCoordinate();
         $coordinateOfStyle = str_replace('0', '3', $coordinate);
 
         return [
-            AfterSheet::class    => function(AfterSheet $event) use ($coordinate, $coordinateOfStyle) {
-  
-                 $event->sheet->getDelegate()->getStyle("A1:$coordinateOfStyle")
-                                ->getFont()
-                                ->setBold(true);                
+            AfterSheet::class => function (AfterSheet $event) use ($coordinate, $coordinateOfStyle) {
 
-                $event->sheet->getDelegate()->getStyle('A3:F3')
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('c4dbca');
+                $event->sheet->getDelegate()->getStyle("A1:$coordinateOfStyle")
+                    ->getFont()
+                    ->setBold(true);
 
-                $event->sheet->getDelegate()->getStyle('H3:L3')
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('3b73c0');
+                $event->sheet->getDelegate()->getStyle('A3:G3')
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('c4dbca');
 
-                $event->sheet->getDelegate()->getStyle('N3')
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('ffc000');
+                $event->sheet->getDelegate()->getStyle('L3:H3')
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('3b73c0');
 
-                $event->sheet->getDelegate()->getStyle("O3:$coordinateOfStyle")
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('8ccf5b');
+                $event->sheet->getDelegate()->getStyle('O3')
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('ffc000');
 
-               $event->sheet->setCellValue('A' . (7 + $this->counter), 'Уволенные');
-               $event->sheet->getDelegate()->getStyle('A' . (7 + $this->counter))
-                                ->getFont()
-                                ->setBold(true);  
-               
+                $event->sheet->getDelegate()->getStyle("P3:$coordinateOfStyle")
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('8ccf5b');
 
-               $fields = ['A', 'B', 'C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R', 'S', 'T', 'U'];
+                $event->sheet->setCellValue('A' . (7 + $this->counter), 'Уволенные');
+                $event->sheet->getDelegate()->getStyle('A' . (7 + $this->counter))
+                    ->getFont()
+                    ->setBold(true);
 
-               /*foreach($this->last as $key => $item){
-                    if(is_string($item) || $item > 0)
-                        $event->sheet->setCellValue($fields[$key] . (7 + $this->counter), $item);
-               }*/
+
+                $fields = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'];
+
+                /*foreach($this->last as $key => $item){
+                     if(is_string($item) || $item > 0)
+                         $event->sheet->setCellValue($fields[$key] . (7 + $this->counter), $item);
+                }*/
 
                 $last = $coordinate;
 
-               $totals = 'F' . (count($this->collection) + 3) . ':' . $last  . (count($this->collection) + 3);
-               $totals2 = 'F' . ($this->counter + 5) . ':' . $last  . ($this->counter + 5);
+                $totals = 'G' . (count($this->collection) + 3) . ':' . $last . (count($this->collection) + 3);
+                $totals2 = 'G' . ($this->counter + 5) . ':' . $last . ($this->counter + 5);
                 //$event->sheet->prependRow(3, $this->headings);
-  
+
                 $count_fields = ($this->counter + 4);
 
-                $event->sheet->getDelegate()->getStyle('A5:A'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
+                $event->sheet->getDelegate()->getStyle('A5:A' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('G5:G'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
+                $event->sheet->getDelegate()->getStyle('H5:H' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('K5:K'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
+                $event->sheet->getDelegate()->getStyle('L5:L' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('N5:N'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('ffc000');
+                $event->sheet->getDelegate()->getStyle('O5:O' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('ffc000');
 
-                $event->sheet->getDelegate()->getStyle('U5:U'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
+                $event->sheet->getDelegate()->getStyle('V5:V' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('V5:V'. $count_fields)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('e0e0e0');
+                $event->sheet->getDelegate()->getStyle('W5:W' . $count_fields)
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('G'.(5 + $this->counter).":$coordinate".(5 + $this->counter))
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('ddffad');
+                $event->sheet->getDelegate()->getStyle('H' . (5 + $this->counter) . ":$coordinate" . (5 + $this->counter))
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('ddffad');
 
                 $event->sheet->getDelegate()->getStyle($totals)
-                        ->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('ddffad');
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('ddffad');
 
                 /*
                     // Итоговые колонки
@@ -210,29 +207,29 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                     [
                         'borders' => [
                             'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                'borderStyle' => Border::BORDER_THIN
                             ],
                         ]
                     ]
                 );
 
                 $event->sheet->styleCells(
-                    "A5:$coordinate". $count_fields,
+                    "A5:$coordinate" . $count_fields,
                     [
                         'borders' => [
                             'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                'borderStyle' => Border::BORDER_THIN
                             ],
                         ]
                     ]
                 );
 
                 $event->sheet->styleCells(
-                    'G'.(5 + $this->counter).":$coordinate".(5 + $this->counter),
+                    'H' . (5 + $this->counter) . ":$coordinate" . (5 + $this->counter),
                     [
                         'borders' => [
                             'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                'borderStyle' => Border::BORDER_THIN
                             ],
                         ]
                     ]
@@ -240,22 +237,22 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
                 //polya dlya uvolennyh
                 $event->sheet->styleCells(
-                    'A'.(9 + $this->counter).":$coordinate".(count($this->collection) + 2),
+                    'A' . (9 + $this->counter) . ":$coordinate" . (count($this->collection) + 2),
                     [
                         'borders' => [
                             'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                'borderStyle' => Border::BORDER_THIN
                             ],
                         ]
                     ]
                 );
 
                 $event->sheet->styleCells(
-                    'G'.(count($this->collection) + 3).":$coordinate".(count($this->collection) + 3),
+                    'H' . (count($this->collection) + 3) . ":$coordinate" . (count($this->collection) + 3),
                     [
                         'borders' => [
                             'allBorders' => [
-                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                'borderStyle' => Border::BORDER_THIN
                             ],
                         ]
                     ]

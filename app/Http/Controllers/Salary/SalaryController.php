@@ -470,7 +470,8 @@ class SalaryController extends Controller
             'ИТОГО',
             'Авансы',
             'Штрафы',
-            'Налоги'
+            'Налоги',
+            'Тип',
         ];
 
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
@@ -527,10 +528,11 @@ class SalaryController extends Controller
                         z.jysan as jysan,
                         users.currency as currency,
                         CONCAT('KASPI', '') as card,
-                        users.uin as uin
+                        users.uin as uin,
+                        users.user_type as user_type
                         ")
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
-                'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
+                'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'user_type', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
             ->get();
 
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
@@ -542,21 +544,22 @@ class SalaryController extends Controller
             2 => 0, // age
             3 => '', // phone
             4 => '', // card detail
-            5 => 0, // uin
-            6 => 0, // Отр. дни
-            7 => 0, // working days
-            8 => 0, // stavka
-            9 => 0, // nachisleniya
-            10 => 0, // kpi
-            11 => 0, // trainee
-            12 => 0, // bonus
-            13 => 0, // itog
-            14 => 0, // avans
-            15 => 0, // fine
-            16 => 0, // taxes,
-            17 => 0, // ИТОГО расход
-            18 => 0, // К выдаче
-            19 => 0 // В валюте
+            5 => '', // user type
+            6 => 0, // uin
+            7 => 0, // Отр. дни
+            8 => 0, // working days
+            9 => 0, // stavka
+            10 => 0, // nachisleniya
+            11 => 0, // kpi
+            12 => 0, // trainee
+            13 => 0, // bonus
+            14 => 0, // itog
+            15 => 0, // avans
+            16 => 0, // fine
+            17 => 0, // taxes,
+            18 => 0, // ИТОГО расход
+            19 => 0, // К выдаче
+            20 => 0 // В валюте
         ];
 
         $data['users'] = [];
@@ -622,7 +625,7 @@ class SalaryController extends Controller
             else if ($_user) $workDays = $_user->getWorkDays($date);
             else return throw new Exception("User not found");
 
-            if (!$edited_salary) $allTotal[7] += intval($workDays);
+            if (!$edited_salary) $allTotal[8] += intval($workDays);
 
             // стажировочные
             $trainee_days = DayType::select([
@@ -650,13 +653,13 @@ class SalaryController extends Controller
             $workedHours = $workedHours->whereNotIn('day', $trainee_days)->sum('total_hours') / 60;
             $workedDays = round($workedHours / $_user->countWorkHours(), 2);
 
-            if (!$edited_salary) $allTotal[6] += $workedDays;
+            if (!$edited_salary) $allTotal[7] += $workedDays;
 
             // проверка сданных экзаменов
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
 
             // ставка
-            $allTotal[8] += intval($wage) ?? 0;
+            $allTotal[9] += intval($wage) ?? 0;
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id], $group_id);
 
@@ -685,9 +688,9 @@ class SalaryController extends Controller
             $kpi = $editedKpi ? $editedKpi->amount : Kpi::userKpi($user->id, $date->format('Y-m-d'));
 
             if (!$edited_salary) {
-                $allTotal[9] += $salary;
-                $allTotal[10] += $kpi;
-                $allTotal[11] += $trainee_fees;
+                $allTotal[10] += $salary;
+                $allTotal[11] += $kpi;
+                $allTotal[12] += $trainee_fees;
             }
 
             // Бонусы
@@ -712,12 +715,12 @@ class SalaryController extends Controller
                 $bonus = round($month_salary->bonus + $ObtainedBonus + $test_bonuses);
             }
 
-            if (!$edited_salary) $allTotal[12] += $bonus;
+            if (!$edited_salary) $allTotal[13] += $bonus;
 
             // ИТОГО доход
             $total_income = round($salary + $bonus + $kpi + $trainee_fees, 0);
 
-            if (!$edited_salary) $allTotal[13] += $total_income;
+            if (!$edited_salary) $allTotal[14] += $total_income;
 
             // headphone price minus
             $headphones_amount = 0;
@@ -731,7 +734,7 @@ class SalaryController extends Controller
             }
 
             $prepaid = round($month_salary->avans) + $headphones_amount;
-            if (!$edited_salary) $allTotal[14] += $prepaid;
+            if (!$edited_salary) $allTotal[15] += $prepaid;
 
             // Не показывать если все по нулям
             if ($edited_salary && $edited_salary->amount == 0) {
@@ -754,17 +757,17 @@ class SalaryController extends Controller
                 $penalty += $fines[$fine->fine_id];
             }
 
-            if (!$edited_salary) $allTotal[15] += $penalty;
+            if (!$edited_salary) $allTotal[16] += $penalty;
 
 
             // Итого расход
             $expense = $prepaid + $penalty;
-            if (!$edited_salary) $allTotal[17] += $expense;
+            if (!$edited_salary) $allTotal[18] += $expense;
 
             // К выдаче
             $total_payment = round($total_income - $expense);
 
-            if (!$edited_salary) $allTotal[18] += max($total_payment, 0);
+            if (!$edited_salary) $allTotal[19] += max($total_payment, 0);
 
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
@@ -776,51 +779,51 @@ class SalaryController extends Controller
                 2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
                 3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '',
                 4 => $cards, // Номер карты
-                5 => $user->uin ?? '', // иин
-                6 => $workedDays, // отработанные дни
-                7 => $workDays, // рабочие дни
-                8 => $wage ?? 0, // ставка
-                9 => 0, // начислено
-                10 => 0, // KPI
-                11 => 0, // стажировочные
-                12 => 0, //
-                13 => 0, // ИТОГО доход,
-                14 => 0, // Авансы
-                15 => 0, // Штрафы
-                16 => $totalTaxesUser, // taxes,
-                17 => 0, // ИТОГО расход
-                18 => 0, // К выдаче
-                19 => 0 // В валюте
-
+                5 => $user->user_type ?? '', // Номер карты
+                6 => $user->uin ?? '', // иин
+                7 => $workedDays, // отработанные дни
+                8 => $workDays, // рабочие дни
+                9 => $wage ?? 0, // ставка
+                10 => 0, // начислено
+                11 => 0, // KPI
+                12 => 0, // стажировочные
+                13 => 0, //
+                14 => 0, // ИТОГО доход,
+                15 => 0, // Авансы
+                16 => 0, // Штрафы
+                17 => $totalTaxesUser, // taxes,
+                18 => 0, // ИТОГО расход
+                19 => 0, // К выдаче
+                20 => 0 // В валюте
             ];
 
             /**
              * Расчет налогов.
              */
-            $allTotal[16] += $totalTaxesUser;
+            $allTotal[17] += $totalTaxesUser;
 
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
             try {
                 if ($edited_salary) {
-                    $allTotal[9] += (float)$edited_salary->amount;
+                    $allTotal[10] += (float)$edited_salary->amount;
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
-                    $totalColumns[9] = 15;
-                    $totalColumns[13] = (int)$edited_salary->amount;
-                    $totalColumns[19] = $this->space($edited_salary->amount, 3, true);
+                    $totalColumns[10] = 15;
+                    $totalColumns[14] = (int)$edited_salary->amount;
+                    $totalColumns[20] = $this->space($edited_salary->amount, 3, true);
 
                 } else {
-                    $totalColumns[9] = (int)$salary;
-                    $totalColumns[10] = $kpi;
-                    $totalColumns[11] = $trainee_fees ?? 0;
-                    $totalColumns[12] = $bonus;
-                    $totalColumns[13] = $total_income;
-                    $totalColumns[14] = $prepaid;
-                    $totalColumns[15] = $penalty;
-                    $totalColumns[17] = $expense;
-                    $totalColumns[18] = $this->space($total_payment, 3, true);
+                    $totalColumns[10] = (int)$salary;
+                    $totalColumns[11] = $kpi;
+                    $totalColumns[12] = $trainee_fees ?? 0;
+                    $totalColumns[13] = $bonus;
+                    $totalColumns[14] = $total_income;
+                    $totalColumns[15] = $prepaid;
+                    $totalColumns[16] = $penalty;
+                    $totalColumns[18] = $expense;
+                    $totalColumns[19] = $this->space($total_payment, 3, true);
                 }
-                $totalColumns[19] = $this->space($on_currency, 3, true);
+                $totalColumns[20] = $this->space($on_currency, 3, true);
                 $data['users'][] = $totalColumns;
             } catch (Exception $e) {
                 dd($e);
@@ -831,9 +834,9 @@ class SalaryController extends Controller
         array_multisort($name_asc, SORT_ASC, $data['users']);
 
         // К выдаче сумма форматированная
-        $allTotal[10] = $this->space(round($allTotal[10]), 3, true);
-        $allTotal[17] = $this->space(round($allTotal[17]), 3, true);
-        $allTotal[18] = $this->space(round($allTotal[18] - $tax_amount), 3, true);
+        $allTotal[11] = $this->space(round($allTotal[11]), 3, true);
+        $allTotal[18] = $this->space(round($allTotal[18]), 3, true);
+        $allTotal[19] = $this->space(round($allTotal[19] - $tax_amount), 3, true);
 
         // Итоги в конце таблицы
         $data['users'][] = $allTotal;
