@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\CacheStorage\KpiItemsCacheStorage;
 use App\Classes\Helpers\Currency;
-use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
@@ -1845,8 +1844,8 @@ class KpiStatisticService
                     operator: '=',
                     value: $groupId
                 );
-            })
-            ->where(fn(Builder $query) => (new KpiFilter)->globalSearch($searchWord));
+            });
+//            ->where(fn(Builder $query) => (new KpiFilter)->globalSearch($searchWord));
 //            ->with([
 //                'histories_latest' => function ($query) use ($date) {
 //                    $query->whereYear('created_at', $date->year);
