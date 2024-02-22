@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $url
  * @property string $original_path
  * @property-read string $path
+ * @property-read string $s3_url
  *
  * @mixin Eloquent
  */
@@ -57,6 +58,11 @@ class File extends Model
     public function getPathAttribute(): string
     {
         return FileHelper::getPath($this->original_path ?? config('app.file.path'), $this->local_name);
+    }
+
+    public function getS3UrlAttribute(): string
+    {
+        return FileHelper::getUrl($this->original_path ?? config('app.file.path'), $this->local_name);
     }
 
     public function users(): BelongsToMany
