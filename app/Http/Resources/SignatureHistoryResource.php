@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Files\FileResource;
 use App\Models\UserSignatureHistory;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +20,8 @@ class SignatureHistoryResource extends JsonResource
             'address' => $this->resource->address,
             'contract_number' => $this->resource->contract_number,
             'password_number' => $this->resource->password_number,
+            'created_at' => $this->resource->created_at,
+            'images' => FileResource::collection($this->whenLoaded('images')),
         ];
     }
 }

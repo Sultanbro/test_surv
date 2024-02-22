@@ -39,7 +39,7 @@ class SignatureController extends Controller
 
     public function histories(User $user): AnonymousResourceCollection
     {
-        return SignatureHistoryResource::collection($user->signatureHistories()->orderByDesc('created_at')->get());
+        return SignatureHistoryResource::collection($user->signatureHistories()->with('images')->orderByDesc('created_at')->get());
     }
 
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
@@ -47,8 +47,9 @@ class SignatureController extends Controller
         $fileName = FileHelper::save($request->validated('file'), 'signature');
         $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
-            'local_name' => $request->validated('local_name'),
-            'original_name' => $fileName,
+            'local_name' => $fileName,
+            'original_name' => $request->validated('original_name'),
+            'original_path' => 'signature'
         ]);
         return FileResource::collection($group->files);
     }
@@ -71,7 +72,7 @@ class SignatureController extends Controller
             Phone::normalize($data['phone']),
             $user->name
         );
-        $this->sms->send($receiver, 'код подтверждение для подписание документа ' . $code->code);
+        $this->sms->send($receiver, 'Kod podtverzhdeniye dlya podpisaniya dokumenta ' . $code->code);
         $this->signatureHistoryRepository->addHistory($user, $data);
 
         return $this->response('Отправлен код подтверждение для подписание документа');
@@ -86,18 +87,18 @@ class SignatureController extends Controller
     public function verify(VerificationRequest $request, User $user, File $file): JsonResponse
     {
         $sms = $user->smsCodes()->where('code', $request->validated('code'))->first();
-        $user->signedFiles()->attach($file);
+        $user->signedFiles()->attach($file, [
+            'signed_at' => now()
+        ]);
         $sms->delete(); // delete sms verification after using
         return $this->response('verified');
     }
 
     public function signedFiles(User $user): AnonymousResourceCollection
     {
-        $signedFiles = $user->signedFiles()->pluck('id')->toArray();
+        $signedFiles = $user->signedFiles()->get();
         $groupFiles = $user->activeGroup()->files()->get();
-        foreach ($groupFiles as $file) {
-            $file->signed = in_array($file->id, $signedFiles);
-        }
+        $groupFiles->merge($signedFiles)->unique('id');
         return FileResource::collection($groupFiles);
     }
 }

@@ -287,7 +287,7 @@ class Salary extends Model
                 ->first('total')
                 ->total;
 
-            $fines = \DB::table('user_fines')
+            $fines = DB::table('user_fines')
                 ->selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
                 ->leftJoin('fines as f', 'f.id', '=', 'user_fines.fine_id')
                 ->where('user_id', $user->id)
@@ -353,96 +353,6 @@ class Salary extends Model
                 },
                 'testBonuses' => function ($q) use ($month) {
                     $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $month->month)->whereYear('date', $month->year);
-                },
-            ])
-            ->whereIn('users.id', $user_ids)
-            ->oldest('users.last_name')
-            ->get();
-    }
-
-    public static function getUsersDataV2($month, $user_ids)
-    {
-        return User::withTrashed()
-            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->with([
-                'groups' => function ($q) use ($month) {
-                    $q->with('workChart');
-//                        ->where([
-//                            ['status', 'active'],
-//                            ['is_head', false]
-//                        ])
-//                        ->whereNull('to');
-                },
-                'zarplata',
-                'workingTime',
-                'user_description',
-                'workChart',
-                'salaries' => function ($q) use ($month) {
-                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year);
-                },
-                'daytypes' => function ($q) use ($month) {
-                    $q->select([
-                        'user_id',
-                        DB::raw('DAY(date) as day'),
-                        'type'
-                    ])
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year)
-                        ->groupBy('day', 'type', 'user_id', 'date');
-                },
-                'timetracking' => function ($q) use ($month) {
-                    $q->select(['user_id',
-                        DB::raw('DAY(enter) as day'),
-                        DB::raw('sum(total_hours) as total_hours'),
-                        DB::raw('UNIX_TIMESTAMP(enter) as time'),
-                    ])
-                        ->whereMonth('enter', $month->month)
-                        ->whereYear('enter', $month->year)
-                        ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
-
-                },
-                'testBonuses' => function ($q) use ($month) {
-                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                        ->whereMonth('date', '=', $month->month)
-                        ->whereYear('date', $month->year);
-                },
-                'kpi_obtained_bonuses' => function ($q) use ($month) {
-                    $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
-                        ->get();
-                },
-                'edited_salaries' => function ($q) use ($month) {
-                    $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
-                        ->get();
-                },
-                'edited_kpi' => function ($q) use ($month) {
-                    $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
-                        ->get();
-                },
-                'saved_kpi' => function ($q) use ($month) {
-                    $q->select(['user_id', 'total'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
-                        ->get();
-                },
-                'edited_bonuses' => function ($q) use ($month) {
-                    $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
-                        ->get();
-                },
-                'fines' => function ($q) use ($month) {
-                    $q->whereYear('day', $month->year)
-                        ->whereMonth('day', $month->month)
-                        ->where('status', 1)
-                        ->get();
                 },
             ])
             ->whereIn('users.id', $user_ids)
@@ -831,8 +741,7 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                }
-                else {
+                } else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
@@ -957,7 +866,7 @@ class Salary extends Model
                 $x = $user->testBonuses->where('day', $d)->sum('amount');
                 if ($x > 0) {
                     $test_bonus[$i] = $x;
-                    if ($earnings[$i] && $user->salaries->where('day', $d)->exists()) {
+                    if ($earnings[$i] && $user->salaries->where('day', $d)->first()) {
                         $allTotal += $x;
                     }
                 } else {
@@ -1047,8 +956,7 @@ class Salary extends Model
             if ($user->userTax && $user->userTax->taxGroup && count($user->userTax->taxGroup->items) > 0) {
                 $taxItems = $user->userTax->taxGroup->items;
                 $method = 'new';
-            }
-            else {
+            } else {
                 $taxItems = $oldTaxes;
                 $method = 'old';
             }
@@ -1254,5 +1162,95 @@ class Salary extends Model
         }
 
         return $all_total;
+    }
+
+    public static function getUsersDataV2($month, $user_ids)
+    {
+        return User::withTrashed()
+            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->with([
+                'groups' => function ($q) use ($month) {
+                    $q->with('workChart');
+//                        ->where([
+//                            ['status', 'active'],
+//                            ['is_head', false]
+//                        ])
+//                        ->whereNull('to');
+                },
+                'zarplata',
+                'workingTime',
+                'user_description',
+                'workChart',
+                'salaries' => function ($q) use ($month) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $month->year);
+                },
+                'daytypes' => function ($q) use ($month) {
+                    $q->select([
+                        'user_id',
+                        DB::raw('DAY(date) as day'),
+                        'type'
+                    ])
+                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $month->year)
+                        ->groupBy('day', 'type', 'user_id', 'date');
+                },
+                'timetracking' => function ($q) use ($month) {
+                    $q->select(['user_id',
+                        DB::raw('DAY(enter) as day'),
+                        DB::raw('sum(total_hours) as total_hours'),
+                        DB::raw('UNIX_TIMESTAMP(enter) as time'),
+                    ])
+                        ->whereMonth('enter', $month->month)
+                        ->whereYear('enter', $month->year)
+                        ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
+
+                },
+                'testBonuses' => function ($q) use ($month) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                        ->whereMonth('date', '=', $month->month)
+                        ->whereYear('date', $month->year);
+                },
+                'kpi_obtained_bonuses' => function ($q) use ($month) {
+                    $q->select(['user_id', 'amount'])
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->get();
+                },
+                'edited_salaries' => function ($q) use ($month) {
+                    $q->select(['user_id', 'amount'])
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->get();
+                },
+                'edited_kpi' => function ($q) use ($month) {
+                    $q->select(['user_id', 'amount'])
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->get();
+                },
+                'saved_kpi' => function ($q) use ($month) {
+                    $q->select(['user_id', 'total'])
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->get();
+                },
+                'edited_bonuses' => function ($q) use ($month) {
+                    $q->select(['user_id', 'amount'])
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->get();
+                },
+                'fines' => function ($q) use ($month) {
+                    $q->whereYear('day', $month->year)
+                        ->whereMonth('day', $month->month)
+                        ->where('status', 1)
+                        ->get();
+                },
+            ])
+            ->whereIn('users.id', $user_ids)
+            ->oldest('users.last_name')
+            ->get();
     }
 }
