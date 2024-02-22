@@ -810,6 +810,9 @@
 					<hr>
 					<!-- eslint-enable vue/no-v-html -->
 				</div>
+				<div class="bold">
+					Всего налогов: {{ editedField.item.totalTax }}
+				</div>
 			</div>
 		</Sidebar>
 
@@ -1310,7 +1313,6 @@ export default {
 				var personalAvanses = 0;
 				var personalFines = 0;
 				var personalBonuses = 0;
-				var personalTaxes = 0;
 
 				item.dayType = []
 				item.salaries.forEach(tt => {
@@ -1380,24 +1382,14 @@ export default {
 				personalFines = Number(item.fines_total);
 
 				const total = personalKpi + personalTotal + personalBonuses - personalFines
-				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
-				item.taxes.forEach(tax => {
-					if(!tax.value) return
-					if(tax.end_subtraction) return
-					totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-					personalTaxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-				})
-				item.taxes.forEach(tax => {
-					if(!tax.value) return
-					if(!tax.end_subtraction) return
-					personalTaxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
-				})
 
-				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
+				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi
 
 				if(item.edited_salary) {
 					personalFinal = item.edited_salary.amount
 				}
+
+				personalFinal -= item.totalTaxes
 
 				daySalaries.bonus = Number(personalBonuses).toFixed(0);
 				daySalaries.avans = Number(personalAvanses).toFixed(0);
@@ -1422,11 +1414,12 @@ export default {
 					}
 				});
 
-				const final = item.edited_salary ? personalFinal : total
+				const final = item.edited_salary ? item.edited_salary.amount : total
 				const taxes = item.user_tax?.tax_group?.items || []
 				const taxinfo = []
 				let afterTaxes = final
 				let taxesSum = final
+				let totalTax = 0
 				taxes.forEach(tax => {
 					if(!tax.value) return
 					let amount
@@ -1444,6 +1437,7 @@ export default {
 
 					taxesSum -= amount
 					if(!tax.is_deduction) afterTaxes -= amount
+					if(!tax.is_deduction) totalTax += amount
 				})
 
 				let obj = {
@@ -1469,6 +1463,7 @@ export default {
 					groupUsers: item.group_users,
 					taxGroup: item.user_tax?.tax_group?.name,
 					taxinfo,
+					totalTax,
 					...daySalaries,
 				};
 
