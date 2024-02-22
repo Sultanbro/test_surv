@@ -151,6 +151,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/groups/{group}/files', [Root\Signature\SignatureController::class, 'list']);
         Route::get('/users/{user}/files', [Root\Signature\SignatureController::class, 'signedFiles']);
         Route::post('/users/{user}/sms', [Root\Signature\SignatureController::class, 'sendSms']);
+        Route::post('/users/{user}/histories', [Root\Signature\SignatureController::class, 'histories']);
         Route::post('/users/{user}/files/{file}/verification', [Root\Signature\SignatureController::class, 'verify']);
         Route::get('/verification', [User\ProfileController::class, 'newprofile']);
         Route::get('/view', [User\ProfileController::class, 'newprofile']);

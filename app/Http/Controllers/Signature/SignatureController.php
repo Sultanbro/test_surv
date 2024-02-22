@@ -9,9 +9,11 @@ use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Requests\Signature\NewVerificationCodeRequest;
 use App\Http\Requests\Signature\VerificationRequest;
 use App\Http\Resources\Files\FileResource;
+use App\Http\Resources\SignatureHistoryResource;
 use App\Models\File\File;
 use App\Models\SmsCode;
 use App\ProfileGroup;
+use App\Repositories\Signature\SignatureHistoryRepositoryInterface;
 use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
@@ -23,8 +25,9 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 class SignatureController extends Controller
 {
     public function __construct(
-        private readonly CodeGeneratorInterface $codeGenerator,
-        private readonly SmsInterface           $sms,
+        private readonly CodeGeneratorInterface              $codeGenerator,
+        private readonly SmsInterface                        $sms,
+        private readonly SignatureHistoryRepositoryInterface $signatureHistoryRepository,
     )
     {
     }
@@ -34,19 +37,13 @@ class SignatureController extends Controller
         return FileResource::collection($group->files);
     }
 
-    public function signedFiles(User $user): AnonymousResourceCollection
+    public function histories(User $user): AnonymousResourceCollection
     {
-        $signedFiles = $user->signedFiles()->pluck('id')->toArray();
-        $groupFiles = $user->activeGroup()->files()->get();
-        foreach ($groupFiles as $file) {
-            $file->signed = in_array($file->id, $signedFiles);
-        }
-        return FileResource::collection($groupFiles);
+        return SignatureHistoryResource::collection($user->signatureHistories()->orderByDesc('created_at')->get());
     }
 
     public function upload(FileStoreRequest $request, ProfileGroup $group): AnonymousResourceCollection
     {
-//        $this->fileManager->apply($request->validated('file'), 'signature');
         $fileName = FileHelper::save($request->validated('file'), 'signature');
         $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
@@ -62,25 +59,28 @@ class SignatureController extends Controller
         return FileResource::make($file);
     }
 
-    public function delete(File $file): JsonResponse
-    {
-        $file->delete();
-        return $this->response('файл удалень', [], ResponseAlias::HTTP_NO_CONTENT);
-    }
-
     public function sendSms(NewVerificationCodeRequest $request, User $user): JsonResponse
     {
+        $data = $request->validated();
         $user->smsCodes()->delete();
         /**
          * @var SmsCode $code
          */
         $code = $user->smsCodes()->create(['code' => $this->codeGenerator->generate()]);
         $receiver = new ReceiverDto(
-            Phone::normalize($request->validated('phone')),
-            $user->name,
+            Phone::normalize($data['phone']),
+            $user->name
         );
         $this->sms->send($receiver, 'код подтверждение для подписание документа ' . $code->code);
+        $this->signatureHistoryRepository->addHistory($user, $data);
+
         return $this->response('Отправлен код подтверждение для подписание документа');
+    }
+
+    public function delete(File $file): JsonResponse
+    {
+        $file->delete();
+        return $this->response('файл удалень', [], ResponseAlias::HTTP_NO_CONTENT);
     }
 
     public function verify(VerificationRequest $request, User $user, File $file): JsonResponse
@@ -91,5 +91,13 @@ class SignatureController extends Controller
         return $this->response('verified');
     }
 
-
+    public function signedFiles(User $user): AnonymousResourceCollection
+    {
+        $signedFiles = $user->signedFiles()->pluck('id')->toArray();
+        $groupFiles = $user->activeGroup()->files()->get();
+        foreach ($groupFiles as $file) {
+            $file->signed = in_array($file->id, $signedFiles);
+        }
+        return FileResource::collection($groupFiles);
+    }
 }
