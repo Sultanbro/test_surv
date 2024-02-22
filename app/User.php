@@ -1820,7 +1820,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             'user_signed_file',
             'user_id',
             'file_id'
-        );
+        )->withPivot('signed_at');
     }
 
     public function signatureHistories(): HasMany

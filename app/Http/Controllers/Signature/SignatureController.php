@@ -87,18 +87,18 @@ class SignatureController extends Controller
     public function verify(VerificationRequest $request, User $user, File $file): JsonResponse
     {
         $sms = $user->smsCodes()->where('code', $request->validated('code'))->first();
-        $user->signedFiles()->attach($file);
+        $user->signedFiles()->attach($file, [
+            'signed_at' => now()
+        ]);
         $sms->delete(); // delete sms verification after using
         return $this->response('verified');
     }
 
     public function signedFiles(User $user): AnonymousResourceCollection
     {
-        $signedFiles = $user->signedFiles()->pluck('id')->toArray();
+        $signedFiles = $user->signedFiles()->get();
         $groupFiles = $user->activeGroup()->files()->get();
-        foreach ($groupFiles as $file) {
-            $file->signed = in_array($file->id, $signedFiles);
-        }
+        $groupFiles->merge($signedFiles)->unique('id');
         return FileResource::collection($groupFiles);
     }
 }
