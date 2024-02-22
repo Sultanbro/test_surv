@@ -2,7 +2,6 @@
 
 namespace App\Service\Tenancy;
 
-use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use App\User;
 
@@ -17,40 +16,17 @@ final class UserSyncService
         'working_country',
     ];
 
-    public function update(String $email, array $data)
+    public function update(string $email, array $data)
     {
-        $currentTenant = tenant('id');
 
-        $owner = CentralUser::with('tenants')->where('email', $email)->first();
-
-        if(!$owner) {
-            return false;
+        if ($data['coordinates']) {
+            $data['coordinate_id'] = $this->setCoordinate($data['coordinates']);
+        } else {
+            $data['coordinate_id'] = null;
         }
 
-        foreach ($owner->tenants as $key => $tenant) {
-
-            tenancy()->initialize($tenant);
-
-            if ($data['coordinates']) {
-                $data['coordinate_id'] = $this->setCoordinate($data['coordinates']);
-            } else {
-                $data['coordinate_id'] = null;
-            }
-
-            $users = User::withTrashed()->where('email', $email)->first();
-
-            $users?->update($data);
-        }
-
-        // Connect to the current tenant
-        tenancy()->initialize(tenant());
-
-        $user = User::withTrashed()
-            ->where('email',$email)
-            ->first()
-            ->update($data);
-
-        $owner->update( $this->normalizeForOwner($data) );
+        $user = User::withTrashed()->where('email', $email)->first();
+        $user?->update($data);
 
         return $user;
     }
@@ -58,16 +34,13 @@ final class UserSyncService
     public function setCoordinate(array $coordinatesArray)
     {
         $coordinate = UserCoordinate::query()
-            ->where('geo_lat',$coordinatesArray['geo_lat'])
-            ->where('geo_lon',$coordinatesArray['geo_lon'])
+            ->where('geo_lat', $coordinatesArray['geo_lat'])
+            ->where('geo_lon', $coordinatesArray['geo_lon'])
             ->first();
 
-        if ($coordinate)
-        {
+        if ($coordinate) {
             return $coordinate->id;
-        }
-        else
-        {
+        } else {
             $coordinate = UserCoordinate::query()->create([
                 'geo_lat' => $coordinatesArray['geo_lat'],
                 'geo_lon' => $coordinatesArray['geo_lon']
@@ -76,25 +49,25 @@ final class UserSyncService
         }
     }
 
-    public function normalize(array $data) : array
+    public function normalizeForOwner(array $data): array
     {
-        $result = [];
-
-        foreach ($this->syncFields as $field) {
-            if(array_key_exists($field, $data))  $result[$field] = $data[$field];
-        }
-
-        return $result;
-    }
-
-    public function normalizeForOwner(array $data) : array
-    {
-        if(array_key_exists('working_country', $data))  $data['country'] = $data['working_country'];
-        if(array_key_exists('working_city', $data))  $data['city'] = $data['working_city'];
+        if (array_key_exists('working_country', $data)) $data['country'] = $data['working_country'];
+        if (array_key_exists('working_city', $data)) $data['city'] = $data['working_city'];
 
         unset($data['working_country']);
         unset($data['working_city']);
 
         return $data;
+    }
+
+    public function normalize(array $data): array
+    {
+        $result = [];
+
+        foreach ($this->syncFields as $field) {
+            if (array_key_exists($field, $data)) $result[$field] = $data[$field];
+        }
+
+        return $result;
     }
 }

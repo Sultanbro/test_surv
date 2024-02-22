@@ -27,16 +27,16 @@ class TimetrackService
      * @return array
      */
     public function getUserFinalSalary(
-        array $salaryBonuses,
-        array $obtainedBonuses,
-        array $testBonuses,
-        $userFines,
-        int $finesSum,
-        array $advances,
-        User $user,
+        array  $salaryBonuses,
+        array  $obtainedBonuses,
+               $userFines,
+        int    $finesSum,
+        array  $advances,
+        User   $user,
         Carbon $date,
-        $currencyRate
-    ): array {
+               $currencyRate
+    ): array
+    {
         $advancesSum = collect($advances)->sum('paid');
 
         // Вычисление даты принятия
@@ -44,7 +44,7 @@ class TimetrackService
 
         $timeTracking = $this->getUserTimetracking($user, $date->year, $date->month, $userAppliedAt, '>=');
         $traineeDays = $this->getDateTypes($date, $user);
-        $timeTrackingBeforeApply =$this->getUserTimetracking($user, $date->year, $date->month, $userAppliedAt, '<');
+        $timeTrackingBeforeApply = $this->getUserTimetracking($user, $date->year, $date->month, $userAppliedAt, '<');
 
         $data = $this->collectSalaryData(
             $date,
@@ -56,7 +56,6 @@ class TimetrackService
             $userFines,
             $salaryBonuses,
             $obtainedBonuses,
-            $testBonuses,
             $advances
         );
 
@@ -78,6 +77,44 @@ class TimetrackService
     }
 
     /**
+     * @param User $user
+     * @param int $year
+     * @param int $month
+     * @param string $user_applied_at
+     * @param string $operator
+     * @return Collection
+     */
+    private function getUserTimetracking(User $user, int $year, int $month, string $user_applied_at, string $operator): Collection
+    {
+        return Timetracking::select([
+            DB::raw('DAY(enter) as date'),
+            DB::raw('sum(total_hours) as total_hours'),
+            DB::raw('MIN(enter) as enter')
+        ])
+            ->whereMonth('enter', $month)
+            ->whereYear('enter', $year)
+            ->whereDate('enter', $operator, Carbon::parse($user_applied_at)->format('Y-m-d'))
+            ->where('user_id', $user->id)
+            ->groupBy('date')
+            ->get();
+    }
+
+    /**
+     * @param Carbon $date
+     * @param User $user
+     * @return Collection
+     */
+    private function getDateTypes(Carbon $date, User $user): Collection
+    {
+        return DayType::selectRaw("DAY(date) as datex")
+            ->where('user_id', $user->id)
+            ->whereYear('date', $date->year)
+            ->whereMonth('date', $date->month)
+            ->whereIn('type', [5, 6, 7])
+            ->get(['datex']);
+    }
+
+    /**
      * @param Carbon $date
      * @param User $user
      * @param Collection $timeTracking
@@ -87,35 +124,34 @@ class TimetrackService
      * @return array[]
      */
     private function collectSalaryData(
-        Carbon $date,
-        User $user,
+        Carbon     $date,
+        User       $user,
         Collection $timeTracking,
         Collection $timeTrackingBeforeApply,
         Collection $traineeDays,
-        $currencyRate,
-        $userFines,
-        $salaryBonuses,
-        $obtainedBonuses,
-        $testBonuses,
-        $avanses
-    ): array{
+                   $currencyRate,
+                   $userFines,
+                   $salaryBonuses,
+                   $obtainedBonuses,
+                   $avanses
+    ): array
+    {
         $data = [
             'salaries' => [],
             'times' => [],
             'hours' => [],
         ];
 
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
+        for ($i = 1; $i <= $date->daysInMonth; $i++) {
             $m = $i;
-            if(strlen($i) == 1) $m = '0'.$i;
-            $data['salaries'][$i]['fines'] = isset($userFines[$m]) ? $userFines[$m]: [];
-            $data['salaries'][$i]['bonuses'] = isset($salaryBonuses[$m]) ? $salaryBonuses[$m]: [];
-            $data['salaries'][$i]['awards'] = isset($obtainedBonuses[$m]) ? $obtainedBonuses[$m]: [];
-            $data['salaries'][$i]['test_bonus'] = isset($testBonuses[$m]) ? $testBonuses[$m]: [];
-            $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m]: [];
+            if (strlen($i) == 1) $m = '0' . $i;
+            $data['salaries'][$i]['fines'] = isset($userFines[$m]) ? $userFines[$m] : [];
+            $data['salaries'][$i]['bonuses'] = isset($salaryBonuses[$m]) ? $salaryBonuses[$m] : [];
+            $data['salaries'][$i]['awards'] = isset($obtainedBonuses[$m]) ? $obtainedBonuses[$m] : [];
+            $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m] : [];
         }
 
-        for($day = 1; $day <= $date->daysInMonth; $day++) {
+        for ($day = 1; $day <= $date->daysInMonth; $day++) {
 
             $s = Salary::where('user_Id', $user->id)
                 ->where('date', $date->day($day)->format('Y-m-d'))
@@ -126,12 +162,12 @@ class TimetrackService
             $workChart = $user->workChart;
 
             // Проверяем установлена ли время отдыха
-            if ($workChart && $workChart->rest_time != null){
+            if ($workChart && $workChart->rest_time != null) {
                 $lunchTime = $workChart->rest_time;
                 $hour = floatval($lunchTime / 60);
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $workingHours = round($userWorkHours / 3600, 1) - $hour;
-            }else{
+            } else {
                 $lunchTime = 1;
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $workingHours = round($userWorkHours / 3600, 1) - $lunchTime;
@@ -139,14 +175,12 @@ class TimetrackService
 
             // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
             $workChartType = $workChart->work_charts_type ?? 0;
-            if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
+            if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
                 $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                 $workdays = workdays($date->year, $date->month, $ignore);
-            }
-            elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+            } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                 $workdays = $user->getCountWorkDaysMonth();
-            }
-            else {
+            } else {
                 throw new Exception(message: 'Проверьте график работы', code: 400);
             }
 
@@ -180,43 +214,6 @@ class TimetrackService
             $data['salaries'][$day]['calculated'] = round($hour, 2) . ' * ' . ($traineeDays->where('datex', $day)->first() ? $hourlyPay * $user->internshipPayRate() : $hourlyPay);
         }
         return $data;
-    }
-
-
-    /**
-     * @param Carbon $date
-     * @param User $user
-     * @return Collection
-     */
-    private function getDateTypes(Carbon $date, User $user): Collection{
-        return DayType::selectRaw("DAY(date) as datex")
-            ->where('user_id', $user->id)
-            ->whereYear('date',  $date->year)
-            ->whereMonth('date',  $date->month)
-            ->whereIn('type', [5,6,7])
-            ->get(['datex']);
-    }
-
-    /**
-     * @param User $user
-     * @param int $year
-     * @param int $month
-     * @param string $user_applied_at
-     * @param string $operator
-     * @return Collection
-     */
-    private function getUserTimetracking(User $user, int $year, int $month, string $user_applied_at, string $operator ): Collection{
-        return Timetracking::select([
-            DB::raw('DAY(enter) as date'),
-            DB::raw('sum(total_hours) as total_hours'),
-            DB::raw('MIN(enter) as enter')
-        ])
-            ->whereMonth('enter', $month)
-            ->whereYear('enter', $year)
-            ->whereDate('enter', $operator, Carbon::parse($user_applied_at)->format('Y-m-d'))
-            ->where('user_id', $user->id)
-            ->groupBy('date')
-            ->get();
     }
 
 }

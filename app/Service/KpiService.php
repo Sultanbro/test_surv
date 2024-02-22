@@ -165,51 +165,21 @@ class KpiService
     }
 
     /**
-     * @throws Throwable
-     * @throws TargetDuplicateException
+     * Change kpi off_limit property, off_limit -> If employee do his activity bigger than 100%, then he will get more kpi_bonus
+     * @param Request $request
+     * @return true
      */
-    public function save(KpiSaveRequest $request): array
+    public function setOffLimit(Request $request): bool
     {
-//        if ($this->hasDuplicate($request)) {
-//            throw new TargetDuplicateException();
-//        }
+        $kpi = Kpi::query()->findOrFail($request->get('id'));
 
-        $kpi_id = 0;
-        $kpi_item_ids = [];
-        try {
-            DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
-                /** @var Kpi $kpi */
-                $kpi = Kpi::query()->create([
-                    'completed_80' => $request->input('completed_80'),
-                    'completed_100' => $request->input('completed_100'),
-                    'lower_limit' => $request->input('lower_limit'),
-                    'upper_limit' => $request->input('upper_limit'),
-                    'colors' => json_encode($request->input('colors')),
-                    'created_by' => auth()->id()
-                ]);
-                foreach ($request->get('kpiables') as $kpiable) {
-                    $kpi->saveTarget($kpiable);
-                }
+        $kpi->update([
+            'off_limit' => $request->get('off_limit')
+        ]);
 
-                $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
+        event(new TrackKpiUpdatesEvent($kpi->id));
 
-                $kpi->children = $kpi_item_ids;
-                $kpi->save();
-
-                $kpi_id = $kpi->id;
-
-            });
-
-            event(new TrackKpiUpdatesEvent($kpi_id));
-            event(new KpiChangedEvent(Carbon::now()));
-
-            return [
-                'id' => $kpi_id,
-                'items' => $kpi_item_ids
-            ];
-        } catch (Exception $exception) {
-            throw new Exception($exception);
-        }
+        return true;
     }
 
     /**
@@ -234,6 +204,8 @@ class KpiService
 
         $kpi = Kpi::query()->findOrFail($id);
         $kpi->update($all);
+        $kpi->updated_at = now();
+        $kpi->save();
         DB::commit();
 
         $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
@@ -245,53 +217,6 @@ class KpiService
             'items' => $kpi_item_ids
         ];
 
-    }
-
-    /**
-     * @param $id
-     * @return void
-     */
-    public function delete($id): void
-    {
-        $kpi = Kpi::query()->find($id);
-        if ($kpi) {
-            $kpi->updated_by = auth()->id();
-            $kpi->save();
-            $kpi->delete();
-        }
-    }
-
-    /**
-     * Сохраняем kpi_items и возвращаем массив с id
-     */
-    private function saveItems(array $items, int $kpiId): array
-    {
-        $ids = [];
-        foreach ($items as $item) {
-            // if a source is no_source
-            // then activity also zeroes
-            if ($item['source'] == 0) $item['activity_id'] = 0;
-
-
-            // create
-            $kpi_item = KpiItem::query()->create([
-                'kpi_id' => $kpiId,
-                'name' => $item['name'],
-                'method' => $item['method'],
-                'unit' => $item['unit'] ?? '',
-                'plan' => $item['plan'],
-                'cell' => $item['cell'],
-                'share' => $item['share'],
-                'activity_id' => $item['activity_id'],
-                'common' => $item['common']
-            ]);
-
-            event(new TrackKpiItemEvent($kpi_item->toArray()));
-
-            $ids[] = $kpi_item->getKey();
-        }
-
-        return $ids;
     }
 
     /**
@@ -341,8 +266,104 @@ class KpiService
                 event(new TrackKpiItemEvent($item));
             }
         }
-
+        $kpi->updated_at = now();
+        $kpi->save();
         return $item_ids;
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function delete($id): void
+    {
+        $kpi = Kpi::query()->find($id);
+        if ($kpi) {
+            $kpi->updated_by = auth()->id();
+            $kpi->save();
+            $kpi->delete();
+        }
+    }
+
+    /**
+     * @throws Throwable
+     * @throws TargetDuplicateException
+     */
+    public function save(KpiSaveRequest $request): array
+    {
+//        if ($this->hasDuplicate($request)) {
+//            throw new TargetDuplicateException();
+//        }
+
+        $kpi_id = 0;
+        $kpi_item_ids = [];
+        try {
+            DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
+                /** @var Kpi $kpi */
+                $kpi = Kpi::query()->create([
+                    'completed_80' => $request->input('completed_80'),
+                    'completed_100' => $request->input('completed_100'),
+                    'lower_limit' => $request->input('lower_limit'),
+                    'upper_limit' => $request->input('upper_limit'),
+                    'colors' => json_encode($request->input('colors')),
+                    'created_by' => auth()->id()
+                ]);
+                foreach ($request->get('kpiables') as $kpiable) {
+                    $kpi->saveTarget($kpiable);
+                }
+
+                $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
+
+                $kpi->children = $kpi_item_ids;
+                $kpi->updated_at = now();
+                $kpi->save();
+
+                $kpi_id = $kpi->id;
+            });
+
+            event(new TrackKpiUpdatesEvent($kpi_id));
+            event(new KpiChangedEvent(Carbon::now()));
+
+            return [
+                'id' => $kpi_id,
+                'items' => $kpi_item_ids
+            ];
+        } catch (Exception $exception) {
+            throw new Exception($exception);
+        }
+    }
+
+    /**
+     * Сохраняем kpi_items и возвращаем массив с id
+     */
+    private function saveItems(array $items, int $kpiId): array
+    {
+        $ids = [];
+        foreach ($items as $item) {
+            // if a source is no_source
+            // then activity also zeroes
+            if ($item['source'] == 0) $item['activity_id'] = 0;
+
+
+            // create
+            $kpi_item = KpiItem::query()->create([
+                'kpi_id' => $kpiId,
+                'name' => $item['name'],
+                'method' => $item['method'],
+                'unit' => $item['unit'] ?? '',
+                'plan' => $item['plan'],
+                'cell' => $item['cell'],
+                'share' => $item['share'],
+                'activity_id' => $item['activity_id'],
+                'common' => $item['common']
+            ]);
+
+            event(new TrackKpiItemEvent($kpi_item->toArray()));
+
+            $ids[] = $kpi_item->getKey();
+        }
+
+        return $ids;
     }
 
     /**
@@ -358,23 +379,5 @@ class KpiService
                 'targetable_type' => $request->get('targetable_type'),
             ])
             ->exists();
-    }
-
-    /**
-     * Change kpi off_limit property, off_limit -> If employee do his activity bigger than 100%, then he will get more kpi_bonus
-     * @param Request $request
-     * @return true
-     */
-    public function setOffLimit(Request $request): bool
-    {
-        $kpi = Kpi::query()->findOrFail($request->get('id'));
-
-        $kpi->update([
-            'off_limit' => $request->get('off_limit')
-        ]);
-
-        event(new TrackKpiUpdatesEvent($kpi->id));
-
-        return true;
     }
 }
