@@ -25,10 +25,8 @@ final class UserSyncService
             $data['coordinate_id'] = null;
         }
 
-        dd($data);
         $user = User::withTrashed()->where('email', $email)->first();
         $user?->update($data);
-
 
         return $user;
     }
