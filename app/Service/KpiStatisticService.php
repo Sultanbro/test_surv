@@ -1884,14 +1884,14 @@ class KpiStatisticService
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', $last_date)
+            ->where('kpis.created_at', '>=', $last_date)
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))));
+                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '<=', $date->format('Y-m-d'))));
     }
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
