@@ -2,7 +2,6 @@
 
 namespace App\Service\Tenancy;
 
-use App\Models\CentralUser;
 use App\Models\UserCoordinate;
 use App\User;
 
@@ -19,38 +18,17 @@ final class UserSyncService
 
     public function update(string $email, array $data)
     {
+
+        if ($data['coordinates']) {
+            $data['coordinate_id'] = $this->setCoordinate($data['coordinates']);
+        } else {
+            $data['coordinate_id'] = null;
+        }
+
         dd($data);
-        $currentTenant = tenant('id');
+        $user = User::withTrashed()->where('email', $email)->first();
+        $user?->update($data);
 
-        $owner = CentralUser::with('tenants')->where('email', $email)->first();
-
-        if (!$owner) {
-            return false;
-        }
-
-        foreach ($owner->tenants as $key => $tenant) {
-
-            tenancy()->initialize($tenant);
-
-            if ($data['coordinates']) {
-                $data['coordinate_id'] = $this->setCoordinate($data['coordinates']);
-            } else {
-                $data['coordinate_id'] = null;
-            }
-
-            $users = User::withTrashed()->where('email', $email)->first();
-            $users?->update($data);
-        }
-
-        // Connect to the current tenant
-        tenancy()->initialize(tenant());
-
-        $user = User::withTrashed()
-            ->where('email', $email)
-            ->first()
-            ->update($data);
-
-        $owner->update($this->normalizeForOwner($data));
 
         return $user;
     }
