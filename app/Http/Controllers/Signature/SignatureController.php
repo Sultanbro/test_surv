@@ -48,7 +48,7 @@ class SignatureController extends Controller
         $group->addFile([
             'url' => FileHelper::getUrl('signature', $fileName),
             'local_name' => $fileName,
-            'original_name' => $request->validated('original_name'),
+            'original_name' => $request->validated('original_name', $fileName),
             'original_path' => 'signature'
         ]);
         return FileResource::collection($group->files);
