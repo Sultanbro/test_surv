@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Builder;
 class KpiFilter
 {
     protected Kpi $kpi;
+    private ?Builder $query;
 
-    public function __construct()
+    public function __construct(?Builder $query = null)
     {
         $this->kpi = new Kpi;
+        $this->query = $query;
     }
 
     /**
@@ -23,7 +25,7 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
-        return $this->kpi::targetJoins()
+        return $this->kpi::targetJoins($this->query)
             ->where(function ($query) use ($searchWord) {
                 $query->where('u.name', 'LIKE', "%$searchWord%")
                     ->orWhere('u.last_name', 'LIKE', "%$searchWord%");

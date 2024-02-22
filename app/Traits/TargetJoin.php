@@ -8,11 +8,9 @@ use Illuminate\Database\Query\JoinClause;
 
 trait TargetJoin
 {
-    abstract static public function query();
-
-    public static function targetJoins(): Builder
+    public static function targetJoins(?Builder $query = null): Builder
     {
-        $query = self::query();
+        $query = $query ?? self::query();
         $table = $query->getModel()->getTable();
 
         return $query->select($table . '.*')
@@ -41,4 +39,6 @@ trait TargetJoin
 //            ->leftJoin('users as updater', 'updater.id', '=', "$table.updated_by")
 //            ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by");
     }
+
+    abstract static public function query();
 }
