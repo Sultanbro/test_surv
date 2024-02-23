@@ -25,8 +25,7 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
-        dd($this->kpi::targetJoins($this->query)->toSql());
-        return $this->kpi::targetJoins($this->query)
+        return $this->kpi::targetJoins()
             ->where(function ($query) use ($searchWord) {
                 $query->where('u.name', 'LIKE', "%$searchWord%")
                     ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
@@ -34,14 +33,14 @@ class KpiFilter
             ->orWhere('pg.name', 'LIKE', "%$searchWord%")
             ->orWhere('p.position', 'LIKE', "%$searchWord%")
             ->orWhere('ki.name', 'LIKE', "%$searchWord%")
-//            ->orWhere(function ($query) use ($searchWord) {
-//                $query->where('updater.name', 'LIKE', "%$searchWord%")
-//                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
-//            })
-//            ->orWhere(function ($query) use ($searchWord) {
-//                $query->where('creator.name', 'LIKE', "%$searchWord%")
-//                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
-//            })
+            ->orWhere(function ($query) use ($searchWord) {
+                $query->where('updater.name', 'LIKE', "%$searchWord%")
+                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
+            })
+            ->orWhere(function ($query) use ($searchWord) {
+                $query->where('creator.name', 'LIKE', "%$searchWord%")
+                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
+            })
             ->distinct();
     }
 }

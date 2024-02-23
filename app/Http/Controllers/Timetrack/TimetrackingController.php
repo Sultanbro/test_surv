@@ -1695,7 +1695,6 @@ class TimetrackingController extends Controller
         return (new TimetrackService())->getUserFinalSalary(
             $salaryBonuses,
             $obtainedBonuses,
-            $testBonuses,
             $userFinesInformation['fines'],
             $userFinesInformation['total'],
             $advances,

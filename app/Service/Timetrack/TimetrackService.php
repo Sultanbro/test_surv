@@ -17,7 +17,6 @@ class TimetrackService
     /**
      * @param array $salaryBonuses
      * @param array $obtainedBonuses
-     * @param array $testBonuses
      * @param $userFines
      * @param int $finesSum
      * @param array $advances
@@ -25,6 +24,7 @@ class TimetrackService
      * @param Carbon $date
      * @param $currencyRate
      * @return array
+     * @throws Exception
      */
     public function getUserFinalSalary(
         array  $salaryBonuses,
