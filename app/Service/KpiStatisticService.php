@@ -1786,7 +1786,7 @@ class KpiStatisticService
             'group_id' => $groupId,
             'only_active' => true
         ];
-        $this->kpis($date, $params)->dd();
+        dd($this->kpis($date, $params)->get());
         $kpis = $this->kpis($date, $params)->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
