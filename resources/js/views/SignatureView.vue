@@ -5,6 +5,8 @@ import { useSettingsStore } from '@/stores/Settings'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import InputText from '@ui/InputText.vue'
 
+const SEPARATOR = '🤡'
+
 export default {
 	name: 'SignatureVerification',
 	components: {
@@ -60,10 +62,44 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.local_name || 'Без названия',
+					name: doc.original_name || 'Без названия',
 					file: this.isDebug ? '/static/td.pdf' : doc.url,
-					signed: doc.signed,
+					signed: doc.signed_at,
 				}))
+				if(!this.groupId){
+					const {data} = await this.axios.post(`/signature/users/${this.userId}/histories`)
+					if(data?.data?.length){
+						if(!this.doc?.signed){
+							const form = data?.data[0]
+							const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+							this.requisites = {
+								fio: form.name,
+								phone,
+								address: form.address,
+								pasport,
+								uin,
+								file1: form.images[0] || '',
+								file2: form.images[1] || '',
+							}
+						}
+						else{
+							const date = this.$moment(this.doc.signed).add(1, 'm')
+							const form = data?.data?.filter(req => date.diff(req.created_at.substring(0, 19)) > 0)?.at(0) || null
+							if(form){
+								const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+								this.requisites = {
+									fio: form.name,
+									phone,
+									address: form.address,
+									pasport,
+									uin,
+									file1: form.images[0] || '',
+									file2: form.images[1] || '',
+								}
+							}
+						}
+					}
+				}
 			}
 			catch (error) {
 				this.$onError(error)
@@ -92,7 +128,10 @@ export default {
 			<VuePdfEmbed
 				:source="doc.file"
 			/>
-			<div class="SignatureVerification-footer">
+			<div
+				v-if="!groupId"
+				class="SignatureVerification-footer"
+			>
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
@@ -173,10 +212,7 @@ export default {
 					</b-col>
 				</b-row>
 
-				<b-row
-					v-if="!groupId"
-					class="SignatureVerification-row"
-				>
+				<b-row class="SignatureVerification-row">
 					<b-col cols="6">
 						<div class="SignatureVerification-label text-center">
 							Лицевая сторона удостоверения / паспорта
