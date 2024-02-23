@@ -102,8 +102,11 @@ class SignatureController extends Controller
         $groupFiles = $user->activeGroup()->files()->withTrashed()->get();
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
-            if (!$signed) continue;
-            $file->signed_at = $signed->pivot?->signed_at;
+
+            if (!$signed && !$file->deleted_at) continue;
+
+            $file->signed_at = $signed?->pivot?->signed_at;
+
             $filteredFiles->add($file);
         }
         return FileResource::collection($filteredFiles);
