@@ -36,6 +36,7 @@ class TestingCommand extends Command
         );
 
         $data = $sms->send($receiver, 'код подтверждение: 12555');
+        dd($data);
         $this->newLine();
         $this->alert(Str::replace([',', '{', '}'], PHP_EOL, json_encode($data)));
     }
