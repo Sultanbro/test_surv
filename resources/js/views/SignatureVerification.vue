@@ -361,7 +361,6 @@ export default {
 
 				<b-btn
 					variant="primary"
-					:disabled="buttonPressed"
 					@click="onVerify"
 				>
 					OK
