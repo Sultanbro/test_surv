@@ -497,7 +497,8 @@
 			size="md"
 			:title="documentForm.id > 0 ? 'Редактирование документа' : 'Создание  документа'"
 			body-class="CompanyGroups-modal"
-			@ok="onSaveDoc"
+			:no-close-on-backdrop="uploadProgress"
+			:no-close-on-esc="uploadProgress"
 		>
 			<b-row class="mb-4">
 				<b-col cols="3">
@@ -536,6 +537,15 @@
 				show-progress
 				animated
 			/>
+			<template #modal-footer>
+				<b-btn
+					variant="primary"
+					:disabled="uploadProgress"
+					@click="onSaveDoc"
+				>
+					OK
+				</b-btn>
+			</template>
 		</b-modal>
 	</div>
 </template>
@@ -985,6 +995,7 @@ export default {
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
+			this.docEditDialog = true
 			if(doc.id > 0){
 				this.updateDoc()
 			}
