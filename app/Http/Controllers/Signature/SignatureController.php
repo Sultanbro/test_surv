@@ -102,6 +102,7 @@ class SignatureController extends Controller
             $signed = $signedFiles->where('id', $file->id)->first();
             if (!$signed) {
                 $groupFiles->where('id', '!=', $file->id);
+                continue;
             }
             $file->signed_at = $signed->pivot?->signed_at;
         }
