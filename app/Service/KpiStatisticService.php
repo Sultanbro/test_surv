@@ -1891,7 +1891,8 @@ class KpiStatisticService
             ])
             ->where('kpis.created_at', '<=', $last_date)
             ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))));
+                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
+            ->distinct();
     }
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
