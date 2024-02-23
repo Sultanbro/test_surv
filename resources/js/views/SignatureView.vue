@@ -20,7 +20,7 @@ export default {
 			userCode: '',
 			user: null,
 			buttonPressed: false,
-			isDebug: true,
+			isDebug: false,
 			activeDoc: 0,
 			requisites: {
 				fio: '',
