@@ -97,7 +97,7 @@ class SignatureController extends Controller
     public function signedFiles(User $user): AnonymousResourceCollection
     {
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groupFiles = $user->activeGroup()->withTrashed()->files()->get();
+        $groupFiles = $user->activeGroup()->files()->withTrashed()->get();
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
             if (!$signed) {
