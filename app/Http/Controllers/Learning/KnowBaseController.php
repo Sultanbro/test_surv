@@ -267,7 +267,7 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getTreeV2(KnowBaseService $service)
+    public function getAllTree(KnowBaseService $service)
     {
         return $this->response(
             message: "Success",
