@@ -103,7 +103,7 @@ class SignatureController extends Controller
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
 
-            if (!$signed && !$file->deleted_at) continue;
+            if (!$signed && $file->deleted_at) continue;
 
             $file->signed_at = $signed?->pivot?->signed_at;
 
