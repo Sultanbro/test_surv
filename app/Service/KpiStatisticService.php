@@ -1873,6 +1873,7 @@ class KpiStatisticService
                         ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by")
                         ->where(function ($query) use ($searchWord) {
                             $query->where(function ($query) use ($searchWord) {
+                                dd($query->dd());
                                 $query->where('u.name', 'LIKE', "%$searchWord%")
                                     ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
                             });
