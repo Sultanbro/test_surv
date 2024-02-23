@@ -397,7 +397,9 @@ export default {
 	}
 	&-logo{
 		display: block;
-		margin: 0 auto 20px;
+		max-width: 50%;
+		margin: 0 auto 40px;
+		border-radius: 24px;
 	}
 	&-title{
 		padding: 0;

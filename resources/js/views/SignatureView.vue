@@ -218,7 +218,7 @@ export default {
 							Лицевая сторона удостоверения / паспорта
 						</div>
 						<a
-							:href="requisites.file1"
+							:href="requisites.file1 ? requisites.file1.url : ''"
 							target="_blank"
 							class="SignatureVerification-file"
 							:class="{
@@ -236,7 +236,7 @@ export default {
 							Вторая сторона удостоверения / паспорта
 						</div>
 						<a
-							:href="requisites.file2"
+							:href="requisites.file2 ? requisites.file2.url : ''"
 							target="_blank"
 							class="SignatureVerification-file"
 							:class="{
@@ -287,7 +287,9 @@ export default {
 	}
 	&-logo{
 		display: block;
-		margin: 0 auto 20px;
+		max-width: 50%;
+		margin: 0 auto 40px;
+		border-radius: 24px;
 	}
 	&-title{
 		padding: 0;
