@@ -15,18 +15,13 @@ use App\Http\Requests\TimeTrack\AcceptOvertimeRequest;
 use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
-use App\Jobs\Salary\ProcessUpdateSalary;
-use App\KnowBase;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
-use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
-use App\Models\CallibroDialer;
 use App\Models\GroupUser;
-use App\Models\KnowBaseModel;
 use App\Models\Kpi\Bonus;
 use App\Models\Timetrack\UserPresence;
 use App\Models\User\NotificationTemplate;
@@ -50,7 +45,6 @@ use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;
 use App\UserAbsenceCause;
-use App\UserDeletePlan;
 use App\UserDescription;
 use App\UserFine;
 use App\UserNotification;
@@ -1690,11 +1684,13 @@ class TimetrackingController extends Controller
         $userFinesInformation = $this->fineService->getUserFines($date->month, $user, $currency_rate);
         $salaryBonuses = $this->salaryService->getUserBonuses($date, $user);
         $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date, $user);
+        $testBonuses = $this->testBonusService->getUserBonuses($date, $user);
         $advances = $this->salaryService->getUserAdvances($date, $user);
 
         return (new TimetrackService())->getUserFinalSalary(
             $salaryBonuses,
             $obtainedBonuses,
+            $testBonuses,
             $userFinesInformation['fines'],
             $userFinesInformation['total'],
             $advances,
