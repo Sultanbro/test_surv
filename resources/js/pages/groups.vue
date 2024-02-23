@@ -961,7 +961,7 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.local_name || 'Без названия',
+					name: doc.original_name || 'Без названия',
 					file: doc.url,
 				}))
 			}
@@ -1009,7 +1009,7 @@ export default {
 				}
 				const formData = new FormData()
 				formData.append('file', this.documentForm.upload)
-				formData.append('local_name', this.documentForm.name)
+				formData.append('original_name', this.documentForm.name)
 				await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data'
@@ -1026,7 +1026,7 @@ export default {
 		async updateDoc(){
 			try {
 				await this.axios.put(`/signature/files/${this.documentForm.id}`, {
-					local_name: this.documentForm.name
+					original_name: this.documentForm.name
 				})
 				this.fetchDocs()
 				this.docEditDialog = false
