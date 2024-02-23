@@ -242,6 +242,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/kb/search', [Learning\KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [Learning\KnowBaseController::class, 'getArchived']);
     Route::post('/kb/tree', [Learning\KnowBaseController::class, 'getTree']);
+    Route::post('/kb/treeV2', [Learning\KnowBaseController::class, 'getTreeV2']);
     Route::get('/kb/get-favourites', [Learning\KnowBaseController::class, 'getFavourites']);
     Route::post('/kb/page/update', [Learning\KnowBaseController::class, 'updatePage']);
     Route::post('/kb/page/delete-section', [Learning\KnowBaseController::class, 'deleteSection']);

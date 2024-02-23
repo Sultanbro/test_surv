@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Learning;
 
+use App\Http\Resources\KB\KnowBaseTreeResource;
 use App\KnowBase;
 use App\Models\KnowBaseModel;
 use App\Models\TestQuestion;
+use App\Service\KB\KnowBaseService;
 use App\User;
 use App\ProfileGroup;
 use App\Position;
@@ -263,6 +265,14 @@ class KnowBaseController extends Controller
             'item_models' => $item_models,
             'can_save' => $this->canSaveWithoutTest()
         ];
+    }
+
+    public function getTreeV2(KnowBaseService $service)
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildTree())
+        );
     }
 
     /**

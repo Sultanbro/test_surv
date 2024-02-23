@@ -52,6 +52,11 @@ class KnowBase extends Model implements CourseInterface
             ->with('children', 'questions');
     }
 
+    public function onlyChildren()
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('order');
+    }
+
     public function item_model()
     {
         return $this->hasOne('App\Models\CourseItemModel', 'item_id');
