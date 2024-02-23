@@ -1847,6 +1847,7 @@ class KpiStatisticService
             })
             ->when($searchWord, function (Builder $subQuery) use ($searchWord) {
                 $subQuery->where(fn(Builder $query) => (new KpiFilter($query))->globalSearch($searchWord));
+                $subQuery->dd();
             })
 //            ->with([
 //                'histories_latest' => function ($query) use ($date) {
