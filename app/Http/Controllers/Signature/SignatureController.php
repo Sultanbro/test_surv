@@ -18,6 +18,7 @@ use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
@@ -96,15 +97,18 @@ class SignatureController extends Controller
 
     public function signedFiles(User $user): AnonymousResourceCollection
     {
+        $filteredFiles = new Collection();
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groupFiles = $user->activeGroup()->withTrashed()->files()->get();
+        $groupFiles = $user->activeGroup()->files()->withTrashed()->get();
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
-            if (!$signed) {
-                $groupFiles->where('id', '!=', $file->id);
-            }
-            $file->signed_at = $signed->pivot?->signed_at;
+
+            if (!$signed && $file->deleted_at) continue;
+
+            $file->signed_at = $signed?->pivot?->signed_at;
+
+            $filteredFiles->add($file);
         }
-        return FileResource::collection($groupFiles);
+        return FileResource::collection($filteredFiles);
     }
 }
