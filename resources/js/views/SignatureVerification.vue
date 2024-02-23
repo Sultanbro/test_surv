@@ -7,6 +7,8 @@ import JobtronButton from '@ui/Button.vue';
 import InputText from '@ui/InputText.vue'
 import InputFile from '@ui/InputFile.vue'
 
+const SEPARATOR = '🤡'
+
 export default {
 	name: 'SignatureVerification',
 	components: {
@@ -76,29 +78,54 @@ export default {
 				const docs = data.data || []
 				this.documents = docs.map(doc => ({
 					id: doc.id,
-					name: doc.local_name || 'Без названия',
+					name: doc.original_name || 'Без названия',
 					file: this.isDebug ? '/static/td.pdf' : doc.url,
-					signed: doc.signed,
+					signed: doc.signed_at,
 				}))
+
+				const {data: hist} = await this.axios.post(`/signature/users/${this.userId}/histories`)
+				if(hist?.data?.length){
+					const form = hist?.data[0]
+					const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+					this.requisites = {
+						fio: form.name,
+						phone,
+						address: form.address,
+						pasport,
+						uin,
+						file1: form.images[0] || '',
+						file2: form.images[1] || '',
+					}
+				}
 			}
 			catch (error) {
 				this.$onError(error)
 			}
 		},
 		async onSign(){
+			/* eslint-disable camelcase */
 			if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
 			if(this.buttonPressed) return
 			this.buttonPressed = true
+
+			const formData = new FormData()
+			formData.set('phone', this.user.phone)
+			formData.set('name', this.requisites.fio)
+			formData.set('contract_number', this.requisites.phone + SEPARATOR + this.requisites.uin + SEPARATOR + this.requisites.pasport)
+			formData.set('address', this.requisites.address)
+
+			if(this.requisites.upload1) formData.append('images[]', this.requisites.upload1[0])
+			if(this.requisites.upload2) formData.append('images[]', this.requisites.upload2[0])
+
 			try {
-				/* const {data} =  */await this.axios.post(`/signature/users/${this.user.id}/sms`, {
-					phone: this.user.phone
-				})
+				/* const {data} =  */await this.axios.post(`/signature/users/${this.user.id}/sms`, formData)
 				this.isVerifyModal = true
 				this.timer = 60
 			}
 			catch (error) {
 				this.$onError(error)
 			}
+			/* eslint-enable camelcase */
 		},
 		onSignAgain(){
 			this.buttonPressed = false
