@@ -78,7 +78,7 @@ class CountHours extends Command
     {
         $lunchTime = $schedule['rest_time'] ?? 60;
 
-        $maxWorkMinutesPerDay = max($schedule['start']->diffInMinutes($schedule['end']) - $lunchTime, 0);
+        $maxWorkMinutesPerDay = max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes = $enterTime->diffInMinutes($exitTime) - $lunchTime;
         dump($maxWorkMinutesPerDay . " " . $diffInMinutes);
         return min($diffInMinutes, $maxWorkMinutesPerDay);
