@@ -1870,16 +1870,16 @@ class KpiStatisticService
                 $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
-                            ->orWhere('deleted_at', '>', $start_date);
+                            ->orWhere('deleted_at', '>', $last_date);
                     } elseif ($q->getModel() instanceof Position) {
                         $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $start_date);
+                            ->orWhereDate('deleted_at', '>', $last_date);
                     }
                 })
                     ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                        ->orWhereDate('deleted_at', '>', $last_date))
                     ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $start_date, $last_date))
+                        ->orWhereDate('deleted_at', '>', $last_date))
                     ->orWhereHas('groups', fn($q) => $q->where('active', 1));
             })
             ->with([
