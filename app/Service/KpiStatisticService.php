@@ -1824,7 +1824,7 @@ class KpiStatisticService
         array  $filter = [],
     )
     {
-        $searchWord = $filter['search_world'] ?? '';
+        $searchWord = $filter['search_world'] ?? null;
         $groupId = $filter['group_id'] ?? null;
         $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
         $this->updatedValues = UpdatedUserStat::query()
@@ -1845,7 +1845,9 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->where(fn(Builder $query) => (new KpiFilter($query))->globalSearch($searchWord));
+            ->when($searchWord, function (Builder $subQuery) use ($searchWord) {
+                $subQuery->where(fn(Builder $query) => (new KpiFilter($query))->globalSearch($searchWord));
+            })
 //            ->with([
 //                'histories_latest' => function ($query) use ($date) {
 //                    $query->whereYear('created_at', $date->year);
@@ -1892,7 +1894,8 @@ class KpiStatisticService
 //            ])
 //            ->where('kpis.created_at', '>=', $last_date)
 //            ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-//                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '<=', $date->format('Y-m-d'))));
+//                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '<=', $date->format('Y-m-d'))))
+            ;
     }
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
