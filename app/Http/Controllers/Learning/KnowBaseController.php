@@ -271,7 +271,15 @@ class KnowBaseController extends Controller
     {
         return $this->response(
             message: "Success",
-            data: KnowBaseTreeResource::collection($service->buildTree())
+            data: KnowBaseTreeResource::collection($service->buildAllTree())
+        );
+    }
+
+    public function getUserTree(KnowBaseService $service)
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildUserTree())
         );
     }
 
