@@ -497,7 +497,9 @@
 			size="md"
 			:title="documentForm.id > 0 ? 'Редактирование документа' : 'Создание  документа'"
 			body-class="CompanyGroups-modal"
-			@ok="onSaveDoc"
+			:no-close-on-backdrop="uploadProgress > 0"
+			:no-close-on-esc="uploadProgress > 0"
+			:hide-header="uploadProgress > 0"
 		>
 			<b-row class="mb-4">
 				<b-col cols="3">
@@ -536,6 +538,15 @@
 				show-progress
 				animated
 			/>
+			<template #modal-footer>
+				<b-btn
+					variant="primary"
+					:disabled="uploadProgress > 0"
+					@click="onSaveDoc"
+				>
+					OK
+				</b-btn>
+			</template>
 		</b-modal>
 	</div>
 </template>
@@ -985,6 +996,7 @@ export default {
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
+			this.docEditDialog = true
 			if(doc.id > 0){
 				this.updateDoc()
 			}
@@ -1269,6 +1281,14 @@ export default {
 			background-color: #F7FAFC !important;
 			border-radius: 6px !important;
 		}
+	}
+
+	.progress-bar-striped{
+		background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+		background-size: 1rem 1rem;
+	}
+	.progress-bar-animated{
+		animation: progress-bar-stripes 1s linear infinite;
 	}
 }
 </style>
