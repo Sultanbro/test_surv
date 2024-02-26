@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HigherOrderWhenProxy;
 
 class UserService
@@ -361,20 +360,12 @@ class UserService
      */
     public function getFiredEmployeesForSalaries(int $groupId, string $date): array
     {
-        $activeGroupSubQuery = DB::table('group_user')
-            ->select([
-                DB::raw('group_id as active_group_id'),
-                DB::raw('user_id')
-            ])
-            ->where('status', [GroupUser::STATUS_ACTIVE]);
 
         $data = User::withTrashed()
             ->with('groups')
-            ->joinSub($activeGroupSubQuery, 'active_group', 'users.id', 'active_group.user_id')
             ->whereHas('group_users', function (Builder $q) use ($groupId, $date) {
                 $q->whereIn('status', [GroupUser::STATUS_FIRED]);
                 $q->where('group_id', $groupId);
-                $q->whereRaw('group_id != active_group_id');
                 $q->whereDate('to', '>=', $date);
             })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
