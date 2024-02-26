@@ -24,7 +24,7 @@ class FineController extends Controller
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(UpdateUserFinesRequest $request)
+    public function update(UpdateUserFinesRequest $request): JsonResponse
     {
         $data = $request->toDto();
 
@@ -35,8 +35,6 @@ class FineController extends Controller
         if ($ud && $ud->is_trainee == 1) return response()->json([
             "message" => 'Не удалось сохранить изменения. Стажеру нельзя ставить штрафы'
         ]);
-
-        $fines = Fine::query()->pluck('id')->toArray();
 
         $currentUserFines = UserFine::query()->whereDate('day', $data->date)
             ->where('user_id', $data->userId)
