@@ -99,7 +99,7 @@ class SignatureController extends Controller
     {
         $filteredFiles = new Collection();
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groups = $user->groups()->withWhereHas('files')->get();
+        $groups = $user->groups()->withWhereHas('files', fn($query) => $query->withTrashed())->get();
         $groupFiles = new Collection();
         foreach ($groups as $group) {
             $groupFiles->merge($group->files);
