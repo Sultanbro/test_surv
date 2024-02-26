@@ -25,7 +25,8 @@
 				</a>
 				<div class="UserEditDocumentsV2-docControls">
 					<template v-if="doc.signed">
-						<i class="fas fa-check" />
+						{{ $moment(doc.signed).format('DD.MM.YYYY') }}
+						<i class="fas fa-check ml-2" />
 						Подписан
 					</template>
 				</div>

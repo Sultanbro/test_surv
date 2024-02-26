@@ -265,7 +265,7 @@ export default {
 			<label
 				for="zarplata"
 				class="col-sm-2 col-form-label font-weight-bold"
-			>Оклад</label>
+			>Оклад<span class="red">*</span></label>
 
 			<div class="col-sm-4">
 				<input

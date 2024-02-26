@@ -70,17 +70,17 @@ export default {
 					const {data} = await this.axios.post(`/signature/users/${this.userId}/histories`)
 					if(data?.data?.length){
 						if(!this.doc?.signed){
-							const form = data?.data[0]
-							const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
-							this.requisites = {
-								fio: form.name,
-								phone,
-								address: form.address,
-								pasport,
-								uin,
-								file1: form.images[0] || '',
-								file2: form.images[1] || '',
-							}
+							// const form = data?.data[0]
+							// const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+							// this.requisites = {
+							// 	fio: form.name,
+							// 	phone,
+							// 	address: form.address,
+							// 	pasport,
+							// 	uin,
+							// 	file1: form.images[0] || '',
+							// 	file2: form.images[1] || '',
+							// }
 						}
 						else{
 							const date = this.$moment(this.doc.signed).add(1, 'm')
@@ -129,7 +129,7 @@ export default {
 				:source="doc.file"
 			/>
 			<div
-				v-if="!groupId"
+				v-if="!groupId && doc.signed"
 				class="SignatureVerification-footer"
 			>
 				<b-row class="SignatureVerification-row">
@@ -282,12 +282,14 @@ export default {
 		box-shadow: 0 0 3px rgba(#000, 0.25);
 	}
 	&-header{
-		margin-bottom: 20px;
+		padding: 20px 20px 0;
+		margin: -20px -20px 20px;
 		border-bottom: 3px solid #e0f0fe;
+		background-color: #cdcbd3;
 	}
 	&-logo{
 		display: block;
-		max-width: 50%;
+		max-width: 35%;
 		margin: 0 auto 40px;
 		border-radius: 24px;
 	}

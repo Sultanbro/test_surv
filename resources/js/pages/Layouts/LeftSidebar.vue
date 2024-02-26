@@ -95,7 +95,7 @@
 									src="/images/dist/icon-settings.svg"
 									alt="settings icon"
 								>
-								<span class="menu__item-title">Настройки</span>
+								<span class="menu__item-title">Настройки профиля</span>
 							</router-link>
 						</PulseCard>
 						<router-link
@@ -107,7 +107,7 @@
 								src="/images/dist/icon-settings.svg"
 								alt="settings icon"
 							>
-							<span class="menu__item-title">Настройки</span>
+							<span class="menu__item-title">Настройки профиля</span>
 						</router-link>
 						<form @click.prevent="logout">
 							<button
