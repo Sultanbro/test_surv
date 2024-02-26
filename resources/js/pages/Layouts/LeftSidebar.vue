@@ -242,6 +242,8 @@ export default {
 				|| this.$can('permissions_view')
 				|| this.$can('checklists_view')
 				|| this.$can('awards_view')
+				|| this.$can('shifts_view')
+				|| this.$can('texes_view')
 		},
 		showReports(){
 			return (this.$can('top_view') && this.isMainProject)
