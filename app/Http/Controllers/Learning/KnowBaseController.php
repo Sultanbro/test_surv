@@ -14,6 +14,7 @@ use App\Models\CourseItemModel;
 use Auth;
 use App\Setting;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -267,7 +268,7 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getAllTree(KnowBaseService $service)
+    public function getAllTree(KnowBaseService $service): JsonResponse
     {
         return $this->response(
             message: "Success",
@@ -275,7 +276,10 @@ class KnowBaseController extends Controller
         );
     }
 
-    public function getUserTree(KnowBaseService $service)
+    /**
+     * @throws \Exception
+     */
+    public function getUserTree(KnowBaseService $service): JsonResponse
     {
         return $this->response(
             message: "Success",
