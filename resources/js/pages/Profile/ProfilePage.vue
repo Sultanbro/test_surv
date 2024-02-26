@@ -4,11 +4,17 @@
 		id="page-profile"
 	>
 		<router-link
-			v-if="profileUnfilled"
+			v-if="profileUnfilled || unsignedDocs.length"
 			to="/cabinet"
 			class="ProfilePage-fillProfile"
 		>
-			Поздравляем вы приняты на работу, заполните свой профиль
+			<i class="fas fa-arrow-left ProfilePage-fillProfileArrow" />
+			<template v-if="profileUnfilled">
+				Поздравляем вы приняты на работу, заполните свой профиль
+			</template>
+			<template v-else-if="unsignedDocs.length">
+				Подпишите внесенные изменения в профиле
+			</template>
 		</router-link>
 		<div class="intro">
 			<IntroTop
@@ -216,6 +222,8 @@ export default {
 			},
 			intersectionObserver: null,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
+
+			documents: [],
 		};
 	},
 	computed: {
@@ -267,6 +275,9 @@ export default {
 				|| !this.user.email
 				|| !this.user.birthday
 				|| !this.user.working_country
+		},
+		unsignedDocs(){
+			return this.documents.filter(doc => !doc.signed)
 		}
 	},
 	watch: {
@@ -277,6 +288,7 @@ export default {
 	mounted(){
 		if(this.isReady) this.initAnimOnScroll()
 		if(this.isBP) this.fetchUserStats()
+		this.fetchDocs()
 	},
 	beforeDestroy(){
 		this.intersectionObserver.disconnect()
@@ -284,6 +296,16 @@ export default {
 	},
 	methods: {
 		...mapActions(useReferralStore, ['fetchUserStats']),
+		async fetchDocs(){
+			const { data } = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
+			const docs = data.data || []
+			this.documents = docs.map(doc => ({
+				id: doc.id,
+				name: doc.original_name || 'Без названия',
+				file: this.isDebug ? '/static/td.pdf' : doc.url,
+				signed: doc.signed_at,
+			}))
+		},
 		pop(window) {
 			if(window == 'balance') this.popBalance = true;
 			if(window == 'kpi') this.popKpi = true;
@@ -361,7 +383,9 @@ export default {
 	&-fillProfile{
 		display: block;
 		margin-top: 20px;
-		padding: 20px;
+		padding: 20px 40px;
+
+		position: relative;
 
 		font-size: 20px;
 		color: #fff;
@@ -375,6 +399,12 @@ export default {
 			color: #fff;
 			transform: translateY(-2px);
 		}
+	}
+	&-fillProfileArrow{
+		position: absolute;
+		top: 50%;
+		left: 10px;
+		transform: translateY(-50%);
 	}
 }
 </style>

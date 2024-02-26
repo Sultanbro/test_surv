@@ -102,14 +102,32 @@ export default {
 				this.$onError(error)
 			}
 		},
+
+		validateForm(){
+			const errors = []
+
+			if(this.requisites.fio.length < 5) errors.push('Заполните ФИО')
+			if(this.requisites.phone.replace(/[^\d+]/g, '').length < 10) errors.push('Заполните номер телефона')
+			if(this.requisites.uin.length < 10) errors.push('Заполните ИНН')
+			if(this.requisites.pasport.length < 10) errors.push('Заполните номер удостоверения/паспорта')
+			if(this.requisites.address.length < 10) errors.push('Заполните адрес')
+			if(!this.requisites.file1) errors.push('Загрузите лицевую сторону удостоверения/паспорта')
+			if(!this.requisites.file2) errors.push('Загрузите оборотную сторону удостоверения/паспорта')
+
+			if(errors.length) this.$toast.error(errors.join('\n'))
+
+			return !errors.length
+		},
 		async onSign(){
 			/* eslint-disable camelcase */
 			if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
 			if(this.buttonPressed) return
 			this.buttonPressed = true
 
+			if(!this.validateForm()) return
+
 			const formData = new FormData()
-			formData.set('phone', this.user.phone)
+			formData.set('phone', this.requisites.phone.replace(/[^\d+]/g), '')
 			formData.set('name', this.requisites.fio)
 			formData.set('contract_number', this.requisites.phone + SEPARATOR + this.requisites.uin + SEPARATOR + this.requisites.pasport)
 			formData.set('address', this.requisites.address)
@@ -120,7 +138,7 @@ export default {
 			try {
 				/* const {data} =  */await this.axios.post(`/signature/users/${this.user.id}/sms`, formData)
 				this.isVerifyModal = true
-				this.timer = 60
+				this.timer = 120
 			}
 			catch (error) {
 				this.$onError(error)
@@ -141,22 +159,37 @@ export default {
 				++this.activeDoc
 				if(this.documents[this.activeDoc]){
 					this.signCount = 0
-					this.buttonPressed
+					this.buttonPressed = false
 				}
 				else{
 					this.isFinish = true
+					setTimeout(() => {
+						location.assign('/cabinet?tab=documents')
+					})
 				}
-				// window.close()
 			}
 			catch (error) {
 				this.$onError(error)
 			}
 		},
-		onFile1(file){
-			this.requisites.upload1 = file
+		getImage(file){
+			return new Promise((resolve) => {
+				const reader = new FileReader()
+				reader.onload = function (e) {
+					resolve(e.target.result)
+				}
+				reader.readAsDataURL(file)
+			})
 		},
-		onFile2(file){
-			this.requisites.upload2 = file
+		async onFile1(files){
+			if(!files[0]) return
+			this.requisites.upload1 = files
+			this.requisites.file1 = await this.getImage(files[0])
+		},
+		async onFile2(files){
+			if(!files[0]) return
+			this.requisites.upload2 = files
+			this.requisites.file2 = await this.getImage(files[0])
 		},
 		countTimer(){
 			if(this.timer) --this.timer
@@ -197,7 +230,7 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
-							ФИО
+							ФИО<span class="red">*</span>
 						</div>
 					</b-col>
 					<b-col cols="9">
@@ -212,7 +245,7 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
-							Удостоверение/паспорт
+							Удостоверение/паспорт<span class="red">*</span>
 						</div>
 					</b-col>
 					<b-col cols="9">
@@ -227,7 +260,7 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
-							ИИН/ИНН
+							ИНН<span class="red">*</span>
 						</div>
 					</b-col>
 					<b-col cols="9">
@@ -242,7 +275,15 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
-							Сотовый номер
+							Сотовый номер<span class="red">*</span>
+							<img
+								v-b-popover.click.blur.html="'Укажите номер телефона на который придет смс для подписания'"
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								width="20"
+								alt="info icon"
+								tabindex="-1"
+							>
 						</div>
 					</b-col>
 					<b-col cols="9">
@@ -257,7 +298,7 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="3">
 						<div class="SignatureVerification-label">
-							Адресс
+							Адрес<span class="red">*</span>
 						</div>
 					</b-col>
 					<b-col cols="9">
@@ -272,7 +313,7 @@ export default {
 				<b-row class="SignatureVerification-row">
 					<b-col cols="6">
 						<div class="SignatureVerification-label text-center">
-							Лицевая сторона удостоверения / паспорта
+							Лицевая сторона удостоверения / паспорта<span class="red">*</span>
 						</div>
 						<InputFile @change="onFile1">
 							<div
@@ -280,17 +321,19 @@ export default {
 								:class="{
 									'SignatureVerification-file_check': requisites.file1 || requisites.upload1
 								}"
+								:style="[`--card-bg: url(${requisites.file1})`].join(';')"
 							>
 								<i
 									v-if="requisites.file1 || requisites.upload1"
 									class="fa fa-check"
 								/>
+								<span v-else>Загрузите лицевую сторону удостоверения или паспорта</span>
 							</div>
 						</InputFile>
 					</b-col>
 					<b-col cols="6">
 						<div class="SignatureVerification-label text-center">
-							Вторая сторона удостоверения / паспорта
+							Вторая сторона удостоверения / паспорта<span class="red">*</span>
 						</div>
 						<InputFile @change="onFile2">
 							<div
@@ -298,22 +341,28 @@ export default {
 								:class="{
 									'SignatureVerification-file_check': requisites.file2 || requisites.upload2
 								}"
+								:style="[`--card-bg: url(${requisites.file2})`].join(';')"
 							>
 								<i
 									v-if="requisites.file2 || requisites.upload2"
 									class="fa fa-check"
 								/>
+								<span v-else>Загрузите оборотную сторону удостоверения или паспорта</span>
 							</div>
 						</InputFile>
 					</b-col>
 				</b-row>
 
+				<p class="text-center mt-4">
+					Нажимая "Подписать" вы соглашаетесь с условиями данного договора и подтверждаете подлинность приложенных документов
+				</p>
+
 				<JobtronButton
 					:disabled="buttonPressed"
-					class="mt-4"
+					class="mt-2"
 					@click="onSign"
 				>
-					Подписать
+					Подписать {{ activeDoc + 1 }}й документ
 				</JobtronButton>
 			</div>
 		</div>
@@ -334,8 +383,8 @@ export default {
 			v-model="isVerifyModal"
 			@ok="onVerify"
 		>
-			<div class="">
-				На ваш основной номер было отпревлено смс с кодом подверждения
+			<div class="mb-4">
+				На Ваш основной номер было отправлено смс с кодом подтверждения
 			</div>
 			<b-input
 				v-model="userCode"
@@ -385,18 +434,20 @@ export default {
 		max-width: 960px;
 		width: 100%;
 		padding: 20px;
-		padding-bottom: 50px;
+		margin-bottom: 50px;
 
 		background-color: #fff;
 		box-shadow: 0 0 3px rgba(#000, 0.25);
 	}
 	&-header{
-		margin-bottom: 20px;
+		padding: 20px 20px 0;
+		margin: -20px -20px 20px;
 		border-bottom: 3px solid #e0f0fe;
+		background-color: #cdcbd3;
 	}
 	&-logo{
 		display: block;
-		max-width: 50%;
+		max-width: 35%;
 		margin: 0 auto 40px;
 		border-radius: 24px;
 	}
@@ -420,9 +471,10 @@ export default {
 		justify-content: center;
 		gap: 10px;
 
-		padding-block: 20px;
-		margin-block: 20px;
+		padding: 20px;
+		margin: 0 -20px -20px;
 		border-top: 1px solid #ddd;
+		background-color: #cdcbd3;
 	}
 	&-row{
 		width: 100%;
@@ -442,6 +494,10 @@ export default {
 		border-radius: 16px;
 		&_check{
 			border-color: green;
+			background-image: var(--card-bg);
+			background-size: contain;
+			background-position: center center;
+			background-repeat: no-repeat;
 		}
 		.fa-check{
 			display: block;
@@ -454,6 +510,10 @@ export default {
 
 			background-color: green;
 		}
+	}
+	&-finish{
+		align-self: center;
+		font-size: 16px;
 	}
 }
 </style>
