@@ -361,7 +361,7 @@ class UserService
      */
     public function getFiredEmployeesForSalaries(int $groupId, string $date): array
     {
-        $activeGroupSubQuery = DB::table('group_users')
+        $activeGroupSubQuery = DB::table('group_user')
             ->select([
                 DB::raw('group_id as active_group_id'),
                 DB::raw('user_id')
