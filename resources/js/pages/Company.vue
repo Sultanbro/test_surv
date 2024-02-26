@@ -110,7 +110,7 @@ export default {
 					htmlId: 'nav-shift',
 					path: '???',
 					title: 'Смены',
-					access: ['settings_view']
+					access: ['shifts_view']
 				},
 				{
 					id: 5,
