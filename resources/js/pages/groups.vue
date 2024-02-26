@@ -502,7 +502,10 @@
 			:hide-header="uploadProgress > 0"
 		>
 			<b-row class="mb-4">
-				<b-col cols="3">
+				<b-col
+					cols="3"
+					class="pt-3"
+				>
 					Название
 				</b-col>
 				<b-col cols="9">
@@ -516,7 +519,10 @@
 				v-if="documentForm.id <= 0"
 				class="mb-4"
 			>
-				<b-col cols="3">
+				<b-col
+					cols="3"
+					class="pt-3"
+				>
 					Файл pdf
 				</b-col>
 				<b-col cols="9">
@@ -525,7 +531,9 @@
 						@change="uploadDoc"
 					>
 						<div class="form-control">
-							{{ documentForm.upload || 'Нет документа' }}
+							<div class="mt-2">
+								{{ documentForm.upload ? documentForm.upload.name : 'Нет документа' }}
+							</div>
 						</div>
 					</InputFile>
 				</b-col>
@@ -849,7 +857,7 @@ export default {
 				})
 			}
 			catch (error) {
-				this.onError(error)
+				this.$onError(error)
 			}
 
 			try {

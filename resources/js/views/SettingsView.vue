@@ -40,7 +40,7 @@ export default {
 					htmlId: 'nav-company',
 					path: '/timetracking/settings?tab=2#nav-home',
 					title: 'Компания',
-					access: ['positions_view', 'groups_view', 'settings_view']
+					access: ['positions_view', 'groups_view', 'shifts_view', 'taxes_view', 'settings_view']
 				},
 				{
 					id: '4',

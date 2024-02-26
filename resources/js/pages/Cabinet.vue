@@ -122,7 +122,7 @@
 								:class="{'PageCabinet-tab_active': activeTab === 'documents'}"
 								@click="selectTab('documents')"
 							>
-								<span>Документы</span>
+								<span>Документы <span class="red">*</span></span>
 							</li>
 							<li
 								id="bg-this-4"
@@ -271,11 +271,11 @@
 								<label
 									class="col-sm-4 col-form-label font-weight-bold label-surv"
 								>
-									Карта для выплат
+									Карта для выплат<span class="red">*</span>
 									<img
 										v-b-popover.click.blur.html="'Добавьте назаблокированную карту на которую Вам будет перечисляться зарплата'"
 										src="/images/dist/profit-info.svg"
-										class="img-info iban-info"
+										class="img-info"
 										width="20"
 										alt="info icon"
 										tabindex="-1"
@@ -357,6 +357,10 @@
 									:key="index"
 									class="PageCabinet-doc p-2"
 								>
+									<span
+										v-if="!doc.signed"
+										class="red"
+									>*</span>
 									<div class="PageCabinet-docIcon">
 										<img
 											src="/icon/doc-pdf.png"
@@ -380,7 +384,8 @@
 									</div>
 									<div class="PageCabinet-docControls">
 										<template v-if="doc.signed">
-											<i class="fas fa-check" />
+											{{ $moment(doc.signed).format('DD.MM.YYYY') }}
+											<i class="fas fa-check ml-2" />
 											Подписан
 										</template>
 										<JobtronButton
@@ -552,7 +557,7 @@ export default {
 			geo_lat: 0,
 			geo_lon: 0,
 
-			activeTab: 'main',
+			activeTab: this.$route.query?.tab || 'main',
 
 			documents: [],
 		};
@@ -1287,6 +1292,7 @@ a.lp-link {
 
 	.content{
 		padding: 15px !important;
+		overflow: visible;
 	}
 	.iban-info{
 		position: absolute;

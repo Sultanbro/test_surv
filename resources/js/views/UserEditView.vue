@@ -570,10 +570,9 @@ export default {
 		},
 
 		async sendForm(formData, isNew){
-
 			this.fieldErrors = {}
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
-			const loader = this.$loading.show();
+			const loader = this.$loading.show()
 
 			try{
 				const { data } = await this.axios.post(this.formAction, formData, {
@@ -626,7 +625,7 @@ export default {
 				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
 				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
-				location.assign('/timetracking/settings')
+				if(isNew) location.assign('/timetracking/settings')
 			}
 			catch (error){
 				console.error(error);
