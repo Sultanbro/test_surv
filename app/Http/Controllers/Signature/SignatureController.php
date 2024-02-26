@@ -102,8 +102,7 @@ class SignatureController extends Controller
         $groups = $user->groups()->withWhereHas('files', fn($query) => $query->withTrashed())->get();
         $groupFiles = new Collection();
         foreach ($groups as $group) {
-            dd($group->files);
-            $groupFiles->merge($group->files);
+            $groupFiles = $groupFiles->merge($group->files);
         }
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
