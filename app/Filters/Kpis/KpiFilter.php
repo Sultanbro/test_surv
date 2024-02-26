@@ -45,4 +45,4 @@ class KpiFilter
                 $query->distinct();
             });
     }
-}
+}   

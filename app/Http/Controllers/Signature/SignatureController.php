@@ -99,7 +99,8 @@ class SignatureController extends Controller
     {
         $filteredFiles = new Collection();
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groupFiles = $user->activeGroup()->files()->withTrashed()->get();
+        $groupFiles = $user->groups()->with(['files' => fn($query) => $query->withTrashed()])->pluck('files');
+        dd($groupFiles);
         foreach ($groupFiles as $file) {
             $signed = $signedFiles->where('id', $file->id)->first();
 
