@@ -16,9 +16,9 @@ class ForReferrerDaily
 
         $users = User::withTrashed()
             ->when($user, fn($query) => $query->where('id', $user->id))
-            ->where(function (Builder $query) use ($from, $to) {
+            ->where(function (Builder $query) use ($to) {
                 $query->whereNull('deleted_at');
-                $query->orWhereBetween('deleted_at', [$from, $to]);
+                $query->orWhere('deleted_at', '>=', $to);
             })
             ->whereNotNull('referrer_id')
             ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
