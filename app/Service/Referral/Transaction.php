@@ -34,13 +34,6 @@ class Transaction implements TransactionInterface
         $this->level = $level;
         $this->date = $this->date ?: now();
 
-        dd_if($this->referral->id === 30604, [
-            'referral' => $this->referral->id,
-            'referrer' => $this->referrer->id,
-            'is_paid' => $this->alreadyPaid(),
-            'type' => $this->paidType->name
-        ]);
-
         if ($this->alreadyPaid()) return; // already has
 
         $this->calculateAmount();

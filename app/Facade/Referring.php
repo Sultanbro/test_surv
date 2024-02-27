@@ -130,6 +130,10 @@ class Referring extends Facade
             return;
         }
 
+        dd_if($user->id === 30604, [
+            '$workedWeeksCount' => $workedWeeksCount
+        ]);
+
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
         $service->touch($user, PaidType::FIRST_WORK);
