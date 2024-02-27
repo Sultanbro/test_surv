@@ -26,7 +26,7 @@ class ForReferrerDaily
             ->get();
 
         dd(
-            User::withTrashed()->where('deleted_at', '>=', $to)
+            User::withTrashed()->where('deleted_at', '>=', $to)->pluck('deleted_at', 'id')
         );
         $trainers = $users->filter(fn($user) => $user->description->is_trainee);
         $employees = $users->filter(fn($user) => !$user->description->is_trainee);
