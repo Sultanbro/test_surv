@@ -36,7 +36,6 @@ class Referring extends Facade
 
     public static function touchReferrerSalaryForCertificate(User $user, ?Carbon $date = null): void
     {
-
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
         /** @var User $user */
