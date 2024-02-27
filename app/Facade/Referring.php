@@ -126,6 +126,7 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
+        $service->touch($user, PaidType::FIRST_WORK);
         $service->touch($user, PaidType::WORK);
     }
 

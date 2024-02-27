@@ -13,10 +13,10 @@ class Transaction implements TransactionInterface
 {
     private PaidType $paidType;
     private ?Carbon $date = null;
-    private ?User $referral=null;
-    private int|float $amount=0;
-    private int $level=1;
-    private ?User $referrer=null;
+    private ?User $referral = null;
+    private int|float $amount = 0;
+    private int $level = 1;
+    private ?User $referrer = null;
 
     public function __construct(
         private readonly CalculateInterface $calculator
@@ -37,11 +37,28 @@ class Transaction implements TransactionInterface
         $this->calculateAmount();
         $this->addSalary();
 
-        if ($this->paidType->name != PaidType::FIRST_WORK) return;
+        if ($this->paidType != PaidType::FIRST_WORK) return;
         if (!$this->referrer) return;
 
         $this->touch($this->referrer, $type, $level + 1);
         $this->addSalary();
+    }
+
+    private function alreadyPaid(): bool
+    {
+        return $this->referral->referrerSalaries()
+            ->when(!in_array($this->paidType, [PaidType::ATTESTATION, PaidType::FIRST_WORK]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
+            ->where('type', $this->paidType->name)
+            ->exists();
+    }
+
+    private function calculateAmount(): void
+    {
+        $this->amount = $this->calculator->calculate(
+            $this->referrer,
+            $this->paidType,
+            $this->level
+        );
     }
 
     private function addSalary(): void
@@ -59,21 +76,5 @@ class Transaction implements TransactionInterface
     public function useDate(Carbon $date): void
     {
         $this->date = $date;
-    }
-
-    private function calculateAmount(): void
-    {
-        $this->amount = $this->calculator->calculate(
-            $this->referrer,
-            $this->paidType,
-            $this->level
-        );
-    }
-
-    private function alreadyPaid(): bool
-    {
-        return $this->referral->referrerSalaries()
-            ->when(!in_array($this->paidType->name, [PaidType::ATTESTATION->name, PaidType::FIRST_WORK->name]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
-            ->where('type', $this->paidType->name)->exists();
     }
 }
