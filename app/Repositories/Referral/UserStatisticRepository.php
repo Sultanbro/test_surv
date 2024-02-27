@@ -139,7 +139,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 'deleted_at'
             ])
             ->withCount('referrals as referrals_count')
-            ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
+            ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
                 $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
                 $query->orderBy('date');
