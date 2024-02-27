@@ -192,7 +192,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     {
         $days = [];
         foreach ($salaries as $day => $salary) {
-            $days["$day"] = $this->parseSalary($salary->toArray());
+            $days[$day] = $this->parseSalary($salary->toArray());
         }
         return $days;
     }
