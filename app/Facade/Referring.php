@@ -134,6 +134,10 @@ class Referring extends Facade
             '$workedWeeksCount' => $workedWeeksCount
         ]);
 
+        if ($workedWeeksCount == 5) $workedWeeksCount = 4;
+        else if ($workedWeeksCount == 7) $workedWeeksCount = 6;
+        else if (in_array($workedWeeksCount, [9, 10, 11])) $workedWeeksCount = 8;
+
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
         $service->touch($user, PaidType::FIRST_WORK);
