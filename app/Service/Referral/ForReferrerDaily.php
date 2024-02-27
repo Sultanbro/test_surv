@@ -18,8 +18,8 @@ class ForReferrerDaily
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
             ->when($user, fn($query) => $query->where('id', $user->id))
             ->where(function (Builder $query) use ($to) {
-                $query->whereNull('deleted_at');
-                $query->orWhere('deleted_at', '>=', $to);
+//                $query->whereNull('deleted_at');
+//                $query->orWhere('deleted_at', '>=', $to);
             })
             ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
             ->withWhereHas('referrer')
