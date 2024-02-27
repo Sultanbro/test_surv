@@ -108,16 +108,15 @@ class Referring extends Facade
         /** @var User $user */
         $user = $user->load([
             'description',
-            'referrer',
-            'timetracking' => function (HasMany $query) {
-                $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
-                    ->havingRaw("work_total >= ?", [60 * 3]);
-            }
-        ]);
+            'referrer'
+        ])->loadCount(['timetracking' => function (HasMany $query) {
+            $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total_hours")
+                ->havingRaw("work_total_hours >= ?", [60 * 3]);
+        }]);
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
-
-        $workedWeeksCount = (int)$user->timetracking?->count() / 6;
+        dd_if($user->id === 30604, $user->timetracking_count);
+        $workedWeeksCount = (int)$user->timetracking_count / 6;
 
         if ($workedWeeksCount === 0) return;
 
