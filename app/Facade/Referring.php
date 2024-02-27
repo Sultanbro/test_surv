@@ -114,7 +114,7 @@ class Referring extends Facade
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")])
             ->first();
 
-        dd_if($user->id === 30604, $user);
+        dd_if($user->id === 30604, $user->toArray());
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $workedWeeksCount = (int)$user->timetracking_count / 6;
