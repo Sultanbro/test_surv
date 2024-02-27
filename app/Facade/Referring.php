@@ -120,11 +120,8 @@ class Referring extends Facade
             ])
             ->first();
 
-
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $workedWeeksCount = (int)floor($user->timetracking_count / 6);
-
-        dd_if($user->id === 30604, $userCurrentGroupStartingDate);
 
         if ($workedWeeksCount < 1) return;
 
@@ -132,7 +129,6 @@ class Referring extends Facade
             $service->touch($user, PaidType::FIRST_WORK);
             return;
         }
-
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
