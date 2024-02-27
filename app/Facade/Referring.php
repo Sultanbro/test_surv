@@ -13,6 +13,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 
@@ -109,7 +110,14 @@ class Referring extends Facade
         $user = $user->load([
             'description',
             'referrer',
-            'timetracking'
+            'timetracking' => function (HasMany $query) {
+                $query->select([
+                    DB::raw("id"),
+                    DB::raw("user_id"),
+                    DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) as worked_total"),
+                ]);
+                $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
+            }
         ])->loadCount(['timetracking' => function (Builder $query) {
             $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
         }]);
