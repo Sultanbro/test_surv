@@ -152,7 +152,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->get()
             ->map(function ($referral) use ($referrer, $step) {
 
-                $salaries = $referral->referrerSalaries;
+                $salaries = $referral->referralSalaries;
 
                 $referral->is_trainee = $referral->user_description?->is_trainee;
 
