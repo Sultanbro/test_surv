@@ -192,7 +192,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     {
         $days = [];
         foreach ($salaries as $day => $salary) {
-            $days[$day] = $this->parseSalary($salary->toArray());
+            $days["$day"] = $this->parseSalary($salary->toArray());
         }
         return $days;
     }
@@ -230,7 +230,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     {
         $template = [];
 
-        $weeks = [1, 2, 3, 4, 6, 8, 12];
+        $weeks = [2, 3, 4, 6, 8, 12];
 
         foreach ($weeks as $week) {
             $template[$week . '_week'] = null;
