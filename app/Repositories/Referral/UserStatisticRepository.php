@@ -138,10 +138,8 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 'referrer_status',
                 'deleted_at'
             ])
-            ->withCount('referrals as referrals_count')
             ->with(['referralSalaries' => function (HasMany $query) use ($referrer) {
-                $query->where("referrer_id", $referrer->getKey());
-                $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
+                $query->where("referrer_id", $referrer->id);
                 $query->orderBy('date');
             }])
             ->with(['groups' => function (BelongsToMany $query) use ($referrer) {
@@ -149,6 +147,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 $query->select(["id", 'name']);
             }])
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
+            ->withCount('referrals as referrals_count')
             ->orderBy("created_at")
             ->get()
             ->map(function ($referral) use ($referrer, $step) {
