@@ -117,7 +117,7 @@ class Referring extends Facade
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $workedWeeksCount = (int)$user->timetracking_count / 6;
-        dd($user->timetracking_count);
+        dd_if($user->id === 30604, $workedWeeksCount);
         if ($workedWeeksCount < 1) return;
 
         if (floor($workedWeeksCount) == 1) {
