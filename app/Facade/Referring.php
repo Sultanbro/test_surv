@@ -33,25 +33,6 @@ class Referring extends Facade
         $service->touch($user->referrer);
     }
 
-    public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
-    {
-        /** @var User $referral */
-        $referral = User::with(['description', 'referrer'])
-            ->find($user_id);
-
-        /** @var User $referrer */
-        $referrer = User::query()->find($referral->referrer_id);
-
-        if (!$referrer) return; // if a user doesn't have a referrer, then just return;
-
-        $referrer->referralSalaries()
-            ->where('date', $date->format("Y-m-d"))
-            ->where('referral_id', $referral->getKey())
-            ->where('type', PaidType::TRAINEE->name)
-            ->first()
-            ?->delete();
-    }
-
     public static function touchReferrerSalaryForCertificate(User $user): void
     {
 
@@ -85,10 +66,32 @@ class Referring extends Facade
             ])
             ->first();
 
-        if (!$user?->referrer) return; // if a user doesn't have a referrer, then just return;
+        if (!$user?->referrer) {
+            self::deleteReferrerDailySalary($user->id, $date);
+            return;
+        } // if a user doesn't have a referrer, then just return;
 
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($user, PaidType::TRAINEE);
+    }
+
+    public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
+    {
+        /** @var User $referral */
+        $referral = User::with(['description', 'referrer'])
+            ->find($user_id);
+
+        /** @var User $referrer */
+        $referrer = User::query()->find($referral->referrer_id);
+
+        if (!$referrer) return; // if a user doesn't have a referrer, then just return;
+
+        $referrer->referralSalaries()
+            ->where('date', $date->format("Y-m-d"))
+            ->where('referral_id', $referral->getKey())
+            ->where('type', PaidType::TRAINEE->name)
+            ->first()
+            ?->delete();
     }
 
     public static function touchReferrerSalaryWeekly(User|Authenticatable $user, Carbon $date): void
