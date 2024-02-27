@@ -129,7 +129,7 @@ export default {
 			this.buttonPressed = true
 
 			const formData = new FormData()
-			formData.append('phone', this.requisites.phone.replace(/[^\d+]/g), '')
+			formData.append('phone', this.requisites.phone.replace(/[^\d+]/g, ''))
 			formData.append('name', this.requisites.fio)
 			formData.append('contract_number', this.requisites.phone + SEPARATOR + this.requisites.uin + SEPARATOR + this.requisites.pasport)
 			formData.append('address', this.requisites.address)
