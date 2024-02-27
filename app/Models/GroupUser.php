@@ -36,7 +36,8 @@ class GroupUser extends Model
         return $this->hasMany('App\User', 'user_id');
     }
 
-    public function users(){
+    public function users()
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
@@ -45,27 +46,27 @@ class GroupUser extends Model
         return $this->belongsTo(ProfileGroup::class, 'group_id');
     }
 
-    public static function updateGroupUserWorkChart($dto, $old_work_chart):bool {
+    public static function updateGroupUserWorkChart($dto, $old_work_chart): bool
+    {
         try {
             $group_users = self::with(['users' => function ($query) use ($old_work_chart) {
-                $query->where('work_chart_id', 0)
-                    ->orWhere('work_chart_id', $old_work_chart)
-                    ->whereNull('deleted_at');
+                $query->where(function ($q) use ($old_work_chart) {
+                    $q->where('work_chart_id', 0)->orWhere('work_chart_id', $old_work_chart);
+                })->whereNull('deleted_at');
             }])
                 ->where('group_id', $dto->groupId)
                 ->where('status', 'active')
                 ->get();
 
-            foreach ($group_users as $group_user){
+            foreach ($group_users as $group_user) {
                 $user = $group_user->users;
-                if($user !== null) {
+                if ($user !== null) {
                     $user->work_chart_id = $dto->workChartId;
                     $user->save();
                 }
             }
             return true;
-        }
-        catch (\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -77,18 +78,21 @@ class GroupUser extends Model
      * @param $groupId
      * @return GroupUser
      */
-    public static function getHeadInGroup($groupId){
+    public static function getHeadInGroup($groupId)
+    {
         return self::where('is_head', self::IS_HEAD)
             ->where('group_id', $groupId)
             ->first();
     }
 
-    public static function getUsers($userId){
+    public static function getUsers($userId)
+    {
         return self::where('user_id', $userId)
             ->get();
     }
 
-    public static function getGroupId($userId){
+    public static function getGroupId($userId)
+    {
         return self::where('user_id', $userId)
             ->first();
     }
