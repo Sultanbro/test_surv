@@ -15,7 +15,7 @@ class MarkAsPaidController extends Controller
         $referral = User::withTrashed()->where('id', $user)->first();
         $data = $request->validated();
         $referrer = $referral->referrer;
-        $salary = $referrer->referrerSalaries()
+        $salary = $referrer->referralSalaries()
             ->find($data['id']);
 
         if (!$salary) {

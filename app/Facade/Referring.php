@@ -92,7 +92,7 @@ class Referring extends Facade
 
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
 
-        $referrer->referrerSalaries()
+        $referrer->referralSalaries()
             ->where('date', $date->format("Y-m-d"))
             ->where('referral_id', $referral->getKey())
             ->where('type', PaidType::TRAINEE->name)
