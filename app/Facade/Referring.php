@@ -131,10 +131,6 @@ class Referring extends Facade
             return;
         }
 
-        dd_if($user->id === 30604, [
-            '$workedWeeksCount' => $workedWeeksCount
-        ]);
-
         if ($workedWeeksCount == 5) $workedWeeksCount = 4;
         else if ($workedWeeksCount == 7) $workedWeeksCount = 6;
         else if (in_array($workedWeeksCount, [9, 10, 11])) $workedWeeksCount = 8;
