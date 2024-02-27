@@ -13,8 +13,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -109,20 +107,8 @@ class Referring extends Facade
         /** @var User $user */
         $user = $user->load([
             'description',
-            'referrer',
-            'timetracking' => function (HasMany $query) {
-                $query->select([
-                    DB::raw("id"),
-                    DB::raw("user_id"),
-                    DB::raw("`exit`"),
-                    DB::raw("`enter`"),
-                    DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) as worked_total"),
-                ]);
-                $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
-            }
-        ])->loadCount(['timetracking' => function (Builder $query) {
-            $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
-        }]);
+            'referrer'
+        ])->loadCount('timetracking');
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         dd_if($user->id === 30604, $user->toArray());
