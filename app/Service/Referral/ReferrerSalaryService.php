@@ -30,6 +30,7 @@ class ReferrerSalaryService
             foreach ($referrals as $referral) {
                 Referring::touchReferrerSalaryDaily($referral, $from);
                 Referring::touchReferrerSalaryWeekly($referral, $from);
+                Referring::touchReferrerSalaryForCertificate($user);
                 Referring::touchReferrerStatus($referral->referrer);
                 dump('user_id: ' . $referral->id);
             }

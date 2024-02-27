@@ -33,7 +33,7 @@ class Referring extends Facade
         $service->touch($user->referrer);
     }
 
-    public static function touchReferrerSalaryForCertificate(User $user): void
+    public static function touchReferrerSalaryForCertificate(User $user, ?Carbon $date = null): void
     {
 
         /** @var TransactionInterface $service */
@@ -45,6 +45,7 @@ class Referring extends Facade
         ]);
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
+        $service->useDate($date ?? now());
         $service->touch($user, PaidType::ATTESTATION);
     }
 
@@ -66,8 +67,12 @@ class Referring extends Facade
             ])
             ->first();
 
-        if (!$user?->referrer) {
+        if (!$user) {
             self::deleteReferrerDailySalary($user->id, $date);
+            return;
+        }
+
+        if (!$user->referrer) {
             return;
         } // if a user doesn't have a referrer, then just return;
 
