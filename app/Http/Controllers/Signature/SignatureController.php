@@ -99,18 +99,14 @@ class SignatureController extends Controller
     {
         $filteredFiles = new Collection();
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groups = $user->groups()->withWhereHas('files', fn($query) => $query->withTrashed())->get();
-        $groupFiles = new Collection();
-        foreach ($groups as $group) {
-            $groupFiles = $groupFiles->merge($group->files);
-        }
-        foreach ($groupFiles as $file) {
-            $signed = $signedFiles->where('id', $file->id)->first();
+        $groupFiles = $user->activeGroup()
+            ->files()
+            ->whereNotIn('id', $signedFiles->pluck('id')->toArray())
+            ->get();
+        $merged = $groupFiles->merge($signedFiles);
 
-            if (!$signed && $file->deleted_at) continue;
-
-            $file->signed_at = $signed?->pivot?->signed_at;
-
+        foreach ($merged as $file) {
+            $file->signed_at = $file?->pivot?->signed_at;
             $filteredFiles->add($file);
         }
         return FileResource::collection($filteredFiles);
