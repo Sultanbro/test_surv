@@ -50,13 +50,13 @@ class Transaction implements TransactionInterface
         $this->addSalary();
     }
 
-    private function alreadyPaid(): bool
+    private function alreadyPaid(): Model
     {
         return $this->referral->referralSalaries()
             ->when(!in_array($this->paidType, [PaidType::ATTESTATION, PaidType::FIRST_WORK]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
             ->where('type', $this->paidType->name)
             ->where('referrer_id', $this->referrer->id)
-            ->exists();
+            ->first();
     }
 
     private function calculateAmount(): void
