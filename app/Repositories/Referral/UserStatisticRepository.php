@@ -183,7 +183,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return [
             ...$this->traineeDaysSalaries($training),
             ...$this->workingWeeksSalaries($working),
-            'week_1' => $this->tryGetSalary($firstWork),
+            '1_week' => $this->tryGetSalary($firstWork),
             'pass_certification' => $this->tryGetSalary($attestation)
         ];
     }
