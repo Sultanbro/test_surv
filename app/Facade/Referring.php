@@ -13,6 +13,8 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -109,7 +111,16 @@ class Referring extends Facade
             ->where('id', $user->id)
             ->with([
                 'description',
-                'referrer'
+                'referrer',
+                'timetracking' => fn(HasMany $query) => $query
+                    ->select([
+                        DB::raw('TIMESTAMPDIFF(minute, `enter`, `exit`) as worked_total'),
+                        DB::raw('id'),
+                        `enter`,
+                        `exit`,
+                        `user_id`,
+                    ])
+                    ->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
             ])
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")])
             ->first();
