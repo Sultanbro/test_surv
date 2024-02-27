@@ -40,7 +40,7 @@ class Transaction implements TransactionInterface
         $this->addSalary();
 
         if ($this->paidType != PaidType::FIRST_WORK) return;
-        if (!$this->referrer) return;
+        if (!$this->referrer?->referrer) return;
 
         $this->touch($this->referrer, $type, $level + 1);
         $this->addSalary();
