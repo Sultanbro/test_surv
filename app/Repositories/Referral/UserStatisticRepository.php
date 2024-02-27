@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Referral;
 
-use App\DayType;
+use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\LeadTemplate;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\SalaryFilter;
@@ -39,28 +39,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             'absolute' => $referrerToArray['absolute_earned'],
         ];
     }
-
-    private function tops(): array
-    {
-        return User::query()
-            ->selectRaw('
-        users.id as id, 
-        users.name as name, 
-        users.last_name as last_name, 
-        users.referrer_status as referrer_status, 
-        users.img_url as img_url, 
-        COUNT(r.id) as applieds'
-            )
-            ->leftJoin('users as r', 'users.id', '=', 'r.referrer_id')
-            ->leftJoin('user_descriptions as d', 'r.id', '=', 'd.user_id')
-            ->where('d.is_trainee', 0)
-            ->groupBy('users.id', 'users.name', 'users.last_name', 'users.referrer_status', 'users.img_url')
-            ->orderBy('applieds', 'desc')
-            ->take(5)
-            ->get()
-            ->toArray();
-    }
-
 
     protected function referrer(User $user): User
     {
@@ -104,7 +82,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return $referrer;
     }
 
-
     protected function dateStart(): Carbon
     {
         $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
@@ -121,7 +98,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->copy();
     }
 
-
     protected function getRatio($convertible, $to): float
     {
         if ($to) {
@@ -130,10 +106,32 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         return 0;
     }
 
+    private function tops(): array
+    {
+        return User::query()
+            ->selectRaw('
+        users.id as id, 
+        users.name as name, 
+        users.last_name as last_name, 
+        users.referrer_status as referrer_status, 
+        users.img_url as img_url, 
+        COUNT(r.id) as applieds'
+            )
+            ->leftJoin('users as r', 'users.id', '=', 'r.referrer_id')
+            ->leftJoin('user_descriptions as d', 'r.id', '=', 'd.user_id')
+            ->where('d.is_trainee', 0)
+            ->groupBy('users.id', 'users.name', 'users.last_name', 'users.referrer_status', 'users.img_url')
+            ->orderBy('applieds', 'desc')
+            ->take(5)
+            ->get()
+            ->toArray();
+    }
+
     private function referrals(User $referrer, int $step = 1)
     {
         return $referrer->referrals()
-            ->select(['id',
+            ->select([
+                'id',
                 'referrer_id',
                 'name',
                 'last_name',
@@ -141,16 +139,6 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
                 'deleted_at'
             ])
             ->withCount('referrals as referrals_count')
-            ->with(['daytypes' => function (HasMany $query) {
-                $query->selectRaw("id, user_id, type, date,DATE_FORMAT(date, '%e') as day")
-                    ->where('type', DayType::DAY_TYPES['TRAINEE'])
-                    ->distinct();
-            }])
-            ->with(['timetracking' => function (HasMany $query) {
-                $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total")
-                    ->distinct()
-                    ->havingRaw("work_total >= ?", [60 * 3]);
-            }])
             ->with(['referrerSalaries' => function (HasMany $query) use ($referrer) {
                 $query->where("referrer_id", $referrer->getKey());
                 $query->select(["referrer_id", 'date', 'amount', 'comment', 'referral_id', 'type', 'id', 'is_paid']);
@@ -163,23 +151,13 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             ->with(['user_description' => fn($query) => $query->select(['id', 'user_id', 'is_trainee'])])
             ->orderBy("created_at")
             ->get()
-            ->map(function (User $referral) use ($referrer, $step) {
+            ->map(function ($referral) use ($referrer, $step) {
 
                 $salaries = $referral->referrerSalaries;
 
-                $this->salaryFilter->forThisCollection($salaries);
-                $training = $this->salaryFilter->filter(PaidType::TRAINEE);
-                $working = $this->salaryFilter->filter(PaidType::WORK);
-                $firstWork = $this->salaryFilter->filter(PaidType::FIRST_WORK);
-                $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION);
                 $referral->is_trainee = $referral->user_description?->is_trainee;
 
-                $dateTypes = array_merge(
-                    $this->traineesDaily($referral->daytypes, $training),
-                    $this->attestation($attestation),
-                    $this->employeeWeekly($working),
-                    $this->employeeFirstWeek($firstWork)
-                );
+                $dateTypes = $this->table($salaries);
 
                 $referral->datetypes = Arr::sort($dateTypes, 'date');
 
@@ -194,89 +172,29 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
             });
     }
 
-    private function traineesDaily($days, $training): array
+    private function table(Collection $salaries): array
     {
-        $types = [];
-        for ($i = 1; $i <= $this->dateStart()->daysInMonth; $i++) {
-            $types[$i] = null;
-            $day = $this->getDay($days, $i);
-            if ($day) {
-                $types[$i] = $this->countTrainingDays($training, $day);
-            }
-        }
-        return $types;
-    }
-
-    private function attestation($attestation): array
-    {
-        $appliedSalary = current($attestation->toArray());
-
-        if (!$appliedSalary) {
-            return [];
-        }
+        $this->salaryFilter->for($salaries);
+        $training = $this->salaryFilter->filter(PaidType::TRAINEE);
+        $working = $this->salaryFilter->filter(PaidType::WORK);
+        $firstWork = $this->salaryFilter->filter(PaidType::FIRST_WORK)->first();
+        $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION)->first();
 
         return [
-            'pass_certification' => $this->parseSalary($appliedSalary)
+            ...$this->traineeDaysSalaries($training),
+            ...$this->workingWeeksSalaries($working),
+            'week_1' => $this->tryGetSalary($firstWork),
+            'pass_certification' => $this->tryGetSalary($attestation)
         ];
     }
 
-    private function employeeWeekly(Collection $working): array
+    private function traineeDaysSalaries(Collection $salaries): array
     {
-        $working = $working->sortBy('date');
-        $weekTemplate = $this->createWeekTemplate();
-        $salaryWeeks = [2, 3, 4, 6, 8, 12]; // Define the weeks at which salaries are given
-        $salaryIndex = 0; // Index to track the current salary
-
-        foreach ($working as $salary) {
-            // Ensure there's another salary week to process
-            if (isset($salaryWeeks[$salaryIndex])) {
-                $weekLabel = $salaryWeeks[$salaryIndex] . '_week';
-                $weekTemplate[$weekLabel] = $this->parseSalary($salary->toArray());
-                $salaryIndex++;
-            }
+        $days = [];
+        foreach ($salaries as $day => $salary) {
+            $days[$day] = $this->parseSalary($salary->toArray());
         }
-
-        return $weekTemplate;
-    }
-
-    private function getDay(Collection $days, int $day): ?DayType
-    {
-        /** @var DayType $day */
-        return $days
-            ->where('day', $day)
-            ->first();
-    }
-
-    private function countTrainingDays($training, DayType $day): ?array
-    {
-        $salary = [];
-        foreach ($training as $item) {
-            if ($this->isSameDate(Carbon::parse($item['date']), $day->date)) {
-                $salary = $item->toArray();
-            }
-        }
-
-        if (!count($salary)) {
-            return null;
-        }
-
-        return $this->parseSalary($salary);
-    }
-
-    private function isSameDate(Carbon $first, Carbon $second): bool
-    {
-        return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
-    }
-
-    private function createWeekTemplate(): array
-    {
-        $types = [];
-
-        $weeks = [2, 3, 4, 6, 8, 12];
-        foreach ($weeks as $week) {
-            $types[$week . '_week'] = null;
-        }
-        return $types;
+        return $days;
     }
 
     private function parseSalary(?array $current): array
@@ -290,16 +208,43 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
         ];
     }
 
-    private function employeeFirstWeek(Collection $firstWork): array
+    private function workingWeeksSalaries(Collection $salaries): array
     {
-        $appliedSalary = current($firstWork->toArray());
+        $salaries = $salaries->sortBy('date');
+        $weekTemplate = $this->createWeekTemplate();
+        $salaryWeeks = [2, 3, 4, 6, 8, 12]; // Define the weeks at which salaries are given
+        $salaryIndex = 0; // Index to track the current salary
 
-        if (!$appliedSalary) {
-            return [];
+        foreach ($salaries as $salary) {
+            // Ensure there's another salary week to process
+            if (isset($salaryWeeks[$salaryIndex])) {
+                $weekTemplate[$salaryWeeks[$salaryIndex] . '_week'] = $this->parseSalary($salary->toArray());
+                $salaryIndex++;
+            }
         }
 
-        return [
-            '1_week' => $this->parseSalary($appliedSalary)
-        ];
+        return $weekTemplate;
+    }
+
+    private function createWeekTemplate(): array
+    {
+        $template = [];
+
+        $weeks = [1, 2, 3, 4, 6, 8, 12];
+
+        foreach ($weeks as $week) {
+            $template[$week . '_week'] = null;
+        }
+
+        return $template;
+    }
+
+    private function tryGetSalary(?ReferralSalary $salary): array
+    {
+        $appliedSalary = $salary?->toArray();
+
+        if (!$appliedSalary) return [];
+
+        return $this->parseSalary($appliedSalary);
     }
 }

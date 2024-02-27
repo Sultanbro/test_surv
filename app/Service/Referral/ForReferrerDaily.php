@@ -19,7 +19,7 @@ class ForReferrerDaily
             ->get();
 
         foreach ($trainers as $trainer) {
-            Referring::deleteReferrerDailySalary($trainer, now());
+            Referring::touchReferrerSalaryDaily($trainer, now());
         }
 
         /** @var Collection<User> $employees */

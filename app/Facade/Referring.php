@@ -23,11 +23,6 @@ class Referring extends Facade
 {
     protected static $cached = true;
 
-    protected static function getFacadeAccessor(): string
-    {
-        return 'referral';
-    }
-
     public static function touchReferrerStatus(User $user): void
     {
         $referrer = $user->referrer;
@@ -52,7 +47,8 @@ class Referring extends Facade
             ->where('date', $date->format("Y-m-d"))
             ->where('referral_id', $referral->getKey())
             ->where('type', PaidType::TRAINEE->name)
-            ->first()?->delete();
+            ->first()
+            ?->delete();
     }
 
     public static function touchReferrerSalaryForCertificate(User $user): void
@@ -70,7 +66,7 @@ class Referring extends Facade
         $service->touch($user, PaidType::ATTESTATION);
     }
 
-    public static function touchReferrerSalaryForTrain(User $user, Carbon $date): void
+    public static function touchReferrerSalaryDaily(User $user, Carbon $date): void
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
@@ -113,10 +109,14 @@ class Referring extends Facade
             return;
         }
 
-        foreach ([2, 3, 4, 6, 8, 12] as $week) {
-            if ($workedWeeksCount !== $week) continue;
-            $service->useDate($date);
-            $service->touch($user, PaidType::WORK);
-        }
+        if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
+
+        $service->useDate($date);
+        $service->touch($user, PaidType::WORK);
+    }
+
+    protected static function getFacadeAccessor(): string
+    {
+        return 'referral';
     }
 }

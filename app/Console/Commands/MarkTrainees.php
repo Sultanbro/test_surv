@@ -9,6 +9,7 @@ use App\ProfileGroup;
 use App\Service\Department\UserService;
 use App\Trainee;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Console\Command;
 
 class MarkTrainees extends Command
@@ -60,7 +61,7 @@ class MarkTrainees extends Command
             $users = array_merge($users, $gusers);
         }
 
-        $trainees = \DB::table('users')
+        $trainees = DB::table('users')
             ->whereNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 1)
@@ -95,7 +96,7 @@ class MarkTrainees extends Command
                     'admin_id' => 5,
                 ]);
                 if (tenant()->getKey() === 'bp') {
-                    Referring::touchReferrerSalaryForTrain($trainee, now());
+                    Referring::touchReferrerSalaryDaily($trainee, now());
                 }
             }
         }

@@ -16,17 +16,17 @@ use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
 use App\Jobs\Salary\ProcessUpdateSalary;
-use App\Models\Analytics\UserStat;
 use App\KnowBase;
-use App\Models\KnowBaseModel;
-use App\Models\CallibroDialer;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
+use App\Models\CallibroDialer;
 use App\Models\GroupUser;
+use App\Models\KnowBaseModel;
 use App\Models\Kpi\Bonus;
 use App\Models\Timetrack\UserPresence;
 use App\Models\User\NotificationTemplate;
@@ -50,9 +50,9 @@ use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;
 use App\UserAbsenceCause;
+use App\UserDeletePlan;
 use App\UserDescription;
 use App\UserFine;
-use App\UserDeletePlan;
 use App\UserNotification;
 use Carbon\Carbon;
 use Exception;
@@ -1954,7 +1954,7 @@ class TimetrackingController extends Controller
                     'date' => $date,
                     'user_id' => $request->get("user_id")
                 ]);
-            Referring::touchReferrerSalaryForTrain($targetUser, $date);
+            Referring::touchReferrerSalaryDaily($targetUser, $date);
 
             if ($trainee) {
                 $bitrix = new Bitrix();

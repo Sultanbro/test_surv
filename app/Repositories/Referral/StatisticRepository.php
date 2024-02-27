@@ -22,51 +22,12 @@ class StatisticRepository implements StatisticRepositoryInterface
         ];
     }
 
-    protected function pivot(array $referrers): array
-    {
-        $deal_lead_conversion = 0;
-        $applied_deal_conversion = 0;
-        $countForDeals = 0;
-        $countForApplied = 0;
-        $accepted = 0;
-        $paidTotal = 0;
-        $paidTotalForMonth = 0;
-        $earnedTotalForMonth = 0;
-
-        foreach ($referrers as $referer) {
-            $accepted += $referer['applieds'];
-            $paidTotal += $referer['absolute_paid'];
-            $paidTotalForMonth += $referer['month_paid'];
-            $earnedTotalForMonth += $referer['month_earned'];
-            $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
-            if ($referer['leads'] > 0) {
-                ++$countForDeals;
-            }
-            $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
-            if ($referer['deals'] > 0) {
-                ++$countForApplied;
-            }
-        }
-
-        $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
-        $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
-
-        return [
-            'employee_price' => $accepted ? $paidTotal / $accepted : 0,
-            'deal_lead_conversion' => $deal_lead_conversion,
-            'applied_deal_conversion' => $applied_deal_conversion,
-            'earned' => $earnedTotalForMonth,
-            'paid' => $paidTotalForMonth,
-        ];
-    }
-
     protected function referrers(): array
     {
         $startDate = $this->dateStart()->format("Y-m-d");
         $endDate = $this->dateEnd()->format("Y-m-d");
         $paidTypeFirstWork = PaidType::FIRST_WORK->name;
 
-        // Aggregate subqueries prepared as joins
         $referralSalariesSubQuery = DB::table('referral_salaries')
             ->select('referrer_id',
                 DB::raw("SUM(amount) AS absolute_earned"),
@@ -157,5 +118,43 @@ class StatisticRepository implements StatisticRepositoryInterface
             return ceil((100 * $convertible) / $to);
         }
         return 0;
+    }
+
+    protected function pivot(array $referrers): array
+    {
+        $deal_lead_conversion = 0;
+        $applied_deal_conversion = 0;
+        $countForDeals = 0;
+        $countForApplied = 0;
+        $accepted = 0;
+        $paidTotal = 0;
+        $paidTotalForMonth = 0;
+        $earnedTotalForMonth = 0;
+
+        foreach ($referrers as $referer) {
+            $accepted += $referer['applieds'];
+            $paidTotal += $referer['absolute_paid'];
+            $paidTotalForMonth += $referer['month_paid'];
+            $earnedTotalForMonth += $referer['month_earned'];
+            $deal_lead_conversion += $referer['deal_lead_conversion_ratio'];
+            if ($referer['leads'] > 0) {
+                ++$countForDeals;
+            }
+            $applied_deal_conversion += $referer['appiled_deal_conversion_ratio'];
+            if ($referer['deals'] > 0) {
+                ++$countForApplied;
+            }
+        }
+
+        $deal_lead_conversion = $countForDeals ? $deal_lead_conversion / $countForDeals : 0;
+        $applied_deal_conversion = $countForApplied ? $applied_deal_conversion / $countForApplied : 0;
+
+        return [
+            'employee_price' => $accepted ? $paidTotal / $accepted : 0,
+            'deal_lead_conversion' => $deal_lead_conversion,
+            'applied_deal_conversion' => $applied_deal_conversion,
+            'earned' => $earnedTotalForMonth,
+            'paid' => $paidTotalForMonth,
+        ];
     }
 }
