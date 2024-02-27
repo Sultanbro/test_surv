@@ -8,6 +8,7 @@ use App\Service\Referral\Core\TransactionInterface;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Transaction implements TransactionInterface
 {
@@ -32,6 +33,10 @@ class Transaction implements TransactionInterface
         $this->level = $level;
         $this->date = $this->date ?: now();
 
+        dd_if($this->referrer->id === 30604, [
+            'is_paid' => $this->alreadyPaid(),
+            'type' => $this->paidType->name,
+        ]);
         if ($this->alreadyPaid()) return; // already has
 
         $this->calculateAmount();
@@ -62,10 +67,10 @@ class Transaction implements TransactionInterface
         );
     }
 
-    private function addSalary(): void
+    private function addSalary(): Model
     {
 
-        $salary = $this->referrer->referrerSalaries()
+        return $this->referrer->referrerSalaries()
             ->create([
                 'type' => $this->paidType->name,
                 'referral_id' => $this->referral->getKey(),
@@ -73,8 +78,6 @@ class Transaction implements TransactionInterface
                 'is_paid' => 0,
                 'amount' => $this->amount,
             ]);
-
-        dd_if($this->referrer->id === 30604, $salary);
     }
 
     public function useDate(Carbon $date): void
