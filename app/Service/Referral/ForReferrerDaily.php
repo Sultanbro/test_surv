@@ -15,7 +15,7 @@ class ForReferrerDaily
         $to = now()->endOfMonth()->format("Y-m-d");
 
         $users = User::withTrashed()
-            ->select(['id', 'referrer_id', 'referral_id'])
+            ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
             ->when($user, fn($query) => $query->where('id', $user->id))
             ->where(function (Builder $query) use ($to) {
                 $query->whereNull('deleted_at');
