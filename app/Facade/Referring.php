@@ -143,7 +143,7 @@ class Referring extends Facade
 
 
         dd_if($user->id === 30604, [
-            'count' => $user->referralSalaries_count
+            'count' => $user->referral_salaries_count
         ]);
 
         $service->touch($user, PaidType::FIRST_WORK);
