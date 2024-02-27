@@ -6,10 +6,10 @@ use App\Facade\Referring;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
-class ForReferrerDaily
+class ReferrerSalaryService
 {
 
-    public function handle(?User $user = null): void
+    public function updateSalaries(?User $user = null): void
     {
         $from = now()->startOfMonth();
         $to = now()->endOfMonth();

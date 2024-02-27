@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Service\Referral\ForReferrerDaily;
+use App\Service\Referral\ReferrerSalaryService;
 use Illuminate\Console\Command;
 
 class CheckForReferrerDaily extends Command
@@ -25,12 +25,12 @@ class CheckForReferrerDaily extends Command
     /**
      * Execute the console command.
      *
-     * @param ForReferrerDaily $service
+     * @param ReferrerSalaryService $service
      * @return int
      */
-    public function handle(ForReferrerDaily $service): int
+    public function handle(ReferrerSalaryService $service): int
     {
-        $service->handle($this->argument('user'));
+        $service->updateSalaries($this->argument('user'));
         return 1;
     }
 }

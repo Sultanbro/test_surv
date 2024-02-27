@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Service\Referral\ForReferrerDaily;
+use App\Service\Referral\ReferrerSalaryService;
 use App\Timetracking;
 use App\User;
 use Illuminate\Console\Command;
@@ -36,10 +36,10 @@ class CheckTimetrackers extends Command
     /**
      * Execute the console command.
      *
-     * @param ForReferrerDaily $service
+     * @param ReferrerSalaryService $service
      * @return void
      */
-    public function handle(ForReferrerDaily $service): void
+    public function handle(ReferrerSalaryService $service): void
     {
         $this->line('Checking for the end of the day for users');
 
@@ -61,6 +61,6 @@ class CheckTimetrackers extends Command
             }
         }
         // update referral daily salaries
-        $service->handle();
+        $service->updateSalaries();
     }
 }
