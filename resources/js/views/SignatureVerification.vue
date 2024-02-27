@@ -84,20 +84,20 @@ export default {
 					signed: doc.signed_at,
 				}))
 
-				const {data: hist} = await this.axios.post(`/signature/users/${this.$laravel.userId}/histories`)
-				if(hist?.data?.length){
-					const form = hist?.data[0]
-					const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
-					this.requisites = {
-						fio: form.name,
-						phone,
-						address: form.address,
-						pasport,
-						uin,
-						file1: form.images[0] || '',
-						file2: form.images[1] || '',
-					}
-				}
+				// const {data: hist} = await this.axios.post(`/signature/users/${this.$laravel.userId}/histories`)
+				// if(hist?.data?.length){
+				// 	const form = hist?.data[0]
+				// 	const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+				// 	this.requisites = {
+				// 		fio: form.name,
+				// 		phone,
+				// 		address: form.address,
+				// 		pasport,
+				// 		uin,
+				// 		file1: form.images[0] || '',
+				// 		file2: form.images[1] || '',
+				// 	}
+				// }
 			}
 			catch (error) {
 				this.$onError(error)
@@ -129,10 +129,10 @@ export default {
 			this.buttonPressed = true
 
 			const formData = new FormData()
-			formData.set('phone', this.requisites.phone.replace(/[^\d+]/g), '')
-			formData.set('name', this.requisites.fio)
-			formData.set('contract_number', this.requisites.phone + SEPARATOR + this.requisites.uin + SEPARATOR + this.requisites.pasport)
-			formData.set('address', this.requisites.address)
+			formData.append('phone', this.requisites.phone.replace(/[^\d+]/g), '')
+			formData.append('name', this.requisites.fio)
+			formData.append('contract_number', this.requisites.phone + SEPARATOR + this.requisites.uin + SEPARATOR + this.requisites.pasport)
+			formData.append('address', this.requisites.address)
 
 			if(this.requisites.upload1) formData.append('images[]', this.requisites.upload1[0])
 			if(this.requisites.upload2) formData.append('images[]', this.requisites.upload2[0])
