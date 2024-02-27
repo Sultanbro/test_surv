@@ -109,7 +109,7 @@ class Referring extends Facade
         $user = $user->load([
             'description',
             'referrer'
-        ])->loadCount(['timetracking' => function (Builder $query) {
+        ])->load(['timetracking' => function (Builder $query) {
             $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
         }]);
 
