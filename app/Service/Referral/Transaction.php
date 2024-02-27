@@ -36,7 +36,7 @@ class Transaction implements TransactionInterface
 
         dd_if($this->referral->id === 30604, [
             'referral' => $this->referral->id,
-            'referrer' => $this->referrer->id,
+            'referrer' => $this->referrer,
             'is_paid' => $this->alreadyPaid(),
             'type' => $this->paidType->name
         ]);
