@@ -36,13 +36,6 @@ class Transaction implements TransactionInterface
 
         if ($this->alreadyPaid()) return; // already has
 
-        dd_if($this->referral->id === 30604, [
-            'referral' => $this->referral->id,
-            'referrer' => $this->referrer->id,
-            'is_paid' => $this->alreadyPaid(),
-            'type' => $this->paidType->name
-        ]);
-
         $this->calculateAmount();
         $this->addSalary();
 
