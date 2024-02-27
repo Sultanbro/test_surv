@@ -26,9 +26,9 @@ class ForReferrerDaily
             ->get();
 
 
-        $trainers = $users->where('description.is_trainee', 1);
-        $employees = $users->where('description.is_trainee', 0);
-        dd($users->first());
+        $trainers = $users->filter(fn($user) => $user->description->is_trainee);
+        $employees = $users->filter(fn($user) => !$user->description->is_trainee);
+        dd($trainers);
 
         foreach ($trainers as $trainer) {
             Referring::touchReferrerSalaryDaily($trainer, now());
