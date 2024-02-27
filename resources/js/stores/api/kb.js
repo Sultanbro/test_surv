@@ -50,9 +50,39 @@ function booksOpen(books){
 	return books
 }
 
+function canRead(tree){
+	tree.forEach(book => {
+		book.canRead = true
+		if(book.children) canRead(book.children)
+	})
+}
+
+function tree2flat(tree, books = []){
+	tree.forEach(book => {
+		books.push(book)
+		if(book.children) tree2flat(book.children, books)
+	})
+	return books
+}
+
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
 	return booksTree(booksOpen(data.books || []))
+}
+
+export async function fetchKBBooksV2(){
+	const {data} = await axios.post('/kb/user-tree')
+	const tree = data.data || []
+	canRead(tree)
+	const flat = tree2flat(tree, [])
+	return {
+		tree,
+		flat,
+		map: flat.reduce((result, book) => {
+			result[book.id] = book
+			return result
+		}, {})
+	}
 }
 
 export async function fetchKBArchived(){
