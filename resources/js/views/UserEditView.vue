@@ -972,21 +972,21 @@ export default {
 							:class="{'active': showBlocks.documents}"
 							@click="showBlock(9)"
 						>
-							<span>Документы</span>
+							<span>Документы <span class="red">*</span></span>
 						</li>
 						<li
 							id="bg-this-4"
 							:class="{'active': showBlocks.phones}"
 							@click="showBlock(4)"
 						>
-							<span>Контакты</span>
+							<span>Контакты <span class="red">*</span></span>
 						</li>
 						<li
 							id="bg-this-5"
 							:class="{'active': showBlocks.salary}"
 							@click="showBlock(5)"
 						>
-							<span>Оплата</span>
+							<span>Оплата <span class="red">*</span></span>
 						</li>
 						<li
 							v-if="user && isMain"
@@ -994,7 +994,7 @@ export default {
 							:class="{'active': showBlocks.adaptation}"
 							@click="showBlock(7)"
 						>
-							<span>Адаптационные данные</span>
+							<span>Адаптационные данные <span class="red">*</span></span>
 						</li>
 					</ul>
 
