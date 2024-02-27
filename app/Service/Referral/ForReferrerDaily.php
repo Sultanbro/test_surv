@@ -21,7 +21,7 @@ class ForReferrerDaily
                 $query->orWhereBetween('deleted_at', [$from, $to]);
             })
             ->whereNotNull('referrer_id')
-//            ->with(['description', fn($query) => $query->select('user_id', 'is_trainee')])
+            ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
             ->withWhereHas('referrer')
             ->get();
 
