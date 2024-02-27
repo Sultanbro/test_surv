@@ -11,15 +11,15 @@ class ForReferrerDaily
 
     public function handle(?User $user = null): void
     {
-        $from = now()->startOfMonth()->format("Y-m-d");
-        $to = now()->endOfMonth()->format("Y-m-d");
+        $from = now()->startOfMonth();
+        $to = now()->endOfMonth();
 
         $users = User::withTrashed()
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
             ->when($user, fn($query) => $query->where('id', $user->id))
             ->where(function (Builder $query) use ($to) {
-//                $query->whereNull('deleted_at');
-//                $query->orWhere('deleted_at', '>=', $to);
+                $query->whereNull('deleted_at');
+                $query->orWhere('deleted_at', '>=', $to->format("Y-m-d"));
             })
             ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
             ->withWhereHas('referrer')
@@ -28,18 +28,19 @@ class ForReferrerDaily
         $trainers = $users->filter(fn($user) => $user->description->is_trainee);
         $employees = $users->filter(fn($user) => !$user->description->is_trainee);
 
-        dd([
-            'trainers' => $trainers->count(),
-            'employees' => $employees->count(),
-        ]);
+        while ($from <= $to) {
 
-        foreach ($trainers as $trainer) {
-            Referring::touchReferrerSalaryDaily($trainer, now());
-        }
+            foreach ($trainers as $trainee) {
+                Referring::touchReferrerSalaryDaily($trainee, $from);
+                Referring::touchReferrerStatus($trainee->referrer);
+            }
 
-        foreach ($employees as $employee) {
-            $referrer = $employee->referrer;
-            Referring::touchReferrerSalaryWeekly($referrer, now());
+            foreach ($employees as $employee) {
+                Referring::touchReferrerSalaryWeekly($employee, $from);
+                Referring::touchReferrerStatus($employee->referrer);
+            }
+
+            $from->addDay();
         }
     }
 }

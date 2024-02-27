@@ -87,6 +87,7 @@ class Referring extends Facade
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
+        $service->useDate($date);
 
         /** @var User $user */
         $user = $user->load([
@@ -111,7 +112,6 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
-        $service->useDate($date);
         $service->touch($user, PaidType::WORK);
     }
 

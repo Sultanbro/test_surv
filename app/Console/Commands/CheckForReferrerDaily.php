@@ -13,7 +13,7 @@ class CheckForReferrerDaily extends Command
      *
      * @var string
      */
-    protected $signature = 'referrer:daily';
+    protected $signature = 'referrer:daily {user?}';
 
     /**
      * The console command description.
@@ -30,7 +30,7 @@ class CheckForReferrerDaily extends Command
      */
     public function handle(ForReferrerDaily $service): int
     {
-        $service->handle();
+        $service->handle($this->argument('user'));
         return 1;
     }
 }
