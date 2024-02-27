@@ -12,6 +12,7 @@ use App\Service\Referral\UrlGeneratorService;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Facade;
 
@@ -57,7 +58,7 @@ class Referring extends Facade
         /** @var User $user */
         $user = User::withTrashed()
             ->where('id', $user->id)
-            ->whereHas('daytypes', function (HasMany $query) use ($date) {
+            ->whereHas('daytypes', function (Builder $query) use ($date) {
                 $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
                 $query->where('date', $date->format("Y-m-d"));
             })
