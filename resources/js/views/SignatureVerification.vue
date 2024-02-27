@@ -84,20 +84,20 @@ export default {
 					signed: doc.signed_at,
 				}))
 
-				const {data: hist} = await this.axios.post(`/signature/users/${this.$laravel.userId}/histories`)
-				if(hist?.data?.length){
-					const form = hist?.data[0]
-					const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
-					this.requisites = {
-						fio: form.name,
-						phone,
-						address: form.address,
-						pasport,
-						uin,
-						file1: form.images[0] || '',
-						file2: form.images[1] || '',
-					}
-				}
+				// const {data: hist} = await this.axios.post(`/signature/users/${this.$laravel.userId}/histories`)
+				// if(hist?.data?.length){
+				// 	const form = hist?.data[0]
+				// 	const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
+				// 	this.requisites = {
+				// 		fio: form.name,
+				// 		phone,
+				// 		address: form.address,
+				// 		pasport,
+				// 		uin,
+				// 		file1: form.images[0] || '',
+				// 		file2: form.images[1] || '',
+				// 	}
+				// }
 			}
 			catch (error) {
 				this.$onError(error)
