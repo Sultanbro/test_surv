@@ -4,6 +4,7 @@ namespace App\Service\Referral;
 
 use App\Facade\Referring;
 use App\User;
+use Illuminate\Database\Eloquent\Builder;
 
 class ForReferrerDaily
 {
@@ -16,10 +17,10 @@ class ForReferrerDaily
         $users = User::withTrashed()
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
             ->when($user, fn($query) => $query->where('id', $user->id))
-//            ->where(function (Builder $query) use ($to) {
-//                $query->whereNull('deleted_at');
-//                $query->orWhere('deleted_at', '>=', $to);
-//            })
+            ->where(function (Builder $query) use ($to) {
+                $query->whereNull('deleted_at');
+                $query->orWhere('deleted_at', '>=', $to);
+            })
             ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
             ->withWhereHas('referrer')
             ->get();
