@@ -1285,6 +1285,9 @@ export default {
 			border: 1px solid #e8e8e8;
 
 			font-size: 14px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
 
 			background-color: #F7FAFC !important;
 			border-radius: 6px !important;

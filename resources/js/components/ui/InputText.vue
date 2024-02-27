@@ -5,6 +5,7 @@
 			'InputText_focus': focus,
 			'InputText_small': small,
 			'InputText_empty': !value,
+			'InputText_error': !!error,
 			'InputText_primary': primary,
 		}"
 	>
@@ -59,6 +60,10 @@ export default {
 		readonly: {
 			type: Boolean
 		},
+		error: {
+			type: String,
+			default: '',
+		}
 	},
 	data(){
 		return {
@@ -137,6 +142,10 @@ export default {
 		background-color: #fff;
 		box-shadow: 0px 8px 16px 4px rgba(131, 178, 233, 0.14),
 			0px 0px 1px 0px rgba(21, 106, 232, 0.20);
+	}
+	&_error{
+		background-color: #fdd;
+		outline: 1px solid red;
 	}
 }
 </style>
