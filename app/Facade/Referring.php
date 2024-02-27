@@ -13,6 +13,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -109,8 +110,7 @@ class Referring extends Facade
             'description',
             'referrer'
         ])->loadCount(['timetracking' => function (Builder $query) {
-            $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total_hours")
-                ->havingRaw("work_total_hours >= ?", [60 * 3]);
+            $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
         }]);
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
