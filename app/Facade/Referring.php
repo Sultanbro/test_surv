@@ -114,6 +114,8 @@ class Referring extends Facade
                 $query->select([
                     DB::raw("id"),
                     DB::raw("user_id"),
+                    DB::raw("`exit`"),
+                    DB::raw("`enter`"),
                     DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) as worked_total"),
                 ]);
                 $query->where(DB::raw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180"));
