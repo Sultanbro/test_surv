@@ -52,13 +52,15 @@ class Referring extends Facade
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
+        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
 
         /** @var User $exists */
         $exists = User::withTrashed()
             ->where('id', $user->id)
-            ->whereHas('daytypes', function (Builder $query) use ($date) {
+            ->whereHas('daytypes', function (Builder $query) use ($date, $userCurrentGroupStartingDate) {
                 $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
                 $query->where('date', $date->format("Y-m-d"));
+                $query->where('date', '>=', $userCurrentGroupStartingDate);
             })
             ->with([
                 'description',
@@ -103,9 +105,8 @@ class Referring extends Facade
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
         $service->useDate($date);
-        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
 
-        dd_if($user->id === 30604, $userCurrentGroupStartingDate);
+        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
 
         /** @var User $user */
         $user = User::withTrashed()
@@ -114,18 +115,24 @@ class Referring extends Facade
                 'description',
                 'referrer'
             ])
-            ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")])
+            ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
+                ->where("enter", '>=', $userCurrentGroupStartingDate)
+            ])
             ->first();
 
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $workedWeeksCount = (int)floor($user->timetracking_count / 6);
+
+        dd_if($user->id === 30604, $workedWeeksCount);
+
         if ($workedWeeksCount < 1) return;
 
         if ($workedWeeksCount == 1) {
             $service->touch($user, PaidType::FIRST_WORK);
             return;
         }
+
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
