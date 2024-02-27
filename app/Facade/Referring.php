@@ -141,13 +141,12 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
-
-        dd_if($user->id === 30604, [
-            'count' => $user->referral_salaries_count
-        ]);
+        $toCreateCount = $workedWeeksCount - $user->referral_salaries_count;
 
         $service->touch($user, PaidType::FIRST_WORK);
-        $service->touch($user, PaidType::WORK);
+        for ($created = 0; $created < $toCreateCount; $created++) {
+            $service->touch($user, PaidType::WORK);
+        }
     }
 
     protected static function getFacadeAccessor(): string
