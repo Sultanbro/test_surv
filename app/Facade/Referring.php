@@ -2,6 +2,7 @@
 
 namespace App\Facade;
 
+use App\DayType;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\ReferralUrlDto;
 use App\Service\Referral\Core\ReferrerInterface;
@@ -72,12 +73,19 @@ class Referring extends Facade
         $service = app(TransactionInterface::class);
 
         /** @var User $user */
-        $user = $user->load([
-            'description',
-            'referrer'
-        ]);
+        $user = User::withTrashed()
+            ->where('id', $user->id)
+            ->whereHas('daytypes', function (HasMany $query) use ($date) {
+                $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
+                $query->where('date', $date->format("Y-m-d"));
+            })
+            ->with([
+                'description',
+                'referrer',
+            ])
+            ->first();
 
-        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
+        if (!$user?->referrer) return; // if a user doesn't have a referrer, then just return;
 
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($user, PaidType::TRAINEE);

@@ -14,33 +14,25 @@ class ReferrerSalaryService
         $from = now()->startOfMonth();
         $to = now()->endOfMonth();
 
-        $users = User::withTrashed()
+        $referrals = User::withTrashed()
+            ->withWhereHas('referrer')
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
             ->when($user, fn($query) => $query->where('id', $user->id))
             ->where(function (Builder $query) use ($to) {
                 $query->whereNull('deleted_at');
                 $query->orWhere('deleted_at', '>=', $to->format("Y-m-d"));
             })
-            ->with(['description' => fn($query) => $query->select('user_id', 'is_trainee')])
-            ->withWhereHas('referrer')
             ->get();
 
-        $trainers = $users->filter(fn($user) => $user->description->is_trainee);
-        $employees = $users->filter(fn($user) => !$user->description->is_trainee);
-
+        dd($referrals->count());
         while ($from <= $to) {
             dump('date: ' . $from->format("Y-m-d"));
 
-            foreach ($trainers as $trainee) {
-                Referring::touchReferrerSalaryDaily($trainee, $from);
-                Referring::touchReferrerStatus($trainee->referrer);
-                dump('trainee_id: ' . $trainee->id);
-            }
-
-            foreach ($employees as $employee) {
-                Referring::touchReferrerSalaryWeekly($employee, $from);
-                Referring::touchReferrerStatus($employee->referrer);
-                dump('employee_id: ' . $employee->id);
+            foreach ($referrals as $referral) {
+                Referring::touchReferrerSalaryDaily($referral, $from);
+                Referring::touchReferrerSalaryWeekly($referral, $from);
+                Referring::touchReferrerStatus($referral->referrer);
+                dump('user_id: ' . $referral->id);
             }
 
             $from->addDay();
