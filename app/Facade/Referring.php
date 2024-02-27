@@ -13,7 +13,6 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -109,7 +108,7 @@ class Referring extends Facade
         $user = $user->load([
             'description',
             'referrer'
-        ])->loadCount(['timetracking' => function (HasMany $query) {
+        ])->loadCount(['timetracking' => function (Builder $query) {
             $query->selectRaw("`enter`, `exit`, id, user_id, TIMESTAMPDIFF(minute, `enter`, `exit`) as work_total_hours")
                 ->havingRaw("work_total_hours >= ?", [60 * 3]);
         }]);
