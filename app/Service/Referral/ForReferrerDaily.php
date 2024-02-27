@@ -25,8 +25,9 @@ class ForReferrerDaily
             ->withWhereHas('referrer')
             ->get();
 
+        dd($users);
+
         $trainers = $users->where('description.is_trainee', 1);
-        dd($trainers);
         $employees = $users->where('description.is_trainee', 0);
 
         foreach ($trainers as $trainer) {
