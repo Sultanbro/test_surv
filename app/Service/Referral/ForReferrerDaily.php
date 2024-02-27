@@ -4,6 +4,7 @@ namespace App\Service\Referral;
 
 use App\Facade\Referring;
 use App\User;
+use Illuminate\Database\Eloquent\Builder;
 
 class ForReferrerDaily
 {
@@ -14,12 +15,12 @@ class ForReferrerDaily
         $to = now()->endOfMonth()->format("Y-m-d");
 
         $users = User::withTrashed()
-//            ->when($user, fn($query) => $query->where('id', $user->id))
-//            ->where(function (Builder $query) use ($from, $to) {
-//                $query->whereNull('deleted_at');
-//                $query->orWhereBetween('deleted_at', [$from, $to]);
-//            })
-//            ->whereNotNull('referrer_id')
+            ->when($user, fn($query) => $query->where('id', $user->id))
+            ->where(function (Builder $query) use ($from, $to) {
+                $query->whereNull('deleted_at');
+                $query->orWhereBetween('deleted_at', [$from, $to]);
+            })
+            ->whereNotNull('referrer_id')
 //            ->with(['description', fn($query) => $query->select('user_id', 'is_trainee')])
             ->withWhereHas('referrer')
             ->get();
