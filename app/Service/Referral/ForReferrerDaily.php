@@ -25,10 +25,10 @@ class ForReferrerDaily
             ->withWhereHas('referrer')
             ->get();
 
-        dd($users);
 
         $trainers = $users->where('description.is_trainee', 1);
         $employees = $users->where('description.is_trainee', 0);
+        dd($trainers);
 
         foreach ($trainers as $trainer) {
             Referring::touchReferrerSalaryDaily($trainer, now());
