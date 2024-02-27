@@ -46,9 +46,10 @@ class Transaction implements TransactionInterface
 
     private function alreadyPaid(): bool
     {
-        return $this->referral->referrerSalaries()
+        return $this->referrer->referrerSalaries()
             ->when(!in_array($this->paidType, [PaidType::ATTESTATION, PaidType::FIRST_WORK]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
             ->where('type', $this->paidType->name)
+            ->where('referral_id', $this->referral->id)
             ->exists();
     }
 
@@ -63,7 +64,8 @@ class Transaction implements TransactionInterface
 
     private function addSalary(): void
     {
-        $this->referrer->referralSalaries()
+
+        $salary = $this->referrer->referrerSalaries()
             ->create([
                 'type' => $this->paidType->name,
                 'referral_id' => $this->referral->getKey(),
@@ -71,6 +73,8 @@ class Transaction implements TransactionInterface
                 'is_paid' => 0,
                 'amount' => $this->amount,
             ]);
+
+        dd_if($this->referrer->id === 30604, $salary);
     }
 
     public function useDate(Carbon $date): void

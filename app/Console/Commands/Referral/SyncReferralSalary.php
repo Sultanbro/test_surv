@@ -36,7 +36,7 @@ class SyncReferralSalary extends Command
                 if ($description->is_trainee) {
                     break;
                 }
-                $referrer->referralSalaries()->firstOrCreate([
+                $referrer->referrerSalaries()->firstOrCreate([
                     'referral_id' => $referral->getKey(),
                     'amount' => 5000,
                     'type' => PaidType::ATTESTATION->name,

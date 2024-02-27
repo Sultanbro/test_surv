@@ -1063,7 +1063,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->hasOne('App\Downloads', 'user_id', 'id');
     }
 
-    public function referralSalaries(): HasMany
+    public function referrerSalaries(): HasMany
     {
         return $this->hasMany(
             ReferralSalary::class,
@@ -1072,7 +1072,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         );
     }
 
-    public function referrerSalaries(): HasMany
+    public function referralSalaries(): HasMany
     {
         return $this->hasMany(
             ReferralSalary::class,
