@@ -119,7 +119,7 @@ class Referring extends Facade
         $workedWeeksCount = (int)floor($user->timetracking_count / 6);
         if ($workedWeeksCount < 1) return;
 
-        if (floor($workedWeeksCount) == 1) {
+        if ($workedWeeksCount == 1) {
             $service->touch($user, PaidType::FIRST_WORK);
             return;
         }
