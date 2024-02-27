@@ -24,7 +24,6 @@ class ReferrerSalaryService
             })
             ->get();
 
-        dd($referrals->count());
         while ($from <= $to) {
             dump('date: ' . $from->format("Y-m-d"));
 
