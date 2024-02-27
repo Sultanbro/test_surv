@@ -118,7 +118,8 @@ class Referring extends Facade
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
                 ->where("enter", '>=', $userCurrentGroupStartingDate)
             ])
-            ->withCount(['referralSalaries' => fn(Builder $query) => $query->where("type", '>=', $userCurrentGroupStartingDate)
+            ->withCount(['referralSalaries' => fn(Builder $query) => $query
+                ->where("date", '>=', $userCurrentGroupStartingDate)
                 ->where("type", PaidType::WORK->name)
             ])
             ->first();
