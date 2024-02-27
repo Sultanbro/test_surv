@@ -2,6 +2,7 @@
 
 namespace App\Service\Referral;
 
+use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\CalculateInterface;
 use App\Service\Referral\Core\PaidType;
 use App\Service\Referral\Core\TransactionInterface;
@@ -52,10 +53,11 @@ class Transaction implements TransactionInterface
 
     private function alreadyPaid(): Model
     {
-        return $this->referral->referralSalaries()
+        return ReferralSalary::query()
             ->when(!in_array($this->paidType, [PaidType::ATTESTATION, PaidType::FIRST_WORK]), fn(Builder $query) => $query->where('date', $this->date->format("Y-m-d")))
             ->where('type', $this->paidType->name)
             ->where('referrer_id', $this->referrer->id)
+            ->where('referral_id', $this->referral->id)
             ->first();
     }
 
@@ -70,11 +72,11 @@ class Transaction implements TransactionInterface
 
     private function addSalary(): Model
     {
-
-        return $this->referrer->referralSalaries()
+        return ReferralSalary::query()
             ->create([
                 'type' => $this->paidType->name,
                 'referrer_id' => $this->referrer->getKey(),
+                'referral_id' => $this->referral->getKey(),
                 'date' => $this->date->format("Y-m-d"),
                 'is_paid' => 0,
                 'amount' => $this->amount,
