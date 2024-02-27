@@ -4,32 +4,36 @@ namespace App\Service\Referral;
 
 use App\Facade\Referring;
 use App\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 class ForReferrerDaily
 {
 
-    public function handle(): void
+    public function handle(?User $user = null): void
     {
+        $from = now()->startOfMonth()->format("Y-m-d");
+        $to = now()->endOfMonth()->format("Y-m-d");
 
-        /** @var Collection<User> $trainers */
-        $trainers = User::query()
+        $users = User::withTrashed()
+            ->when($user, fn($query) => $query->where('id', $user->id))
+            ->where(function (Builder $query) use ($from, $to) {
+                $query->whereNull('deleted_at');
+                $query->orWhereBetween('deleted_at', [$from, $to]);
+            })
             ->whereNotNull('referrer_id')
-            ->whereRelation('description', 'is_trainee', 1)
+            ->with(['description', fn($query) => $query->select('user_id', 'is_trainee')])
+            ->withWhereHas('referrer')
             ->get();
+
+        $trainers = $users->where('description.is_trainee', 1);
+        dd($trainers);
+        $employees = $users->where('description.is_trainee', 0);
 
         foreach ($trainers as $trainer) {
             Referring::touchReferrerSalaryDaily($trainer, now());
         }
 
-        /** @var Collection<User> $employees */
-        $employees = User::query()
-            ->whereNotNull('referrer_id')
-            ->whereRelation('description', 'is_trainee', 0)
-            ->get();
-
         foreach ($employees as $employee) {
-
             $referrer = $employee->referrer;
             Referring::touchReferrerSalaryWeekly($referrer, now());
         }
