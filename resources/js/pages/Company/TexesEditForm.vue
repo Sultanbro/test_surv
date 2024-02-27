@@ -80,7 +80,7 @@
 			</Draggable>
 			<JobtronButton
 				small
-				@click="addItem"
+				@click="addItem(0)"
 			>
 				+ Добавить налог
 			</JobtronButton>

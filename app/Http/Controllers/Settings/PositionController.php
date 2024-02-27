@@ -89,17 +89,7 @@ final class PositionController extends Controller
      */
     public function savePositionWithDescription(StorePositionWithDescriptionRequest $request)
     {
-        $dto = $request->toDto();
-        $response = $this->service->savePositionWithDescription(
-            $dto->id,
-            $dto->newName,
-            $dto->indexation,
-            $dto->sum,
-            $dto->description,
-            $dto->is_head,
-            $dto->is_spec,
-        );
-
+        $response = $this->service->savePositionWithDescription($request->toDto());
         return response()->success($response);
     }
 

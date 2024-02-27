@@ -29,6 +29,9 @@ class Position extends Model
         'sum', // Сумма
         'is_head', // boolean
         'is_spec', // boolean
+        'ckp_status',
+        'ckp',
+        'ckp_link'
     ];
 
     /**

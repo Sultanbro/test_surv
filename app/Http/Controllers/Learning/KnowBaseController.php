@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Learning;
 
+use App\Http\Resources\KB\KnowBaseTreeResource;
 use App\KnowBase;
 use App\Models\KnowBaseModel;
 use App\Models\TestQuestion;
+use App\Service\KB\KnowBaseService;
 use App\User;
 use App\ProfileGroup;
 use App\Position;
@@ -12,6 +14,7 @@ use App\Models\CourseItemModel;
 use Auth;
 use App\Setting;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -263,6 +266,25 @@ class KnowBaseController extends Controller
             'item_models' => $item_models,
             'can_save' => $this->canSaveWithoutTest()
         ];
+    }
+
+    public function getAllTree(KnowBaseService $service): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildAllTree())
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getUserTree(KnowBaseService $service): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildUserTree())
+        );
     }
 
     /**
