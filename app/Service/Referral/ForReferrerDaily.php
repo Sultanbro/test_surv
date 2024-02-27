@@ -29,7 +29,10 @@ class ForReferrerDaily
 
         $trainers = $users->filter(fn($user) => $user->description->is_trainee);
         $employees = $users->filter(fn($user) => !$user->description->is_trainee);
-        dd($trainers);
+        dd([
+            'trainers' => $trainers->count(),
+            'employees' => $employees->count(),
+        ]);
 
         foreach ($trainers as $trainer) {
             Referring::touchReferrerSalaryDaily($trainer, now());
