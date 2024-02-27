@@ -105,14 +105,19 @@ class Referring extends Facade
         $service->useDate($date);
 
         /** @var User $user */
-        $user = $user->load([
-            'description',
-            'referrer'
-        ])->loadCount('timetracking');
+        $user = User::withTrashed()
+            ->where('id', $user->id)
+            ->with([
+                'description',
+                'referrer'
+            ])
+            ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")])
+            ->first();
+
+        dd_if($user->id === 30604, $user);
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
         $workedWeeksCount = (int)$user->timetracking_count / 6;
-        dd_if($user->id === 30604, $workedWeeksCount);
 
         if ($workedWeeksCount < 1) return;
 
