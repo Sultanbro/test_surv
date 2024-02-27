@@ -118,6 +118,10 @@ class Referring extends Facade
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
                 ->where("enter", '>=', $userCurrentGroupStartingDate)
             ])
+            ->withCount(['referralSalaries' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
+                ->where("type", '>=', $userCurrentGroupStartingDate)
+                ->where("type", PaidType::WORK)
+            ])
             ->first();
 
         if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
@@ -137,6 +141,10 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
+
+        dd_if($user->id === 30604, [
+            'count' => $user->referralSalaries_count
+        ]);
         $service->touch($user, PaidType::FIRST_WORK);
         $service->touch($user, PaidType::WORK);
     }
