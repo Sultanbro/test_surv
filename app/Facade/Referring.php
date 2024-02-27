@@ -120,7 +120,7 @@ class Referring extends Facade
             ])
             ->withCount(['referralSalaries' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
                 ->where("type", '>=', $userCurrentGroupStartingDate)
-                ->where("type", PaidType::WORK)
+                ->where("type", PaidType::WORK->name)
             ])
             ->first();
 
@@ -145,6 +145,7 @@ class Referring extends Facade
         dd_if($user->id === 30604, [
             'count' => $user->referralSalaries_count
         ]);
+
         $service->touch($user, PaidType::FIRST_WORK);
         $service->touch($user, PaidType::WORK);
     }
