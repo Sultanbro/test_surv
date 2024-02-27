@@ -103,6 +103,9 @@ class Referring extends Facade
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
         $service->useDate($date);
+        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
+
+        dd_if($user->id === 30604, $userCurrentGroupStartingDate);
 
         /** @var User $user */
         $user = User::withTrashed()
