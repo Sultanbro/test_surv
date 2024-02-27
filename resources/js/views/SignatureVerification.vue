@@ -41,6 +41,7 @@ export default {
 			timer: 0,
 			timerLink: null,
 			signCount: 0,
+			errors: {},
 		}
 	},
 	computed: {
@@ -83,7 +84,7 @@ export default {
 					signed: doc.signed_at,
 				}))
 
-				const {data: hist} = await this.axios.post(`/signature/users/${this.userId}/histories`)
+				const {data: hist} = await this.axios.post(`/signature/users/${this.$laravel.userId}/histories`)
 				if(hist?.data?.length){
 					const form = hist?.data[0]
 					const [phone, uin, pasport] = form.contract_number.split(SEPARATOR)
@@ -104,27 +105,28 @@ export default {
 		},
 
 		validateForm(){
-			const errors = []
+			this.errors = {}
 
-			if(this.requisites.fio.length < 5) errors.push('Заполните ФИО')
-			if(this.requisites.phone.replace(/[^\d+]/g, '').length < 10) errors.push('Заполните номер телефона')
-			if(this.requisites.uin.length < 10) errors.push('Заполните ИНН')
-			if(this.requisites.pasport.length < 10) errors.push('Заполните номер удостоверения/паспорта')
-			if(this.requisites.address.length < 10) errors.push('Заполните адрес')
-			if(!this.requisites.file1) errors.push('Загрузите лицевую сторону удостоверения/паспорта')
-			if(!this.requisites.file2) errors.push('Загрузите оборотную сторону удостоверения/паспорта')
+			if(this.requisites.fio.length < 5) this.errors.fio = 'Заполните ФИО'
+			if(this.requisites.phone.replace(/[^\d+]/g, '').length < 10) this.errors.phone = 'Заполните номер телефона'
+			if(this.requisites.uin.length < 10) this.errors.uin = 'Заполните ИНН'
+			if(this.requisites.pasport.length < 10) this.errors.pasport = 'Заполните номер удостоверения/паспорта'
+			if(this.requisites.address.length < 10) this.errors.address = 'Заполните адрес'
+			if(!this.requisites.file1) this.errors.file1 = 'Загрузите лицевую сторону удостоверения/паспорта'
+			if(!this.requisites.file2) this.errors.file2 = 'Загрузите оборотную сторону удостоверения/паспорта'
 
-			if(errors.length) this.$toast.error(errors.join('\n'))
+			const keys = Object.keys(this.errors)
+			if(keys.length) this.$toast.error(Object.values(this.errors).join('\n'))
 
-			return !errors.length
+			return !keys.length
 		},
 		async onSign(){
 			/* eslint-disable camelcase */
-			if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
+			// if(!this.user.phone) return alert('Заполните неомер телефона в настройках профиля')
 			if(this.buttonPressed) return
-			this.buttonPressed = true
-
 			if(!this.validateForm()) return
+
+			this.buttonPressed = true
 
 			const formData = new FormData()
 			formData.set('phone', this.requisites.phone.replace(/[^\d+]/g), '')
@@ -238,7 +240,14 @@ export default {
 							v-model="requisites.fio"
 							primary
 							small
+							:error="errors.fio"
 						/>
+						<div
+							v-if="errors.fio"
+							class="SignatureVerification-error"
+						>
+							{{ errors.fio }}
+						</div>
 					</b-col>
 				</b-row>
 
@@ -253,7 +262,14 @@ export default {
 							v-model="requisites.pasport"
 							primary
 							small
+							:error="errors.pasport"
 						/>
+						<div
+							v-if="errors.pasport"
+							class="SignatureVerification-error"
+						>
+							{{ errors.pasport }}
+						</div>
 					</b-col>
 				</b-row>
 
@@ -268,7 +284,14 @@ export default {
 							v-model="requisites.uin"
 							primary
 							small
+							:error="errors.uin"
 						/>
+						<div
+							v-if="errors.uin"
+							class="SignatureVerification-error"
+						>
+							{{ errors.uin }}
+						</div>
 					</b-col>
 				</b-row>
 
@@ -291,7 +314,14 @@ export default {
 							v-model="requisites.phone"
 							primary
 							small
+							:error="errors.phone"
 						/>
+						<div
+							v-if="errors.phone"
+							class="SignatureVerification-error"
+						>
+							{{ errors.phone }}
+						</div>
 					</b-col>
 				</b-row>
 
@@ -306,20 +336,25 @@ export default {
 							v-model="requisites.address"
 							primary
 							small
+							:error="errors.address"
 						/>
+						<div
+							v-if="errors.address"
+							class="SignatureVerification-error"
+						>
+							{{ errors.address }}
+						</div>
 					</b-col>
 				</b-row>
 
 				<b-row class="SignatureVerification-row">
 					<b-col cols="6">
-						<div class="SignatureVerification-label text-center">
-							Лицевая сторона удостоверения / паспорта<span class="red">*</span>
-						</div>
 						<InputFile @change="onFile1">
 							<div
 								class="SignatureVerification-file"
 								:class="{
-									'SignatureVerification-file_check': requisites.file1 || requisites.upload1
+									'SignatureVerification-file_check': requisites.file1 || requisites.upload1,
+									'SignatureVerification-file_error': errors.file1,
 								}"
 								:style="[`--card-bg: url(${requisites.file1})`].join(';')"
 							>
@@ -327,19 +362,23 @@ export default {
 									v-if="requisites.file1 || requisites.upload1"
 									class="fa fa-check"
 								/>
-								<span v-else>Загрузите лицевую сторону удостоверения или паспорта</span>
+								<span v-else>Загрузите лицевую сторону удостоверения или паспорта <span class="red">*</span></span>
 							</div>
 						</InputFile>
+						<div
+							v-if="errors.file1"
+							class="SignatureVerification-error"
+						>
+							{{ errors.file1 }}
+						</div>
 					</b-col>
 					<b-col cols="6">
-						<div class="SignatureVerification-label text-center">
-							Вторая сторона удостоверения / паспорта<span class="red">*</span>
-						</div>
 						<InputFile @change="onFile2">
 							<div
 								class="SignatureVerification-file"
 								:class="{
-									'SignatureVerification-file_check': requisites.file2 || requisites.upload2
+									'SignatureVerification-file_check': requisites.file2 || requisites.upload2,
+									'SignatureVerification-file_error': errors.file2,
 								}"
 								:style="[`--card-bg: url(${requisites.file2})`].join(';')"
 							>
@@ -347,13 +386,19 @@ export default {
 									v-if="requisites.file2 || requisites.upload2"
 									class="fa fa-check"
 								/>
-								<span v-else>Загрузите оборотную сторону удостоверения или паспорта</span>
+								<span v-else>Загрузите оборотную сторону удостоверения или паспорта <span class="red">*</span></span>
 							</div>
 						</InputFile>
+						<div
+							v-if="errors.file2"
+							class="SignatureVerification-error"
+						>
+							{{ errors.file2 }}
+						</div>
 					</b-col>
 				</b-row>
 
-				<p class="text-center mt-4">
+				<p class="SignatureVerification-confirm mt-4">
 					Нажимая "Подписать" вы соглашаетесь с условиями данного договора и подтверждаете подлинность приложенных документов
 				</p>
 
@@ -489,8 +534,14 @@ export default {
 		justify-content: center;
 
 		aspect-ratio: 2/1;
+		padding: 24px;
 		margin-top: 10px;
 		border: 3px dashed #000;
+
+		font-size: 14px;
+		text-align: center;
+		text-wrap: balance;
+
 		border-radius: 16px;
 		&_check{
 			border-color: green;
@@ -498,6 +549,9 @@ export default {
 			background-size: contain;
 			background-position: center center;
 			background-repeat: no-repeat;
+		}
+		&_error{
+			border-color: red;
 		}
 		.fa-check{
 			display: block;
@@ -514,6 +568,15 @@ export default {
 	&-finish{
 		align-self: center;
 		font-size: 16px;
+	}
+	&-error{
+		color: red;
+		font-size: 13px;
+	}
+	&-confirm{
+		text-align: center;
+		font-size: 11px;
+		color: #006dae;
 	}
 }
 </style>
