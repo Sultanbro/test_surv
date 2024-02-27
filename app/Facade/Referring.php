@@ -55,8 +55,8 @@ class Referring extends Facade
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
 
-        /** @var User $user */
-        $user = User::withTrashed()
+        /** @var User $exists */
+        $exists = User::withTrashed()
             ->where('id', $user->id)
             ->whereHas('daytypes', function (Builder $query) use ($date) {
                 $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
@@ -68,17 +68,17 @@ class Referring extends Facade
             ])
             ->first();
 
-        if (!$user) {
+        if (!$exists) {
             self::deleteReferrerDailySalary($user->id, $date);
             return;
         }
 
-        if (!$user->referrer) {
+        if (!$exists->referrer) {
             return;
         } // if a user doesn't have a referrer, then just return;
 
         $service->useDate($date); // this can be used when the date is not current
-        $service->touch($user, PaidType::TRAINEE);
+        $service->touch($exists, PaidType::TRAINEE);
     }
 
     public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
