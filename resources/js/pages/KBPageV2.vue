@@ -913,6 +913,7 @@ export default {
 				else{
 					this.books.push(book)
 				}
+				this.booksMap[book.id] = book
 
 				this.updateBook = book
 				await this.updateSection(true)
@@ -1013,6 +1014,7 @@ export default {
 
 			if(!parent.children) parent.children = []
 			parent.children.push(book)
+			this.booksMap[book.id] = book
 
 			this.$nextTick(() => {
 				this.activeBook = book
