@@ -3,10 +3,9 @@
 		<KBNav
 			:mode="mode"
 			:active-book="activeBook"
-			:books="books"
-			:pages="pages"
+			:books="currentBook ? currentBook.children : books"
 			:favorites="favorites"
-			:root-book="rootBook"
+			:current-book="currentBook"
 			class="KBPageV2-nav"
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
@@ -28,8 +27,6 @@
 				:breadcrumbs="breadcrumbs"
 				:can-edit="!!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
 				:edit-book="editBook"
-				:root-book="rootBook"
-				:parent-book="parentBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
 				@upload-image="isUploadImage = true"
@@ -37,7 +34,7 @@
 				@delete-page="onDeletePage"
 				@save-page="onSavePage"
 				@edit-page="editBook = true"
-				@settings="activeBook ? editAccess(activeBook) : getSettings()"
+				@settings="activeBook ? editAccess(activeBook) : getSettings(true)"
 			/>
 			<div class="KBPageV2-body">
 				<GlossaryComponent
@@ -543,8 +540,7 @@ export default {
 		return {
 			mode: 'read',
 			books: [],
-			pages: [],
-			allBooks: [],
+			currentBook: null,
 			archived_books: [],
 			itemModels: [],
 
@@ -647,28 +643,22 @@ export default {
 				}
 			})
 		},
-		allBooksMap(){
-			const map = {}
-			this.allBooks.forEach(book => {
-				map[book.id] = book
-			})
-			return map
-		},
-		booksMap(){
-			const map = {}
-			this.getPages(map, this.allBooks)
-			return map
-		},
 		breadcrumbs(){
-			if(!this.activeBook) return []
+			if(!this.activeBook) {
+				if(!this.currentBook) return []
+				return [{
+					title: this.currentBook.title,
+					link: `/kb?s=${this.currentBook.id || ''}`
+				}]
+			}
 			const breadcrumbs = []
 			let currentId = this.activeBook.id
 			while(currentId){
-				const book = this.booksMap[currentId] || this.pagesMap[currentId]
+				const book = this.booksMap[currentId]
 				if(!book) return breadcrumbs.reverse()
 				breadcrumbs.push({
 					title: book.title,
-					link: `/kb?s=${this.rootId}${book.parent_id ? '&b=' + currentId  : ''}`
+					link: `/kb?s=${this.currentBook?.id || ''}${book.parent_id ? '&b=' + currentId  : ''}`
 				})
 				currentId = book.parent_id
 			}
@@ -676,30 +666,44 @@ export default {
 		},
 		isActiveCategory(){
 			if(!this.activeBook) return false
-			return !this.activeBook.parent_id || this.activeBook.is_category
+			return this.activeBook.is_category
 		},
 		parentBook(){
 			if(!this.activeBook) return null
 			let book = this.activeBook
 			while(book){
 				if(book.is_category || !book.parent_id) return book
-				book = this.pagesMap[book.parent_id] || this.allBooksMap[book.parent_id]
+				book = this.booksMap[book.parent_id]
 			}
 			return null
-		}
+		},
+
+		queryBook(){
+			return this.$route.query?.s || ''
+		},
+		queryPage(){
+			return this.$route.query?.b || ''
+		},
 	},
 	watch: {
-		pages: {
-			// computed сделать не получилось
-			deep: true,
-			handler(){
-				this.pagesMap = this.pages.reduce((result, page) => {
-					result[page.id] = page
-					if(page.children && page.children.length) this.getPages(result, page.children)
-					return result
-				}, {})
+		queryBook(){
+			if(this.queryBook) {
+				const book = this.booksMap[this.queryBook]
+				this.onBook(book)
 			}
-		}
+			else{
+				this.back()
+			}
+		},
+		queryPage(){
+			if(this.queryPage) {
+				const page = this.booksMap[this.queryPage]
+				this.onPage(page)
+			}
+			else{
+				this.activeBook = null
+			}
+		},
 	},
 
 	created() {
@@ -715,6 +719,7 @@ export default {
 		async init(){
 			this.fetchGlossary()
 			this.fetchGlossaryAccess()
+			this.getSettings(false)
 
 			await this.fetchData()
 			const bookId = this.$route.query.s
@@ -728,12 +733,12 @@ export default {
 				}
 				// const top = this.getTopParent(book)
 				// this.routerPush(`/kb?s=${bookId}${pageId ? '&b=' + pageId : ''}`)
-				this.books = []
+				// this.books = []
 				await this.fetchBook(book, true)
 				// if(book.id !== top.id) this.setParentsOpened(bookId)
 			}
-			if(this.rootBook && pageId){
-				const page = this.pagesMap[+pageId]
+			if(this.currentBook && pageId){
+				const page = this.booksMap[+pageId]
 				if(!page) {
 					this.routerPush(`/kb?s=${bookId}`)
 					return this.$toast.error('Страница удалена')
@@ -742,23 +747,13 @@ export default {
 				this.setParentsOpened(pageId)
 			}
 		},
-		getPages(map, pages){
-			pages.map(page => {
-				map[page.id] = page
-				if(page.children && page.children.length) this.getPages(map, page.children)
-			})
-		},
 		back() {
 			if(!this.isAdmin) {
 				this.mode = 'read'
 			}
 			this.activeBook = null
-			this.pages = []
-			this.books = this.allBooks
-			this.rootBook = null
-			this.rootId =  null
+			this.currentBook = null
 			this.showGlossary = false
-			this.fetchData()
 			this.routerPush('/kb')
 		},
 		setTargetBlank(book){
@@ -774,11 +769,11 @@ export default {
 			if(hasParent) return this.getTopParent(hasParent)
 			return book
 		},
-		setParentsOpened(pageId){
-			const page = this.pagesMap[pageId]
-			if(page) {
-				page.opened = true
-				this.setParentsOpened(page.parent_id)
+		setParentsOpened(bookId){
+			const book = this.booksMap[bookId]
+			if(book) {
+				book.opened = true
+				this.setParentsOpened(book.parent_id)
 			}
 		},
 		treePluck(books, result = []){
@@ -795,13 +790,13 @@ export default {
 		/* === HELPERS === */
 
 		/* === SETTINGS === */
-		async getSettings() {
+		async getSettings(show) {
 			try {
 				const {settings} = await API.fetchSettings('kb')
 				this.send_notification_after_edit = settings.send_notification_after_edit
 				this.show_page_from_kb_everyday = settings.show_page_from_kb_everyday
 				this.allow_save_kb_without_test = settings.allow_save_kb_without_test
-				this.showBookSettings = true
+				this.showBookSettings = show
 			}
 			catch (error) {
 				console.error(error)
@@ -840,14 +835,17 @@ export default {
 			const loader = this.$loading.show()
 
 			try {
-				const { tree, orphans } = await API.fetchKBBooks()
+				const { tree, flat, map } = await API.fetchKBBooksV2()
 				const { items } = await API.fetchKBFavorites()
 				this.favorites = items
-				const books = [...tree, ...orphans]
+				const books = tree
 				this.booksAccess(books)
+
 				this.books = books
+				this.booksFlat = flat
+				this.booksMap = map
+
 				this.allBooks = this.books
-				this.itemModels = []
 				this.activeBook = null
 			}
 			catch (error) {
@@ -866,41 +864,16 @@ export default {
 		async fetchBook(root, init){
 			if(!root) return
 			const loader = this.$loading.show()
-			function setRootRights(root, page){
-				page.canEdit = root.canEdit
-				page.canRead = root.canRead
-				if(page.children) page.children.forEach(child => setRootRights(root, child))
-			}
 
 			this.showGlossary = false
+			this.currentBook = root
+			this.activeBook = null
 
 			try{
-				const {trees, item_models, book, can_save} = await API.fetchKBBook(root.id)
-
-				const ids = this.treePluck(trees)
+				const ids = this.treePluck(root.children)
 				if(!ids.includes(root.id)) ids.push(root.id)
 				const accessMap = await API.fetchKBAccesses(ids)
 				await this.bookAccess(root, accessMap)
-
-				this.books = []
-				this.pages = []
-				const pages = []
-
-				book.canEdit = root.canEdit
-				book.canRead = root.canRead || root.canEdit
-
-				for(const page of trees){
-					page.parent_id = +root.id
-					if(page.is_category) await this.bookAccess(page, accessMap)
-					else setRootRights(root, page)
-					pages.push(page)
-				}
-				this.pages = pages
-				this.rootId = root.id
-				this.rootBook = root
-				this.itemModels = item_models
-				this.activeBook = book
-				this.canSave = can_save
 
 				if(!init) this.routerPush('/kb?s=' + root.id)
 			}
@@ -928,19 +901,19 @@ export default {
 				this.sectionName = ''
 
 				if(this.createParentId){
-					const parent = this.rootBook ? this.pagesMap[this.createParentId] : this.booksMap[this.createParentId]
+					const parent = this.booksMap[this.createParentId]
 					if(parent){
 						if(!parent.children) parent.children = []
 						parent.children.push(book)
 					}
 					else{
-						this.pages.push(book)
+						this.books.push(book)
 					}
 				}
 				else{
 					this.books.push(book)
-					// this.allBooks.push(book)
 				}
+				this.booksMap[book.id] = book
 
 				this.updateBook = book
 				await this.updateSection(true)
@@ -994,9 +967,8 @@ export default {
 				})
 
 				this.showEdit = false
-				const index = this.books.findIndex(b => b.id == this.updateBook.id)
-
-				if(index != -1) this.books[index].title = this.updateBook.title
+				const book = this.booksMap[this.updateBook.id]
+				if(book) book.title = this.updateBook.title
 
 				this.updateBook = null
 				this.who_can_read = []
@@ -1040,14 +1012,9 @@ export default {
 			book.canEdit = true
 			book.parent_id = parent.id
 
-			if(parent.id === this.rootId){
-				this.pages.push(book)
-			}
-			else{
-				if(!parent.children) parent.children = []
-				parent.children.push(book)
-			}
-			this.pages = this.pages.slice() // reactivity issue
+			if(!parent.children) parent.children = []
+			parent.children.push(book)
+			this.booksMap[book.id] = book
 
 			this.$nextTick(() => {
 				this.activeBook = book
@@ -1080,7 +1047,7 @@ export default {
 				this.activeBook.canRead = page.canRead
 				this.editBook = false
 				// TODO: clear search
-				if(!init) this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}`)
+				if(!init) this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}`)
 			}
 			catch (error) {
 				console.error(error)
@@ -1089,17 +1056,18 @@ export default {
 		},
 
 		async onSearch(page, search){
-			if(!this.root || this.root.id !== page.book.id){
-				await this.fetchBook(page.book)
-			}
+			const book = this.booksMap[page.book.id]
+			const root = this.getTopParent(book)
+			if(!root) return
+			await this.onBook(root)
 			this.$nextTick(async () => {
 				await this.onPage(page, true)
-				this.routerPush(`/kb?s=${this.rootBook.id}&b=${page.id}${search ? '&hl=' + search : ''}`)
+				this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}${search ? '&hl=' + search : ''}`)
 			})
 		},
 
 		async onSavePage(){
-			if(!this.bookForm.questions.length && !this.canSave) return this.$toast.error('Нельзя вносить изменения без тестов')
+			if(!this.bookForm.questions.length && !this.allow_save_kb_without_test) return this.$toast.error('Нельзя вносить изменения без тестов')
 
 			const loader = this.$loading.show()
 			try {
@@ -1110,7 +1078,7 @@ export default {
 					pass_grade: this.bookForm.pass_grade,
 				})
 				this.editBook = false
-				this.pagesMap[this.bookForm.id].title = this.bookForm.title
+				this.booksMap[this.bookForm.id].title = this.bookForm.title
 				this.activeBook = this.bookForm
 				this.activeBook.editor_id = this.user.id
 				this.activeBook.editor = `${this.user.last_name} ${this.user.name}`
@@ -1129,7 +1097,7 @@ export default {
 			if(!confirm('Вы уверены?')) return
 
 			const id = this.activeBook.id
-			const parent = this.rootBook ? this.pagesMap[this.activeBook.parent_id] :this.booksMap[this.activeBook.parent_id]
+			const parent = this.booksMap[this.activeBook.parent_id]
 			try {
 				await this.axios.post('/kb/page/delete', { id })
 
@@ -1138,11 +1106,10 @@ export default {
 					if(~index) parent.children.splice(index, 1)
 				}
 				else{
-					const index = this.pages.findIndex(page => page.id === id)
-					if(~index) this.pages.splice(index, 1)
+					const index = this.books.findIndex(page => page.id === id)
+					if(~index) this.books.splice(index, 1)
 				}
-				this.pages = this.pages.slice()
-				this.activeBook = this.allBooksMap[this.rootId]
+				this.activeBook = this.booksMap[this.currentBook.id]
 				this.$toast.success('Удалено')
 			}
 			catch (error) {
@@ -1152,24 +1119,17 @@ export default {
 			}
 		},
 		archive(book){
-			const parent = this.rootBook ? this.pagesMap[book.parent_id] :this.booksMap[book.parent_id]
+			const parent = this.booksMap[book.parent_id]
 
 			if(parent){
 				const index = parent.children.findIndex(children => children.id === book.id)
 				if(~index) parent.children.splice(index, 1)
 			}
-			else if(this.pages.length){
-				const index = this.pages.findIndex(children => children.id === book.id)
-				if(~index) this.pages.splice(index, 1)
-			}
 			else{
-				const index = this.allBooks.findIndex(children => children.id === book.id)
-				if(~index) this.allBooks.splice(index, 1)
 				const index2 = this.books.findIndex(children => children.id === book.id)
 				if(~index2) this.books.splice(index2, 1)
 			}
 
-			this.pages = this.pages.slice()
 			this.books = this.books.slice()
 		},
 		unarchive(book){
@@ -1197,13 +1157,11 @@ export default {
 					order: newIndex,
 					parent_id: parentId || null,
 				})
-				this[this.rootBook ? 'updatePageOrder' : 'updateBookOrder'](id, parentId, newIndex)
+				this.updateBookOrder(id, parentId, newIndex)
 
 				this.$nextTick(() => {
 					this.$forceUpdate()
-					this.pages = this.pages.slice()
 					this.books = this.books.slice()
-					this.allBooks = this.allBooks.slice()
 				})
 				this.$toast.success('Очередь сохранена')
 			}
@@ -1235,35 +1193,6 @@ export default {
 				this.books.splice(newIndex, 0, book)
 			}
 			book.parent_id = parentId
-		},
-		updatePageOrder(id, parentId, newIndex){
-			const page = this.pagesMap[id]
-			const prevParent = this.pagesMap[page.parent_id]
-			const parent = this.pagesMap[parentId]
-
-			if(prevParent){
-				const index = prevParent.children.findIndex(children => children.id === id)
-				if(~index) prevParent.children.splice(index, 1)
-			}
-			else{
-				const index = this.pages.findIndex(p => p.id === id)
-				if(~index) this.pages.splice(index, 1)
-			}
-
-			if(parent){
-				if(!parent.children) parent.children = []
-				page.is_category = parent.is_category ? page.factCategory : 0
-				if(!parent.is_category) {
-					page.canEdit = parent.canEdit
-					page.canRead = parent.canRead
-				}
-				parent.children.splice(newIndex, 0, page)
-			}
-			else{
-				page.is_category = page.factCategory
-				this.pages.splice(newIndex, 0, page)
-			}
-			page.parent_id = parentId
 		},
 		/* === BOOKS === */
 
@@ -1439,7 +1368,7 @@ export default {
 		booksAccess(books){
 			books.forEach(book => {
 				book.canEdit = this.$can('books_edit')
-				if(book.children) this.booksAccess(book.children)
+				// if(book.children) this.booksAccess(book.children)
 			})
 		},
 		/* === ACCESS === */
@@ -1460,6 +1389,7 @@ export default {
 				id: --this.newGlossaryId,
 				word: '',
 				definition: '',
+				created_at: new Date().toISOString()
 			})
 		},
 		async saveTerm(saveTerm){

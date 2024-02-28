@@ -116,7 +116,7 @@ class PositionRepository extends CoreRepository
              'is_spec' => $is_spec,
              'ckp_status' => $ckp_status,
              'ckp' => $ckp,
-             'ckp_lin' => $ckp_link,
+             'ckp_link' => $ckp_link,
          ]);
 
          if ($positionUpdated && isset($description))
