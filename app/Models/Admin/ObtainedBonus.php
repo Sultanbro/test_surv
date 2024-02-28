@@ -2,19 +2,16 @@
 
 namespace App\Models\Admin;
 
-use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
-use App\Classes\Helpers\Currency;
-use App\Salary;
 use App\Models\TestBonus;
+use App\Salary;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ObtainedBonus extends Model
 {
-    protected $table = 'kpi_obtained_bonuses';
-
     public $timestamps = false;
-
+    protected $table = 'kpi_obtained_bonuses';
     protected $fillable = [
         'user_id',
         'bonus_id',
@@ -23,14 +20,6 @@ class ObtainedBonus extends Model
         'comment',
         'read',
     ];
-
-    /**
-     * @return BelongsTo
-     */
-    public function bonus(): BelongsTo
-    {
-        return $this->belongsTo('App\Models\Kpi\Bonus', 'bonus_id');
-    }
 
     /**
      * create or update bonus on day or month
@@ -242,17 +231,17 @@ class ObtainedBonus extends Model
                 }
             }
 
-            if ($test_bonuses->count() > 0) {
-                $item['test'] = [];
-                foreach ($test_bonuses as $bon) {
-                    $item['date'] = $bon->date;
-                    $sum += $bon->amount * $currency_rate;
-                    $item['test'][] = [
-                        'sum' => $bon->amount * $currency_rate,
-                        'comment' => $bon->comment ? $bon->comment : '',
-                    ];
-                }
-            }
+//            if ($test_bonuses->count() > 0) {
+//                $item['test'] = [];
+//                foreach ($test_bonuses as $bon) {
+//                    $item['date'] = $bon->date;
+//                    $sum += $bon->amount * $currency_rate;
+//                    $item['test'][] = [
+//                        'sum' => $bon->amount * $currency_rate,
+//                        'comment' => $bon->comment ? $bon->comment : '',
+//                    ];
+//                }
+//            }
 
             $item['sum'] = $sum;
 
@@ -262,5 +251,13 @@ class ObtainedBonus extends Model
         }
 
         return $bonusHistory;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function bonus(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\Kpi\Bonus', 'bonus_id');
     }
 }
