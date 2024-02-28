@@ -1387,6 +1387,7 @@ export default {
 				id: --this.newGlossaryId,
 				word: '',
 				definition: '',
+				created_at: new Date().toISOString()
 			})
 		},
 		async saveTerm(saveTerm){
