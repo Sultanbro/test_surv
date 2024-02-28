@@ -981,12 +981,12 @@ class HrController extends Controller
 
     public function createDeal(Request $request)
     {
-        $bitrixUrl = 'https://infinitys.bitrix24.kz/rest/158504/';
+        $bitrixUrl = 'https://infinitys.bitrix24.kz/rest/66/';
         $dealId = $request->deal_id;
 
         $client = new Client();
 
-        $response = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'crm.deal.get', [
+        $response = $client->get($bitrixUrl . '/esm1j37wdgx6xh4r/' . 'crm.deal.get', [
             'query' => [
                 'id' => $dealId,
             ],
@@ -994,13 +994,13 @@ class HrController extends Controller
 
         $deal = json_decode($response->getBody()->getContents(), true);
 
-        $lead = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'crm.lead.get', [
+        $lead = $client->get($bitrixUrl . '/esm1j37wdgx6xh4r/' . 'crm.lead.get', [
             'query' => [
                 'id' => $deal['result']['LEAD_ID']
             ]
         ]);
         $assignedUserId = $deal['result']['ASSIGNED_BY_ID'];
-        $userResponse = $client->get($bitrixUrl . '/lyg5ejdqbyjc1js8/' . 'user.get', [
+        $userResponse = $client->get($bitrixUrl . '/esm1j37wdgx6xh4r/' . 'user.get', [
             'query' => [
                 'ID' => $assignedUserId,
             ],
