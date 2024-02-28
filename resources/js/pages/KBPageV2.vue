@@ -1054,9 +1054,10 @@ export default {
 		},
 
 		async onSearch(page, search){
-			if(!this.currentBook || this.currentBook.id !== page.book.id){
-				await this.fetchBook(page.book)
-			}
+			const book = this.booksMap[page.book.id]
+			const root = this.getTopParent(book)
+			if(!root) return
+			await this.onBook(root)
 			this.$nextTick(async () => {
 				await this.onPage(page, true)
 				this.routerPush(`/kb?s=${this.currentBook.id}&b=${page.id}${search ? '&hl=' + search : ''}`)
