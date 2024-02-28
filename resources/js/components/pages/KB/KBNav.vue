@@ -19,7 +19,7 @@
 			>x</i>
 		</div>
 		<div
-			v-if="!activeBook"
+			v-if="!currentBook"
 			class="KBNav-glossary"
 		>
 			<div
@@ -40,7 +40,7 @@
 
 		<!-- Back buttons -->
 		<div
-			v-if="archived.show || activeBook"
+			v-if="archived.show || currentBook"
 			class="KBNav-back"
 		>
 			<div
@@ -52,7 +52,7 @@
 				<span>Выйти из архива</span>
 			</div>
 			<div
-				v-if="activeBook"
+				v-if="currentBook"
 				class="btn btn-grey btn-block mb-3"
 				@click="onBack"
 			>
@@ -139,17 +139,17 @@
 			class="KBNav-items"
 		>
 			<div
-				v-if="rootBook"
+				v-if="currentBook"
 				class="KBNav-currentTitle"
 			>
-				{{ rootBook.title }}
+				{{ currentBook.title }}
 				<div
-					v-if="mode == 'edit' && rootBook.canEdit"
+					v-if="mode == 'edit' && currentBook.canEdit"
 					class="KBNav-itemActions"
 				>
 					<i
 						class="KBNav-itemAction fa fa-plus mr-1"
-						@click="$emit('add-page', rootBook)"
+						@click="$emit('add-page', currentBook)"
 					/>
 				</div>
 			</div>
@@ -168,16 +168,13 @@
 				</div>
 			</template>
 			<KBNavItems
-				v-if="rootBook"
+				v-if="currentBook"
 				:key="'p' + listsKey"
-				:items="[
-					...books,
-					...pages,
-				]"
+				:items="books"
 				:opened="true"
 				:mode="mode"
-				:parent="rootBook"
-				:active="activeBook.id"
+				:parent="currentBook"
+				:active="activeBook ? activeBook.id : null"
 				@show-page="$emit('page', $event)"
 				@add-page="$emit('add-page', $event)"
 				@page-order="$emit('page-order', $event)"
@@ -200,56 +197,9 @@
 				@remove-book="archiveBook($event)"
 				@settings="$emit('settings', $event)"
 			/>
-			<!-- @add-page="$emit('add-page', $event)" -->
-			<Draggable
-				v-else-if="false || books.length"
-				:id="null"
-				:key="'?' + listsKey"
-				class="dragArea ml-0"
-				tag="div"
-				handle=".KBNav-mover"
-				:list="books"
-				:group="{ name: 'g1' }"
-				@end="saveBookOrder"
-			>
-				<template v-for="book in books">
-					<div
-						:id="'KBNav-book-' + book.id"
-						:key="book.id"
-						class="KBNav-item"
-						:title="book.title"
-						:data-id="book.id"
-						@click.stop="$emit('book', book)"
-					>
-						<div class="d-flex aic">
-							<i
-								v-if="mode == 'edit'"
-								class="KBNav-mover fa fa-bars mr-2"
-							/>
-							<p class="KBNav-itemText">
-								{{ book.title }}
-							</p>
-						</div>
-
-						<div
-							v-if="mode == 'edit'"
-							class="KBNav-itemActions"
-						>
-							<i
-								class="KBNav-itemAction fa fa-trash mr-1"
-								@click.stop="archiveBook(book)"
-							/>
-							<i
-								class="KBNav-itemAction fa fa-cog "
-								@click.stop="$emit('settings', book)"
-							/>
-						</div>
-					</div>
-				</template>
-			</Draggable>
 		</div>
 
-		<div v-if="mode === 'edit' && !rootBook">
+		<div v-if="mode === 'edit' && !currentBook">
 			<div
 				v-if="!archived.show"
 				class="d-flex jscb mt-3"
@@ -270,14 +220,14 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="mode === 'edit' && rootBook">
+		<div v-if="mode === 'edit' && currentBook">
 			<div
 				v-if="!archived.show"
 				class="d-flex jscb mt-3 gap-1"
 			>
 				<div
 					class="btn btn-grey w-full mr-1"
-					@click="$emit('add-page', rootBook)"
+					@click="$emit('add-page', currentBook)"
 				>
 					<i class="fa fa-plus" />
 					<span>Страница</span>
@@ -285,7 +235,7 @@
 				<div
 					v-if="$laravel.is_admin"
 					class="btn btn-grey w-full mr-1"
-					@click="$emit('create', rootBook)"
+					@click="$emit('create', currentBook)"
 				>
 					<i class="fa fa-plus" />
 					<span>База</span>
@@ -311,7 +261,6 @@ import * as KBAPI from '@/stores/api/kb.js'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 
-import Draggable from 'vuedraggable'
 import KBNavItems from './KBNavItems.vue'
 
 const API = {
@@ -323,7 +272,6 @@ const API = {
 export default {
 	name: 'KBNav',
 	components: {
-		Draggable,
 		KBNavItems,
 	},
 	props: {
@@ -339,15 +287,11 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		pages: {
-			type: Array,
-			default: () => []
-		},
 		favorites: {
 			type: Array,
 			default: () => []
 		},
-		rootBook: {
+		currentBook: {
 			type: Object,
 			default: null
 		},
@@ -421,7 +365,7 @@ export default {
 			try {
 				const data = await API.searchKBBook({
 					text: this.search.input,
-					id: this.rootBook?.id || null
+					id: this.currentBook?.id || null
 				})
 				this.search.items = data.items.map(item => {
 					const regExp = new RegExp(this.search.input,'gi')
