@@ -644,7 +644,13 @@ export default {
 			})
 		},
 		breadcrumbs(){
-			if(!this.activeBook) return []
+			if(!this.activeBook) {
+				if(!this.currentBook) return []
+				return [{
+					title: this.currentBook.title,
+					link: `/kb?s=${this.currentBook.id || ''}`
+				}]
+			}
 			const breadcrumbs = []
 			let currentId = this.activeBook.id
 			while(currentId){
@@ -670,9 +676,35 @@ export default {
 				book = this.booksMap[book.parent_id]
 			}
 			return null
-		}
+		},
+
+		queryBook(){
+			return this.$route.query?.s || ''
+		},
+		queryPage(){
+			return this.$route.query?.b || ''
+		},
 	},
-	watch: {},
+	watch: {
+		queryBook(){
+			if(this.queryBook) {
+				const book = this.booksMap[this.queryBook]
+				this.onBook(book)
+			}
+			else{
+				this.back()
+			}
+		},
+		queryPage(){
+			if(this.queryPage) {
+				const page = this.booksMap[this.queryPage]
+				this.onPage(page)
+			}
+			else{
+				this.activeBook = null
+			}
+		},
+	},
 
 	created() {
 		if(!this.users.length) this.loadCompany()
