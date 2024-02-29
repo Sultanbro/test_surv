@@ -48,7 +48,7 @@ class KpiService
                 'search_word' => $searchWord,
             ],
             Kpi::query()
-        )->dd();
+        )->get();
 
         $kpis_final = [];
 
