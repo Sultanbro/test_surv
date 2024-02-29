@@ -454,24 +454,24 @@ class SalaryController extends Controller
         }
 
         $headings = [
-            'ФИО',
-            'На карте',
-            'Возраст',
-            'Телефон',
-            'Карта',
-            'Тип',
-            'ИИН',
-            'Отр. дни',
-            'Раб. дни',
-            'Ставка',
-            'Начислено',
-            'KPI',
-            'Стажировочные',
-            'Бонус',
-            'ИТОГО',
-            'Авансы',
-            'Штрафы',
-            'Налоги'
+            'ФИО', // 0
+            'На карте', // 1
+            'Возраст', // 2
+            'Телефон', // 3
+            'Карта', // 4
+            'Тип', // 5
+            'ИИН', // 6
+            'Отр. дни', // 7
+            'Раб. дни', // 8
+            'Ставка', // 9
+            'Начислено', // 10
+            'KPI', // 11
+            'Стажировочные', // 12
+            'Бонус', // 13
+            'ИТОГО', // 14
+            'Авансы', // 15
+            'Штрафы', // 16
+            'Налоги' // 17
         ];
 
         array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
@@ -765,7 +765,7 @@ class SalaryController extends Controller
             if (!$edited_salary) $allTotal[18] += $expense;
 
             // К выдаче
-            $total_payment = round($total_income - $expense);
+            $total_payment = round($total_income - $expense - $totalTaxesUser);
 
             if (!$edited_salary) $allTotal[19] += max($total_payment, 0);
 
