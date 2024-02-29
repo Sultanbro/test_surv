@@ -49,7 +49,7 @@ class KpiService
             ],
             Kpi::query()
         )->get();
-        dd($kpis->pluck('id')->toArray());
+
         $kpis_final = [];
 
         foreach ($kpis as $kpi) {
