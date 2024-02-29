@@ -966,8 +966,6 @@ class KpiStatisticService
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
 
-        dd_if($kpi->id == 82, $sum_and_counts->get());
-
         // query
         $users = User::withTrashed()
             ->select([
@@ -991,6 +989,9 @@ class KpiStatisticService
             ->whereIn('users.id', $user_ids)
             ->orderBy('last_name')
             ->get();
+
+        dd_if($kpi->id == 82, $users);
+
 
         // group collection
         $users = $users->groupBy('id')
