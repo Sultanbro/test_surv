@@ -1346,16 +1346,14 @@ class KpiStatisticService
                         COUNT(value) as records_count,
                         activity_id
                     ")
-                    ->whereMonth('date', $date->month)
                     ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
                     ->where('value', '>', 0)
                     ->where('activity_id', $kpi_item->activity_id)
                     ->groupBy('activity_id')
                     ->first();
 
-                dd_if($kpi_item->id == 241, [
-                    $query
-                ]);
+                dd_if($kpi_item->id == 241, $query);
 
                 if ($query) {
                     $item['fact'] = $query->fact;
