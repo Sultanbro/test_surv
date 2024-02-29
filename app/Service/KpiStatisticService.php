@@ -1039,11 +1039,22 @@ class KpiStatisticService
             $kpi_items = [];
             $sumKpiPercent = 0;
 
-
             foreach ($kpi->items as $_item) {
 
                 // to array because object changes every loop
                 $item = $_item->toArray();
+
+                // get last History
+                if ($_item->histories_latest) {
+                    $last_history = json_decode($_item->histories_latest->payload, true);
+                    if (Arr::exists($last_history, 'activity_id')) $item['activity_id'] = $last_history['activity_id'];
+                    if (Arr::exists($last_history, 'method')) $item['method'] = $last_history['method'];
+                    if (Arr::exists($last_history, 'share')) $item['share'] = $last_history['share'];
+                    if (Arr::exists($last_history, 'unit')) $item['unit'] = $last_history['unit'];
+                    if (Arr::exists($last_history, 'plan')) $item['plan'] = $last_history['plan'];
+                    if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
+                }
+
 
                 // check user stat exists
                 $exists = collect($user['items'])
@@ -1107,7 +1118,7 @@ class KpiStatisticService
 
                         } else {
                             $item['fact'] = $query->sum('value');
-                            $item['avg'] = $query->avg('avg') ?? 0;
+                            $item['avg'] = $query->avg('avg');
                             $item['records_count'] = $query->count();
                         }
 
@@ -1121,6 +1132,11 @@ class KpiStatisticService
                     $item['registered'] = 0;
                     $item['applied'] = null;
                 }
+
+                /**
+                 * take another activity values
+                 */
+                $item['fact'] = $item['fact'] ?? 0;
 
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
@@ -1139,8 +1155,25 @@ class KpiStatisticService
 
                 // plan
                 $item['full_time'] = $user['full_time'];
+                $history = $_item->histories_latest;
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+
+                /**
+                 * fields from history
+                 */
                 $item['daily_plan'] = (float)$_item->plan;
 
+                if ($has_edited_plan) {
+                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+
+                }
 
                 /**
                  * If the user works part-time, the daily plan needs to be divided by 2.
@@ -1158,11 +1191,16 @@ class KpiStatisticService
                  * count workdays
                  */
                 $item['workdays'] = $workdays[6];
+                $percent_of_plan_for_sum_method = 1;
+
                 if ($_item->activity) {
                     $has_workdays = $this->workdays->where('user_id', $user['id'])
                         ->where('activity_id', $_item->activity->id)
                         ->first();
                     if ($has_workdays) {
+                        $percent_of_plan_for_sum_method = $has_workdays['workdays_in_month'] > 0
+                            ? $has_workdays['user_work_days'] / $has_workdays['workdays_in_month']
+                            : 1;
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
@@ -1371,9 +1409,11 @@ class KpiStatisticService
     private
     function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
 
-        if ($kpi_item->activity
-            && $kpi_item->activity->view == Activity::VIEW_CELL) {
+        if ($activity
+            && $activity->view == Activity::VIEW_CELL) {
             // ->where('created_at', '<=', $date)->toArray());
 
 
@@ -1382,7 +1422,7 @@ class KpiStatisticService
 
             // }
             $item['fact'] = AnalyticStat::getCellValue(
-                $kpi_item->activity->group_id,
+                $activity->group_id,
                 $kpi_item->cell,
                 $date->firstOfMonth()->format('Y-m-d'),
                 2
@@ -1408,10 +1448,13 @@ class KpiStatisticService
     private
     function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
-        if ($kpi_item->activity
-            && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
+
+        if ($activity
+            && $activity->view == Activity::VIEW_RENTAB) {
             $item['fact'] = AnalyticStat::getRentability(
-                $kpi_item->activity->group_id,
+                $activity->group_id,
                 $date->format('Y-m-d')
             );
 
@@ -2123,34 +2166,6 @@ class KpiStatisticService
                 });
             })
             ->firstOrFail();
-
-        $kpi->kpi_items = [];
-        if ($kpi->histories_latest) {
-            $payload = json_decode($kpi->histories_latest->payload, true);
-
-            if (isset($payload['children'])) {
-                $kpi->items = $kpi->items->whereIn('id', $payload['children']);
-            }
-            foreach ($kpi->items as $item) {
-                $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
-                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-                $item['daily_plan'] = (float)$item->plan;
-                if ($has_edited_plan) {
-                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
-                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
-                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
-                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
-                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
-                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
-                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
-                    if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
-                    if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
-                    if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
-                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
-                }
-                $item['plan'] = $item['daily_plan'];
-            }
-        }
 
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
