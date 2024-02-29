@@ -1043,18 +1043,6 @@ class KpiStatisticService
                 // to array because object changes every loop
                 $item = $_item->toArray();
 
-                // get last History
-                if ($_item->histories_latest) {
-                    $last_history = json_decode($_item->histories_latest->payload, true);
-                    if (Arr::exists($last_history, 'activity_id')) $item['activity_id'] = $last_history['activity_id'];
-                    if (Arr::exists($last_history, 'method')) $item['method'] = $last_history['method'];
-                    if (Arr::exists($last_history, 'share')) $item['share'] = $last_history['share'];
-                    if (Arr::exists($last_history, 'unit')) $item['unit'] = $last_history['unit'];
-                    if (Arr::exists($last_history, 'plan')) $item['plan'] = $last_history['plan'];
-                    if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
-                }
-
-
                 // check user stat exists
                 $exists = collect($user['items'])
                     ->where('activity_id', $item['activity_id'])
@@ -1154,25 +1142,8 @@ class KpiStatisticService
 
                 // plan
                 $item['full_time'] = $user['full_time'];
-                $history = $_item->histories_latest;
-                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-
-                /**
-                 * fields from history
-                 */
                 $item['daily_plan'] = (float)$_item->plan;
 
-                if ($has_edited_plan) {
-                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
-                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
-                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
-                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
-                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
-                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
-                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
-                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
-
-                }
 
                 /**
                  * If the user works part-time, the daily plan needs to be divided by 2.
@@ -1190,8 +1161,6 @@ class KpiStatisticService
                  * count workdays
                  */
                 $item['workdays'] = $workdays[6];
-                $percent_of_plan_for_sum_method = 1;
-
                 if ($_item->activity) {
                     $has_workdays = $this->workdays->where('user_id', $user['id'])
                         ->where('activity_id', $_item->activity->id)
@@ -2189,8 +2158,6 @@ class KpiStatisticService
                 }
                 $item['plan'] = $item['daily_plan'];
             }
-            dd_if($kpi->id == 82, $kpi->items);
-
         }
 
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
