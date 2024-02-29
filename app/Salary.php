@@ -495,7 +495,7 @@ class Salary extends Model
                 })->orWhere(function ($q) use ($date) {
                     $q->where('status', UserTax::REMOVED)
                         ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
-                        ->whereDate('to', '<=', $date->endOfMonth()->format('Y-m-d'));
+                        ->whereDate('to', '>=', $date->endOfMonth()->format('Y-m-d'));
                 })->with('taxGroup.items');
                 // то ни хам текшир, олдинги ой учун
             },
