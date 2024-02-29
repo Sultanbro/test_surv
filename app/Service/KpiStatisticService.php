@@ -1352,8 +1352,6 @@ class KpiStatisticService
                     $item['avg'] = $query->avg;
                     $item['records_count'] = $query->records_count;
                 }
-
-                dd_if($kpi_item->id == 241, $item);
             }
 
         }
