@@ -1837,16 +1837,6 @@ class KpiStatisticService
         $last_date = $date->endOfMonth()->format("Y-m-d");
         $query ?: Kpi::withTrashed();
         return $query
-            ->when($groupId, function (Builder $subQuery) use ($groupId) {
-                $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereRelation(
-                    relation: 'groups',
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
-            })
-            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
@@ -1892,6 +1882,16 @@ class KpiStatisticService
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->where('kpis.created_at', '<=', $last_date)
+            ->when($groupId, function (Builder $subQuery) use ($groupId) {
+                $subQuery->where('targetable_id', $groupId);
+                $subQuery->orWhereRelation(
+                    relation: 'groups',
+                    column: 'kpiable_id',
+                    operator: '=',
+                    value: $groupId
+                );
+            })
+            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter)->globalSearch($searchWord))
             ->distinct();
     }
 
