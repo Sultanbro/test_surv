@@ -1414,13 +1414,13 @@ class KpiStatisticService
         if ($activity
             && $activity->view == Activity::VIEW_CELL) {
 
-            dd_if($kpi_item->id == 112, $kpi_item->cell);
             $item['fact'] = AnalyticStat::getCellValue(
                 $activity->group_id,
                 $kpi_item->cell,
                 $date->firstOfMonth()->format('Y-m-d'),
                 2
             );
+            dd_if($kpi_item->id == 112, $item['fact']);
 
             $item['avg'] = $item['fact'];
         }
