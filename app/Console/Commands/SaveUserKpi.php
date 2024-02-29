@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Events\KpiChangedEvent;
-use App\Kpi;
+use App\Models\Kpi\Kpi;
 use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
@@ -45,9 +45,10 @@ class SaveUserKpi extends Command
             [
                 'only_active' => false
             ],
-            Kpi::withTrashed()->where(fn($query) => $query
-                ->whereNull('kpis.deleted_at')
-                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
+            Kpi::withTrashed()
+                ->where(fn($query) => $query
+                    ->whereNull('kpis.deleted_at')
+                    ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
         )
             ->get();
 
