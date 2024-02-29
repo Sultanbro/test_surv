@@ -1234,12 +1234,13 @@ class KpiStatisticService
 
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
-
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
         /**
          * take quality value
          * avg goes with weeks
          */
-        if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view == Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity == Activity::VIEW_QUALITY) {
 
             $query = UserStat::query()
                 ->selectRaw("
@@ -1310,10 +1311,10 @@ class KpiStatisticService
          * take another common values
          */
         dd_if($kpi_item->id == 241, [
-            'cond' => $kpi_item->activity
+            'cond' => $activity
         ]);
 
-        if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity != Activity::VIEW_QUALITY) {
 
             if (in_array($kpi_item->method, [2, 4, 6])) {
 
