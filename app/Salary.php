@@ -488,9 +488,16 @@ class Salary extends Model
             'user_description',
             'group_users',
             'userTax' => function ($query) use ($date) {
-                $query->where('status', UserTax::ACTIVE)
-                    ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
-                    ->with('taxGroup.items');
+                $query->where(function ($q) use ($date) {
+                    $q->where('status', UserTax::ACTIVE)
+                        ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                        ->whereNull('to');
+                })->orWhere(function ($q) use ($date) {
+                    $q->where('status', UserTax::REMOVED)
+                        ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                        ->whereDate('to', '<=', $date->endOfMonth()->format('Y-m-d'));
+                })->with('taxGroup.items');
+                // то ни хам текшир, олдинги ой учун
             },
             'profile_histories_latest' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
