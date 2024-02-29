@@ -1891,8 +1891,8 @@ class KpiStatisticService
                     ->orWhereDate('deleted_at', '<=', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', $last_date)
-            ->distinct();
+            ->where('kpis.created_at', '<=', $last_date);
+//            ->distinct();
     }
 
 
