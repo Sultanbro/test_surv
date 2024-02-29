@@ -2170,7 +2170,6 @@ class KpiStatisticService
             if (isset($payload['children'])) {
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
-            dd_if($kpi->id == 82, $kpi->items);
             foreach ($kpi->items as $item) {
                 $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
@@ -2190,6 +2189,8 @@ class KpiStatisticService
                 }
                 $item['plan'] = $item['daily_plan'];
             }
+            dd_if($kpi->id == 82, $kpi->items);
+
         }
 
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
