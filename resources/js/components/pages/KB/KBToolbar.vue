@@ -123,10 +123,6 @@ export default {
 			type: Object,
 			default: null
 		},
-		parentBook: {
-			type: Object,
-			default: null
-		},
 		breadcrumbs: {
 			type: Array,
 			default: () => []

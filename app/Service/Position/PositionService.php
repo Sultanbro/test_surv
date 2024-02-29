@@ -94,11 +94,7 @@ final class PositionService
     }
 
     /**
-     * @param int $id
-     * @param string|null $newName
-     * @param int|null $indexation
-     * @param int|null $sum
-     * @param array|null $description
+     * @param StorePositionWithDescriptionDTO $dto
      * @return bool|void
      * @throws Exception
      */

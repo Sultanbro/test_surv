@@ -118,8 +118,9 @@ const KBNavItems = {
 	mounted(){},
 	methods: {
 		toggleOpen(item) {
-			this.showPage(item, false, true)
 			item.opened = !item.opened
+			this.showPage(item, false, true)
+			++this.key
 		},
 		showPage(page) {
 			this.$emit('show-page', page)
