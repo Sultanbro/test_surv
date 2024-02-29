@@ -1835,7 +1835,6 @@ class KpiStatisticService
             ->get();
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
-        $query->dd();
         $query ?: Kpi::withTrashed();
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
