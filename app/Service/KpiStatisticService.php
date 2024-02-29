@@ -1234,7 +1234,7 @@ class KpiStatisticService
 
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
-        dd_if($kpi_item == 241, $item);
+        dd_if($kpi_item->id == 241, $item);
 
         /**
          * take quality value
