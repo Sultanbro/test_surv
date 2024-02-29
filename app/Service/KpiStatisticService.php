@@ -1240,7 +1240,7 @@ class KpiStatisticService
          * take quality value
          * avg goes with weeks
          */
-        if ($kpi_item->common == 1 && $activity && $activity == Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity->view == Activity::VIEW_QUALITY) {
 
             $query = UserStat::query()
                 ->selectRaw("
@@ -1314,7 +1314,7 @@ class KpiStatisticService
             'cond' => $activity
         ]);
 
-        if ($kpi_item->common == 1 && $activity && $activity != Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity->view != Activity::VIEW_QUALITY) {
 
             if (in_array($kpi_item->method, [2, 4, 6])) {
 
