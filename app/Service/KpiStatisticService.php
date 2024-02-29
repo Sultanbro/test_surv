@@ -1420,7 +1420,6 @@ class KpiStatisticService
                 $date->firstOfMonth()->format('Y-m-d'),
                 2
             );
-            dd_if($kpi_item->id == 112, $item['fact']);
 
             $item['avg'] = $item['fact'];
         }
