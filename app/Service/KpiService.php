@@ -45,7 +45,7 @@ class KpiService
             $date,
             [
                 'group_id' => $groupId,
-                'search_word' => $searchWord,
+                'search_world' => $searchWord,
             ],
             Kpi::query()
         )->get();
