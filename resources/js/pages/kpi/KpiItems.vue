@@ -410,7 +410,7 @@ export default {
 
 	},
 	mounted(){
-		this.defineSourcesAndGroups()
+		// this.defineSourcesAndGroups()
 	},
 
 	methods: {
