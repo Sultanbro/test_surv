@@ -1307,12 +1307,6 @@ class KpiStatisticService
 
         }
 
-        /**
-         * take another common values
-         */
-        dd_if($kpi_item->id == 241, [
-        ]);
-
         if ($kpi_item->common == 1 && $activity && $activity->view != Activity::VIEW_QUALITY) {
 
             if (in_array($kpi_item->method, [2, 4, 6])) {
