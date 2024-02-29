@@ -1311,7 +1311,6 @@ class KpiStatisticService
          * take another common values
          */
         dd_if($kpi_item->id == 241, [
-            'cond' => $activity
         ]);
 
         if ($kpi_item->common == 1 && $activity && $activity->view != Activity::VIEW_QUALITY) {
@@ -1351,8 +1350,12 @@ class KpiStatisticService
                     ->whereYear('date', $date->year)
                     ->where('value', '>', 0)
                     ->where('activity_id', $kpi_item->activity_id)
-                    ->groupBy(['activity_id', 'date'])
+                    ->groupBy('activity_id')
                     ->first();
+
+                dd_if($kpi_item->id == 241, [
+                    $query
+                ]);
 
                 if ($query) {
                     $item['fact'] = $query->fact;
