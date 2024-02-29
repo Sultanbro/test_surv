@@ -190,8 +190,13 @@ export default {
 			if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
 			return ''
 		},
+		descriptionCreated(){
+			if(this.user?.user_description?.created_at) return this.$moment(this.user.user_description.created_at).format(DATE_DMY)
+			return ''
+		},
 		userAppliedDays(){
-			if(!this.userApplied) return 0
+			if(!this.userApplied && !this.descriptionCreated) return 0
+			if(!this.userApplied) return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.created_at), 'days')
 			return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
 		},
 		userDeleted(){
