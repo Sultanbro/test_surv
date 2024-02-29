@@ -1310,7 +1310,7 @@ class KpiStatisticService
          * take another common values
          */
         dd_if($kpi_item->id == 241, [
-            'cond' => $kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY
+            'cond' => $kpi_item->activity
         ]);
 
         if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
