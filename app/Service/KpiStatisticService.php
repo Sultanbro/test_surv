@@ -945,14 +945,14 @@ class KpiStatisticService
     /**
      * get users with user stats
      */
-    private
-    function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
+    private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
     {
         $activities = $kpi->items
             ->where('activity_id', '!=', 0)
             ->pluck('activity_id')
             ->unique()
             ->toArray();
+        dd_if($kpi->id == 82, $activities);
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
