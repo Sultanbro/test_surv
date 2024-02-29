@@ -1234,7 +1234,6 @@ class KpiStatisticService
 
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
-        dd_if($kpi_item->id == 241, $item);
 
         /**
          * take quality value
@@ -1310,6 +1309,10 @@ class KpiStatisticService
         /**
          * take another common values
          */
+        dd_if($kpi_item->id == 241, [
+            'cond' => $kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY
+        ]);
+
         if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
 
             if (in_array($kpi_item->method, [2, 4, 6])) {
