@@ -1141,14 +1141,13 @@ class KpiStatisticService
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
-                dd_if($_item->id == 112, $item['fact']);
 
-                $this->takeUpdatedValue($_item->id,
-                    $item['activity_id'],
-                    $date,
-                    $item,
-                    $user['id']
-                );
+//                $this->takeUpdatedValue($_item->id,
+//                    $item['activity_id'],
+//                    $date,
+//                    $item,
+//                    $user['id']
+//                );
 
                 $item = $this->calculatePercent($item);
 
@@ -1455,41 +1454,6 @@ class KpiStatisticService
             $item['avg'] = $item['fact'];
         }
 
-    }
-
-    /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     * @param int $user_id
-     *
-     * @return float
-     */
-    private
-    function takeUpdatedValue(
-        $kpi_item_id,
-        $activity_id,
-        Carbon $date,
-        array &$item,
-        int $user_id
-    ): void
-    {
-        $has = $this->updatedValues
-            ->where('user_id', $user_id)
-            ->where('kpi_item_id', $kpi_item_id)
-            ->where('activity_id', $activity_id)
-            ->first();
-
-        if ($has) {
-            $item['fact'] = (float)$has->value;
-            $item['avg'] = (float)$has->value;
-        }
-
-        $item['fact'] = round($item['fact'], 2);
-        $item['avg'] = round($item['avg'], 2);
     }
 
     private
@@ -1898,7 +1862,6 @@ class KpiStatisticService
             ->distinct();
     }
 
-
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
         $dateFrom = $date->copy()->startOfMonth();
@@ -2093,6 +2056,41 @@ class KpiStatisticService
         }
 
         return $users;
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     *
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * @param int $user_id
+     *
+     * @return float
+     */
+    private
+    function takeUpdatedValue(
+        $kpi_item_id,
+        $activity_id,
+        Carbon $date,
+        array &$item,
+        int $user_id
+    ): void
+    {
+        $has = $this->updatedValues
+            ->where('user_id', $user_id)
+            ->where('kpi_item_id', $kpi_item_id)
+            ->where('activity_id', $activity_id)
+            ->first();
+
+        if ($has) {
+            $item['fact'] = (float)$has->value;
+            $item['avg'] = (float)$has->value;
+        }
+
+        $item['fact'] = round($item['fact'], 2);
+        $item['avg'] = round($item['avg'], 2);
     }
 
     /**
