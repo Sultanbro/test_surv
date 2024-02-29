@@ -486,6 +486,8 @@ export default {
 			}
 
 			kpi.items.forEach(item => {
+				item.source = 0
+				item.group_id = 0
 				if(item.activity_id){
 					const activity = activities.find(activity => activity.id === item.activity_id)
 					if(activity){
