@@ -1136,7 +1136,6 @@ class KpiStatisticService
                 /**
                  * take another activity values
                  */
-                $item['fact'] = $item['fact'] ?? 0;
 
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
@@ -1150,6 +1149,10 @@ class KpiStatisticService
                 );
 
                 $item = $this->calculatePercent($item);
+
+                dd_if($_item->id == 112, $item['fact']);
+
+                $_item->fact = $item['fact'] ?? 0;
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
