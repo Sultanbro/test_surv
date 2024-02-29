@@ -1347,14 +1347,13 @@ class KpiStatisticService
                     ->groupBy('activity_id')
                     ->first();
 
-                dd_if($kpi_item->id == 241, $query);
-
                 if ($query) {
                     $item['fact'] = $query->fact;
                     $item['avg'] = $query->avg;
                     $item['records_count'] = $query->records_count;
                 }
 
+                dd_if($kpi_item->id == 241, $item);
             }
 
         }
