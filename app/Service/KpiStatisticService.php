@@ -1039,7 +1039,7 @@ class KpiStatisticService
             $kpi_items = [];
             $sumKpiPercent = 0;
 
-            dd_if($user->id == 18123, $user);
+            dd_if($user['id'] == 18123, $user);
 
             foreach ($kpi->items as $_item) {
 
