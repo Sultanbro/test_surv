@@ -455,11 +455,12 @@ export default {
 					...filter,
 					query: this.searchText
 				}
-			}).then(response => {
-				this.items = this.processKpis(response.data.data.kpis, response.data.data.activities)
-				this.all_items = response.data.data.kpis.map(this.processKpi);
-				this.activities = response.data.data.activities;
-				this.groups = response.data.data.groups;
+			}).then(({data}) => {
+				const { kpis, activities, groups } = data.data
+				this.items = this.processKpis(kpis, activities || [])
+				this.all_items = this.processKpis(kpis, activities || [])
+				this.activities = activities;
+				this.groups = groups;
 
 				this.page_items = this.items.slice(0, this.pageSize);
 
