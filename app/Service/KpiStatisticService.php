@@ -963,6 +963,7 @@ class KpiStatisticService
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
             ->where('value', '>', 0)
+            ->whereIn('user_id', $user_ids)
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
 
@@ -989,9 +990,6 @@ class KpiStatisticService
             ->whereIn('users.id', $user_ids)
             ->orderBy('last_name')
             ->get();
-
-        dd_if($kpi->id == 82, $users);
-
 
         // group collection
         $users = $users->groupBy('id')
