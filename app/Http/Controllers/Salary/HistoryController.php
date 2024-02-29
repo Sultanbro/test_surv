@@ -24,7 +24,7 @@ class HistoryController extends Controller
             $salary = Salary::query()
                 ->findOrFail($payload['salary_id']);
             $salary->update([
-                $type => $type + $amount
+                $type => $salary->{$type} + $amount
             ]);
         }
         return response()->noContent();
