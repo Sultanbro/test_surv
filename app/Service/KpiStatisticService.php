@@ -1872,7 +1872,7 @@ class KpiStatisticService
                         ->orWhereDate('deleted_at', '>', $last_date))
                     ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                    ->orWhereHas('groups');
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
@@ -1891,7 +1891,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter($subQuery))->globalSearch($searchWord))
+            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter())->globalSearch($searchWord))
             ->distinct();
     }
 
