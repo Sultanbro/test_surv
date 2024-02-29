@@ -1835,6 +1835,7 @@ class KpiStatisticService
             ->get();
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
+        $query->dd();
         $query ?: Kpi::withTrashed();
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
@@ -1891,8 +1892,8 @@ class KpiStatisticService
                     ->orWhereDate('deleted_at', '<=', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', $last_date);
-//            ->distinct();
+            ->where('kpis.created_at', '<=', $last_date)
+            ->distinct();
     }
 
 
