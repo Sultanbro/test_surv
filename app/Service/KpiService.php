@@ -92,7 +92,7 @@ class KpiService
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->whereDate('kpis.created_at', '<=', $endOfDate)
-            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->when($searchWord, fn($query) => (new KpiFilter($query))->globalSearch($searchWord))
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
                 $subQuery->orWhereRelation(
@@ -102,7 +102,8 @@ class KpiService
                     value: $groupId
                 );
             })
-            ->dd();
+            ->distinct()
+            ->get();
 
         $kpis_final = [];
 

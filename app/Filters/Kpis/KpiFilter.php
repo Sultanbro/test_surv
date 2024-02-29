@@ -42,6 +42,7 @@ class KpiFilter
 //                    $query->where('creator.name', 'LIKE', "%$searchWord%")
 //                        ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
 //                });
-            });
+            })
+            ->distinct();
     }
 }   
