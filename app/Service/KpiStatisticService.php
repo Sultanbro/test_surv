@@ -1857,8 +1857,6 @@ class KpiStatisticService
                     $query->whereMonth('created_at', $date->month);
                 },
                 'items' => function (HasMany $query) use ($last_date, $date) {
-                    $query->with('activity');
-                    $query->dd();
                     $query->with(['histories' => function (MorphMany $query) use ($date) {
                         $query->whereYear('created_at', $date->year);
                         $query->whereMonth('created_at', $date->month);
@@ -1868,6 +1866,7 @@ class KpiStatisticService
                         $query->orWhere('deleted_at', '>', $last_date);
                     });
                 },
+                'items.activity'
             ])
             ->where(function ($query) use ($last_date) {
                 $query->whereHas('targetable', function ($q) use ($last_date) {
