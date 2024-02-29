@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Events\KpiChangedEvent;
+use App\Kpi;
 use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
@@ -12,19 +13,14 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
-use function Psy\debug;
 
 class SaveUserKpi extends Command
 {
 
-    protected $signature = 'user:save_kpi {date?} {user_id?}';
-
-    protected $description = 'Сохранить kpi';
-
     public KpiStatisticService $repo;
-
     public CalculateKpiService2 $calculator;
-
+    protected $signature = 'user:save_kpi {date?} {user_id?}';
+    protected $description = 'Сохранить kpi';
     private KpiStatisticService $statisticService;
 
     public function __construct(
@@ -46,9 +42,19 @@ class SaveUserKpi extends Command
         // get kpis
         $kpis = $this->statisticService->kpis($date, [
             'only_active' => false
-        ])->get();
+        ], Kpi::withTrashed()->where(fn($query) => $query->whereNull('kpis.deleted_at')
+            ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d')))))->get();
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
+    }
+
+    private function truncate(Carbon $date, $userId = null): void
+    {
+        DB::table('saved_kpi')
+            ->when($userId, fn($query) => $query->where('user_id', $userId))
+            ->where('date', '>=', $date->startOfMonth()->format("Y-m-d"))
+            ->where('date', '<=', $date->endOfMonth()->format("Y-m-d"))
+            ->delete();
     }
 
     private function calc($kpis, Carbon $date, $userId = null): void
@@ -110,14 +116,5 @@ class SaveUserKpi extends Command
 
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
-    }
-
-    private function truncate(Carbon $date, $userId = null): void
-    {
-        DB::table('saved_kpi')
-            ->when($userId, fn($query) => $query->where('user_id', $userId))
-            ->where('date', '>=', $date->startOfMonth()->format("Y-m-d"))
-            ->where('date', '<=', $date->endOfMonth()->format("Y-m-d"))
-            ->delete();
     }
 }

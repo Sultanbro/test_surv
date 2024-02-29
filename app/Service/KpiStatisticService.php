@@ -1043,18 +1043,6 @@ class KpiStatisticService
                 // to array because object changes every loop
                 $item = $_item->toArray();
 
-                // get last History
-                if ($_item->histories_latest) {
-                    $last_history = json_decode($_item->histories_latest->payload, true);
-                    if (Arr::exists($last_history, 'activity_id')) $item['activity_id'] = $last_history['activity_id'];
-                    if (Arr::exists($last_history, 'method')) $item['method'] = $last_history['method'];
-                    if (Arr::exists($last_history, 'share')) $item['share'] = $last_history['share'];
-                    if (Arr::exists($last_history, 'unit')) $item['unit'] = $last_history['unit'];
-                    if (Arr::exists($last_history, 'plan')) $item['plan'] = $last_history['plan'];
-                    if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
-                }
-
-
                 // check user stat exists
                 $exists = collect($user['items'])
                     ->where('activity_id', $item['activity_id'])
@@ -1154,25 +1142,8 @@ class KpiStatisticService
 
                 // plan
                 $item['full_time'] = $user['full_time'];
-                $history = $_item->histories_latest;
-                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-
-                /**
-                 * fields from history
-                 */
                 $item['daily_plan'] = (float)$_item->plan;
 
-                if ($has_edited_plan) {
-                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
-                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
-                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
-                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
-                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
-                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
-                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
-                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
-
-                }
 
                 /**
                  * If the user works part-time, the daily plan needs to be divided by 2.
@@ -1190,8 +1161,6 @@ class KpiStatisticService
                  * count workdays
                  */
                 $item['workdays'] = $workdays[6];
-                $percent_of_plan_for_sum_method = 1;
-
                 if ($_item->activity) {
                     $has_workdays = $this->workdays->where('user_id', $user['id'])
                         ->where('activity_id', $_item->activity->id)
@@ -1786,9 +1755,16 @@ class KpiStatisticService
             'group_id' => $groupId,
             'only_active' => true
         ];
-        $kpis = $this->kpis($date, $params)->paginate();
 
+        $query = Kpi::withTrashed()
+            ->where(function ($query) use ($date) {
+                $query->whereNull('kpis.deleted_at');
+                $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
+            });
+
+        $kpis = $this->kpis($date, $params, $query)->paginate();
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
+
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
@@ -1819,8 +1795,9 @@ class KpiStatisticService
     }
 
     public function kpis(
-        Carbon $date = null,
-        array  $filter = [],
+        Carbon  $date = null,
+        array   $filter = [],
+        Builder $query = null,
     )
     {
         $searchWord = $filter['search_world'] ?? null;
@@ -1832,9 +1809,9 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
-        return Kpi::withTrashed()
+        $query ?: Kpi::withTrashed();
+        return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
                 $subQuery->orWhereRelation(
@@ -1844,7 +1821,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter($subQuery))->globalSearch($searchWord))
+            ->when($searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
@@ -1854,20 +1831,20 @@ class KpiStatisticService
                     $query->whereYear('created_at', $date->year);
                     $query->whereMonth('created_at', $date->month);
                 },
-                'items' => function (HasMany $query) use ($last_date, $start_date, $date) {
+                'items' => function (HasMany $query) use ($last_date, $date) {
                     $query->with(['histories' => function (MorphMany $query) use ($date) {
                         $query->whereYear('created_at', $date->year);
                         $query->whereMonth('created_at', $date->month);
                     }]);
-                    $query->where(function (Builder $query) use ($start_date, $last_date) {
+                    $query->where(function (Builder $query) use ($last_date) {
                         $query->whereNull('deleted_at');
                         $query->orWhere('deleted_at', '>', $last_date);
                     });
                 },
                 'items.activity'
             ])
-            ->where(function ($query) use ($start_date, $last_date) {
-                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
+            ->where(function ($query) use ($last_date) {
+                $query->whereHas('targetable', function ($q) use ($last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhere('deleted_at', '>', $last_date);
@@ -1880,7 +1857,7 @@ class KpiStatisticService
                         ->orWhereDate('deleted_at', '>', $last_date))
                     ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
+                    ->orWhereHas('groups');
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
@@ -1890,10 +1867,9 @@ class KpiStatisticService
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->where('kpis.created_at', '<=', $last_date)
-            ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
             ->distinct();
     }
+
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
@@ -2109,7 +2085,7 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-
+        /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
@@ -2163,7 +2139,27 @@ class KpiStatisticService
             if (isset($payload['children'])) {
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
+            foreach ($kpi->items as $item) {
+                $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                $item['daily_plan'] = (float)$item->plan;
+                if ($has_edited_plan) {
+                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                    if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
+                    if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
+                    if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
+                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+                }
+                $item['plan'] = $item['daily_plan'];
+            }
         }
+
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -2179,8 +2175,7 @@ class KpiStatisticService
         ];
     }
 
-    private
-    function dateFromRequest(Request $request): void
+    private function dateFromRequest(Request $request): void
     {
         $all = $request->all();
         $year = $all['filters']['data_from']['year'] ?? now()->year;

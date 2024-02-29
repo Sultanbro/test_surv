@@ -33,7 +33,7 @@ class KpiFilter
                 });
                 $query->orWhere('pg.name', 'LIKE', "%$searchWord%");
                 $query->orWhere('p.position', 'LIKE', "%$searchWord%");
-                $query->orWhere('ki.name', 'LIKE', "%$searchWord%");
+//                $query->orWhere('ki.name', 'LIKE', "%$searchWord%");
 //                $query->orWhere(function ($query) use ($searchWord) {
 //                    $query->where('updater.name', 'LIKE', "%$searchWord%")
 //                        ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");

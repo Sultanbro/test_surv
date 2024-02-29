@@ -455,11 +455,12 @@ export default {
 					...filter,
 					query: this.searchText
 				}
-			}).then(response => {
-				this.items = response.data.data.kpis.map(this.processKpi);
-				this.all_items = response.data.data.kpis.map(this.processKpi);
-				this.activities = response.data.data.activities;
-				this.groups = response.data.data.groups;
+			}).then(({data}) => {
+				const { kpis, activities, groups } = data.data
+				this.items = this.processKpis(kpis, activities || [])
+				this.all_items = this.processKpis(kpis, activities || [])
+				this.activities = activities;
+				this.groups = groups;
 
 				this.page_items = this.items.slice(0, this.pageSize);
 
@@ -471,7 +472,11 @@ export default {
 			});
 		},
 
-		processKpi(kpi){
+		processKpis(kpis, activities){
+			return kpis.map(kpi => this.processKpi(kpi, activities))
+		},
+
+		processKpi(kpi, activities){
 			let isActive = kpi.is_active
 			if(kpi?.histories_latest?.payload && typeof kpi.histories_latest.payload === 'string') {
 				kpi.histories_latest.payload = JSON.parse(kpi.histories_latest.payload)
@@ -479,6 +484,18 @@ export default {
 					isActive = kpi.histories_latest.payload.is_active
 				}
 			}
+
+			kpi.items.forEach(item => {
+				item.source = 0
+				item.group_id = 0
+				if(item.activity_id){
+					const activity = activities.find(activity => activity.id === item.activity_id)
+					if(activity){
+						item.source = activity.source
+						if(activity.source === 1) item.group_id = activity.group_id
+					}
+				}
+			})
 
 			return {
 				...kpi,
@@ -539,14 +556,7 @@ export default {
 
 		addStatusToItems() {
 			this.items.forEach(el => {
-
-				el.items.forEach(a => {
-					a.source = 0
-					a.group_id = 0
-				});
-
 				el.on_edit = false
-
 			});
 		},
 
