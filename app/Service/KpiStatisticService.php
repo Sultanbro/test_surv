@@ -1039,7 +1039,6 @@ class KpiStatisticService
             $kpi_items = [];
             $sumKpiPercent = 0;
 
-            dd_if($user['id'] == 18123, $user);
 
             foreach ($kpi->items as $_item) {
 
@@ -1108,7 +1107,7 @@ class KpiStatisticService
 
                         } else {
                             $item['fact'] = $query->sum('value');
-                            $item['avg'] = $query->avg('avg');
+                            $item['avg'] = $query->avg('avg') ?? 0;
                             $item['records_count'] = $query->count();
                         }
 
@@ -1122,11 +1121,6 @@ class KpiStatisticService
                     $item['registered'] = 0;
                     $item['applied'] = null;
                 }
-
-                /**
-                 * take another activity values
-                 */
-                $item['fact'] = $item['fact'] ?? 0;
 
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
@@ -1238,9 +1232,10 @@ class KpiStatisticService
         return $weeks;
     }
 
-    private
-    function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
+    private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
+        dd_if($kpi_item == 241, $item);
+
         /**
          * take quality value
          * avg goes with weeks
@@ -1341,17 +1336,18 @@ class KpiStatisticService
 
             } else {
 
-                $query = UserStat::selectRaw("
+                $query = UserStat::query()
+                    ->selectRaw("
                         SUM(value) as fact,
                         AVG(value) as avg,
                         COUNT(value) as records_count,
-                        activity_id,
-                        date
+                        activity_id
                     ")
                     ->whereMonth('date', $date->month)
                     ->whereYear('date', $date->year)
                     ->where('value', '>', 0)
                     ->where('activity_id', $kpi_item->activity_id)
+                    ->groupBy(['activity_id', 'date'])
                     ->first();
 
                 if ($query) {
