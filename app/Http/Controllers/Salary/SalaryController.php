@@ -481,7 +481,6 @@ class SalaryController extends Controller
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
-        dd($working_users);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
 
         $_users = array_merge([['']], $working_users['users']);
