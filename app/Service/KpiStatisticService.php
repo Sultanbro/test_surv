@@ -1786,10 +1786,16 @@ class KpiStatisticService
             'group_id' => $groupId,
             'only_active' => true
         ];
-        $kpis = $this->kpis($date, $params, Kpi::withTrashed()->where(fn($query) => $query->whereNull('kpis.deleted_at')
-            ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d')))))->paginate();
 
+        $query = Kpi::withTrashed()
+            ->where(function ($query) use ($date) {
+                $query->whereNull('kpis.deleted_at');
+                $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
+            });
+
+        $kpis = $this->kpis($date, $params, $query)->paginate();
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
+
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
@@ -2110,7 +2116,7 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-
+        /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
@@ -2165,6 +2171,7 @@ class KpiStatisticService
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
             }
         }
+
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
@@ -2180,8 +2187,7 @@ class KpiStatisticService
         ];
     }
 
-    private
-    function dateFromRequest(Request $request): void
+    private function dateFromRequest(Request $request): void
     {
         $all = $request->all();
         $year = $all['filters']['data_from']['year'] ?? now()->year;
