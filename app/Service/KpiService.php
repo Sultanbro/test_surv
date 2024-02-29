@@ -6,23 +6,15 @@ use App\Events\KpiChangedEvent;
 use App\Events\TrackKpiItemEvent;
 use App\Events\TrackKpiUpdatesEvent;
 use App\Exceptions\Kpi\TargetDuplicateException;
-use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
-use App\Position;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
-use App\User;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -30,6 +22,10 @@ use Throwable;
 class KpiService
 {
     use KpiHelperTrait;
+
+    public function __construct(private readonly KpiStatisticService $statistics)
+    {
+    }
 
     public function fetch($filters): array
     {
@@ -45,65 +41,14 @@ class KpiService
         $startOfDate = $date->startOfMonth()->format('Y-m-d');
         $groupId = $filters['group_id'] ?? null;
 
-        $kpis = Kpi::with([
-            'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                    $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                }]);
-                $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
-                    $query->whereNull('deleted_at');
-                    $query->orWhere('deleted_at', '>', $endOfDate);
-                });
-            },
-            'user' => fn(HasOne $query) => $query->select('id'),
-            'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
-            'creator',
-            'updater',
-            'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
-                $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-            },
-            'histories_latest' => function ($query) use ($endOfDate) {
-                $query->whereDate('created_at', '<=', $endOfDate);
-            }
-        ])
-            ->where(function ($query) use ($startOfDate) {
-                $query->whereHas('targetable', function ($q) use ($startOfDate) {
-                    if ($q->getModel() instanceof User) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $startOfDate);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $startOfDate);
-                    } elseif ($q->getModel() instanceof ProfileGroup) {
-                        $q->where('active', 1);
-                    }
-                })
-                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $startOfDate))
-                    ->orWhereHas('groups', fn($q) => $q->where('active', 1));
-            })
-            ->with([
-                'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
-                'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $startOfDate),
-                'groups' => fn($q) => $q->where('active', 1),
-            ])
-            ->whereDate('kpis.created_at', '<=', $endOfDate)
-            ->when($searchWord, fn($query) => (new KpiFilter($query))->globalSearch($searchWord))
-            ->when($groupId, function (Builder $subQuery) use ($groupId) {
-                $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereRelation(
-                    relation: 'groups',
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
-            })
-            ->distinct()
-            ->get();
+        $kpis = $this->statistics->kpis(
+            $date,
+            [
+                'group_id' => $groupId,
+                'search_word' => $searchWord,
+            ],
+            Kpi::query()
+        )->get();
 
         $kpis_final = [];
 

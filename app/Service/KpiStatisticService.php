@@ -1786,7 +1786,8 @@ class KpiStatisticService
             'group_id' => $groupId,
             'only_active' => true
         ];
-        $kpis = $this->kpis($date, $params)->paginate();
+        $kpis = $this->kpis($date, $params, Kpi::withTrashed()->where(fn($query) => $query->whereNull('kpis.deleted_at')
+            ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d')))))->paginate();
 
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
         foreach ($kpis->items() as $kpi) {
@@ -1819,8 +1820,9 @@ class KpiStatisticService
     }
 
     public function kpis(
-        Carbon $date = null,
-        array  $filter = [],
+        Carbon  $date = null,
+        array   $filter = [],
+        Builder $query = null,
     )
     {
         $searchWord = $filter['search_world'] ?? null;
@@ -1832,9 +1834,9 @@ class KpiStatisticService
             ->orderBy('date', 'desc')
             ->get();
 
-        $start_date = $date->startOfMonth()->format("Y-m-d");
         $last_date = $date->endOfMonth()->format("Y-m-d");
-        return Kpi::withTrashed()
+        $query ?: Kpi::withTrashed();
+        return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
                 $subQuery->orWhereRelation(
@@ -1854,20 +1856,20 @@ class KpiStatisticService
                     $query->whereYear('created_at', $date->year);
                     $query->whereMonth('created_at', $date->month);
                 },
-                'items' => function (HasMany $query) use ($last_date, $start_date, $date) {
+                'items' => function (HasMany $query) use ($last_date, $date) {
                     $query->with(['histories' => function (MorphMany $query) use ($date) {
                         $query->whereYear('created_at', $date->year);
                         $query->whereMonth('created_at', $date->month);
                     }]);
-                    $query->where(function (Builder $query) use ($start_date, $last_date) {
+                    $query->where(function (Builder $query) use ($last_date) {
                         $query->whereNull('deleted_at');
                         $query->orWhere('deleted_at', '>', $last_date);
                     });
                 },
                 'items.activity'
             ])
-            ->where(function ($query) use ($start_date, $last_date) {
-                $query->whereHas('targetable', function ($q) use ($start_date, $last_date) {
+            ->where(function ($query) use ($last_date) {
+                $query->whereHas('targetable', function ($q) use ($last_date) {
                     if ($q->getModel() instanceof User) {
                         $q->whereNull('deleted_at')
                             ->orWhere('deleted_at', '>', $last_date);
@@ -1890,10 +1892,9 @@ class KpiStatisticService
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->where('kpis.created_at', '<=', $last_date)
-            ->where(fn($query) => $query->whereNull('kpis.deleted_at')
-                ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
             ->distinct();
     }
+
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
