@@ -9,6 +9,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
+use App\Models\UserTax;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\Department\UserService;
 use App\Service\Tax\UserTaxService;
@@ -487,7 +488,9 @@ class Salary extends Model
             'user_description',
             'group_users',
             'userTax' => function ($query) use ($date) {
-                $query->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))->with('taxGroup.items');
+                $query->where('status', UserTax::ACTIVE)
+                    ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                    ->with('taxGroup.items');
             },
             'profile_histories_latest' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
