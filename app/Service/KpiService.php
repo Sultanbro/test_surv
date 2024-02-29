@@ -45,38 +45,27 @@ class KpiService
         $startOfDate = $date->startOfMonth()->format('Y-m-d');
         $groupId = $filters['group_id'] ?? null;
 
-        $kpis = Kpi::query()
-            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
-            ->when($groupId, function (Builder $subQuery) use ($groupId) {
-                $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereRelation(
-                    relation: 'groups',
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
-            })
-            ->with([
-                'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
-                    $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
-                        $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                    }]);
-                    $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
-                        $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $endOfDate);
-                    });
-                },
-                'user' => fn(HasOne $query) => $query->select('id'),
-                'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
-                'creator',
-                'updater',
-                'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
+        $kpis = Kpi::with([
+            'items' => function (HasMany $query) use ($endOfDate, $startOfDate) {
+                $query->with(['histories' => function (MorphMany $query) use ($endOfDate, $startOfDate) {
                     $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
-                },
-                'histories_latest' => function ($query) use ($endOfDate) {
-                    $query->whereDate('created_at', '<=', $endOfDate);
-                }
-            ])
+                }]);
+                $query->where(function (Builder $query) use ($startOfDate, $endOfDate) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhere('deleted_at', '>', $endOfDate);
+                });
+            },
+            'user' => fn(HasOne $query) => $query->select('id'),
+            'user.groups' => fn(BelongsToMany $query) => $query->select('name')->where('status', 'active'),
+            'creator',
+            'updater',
+            'histories' => function (morphMany $query) use ($startOfDate, $endOfDate) {
+                $query->whereBetween('created_at', [$startOfDate, $endOfDate]);
+            },
+            'histories_latest' => function ($query) use ($endOfDate) {
+                $query->whereDate('created_at', '<=', $endOfDate);
+            }
+        ])
             ->where(function ($query) use ($startOfDate) {
                 $query->whereHas('targetable', function ($q) use ($startOfDate) {
                     if ($q->getModel() instanceof User) {
@@ -103,7 +92,17 @@ class KpiService
                 'groups' => fn($q) => $q->where('active', 1),
             ])
             ->whereDate('kpis.created_at', '<=', $endOfDate)
-            ->get();
+            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->when($groupId, function (Builder $subQuery) use ($groupId) {
+                $subQuery->where('targetable_id', $groupId);
+                $subQuery->orWhereRelation(
+                    relation: 'groups',
+                    column: 'kpiable_id',
+                    operator: '=',
+                    value: $groupId
+                );
+            })
+            ->dd();
 
         $kpis_final = [];
 
