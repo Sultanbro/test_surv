@@ -554,14 +554,7 @@ export default {
 
 		addStatusToItems() {
 			this.items.forEach(el => {
-
-				el.items.forEach(a => {
-					a.source = 0
-					a.group_id = 0
-				});
-
 				el.on_edit = false
-
 			});
 		},
 
