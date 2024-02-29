@@ -374,6 +374,7 @@ export default {
 			handler: function() {
 				this.recalc();
 				this.getSum();
+				this.defineSourcesAndGroups()
 			},
 			deep: true
 		},
@@ -402,7 +403,7 @@ export default {
 	created() {
 		this.fillSelectOptions()
 
-		this.defineSourcesAndGroups('with_sources_and_group_id');
+		this.defineSourcesAndGroups()
 
 		this.recalc();
 		this.getSum();
