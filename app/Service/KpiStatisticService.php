@@ -952,6 +952,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
+
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
@@ -985,7 +986,7 @@ class KpiStatisticService
             ->leftJoinSub($sum_and_counts, 'sum_and_counts', function ($join) {
                 $join->on('users.id', '=', 'sum_and_counts.user_id');
             })
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $user_ids)
             ->orderBy('last_name')
@@ -1002,7 +1003,6 @@ class KpiStatisticService
                     'items' => $items->map(function ($item) {
                         $item->percent = 0;
                         $item->share = 0;
-
                         return $item;
                     }),
                 ];
@@ -1038,6 +1038,8 @@ class KpiStatisticService
         foreach ($_users as $user) {
             $kpi_items = [];
             $sumKpiPercent = 0;
+
+            dd_if($user->id == 18123, $user);
 
             foreach ($kpi->items as $_item) {
 
@@ -1167,9 +1169,6 @@ class KpiStatisticService
                         ->where('activity_id', $_item->activity->id)
                         ->first();
                     if ($has_workdays) {
-                        $percent_of_plan_for_sum_method = $has_workdays['workdays_in_month'] > 0
-                            ? $has_workdays['user_work_days'] / $has_workdays['workdays_in_month']
-                            : 1;
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
