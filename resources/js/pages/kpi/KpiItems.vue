@@ -374,7 +374,6 @@ export default {
 			handler: function() {
 				this.recalc();
 				this.getSum();
-				this.defineSourcesAndGroups()
 			},
 			deep: true
 		},
@@ -403,8 +402,6 @@ export default {
 	created() {
 		this.fillSelectOptions()
 
-		this.defineSourcesAndGroups()
-
 		this.recalc();
 		this.getSum();
 		if(!this.editable) {
@@ -413,7 +410,7 @@ export default {
 
 	},
 	mounted(){
-
+		this.defineSourcesAndGroups()
 	},
 
 	methods: {
