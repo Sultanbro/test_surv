@@ -1891,7 +1891,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->when($searchWord, fn(Builder $subQuery) => (new KpiFilter)->globalSearch($searchWord))
+            ->when($searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->distinct();
     }
 
