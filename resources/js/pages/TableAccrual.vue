@@ -1426,7 +1426,9 @@ export default {
 					if(!tax.is_percent) {
 						amount = tax.value
 					}
-					amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
+					else{
+						amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
+					}
 					taxinfo.push({
 						name: tax.name,
 						value: tax.value + (tax.is_percent ? '%' : ''),
