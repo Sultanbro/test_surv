@@ -2167,6 +2167,29 @@ class KpiStatisticService
             })
             ->firstOrFail();
 
+        if (isset($payload['children'])) {
+            $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+        }
+        foreach ($kpi->items as $item) {
+            $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
+            $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+            $item['daily_plan'] = (float)$item->plan;
+            if ($has_edited_plan) {
+                if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
+                if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
+                if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
+                if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+            }
+            $item['plan'] = $item['daily_plan'];
+        }
+
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);
         $kpi_sum = 0;
 
