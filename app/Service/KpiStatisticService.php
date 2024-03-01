@@ -1141,12 +1141,12 @@ class KpiStatisticService
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
-                $this->takeUpdatedValue($_item->id,
-                    $item['activity_id'],
-                    $date,
-                    $item,
-                    $user['id']
-                );
+//                $this->takeUpdatedValue($_item->id,
+//                    $item['activity_id'],
+//                    $date,
+//                    $item,
+//                    $user['id']
+//                );
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1432,43 +1432,7 @@ class KpiStatisticService
 
     }
 
-    /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item_id
-     * @param $activity_id
-     * @param Carbon $date
-     * @param array &$item
-     * @param int $user_id
-     *
-     * @return void
-     */
-    private function takeUpdatedValue(
-        $kpi_item_id,
-        $activity_id,
-        Carbon $date,
-        array &$item,
-        int $user_id
-    ): void
-    {
-        $has = $this->updatedValues
-            ->where('user_id', $user_id)
-            ->where('kpi_item_id', $kpi_item_id)
-            ->where('activity_id', $activity_id)
-            ->first();
-
-        if ($has) {
-            $item['fact'] = (float)$has->value;
-            $item['avg'] = (float)$has->value;
-        }
-
-        $item['fact'] = round($item['fact'], 2);
-        $item['avg'] = round($item['avg'], 2);
-    }
-
-    private
-    function calculatePercent(array $item): array
+    private function calculatePercent(array $item): array
     {
         $item['percent'] = 0;
         $item['plan'] = floatval($item['plan']);
@@ -2066,6 +2030,38 @@ class KpiStatisticService
         }
 
         return $users;
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     *
+     * @param $kpi_item_id
+     * @param $activity_id
+     * @param Carbon $date
+     * @param array &$item
+     * @param int $user_id
+     *
+     * @return void
+     */
+    private function takeUpdatedValue(
+        $kpi_item_id,
+        $activity_id,
+        Carbon $date,
+        array &$item,
+        int $user_id
+    ): void
+    {
+        $has = $this->updatedValues
+            ->where('user_id', $user_id)
+            ->where('kpi_item_id', $kpi_item_id)
+            ->where('activity_id', $activity_id)
+            ->first();
+
+        if ($has) {
+            $item['fact'] = (float)$has->value;
+            $item['avg'] = (float)$has->value;
+        }
     }
 
     /**
