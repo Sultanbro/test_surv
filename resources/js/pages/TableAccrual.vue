@@ -1731,11 +1731,10 @@ export default {
 				});
 		},
 
-		updateSalary(type) {
+		async updateSalary(type) {
 			if(this.selectedCell.index == 0) return '';
 
-			let comment,
-				amount;
+			let comment, amount, response;
 
 			if(type == 'avans') {
 				if(this.avans.comment.length < 3) {
@@ -1767,8 +1766,8 @@ export default {
 				amount = this.bonus.sum;
 			}
 
-			this.axios
-				.post('/timetracking/salaries/update', {
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/update', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					year: this.dateInfo.currentYear,
 					day: this.selectedCell.field.key,
@@ -1777,35 +1776,35 @@ export default {
 					comment: comment,
 					type: type
 				})
-				.then((response) => {
+				response = data
+			}
+			catch (error) {
+				this.$onError({error, msg: 'Не сохранилось'})
+			}
+			if(response){
+				switch(type){
+				case 'avans':
+					this.$toast.success('Аванс успешно сохранен');
+					this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+					break;
+				case 'bonus':
+					this.$toast.success('Бонус успешно сохранен');
+					this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
+					break;
+				}
+				this.avans.sum = 0;
+				this.avans.comment = '';
+				this.avans.require = '';
+				this.avans.visible = false;
 
-					if(type == 'avans') {
-						this.$toast.success('Аванс успешно сохранен');
-						this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+				this.bonus.sum = 0;
+				this.bonus.comment = '';
+				this.bonus.require = '';
+				this.bonus.visible = false;
 
-						this.avans.sum = 0;
-						this.avans.comment = '';
-						this.avans.require = '';
-						this.avans.visible = false;
-					}
-
-					if(type == 'bonus')  {
-						this.$toast.success('Бонус успешно сохранен');
-						this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
-
-						this.bonus.sum = 0;
-						this.bonus.comment = '';
-						this.bonus.require = '';
-						this.bonus.visible = false;
-					}
-
-					this.sidebarHistory.unshift(response.data);
-					this.items[this.selectedCell.index].history.unshift(response.data)
-
-				}).catch(error => {
-					this.$toast.error('Не сохранилось');
-					console.error(error)
-				});
+				this.sidebarHistory.unshift(response);
+				this.items[this.selectedCell.index].history.unshift(response)
+			}
 		},
 
 		// excel
@@ -1928,7 +1927,7 @@ export default {
 				item.deleted_at = new Date().toISOString()
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 			/* eslint-enable require-atomic-updates */
 		},
@@ -1939,7 +1938,7 @@ export default {
 				item.deleted_at = null
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 			/* eslint-enable require-atomic-updates */
 		},

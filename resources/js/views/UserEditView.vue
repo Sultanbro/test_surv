@@ -317,7 +317,7 @@ export default {
 					this.currentTaxGroup = taxData.data?.id || 0
 				}
 				catch (error) {
-					this.$onError(error, '', 1)
+					this.$onError({error, silent: 1})
 				}
 
 			}
@@ -329,7 +329,7 @@ export default {
 				this.taxGroups = data.data
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 		},
 		onTaxChange($event){

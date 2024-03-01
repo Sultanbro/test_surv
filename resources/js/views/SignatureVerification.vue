@@ -70,7 +70,7 @@ export default {
 				this.user = data.user
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 		},
 		async fetchDocs(){
@@ -100,7 +100,7 @@ export default {
 				// }
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 		},
 
@@ -143,7 +143,7 @@ export default {
 				this.timer = 120
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 			/* eslint-enable camelcase */
 		},
@@ -171,7 +171,7 @@ export default {
 				}
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 		},
 		getImage(file){
