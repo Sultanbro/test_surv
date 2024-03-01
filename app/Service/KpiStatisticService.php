@@ -1142,13 +1142,6 @@ class KpiStatisticService
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
 
-//                $this->takeUpdatedValue($_item->id,
-//                    $item['activity_id'],
-//                    $date,
-//                    $item,
-//                    $user['id']
-//                );
-
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1158,9 +1151,6 @@ class KpiStatisticService
                 $history = $_item->histories_latest;
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
-                /**
-                 * fields from history
-                 */
                 $item['daily_plan'] = (float)$_item->plan;
 
                 if ($has_edited_plan) {
@@ -1204,24 +1194,6 @@ class KpiStatisticService
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
-//
-//                /**
-//                 * sum method in kpi_item
-//                 * change plan
-//                 */
-//                if ($item['method'] == 1) {
-//
-//                    /**
-//                     * for part timer reduce plan twice
-//                     */
-//                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
-//
-//                    /**
-//                     * final plan
-//                     */
-//                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
-//                }
-
                 $kpi_items[] = $item;
             }
 
@@ -1231,7 +1203,6 @@ class KpiStatisticService
             } else {
                 $user['avg_percent'] = 0;
             }
-
 
             $users[] = $user;
         }
@@ -1732,9 +1703,8 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(array $filters): array
     {
-        $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
         $date = Carbon::createFromDate(
@@ -1748,7 +1718,7 @@ class KpiStatisticService
             'only_active' => true
         ];
 
-        $query = Kpi::withTrashed()
+        $query = $filters['query_builder'] ?? Kpi::withTrashed()
             ->where(function ($query) use ($date) {
                 $query->whereNull('kpis.deleted_at');
                 $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
@@ -1775,6 +1745,8 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
+
+        if ($filters['only_records'] ?? false) return $kpis->items();
 
         return [
             'paginator' => $kpis,

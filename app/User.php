@@ -1037,9 +1037,17 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $this->hasOne('App\Photo');
     }
 
-    public function fines()
+    public function fines(): BelongsToMany
     {
-        return $this->belongsToMany('App\Fine', 'user_fines')->withPivot(['day', 'status']);
+        return $this->belongsToMany(
+            Fine::class,
+            'user_fines',
+            'user_id',
+            'fine_id',
+            'id',
+            'id'
+        )
+            ->withPivot(['day', 'status']);
     }
 
     public function daytypes()
