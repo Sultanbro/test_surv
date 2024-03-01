@@ -2,10 +2,13 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Fine extends Model
 {
+    use HasFactory;
+
     const COLUMN_PENALTY_AMOUNT = 'penalty_amount';
     const TYPE_LATE_MORE_5 = 1; // больше 5 минут опоздание
     const TYPE_LATE_LESS_5 = 2; // меньше 5 минут опоздание

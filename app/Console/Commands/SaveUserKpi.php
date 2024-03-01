@@ -50,7 +50,7 @@ class SaveUserKpi extends Command
                     $query->where('targetable_id', $this->argument('user_id'));
                     $query->where('targetable_type', User::class);
                     $query->orWhereHas('users', fn($q) => $q
-                        ->where('id', $this->argument('user_id'))
+                        ->where('users.id', $this->argument('user_id'))
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
                 });
@@ -59,13 +59,8 @@ class SaveUserKpi extends Command
                 ->whereNull('kpis.deleted_at')
                 ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
 
-        $filter['data_from']['year'] = $date->year;
-        $filter['data_from']['month'] = $date->month;
-        $filter['query_builder'] = $query;
-        $filter['only_records'] = true;
+        $kpis = $this->statisticService->kpis($date, [], $query)->get();
 
-        $kpis = $this->statisticService->fetchKpiGroupsAndUsers($filter);
-        dd($kpis);
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
@@ -98,7 +93,6 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
@@ -119,23 +113,23 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        $exists = SavedKpi::query()
+        $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
 
-        if ($exists) {
-            $exists->total += $data['total'];
-            $exists->save();
+        if ($saved) {
+            $saved->total += $data['total'];
+            $saved->save();
         } else {
-            SavedKpi::query()->create([
+            $saved = SavedKpi::query()->create([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
                 'total' => $data['total']
             ]);
         }
-
+        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->totoal);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }

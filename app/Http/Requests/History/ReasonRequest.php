@@ -22,7 +22,7 @@ class ReasonRequest extends FormRequest
             'delete' => 'Удалено',
         ];
 
-        return $data[Str::lower($this->method)];
+        return $data[Str::lower($this->method())];
     }
 
     public function reason(): string

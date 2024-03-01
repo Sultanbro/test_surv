@@ -100,7 +100,10 @@ class FineController extends Controller
                 'description' => isset($comment) ? 'Штраф, причина: ' . $comment : 'Штраф',
                 'payload' => json_encode([
                     'type' => 'fine',
-                    'fine_id' => $fine->getKey()
+                    'fine_id' => $fine->getKey(),
+                    'user_id' => $dto->userId,
+                    'day' => $dto->date,
+                    'note' => $dto->comment,
                 ])
             ];
 
