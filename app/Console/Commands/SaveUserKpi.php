@@ -50,7 +50,7 @@ class SaveUserKpi extends Command
                     $query->where('targetable_id', $this->argument('user_id'));
                     $query->where('targetable_type', User::class);
                     $query->orWhereHas('users', fn($q) => $q
-                        ->where('id', $this->argument('user_id'))
+                        ->where('users.id', $this->argument('user_id'))
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
                 });
