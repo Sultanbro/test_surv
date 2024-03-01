@@ -59,12 +59,7 @@ class SaveUserKpi extends Command
                 ->whereNull('kpis.deleted_at')
                 ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
 
-        $filter['data_from']['year'] = $date->year;
-        $filter['data_from']['month'] = $date->month;
-        $filter['only_records'] = $date->month;
-        $filter['query_builder'] = $query;
-
-        $kpis = $this->statisticService->fetchKpiGroupsAndUsers($filter);
+        $kpis = $this->statisticService->kpis($date, [], $query)->get();
 
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
@@ -98,7 +93,6 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-                    dd($user);
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
@@ -106,7 +100,6 @@ class SaveUserKpi extends Command
                     $this->updateSavedKpi([
                         'total' => $total,
                         'user_id' => $user['id'],
-                        'user_name' => $user['name'],
                         'date' => $date->format("Y-m-d")
                     ]);
                 }
