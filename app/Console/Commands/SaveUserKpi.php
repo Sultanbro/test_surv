@@ -40,6 +40,7 @@ class SaveUserKpi extends Command
 
     public function handle(): void
     {
+        dd($this->argument('date'));
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
 
