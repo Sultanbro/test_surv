@@ -64,7 +64,7 @@ class SaveUserKpi extends Command
         $filter['query_builder'] = $query;
         $filter['only_records'] = true;
 
-        $kpis = $this->statisticService->fetchKpiGroupsAndUsers($filter);
+        $kpis = $this->statisticService->kpis($date, $filter, $query);
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
