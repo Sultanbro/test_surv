@@ -65,7 +65,6 @@ class SaveUserKpi extends Command
         $filter['only_records'] = true;
 
         $kpis = $this->statisticService->fetchKpiGroupsAndUsers($filter);
-        dd($kpis);
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
