@@ -40,7 +40,6 @@ class SaveUserKpi extends Command
 
     public function handle(): void
     {
-        dd($this->argument('date'));
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
 
@@ -66,6 +65,7 @@ class SaveUserKpi extends Command
         $filter['only_records'] = true;
 
         $kpis = $this->statisticService->kpis($date, $filter, $query);
+        dd($kpis);
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
