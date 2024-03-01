@@ -118,23 +118,23 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        $exists = SavedKpi::query()
+        $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
 
-        if ($exists) {
-            $exists->total += $data['total'];
-            $exists->save();
+        if ($saved) {
+            $saved->total += $data['total'];
+            $saved->save();
         } else {
-            SavedKpi::query()->create([
+            $saved = SavedKpi::query()->create([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
                 'total' => $data['total']
             ]);
         }
-
+        $this->info('user: ' . $data['user_id'], 'saved kpi: ' . $saved->total);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }
