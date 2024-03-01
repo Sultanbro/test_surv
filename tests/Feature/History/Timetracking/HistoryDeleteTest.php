@@ -8,10 +8,10 @@ use App\TimetrackingHistory;
 use App\User;
 use Tests\TenantTestCase;
 
-class HistoryRestoreTest extends TenantTestCase
+class HistoryDeleteTest extends TenantTestCase
 {
 
-    public function test_it_can_restore_bonus()
+    public function test_it_can_delete_bonus()
     {
         $amount = 500;
         $type = 'bonus';
@@ -23,9 +23,12 @@ class HistoryRestoreTest extends TenantTestCase
             'bonus' => $amount,
             'comment_bonus' => $amount
         ]);
-
+        $this->assertDatabaseHas('salaries', [
+            'id' => $salary->id,
+            'bonus' => 500,
+        ]);
         $params = [
-            'reason' => 'because you idiot'
+            'reason' => 'sebaceous you idiot'
         ];
 
         $history = TimetrackingHistory::query()->create([
@@ -41,7 +44,7 @@ class HistoryRestoreTest extends TenantTestCase
             ])
         ]);
 
-        $response = $this->json('post', "timetracking/salaries/histories/$history->id", $params);
+        $response = $this->json('delete', "timetracking/salaries/histories/$history->id", $params);
         $response->assertStatus(200);
         $this->assertDatabaseHas('salaries', [
             'id' => $salary->id,
@@ -49,7 +52,7 @@ class HistoryRestoreTest extends TenantTestCase
         ]);
     }
 
-    public function test_it_can_restore_paid()
+    public function test_it_can_delete_paid()
     {
         $amount = 500;
         $type = 'paid';
@@ -68,7 +71,7 @@ class HistoryRestoreTest extends TenantTestCase
         ]);
 
         $params = [
-            'reason' => 'because you idiot'
+            'reason' => 'sebaceous you idiot'
         ];
 
         $history = TimetrackingHistory::query()->create([
@@ -84,7 +87,7 @@ class HistoryRestoreTest extends TenantTestCase
             ])
         ]);
 
-        $response = $this->json('post', "timetracking/salaries/histories/$history->id", $params);
+        $response = $this->json('delete', "timetracking/salaries/histories/$history->id", $params);
         $response->assertStatus(200);
         $this->assertDatabaseHas('salaries', [
             'id' => $salary->id,
@@ -92,7 +95,7 @@ class HistoryRestoreTest extends TenantTestCase
         ]);
     }
 
-    public function test_it_can_restore_fine()
+    public function test_it_can_delete_fine()
     {
         $amount = 500;
         $type = 'fine';
@@ -111,7 +114,7 @@ class HistoryRestoreTest extends TenantTestCase
         ]);
 
         $params = [
-            'reason' => 'because you idiot'
+            'reason' => 'sebaceous you idiot'
         ];
 
         $history = TimetrackingHistory::query()->create([
@@ -128,7 +131,7 @@ class HistoryRestoreTest extends TenantTestCase
             ])
         ]);
 
-        $response = $this->json('post', "timetracking/salaries/histories/$history->id", $params);
+        $response = $this->json('delete', "timetracking/salaries/histories/$history->id", $params);
         $response->assertStatus(200);
         $this->assertDatabaseMissing('user_fines', [
             'user_id' => $user->id,

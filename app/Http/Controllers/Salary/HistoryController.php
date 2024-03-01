@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\History\ReasonRequest;
 use App\Salary;
 use App\TimetrackingHistory;
+use App\User;
 use App\UserFine;
-use Illuminate\Http\Response;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class HistoryController extends Controller
 {
-    public function restore(ReasonRequest $request, int $history): Response
+    public function restore(ReasonRequest $request, int $history): JsonResponse
     {
         /** @var TimetrackingHistory $history */
         $history = TimetrackingHistory::withTrashed()->findOrFail($history);
@@ -33,7 +35,7 @@ class HistoryController extends Controller
         $payload['restored_by'] = $this->template($request);
         $history->payload = json_encode($payload);
         $history->save();
-        return response()->noContent();
+        return response()->json($history);
     }
 
     private function template(ReasonRequest $request): string
@@ -42,14 +44,22 @@ class HistoryController extends Controller
             . "<br>Причина: " . $request->reason();
     }
 
-    public function delete(ReasonRequest $request, TimetrackingHistory $history): Response
+    public function delete(ReasonRequest $request, TimetrackingHistory $history): JsonResponse
     {
         $payload = json_decode($history->payload, true);
         $type = $payload['type'];
         if ($type == 'fine') {
-            $userFine = UserFine::query()->find($payload['fine_id']);
-            $payload['record'] = $userFine->toArray();
-            $userFine->delete();
+            /** @var User $user */
+            $user = User::query()->find($payload['user_id']);
+
+            $userFine = $user->fines()->where('day', Carbon::parse($payload['day'])->format("Y-m-d"))
+                ->find($payload['fine_id']);
+
+            if ($userFine) {
+                $payload['record'] = $userFine->toArray();
+                $user->fines()->detach($userFine);
+            }
+
         } else {
             $amount = $payload['amount'];
             $salary = Salary::query()
@@ -59,10 +69,10 @@ class HistoryController extends Controller
             ]);
         }
 
-        $payload['deleted_by'] = $this->template($request->user());
+        $payload['deleted_by'] = $this->template($request);
         $history->payload = json_encode($payload);
         $history->save();
         $history->delete();
-        return response()->noContent();
+        return response()->json($history);
     }
 }
