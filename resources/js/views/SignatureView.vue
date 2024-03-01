@@ -102,7 +102,7 @@ export default {
 				}
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 		},
 	},
