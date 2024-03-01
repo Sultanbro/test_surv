@@ -1083,7 +1083,7 @@ class SalaryController extends Controller
         $date = Carbon::parse($request->get('date'));
         /** @var User $user */
         $user = User::query()->find($request->get('user_id'));
-        dd($user->fines());
+        dd($user->fines()->get());
         return $user->fines()
             ->whereYear('day', $date->year)
             ->whereMonth('day', $date->month)
