@@ -98,7 +98,7 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-
+                    dd($user);
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
@@ -106,6 +106,7 @@ class SaveUserKpi extends Command
                     $this->updateSavedKpi([
                         'total' => $total,
                         'user_id' => $user['id'],
+                        'user_name' => $user['name'],
                         'date' => $date->format("Y-m-d")
                     ]);
                 }
@@ -135,7 +136,7 @@ class SaveUserKpi extends Command
                 'total' => $data['total']
             ]);
         }
-        $this->info('user: ' . $data['user_id'], 'saved kpi: ' . $saved->totoal);
+        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->totoal);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }
