@@ -495,10 +495,11 @@ class AnalyticsController extends Controller
     public function updateUserStat(UpdateUserStatRequest $request)
     {
         $dto = $request->toDto();
-        $group = ProfileGroup::find($dto->groupId);
+        $group = ProfileGroup::query()->find($dto->groupId);
         $date = Carbon::createFromDate($dto->year, $dto->month, $dto->day)->format('Y-m-d');
 
-        $us = UserStat::where('date', $date)
+        $us = UserStat::query()
+            ->where('date', $date)
             ->where('user_id', $dto->employeeId)
             ->where('activity_id', $dto->activityId)
             ->first();
@@ -507,13 +508,14 @@ class AnalyticsController extends Controller
             $us->value = $dto->value;
             $us->save();
         } else {
-            UserStat::create([
+            UserStat::query()->create([
                 'date' => $date,
                 'user_id' => $dto->employeeId,
                 'activity_id' => $dto->activityId,
                 'value' => $dto->value,
             ]);
         }
+        
         UserStatUpdatedEvent::dispatch($dto);
 
         if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
@@ -783,7 +785,7 @@ class AnalyticsController extends Controller
         $userIds = (new UserService)->getEmployeeIds($group->id, $date->format('Y-m-d'));
 
         $this->users = User::withTrashed()->whereIn('id', $userIds)
-            ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
+            ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);
 
         /****************************** */
         /******==================================== */

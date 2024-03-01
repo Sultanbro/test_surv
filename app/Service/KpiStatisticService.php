@@ -1141,7 +1141,12 @@ class KpiStatisticService
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
-
+                $this->takeUpdatedValue($_item->id,
+                    $item['activity_id'],
+                    $date,
+                    $item,
+                    $user['id']
+                );
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1425,6 +1430,41 @@ class KpiStatisticService
             $item['avg'] = $item['fact'];
         }
 
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     *
+     * @param $kpi_item_id
+     * @param $activity_id
+     * @param Carbon $date
+     * @param array &$item
+     * @param int $user_id
+     *
+     * @return void
+     */
+    private function takeUpdatedValue(
+        $kpi_item_id,
+        $activity_id,
+        Carbon $date,
+        array &$item,
+        int $user_id
+    ): void
+    {
+        $has = $this->updatedValues
+            ->where('user_id', $user_id)
+            ->where('kpi_item_id', $kpi_item_id)
+            ->where('activity_id', $activity_id)
+            ->first();
+
+        if ($has) {
+            $item['fact'] = (float)$has->value;
+            $item['avg'] = (float)$has->value;
+        }
+
+        $item['fact'] = round($item['fact'], 2);
+        $item['avg'] = round($item['avg'], 2);
     }
 
     private
@@ -1718,7 +1758,7 @@ class KpiStatisticService
             'only_active' => true
         ];
 
-        $query = $filters['query_builder'] ?? Kpi::withTrashed()
+        $query = Kpi::withTrashed()
             ->where(function ($query) use ($date) {
                 $query->whereNull('kpis.deleted_at');
                 $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
@@ -1745,8 +1785,6 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
-
-        if ($filters['only_records'] ?? false) return $kpis->items();
 
         return [
             'paginator' => $kpis,
@@ -2028,41 +2066,6 @@ class KpiStatisticService
         }
 
         return $users;
-    }
-
-    /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     * @param int $user_id
-     *
-     * @return float
-     */
-    private
-    function takeUpdatedValue(
-        $kpi_item_id,
-        $activity_id,
-        Carbon $date,
-        array &$item,
-        int $user_id
-    ): void
-    {
-        $has = $this->updatedValues
-            ->where('user_id', $user_id)
-            ->where('kpi_item_id', $kpi_item_id)
-            ->where('activity_id', $activity_id)
-            ->first();
-
-        if ($has) {
-            $item['fact'] = (float)$has->value;
-            $item['avg'] = (float)$has->value;
-        }
-
-        $item['fact'] = round($item['fact'], 2);
-        $item['avg'] = round($item['avg'], 2);
     }
 
     /**
