@@ -1703,9 +1703,8 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(array $filters): array
     {
-        $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
         $date = Carbon::createFromDate(
@@ -1719,7 +1718,7 @@ class KpiStatisticService
             'only_active' => true
         ];
 
-        $query = Kpi::withTrashed()
+        $query = $filters['query_builder'] ?? Kpi::withTrashed()
             ->where(function ($query) use ($date) {
                 $query->whereNull('kpis.deleted_at');
                 $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
@@ -1746,6 +1745,8 @@ class KpiStatisticService
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
+
+        if ($filters['only_records']) return $kpis->items();
 
         return [
             'paginator' => $kpis,
