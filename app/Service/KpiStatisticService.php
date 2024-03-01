@@ -945,14 +945,14 @@ class KpiStatisticService
     /**
      * get users with user stats
      */
-    private
-    function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
+    private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
     {
         $activities = $kpi->items
             ->where('activity_id', '!=', 0)
             ->pluck('activity_id')
             ->unique()
             ->toArray();
+
         // subquery
         $sum_and_counts = \DB::table('user_stats')
             ->selectRaw("user_id,
@@ -964,8 +964,10 @@ class KpiStatisticService
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
             ->where('value', '>', 0)
+            ->whereIn('user_id', $user_ids)
             ->whereIn('activity_id', $activities)
             ->groupBy('user_id', 'activity_id');
+
         // query
         $users = User::withTrashed()
             ->select([
@@ -984,7 +986,7 @@ class KpiStatisticService
             ->leftJoinSub($sum_and_counts, 'sum_and_counts', function ($join) {
                 $join->on('users.id', '=', 'sum_and_counts.user_id');
             })
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $user_ids)
             ->orderBy('last_name')
@@ -1001,7 +1003,6 @@ class KpiStatisticService
                     'items' => $items->map(function ($item) {
                         $item->percent = 0;
                         $item->share = 0;
-
                         return $item;
                     }),
                 ];
@@ -1042,6 +1043,18 @@ class KpiStatisticService
 
                 // to array because object changes every loop
                 $item = $_item->toArray();
+
+                // get last History
+                if ($_item->histories_latest) {
+                    $last_history = json_decode($_item->histories_latest->payload, true);
+                    if (Arr::exists($last_history, 'activity_id')) $item['activity_id'] = $last_history['activity_id'];
+                    if (Arr::exists($last_history, 'method')) $item['method'] = $last_history['method'];
+                    if (Arr::exists($last_history, 'share')) $item['share'] = $last_history['share'];
+                    if (Arr::exists($last_history, 'unit')) $item['unit'] = $last_history['unit'];
+                    if (Arr::exists($last_history, 'plan')) $item['plan'] = $last_history['plan'];
+                    if (Arr::exists($last_history, 'name')) $item['name'] = $last_history['name'];
+                }
+
 
                 // check user stat exists
                 $exists = collect($user['items'])
@@ -1128,22 +1141,34 @@ class KpiStatisticService
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
-
                 $this->takeUpdatedValue($_item->id,
                     $item['activity_id'],
                     $date,
                     $item,
                     $user['id']
                 );
-
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
                 // plan
                 $item['full_time'] = $user['full_time'];
+                $history = $_item->histories_latest;
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+
                 $item['daily_plan'] = (float)$_item->plan;
 
+                if ($has_edited_plan) {
+                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+
+                }
 
                 /**
                  * If the user works part-time, the daily plan needs to be divided by 2.
@@ -1161,6 +1186,8 @@ class KpiStatisticService
                  * count workdays
                  */
                 $item['workdays'] = $workdays[6];
+                $percent_of_plan_for_sum_method = 1;
+
                 if ($_item->activity) {
                     $has_workdays = $this->workdays->where('user_id', $user['id'])
                         ->where('activity_id', $_item->activity->id)
@@ -1172,24 +1199,6 @@ class KpiStatisticService
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
-//
-//                /**
-//                 * sum method in kpi_item
-//                 * change plan
-//                 */
-//                if ($item['method'] == 1) {
-//
-//                    /**
-//                     * for part timer reduce plan twice
-//                     */
-//                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
-//
-//                    /**
-//                     * final plan
-//                     */
-//                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
-//                }
-
                 $kpi_items[] = $item;
             }
 
@@ -1199,7 +1208,6 @@ class KpiStatisticService
             } else {
                 $user['avg_percent'] = 0;
             }
-
 
             $users[] = $user;
         }
@@ -1238,14 +1246,15 @@ class KpiStatisticService
         return $weeks;
     }
 
-    private
-    function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
+    private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
         /**
          * take quality value
          * avg goes with weeks
          */
-        if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view == Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity->view == Activity::VIEW_QUALITY) {
 
             $query = UserStat::query()
                 ->selectRaw("
@@ -1312,10 +1321,7 @@ class KpiStatisticService
 
         }
 
-        /**
-         * take another common values
-         */
-        if ($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
+        if ($kpi_item->common == 1 && $activity && $activity->view != Activity::VIEW_QUALITY) {
 
             if (in_array($kpi_item->method, [2, 4, 6])) {
 
@@ -1341,17 +1347,18 @@ class KpiStatisticService
 
             } else {
 
-                $query = UserStat::selectRaw("
+                $query = UserStat::query()
+                    ->selectRaw("
                         SUM(value) as fact,
                         AVG(value) as avg,
                         COUNT(value) as records_count,
-                        activity_id,
-                        date
+                        activity_id
                     ")
-                    ->whereMonth('date', $date->month)
                     ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
                     ->where('value', '>', 0)
                     ->where('activity_id', $kpi_item->activity_id)
+                    ->groupBy('activity_id')
                     ->first();
 
                 if ($query) {
@@ -1359,7 +1366,6 @@ class KpiStatisticService
                     $item['avg'] = $query->avg;
                     $item['records_count'] = $query->records_count;
                 }
-
             }
 
         }
@@ -1376,27 +1382,21 @@ class KpiStatisticService
      *
      * @return float
      */
-    private
-    function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item): void
+    private function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
 
-        if ($kpi_item->activity
-            && $kpi_item->activity->view == Activity::VIEW_CELL) {
-            // ->where('created_at', '<=', $date)->toArray());
+        if ($activity
+            && $activity->view == Activity::VIEW_CELL) {
 
-
-            // if($kpi->histories->first()) {
-            //     $payload = json_decode($kpi->histories->first()->payload, true);
-
-            // }
             $item['fact'] = AnalyticStat::getCellValue(
-                $kpi_item->activity->group_id,
+                $activity->group_id,
                 $kpi_item->cell,
                 $date->firstOfMonth()->format('Y-m-d'),
                 2
             );
 
-            $item['fact'] = round($item['fact'], 2);
             $item['avg'] = $item['fact'];
         }
 
@@ -1413,13 +1413,16 @@ class KpiStatisticService
      *
      * @return float
      */
-    private
-    function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item): void
+    private function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
-        if ($kpi_item->activity
-            && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
+        $activity = null;
+        if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
+
+
+        if ($activity
+            && $activity->view == Activity::VIEW_RENTAB) {
             $item['fact'] = AnalyticStat::getRentability(
-                $kpi_item->activity->group_id,
+                $activity->group_id,
                 $date->format('Y-m-d')
             );
 
@@ -1433,15 +1436,15 @@ class KpiStatisticService
      * take cell value from analytics
      * for kpi item
      *
-     * @param $kpi_item
+     * @param $kpi_item_id
+     * @param $activity_id
      * @param Carbon $date
      * @param array &$item
      * @param int $user_id
      *
-     * @return float
+     * @return void
      */
-    private
-    function takeUpdatedValue(
+    private function takeUpdatedValue(
         $kpi_item_id,
         $activity_id,
         Carbon $date,
@@ -1459,13 +1462,9 @@ class KpiStatisticService
             $item['fact'] = (float)$has->value;
             $item['avg'] = (float)$has->value;
         }
-
-        $item['fact'] = round($item['fact'], 2);
-        $item['avg'] = round($item['avg'], 2);
     }
 
-    private
-    function calculatePercent(array $item): array
+    private function calculatePercent(array $item): array
     {
         $item['percent'] = 0;
         $item['plan'] = floatval($item['plan']);
@@ -1740,9 +1739,8 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpiGroupsAndUsers(Request $request): array
+    public function fetchKpiGroupsAndUsers(array $filters): array
     {
-        $filters = $request->filters;
         $groupId = $filters['group_id'] ?? null;
         $searchWord = $filters['query'] ?? null;
         $date = Carbon::createFromDate(
@@ -1869,7 +1867,6 @@ class KpiStatisticService
             ->where('kpis.created_at', '<=', $last_date)
             ->distinct();
     }
-
 
     public function getAverageKpiPercent(Kpi $kpi, Carbon $date): array
     {
@@ -2132,32 +2129,27 @@ class KpiStatisticService
             })
             ->firstOrFail();
 
-        $kpi->kpi_items = [];
-        if ($kpi->histories_latest) {
-            $payload = json_decode($kpi->histories_latest->payload, true);
-
-            if (isset($payload['children'])) {
-                $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+        if (isset($payload['children'])) {
+            $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+        }
+        foreach ($kpi->items as $item) {
+            $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
+            $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+            $item['daily_plan'] = (float)$item->plan;
+            if ($has_edited_plan) {
+                if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
+                if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
+                if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
+                if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
             }
-            foreach ($kpi->items as $item) {
-                $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
-                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-                $item['daily_plan'] = (float)$item->plan;
-                if ($has_edited_plan) {
-                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
-                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
-                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
-                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
-                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
-                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
-                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
-                    if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
-                    if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
-                    if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
-                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
-                }
-                $item['plan'] = $item['daily_plan'];
-            }
+            $item['plan'] = $item['daily_plan'];
         }
 
         $kpi->users = $this->getUsersForKpi($kpi, $this->from);

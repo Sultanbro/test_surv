@@ -533,11 +533,6 @@ class Salary extends Model
                     ->whereMonth('date', '=', $date->month)
                     ->whereYear('date', $date->year);
             },
-            'testBonuses' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                    ->whereMonth('date', '=', $date->month)
-                    ->whereYear('date', $date->year);
-            },
             'timetracking' => function ($q) use ($date) {
                 $q->select(['user_id',
                     DB::raw('DAY(enter) as day'),
@@ -898,7 +893,7 @@ class Salary extends Model
             $user->earnings = $earnings;
             $user->taxes = $oldTaxes;
             $user->bonuses = $bonuses;
-            $user->test_bonus = $test_bonus;
+            $user->test_bonus = [];
             $user->awards = $awards;
 
 

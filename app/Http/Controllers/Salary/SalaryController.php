@@ -30,6 +30,7 @@ use Artisan;
 use Auth;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -1050,7 +1051,7 @@ class SalaryController extends Controller
     public function bonuses(Request $request): mixed
     {
         $date = Carbon::parse($request->date);
-        return TimetrackingHistory::query()
+        return TimetrackingHistory::withTrashed()
             ->where('user_id', $request->user_id)
             ->whereYear('date', $date->year)
             ->whereMonth('date', $date->month)
@@ -1075,18 +1076,18 @@ class SalaryController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return Collection
      */
-    public function fines(Request $request): mixed
+    public function fines(Request $request): Collection
     {
-        $date = Carbon::parse($request->date);
-        $user = User::query()->find($request->user_id);
+        $date = Carbon::parse($request->get('date'));
+        /** @var User $user */
+        $user = User::query()->find($request->get('user_id'));
 
         return $user->fines()
             ->whereYear('day', $date->year)
             ->whereMonth('day', $date->month)
             ->get();
-
     }
 
     /**

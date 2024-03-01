@@ -435,7 +435,7 @@
 
 
 				<div class="mt-3">
-					<p class="mt-3">
+					<!-- <p class="mt-3">
 						<b>Бонусы локальные</b>
 					</p>
 					<div
@@ -450,7 +450,7 @@
 							{{ editedField.item.bonuses[item] }}
 						</p>
 					</div>
-					<hr>
+					<hr> -->
 
 					<p class="mt-3">
 						<b>Бонусы за активности</b>
@@ -467,52 +467,78 @@
 						</p>
 					</div>
 
-					<p class="mt-3">
+					<!-- <p class="mt-3">
 						<b>Бонусы за обучение</b>
 					</p>
 					<div
-						v-for="(item,index) in Object.keys(editedField.item.test_bonus)"
+						v-for="(item,index) in editedField.item.test_bonuses.slice().sort((a, b) => Number(a.day) - Number(b.day))"
 						:key="index"
+						class="AvansHistoryItem"
 					>
-						<p
-							v-if=" editedField.item.test_bonus[item] != null"
-							class="fz12"
-						>
-							<b class="text-black">{{ item }}:</b> {{ editedField.item.test_bonus[item] }}
-						</p>
-					</div>
-					<hr>
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(item.date).format('DD.MM.YYYY') }}</b>
+							</div>
+							<div
+								v-if="item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="restoreHistory(item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="removeHistory(item)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</div>
+						eslint-disable vue/no-v-html
+						<div
+							class="AvansHistoryItem-text"
+							v-html="`Добавлен бонус на сумму ${item.amount}<br>Комментарии: ${item.comment}`"
+						/>
+						<hr>
+					</div> -->
 
 					<p class="mt-3">
-						<b>Авансы </b>
-					</p>
-					<div
-						v-for="(item,index) in Object.keys(editedField.item.avanses)"
-						:key="index"
-					>
-						<p
-							v-if=" editedField.item.avanses[item] != null"
-							class="fz12"
-						>
-							<b class="text-black">{{ item }}:</b> {{ editedField.item.avanses[item] }}
-						</p>
-					</div>
-					<hr>
-
-					<p class="mt-3">
-						<b>История {{ bonus_history.length }}</b>
+						<b>История</b>
 					</p>
 					<div
 						v-for="(item,index) in bonus_history"
 						:key="index"
 						class="mb-3"
 					>
-						<p class="fz12">
-							<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
-						</p>
-						<p class="fz12">
-							<b class="text-black">Автор:</b> {{ item.author }} <br>
-						</p>
+						<div class="AvansHistoryItem-header">
+							<div class="">
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+							</div>
+							<div
+								v-if="item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="restoreHistory(item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="removeHistory(item)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</div>
+
 						<!-- eslint-disable -->
 						<p
 							class="fz14 mb-0"
@@ -741,9 +767,30 @@
 					v-for="avansItem in avans_history"
 					:key="avansItem.id"
 					class="AvansHistoryItem"
+					:class="{
+						'AvansHistoryItem_deleted': avansItem.deleted_at
+					}"
 				>
-					<div class="AvansHistoryItem-date">
-						<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+					<div class="AvansHistoryItem-header">
+						<div class="AvansHistoryItem-date">
+							<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+						</div>
+						<div
+							v-if="avansItem.deleted_at"
+							class="AvansHistoryItem-restore pointer mr-2"
+							title="Восстановить"
+							@click="restoreHistory(avansItem)"
+						>
+							<i class="fas fa-undo" />
+						</div>
+						<div
+							v-else
+							class="AvansHistoryItem-delete pointer mr-2"
+							title="Удалить"
+							@click="removeHistory(avansItem)"
+						>
+							<i class="fas fa-times" />
+						</div>
 					</div>
 					<!-- eslint-disable vue/no-v-html -->
 					<div
@@ -771,8 +818,26 @@
 						:key="fineIndex"
 						class="AvansHistoryItem"
 					>
-						<div class="AvansHistoryItem-date">
-							<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+							</div>
+							<div
+								v-if="fineItem.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="restoreHistory(fineItem)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="removeHistory(fineItem)"
+							>
+								<i class="fas fa-times" />
+							</div>
 						</div>
 						<!-- eslint-disable vue/no-v-html -->
 						<div
@@ -1319,7 +1384,7 @@ export default {
 					let salary = 0;
 					let total = 0;
 
-					if(item.earnings[tt.day] !== null) {
+					if(item.earnings[tt.day]) {
 						salary = Number(item.earnings[tt.day]);
 						total = salary;
 					}
@@ -1327,26 +1392,26 @@ export default {
 					// salary earned to total
 					if(Number(salary) != 0) personalTotal += parseInt(salary);
 
-					if(tt.paid !== null) {
+					if(tt.paid) {
 						personalAvanses += parseInt(tt.paid, 0);
 					}
 
-					if(item.bonuses[tt.day] !== null) {
+					if(item.bonuses[tt.day]) {
 						personalBonuses += Number(item.bonuses[tt.day]);
 						total += Number(item.bonuses[tt.day]);
 					}
 
-					if(item.awards[tt.day] !== null) {
+					if(item.awards[tt.day]) {
 						personalBonuses += Number(item.awards[tt.day]);
 						total += Number(item.awards[tt.day]);
 					}
 
-					if(item.test_bonus[tt.day] !== null) {
-						personalBonuses += Number(item.test_bonus[tt.day]);
-						total += Number(item.test_bonus[tt.day]);
-					}
+					// if(item.test_bonus[tt.day]) {
+					// 	personalBonuses += Number(item.test_bonus[tt.day]);
+					// 	total += Number(item.test_bonus[tt.day]);
+					// }
 
-					if(item.fine[tt.day] !== null) {
+					if(item.fine[tt.day]) {
 						let fine_for_day = 0;
 						item.fine[tt.day].forEach(el => {
 							Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
@@ -1854,6 +1919,30 @@ export default {
 			this.kpiSidebar = true
 			loader.hide()
 		},
+
+		async removeHistory(item){
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			try {
+				await this.axios.delete(`/timetracking/salaries/histories/${item.id}`)
+				item.deleted_at = new Date().toISOString()
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		async restoreHistory(item){
+			/* eslint-disable require-atomic-updates */
+			try {
+				await this.axios.post(`/timetracking/salaries/histories/${item.id}`)
+				item.deleted_at = null
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+			/* eslint-enable require-atomic-updates */
+		},
 	},
 };
 </script>
@@ -2241,8 +2330,24 @@ hr {
 .AvansHistoryItem{
 	padding: 4px 0;
 	line-height: 1.3;
+	&_deleted{
+		background-color: #fdd;
+	}
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 10px;
+	}
+	&-date{
+		flex: 1;
+	}
 	&-text{
 		font-size: 0.95em;
+	}
+	&-delete{
+		color: red;
 	}
 }
 

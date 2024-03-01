@@ -98,7 +98,7 @@ class KpiStatController extends Controller
      */
     public function fetchKpiGroupsAndUsers(Request $request): JsonResponse
     {
-        $response = $this->service->fetchKpiGroupsAndUsers($request);
+        $response = $this->service->fetchKpiGroupsAndUsers($request->filters);
 
         return response()->json($response);
     }
@@ -197,9 +197,9 @@ class KpiStatController extends Controller
 
     /**
      * @param UpdatedUserStatUpdateRequest $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function updateStat(UpdatedUserStatUpdateRequest $request)
+    public function updateStat(UpdatedUserStatUpdateRequest $request): JsonResponse
     {
         $response = (new UpdatedUserStatService)->updateOrCreate(
             $request->user_id ?? null,
@@ -210,11 +210,11 @@ class KpiStatController extends Controller
         );
 
         Artisan::call('user:save_kpi', [
-            'date' => $request->date,
-            'user_id' => $request->user_id
+            'date' => $request->get('date'),
+            'user_id' => $request->get('user_id')
         ]);
 
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**

@@ -3,12 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Events\KpiChangedEvent;
-use App\Kpi;
+use App\Models\Kpi\Kpi;
 use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,10 +18,11 @@ use RuntimeException;
 
 class SaveUserKpi extends Command
 {
-
     public KpiStatisticService $repo;
     public CalculateKpiService2 $calculator;
+
     protected $signature = 'user:save_kpi {date?} {user_id?}';
+
     protected $description = 'Сохранить kpi';
     private KpiStatisticService $statisticService;
 
@@ -39,11 +42,25 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
+
         // get kpis
-        $kpis = $this->statisticService->kpis($date, [
-            'only_active' => false
-        ], Kpi::withTrashed()->where(fn($query) => $query->whereNull('kpis.deleted_at')
-            ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d')))))->get();
+        $query = Kpi::withTrashed()
+            ->when($this->argument('user_id'), function (Builder $query) use ($date) {
+                $query->where(function (Builder $query) use ($date) {
+                    $query->where('targetable_id', $this->argument('user_id'));
+                    $query->where('targetable_type', User::class);
+                    $query->orWhereHas('users', fn($q) => $q
+                        ->where('users.id', $this->argument('user_id'))
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
+                });
+            })
+            ->where(fn($query) => $query
+                ->whereNull('kpis.deleted_at')
+                ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
+
+        $kpis = $this->statisticService->kpis($date, [], $query)->get();
+
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
@@ -76,7 +93,6 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
@@ -97,23 +113,23 @@ class SaveUserKpi extends Command
     private function updateSavedKpi(array $data): void
     {
 
-        $exists = SavedKpi::query()
+        $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
 
-        if ($exists) {
-            $exists->total += $data['total'];
-            $exists->save();
+        if ($saved) {
+            $saved->total += $data['total'];
+            $saved->save();
         } else {
-            SavedKpi::query()->create([
+            $saved = SavedKpi::query()->create([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
                 'total' => $data['total']
             ]);
         }
-
+        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->totoal);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }
