@@ -7,8 +7,10 @@ use App\Models\Kpi\Kpi;
 use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,10 +18,11 @@ use RuntimeException;
 
 class SaveUserKpi extends Command
 {
-
     public KpiStatisticService $repo;
     public CalculateKpiService2 $calculator;
+
     protected $signature = 'user:save_kpi {date?} {user_id?}';
+
     protected $description = 'Сохранить kpi';
     private KpiStatisticService $statisticService;
 
@@ -39,18 +42,28 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
+
         // get kpis
+        $query = Kpi::withTrashed()
+            ->when($this->argument('user_id'), function (Builder $query) use ($date) {
+                $query->where(function (Builder $query) use ($date) {
+                    $query->where('targetable_id', $this->argument('user_id'));
+                    $query->where('targetable_type', User::class);
+                    $query->orWhereHas('users', fn($q) => $q
+                        ->where('id', $this->argument('user_id'))
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
+                });
+            })
+            ->where(fn($query) => $query
+                ->whereNull('kpis.deleted_at')
+                ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
+
         $kpis = $this->statisticService->kpis(
             $date,
-            [
-                'only_active' => false
-            ],
-            Kpi::withTrashed()
-                ->where(fn($query) => $query
-                    ->whereNull('kpis.deleted_at')
-                    ->orWhere(fn($query) => $query->whereDate('kpis.deleted_at', '>', $date->format('Y-m-d'))))
-        )
-            ->get();
+            [],
+            $query
+        )->get();
 
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
@@ -74,26 +87,6 @@ class SaveUserKpi extends Command
 
                 if (isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
-                }
-
-                foreach ($kpi->items as $item) {
-                    $history = $item->histories->whereBetween('created_at', [$date->startOfMonth(), $date->endOfMonth()])->first();
-                    $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-                    $item['daily_plan'] = (float)$item->plan;
-                    if ($has_edited_plan) {
-                        if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
-                        if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
-                        if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
-                        if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
-                        if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
-                        if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
-                        if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
-                        if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
-                        if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
-                        if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
-                        if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
-                    }
-                    $item['plan'] = $item['daily_plan'];
                 }
             }
             try {

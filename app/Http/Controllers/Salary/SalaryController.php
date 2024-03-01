@@ -1050,7 +1050,7 @@ class SalaryController extends Controller
     public function bonuses(Request $request): mixed
     {
         $date = Carbon::parse($request->date);
-        return TimetrackingHistory::query()
+        return TimetrackingHistory::withTrashed()
             ->where('user_id', $request->user_id)
             ->whereYear('date', $date->year)
             ->whereMonth('date', $date->month)

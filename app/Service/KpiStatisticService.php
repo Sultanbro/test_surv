@@ -1142,13 +1142,6 @@ class KpiStatisticService
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
 
-//                $this->takeUpdatedValue($_item->id,
-//                    $item['activity_id'],
-//                    $date,
-//                    $item,
-//                    $user['id']
-//                );
-
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1158,9 +1151,6 @@ class KpiStatisticService
                 $history = $_item->histories_latest;
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
-                /**
-                 * fields from history
-                 */
                 $item['daily_plan'] = (float)$_item->plan;
 
                 if ($has_edited_plan) {
@@ -1204,24 +1194,6 @@ class KpiStatisticService
                         $item['workdays'] = $has_workdays['user_work_days'];
                     }
                 }
-//
-//                /**
-//                 * sum method in kpi_item
-//                 * change plan
-//                 */
-//                if ($item['method'] == 1) {
-//
-//                    /**
-//                     * for part timer reduce plan twice
-//                     */
-//                    if ($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
-//
-//                    /**
-//                     * final plan
-//                     */
-//                    $item['plan'] = round((int)$item['plan'] * (int)$percent_of_plan_for_sum_method);
-//                }
-
                 $kpi_items[] = $item;
             }
 
@@ -1231,7 +1203,6 @@ class KpiStatisticService
             } else {
                 $user['avg_percent'] = 0;
             }
-
 
             $users[] = $user;
         }
