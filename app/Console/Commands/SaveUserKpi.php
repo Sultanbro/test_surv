@@ -59,8 +59,12 @@ class SaveUserKpi extends Command
                 ->whereNull('kpis.deleted_at')
                 ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
 
-        $kpis = $this->statisticService->kpis($date, [], $query);
-        dd($kpis);
+        $filter['data_from']['year'] = $date->year;
+        $filter['data_from']['month'] = $date->month;
+        $filter['query_builder'] = $query;
+        $filter['only_records'] = true;
+
+        $kpis = $this->statisticService->kpis($date, $filter, $query);
         $this->truncate($date, $this->argument('user_id'));
         $this->calc($kpis, $date, $this->argument('user_id'));
     }
