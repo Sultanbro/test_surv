@@ -1746,7 +1746,7 @@ class KpiStatisticService
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
         }
 
-        if ($filters['only_records']) return $kpis->items();
+        if ($filters['only_records'] ?? false) return $kpis->items();
 
         return [
             'paginator' => $kpis,

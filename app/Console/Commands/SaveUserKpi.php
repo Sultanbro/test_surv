@@ -62,6 +62,7 @@ class SaveUserKpi extends Command
         $filter['data_from']['year'] = $date->year;
         $filter['data_from']['month'] = $date->month;
         $filter['query_builder'] = $query;
+        $filter['only_records'] = true;
 
         $kpis = $this->statisticService->fetchKpiGroupsAndUsers($filter);
         dd($kpis);
