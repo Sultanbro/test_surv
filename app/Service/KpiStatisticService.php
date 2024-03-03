@@ -1693,10 +1693,9 @@ class KpiStatisticService
                     ProfileGroup::class,
                     Position::class
                 ], function (Builder $query, string $type) use ($targetable, $last_date) {
-                    $table = Kpi::MORHPS[$type];
-                    if ($type !== ProfileGroup::class) {
-                        $query->whereNull($table . '.deleted_at');
-                        $query->orWhere($table . '.deleted_at', '>', $last_date);
+                    if ($type === User::class) {
+                        $query->whereNull('users.deleted_at');
+                        $query->orWhere('users.deleted_at', '>', $last_date);
                     }
                     $query->when($targetable, function (Builder $query) use ($targetable) {
                         $query->where('targetable_id', $targetable['id']);
