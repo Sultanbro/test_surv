@@ -780,7 +780,6 @@ class Salary extends Model
                 if ($earnings[$i] && $s) {
                     $allTotal += $earnings[$i];
                 }
-                dd_if($user->id == 31451 && $i == 29, $allTotal);
             }
 
             /**
