@@ -1664,7 +1664,7 @@ class KpiStatisticService
                     value: $groupId
                 );
             })
-            ->when($searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
+            ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
