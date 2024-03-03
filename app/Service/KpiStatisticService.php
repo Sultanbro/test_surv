@@ -805,13 +805,9 @@ class KpiStatisticService
         return User::query()
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
-            ->leftJoin('kpis as kp', function (JoinClause $kp) {
+            ->join('kpis as kp', function (JoinClause $kp) {
                 $kp->on('kp.targetable_id', '=', 'gu.group_id')
                     ->where('kp.targetable_type', '=', self::PROFILE_GROUP);
-            })
-            ->leftJoin('kpiables as kp_pivot', function (JoinClause $kp) {
-                $kp->on('kp_pivot.kpiable_id', '=', 'gu.group_id');
-                $kp->where('kp_pivot.kpiable_type', '=', self::PROFILE_GROUP);
             })
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
             ->join('activities as a', 'ki.activity_id', '=', 'a.id')
@@ -1739,6 +1735,13 @@ class KpiStatisticService
         ];
     }
 
+    /**
+     * Вытащить список Групп и Пользователей с KPI
+     *
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
+     */
     public function fetchKpiGroupsAndUsers(array $filters): array
     {
         $groupId = $filters['group_id'] ?? null;
@@ -1815,7 +1818,6 @@ class KpiStatisticService
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
         $query ?: Kpi::withTrashed();
-
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
@@ -2071,6 +2073,13 @@ class KpiStatisticService
         return $users;
     }
 
+    /**
+     * Вытащить список kpi со статистикой
+     *
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
+     */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
     {
         $this->dateFromRequest($request);
@@ -2082,29 +2091,22 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-
-        $date = $this->from;
-        $last_date = $date->endOfMonth()->format("Y-m-d");
-
         /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
-                'histories_latest' => function ($query) use ($date) {
-                    $query->whereYear('created_at', $date->year);
-                    $query->whereMonth('created_at', $date->month);
+                'histories_latest' => function ($query) {
+                    $query->whereBetween('created_at', [$this->from, $this->to]);
                 },
-                'items.histories_latest' => function ($query) use ($date) {
-                    $query->whereYear('created_at', $date->year);
-                    $query->whereMonth('created_at', $date->month);
+                'items.histories_latest' => function ($query) {
+                    $query->whereBetween('created_at', [$this->from, $this->to]);
                 },
-                'items' => function (HasMany $query) use ($last_date, $date) {
-                    $query->with(['histories' => function (MorphMany $query) use ($date) {
-                        $query->whereYear('created_at', $date->year);
-                        $query->whereMonth('created_at', $date->month);
+                'items' => function (HasMany $query) {
+                    $query->with(['histories' => function (MorphMany $query) {
+                        $query->whereBetween('created_at', [$this->from, $this->to]);
                     }]);
-                    $query->where(function (Builder $query) use ($last_date) {
+                    $query->where(function (Builder $query) {
                         $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $last_date);
+                        $query->orWhere('deleted_at', '>', $this->to);
                     });
                 },
                 'items.activity'
@@ -2130,7 +2132,8 @@ class KpiStatisticService
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('groups', fn($q) => $q
-                        ->where('kpi_id', $targetableId));
+                        ->where('kpi_id', $targetableId)
+                        ->where('active', 1));
                 });
             })
             ->firstOrFail();
@@ -2138,7 +2141,6 @@ class KpiStatisticService
         if (isset($payload['children'])) {
             $kpi->items = $kpi->items->whereIn('id', $payload['children']);
         }
-
         foreach ($kpi->items as $item) {
             $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
