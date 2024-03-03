@@ -1694,6 +1694,7 @@ class KpiStatisticService
                         $query->orWhere('users.deleted_at', '>', $last_date);
                     }
                     $query->when($targetable, function (Builder $query) use ($targetable) {
+                        dd($targetable);
                         $query->where('targetable_id', $targetable['id']);
                         $query->where('targetable_type', $targetable['type']);
                     });
