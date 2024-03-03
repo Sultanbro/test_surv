@@ -119,7 +119,7 @@ class SaveUserKpi extends Command
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
-
+                    dd($startOfMonth->format("Y-m-d"));
                     $this->updateSavedKpi([
                         'total' => $total,
                         'user_id' => $user['id'],
