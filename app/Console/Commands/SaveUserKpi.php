@@ -41,8 +41,8 @@ class SaveUserKpi extends Command
     public function handle(): void
     {
         $date = Carbon::parse($this->argument('date') ?? now());
-        $startOfMonth = $date->startOfMonth();
-        $endOfMonth = $date->endOfMonth();
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
         // get kpis
         $query = Kpi::withTrashed()
             ->when($this->argument('user_id'), function (Builder $query) use ($endOfMonth) {
@@ -78,7 +78,6 @@ class SaveUserKpi extends Command
     {
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
-        dd($startOfMonth);
         foreach ($kpis as $kpi) {
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
