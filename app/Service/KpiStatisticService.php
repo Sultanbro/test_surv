@@ -1687,8 +1687,8 @@ class KpiStatisticService
                 'items.activity'
             ])
             ->where(function (Builder $query) use ($last_date, $targetable) {
+                dd($targetable);
                 $query->where(function (Builder $query) use ($last_date, $targetable) {
-                    dd($targetable);
                     $query->withWhereHas('targetable', function ($q) use ($last_date, $targetable) {
                         if ($q->getModel() instanceof User) {
                             $q->whereNull('deleted_at')
