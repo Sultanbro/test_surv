@@ -610,6 +610,7 @@ class Salary extends Model
             /////// TTS
             $tts = $user->timetracking
                 ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
+            dd_if($user->id == 31451, $tts);
             $tts_before_apply = $user->timetracking
                 ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
             $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
