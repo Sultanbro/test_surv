@@ -846,7 +846,7 @@ export default {
 					}
 				}
 				catch (error) {
-					this.$onError(error)
+					this.$onError({error})
 				}
 			}
 
@@ -857,7 +857,7 @@ export default {
 				})
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 
 			try {
@@ -886,7 +886,7 @@ export default {
 				this.messageoff()
 			}
 			catch (error) {
-				this.$onError(error)
+				this.$onError({error})
 			}
 
 			loader.hide()

@@ -40,7 +40,7 @@ class HistoryController extends Controller
 
     private function template(ReasonRequest $request): string
     {
-        return "<br>" . $request->action() . " сотрудником" . $request->user()->name . ' ' . date('d.m.Y')
+        return "<br>" . $request->action() . " сотрудником " . $request->user()->name . ' ' . $request->user()->last_name . ' ' . date('d.m.Y')
             . "<br>Причина: " . $request->reason();
     }
 
