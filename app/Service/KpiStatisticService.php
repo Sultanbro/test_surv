@@ -1700,7 +1700,7 @@ class KpiStatisticService
                         });
                     });
                 });
-                $query->where(function (Builder $query) use ($last_date, $targetable) {
+                $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
                     $query->withWhereHas('users', fn($q) => $q
                         ->when($targetable, fn($query) => $query
                             ->where('kpiables.kpiable_id', $targetable['id'])
@@ -1709,7 +1709,7 @@ class KpiStatisticService
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date));
                 });
-                $query->where(function (Builder $query) use ($last_date, $targetable) {
+                $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
                     $query->withWhereHas('positions', fn(Builder $query) => $query
                         ->when($targetable, fn(Builder $query) => $query
                             ->where('kpiables.kpiable_id', $targetable['id'])
@@ -1718,7 +1718,7 @@ class KpiStatisticService
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date));
                 });
-                $query->where(function (Builder $query) use ($last_date, $targetable) {
+                $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
                     $query->withWhereHas('groups', fn($q) => $q
                         ->when($targetable, fn($query) => $query
                             ->where('kpiables.kpiable_id', $targetable['id'])
