@@ -1747,7 +1747,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $workChartName = $this->workChart->name;
-        dd_if($this->id == 3460, $workChartName);
 
         if ($workChartName == "2-2") {
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
@@ -1764,6 +1763,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $daysInMonth = $requestDate->daysInMonth;
+        $daysInMonth = $daysInMonth < 30 ? $daysInMonth + (30 - $daysInMonth) : $daysInMonth;
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
@@ -1777,6 +1777,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 $workDayInMonth++;
             }
         }
+
         return $workDayInMonth;
     }
 
