@@ -77,15 +77,12 @@ class SaveUserKpi extends Command
     private function calc($kpis, Carbon $date, $userId = null): void
     {
         foreach ($kpis as $kpi) {
-            $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
 
                 if (isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
-                $kpi->completed_80 = $payload['completed_80'];
-                $kpi->completed_100 = $payload['completed_100'];
             }
 
             foreach ($kpi->items as $item) {
@@ -116,6 +113,7 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
+                    dd_if($user['id'] == 1739, $user);
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
