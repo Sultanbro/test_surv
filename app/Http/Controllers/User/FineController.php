@@ -66,8 +66,8 @@ class FineController extends Controller
     /**
      * Добавление штрафов пользователю
      *
-     * @param UpdateUserFinesDTO $request
-     * @param array $currentUserFines
+     * @param UpdateUserFinesDTO $dto
+     * @param array $newFines
      * @param string|null $comment
      */
     protected function addUserFines(UpdateUserFinesDTO $dto, array $newFines, string $comment = null)

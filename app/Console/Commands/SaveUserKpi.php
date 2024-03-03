@@ -129,7 +129,7 @@ class SaveUserKpi extends Command
                 'total' => $data['total']
             ]);
         }
-        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->totoal);
+        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->total);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }
