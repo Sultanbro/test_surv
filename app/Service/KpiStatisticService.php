@@ -1655,16 +1655,6 @@ class KpiStatisticService
         $query ?: Kpi::withTrashed();
 
         return $query
-            ->when($groupId, function (Builder $subQuery) use ($groupId) {
-                $subQuery->where('targetable_id', $groupId);
-                $subQuery->orWhereRelation(
-                    relation: 'groups',
-                    column: 'kpiable_id',
-                    operator: '=',
-                    value: $groupId
-                );
-            })
-            ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
                     $query->whereYear('created_at', $date->year);
@@ -1686,47 +1676,46 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where(function (Builder $query) use ($last_date, $targetable) {
-                dd($targetable);
-                $query->where(function (Builder $query) use ($last_date, $targetable) {
-                    $query->withWhereHas('targetable', function ($q) use ($last_date, $targetable) {
-                        if ($q->getModel() instanceof User) {
-                            $q->whereNull('deleted_at')
-                                ->orWhere('deleted_at', '>', $last_date);
-                        } elseif ($q->getModel() instanceof Position) {
-                            $q->whereNull('deleted_at')
-                                ->orWhereDate('deleted_at', '>', $last_date);
-                        }
-                        $q->when($targetable, function (Builder $query) use ($targetable) {
-                            $query->where('targetable_id', $targetable['id']);
-                            $query->where('targetable_type', $targetable['type']);
-                        });
-                    });
-                });
-                $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
-                    $query->withWhereHas('users', fn($q) => $q
-                        ->when($targetable, fn($query) => $query
-                            ->where('kpiables.kpiable_id', $targetable['id'])
-                            ->where('kpiables.kpiable_id', $targetable['type'])
-                        )
-                        ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $last_date));
-                    $query->withWhereHas('positions', fn($q) => $q
-                        ->when($targetable, fn($query) => $query
-                            ->where('kpiables.kpiable_id', $targetable['id'])
-                            ->where('kpiables.kpiable_id', $targetable['type'])
-                        )
-                        ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $last_date));
-                    $query->withWhereHas('groups', fn($q) => $q
-                        ->when($targetable, fn($query) => $query
-                            ->where('kpiables.kpiable_id', $targetable['id'])
-                            ->where('kpiables.kpiable_id', $targetable['type'])
-                        )
-                    );
-                });
-            })
             ->where('kpis.created_at', '<=', $last_date)
+            ->when($groupId, function (Builder $subQuery) use ($groupId) {
+                $subQuery->where('targetable_id', $groupId);
+                $subQuery->orWhereRelation(
+                    relation: 'groups',
+                    column: 'kpiable_id',
+                    operator: '=',
+                    value: $groupId
+                );
+            })
+            ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
+            ->where(function (Builder $query) use ($last_date, $targetable) {
+                $query->whereHas('targetable', fn($q) => $q
+                    ->whereNull('deleted_at')->orWhere('deleted_at', '>', $last_date)
+                    ->when($targetable, function (Builder $query) use ($targetable) {
+                        $query->where('targetable_id', $targetable['id']);
+                        $query->where('targetable_type', $targetable['type']);
+                    })
+                );
+                $query->orWhereHas('users', fn($q) => $q
+                    ->when($targetable, fn($query) => $query
+                        ->where('kpiables.kpiable_id', $targetable['id'])
+                        ->where('kpiables.kpiable_id', $targetable['type'])
+                    )
+                    ->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $last_date));
+                $query->orWhereHas('positions', fn($q) => $q
+                    ->when($targetable, fn($query) => $query
+                        ->where('kpiables.kpiable_id', $targetable['id'])
+                        ->where('kpiables.kpiable_id', $targetable['type'])
+                    )
+                    ->whereNull('deleted_at')
+                    ->orWhereDate('deleted_at', '>', $last_date));
+                $query->orWhereHas('groups', fn($q) => $q
+                    ->when($targetable, fn($query) => $query
+                        ->where('kpiables.kpiable_id', $targetable['id'])
+                        ->where('kpiables.kpiable_id', $targetable['type'])
+                    )
+                );
+            })
             ->distinct();
     }
 
