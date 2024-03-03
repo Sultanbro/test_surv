@@ -1688,12 +1688,8 @@ class KpiStatisticService
             })
             ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->where(function (Builder $query) use ($last_date, $targetable) {
-                $query->whereHasMorph('targetable', [
-                    User::class,
-                    ProfileGroup::class,
-                    Position::class
-                ], function (Builder $query, string $type) use ($targetable, $last_date) {
-                    if ($type === User::class) {
+                $query->withWhereHas('targetable', function (Builder $query) use ($targetable, $last_date) {
+                    if ($query->getModel() instanceof User::class) {
                         $query->whereNull('users.deleted_at');
                         $query->orWhere('users.deleted_at', '>', $last_date);
                     }
@@ -1702,21 +1698,21 @@ class KpiStatisticService
                         $query->where('targetable_type', $targetable['type']);
                     });
                 });
-                $query->orWhereHas('users', fn($q) => $q
+                $query->withWhereHas('users', fn($q) => $q
                     ->when($targetable, fn($query) => $query
                         ->where('kpiables.kpiable_id', $targetable['id'])
                         ->where('kpiables.kpiable_id', $targetable['type'])
                     )
                     ->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $last_date));
-                $query->orWhereHas('positions', fn($q) => $q
-                    ->when($targetable, fn($query) => $query
+                $query->withWhereHas('positions', fn(Builder $query) => $query
+                    ->when($targetable, fn(Builder $query) => $query
                         ->where('kpiables.kpiable_id', $targetable['id'])
                         ->where('kpiables.kpiable_id', $targetable['type'])
                     )
                     ->whereNull('deleted_at')
                     ->orWhereDate('deleted_at', '>', $last_date));
-                $query->orWhereHas('groups', fn($q) => $q
+                $query->withWhereHas('groups', fn($q) => $q
                     ->when($targetable, fn($query) => $query
                         ->where('kpiables.kpiable_id', $targetable['id'])
                         ->where('kpiables.kpiable_id', $targetable['type'])
