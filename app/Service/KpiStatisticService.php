@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -739,7 +740,7 @@ class KpiStatisticService
     }
 
     /**
-     * @param Request $request
+     * @param array|null $filter
      * @return array
      */
     public function userWorkdays(?array $filter = null): array
@@ -799,13 +800,20 @@ class KpiStatisticService
      * @param $filters
      * @return Collection|array
      */
-    private
-    function getUserProfileGroup($filters): Collection|array
+    private function getUserProfileGroup($filters): Collection|array
     {
         return User::query()
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
-            ->join('kpis as kp', fn($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', self::PROFILE_GROUP))
+            ->join('kpis as kp', function (JoinClause $kp) {
+                $kp->on('kp.targetable_id', '=', 'gu.group_id')
+                    ->where('kp.targetable_type', '=', self::PROFILE_GROUP);
+            })
+            ->leftJoin('kpiables as kp_morph', 'kp_morph.kpi_id', '=', 'kp.id')
+            ->leftJoin('gu', function (JoinClause $kp) {
+                $kp->on('kp_morph.kpiable_id', '=', 'gu.id')
+                    ->where('kp_morph.kpiable_type', '=', self::PROFILE_GROUP);
+            })
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
             ->join('activities as a', 'ki.activity_id', '=', 'a.id')
             ->where('ud.is_trainee', 0)
@@ -1732,13 +1740,6 @@ class KpiStatisticService
         ];
     }
 
-    /**
-     * Вытащить список Групп и Пользователей с KPI
-     *
-     * getUsersForKpi($kpi)
-     * getUserStats($kpi, $_user_ids, $date)
-     * connectKpiWithUserStats(Kpi $kpi, $_users)
-     */
     public function fetchKpiGroupsAndUsers(array $filters): array
     {
         $groupId = $filters['group_id'] ?? null;
@@ -1800,7 +1801,13 @@ class KpiStatisticService
     {
         $searchWord = $filter['search_world'] ?? null;
         $groupId = $filter['group_id'] ?? null;
-        $this->workdays = collect($this->userWorkdays(['filters' => $date->startOfMonth()->format("Y-m-d")]));
+        $this->workdays = collect($this->userWorkdays(
+            [
+                'filters' => [
+                    'date_from' => $date->startOfMonth()->format("Y-m-d")
+                ]
+            ]));
+
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
@@ -1809,6 +1816,7 @@ class KpiStatisticService
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
         $query ?: Kpi::withTrashed();
+
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
@@ -2064,13 +2072,6 @@ class KpiStatisticService
         return $users;
     }
 
-    /**
-     * Вытащить список kpi со статистикой
-     *
-     * getUsersForKpi($kpi)
-     * getUserStats($kpi, $_user_ids, $date)
-     * connectKpiWithUserStats(Kpi $kpi, $_users)
-     */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
     {
         $this->dateFromRequest($request);
@@ -2082,22 +2083,29 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
+
+        $date = $this->from;
+        $last_date = $date->endOfMonth()->format("Y-m-d");
+
         /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
-                'histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
+                'histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 },
-                'items.histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
+                'items.histories_latest' => function ($query) use ($date) {
+                    $query->whereYear('created_at', $date->year);
+                    $query->whereMonth('created_at', $date->month);
                 },
-                'items' => function (HasMany $query) {
-                    $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereBetween('created_at', [$this->from, $this->to]);
+                'items' => function (HasMany $query) use ($last_date, $date) {
+                    $query->with(['histories' => function (MorphMany $query) use ($date) {
+                        $query->whereYear('created_at', $date->year);
+                        $query->whereMonth('created_at', $date->month);
                     }]);
-                    $query->where(function (Builder $query) {
+                    $query->where(function (Builder $query) use ($last_date) {
                         $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $this->to);
+                        $query->orWhere('deleted_at', '>', $last_date);
                     });
                 },
                 'items.activity'
@@ -2123,8 +2131,7 @@ class KpiStatisticService
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $this->from));
                     $query->orWhereHas('groups', fn($q) => $q
-                        ->where('kpi_id', $targetableId)
-                        ->where('active', 1));
+                        ->where('kpi_id', $targetableId));
                 });
             })
             ->firstOrFail();
@@ -2132,6 +2139,7 @@ class KpiStatisticService
         if (isset($payload['children'])) {
             $kpi->items = $kpi->items->whereIn('id', $payload['children']);
         }
+
         foreach ($kpi->items as $item) {
             $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
