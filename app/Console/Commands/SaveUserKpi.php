@@ -76,8 +76,8 @@ class SaveUserKpi extends Command
 
     private function calc($kpis, Carbon $date, $userId = null): void
     {
-        $startOfMonth = $date->startOfMonth();
-        $endOfMonth = $date->endOfMonth();
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
         dd($startOfMonth);
         foreach ($kpis as $kpi) {
             if ($kpi->histories_latest) {
