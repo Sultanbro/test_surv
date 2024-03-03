@@ -40,29 +40,29 @@ class SaveUserKpi extends Command
 
     public function handle(): void
     {
-        $date = Carbon::parse($this->argument('date') ?? now())
-            ->startOfMonth();
+        $date = Carbon::parse($this->argument('date') ?? now());
         $startOfMonth = $date->startOfMonth();
+        $endOfMonth = $date->endOfMonth();
         // get kpis
         $query = Kpi::withTrashed()
-            ->when($this->argument('user_id'), function (Builder $query) use ($date) {
-                $query->where(function (Builder $query) use ($date) {
+            ->when($this->argument('user_id'), function (Builder $query) use ($endOfMonth) {
+                $query->where(function (Builder $query) use ($endOfMonth) {
                     $query->where('targetable_id', $this->argument('user_id'));
                     $query->where('targetable_type', User::class);
                     $query->orWhereHas('users', fn($q) => $q
                         ->where('users.id', $this->argument('user_id'))
                         ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
+                        ->orWhereDate('deleted_at', '>', $endOfMonth));
                 });
             })
             ->where(fn($query) => $query
                 ->whereNull('kpis.deleted_at')
-                ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
+                ->orWhere('kpis.deleted_at', '>', $startOfMonth->format('Y-m-d')));
 
-        $kpis = $this->statisticService->kpis($date, [], $query)->get();
+        $kpis = $this->statisticService->kpis($startOfMonth, [], $query)->get();
 
-        $this->truncate($date, $this->argument('user_id'));
-        $this->calc($kpis, $date, $this->argument('user_id'));
+        $this->truncate($startOfMonth, $this->argument('user_id'));
+        $this->calc($kpis, $startOfMonth, $this->argument('user_id'));
     }
 
     private function truncate(Carbon $date, $userId = null): void
@@ -76,6 +76,9 @@ class SaveUserKpi extends Command
 
     private function calc($kpis, Carbon $date, $userId = null): void
     {
+        $startOfMonth = $date->startOfMonth();
+        $endOfMonth = $date->endOfMonth();
+
         foreach ($kpis as $kpi) {
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
@@ -86,7 +89,7 @@ class SaveUserKpi extends Command
             }
 
             foreach ($kpi->items as $item) {
-                $history = $item->histories->whereBetween('created_at', [$date->startOfMonth(), $date->endOfMonth()])->first();
+                $history = $item->histories->whereBetween('created_at', [$startOfMonth, $endOfMonth])->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 $item['daily_plan'] = (float)$item->plan;
                 if ($has_edited_plan) {
@@ -120,7 +123,7 @@ class SaveUserKpi extends Command
                     $this->updateSavedKpi([
                         'total' => $total,
                         'user_id' => $user['id'],
-                        'date' => $date->format("Y-m-d")
+                        'date' => $startOfMonth->format("Y-m-d")
                     ]);
                 }
             } catch (RuntimeException $e) {
@@ -132,12 +135,13 @@ class SaveUserKpi extends Command
 
     private function updateSavedKpi(array $data): void
     {
-
+        dd($data['date']);
         $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
+
         if ($saved) {
             $saved->total += $data['total'];
             $saved->save();
