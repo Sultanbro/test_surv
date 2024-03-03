@@ -1764,7 +1764,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $daysInMonth = $requestDate->daysInMonth;
-        $daysInMonth = $daysInMonth < 30 ? $daysInMonth + (30 - $daysInMonth) : $daysInMonth;
+//        $daysInMonth = $daysInMonth < 30 ? $daysInMonth + (30 - $daysInMonth) : $daysInMonth;
+        dd_if($this->id == 3460, $daysInMonth);
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
@@ -1779,7 +1780,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             }
         }
 
-        dd_if($this->id == 3460, $workDayInMonth);
 
         return $workDayInMonth;
     }
