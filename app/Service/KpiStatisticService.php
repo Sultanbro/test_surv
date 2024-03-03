@@ -1704,15 +1704,25 @@ class KpiStatisticService
                 });
                 $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
                     $query->withWhereHas('users', fn($q) => $q
+                        ->when($targetable, fn($query) => $query
+                            ->where('kpiables.kpiable_id', $targetable['id'])
+                            ->where('kpiables.kpiable_id', $targetable['type'])
+                        )
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date));
                     $query->withWhereHas('positions', fn($q) => $q
+                        ->when($targetable, fn($query) => $query
+                            ->where('kpiables.kpiable_id', $targetable['id'])
+                            ->where('kpiables.kpiable_id', $targetable['type'])
+                        )
                         ->whereNull('deleted_at')
                         ->orWhereDate('deleted_at', '>', $last_date));
-                    $query->withWhereHas('groups');
-                    $query->when($targetable, fn($query) => $query
-                        ->where('kpiable_id', $targetable['id'])
-                        ->where('kpiable_type', $targetable['type']));
+                    $query->withWhereHas('groups', fn($q) => $q
+                        ->when($targetable, fn($query) => $query
+                            ->where('kpiables.kpiable_id', $targetable['id'])
+                            ->where('kpiables.kpiable_id', $targetable['type'])
+                        )
+                    );
                 });
             })
             ->where('kpis.created_at', '<=', $last_date)
