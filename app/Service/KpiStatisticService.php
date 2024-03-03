@@ -1688,14 +1688,19 @@ class KpiStatisticService
             })
             ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->where(function (Builder $query) use ($last_date, $targetable) {
-                $query->whereHas('targetable', fn($q) => $q
-                    ->whereNull('targetable.deleted_at')
-                    ->orWhere('targetable.deleted_at', '>', $last_date)
-                    ->when($targetable, function (Builder $query) use ($targetable) {
+                $query->whereHasMorph('targetable', [
+                    User::class,
+                    ProfileGroup::class,
+                    Position::class
+                ], function (Builder $query, string $type) use ($targetable, $last_date) {
+                    $table = Kpi::MORHPS[$type];
+                    $query->whereNull($table . '.deleted_at');
+                    $query->orWhere($table . '.deleted_at', '>', $last_date);
+                    $query->when($targetable, function (Builder $query) use ($targetable) {
                         $query->where('targetable_id', $targetable['id']);
                         $query->where('targetable_type', $targetable['type']);
-                    })
-                );
+                    });
+                });
                 $query->orWhereHas('users', fn($q) => $q
                     ->when($targetable, fn($query) => $query
                         ->where('kpiables.kpiable_id', $targetable['id'])
