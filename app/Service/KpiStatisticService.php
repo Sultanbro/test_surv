@@ -20,7 +20,6 @@ use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use App\User;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -95,28 +94,11 @@ class KpiStatisticService
         3 => 'App\Position',
     ];
 
-    /**
-     * Workdays for kpi_items
-     */
     public $workdays;
 
-    /**
-     * UpdatedUserStat for kpi_items
-     */
     public $updatedValues;
 
-    /**
-     * Daily plan from histories for kpi_items
-     */
-    public $dailyPlans;
 
-    /**
-     * Asis for recruiters
-     * temp decision
-     *
-     * after moving from asi to userstat delete
-     */
-    public $asis;
     private Carbon $from;
     private Carbon $to;
 
@@ -128,11 +110,6 @@ class KpiStatisticService
         return $this->getUserKpis($group, $parameters);
     }
 
-    /**
-     * @param $group
-     * @param $parameters
-     * @return array
-     */
     private function getUserKpis($group, $parameters): array
     {
         $userIds = $group->users()->pluck('id')->toArray();
@@ -161,14 +138,7 @@ class KpiStatisticService
         ])->get()->toArray();
     }
 
-    /**
-     * С фронта прилитает тип метода подробнее в CalculateKpiService
-     * @param Request $request
-     * @param User $user
-     * @return array
-     * @throws Exception
-     */
-    public function get(Request $request, User $user)
+    public function get(Request $request, User $user): array
     {
         $method = $request->input('method');
         $date = $request->input('date');
@@ -176,13 +146,6 @@ class KpiStatisticService
         return $this->calculateStatistics($user, $method, $date);
     }
 
-    /**
-     * @param User $user
-     * @param $method
-     * @param $date
-     * @return array
-     * @throws Exception
-     */
     private function calculateStatistics(User $user, $method, $date): array
     {
         $statistics = $this->getUserStatistics((int)$user->id, $date);
@@ -203,19 +166,6 @@ class KpiStatisticService
         return $statistics;
     }
 
-    /**
-     * Получаем статистику для пользователя и kpi и kpi_items для пользователя
-     * и получаем все нужные данные
-     * @value kpi_id
-     * @value activity_id
-     * @value daily_pan
-     * @value value
-     * @value workdays
-     * @value is_user_full_time
-     * @param int $userId
-     * @param $date
-     * @return array
-     */
     private function getUserStatistics(int $userId, $date): array
     {
         $userStats = User::query()
@@ -265,9 +215,6 @@ class KpiStatisticService
         return $statistics;
     }
 
-    /**
-     *  кол-во записей с UserStat
-     */
     private function getRecordsCount(array $date, int $userId): int
     {
         return UserStat::query()->where('user_id', $userId)->when(!empty($date), function ($kpi) use ($date) {
@@ -311,11 +258,6 @@ class KpiStatisticService
         return $result;
     }
 
-    /**
-     * Получаем KPI бонусы.
-     * @param BonusesFilterRequest $request
-     * @return array
-     */
     public function fetchBonuses(BonusesFilterRequest $request): array
     {
         $bonuses = $this->getBonuses($request);
@@ -338,9 +280,6 @@ class KpiStatisticService
         return $kpiBonuses;
     }
 
-    /**
-     * @param Request $request
-     */
     private function getBonuses(Request $request)
     {
         $parameters = $request->all();
@@ -353,12 +292,6 @@ class KpiStatisticService
         ]))->paginate(50);
     }
 
-    /**
-     * Получаем по Отделам.
-     * @param $bonus
-     * @param $request
-     * @return Builder[]|Collection
-     */
     private function getProfileGroupBonus($bonus, $request)
     {
         $userId = $request->user_id ?? null;
@@ -378,9 +311,6 @@ class KpiStatisticService
             });
     }
 
-    /**
-     * Получаем сотрудников.
-     */
     private function getUserBonus($bonus, $request)
     {
         $month = $request->month ?? null;
@@ -398,12 +328,6 @@ class KpiStatisticService
             ->first(['id', 'name']);
     }
 
-    /**
-     * Получаем по позициям.
-     * @param $bonus
-     * @param $request
-     * @return Builder[]|Collection
-     */
     private function getPositionBonus($bonus, $request)
     {
         $userId = $request->user_id ?? null;
@@ -424,9 +348,6 @@ class KpiStatisticService
             });
     }
 
-    /**
-     * Список Квартальных премии
-     */
     public function fetchQuartalPremiums(Request $request): array
     {
 
@@ -509,9 +430,6 @@ class KpiStatisticService
         ];
     }
 
-    /**
-     * Получаем кв-премий.
-     */
     private function getQuartalPremiums(Request $request)
     {
         $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
@@ -589,9 +507,6 @@ class KpiStatisticService
         return $qps;
     }
 
-    /**
-     * Получаем кв-премий индивидуальные.
-     */
     private function getUsersQp($quartalPremium)
     {
         return User::query()->leftJoin('user_stats as us', 'us.user_id', '=', 'users.id')
@@ -605,15 +520,7 @@ class KpiStatisticService
             ->first();
     }
 
-    /**
-     * Вытащить список kpi со статистикой
-     *
-     * getUsersForKpi($kpi)
-     * getUserStats($kpi, $_user_ids, $date)
-     * connectKpiWithUserStats(Kpi $kpi, $_users)
-     */
-    public
-    function fetchKpis(Request $request): array
+    public function fetchKpis(Request $request): array
     {
         $filters = $request->filters;
 
@@ -739,10 +646,6 @@ class KpiStatisticService
         ];
     }
 
-    /**
-     * @param array|null $filter
-     * @return array
-     */
     public function userWorkdays(?array $filter = null): array
     {
         $default_date = ['year' => Carbon::now()->year, 'month' => Carbon::now()->month];
@@ -796,10 +699,6 @@ class KpiStatisticService
         return $result;
     }
 
-    /**
-     * @param $filters
-     * @return Collection|array
-     */
     private function getUserProfileGroup($filters): Collection|array
     {
         return User::query()
@@ -815,15 +714,7 @@ class KpiStatisticService
             ->get();
     }
 
-    /**
-     * @param $year
-     * @param $month
-     * @param $day
-     * @param array $ignore
-     * @return int
-     */
-    private
-    function workdays($year, $month, $day, array $ignore = [6, 0]): int
+    private function workdays($year, $month, $day, array $ignore = [6, 0]): int
     {
         $count = 0;
         $counter = mktime(0, 0, 0, $month, $day, $year);
@@ -836,9 +727,6 @@ class KpiStatisticService
         return $count;
     }
 
-    /**
-     * Helper for fetchKpis()
-     */
     public function getUsersForKpi(
         Kpi    $kpi,
         Carbon $date,
@@ -945,9 +833,6 @@ class KpiStatisticService
         return $users;
     }
 
-    /**
-     * get users with user stats
-     */
     private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date): \Illuminate\Support\Collection
     {
         $activities = $kpi->items
@@ -1013,14 +898,6 @@ class KpiStatisticService
         return $users->values();
     }
 
-    /**
-     * Create final users array
-     *
-     * connect user activity facts and avg values with kpi_items
-     *
-     * find fact
-     * identify actual plan
-     */
     private function connectKpiWithUserStats(
         Kpi    $kpi,
         mixed  $_users,
@@ -1219,12 +1096,7 @@ class KpiStatisticService
         return $users;
     }
 
-    /**
-     * Create weeks array with days
-     * copy of method in QualityController
-     */
-    private
-    function weeksArray($month, $year)
+    private function weeksArray($month, $year): array
     {
         $weeks = [];
         $week_number = 1;
@@ -1375,16 +1247,6 @@ class KpiStatisticService
 
     }
 
-    /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     *
-     * @return float
-     */
     private function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
         $activity = null;
@@ -1406,16 +1268,6 @@ class KpiStatisticService
 
     }
 
-    /**
-     * take rentability value from analytics
-     * for kpi item
-     *
-     * @param KpiItem $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     *
-     * @return float
-     */
     private function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item): void
     {
         $activity = null;
@@ -1435,18 +1287,6 @@ class KpiStatisticService
 
     }
 
-    /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item_id
-     * @param $activity_id
-     * @param Carbon $date
-     * @param array &$item
-     * @param int $user_id
-     *
-     * @return void
-     */
     private function takeUpdatedValue(
         $kpi_item_id,
         $activity_id,
@@ -1735,13 +1575,6 @@ class KpiStatisticService
         ];
     }
 
-    /**
-     * Вытащить список Групп и Пользователей с KPI
-     *
-     * getUsersForKpi($kpi)
-     * getUserStats($kpi, $_user_ids, $date)
-     * connectKpiWithUserStats(Kpi $kpi, $_users)
-     */
     public function fetchKpiGroupsAndUsers(array $filters): array
     {
         $groupId = $filters['group_id'] ?? null;
@@ -1810,6 +1643,8 @@ class KpiStatisticService
                 ]
             ]));
 
+        $targetable = $filter['targetable'] ?? null;
+
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $date->month)
             ->whereYear('date', $date->year)
@@ -1818,6 +1653,7 @@ class KpiStatisticService
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
         $query ?: Kpi::withTrashed();
+
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
                 $subQuery->where('targetable_id', $groupId);
@@ -1850,29 +1686,35 @@ class KpiStatisticService
                 },
                 'items.activity'
             ])
-            ->where(function ($query) use ($last_date) {
-                $query->whereHas('targetable', function ($q) use ($last_date) {
-                    if ($q->getModel() instanceof User) {
-                        $q->whereNull('deleted_at')
-                            ->orWhere('deleted_at', '>', $last_date);
-                    } elseif ($q->getModel() instanceof Position) {
-                        $q->whereNull('deleted_at')
-                            ->orWhereDate('deleted_at', '>', $last_date);
-                    }
-                })
-                    ->orWhereHas('users', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $last_date))
-                    ->orWhereHas('positions', fn($q) => $q->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $last_date))
-                    ->orWhereHas('groups');
+            ->where(function (Builder $query) use ($last_date, $targetable) {
+                $query->where(function (Builder $query) use ($last_date, $targetable) {
+                    $query->withWhereHas('targetable', function ($q) use ($last_date, $targetable) {
+                        if ($q->getModel() instanceof User) {
+                            $q->whereNull('deleted_at')
+                                ->orWhere('deleted_at', '>', $last_date);
+                        } elseif ($q->getModel() instanceof Position) {
+                            $q->whereNull('deleted_at')
+                                ->orWhereDate('deleted_at', '>', $last_date);
+                        }
+                        $q->when($targetable, function (Builder $query) use ($targetable) {
+                            $query->where('targetable_id', $targetable['id']);
+                            $query->where('targetable_type', $targetable['type']);
+                        });
+                    });
+                });
+                $query->orWhere(function (Builder $query) use ($last_date, $targetable) {
+                    $query->withWhereHas('users', fn($q) => $q
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $last_date));
+                    $query->withWhereHas('positions', fn($q) => $q
+                        ->whereNull('deleted_at')
+                        ->orWhereDate('deleted_at', '>', $last_date));
+                    $query->withWhereHas('groups');
+                    $query->when($targetable, fn($query) => $query
+                        ->where('kpiable_id', $targetable['id'])
+                        ->where('kpiable_type', $targetable['type']));
+                });
             })
-            ->with([
-                'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
-                'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
-                'groups' => fn($q) => $q->where('active', 1),
-            ])
             ->where('kpis.created_at', '<=', $last_date)
             ->distinct();
     }
@@ -1929,16 +1771,7 @@ class KpiStatisticService
         );
     }
 
-    /**
-     * Get AVG KPI percent for all users
-     *
-     * @param Kpi $kpi
-     * @param mixed $_users
-     * @param Carbon $date
-     * @return array
-     */
-    private
-    function getKpiStats(
+    private function getKpiStats(
         Kpi    $kpi,
         mixed  $_users,
         Carbon $date,
@@ -2073,13 +1906,6 @@ class KpiStatisticService
         return $users;
     }
 
-    /**
-     * Вытащить список kpi со статистикой
-     *
-     * getUsersForKpi($kpi)
-     * getUserStats($kpi, $_user_ids, $date)
-     * connectKpiWithUserStats(Kpi $kpi, $_users)
-     */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
     {
         $this->dateFromRequest($request);
@@ -2091,56 +1917,34 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
+
+        $date = $this->from;
+
+        $query = Kpi::withTrashed()
+            ->where(function ($query) use ($date) {
+                $query->whereNull('kpis.deleted_at');
+                $query->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d'));
+            });
+
+        $params = [
+            'targetable' => [
+                'id' => $targetableId,
+                'type' => $targetableType
+            ]
+        ];
+
         /** @var Kpi $kpi */
-        $kpi = Kpi::withTrashed()
-            ->with([
-                'histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
-                },
-                'items.histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
-                },
-                'items' => function (HasMany $query) {
-                    $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereBetween('created_at', [$this->from, $this->to]);
-                    }]);
-                    $query->where(function (Builder $query) {
-                        $query->whereNull('deleted_at');
-                        $query->orWhere('deleted_at', '>', $this->to);
-                    });
-                },
-                'items.activity'
-            ])
-            ->where('created_at', '<=', $this->to)
-            ->where(fn($query) => $query->whereNull('deleted_at')
-                ->orWhere(
-                    fn($query) => $query->whereDate('deleted_at', '>', $this->from)
-                )
-            )
-            ->where(function (Builder $query) use ($targetableType, $targetableId) {
-                $query->where(function (Builder $query) use ($targetableType, $targetableId) {
-                    $query->where('targetable_id', $targetableId);
-                    $query->where('targetable_type', $targetableType);
-                });
-                $query->orWhere(function (Builder $query) use ($targetableType, $targetableId) {
-                    $query->whereHas('users', fn($q) => $q
-                        ->where('kpi_id', $targetableId)
-                        ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $this->from));
-                    $query->orWhereHas('positions', fn($q) => $q
-                        ->where('kpi_id', $targetableId)
-                        ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $this->from));
-                    $query->orWhereHas('groups', fn($q) => $q
-                        ->where('kpi_id', $targetableId)
-                        ->where('active', 1));
-                });
-            })
+        $kpi = $this->kpis($date, $params, $query)
             ->firstOrFail();
 
-        if (isset($payload['children'])) {
-            $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+        if ($kpi->histories_latest) {
+            $payload = json_decode($kpi->histories_latest->payload, true);
+
+            if (isset($payload['children'])) {
+                $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+            }
         }
+
         foreach ($kpi->items as $item) {
             $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
@@ -2186,9 +1990,6 @@ class KpiStatisticService
         $this->to = Carbon::createFromDate($year, $month, $day)->endOfMonth();
     }
 
-    /**
-     * Возвращает процент выполнения KPI по месяцам года
-     */
     public function fetchAnnualKPIPercent(Request $request): array
     {
         $limit = $request->limit ? $request->limit : 10;
@@ -2298,12 +2099,7 @@ class KpiStatisticService
         ];
     }
 
-    /**
-     * @param int $user_id
-     * @return void
-     */
-    public
-    function readKpis(int $user_id)
+    public function readKpis(int $user_id): void
     {
         $user = User::find($user_id);
 
@@ -2338,13 +2134,7 @@ class KpiStatisticService
         }
     }
 
-
-    /**
-     * @param int $user_id
-     * @return void
-     */
-    public
-    function readQuartalPremiums(int $user_id)
+    public function readQuartalPremiums(int $user_id): void
     {
         $user = User::find($user_id);
 
@@ -2376,73 +2166,6 @@ class KpiStatisticService
                 $read_by[] = $user_id;
                 $qp->update(['read_by' => $read_by]);
             }
-        }
-    }
-
-    /**
-     * Получаем кв-премий групповые.
-     */
-    private function getProfileGroupQp($quartalPremium)
-    {
-        return ProfileGroup::query()
-            ->select(DB::raw('CONCAT(u.name,\' \',u.last_name) as full_name'), 'us.user_id', 'us.activity_id', 'profile_groups.name', DB::raw('SUM(us.value) as fact'))
-            ->join('group_user as gu', 'gu.group_id', '=', 'profile_groups.id')
-            ->join('users as u', 'u.id', '=', 'gu.user_id')
-            ->join('user_stats as us', 'us.user_id', '=', 'u.id')
-            ->where('profile_groups.id', $quartalPremium->targetable_id)
-            ->where('us.activity_id', '=', $quartalPremium->activity_id)
-            ->whereBetween('us.date', [$quartalPremium->from, $quartalPremium->to])
-            ->groupBy(['us.activity_id', 'us.user_id', 'profile_groups.name', 'u.name', 'u.last_name'])
-            ->get()->each(function ($data) use ($quartalPremium) {
-                $data->targetable_id = $quartalPremium->targetable_id;
-                $data->targetable_type = $quartalPremium->targetable_type;
-                $data->expended = false;
-                $data->quartalPremiums = [
-                    'title' => $quartalPremium->title,
-                    'text' => $quartalPremium->text,
-                    'plan' => $quartalPremium->plan,
-                    'from' => $quartalPremium->from,
-                    'to' => $quartalPremium->to,
-                    'sum' => $quartalPremium->sum,
-                ];
-            });
-    }
-
-    /**
-     * take timeboard value from analytics
-     * for kpi item
-     *
-     * @param KpiItem $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     *
-     * @return void
-     */
-    private
-    function takeTimeboardValue(KpiItem $kpi_item, Carbon $date, array &$item): void
-    {
-        if ($kpi_item->activity
-            && $kpi_item->activity->source == Activity::SOURCE_TIMEBOARD) {
-            $item['fact'] = round($item['fact'], 2);
-        }
-    }
-
-    /**
-     * take HR value from analytics
-     * for kpi item
-     *
-     * @param KpiItem $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     *
-     * @return void
-     */
-    private
-    function takeHRValue(KpiItem $kpi_item, Carbon $date, array &$item): void
-    {
-        if ($kpi_item->activity
-            && $kpi_item->activity->source == Activity::SOURCE_HR) {
-            $item['fact'] = round($item['fact'], 2);
         }
     }
 }
