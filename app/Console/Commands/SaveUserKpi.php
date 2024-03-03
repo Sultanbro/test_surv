@@ -89,7 +89,7 @@ class SaveUserKpi extends Command
             }
 
             foreach ($kpi->items as $item) {
-                $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
+                $history = $item->histories->whereBetween('created_at', [$date->startOfMonth(), $date->endOfMonth()])->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 $item['daily_plan'] = (float)$item->plan;
                 if ($has_edited_plan) {
@@ -107,7 +107,7 @@ class SaveUserKpi extends Command
                 }
                 $item['plan'] = $item['daily_plan'];
             }
-            
+
             try {
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 if ($userId) {
