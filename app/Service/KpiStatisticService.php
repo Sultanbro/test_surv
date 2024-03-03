@@ -1140,12 +1140,13 @@ class KpiStatisticService
                 $this->takeCommonValue($_item, $date, $item);
                 $this->takeCellValue($_item, $date, $item);
                 $this->takeRentability($_item, $date, $item);
-//                $this->takeUpdatedValue($_item->id,
-//                    $item['activity_id'],
-//                    $date,
-//                    $item,
-//                    $user['id']
-//                );
+                $this->takeUpdatedValue($_item->id,
+                    $item['activity_id'],
+                    $date,
+                    $item,
+                    $user['id']
+                );
+
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1429,6 +1430,38 @@ class KpiStatisticService
             $item['avg'] = $item['fact'];
         }
 
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     *
+     * @param $kpi_item_id
+     * @param $activity_id
+     * @param Carbon $date
+     * @param array &$item
+     * @param int $user_id
+     *
+     * @return void
+     */
+    private function takeUpdatedValue(
+        $kpi_item_id,
+        $activity_id,
+        Carbon $date,
+        array &$item,
+        int $user_id
+    ): void
+    {
+        $has = $this->updatedValues
+            ->where('user_id', $user_id)
+            ->where('kpi_item_id', $kpi_item_id)
+            ->where('activity_id', $activity_id)
+            ->first();
+
+        if ($has) {
+            $item['fact'] = (float)$has->value;
+            $item['avg'] = (float)$has->value;
+        }
     }
 
     private function calculatePercent(array $item): array
@@ -2032,38 +2065,6 @@ class KpiStatisticService
     }
 
     /**
-     * take cell value from analytics
-     * for kpi item
-     *
-     * @param $kpi_item_id
-     * @param $activity_id
-     * @param Carbon $date
-     * @param array &$item
-     * @param int $user_id
-     *
-     * @return void
-     */
-    private function takeUpdatedValue(
-        $kpi_item_id,
-        $activity_id,
-        Carbon $date,
-        array &$item,
-        int $user_id
-    ): void
-    {
-        $has = $this->updatedValues
-            ->where('user_id', $user_id)
-            ->where('kpi_item_id', $kpi_item_id)
-            ->where('activity_id', $activity_id)
-            ->first();
-
-        if ($has) {
-            $item['fact'] = (float)$has->value;
-            $item['avg'] = (float)$has->value;
-        }
-    }
-
-    /**
      * Вытащить список kpi со статистикой
      *
      * getUsersForKpi($kpi)
@@ -2131,6 +2132,7 @@ class KpiStatisticService
         if (isset($payload['children'])) {
             $kpi->items = $kpi->items->whereIn('id', $payload['children']);
         }
+
         foreach ($kpi->items as $item) {
             $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
