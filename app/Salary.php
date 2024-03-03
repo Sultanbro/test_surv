@@ -776,11 +776,11 @@ class Salary extends Model
                     }
                 }
 
-                dd_if($user->id == 31451 && $i == 29, $earnings[$i] && $s);
                 // Sum earnings
                 if ($earnings[$i] && $s) {
                     $allTotal += $earnings[$i];
                 }
+                dd_if($user->id == 31451 && $i == 29, $allTotal);
             }
 
             /**
