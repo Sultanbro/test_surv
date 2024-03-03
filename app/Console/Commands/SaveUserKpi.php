@@ -42,7 +42,7 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now())
             ->startOfMonth();
-
+        $startOfMonth = $date->startOfMonth();
         // get kpis
         $query = Kpi::withTrashed()
             ->when($this->argument('user_id'), function (Builder $query) use ($date) {
@@ -138,7 +138,6 @@ class SaveUserKpi extends Command
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
-        dd($data['date']);
         if ($saved) {
             $saved->total += $data['total'];
             $saved->save();
