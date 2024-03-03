@@ -138,7 +138,7 @@ class SaveUserKpi extends Command
                 'date' => $data['date'],
                 'user_id' => $data['user_id'],
             ])->first();
-        dd($saved);
+        dd($data['date']);
         if ($saved) {
             $saved->total += $data['total'];
             $saved->save();
