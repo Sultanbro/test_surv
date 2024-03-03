@@ -1689,7 +1689,7 @@ class KpiStatisticService
             ->when(!$targetable && $searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->where(function (Builder $query) use ($last_date, $targetable) {
                 $query->withWhereHas('targetable', function (Builder $query) use ($targetable, $last_date) {
-                    if ($query->getModel() instanceof User::class) {
+                    if ($query->getModel() instanceof User) {
                         $query->whereNull('users.deleted_at');
                         $query->orWhere('users.deleted_at', '>', $last_date);
                     }
