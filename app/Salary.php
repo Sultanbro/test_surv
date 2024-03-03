@@ -706,13 +706,6 @@ class Salary extends Model
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
-                dd_if($user->id == 31451 && $i == 29, [
-                    'statTotalHour' => $statTotalHour,
-                    'y' => $y,
-                    't' => $t,
-                    'r' => $r,
-                    'a' => $a,
-                ]);
 
                 if (empty($statTotalHour)) {
                     if ($a) {
@@ -775,6 +768,12 @@ class Salary extends Model
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($statTotalHour, 2);
+
+                        dd_if($user->id == 31451 && $i == 29, [
+                            'earning' => $earning,
+                            'earnings' => $earnings[$i],
+                            'hours' => $hours[$i],
+                        ]);
 
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $earning = $statTotalHour * $hourly_pay;
