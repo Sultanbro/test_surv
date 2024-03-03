@@ -612,7 +612,6 @@ class Salary extends Model
                 ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
             $tts_before_apply = $user->timetracking
                 ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
-            dd_if($user->id == 31451, $tts_before_apply);
             $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
             $retraining_days = $user->daytypes->whereIn('type', [6]);
             $absent_days = $user->daytypes->whereIn('type', [2]);
@@ -708,6 +707,7 @@ class Salary extends Model
                 $r = $retraining_days->where('day', $i)->first();
                 $a = $absent_days->where('day', $i)->first();
 
+                dd_if($user->id == 31451 && $i == 29, $x);
 
                 if (empty($statTotalHour)) {
                     if ($a) {
