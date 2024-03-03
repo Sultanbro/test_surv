@@ -1698,26 +1698,26 @@ class KpiStatisticService
                         $query->where('targetable_type', $targetable['type']);
                     });
                 });
-                $query->orWhereHas('users', fn($q) => $q
-                    ->when($targetable, fn($query) => $query
-                        ->where('kpiables.kpiable_id', $targetable['id'])
-                        ->where('kpiables.kpiable_id', $targetable['type'])
-                    )
-                    ->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $last_date));
-                $query->orWhereHas('positions', fn(Builder $query) => $query
-                    ->when($targetable, fn(Builder $query) => $query
-                        ->where('kpiables.kpiable_id', $targetable['id'])
-                        ->where('kpiables.kpiable_id', $targetable['type'])
-                    )
-                    ->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '>', $last_date));
-                $query->orWhereHas('groups', fn($q) => $q
-                    ->when($targetable, fn($query) => $query
-                        ->where('kpiables.kpiable_id', $targetable['id'])
-                        ->where('kpiables.kpiable_id', $targetable['type'])
-                    )
-                );
+//                $query->orWhereHas('users', fn($q) => $q
+//                    ->when($targetable, fn($query) => $query
+//                        ->where('kpiables.kpiable_id', $targetable['id'])
+//                        ->where('kpiables.kpiable_id', $targetable['type'])
+//                    )
+//                    ->whereNull('deleted_at')
+//                    ->orWhereDate('deleted_at', '>', $last_date));
+//                $query->orWhereHas('positions', fn(Builder $query) => $query
+//                    ->when($targetable, fn(Builder $query) => $query
+//                        ->where('kpiables.kpiable_id', $targetable['id'])
+//                        ->where('kpiables.kpiable_id', $targetable['type'])
+//                    )
+//                    ->whereNull('deleted_at')
+//                    ->orWhereDate('deleted_at', '>', $last_date));
+//                $query->orWhereHas('groups', fn($q) => $q
+//                    ->when($targetable, fn($query) => $query
+//                        ->where('kpiables.kpiable_id', $targetable['id'])
+//                        ->where('kpiables.kpiable_id', $targetable['type'])
+//                    )
+//                );
             })
             ->with(['targetable', 'users', 'groups', 'positions'])
             ->distinct();
