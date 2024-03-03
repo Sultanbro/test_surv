@@ -133,7 +133,6 @@ class SaveUserKpi extends Command
 
     private function updateSavedKpi(array $data): void
     {
-        dd($data['date']);
         $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
