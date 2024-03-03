@@ -1747,6 +1747,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $workChartName = $this->workChart->name;
+        dd_if($this->id == 3460, $workChartName);
 
         if ($workChartName == "2-2") {
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
