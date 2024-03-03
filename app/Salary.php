@@ -769,12 +769,6 @@ class Salary extends Model
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($statTotalHour, 2);
 
-                        dd_if($user->id == 31451 && $i == 29, [
-                            'earning' => $earning,
-                            'earnings' => $earnings[$i],
-                            'hours' => $hours[$i],
-                        ]);
-
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
@@ -782,6 +776,7 @@ class Salary extends Model
                     }
                 }
 
+                dd_if($user->id == 31451 && $i == 29, $earnings[$i] && $s);
                 // Sum earnings
                 if ($earnings[$i] && $s) {
                     $allTotal += $earnings[$i];
