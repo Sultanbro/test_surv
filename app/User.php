@@ -1765,7 +1765,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         $daysInMonth = $requestDate->daysInMonth;
 //        $daysInMonth = $daysInMonth < 30 ? $daysInMonth + (30 - $daysInMonth) : $daysInMonth;
-        dd_if($this->id == 3460, $daysInMonth);
+        dd_if($this->id == 3460, $year, $month);
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
