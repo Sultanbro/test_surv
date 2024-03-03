@@ -805,14 +805,13 @@ class KpiStatisticService
         return User::query()
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
-            ->join('kpis as kp', function (JoinClause $kp) {
+            ->leftJoin('kpis as kp', function (JoinClause $kp) {
                 $kp->on('kp.targetable_id', '=', 'gu.group_id')
                     ->where('kp.targetable_type', '=', self::PROFILE_GROUP);
             })
-            ->leftJoin('kpiables as kp_morph', 'kp_morph.kpi_id', '=', 'kp.id')
-            ->leftJoin('gu', function (JoinClause $kp) {
-                $kp->on('kp_morph.kpiable_id', '=', 'gu.id')
-                    ->where('kp_morph.kpiable_type', '=', self::PROFILE_GROUP);
+            ->leftJoin('kpiables as kp_pivot', function (JoinClause $kp) {
+                $kp->on('kp_pivot.kpiable_id', '=', 'gu.group_id');
+                $kp->where('kp_pivot.kpiable_type', '=', self::PROFILE_GROUP);
             })
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
             ->join('activities as a', 'ki.activity_id', '=', 'a.id')
