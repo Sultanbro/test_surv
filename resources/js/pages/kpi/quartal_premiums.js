@@ -19,6 +19,14 @@ export const fields = [
 		alter_class: 'col-md-12'
 	},
 	{
+		name: 'Вид плана',
+		key: 'method',
+		visible: true,
+		type: 'select',
+		class: 'text-center',
+		alter_class: 'col-md-2'
+	},
+	{
 		name: 'Показатели',
 		key: 'activity_id',
 		visible: true,
@@ -72,7 +80,7 @@ export const fields = [
 		key: 'created_at',
 		visible: true,
 		type: 'date',
-		class: 'text-center',
+		class: 'text-center align-middle',
 		alter_class: 'col-md-6'
 	},
 	{
@@ -80,7 +88,7 @@ export const fields = [
 		key: 'updated_at',
 		visible: true,
 		type: 'date',
-		class: 'text-center',
+		class: 'text-center align-middle',
 		alter_class: 'col-md-6'
 	},
 	{
@@ -88,7 +96,7 @@ export const fields = [
 		key: 'created_by',
 		visible: true,
 		type: 'text',
-		class: 'text-center',
+		class: 'text-center align-middle',
 		alter_class: 'col-md-6'
 	},
 	{
@@ -96,7 +104,7 @@ export const fields = [
 		key: 'updated_by',
 		visible: true,
 		type: 'text',
-		class: 'text-center',
+		class: 'text-center align-middle',
 		alter_class: 'col-md-6'
 	}
 ];

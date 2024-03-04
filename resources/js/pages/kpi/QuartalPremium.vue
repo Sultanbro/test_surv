@@ -118,7 +118,7 @@
 												<th
 													v-for="(field, f) in fields"
 													:key="f"
-													class="text-left"
+													class="text-left align-middle"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -249,6 +249,18 @@
 														<textarea v-model="item[field.key]" />
 													</template>
 
+													<template v-else-if="field.key == 'method'">
+														<select v-model="item.method">
+															<option
+																v-for="name, key in methods"
+																:key="key"
+																:value="key"
+															>
+																{{ name }}
+															</option>
+														</select>
+													</template>
+
 													<template v-else>
 														<input
 															v-model="item[field.key]"
@@ -361,7 +373,7 @@
 												<th
 													v-for="(field, f) in fields"
 													:key="f"
-													class="text-left"
+													class="text-left align-middle"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -494,6 +506,17 @@
 																:value="key"
 															>
 																{{ dayparts[key] }}
+															</option>
+														</select>
+													</template>
+													<template v-else-if="field.key == 'method'">
+														<select v-model="item.method">
+															<option
+																v-for="name, key in methods"
+																:key="key"
+																:value="key"
+															>
+																{{ name }}
 															</option>
 														</select>
 													</template>
@@ -771,7 +794,7 @@ import SuperSelect from '@/components/SuperSelect'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 import {fields, newQuartalPremium} from './quartal_premiums.js';
-import { findModel, sources } from './helpers.js';
+import { findModel, sources, sumMethods as methods } from './helpers.js';
 
 export default {
 	name: 'QuartalPremiums',
@@ -815,6 +838,7 @@ export default {
 			statusRequest: false,
 			timeout: null,
 			filters: null,
+			methods,
 		}
 	},
 	watch: {
@@ -893,8 +917,8 @@ export default {
 			this.newPremiumArray.push(newQuartalPremium());
 		},
 		saveNewQuartal(i){
-			this.newPremiumArray[i].target = this.new_target;
-			this.save(this.newPremiumArray[i],i);
+			this.newPremiumArray[i].target = this.new_target
+			this.save(this.newPremiumArray[i], i)
 		},
 		deleteNewQuartal(i){
 			this.newPremiumArray.splice(i,1);
@@ -956,17 +980,14 @@ export default {
 		},
 
 		setDefaultShowFields() {
-
-			let obj = {}; // Какие поля показывать
-			fields.forEach(field => obj[field.key] = true);
-
-			if(localStorage.quartal_premiums_show_fields) {
-				this.show_fields = JSON.parse(localStorage.getItem('quartal_premiums_show_fields'));
-				if(this.show_fields == null) this.show_fields = obj
-			} else {
-				this.show_fields = obj
+			const fieldsKey =  'quartal_premiums_show_fields'
+			const showFields = {}
+			fields.forEach(field => showFields[field.key] = true)
+			const savedFields = localStorage[fieldsKey] ? JSON.parse(localStorage.getItem(fieldsKey) || '{}') : {}
+			this.show_fields = {
+				...showFields,
+				...savedFields,
 			}
-
 		},
 
 		adjustFields() {
@@ -1025,8 +1046,7 @@ export default {
 			return msg;
 		},
 
-		save(item, index) {
-
+		save(item, index, silent) {
 			/**
 			 * validate item
 			 */
@@ -1081,15 +1101,14 @@ export default {
 						});
 					}
 
-
 					this.showSidebar = false
 				}
 				else{
 					item.updated_at = this.$moment(Date.now()).format('DD.MM.YYYY HH:mm')
 				}
 
-				this.$toast.info('Сохранено');
-				this.newPremiumArray.splice(index,1);
+				!silent && this.$toast.info('Сохранено')
+				if(~index) this.newPremiumArray.splice(index,1)
 				loader.hide()
 			}).catch(error => {
 				let m = error;
@@ -1128,21 +1147,25 @@ export default {
 		},
 
 		saveItem() {
-			this.save(this.activeItem)
+			this.save(this.activeItem, -1)
 		},
 
 		saveItemFromTable(p, i) {
 			const item = this.page_items[p].items[i]
-			this.save(item).then(() => {
-				if(item.id === 0){
-					this.page_items[p].splice(i, 1)
-				}
+			return this.save(item, -1, 1).then(() => {
+				if(!item.id) this.page_items[p].splice(i, 1)
 			})
 		},
 
 		saveAll(p){
+			const requests = []
 			this.page_items[p].items.forEach((item, i) => {
-				this.saveItemFromTable(p, i)
+				requests.push(this.saveItemFromTable(p, i))
+			})
+			Promise.allSettled(requests).then(() => {
+				this.$toast.info('Сохранено')
+			}).catch(error => {
+				this.$onError(error)
 			})
 		},
 
