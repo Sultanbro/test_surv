@@ -123,7 +123,7 @@ class SaveUserKpi extends Command
             ]
         ]);
 
-        dd($withCurrency['items']);
+        dd($withCurrency['items']->pluck('id')->toArray());
     }
 
     private function updateSavedKpi(array $data): void
