@@ -40,29 +40,29 @@ class SaveUserKpi extends Command
 
     public function handle(): void
     {
-        $date = Carbon::parse($this->argument('date') ?? now())
-            ->startOfMonth();
-
+        $date = Carbon::parse($this->argument('date') ?? now());
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
         // get kpis
         $query = Kpi::withTrashed()
-            ->when($this->argument('user_id'), function (Builder $query) use ($date) {
-                $query->where(function (Builder $query) use ($date) {
+            ->when($this->argument('user_id'), function (Builder $query) use ($endOfMonth) {
+                $query->where(function (Builder $query) use ($endOfMonth) {
                     $query->where('targetable_id', $this->argument('user_id'));
                     $query->where('targetable_type', User::class);
                     $query->orWhereHas('users', fn($q) => $q
                         ->where('users.id', $this->argument('user_id'))
                         ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $date->endOfMonth()));
+                        ->orWhereDate('deleted_at', '>', $endOfMonth));
                 });
             })
             ->where(fn($query) => $query
                 ->whereNull('kpis.deleted_at')
-                ->orWhere('kpis.deleted_at', '>', $date->format('Y-m-d')));
+                ->orWhere('kpis.deleted_at', '>', $startOfMonth->format('Y-m-d')));
 
-        $kpis = $this->statisticService->kpis($date, [], $query)->get();
+        $kpis = $this->statisticService->kpis($startOfMonth, [], $query)->get();
 
-        $this->truncate($date, $this->argument('user_id'));
-        $this->calc($kpis, $date, $this->argument('user_id'));
+        $this->truncate($startOfMonth, $this->argument('user_id'));
+        $this->calc($kpis, $startOfMonth, $this->argument('user_id'));
     }
 
     private function truncate(Carbon $date, $userId = null): void
@@ -76,8 +76,9 @@ class SaveUserKpi extends Command
 
     private function calc($kpis, Carbon $date, $userId = null): void
     {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
         foreach ($kpis as $kpi) {
-            $kpi->kpi_items = [];
             if ($kpi->histories_latest) {
                 $payload = json_decode($kpi->histories_latest->payload, true);
 
@@ -85,6 +86,27 @@ class SaveUserKpi extends Command
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
+
+            foreach ($kpi->items as $item) {
+                $history = $item->histories->whereBetween('created_at', [$startOfMonth, $endOfMonth])->first();
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                $item['daily_plan'] = (float)$item->plan;
+                if ($has_edited_plan) {
+                    if (array_key_exists('plan', $has_edited_plan)) $item['daily_plan'] = $has_edited_plan['plan'];
+                    if (array_key_exists('name', $has_edited_plan)) $item['name'] = $has_edited_plan['name'];
+                    if (array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                    if (array_key_exists('method', $has_edited_plan)) $item['method'] = $has_edited_plan['method'];
+                    if (array_key_exists('unit', $has_edited_plan)) $item['unit'] = $has_edited_plan['unit'];
+                    if (array_key_exists('cell', $has_edited_plan)) $item['cell'] = $has_edited_plan['cell'];
+                    if (array_key_exists('common', $has_edited_plan)) $item['common'] = $has_edited_plan['common'];
+                    if (array_key_exists('percent', $has_edited_plan)) $item['percent'] = $has_edited_plan['percent'];
+                    if (array_key_exists('sum', $has_edited_plan)) $item['sum'] = $has_edited_plan['sum'];
+                    if (array_key_exists('group_id', $has_edited_plan)) $item['group_id'] = $has_edited_plan['group_id'];
+                    if (array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+                }
+                $item['plan'] = $item['daily_plan'];
+            }
+
             try {
                 $users = $this->statisticService->getUsersForKpi($kpi, $date);
                 if ($userId) {
@@ -96,11 +118,10 @@ class SaveUserKpi extends Command
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
-
                     $this->updateSavedKpi([
                         'total' => $total,
                         'user_id' => $user['id'],
-                        'date' => $date->format("Y-m-d")
+                        'date' => $startOfMonth->format("Y-m-d")
                     ]);
                 }
             } catch (RuntimeException $e) {
@@ -112,7 +133,6 @@ class SaveUserKpi extends Command
 
     private function updateSavedKpi(array $data): void
     {
-
         $saved = SavedKpi::query()
             ->where([
                 'date' => $data['date'],
@@ -129,7 +149,7 @@ class SaveUserKpi extends Command
                 'total' => $data['total']
             ]);
         }
-        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->totoal);
+        $this->info('user: ' . $data['user_id'] . ' ' . 'saved kpi: ' . $saved->total);
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         event(new KpiChangedEvent($date));
     }

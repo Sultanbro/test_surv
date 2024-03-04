@@ -20,7 +20,6 @@ use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use App\User;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -1147,6 +1146,7 @@ class KpiStatisticService
                     $item,
                     $user['id']
                 );
+
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
@@ -1220,8 +1220,7 @@ class KpiStatisticService
      * Create weeks array with days
      * copy of method in QualityController
      */
-    private
-    function weeksArray($month, $year)
+    private function weeksArray($month, $year)
     {
         $weeks = [];
         $week_number = 1;
@@ -2071,17 +2070,18 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpiGroupOrUser(Request $request, int $targetableId): array
+    public function fetchKpiGroupOrUser(array $request, int $targetableId): array
     {
         $this->dateFromRequest($request);
-        $targetableType = self::TARGET_TYPES[$request->type];
+        $targetableType = self::TARGET_TYPES[$request['type']];
 
-        $this->workdays = collect($this->userWorkdays($request->get('filters')));
+        $this->workdays = collect($this->userWorkdays($request['filters']));
         $this->updatedValues = UpdatedUserStat::query()
             ->whereMonth('date', $this->from->month)
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
+
         /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
@@ -2129,9 +2129,16 @@ class KpiStatisticService
             })
             ->firstOrFail();
 
-        if (isset($payload['children'])) {
-            $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+        if ($kpi->histories_latest) {
+            $payload = json_decode($kpi->histories_latest->payload, true);
+
+            if (isset($payload['children'])) {
+                $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+            }
+            $kpi->completed_80 = $payload['completed_80'];
+            $kpi->completed_100 = $payload['completed_100'];
         }
+
         foreach ($kpi->items as $item) {
             $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
@@ -2167,12 +2174,11 @@ class KpiStatisticService
         ];
     }
 
-    private function dateFromRequest(Request $request): void
+    private function dateFromRequest(array $request): void
     {
-        $all = $request->all();
-        $year = $all['filters']['data_from']['year'] ?? now()->year;
-        $month = $all['filters']['data_from']['month'] ?? now()->month;
-        $day = $all['filters']['data_from']['day'] ?? now()->day;
+        $year = $request['filters']['data_from']['year'] ?? now()->year;
+        $month = $request['filters']['data_from']['month'] ?? now()->month;
+        $day = $request['filters']['data_from']['day'] ?? now()->day;
         $this->from = Carbon::createFromDate($year, $month, $day)->startOfMonth();
         $this->to = Carbon::createFromDate($year, $month, $day)->endOfMonth();
     }
