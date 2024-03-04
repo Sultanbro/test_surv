@@ -1096,7 +1096,7 @@ class SalaryController extends Controller
     public function taxes(Request $request): mixed
     {
         $date = Carbon::parse($request->date);
-        $user = User::query()->find($request->user_id);
+        $user = User::withTrashed()->find($request->user_id);
 
         return $user->taxes()
             ->whereYear('user_tax.created_at', $date->year)
