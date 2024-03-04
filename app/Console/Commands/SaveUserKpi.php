@@ -115,7 +115,7 @@ class SaveUserKpi extends Command
 
                 foreach ($users as $user) {
                     $total = 0;
-                    if ($this->notPrioritize($user->id, $kpi, $startOfMonth)) continue;
+                    if ($this->notPrioritize($user['id'], $kpi, $startOfMonth)) continue;
                     foreach ($user['items'] as $item) {
                         $total += $this->calculator->calcSum($item, $kpi->toArray());
                     }
