@@ -94,7 +94,7 @@ class SaveUserKpi extends Command
                 foreach ($users as $user) {
                     $total = 0;
                     foreach ($user['items'] as $item) {
-                        if ($this->notPrioritize($user, $kpi, $startOfMonth)) continue;
+                        if ($this->notPrioritize($user['id'], $kpi, $startOfMonth)) continue;
                         if ($user['id'] == 3865) {
                             dump($item['kpi_id'], $this->calculator->calcSum($item, $kpi->toArray()));
                         }
@@ -113,10 +113,10 @@ class SaveUserKpi extends Command
         }
     }
 
-    function notPrioritize(User $user, Kpi $kpi, Carbon $date): bool
+    function notPrioritize(int $user_id, Kpi $kpi, Carbon $date): bool
     {
         $withCurrency = $this->statisticService->fetchKpisWithCurrency([
-            'user_id' => $user->id,
+            'user_id' => $user_id,
             'data_from' => [
                 'year' => $date->year,
                 'month' => $date->month
