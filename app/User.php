@@ -1047,7 +1047,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             'id',
             'id'
         )
-            ->wherePivot('deleted_at', null)
             ->withPivot(['day', 'status', 'deleted_at']);
     }
 
