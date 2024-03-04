@@ -123,7 +123,7 @@ class SaveUserKpi extends Command
             ]
         ]);
 
-        dd($withCurrency);
+        dd($withCurrency['items']);
     }
 
     private function updateSavedKpi(array $data): void
