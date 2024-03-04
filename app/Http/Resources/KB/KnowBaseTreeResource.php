@@ -25,7 +25,7 @@ class KnowBaseTreeResource extends JsonResource
             'order' => $this->order,
             'title' => $this->title,
 //            'can_view' => $this->can_view,
-//            'can_edit' => $this->can_edit,
+            'can_edit' => $this->can_edit,
             'children' => KnowBaseTreeResource::collection($this->onlyChildren)
         ];
     }
