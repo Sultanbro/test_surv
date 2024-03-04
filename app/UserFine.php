@@ -6,6 +6,7 @@ use App\Repositories\UserFineRepository;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int id
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserFine extends Model
 {
+    use SoftDeletes;
+
     const SATURDAY = "6";
     const SUNDAY = "0";
 
@@ -96,6 +99,64 @@ class UserFine extends Model
         }
     }
 
+    public static function setNotificationAboutFine($userId, $fineId, $title, $data = [])
+    {
+        $message = self::getFineDescription($fineId);
+
+        if ($fineId == 53 && array_key_exists("date", $data)) {
+            $title = $message;
+            $message = self::getTemplate('2500', $data['date']);
+        }
+
+        UserNotification::create([
+            'user_id' => $userId,
+            'title' => $title,
+            'message' => $message,
+        ]);
+
+        if (array_key_exists("date", $data)) {
+            TimetrackingHistory::create([
+                'user_id' => $userId,
+                'author_id' => 5,
+                'author' => 'Система',
+                'date' => $data['date'],
+                'description' => $message,
+            ]);
+        }
+
+    }
+
+    private static function getFineDescription($fineId)
+    {
+        $fine = Fine::find($fineId);
+        if ($fine) {
+            $description = $fine->name;
+        } else {
+            $description = 'Штраф id = ' . $fineId . ' не найден';
+        }
+
+        return $description;
+    }
+
+    public static function getTemplate($sum, $date)
+    {
+
+        $fineId = 53; // штраф за невыход на работу
+        $notification_template = DB::table('notification_templates')
+            ->find(1); // шаблон штрафа
+
+        if ($notification_template) {
+            $message = $notification_template->message;
+            $message = str_replace("#sum", $sum, $message);  // замена суммы в сообщении
+            $message = str_replace("#date", $date, $message); // замена даты в сообщении
+            return $message;
+        } else {
+            return 'Вам назначен штраф за невыход на работу в рабочий день! ' . $date;
+        }
+
+
+    }
+
     /**
      * @param int $userId
      * @param int $fineId
@@ -168,64 +229,6 @@ class UserFine extends Model
         self::setNotificationAboutFine($data['user_id'], $data['fine_id'], $title);
 
         return $userFine;
-    }
-
-    public static function setNotificationAboutFine($userId, $fineId, $title, $data = [])
-    {
-        $message = self::getFineDescription($fineId);
-
-        if ($fineId == 53 && array_key_exists("date", $data)) {
-            $title = $message;
-            $message = self::getTemplate('2500', $data['date']);
-        }
-
-        UserNotification::create([
-            'user_id' => $userId,
-            'title' => $title,
-            'message' => $message,
-        ]);
-
-        if (array_key_exists("date", $data)) {
-            TimetrackingHistory::create([
-                'user_id' => $userId,
-                'author_id' => 5,
-                'author' => 'Система',
-                'date' => $data['date'],
-                'description' => $message,
-            ]);
-        }
-
-    }
-
-    private static function getFineDescription($fineId)
-    {
-        $fine = Fine::find($fineId);
-        if ($fine) {
-            $description = $fine->name;
-        } else {
-            $description = 'Штраф id = ' . $fineId . ' не найден';
-        }
-
-        return $description;
-    }
-
-    public static function getTemplate($sum, $date)
-    {
-
-        $fineId = 53; // штраф за невыход на работу
-        $notification_template = DB::table('notification_templates')
-            ->find(1); // шаблон штрафа
-
-        if ($notification_template) {
-            $message = $notification_template->message;
-            $message = str_replace("#sum", $sum, $message);  // замена суммы в сообщении
-            $message = str_replace("#date", $date, $message); // замена даты в сообщении
-            return $message;
-        } else {
-            return 'Вам назначен штраф за невыход на работу в рабочий день! ' . $date;
-        }
-
-
     }
 
     public function fine()
