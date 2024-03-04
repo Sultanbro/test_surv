@@ -827,7 +827,7 @@
 						:key="fineIndex"
 						class="AvansHistoryItem"
 						:class="{
-							'AvansHistoryItem_deleted': fineItem.deleted_at
+							'AvansHistoryItem_deleted': fineItem.pivot.deleted_at
 						}"
 					>
 						<div class="AvansHistoryItem-header">
@@ -836,10 +836,10 @@
 							</div>
 							<template v-if="canEdit">
 								<div
-									v-if="fineItem.deleted_at"
+									v-if="fineItem.pivot.deleted_at"
 									class="AvansHistoryItem-restore pointer mr-2"
 									title="Восстановить"
-									@click="onRemoveRestore('restore', 'fine', fineItem)"
+									@click="onFineRR('restore', fineItem)"
 								>
 									<i class="fas fa-undo" />
 								</div>
@@ -847,7 +847,7 @@
 									v-else
 									class="AvansHistoryItem-delete pointer mr-2"
 									title="Удалить"
-									@click="onRemoveRestore('remove', 'fine', fineItem)"
+									@click="onFineRR('remove', fineItem)"
 								>
 									<i class="fas fa-times" />
 								</div>
@@ -963,6 +963,33 @@
 						id="removeUpdateReason"
 						v-model="removeRestoreForm.reason"
 						:placeholder="`Укажите причину ${removeRestoreForm.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- fine update/remove -->
+		<b-modal
+			v-model="formFineRR.isOpen"
+			:ok-text="formFineRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formFineRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmFineRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="removeUpdateReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="removeUpdateReason"
+						v-model="formFineRR.reason"
+						:placeholder="`Укажите причину ${formFineRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
 						class="mb-2"
 					/>
 				</b-col>
@@ -1101,6 +1128,14 @@ export default {
 				isOpen: false,
 				action: '',
 				type: '',
+				reason: '',
+				item: null,
+			},
+
+			formFineRR: {
+				isOpen: false,
+				action: '',
+				item: '',
 				reason: '',
 			},
 		};
@@ -1679,63 +1714,6 @@ export default {
 			this.sidebarTitle = data.item.name + ' : ' + type
 		},
 
-		// история бонусов для showEditPremiumSidebar
-		async fetchBonusHistory(user_id) {
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			try {
-				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
-					user_id: user_id,
-					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-				})
-				this.bonus_history = data.map(bonus => ({
-					...bonus,
-					payload: bonus.payload ? JSON.parse(bonus.payload || '{}') : {}
-				}))
-			}
-			catch (error) {
-				this.$onError({error, silent: 1})
-			}
-		},
-
-		async showAvansSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.avans_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/advances',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.avans_history = data.map(avans => ({
-				...avans,
-				payload: avans.payload ? JSON.parse(avans.payload || '{}') : {}
-			}))
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Авансы'
-			this.isAvansSidebar = true
-			loader.hide()
-		},
-
-		async showFineSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.fine_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/fines',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.fine_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
-			this.isFineSidebar = true
-			loader.hide()
-		},
-
 		async showTaxesSidebar(cellData){
 			if(cellData.index === 0) return false
 
@@ -1991,6 +1969,45 @@ export default {
 			loader.hide()
 		},
 
+		// Avans/Bonus history
+		async fetchBonusHistory(user_id) {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
+					user_id: user_id,
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+				})
+				this.bonus_history = data.map(bonus => ({
+					...bonus,
+					payload: bonus.payload ? JSON.parse(bonus.payload || '{}') : {}
+				}))
+			}
+			catch (error) {
+				this.$onError({error, silent: 1})
+			}
+		},
+
+		async showAvansSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.avans_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/advances',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.avans_history = data.map(avans => ({
+				...avans,
+				payload: avans.payload ? JSON.parse(avans.payload || '{}') : {}
+			}))
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Авансы'
+			this.isAvansSidebar = true
+			loader.hide()
+		},
+
 		onRemoveRestore(action, type, item){
 			if(type === 'fine') return this.$toast.info('В разработке')
 			this.removeRestoreForm = {
@@ -2044,6 +2061,82 @@ export default {
 			}
 			/* eslint-enable require-atomic-updates */
 		},
+		// Avans/Bonus history
+
+		// Fine history
+		async showFineSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.fine_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/fines',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.fine_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
+			this.isFineSidebar = true
+			loader.hide()
+		},
+
+		onFineRR(action, item){
+			this.formFineRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmFineRR(){
+			if(this.formFineRR.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.formFineRR.action === 'remove') return this.removeFine()
+			this.restoreFine()
+		},
+
+		async removeFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.delete(`/timetracking/salaries/fines/histories/${user}/${fine}`, {params: {method: 'delete', reason}})
+				item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.post(`/timetracking/salaries/fines/histories/${user}/${fine}`, {
+					method: 'post',
+					reason,
+				})
+				item.pivot.deleted_at = null
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Fine history
 	},
 };
 </script>
