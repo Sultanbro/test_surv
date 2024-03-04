@@ -111,7 +111,7 @@
 						<tr class="collapsable active">
 							<td :colspan="fields.length + 2">
 								<div class="table__wrapper">
-									<table class="table table-responsive table-inner">
+									<table class="table table-inner">
 										<thead>
 											<tr>
 												<th />
@@ -366,7 +366,7 @@
 						>
 							<td :colspan="fields.length + 2">
 								<div class="table__wrapper w-100">
-									<table class="table table-responsive table-inner">
+									<table class="table table-inner">
 										<thead>
 											<tr>
 												<th />
@@ -957,7 +957,7 @@ export default {
 				this.activities = response.data.activities;
 				this.groups = response.data.groups;
 
-				this.defineSourcesAndGroups('t');
+				this.defineSourcesAndGroups()
 
 				this.items.forEach(el => el.expanded = false);
 				this.page_items = this.items.slice(0, this.pageSize);
