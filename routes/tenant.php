@@ -424,10 +424,13 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::delete('/timetracking/settings/delete-new', [Settings\SettingController::class, 'delete']);
 
     #==================================
-
-    // salaries
+    // adventures history manage
+    Route::post('/timetracking/salaries/fines/histories/{user}/{fine}', [Salary\FineHistoryController::class, 'restore']);
+    Route::delete('/timetracking/salaries/fines/histories/{user}/{fine}', [Salary\FineHistoryController::class, 'delete']);
     Route::post('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'restore']);
     Route::delete('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'delete']);
+
+    // salaries
     Route::get('/timetracking/salaries', [Salary\SalaryController::class, 'index']);
     Route::get('/timetracking/salaries/export', [Salary\SalaryController::class, 'exportExcel']);
     Route::get('/timetracking/salaries/get-transfers', [Salary\SalaryController::class, 'getTransfers']);

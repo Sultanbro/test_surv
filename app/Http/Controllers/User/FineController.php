@@ -97,14 +97,7 @@ class FineController extends Controller
                 'author' => Auth::user()->name . ' ' . Auth::user()->last_name,
                 'author_id' => Auth::user()->id,
                 'date' => $dto->date,
-                'description' => isset($comment) ? 'Штраф, причина: ' . $comment : 'Штраф',
-                'payload' => json_encode([
-                    'type' => 'fine',
-                    'fine_id' => $fine->getKey(),
-                    'user_id' => $dto->userId,
-                    'day' => $dto->date,
-                    'note' => $dto->comment,
-                ])
+                'description' => isset($comment) ? 'Штраф, причина: ' . $comment : 'Штраф'
             ];
 
             TimetrackingHistory::query()->create($history);

@@ -97,11 +97,6 @@ class HistoryDeleteTest extends TenantTestCase
 
     public function test_it_can_delete_fine()
     {
-        $amount = 500;
-        $type = 'fine';
-        $realType = 'fine';
-
-        $comment = 'some comment';
         $user = User::factory()->create();
         $fine = Fine::factory()->create();
         $user->fines()->attach($fine, [
@@ -111,31 +106,19 @@ class HistoryDeleteTest extends TenantTestCase
         $this->assertDatabaseHas('user_fines', [
             'user_id' => $user->id,
             'fine_id' => $fine->id,
+            'deleted_at' => null,
         ]);
 
         $params = [
             'reason' => 'sebaceous you idiot'
         ];
 
-        $history = TimetrackingHistory::query()->create([
+        $response = $this->json('delete', "timetracking/salaries/fines/histories/$user->id/$fine->id", $params);
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('user_fines', [
             'user_id' => $user->id,
-            'author_id' => $user->id,
-            'author' => $user->last_name . ' ' . $user->name,
-            'date' => now(),
-            'description' => 'Добавлен <b>' . $type . '</b> на сумму ' . $amount . '<br> Комментарии: ' . $comment,
-            'payload' => json_encode([
-                'type' => $realType,
-                'fine_id' => $fine->getKey(),
-                'user_id' => $user->getKey(),
-                'day' => now(),
-            ])
-        ]);
-
-        $response = $this->json('delete', "timetracking/salaries/histories/$history->id", $params);
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('user_fines', [
-            'user_id' => $user->id,
-            'fine_id' => $fine->id
+            'fine_id' => $fine->id,
+            'deleted_at' => now()->toDateString(),
         ]);
     }
 
