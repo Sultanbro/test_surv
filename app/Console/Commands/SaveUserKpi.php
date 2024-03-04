@@ -122,7 +122,6 @@ class SaveUserKpi extends Command
                 'month' => $date->month
             ]
         ]);
-        dd(in_array($kpi->id, $withCurrency['items']->pluck('id')->toArray()));
         return !in_array($kpi->id, $withCurrency['items']->pluck('id')->toArray());
     }
 
