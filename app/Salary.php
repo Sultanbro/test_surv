@@ -466,6 +466,7 @@ class Salary extends Model
         $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
 
         $statValues = [];
+        $columnValue = [];
         if ($analyticStat) {
             $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
 
@@ -623,11 +624,7 @@ class Salary extends Model
             /**
              * worktime hours in day
              */
-            if ($user->working_time_id == 1) {
-                $worktime = 8;
-            } else {
-                $worktime = 9;
-            }
+            $worktime = $user->working_time_id == 1 ? 8 : 9;
 
             /**
              * Данные для колонки Налоги.
@@ -641,6 +638,11 @@ class Salary extends Model
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $statTotalHour = null;
+                $earnings[$i] = null;
+                $hourly_pays[$i] = null;
+                $hours[$i] = null;
+                $trainings[$i] = null;
+
                 if ($groupTimeAddress) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
@@ -688,17 +690,13 @@ class Salary extends Model
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
+
                 $hourly_pay = $zarplata / $workdays / $working_hours;
-                dd_if($user->id === 4357, $hourly_pay);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
+                dd_if($user->id === 4357, $hourly_pays);
 
                 // add to array
-
-                $earnings[$i] = null;
-                $hourly_pays[$i] = null;
-                $hours[$i] = null;
-                $trainings[$i] = null;
 
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
@@ -838,11 +836,6 @@ class Salary extends Model
                 }
 
             }
-
-            /**
-             * Bonus from settings
-             */
-            $award_date = Carbon::createFromFormat('m-Y', $date->month . '-' . $date->year);
 
             $awards = [];
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
