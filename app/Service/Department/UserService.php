@@ -365,7 +365,7 @@ class UserService
             ->whereHas('group_users', function (Builder $q) use ($groupId, $date) {
                 $q->whereIn('status', [GroupUser::STATUS_FIRED]);
                 $q->where('group_id', $groupId);
-                $q->whereDate('to', '>=', $date);
+                $q->whereDate('to', '<=', Carbon::parse($date)->endOfMonth());
             })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 
