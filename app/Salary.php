@@ -668,16 +668,13 @@ class Salary extends Model
                 $workChart = $user->workChart;
 
                 // Проверяем установлена ли время отдыха
+                $lunchTime = 1;
                 if ($workChart && $workChart->rest_time) {
-                    $lunchTime = $workChart->rest_time;
-                    $hour = floatval($lunchTime / 60);
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
-                } else {
-                    $lunchTime = 1;
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                    $lunchTime = floatval($workChart->rest_time / 60);
                 }
+
+                $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
@@ -695,7 +692,7 @@ class Salary extends Model
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
-//                dd_if($user->id === 4357, $workChart->rest_time);
+                dd_if($user->id === 4357, $zarplata . '/' . $workdays . '/' . $working_hours);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
