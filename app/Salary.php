@@ -664,7 +664,7 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $schedule = $user->schedule(true);
+                $schedule = $user->schedule();
                 $workChart = $user->workChart;
 
                 // Проверяем установлена ли время отдыха
@@ -676,7 +676,7 @@ class Salary extends Model
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
 
-                dd_if($user->id === 4357, $schedule);
+                dd_if($user->id === 4357, $working_hours);
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
