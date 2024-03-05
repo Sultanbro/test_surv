@@ -681,7 +681,6 @@ class Salary extends Model
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
-                dd_if($user->id === 4357, $workChartType);
 
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
@@ -692,6 +691,8 @@ class Salary extends Model
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
+
+                dd_if($user->id === 4357, $workdays);
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
