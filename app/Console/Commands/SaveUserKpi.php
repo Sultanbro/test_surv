@@ -7,10 +7,8 @@ use App\Models\Kpi\Kpi;
 use App\SavedKpi;
 use App\Service\CalculateKpiService2;
 use App\Service\KpiStatisticService;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -42,25 +40,13 @@ class SaveUserKpi extends Command
     {
         $date = Carbon::parse($this->argument('date') ?? now());
         $startOfMonth = $date->copy()->startOfMonth();
-        $endOfMonth = $date->copy()->endOfMonth();
         // get kpis
         $query = Kpi::withTrashed()
-            ->when($this->argument('user_id'), function (Builder $query) use ($endOfMonth) {
-                $query->where(function (Builder $query) use ($endOfMonth) {
-                    $query->where('targetable_id', $this->argument('user_id'));
-                    $query->where('targetable_type', User::class);
-                    $query->orWhereHas('users', fn($q) => $q
-                        ->where('users.id', $this->argument('user_id'))
-                        ->whereNull('deleted_at')
-                        ->orWhereDate('deleted_at', '>', $endOfMonth));
-                });
-            })
             ->where(fn($query) => $query
                 ->whereNull('kpis.deleted_at')
                 ->orWhere('kpis.deleted_at', '>', $startOfMonth->format('Y-m-d')));
 
         $kpis = $this->statisticService->kpis($startOfMonth, [], $query)->get();
-        dd($kpis);
 
         $this->truncate($startOfMonth, $this->argument('user_id'));
         $this->calc($kpis, $startOfMonth, $this->argument('user_id'));
