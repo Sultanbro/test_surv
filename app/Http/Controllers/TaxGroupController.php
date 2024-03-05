@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Tax\EditUserTaxGroupRequest;
 use App\Http\Requests\Tax\SetTaxGroupAssigneeRequest;
 use App\Http\Requests\Tax\TaxGroupRequest;
 use App\Service\Tax\TaxesService;
@@ -68,6 +69,22 @@ class TaxGroupController extends Controller
         return $this->response(
             message: 'Success',
             data: $this->service->setAssigned($request->toDto())
+        );
+    }
+
+    public function editUserTax(EditUserTaxGroupRequest $request): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $this->service->editUserTax($request->toDto())
+        );
+    }
+
+    public function deleteUserTax(EditUserTaxGroupRequest $request): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $this->service->deleteUserTax($request->toDto())
         );
     }
 }

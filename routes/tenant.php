@@ -739,8 +739,13 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/', [TaxGroupController::class, 'create']);
         Route::put('/{id}', [TaxGroupController::class, 'update']);
         Route::delete('/{id}', [TaxGroupController::class, 'delete']);
+
         // Assign tax to user
         Route::post('/set-assigned', [TaxGroupController::class, 'setAssigned']);
+
+        // Detach tax in salaries page
+        Route::post('edit/user-tax', [TaxGroupController::class, 'editUserTax']);
+        Route::post('delete/user-tax', [TaxGroupController::class, 'deleteUserTax']);
     });
 
     Route::middleware(['check_tariff'])->group(function () {
