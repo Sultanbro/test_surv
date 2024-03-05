@@ -692,9 +692,10 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-                dd_if($user->id === 4357, $workdays);
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+
+                dd_if($user->id === 4357, $workChart->rest_time);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
