@@ -1330,7 +1330,8 @@ class TimetrackingController extends Controller
             }
 
             if (isset($request['filter']) && $request->filter == "deactivated") {
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->whereNotNull('deleted_at')
                     ->with([
                         'timetracking' => function ($q) use ($request) {
@@ -1363,7 +1364,8 @@ class TimetrackingController extends Controller
                     ->get();
             } else {
 
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->with([
                         'timetracking' => function ($q) use ($request) {
                             $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")

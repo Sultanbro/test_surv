@@ -217,8 +217,7 @@ class UserService
      * @param string|null $last_date - Если указана дата, то выводим список, отсекая уволенных после этой даты
      * @return array
      */
-    private
-    function getGroupEmployees($groupUsers, string $last_date = null): array
+    private function getGroupEmployees($groupUsers, string $last_date = null): array
     {
         $userData = [];
         foreach ($groupUsers as $groupUser) {

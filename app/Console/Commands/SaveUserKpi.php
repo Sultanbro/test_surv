@@ -60,6 +60,7 @@ class SaveUserKpi extends Command
                 ->orWhere('kpis.deleted_at', '>', $startOfMonth->format('Y-m-d')));
 
         $kpis = $this->statisticService->kpis($startOfMonth, [], $query)->get();
+        dd($kpis);
 
         $this->truncate($startOfMonth, $this->argument('user_id'));
         $this->calc($kpis, $startOfMonth, $this->argument('user_id'));
