@@ -676,6 +676,8 @@ class Salary extends Model
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
 
+                dump_if($userWorkHours);
+
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
 
@@ -692,7 +694,6 @@ class Salary extends Model
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
-                dump_if($user->id === 4357, $zarplata . '/' . $workdays . '/' . $working_hours);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
