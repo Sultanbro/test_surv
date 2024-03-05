@@ -142,7 +142,7 @@ class SalaryController extends Controller
         }
 
 
-        $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
+        $years = ['2020', '2021', '2022', '2023', '2024']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
         return view('admin.salary', compact('groups', 'years'));
     }

@@ -17,6 +17,7 @@ use Auth;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -479,7 +480,7 @@ class Salary extends Model
                 $statValues[$nameColumn] = $value->value;
             }
         }
-
+        /** @var Collection<User> $users */
         $users = User::withTrashed()
             ->whereIn('users.id', array_unique($users_ids))
             ->with([
@@ -687,8 +688,8 @@ class Salary extends Model
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
-
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+                dd_if($user->id === 4357, $hourly_pay);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
