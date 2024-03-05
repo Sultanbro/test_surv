@@ -668,7 +668,7 @@ class Salary extends Model
                 $workChart = $user->workChart;
 
                 // Проверяем установлена ли время отдыха
-                if ($workChart && $workChart->rest_time != null) {
+                if ($workChart && $workChart->rest_time) {
                     $lunchTime = $workChart->rest_time;
                     $hour = floatval($lunchTime / 60);
                     $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
@@ -695,7 +695,7 @@ class Salary extends Model
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
-                dd_if($user->id === 4357, $workChart->rest_time);
+//                dd_if($user->id === 4357, $workChart->rest_time);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
