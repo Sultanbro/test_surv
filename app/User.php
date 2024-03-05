@@ -1718,17 +1718,18 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return match ($type) {
             "6-1" => [0],
             "5-2" => [6, 0],
-            "4-3" => [5, 6, 0],
+            "4-3", "1-1", "2-2", "3-3" => [5, 6, 0],
             "3-4" => [4, 5, 6, 0],
             "2-5" => [3, 4, 5, 6, 0],
             "1-6" => [2, 3, 4, 5, 6, 0],
-            "1-1", "2-2", "3-3" => [5, 6, 0],
             default => throw new InvalidArgumentException("Invalid chart type"),
         };
     }
 
     /**
      * Получаем дни работы для пользователя за месяц
+     * @param null $year
+     * @param null $month
      * @return int
      */
     public function getCountWorkDaysMonth($year = null, $month = null): int
