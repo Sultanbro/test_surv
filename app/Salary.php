@@ -676,7 +676,7 @@ class Salary extends Model
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
 
-                dd($user->id === 4357, $schedule);
+                dd_if($user->id === 4357, $schedule);
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
