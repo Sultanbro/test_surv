@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 class ReferrerSalaryService
 {
 
-    public function updateSalaries(?string $date = null, ?User $user = null): void
+    public function updateSalaries(?string $date = null, ?int $userId = null): void
     {
         $date = Carbon::parse($date ?: now());
 
@@ -20,7 +20,7 @@ class ReferrerSalaryService
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
-            ->when($user, fn($query) => $query->where('id', $user->id))
+            ->when($userId, fn($query) => $query->where('id', $userId))
             ->where(function (Builder $query) use ($to) {
                 $query->whereNull('deleted_at');
                 $query->orWhere('deleted_at', '>=', $to->format("Y-m-d"));
