@@ -68,8 +68,6 @@ class Referring extends Facade
             ])
             ->first();
 
-        dump_if($user->id == 31451, $exists);
-
         if (!$exists) {
             self::deleteReferrerDailySalary($user->id, $date);
             return;
