@@ -874,7 +874,7 @@
 			@close="isTaxesSidebar = false"
 		>
 			<div class="px-2">
-				<div class="d-flex ">
+				<div class="d-flex jcsb">
 					<span class="bold fz-18">
 						{{ editedField.item.taxGroup }}
 					</span>
@@ -922,7 +922,28 @@
 					:key="hist.id"
 					class="AvansHistoryItem"
 				>
-					<!--  -->
+					<div class="">
+						c <span>{{ $moment(hist.from).format('DD.MM.YYYY') }}</span>
+						по <span>{{ hist.to ? $moment(hist.to).format('DD.MM.YYYY') : 'настоящее время' }}</span>
+					</div>
+					<div class="bold">
+						{{ hist.name }}
+					</div>
+					<div
+						v-if="hist.payload"
+						class=""
+					>
+						<div class="">
+							{{ taxHistActions[hist.payload.action] }} {{ $moment(hist.payload.date).format('DD.MM.YYYY') }}
+						</div>
+						<div class="">
+							сотрудником {{ hist.payload.editor_name }}
+						</div>
+						<div class="">
+							комментарий: {{ hist.payload.comment }}
+						</div>
+					</div>
+					<hr>
 				</div>
 			</div>
 		</Sidebar>
@@ -1257,6 +1278,12 @@ export default {
 				item: '',
 				reason: '',
 			},
+			taxHistActions: {
+				delete: 'Удален',
+				edit: 'Изменен',
+				add: 'Добавлен',
+				restore: 'Восстановлен',
+			},
 		};
 	},
 	computed: {
@@ -1311,6 +1338,12 @@ export default {
 				value: tax.id,
 				text: tax.name,
 			}))
+		},
+		allTaxesMap(){
+			return this.allTaxes.reduce((result, tax) => {
+				result[tax.id] = tax
+				return result
+			}, {})
 		},
 	},
 	watch: {
@@ -2212,8 +2245,11 @@ export default {
 		// tax history
 		async fetchTaxHistory(userId){
 			try {
-				const {data} = await this.axios.get(`/taxes/history/${userId}`)
-				this.taxHistory = data.data
+				const {data} = await this.axios.get(`/taxes/${userId}/history`)
+				this.taxHistory = data.data.map(hist => ({
+					...hist,
+					payload: JSON.parse(hist.payload || 'null'),
+				}))
 			}
 			catch (error) {
 				this.$onError(error)
@@ -2233,7 +2269,7 @@ export default {
 
 			const loader = this.$loading.show()
 			await this.fetchTaxes()
-			// fetchTaxHistory
+			await this.fetchTaxHistory(cellData.item.user_id)
 
 			this.editedField = cellData
 			this.sidebarTitle = cellData.item.name + ' : Налоги'
