@@ -60,7 +60,7 @@ class Referring extends Facade
             ->whereHas('daytypes', function (Builder $query) use ($date, $userCurrentGroupStartingDate) {
                 $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
                 $query->where('date', $date->format("Y-m-d"));
-                $query->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate));
+//                $query->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate));
             })
             ->with([
                 'description',
