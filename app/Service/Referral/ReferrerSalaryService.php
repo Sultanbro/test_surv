@@ -34,12 +34,12 @@ class ReferrerSalaryService
                 Referring::touchReferrerStatus($referral->referrer);
                 /**@var ReferralSalary $salary */
                 $salary = ReferralSalary::query()->where('referral_id', $referral->id)->where('date', $from)->first();
-                dump([
-                    'referral_id' => $referral->id,
-                    'amount' => $salary?->amount,
-                    'is_paid' => $salary?->is_paid,
-                    'type' => $salary?->type,
-                ]);
+//                dump([
+//                    'referral_id' => $referral->id,
+//                    'amount' => $salary?->amount,
+//                    'is_paid' => $salary?->is_paid,
+//                    'type' => $salary?->type,
+//                ]);
             }
 
             $from->addDay();
