@@ -68,7 +68,7 @@ class Referring extends Facade
             ])
             ->first();
 
-        dump_if($user->id == 31451 && $exists, [
+        dump_if($user->id == 31451 && !is_null($exists), [
             'salary_date' => $exists->date,
             'group_worked_date' => $userCurrentGroupStartingDate,
         ]);
