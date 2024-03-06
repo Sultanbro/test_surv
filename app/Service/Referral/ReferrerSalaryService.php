@@ -3,7 +3,6 @@
 namespace App\Service\Referral;
 
 use App\Facade\Referring;
-use App\Models\Referral\ReferralSalary;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,15 +32,11 @@ class ReferrerSalaryService
                 Referring::touchReferrerSalaryDaily($referral, $from);
                 Referring::touchReferrerSalaryWeekly($referral, $from);
                 Referring::touchReferrerStatus($referral->referrer);
-                /**@var ReferralSalary $salary */
-                $salary = ReferralSalary::query()->where('referral_id', $referral->id)->where('date', $from)->first();
-                dump([
-                    'date:' => $from->format("Y-m-d"),
-                    'referral_id' => $referral->id,
-                    'amount' => $salary?->amount,
-                    'is_paid' => $salary?->is_paid,
-                    'type' => $salary?->type,
-                ]);
+//
+//                dump([
+//                    'date:' => $from->format("Y-m-d"),
+//                    'referral_id' => $referral->id
+//                ]);
             }
 
             $from->addDay();
