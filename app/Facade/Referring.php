@@ -123,18 +123,18 @@ class Referring extends Facade
             ])
             ->first();
 
-        dump_if($user->id == 31451, [
-            'timetracking_count' => $exists?->timetracking_count,
-            'date' => $date->format("Y-m-d"),
-            'user_applied_at' => $userCurrentGroupStartingDate
-        ]);
-
         if (!$exists) return; // if a user doesn't have a referrer, then just return;
 
         $workedWeeksCount = (int)floor($exists->timetracking_count / 6);
 
 
         if ($workedWeeksCount < 1) return;
+
+        dump_if($user->id == 31451, [
+            'timetracking_count' => $workedWeeksCount,
+            'date' => $date->format("Y-m-d"),
+            'user_applied_at' => $userCurrentGroupStartingDate
+        ]);
 
         if ($workedWeeksCount == 1) {
             $service->touch($exists, PaidType::FIRST_WORK);
