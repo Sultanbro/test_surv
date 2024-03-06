@@ -10,7 +10,7 @@ use App\Console\Commands\Employee\CheckLate;
 use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
-use App\Console\Commands\Referral\CheckForReferrerDaily;
+use App\Console\Commands\Referral\UpdateReferralSalary;
 use App\Console\Commands\RestartQueue;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
         SetExitTimetracking::class,
         TenantMigrateFreshCommand::class,
         TestingCommand::class,
-        CheckForReferrerDaily::class
+        UpdateReferralSalary::class
     ];
 
     /**

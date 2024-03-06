@@ -5,7 +5,7 @@ namespace App\Console\Commands\Referral;
 use App\Service\Referral\ReferrerSalaryService;
 use Illuminate\Console\Command;
 
-class CheckForReferrerDaily extends Command
+class UpdateReferralSalary extends Command
 {
 
     /**

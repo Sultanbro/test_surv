@@ -28,10 +28,11 @@ class ReferrerSalaryService
             dump('date: ' . $from->format("Y-m-d"));
 
             foreach ($referrals as $referral) {
+                dd_if($referral->id == 31451, 31451);
                 Referring::touchReferrerSalaryDaily($referral, $from);
                 Referring::touchReferrerSalaryWeekly($referral, $from);
                 Referring::touchReferrerStatus($referral->referrer);
-                dump('user_id: ' . $referral->id);
+                dump('referral_id: ' . $referral->id);
             }
 
             $from->addDay();
