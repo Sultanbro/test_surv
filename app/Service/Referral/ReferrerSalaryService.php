@@ -34,8 +34,8 @@ class ReferrerSalaryService
 //                    'date:' => $from->format("Y-m-d"),
 //                    'referral_id' => $referral->id
 //                ]);
-                $from->addDay();
             }
+            $from->addDay();
         }
     }
 }
