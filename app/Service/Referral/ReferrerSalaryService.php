@@ -12,8 +12,10 @@ class ReferrerSalaryService
 
     public function updateSalaries(?string $date = null, ?User $user = null): void
     {
-        $from = Carbon::parse($date ?? now())->startOfMonth();
-        $to = Carbon::parse($date ?? now())->endOfMonth();
+        $date = Carbon::parse($date ?: now());
+
+        $from = $date->startOfMonth();
+        $to = $date->isCurrentDay() ? $date : $date->endOfMonth();
 
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
@@ -30,10 +32,10 @@ class ReferrerSalaryService
                 Referring::salaryForTraining($referral, $from);
                 Referring::salaryForWeek($referral, $from);
                 Referring::syncReferrerStatus($referral->referrer);
-//                dump([
-//                    'date:' => $from->format("Y-m-d"),
-//                    'referral_id' => $referral->id
-//                ]);
+                dump([
+                    'date:' => $from->format("Y-m-d"),
+                    'referral_id' => $referral->id
+                ]);
             }
 
             $from->addDay();
