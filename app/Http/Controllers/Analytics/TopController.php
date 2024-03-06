@@ -391,7 +391,7 @@ class TopController extends Controller
         $top_value = new TopValue();
 
         $top_value->value_type = $request->get("value_type");
-        $top_value->round = $request->get("round", 1);
+        $top_value->round = $request->get("round") ?? 0;
         dd($top_value->round);
         $top_value->is_main = $request->get("is_main");
         $top_value->min_value = $request->get("min_value");
