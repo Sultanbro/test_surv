@@ -108,8 +108,8 @@ class Referring extends Facade
 
         $userCurrentGroupStartingDate = $user->activeGroup()?->pivot?->from;
 
-        /** @var User $user */
-        $user = User::withTrashed()
+        /** @var User $exists */
+        $exists = User::withTrashed()
             ->where('id', $user->id)
             ->withWhereHas('referrer')
             ->withWhereHas('description', fn($query) => $query->where('is_trainee', 0))
@@ -122,18 +122,20 @@ class Referring extends Facade
             ])
             ->first();
 
-        if (!$user) return; // if a user doesn't have a referrer, then just return;
-
-        $workedWeeksCount = (int)floor($user->timetracking_count / 6);
-
         dump_if($user->id == 31451, [
             'group_worked_date' => $userCurrentGroupStartingDate,
+            'exists' => $exists,
         ]);
+
+        if (!$exists) return; // if a user doesn't have a referrer, then just return;
+
+        $workedWeeksCount = (int)floor($exists->timetracking_count / 6);
+
 
         if ($workedWeeksCount < 1) return;
 
         if ($workedWeeksCount == 1) {
-            $service->touch($user, PaidType::FIRST_WORK);
+            $service->touch($exists, PaidType::FIRST_WORK);
             return;
         }
 
@@ -143,11 +145,11 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
-        $toCreateCount = $workedWeeksCount - $user->referral_salaries_count;
+        $toCreateCount = $workedWeeksCount - $exists->referral_salaries_count;
 
-        $service->touch($user, PaidType::FIRST_WORK);
+        $service->touch($exists, PaidType::FIRST_WORK);
         for ($created = 0; $created < $toCreateCount; $created++) {
-            $service->touch($user, PaidType::WORK);
+            $service->touch($exists, PaidType::WORK);
         }
     }
 
