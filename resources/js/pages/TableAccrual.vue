@@ -880,7 +880,7 @@
 					</span>
 					<template v-if="canEdit">
 						<div
-							v-if="avansItem.deleted_at"
+							v-if="editedField.item.deleted_at"
 							class="AvansHistoryItem-restore pointer mr-2"
 							title="Восстановить"
 							@click="onTaxRR('restore', editedField.item)"
@@ -1056,9 +1056,9 @@
 			</b-row>
 		</b-modal>
 
-		<!-- fine update/remove -->
+		<!-- tax edit -->
 		<b-modal
-			v-model="formFineEdit.isOpen"
+			v-model="formTaxEdit.isOpen"
 			ok-text="Изменить"
 			cancel-text="Отмена"
 			title="Изменение налога"
@@ -1075,7 +1075,7 @@
 				<b-col sm="9">
 					<b-form-select
 						id="taxEditTax"
-						v-model="formFineEdit.newTax"
+						v-model="formTaxEdit.newTax"
 						:options="taxOptions"
 						class="mb-2"
 					/>
@@ -1091,7 +1091,7 @@
 				<b-col sm="9">
 					<b-form-input
 						id="taxEditReason"
-						v-model="formFineEdit.reason"
+						v-model="formTaxEdit.reason"
 						placeholder="Укажите причину изменения"
 						class="mb-2"
 					/>
@@ -1233,6 +1233,14 @@ export default {
 				type: '',
 				reason: '',
 			},
+
+			formFineRR: {
+				isOpen: false,
+				action: '',
+				type: '',
+				reason: '',
+			},
+
 
 			formTaxRR: {
 				isOpen: false,
