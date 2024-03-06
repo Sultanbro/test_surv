@@ -15,7 +15,7 @@ class ReferrerSalaryService
         $date = Carbon::parse($date ?: now());
 
         $from = $date->copy()->startOfMonth();
-        $to = $date->copy()->endOfMonth();
+        $to = $date->isCurrentDay() ? $date->copy() : $date->copy()->endOfMonth();
 
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
