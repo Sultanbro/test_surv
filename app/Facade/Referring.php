@@ -123,8 +123,8 @@ class Referring extends Facade
             ->first();
 
         dump_if($user->id == 31451, [
-            'group_worked_date' => $userCurrentGroupStartingDate,
             'exists' => (int)floor($exists?->timetracking_count / 6),
+            'date' => $date->format("Y-m-d"),
         ]);
 
         if (!$exists) return; // if a user doesn't have a referrer, then just return;
