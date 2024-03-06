@@ -30,10 +30,10 @@ class ReferrerSalaryService
                 Referring::touchReferrerSalaryDaily($referral, $from);
                 Referring::touchReferrerSalaryWeekly($referral, $from);
                 Referring::touchReferrerStatus($referral->referrer);
-                dump([
-                    'date:' => $from->format("Y-m-d"),
-                    'referral_id' => $referral->id
-                ]);
+//                dump([
+//                    'date:' => $from->format("Y-m-d"),
+//                    'referral_id' => $referral->id
+//                ]);
             }
 
             $from->addDay();
