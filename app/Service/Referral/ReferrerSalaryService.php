@@ -27,9 +27,9 @@ class ReferrerSalaryService
 
         while ($from <= $to) {
             foreach ($referrals as $referral) {
-                Referring::touchReferrerSalaryDaily($referral, $from);
-                Referring::touchReferrerSalaryWeekly($referral, $from);
-                Referring::touchReferrerStatus($referral->referrer);
+                Referring::salaryForTraining($referral, $from);
+                Referring::salaryForWeek($referral, $from);
+                Referring::syncReferrerStatus($referral->referrer);
 //                dump([
 //                    'date:' => $from->format("Y-m-d"),
 //                    'referral_id' => $referral->id

@@ -96,7 +96,7 @@ class MarkTrainees extends Command
                     'admin_id' => 5,
                 ]);
                 if (tenant()->getKey() === 'bp') {
-                    Referring::touchReferrerSalaryDaily($trainee, now());
+                    Referring::salaryForTraining($trainee, now());
                 }
             }
         }
