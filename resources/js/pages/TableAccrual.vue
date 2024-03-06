@@ -874,11 +874,31 @@
 			@close="isTaxesSidebar = false"
 		>
 			<div class="px-2">
-				<div class="bold">
-					{{ editedField.item.taxGroup }}
+				<div class="d-flex ">
+					<span class="bold fz-18">
+						{{ editedField.item.taxGroup }}
+					</span>
+					<template v-if="canEdit">
+						<div
+							v-if="avansItem.deleted_at"
+							class="AvansHistoryItem-restore pointer mr-2"
+							title="Восстановить"
+							@click="onTaxRR('restore', editedField.item)"
+						>
+							<i class="fas fa-undo" />
+						</div>
+						<div
+							v-else
+							class="AvansHistoryItem-delete pointer mr-2"
+							title="Удалить"
+							@click="onTaxRR('remove', editedField.item)"
+						>
+							<i class="fas fa-times" />
+						</div>
+					</template>
 				</div>
 				<div
-					v-for="taxItem, taxIndex in editedField.item.taxinfo"
+					v-for="taxItem, taxIndex in editedField.item.taxinfo.calc"
 					:key="taxIndex"
 					class="AvansHistoryItem"
 				>
@@ -891,6 +911,18 @@
 				</div>
 				<div class="bold">
 					Всего налогов: {{ editedField.item.totalTax }}
+				</div>
+
+				<!-- History -->
+				<div class="my-4 bold fz-18">
+					История
+				</div>
+				<div
+					v-for="hist in taxHistory"
+					:key="hist.id"
+					class="AvansHistoryItem"
+				>
+					<!--  -->
 				</div>
 			</div>
 		</Sidebar>
@@ -956,13 +988,111 @@
 					sm="3"
 					class="pt-3"
 				>
-					<label for="removeUpdateReason">Причина:</label>
+					<label for="salaryRRReason">Причина:</label>
 				</b-col>
 				<b-col sm="9">
 					<b-form-input
-						id="removeUpdateReason"
+						id="salaryRRReason"
 						v-model="removeRestoreForm.reason"
 						:placeholder="`Укажите причину ${removeRestoreForm.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+
+		<!-- fine update/remove -->
+		<b-modal
+			v-model="formFineRR.isOpen"
+			:ok-text="formFineRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formFineRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmFineRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="fineRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="fineRRReason"
+						v-model="formFineRR.reason"
+						:placeholder="`Укажите причину ${formFineRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax update/remove -->
+		<b-modal
+			v-model="formTaxRR.isOpen"
+			:ok-text="formTaxRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formTaxRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmTaxRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxRRReason"
+						v-model="formTaxRR.reason"
+						:placeholder="`Укажите причину ${formTaxRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- fine update/remove -->
+		<b-modal
+			v-model="formFineEdit.isOpen"
+			ok-text="Изменить"
+			cancel-text="Отмена"
+			title="Изменение налога"
+			size="md"
+			@ok="confirmTaxEdit"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditTax">Заменить на:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-select
+						id="taxEditTax"
+						v-model="formFineEdit.newTax"
+						:options="taxOptions"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxEditReason"
+						v-model="formFineEdit.reason"
+						placeholder="Укажите причину изменения"
 						class="mb-2"
 					/>
 				</b-col>
@@ -1103,6 +1233,22 @@ export default {
 				type: '',
 				reason: '',
 			},
+
+			formTaxRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			taxHistory: [],
+			allTaxes: [],
+			formTaxEdit: {
+				isOpen: false,
+				newTax: '',
+				item: '',
+				reason: '',
+			},
 		};
 	},
 	computed: {
@@ -1151,6 +1297,12 @@ export default {
 		},
 		canEdit(){
 			return this.$can('salaries_edit')
+		},
+		taxOptions(){
+			return this.allTaxes.map(tax => ({
+				value: tax.id,
+				text: tax.name,
+			}))
 		},
 	},
 	watch: {
@@ -1548,7 +1700,10 @@ export default {
 
 				const final = item.edited_salary ? item.edited_salary.amount : total
 				const taxes = item.user_tax?.tax_group?.items || []
-				const taxinfo = []
+				const taxinfo = {
+					group: item.user_tax?.tax_group,
+					calc: []
+				}
 				let afterTaxes = final
 				let taxesSum = final
 				let totalTax = 0
@@ -1561,7 +1716,7 @@ export default {
 					else{
 						amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
 					}
-					taxinfo.push({
+					taxinfo.calc.push({
 						name: tax.name,
 						value: tax.value + (tax.is_percent ? '%' : ''),
 						amount,
@@ -1677,81 +1832,6 @@ export default {
 			this.editedField = data
 			this.editPremiumSidebar = true
 			this.sidebarTitle = data.item.name + ' : ' + type
-		},
-
-		// история бонусов для showEditPremiumSidebar
-		async fetchBonusHistory(user_id) {
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			try {
-				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
-					user_id: user_id,
-					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-				})
-				this.bonus_history = data.map(bonus => ({
-					...bonus,
-					payload: bonus.payload ? JSON.parse(bonus.payload) : {}
-				}))
-			}
-			catch (error) {
-				this.$onError({error, silent: 1})
-			}
-		},
-
-		async showAvansSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.avans_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/advances',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.avans_history = data.map(avans => ({
-				...avans,
-				payload: avans.payload ? JSON.parse(avans.payload) : {}
-			}))
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Авансы'
-			this.isAvansSidebar = true
-			loader.hide()
-		},
-
-		async showFineSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.fine_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/fines',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.fine_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
-			this.isFineSidebar = true
-			loader.hide()
-		},
-
-		async showTaxesSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.texes_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/taxes',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.texes_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Налоги'
-			this.isTaxesSidebar = true
-			loader.hide()
 		},
 
 		editPremium() {
@@ -2044,6 +2124,188 @@ export default {
 			}
 			/* eslint-enable require-atomic-updates */
 		},
+		// Avans/Bonus history
+
+		// Fine history
+		async showFineSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.fine_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/fines',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.fine_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
+			this.isFineSidebar = true
+			loader.hide()
+		},
+
+		onFineRR(action, item){
+			this.formFineRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmFineRR(){
+			if(this.formFineRR.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.formFineRR.action === 'remove') return this.removeFine()
+			this.restoreFine()
+		},
+
+		async removeFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.delete(`/timetracking/salaries/fines/histories/${user}/${fine}`, {params: {method: 'delete', reason}})
+				item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.post(`/timetracking/salaries/fines/histories/${user}/${fine}`, {
+					method: 'post',
+					reason,
+				})
+				item.pivot.deleted_at = null
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Fine history
+
+		// tax history
+		async fetchTaxHistory(userId){
+			try {
+				const {data} = await this.axios.get(`/taxes/history/${userId}`)
+				this.taxHistory = data.data
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		async fetchTaxes(){
+			try {
+				const {data} = await this.axios.get('/taxes')
+				this.allTaxes = data.data
+			}
+			catch (error) {
+				this.$onError({error, silent: true})
+			}
+		},
+		async showTaxesSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const loader = this.$loading.show()
+			await this.fetchTaxes()
+			// fetchTaxHistory
+
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Налоги'
+			this.isTaxesSidebar = true
+			loader.hide()
+		},
+		onTaxRR(action, item){
+			this.formTaxRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxRR(){
+			if(this.formTaxRR.reason.length < 5) return alert('Укажите причину')
+			if(this.formTaxRR.action === 'remove') return this.removeTax()
+			this.restoreTax()
+		},
+		async removeTax(){
+			const {item, reason} = this.formTaxRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				await this.axios.post('/taxes/delete/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					// tax_group_id: taxinfo.group.id,
+				})
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formTaxRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		async restoreTax(){
+			// same api
+			return this.removeTax()
+		},
+		onTaxEdit(item){
+			this.formTaxEdit = {
+				isOpen: true,
+				newTax: '',
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxEdit(){
+			if(this.formTaxEdit.reason.length < 5) return alert('Укажите причину')
+			this.editTax()
+		},
+		async editTax(){
+			const {item, reason, newTax} = this.formTaxEdit
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				await this.axios.post('/taxes/edit/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					tax_group_id: newTax,
+				})
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formTaxEdit.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// tax history
 	},
 };
 </script>
