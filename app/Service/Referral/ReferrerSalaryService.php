@@ -17,10 +17,6 @@ class ReferrerSalaryService
         $from = $date->copy()->startOfMonth();
         $to = $date->copy()->endOfMonth();
 
-        dd(
-            $from,
-            $to,
-        );
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
