@@ -14,8 +14,8 @@ class ReferrerSalaryService
     {
         $date = Carbon::parse($date ?: now());
 
-        $from = $date->startOfMonth();
-        $to = $date->endOfMonth();
+        $from = $date->copy()->startOfMonth();
+        $to = $date->copy()->endOfMonth();
 
         dd(
             $from,
