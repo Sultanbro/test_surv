@@ -86,7 +86,7 @@ class Referring extends Facade
     public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
     {
         /** @var User $referral */
-        $referral = User::with(['description', 'referrer'])
+        $referral = User::withTrashed()->with(['description', 'referrer'])
             ->find($user_id);
 
         /** @var User $referrer */
