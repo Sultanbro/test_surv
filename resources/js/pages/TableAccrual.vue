@@ -879,21 +879,30 @@
 						{{ editedField.item.taxGroup }}
 					</span>
 					<template v-if="canEdit">
-						<div
-							v-if="editedField.item.deleted_at"
-							class="AvansHistoryItem-restore pointer mr-2"
-							title="Восстановить"
-							@click="onTaxRR('restore', editedField.item)"
-						>
-							<i class="fas fa-undo" />
-						</div>
-						<div
-							v-else
-							class="AvansHistoryItem-delete pointer mr-2"
-							title="Удалить"
-							@click="onTaxRR('remove', editedField.item)"
-						>
-							<i class="fas fa-times" />
+						<div class="d-flex">
+							<div
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Изменить"
+								@click="onTaxEdit(editedField.item)"
+							>
+								<i class="fas fa-edit" />
+							</div>
+							<div
+								v-if="editedField.item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="onTaxRR('restore', editedField.item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="onTaxRR('remove', editedField.item)"
+							>
+								<i class="fas fa-times" />
+							</div>
 						</div>
 					</template>
 				</div>
@@ -927,7 +936,7 @@
 						по <span>{{ hist.to ? $moment(hist.to).format('DD.MM.YYYY') : 'настоящее время' }}</span>
 					</div>
 					<div class="bold">
-						{{ hist.name }}
+						{{ hist.tax_group.name }}
 					</div>
 					<div
 						v-if="hist.payload"
