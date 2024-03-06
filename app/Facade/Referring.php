@@ -127,11 +127,7 @@ class Referring extends Facade
 
         $workedWeeksCount = (int)floor($exists->timetracking_count / 6);
 
-        dump_if($user->id == 31451, [
-            'timetracking_count' => $workedWeeksCount,
-            'date' => $date->format("Y-m-d"),
-            'user_applied_at' => $userCurrentGroupStartingDate
-        ]);
+        $service->touch($exists, PaidType::ATTESTATION);
 
         if ($workedWeeksCount < 1) return;
 
