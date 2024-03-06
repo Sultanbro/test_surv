@@ -77,11 +77,6 @@ class Referring extends Facade
             return;
         }
 
-        dump_if($user->id == 31451 && !is_null($exists), [
-            'salary_date' => $exists->date,
-            'group_worked_date' => $userCurrentGroupStartingDate,
-        ]);
-
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($exists, PaidType::TRAINEE);
     }
@@ -116,10 +111,8 @@ class Referring extends Facade
         /** @var User $user */
         $user = User::withTrashed()
             ->where('id', $user->id)
-            ->with([
-                'description',
-                'referrer'
-            ])
+            ->withWhereHas('referrer')
+            ->withWhereHas('description', fn($query) => $query->where('is_trainee', 0))
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
                 ->when($userCurrentGroupStartingDate, fn($query) => $query->where("enter", '>=', $userCurrentGroupStartingDate))
             ])
@@ -129,9 +122,13 @@ class Referring extends Facade
             ])
             ->first();
 
-        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
+        if (!$user) return; // if a user doesn't have a referrer, then just return;
 
         $workedWeeksCount = (int)floor($user->timetracking_count / 6);
+
+        dump_if($user->id == 31451, [
+            'group_worked_date' => $userCurrentGroupStartingDate,
+        ]);
 
         if ($workedWeeksCount < 1) return;
 
