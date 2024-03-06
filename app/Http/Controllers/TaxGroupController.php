@@ -24,11 +24,11 @@ class TaxGroupController extends Controller
         );
     }
 
-    public function getUserTaxes($id): JsonResponse
+    public function getUserTax($id): JsonResponse
     {
         return $this->response(
             message: 'Success',
-            data: $this->service->getUserTaxes($id)
+            data: $this->service->getUserTax($id)
         );
     }
 
@@ -69,6 +69,14 @@ class TaxGroupController extends Controller
         return $this->response(
             message: 'Success',
             data: $this->service->setAssigned($request->toDto())
+        );
+    }
+
+    public function getUserTaxes($id): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $this->service->getUserTaxes($id)
         );
     }
 

@@ -23,7 +23,7 @@ class TaxesService
         return TaxGroup::with('items')->get();
     }
 
-    public function getUserTaxes($userId)
+    public function getUserTax($userId)
     {
         return UserTax::with('taxGroup.items')
             ->where('status', UserTax::ACTIVE)
@@ -297,5 +297,12 @@ class TaxesService
                 'action' => 'add'
             ])
         ]);
+    }
+
+    public function getUserTaxes($userId)
+    {
+        return UserTax::query()
+            ->where('user_id', $userId)
+            ->get();
     }
 }
