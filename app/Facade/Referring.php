@@ -123,7 +123,7 @@ class Referring extends Facade
             ->first();
 
         dump_if($user->id == 31451, [
-            'timetracking_count' => $exists->timetracking_count,
+            'timetracking_count' => $exists?->timetracking_count,
             'date' => $date->format("Y-m-d"),
             'user_applied_at' => $userCurrentGroupStartingDate
         ]);
