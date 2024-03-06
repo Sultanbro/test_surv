@@ -664,7 +664,7 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $schedule = $user->schedule();
+                $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
 
                 // Проверяем установлена ли время отдыха

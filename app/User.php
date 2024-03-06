@@ -1579,9 +1579,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     }
 
     /**
+     * @param bool $withOutHalf
      * @return array
      */
-    public function schedule($withOutHalf = false): array
+    public function schedule(bool $withOutHalf = false): array
     {
         $timezone = $this->timezone();
 
@@ -1597,6 +1598,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         } else {
             $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         }
+
         $end = Carbon::parse("$date $workEndTime", $timezone);
 
         if ($start->greaterThan($end)) {
