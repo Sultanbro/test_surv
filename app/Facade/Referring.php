@@ -114,11 +114,11 @@ class Referring extends Facade
             ->withWhereHas('referrer')
             ->withWhereHas('description', fn($query) => $query->where('is_trainee', 0))
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
-                ->whereRaw("DATE_FORMAT(enter, '%Y-%m-%d') >= ?", [Carbon::parse($userCurrentGroupStartingDate)->format('Y-m-d')])
+//                ->whereRaw("DATE_FORMAT(enter, '%Y-%m-%d') >= ?", [Carbon::parse($userCurrentGroupStartingDate)->format('Y-m-d')])
                 ->whereRaw("DATE_FORMAT(enter, '%Y-%m-%d') <= ?", [$date->format('Y-m-d')])
             ])
             ->withCount(['referralSalaries' => fn(Builder $query) => $query
-                ->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate))
+//                ->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate))
                 ->where("type", PaidType::WORK->name)
             ])
             ->first();
