@@ -108,7 +108,7 @@ class Referring extends Facade
         $service = app(TransactionInterface::class);
         $service->useDate($date);
 
-        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
+        $userCurrentGroupStartingDate = $user->activeGroup()?->pivot?->from;
 
         /** @var User $user */
         $user = User::withTrashed()
@@ -121,7 +121,7 @@ class Referring extends Facade
                 ->where("enter", '>=', $userCurrentGroupStartingDate)
             ])
             ->withCount(['referralSalaries' => fn(Builder $query) => $query
-                ->where("date", '>=', $userCurrentGroupStartingDate)
+                ->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate))
                 ->where("type", PaidType::WORK->name)
             ])
             ->first();
