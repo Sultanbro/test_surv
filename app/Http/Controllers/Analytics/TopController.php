@@ -403,7 +403,7 @@ class TopController extends Controller
         $top_value->date = Carbon::now()->day(1)->format('Y-m-d');
         $top_value->cell = $request->get("cell");
         $top_value->value_type = $request->get("value_type");
-        $top_value->unit = $request->get("unit");
+        $top_value->unit = $request->get("unit") ?? 1;
         $top_value->options = json_encode($request->get("options"));
         $top_value->save();
 
