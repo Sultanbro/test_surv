@@ -14,14 +14,10 @@ use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
 use View;
 
 class TopController extends Controller
@@ -60,45 +56,6 @@ class TopController extends Controller
                 'prognoz_groups' => Recruiting::getPrognozGroups($date),
             ],
         ]);
-    }
-
-    public function fetch(Request $request): JsonResponse
-    {
-        $date = Carbon::createFromDate(
-            year: $request->get("year")
-            , month: $request->get("month")
-            , day: 1)
-            ->format('Y-m-d');
-
-        return response()->json([
-            'rentability' => TopValue::getRentabilityGauges($date),
-            'utility' => TopValue::getUtilityGauges($date),
-            'proceeds' => $this->getProceeds($date),
-        ]);
-
-    }
-
-    /**
-     * Сводная таблица рентабельности за год
-     * @throws Exception
-     */
-    public function getRentability(Request $request): array
-    {
-        return TopValue::getPivotRentability(
-            $request->get("year")
-            , $request->get("month")
-        );
-    }
-
-    /**
-     * Сводная таблица рентабельности только за месяц
-     * @throws Exception
-     */
-    public function getRentabilityOnMonth(Request $request): array
-    {
-        return TopValue::getPivotRentabilityOnMonth(
-            $request->get("year")
-            , $request->get("month"));
     }
 
     /**
@@ -254,6 +211,22 @@ class TopController extends Controller
         return $week_proceeds;
     }
 
+    /**
+     * Даты для таблицы выручки
+     */
+    private function daysInMonth($date): array
+    {
+        $date = Carbon::parse($date)->startOfMonth();
+
+        $days = [];
+
+        for ($i = 1; $i <= $date->daysInMonth; $i++) {
+            $days[] = Carbon::parse($date->day($i)->format('Y-m-d'));
+        }
+
+        return $days;
+    }
+
     private function getProceedFields($days): array
     {
         $fields = [];
@@ -293,20 +266,43 @@ class TopController extends Controller
         return $fields;
     }
 
-    /**
-     * Даты для таблицы выручки
-     */
-    private function daysInMonth($date): array
+    public function fetch(Request $request): JsonResponse
     {
-        $date = Carbon::parse($date)->startOfMonth();
+        $date = Carbon::createFromDate(
+            year: $request->get("year")
+            , month: $request->get("month")
+            , day: 1)
+            ->format('Y-m-d');
 
-        $days = [];
+        return response()->json([
+            'rentability' => TopValue::getRentabilityGauges($date),
+            'utility' => TopValue::getUtilityGauges($date),
+            'proceeds' => $this->getProceeds($date),
+        ]);
 
-        for ($i = 1; $i <= $date->daysInMonth; $i++) {
-            $days[] = Carbon::parse($date->day($i)->format('Y-m-d'));
-        }
+    }
 
-        return $days;
+    /**
+     * Сводная таблица рентабельности за год
+     * @throws Exception
+     */
+    public function getRentability(Request $request): array
+    {
+        return TopValue::getPivotRentability(
+            $request->get("year")
+            , $request->get("month")
+        );
+    }
+
+    /**
+     * Сводная таблица рентабельности только за месяц
+     * @throws Exception
+     */
+    public function getRentabilityOnMonth(Request $request): array
+    {
+        return TopValue::getPivotRentabilityOnMonth(
+            $request->get("year")
+            , $request->get("month"));
     }
 
     public function saveRentMax(Request $request): Response
@@ -395,7 +391,7 @@ class TopController extends Controller
         $top_value = new TopValue();
 
         $top_value->value_type = $request->get("value_type");
-        $top_value->round = $request->get("round");
+        $top_value->round = $request->get("round", 0);
         $top_value->is_main = $request->get("is_main");
         $top_value->min_value = $request->get("min_value");
         $top_value->max_value = $request->get("max_value");
