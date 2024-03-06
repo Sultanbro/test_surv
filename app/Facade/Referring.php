@@ -68,11 +68,6 @@ class Referring extends Facade
             ])
             ->first();
 
-        dump_if($user->id == 31451 && !is_null($exists), [
-            'salary_date' => $exists->date,
-            'group_worked_date' => $userCurrentGroupStartingDate,
-        ]);
-
         if (!$exists) {
             self::deleteReferrerDailySalary($user->id, $date);
             return;
@@ -80,7 +75,12 @@ class Referring extends Facade
 
         if (!$exists->referrer) {
             return;
-        } // if a user doesn't have a referrer, then just return;
+        }
+
+        dump_if($user->id == 31451 && !is_null($exists), [
+            'salary_date' => $exists->date,
+            'group_worked_date' => $userCurrentGroupStartingDate,
+        ]);
 
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($exists, PaidType::TRAINEE);
