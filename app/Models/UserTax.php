@@ -20,6 +20,6 @@ class UserTax extends Model
 
     public function taxGroup()
     {
-        return $this->belongsTo(TaxGroup::class);
+        return $this->belongsTo(TaxGroup::class)->withTrashed();
     }
 }

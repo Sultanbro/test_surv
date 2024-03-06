@@ -301,7 +301,7 @@ class TaxesService
 
     public function getUserTaxes($userId)
     {
-        return UserTax::query()
+        return UserTax::with('taxGroup:id,name')
             ->where('user_id', $userId)
             ->get();
     }
