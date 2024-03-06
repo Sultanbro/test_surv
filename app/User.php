@@ -1596,7 +1596,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $end = Carbon::parse("$date $workEndTime", $timezone);
 
         //TODO: проверить логику, раньше не было число с *.30
-        if (!$withOutHalf && $start->diffInHours($end) <= 5) {
+        if (!$withOutHalf && !$start->diffInHours($end) <= 5) {
             $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         }
 
