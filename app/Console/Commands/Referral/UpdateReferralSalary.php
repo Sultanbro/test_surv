@@ -13,7 +13,7 @@ class UpdateReferralSalary extends Command
      *
      * @var string
      */
-    protected $signature = 'referrer:daily {user?}';
+    protected $signature = 'referrer:daily {user?} {date?}';
 
     /**
      * The console command description.
@@ -30,7 +30,7 @@ class UpdateReferralSalary extends Command
      */
     public function handle(ReferrerSalaryService $service): int
     {
-        $service->updateSalaries($this->argument('user'));
+        $service->updateSalaries($this->argument('date'), $this->argument('user'));
         return 1;
     }
 }

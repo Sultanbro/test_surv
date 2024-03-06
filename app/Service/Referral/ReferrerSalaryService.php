@@ -5,15 +5,16 @@ namespace App\Service\Referral;
 use App\Facade\Referring;
 use App\Models\Referral\ReferralSalary;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ReferrerSalaryService
 {
 
-    public function updateSalaries(?User $user = null): void
+    public function updateSalaries(?string $date = null, ?User $user = null): void
     {
-        $from = now()->startOfMonth();
-        $to = now()->endOfMonth();
+        $from = Carbon::parse($date ?? now())->startOfMonth();
+        $to = Carbon::parse($date ?? now())->endOfMonth();
 
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
