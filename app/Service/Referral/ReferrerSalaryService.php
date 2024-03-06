@@ -13,7 +13,7 @@ class ReferrerSalaryService
     public function updateSalaries(?string $date = null, ?User $user = null): void
     {
         $date = Carbon::parse($date ?: now());
-
+        dd($date);
         $from = $date->startOfMonth();
         $to = $date->endOfMonth();
 
