@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Referral;
 
 use App\Service\Referral\ReferrerSalaryService;
 use Illuminate\Console\Command;
@@ -20,7 +20,7 @@ class CheckForReferrerDaily extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Обнавлять расчеть начислений для рефералов';
 
     /**
      * Execute the console command.

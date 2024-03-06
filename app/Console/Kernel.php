@@ -5,16 +5,16 @@ namespace App\Console;
 use App\Console\Commands\Api\CheckPaymentsStatusCommand;
 use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
-use App\Console\Commands\CheckForReferrerDaily;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
-use App\Console\Commands\TestingCommand;
 use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
+use App\Console\Commands\Referral\CheckForReferrerDaily;
 use App\Console\Commands\RestartQueue;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
+use App\Console\Commands\TestingCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -132,7 +132,7 @@ class Kernel extends ConsoleKernel
                 if ($tenant) {
                     $this->load(__DIR__ . '/Commands');
                     tenancy()->initialize($tenant);
-                };
+                }
             }
         }
         require base_path('routes/console.php');
