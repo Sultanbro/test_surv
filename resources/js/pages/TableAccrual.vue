@@ -1749,7 +1749,15 @@ export default {
 				});
 
 				const final = item.edited_salary ? item.edited_salary.amount : total
-				const taxes = item.user_tax?.tax_group?.items || []
+				const taxItems = item.user_tax?.tax_group?.items || []
+				const taxes = taxItems.map(tax => {
+					if(!tax.histories_latest) return tax
+					const hist = typeof tax.histories_latest === 'string' ? JSON.parse(tax.histories_latest) : tax.histories_latest
+					return {
+						...tax,
+						...hist,
+					}
+				}).sort((a,b) => a.order - b.order)
 				const taxinfo = {
 					group: item.user_tax?.tax_group,
 					calc: []
@@ -1757,6 +1765,7 @@ export default {
 				let afterTaxes = final
 				let taxesSum = final
 				let totalTax = 0
+
 				taxes.forEach(tax => {
 					if(!tax.value) return
 					let amount
@@ -2274,6 +2283,8 @@ export default {
 			}
 		},
 		async showTaxesSidebar(cellData){
+			if(this.dateInfo.currentYear < 2024) return
+			if(this.dateInfo.currentYear === 2024 && +this.dateInfo.month < 2) return
 			if(cellData.index === 0) return false
 
 			const loader = this.$loading.show()
@@ -2298,7 +2309,10 @@ export default {
 			if(this.formTaxRR.action === 'remove') return this.removeTax()
 			this.restoreTax()
 		},
-		async removeTax(){
+		clearFromTaxRR(){
+			this.formTaxRR = {isOpen: false}
+		},
+		async removeTax(msg){
 			const {item, reason} = this.formTaxRR
 			/* eslint-disable require-atomic-updates */
 			if(!confirm('Вы уверены?')) return ''
@@ -2314,6 +2328,7 @@ export default {
 				// item.pivot.deleted_at = new Date().toISOString()
 				// item.payload = JSON.parse(data.payload || '{}')
 				this.formTaxRR.isOpen = false
+				this.$toast.success(msg || 'Налог удален')
 			}
 			catch (error) {
 				this.$onError({error})
@@ -2322,7 +2337,7 @@ export default {
 		},
 		async restoreTax(){
 			// same api
-			return this.removeTax()
+			return this.removeTax('Налог восстановлен')
 		},
 		onTaxEdit(item){
 			this.formTaxEdit = {
@@ -2336,28 +2351,40 @@ export default {
 			if(this.formTaxEdit.reason.length < 5) return alert('Укажите причину')
 			this.editTax()
 		},
+		clearFromTaxEdit(){
+			this.formTaxEdit = {isOpen: false}
+		},
 		async editTax(){
 			const {item, reason, newTax} = this.formTaxEdit
 			/* eslint-disable require-atomic-updates */
 			if(!confirm('Вы уверены?')) return ''
 			const {user_id} = item
 			try {
-				await this.axios.post('/taxes/edit/user-tax', {
+				const {data} = await this.axios.post('/taxes/edit/user-tax', {
 					year: this.dateInfo.currentYear,
 					month: +this.dateInfo.month,
 					user_id,
 					reason,
 					tax_group_id: newTax,
 				})
+				this.updateUserTax(user_id, data.data)
 				// item.pivot.deleted_at = new Date().toISOString()
 				// item.payload = JSON.parse(data.payload || '{}')
+				// this.formTaxEdit.isOpen = false
 				this.formTaxEdit.isOpen = false
+				this.$toast.success('Налог изменен')
 			}
 			catch (error) {
 				this.$onError({error})
 			}
 			/* eslint-enable require-atomic-updates */
 		},
+		updateUserTax(userId, tax){
+			const user = this.data.users?.find(user => user.id === userId) || null
+			if(!user) return
+			user.user_tax = tax
+			this.loadItems()
+		}
 		// tax history
 	},
 };
