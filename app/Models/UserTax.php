@@ -24,7 +24,7 @@ class UserTax extends Model
     const REMOVED = 0;
 
     protected $fillable = [
-        'tax_group_id', 'user_id', 'status', 'from', 'to'
+        'tax_group_id', 'user_id', 'status', 'from', 'to', 'payload'
     ];
 
     public function taxGroup()
