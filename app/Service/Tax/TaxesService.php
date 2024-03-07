@@ -149,7 +149,7 @@ class TaxesService
         }
     }
 
-    public function editUserTax(EditUserTaxDTO $dto): bool
+    public function editUserTax(EditUserTaxDTO $dto)
     {
         $date = Carbon::createFromDate($dto->year, $dto->month);
 
@@ -159,7 +159,7 @@ class TaxesService
         $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
 
         if (!$userTax) {
-            UserTax::query()->create([
+            return UserTax::query()->create([
                 'user_id' => $dto->userId,
                 'tax_group_id' => $dto->taxGroupId,
                 'status' => UserTax::REMOVED,
@@ -173,8 +173,6 @@ class TaxesService
                     'action' => 'edit'
                 ])
             ]);
-
-            return true;
         }
 
         if ($userTax->status == UserTax::ACTIVE) {
@@ -186,7 +184,7 @@ class TaxesService
 
             if ($date->startOfMonth()->isBefore(now()->startOfMonth())) {
                 // For date's month
-                UserTax::query()->create([
+                $newTax = UserTax::query()->create([
                     'user_id' => $dto->userId,
                     'tax_group_id' => $dto->taxGroupId,
                     'status' => UserTax::REMOVED,
@@ -209,7 +207,7 @@ class TaxesService
                 ]);
             } else {
                 // This works as edit in profile, because date's month is current month
-                UserTax::query()->create([
+                $newTax = UserTax::query()->create([
                     'user_id' => $dto->userId,
                     'tax_group_id' => $dto->taxGroupId,
                     'status' => UserTax::ACTIVE,
@@ -225,7 +223,7 @@ class TaxesService
             }
         }
         else {
-            UserTax::query()->create([
+            $newTax = UserTax::query()->create([
                 'user_id' => $dto->userId,
                 'tax_group_id' => $dto->taxGroupId,
                 'status' => UserTax::REMOVED,
@@ -241,7 +239,7 @@ class TaxesService
             ]);
         }
 
-        return true;
+        return $newTax;
     }
 
     public function deleteUserTax(EditUserTaxDTO $dto): bool
@@ -348,24 +346,6 @@ class TaxesService
                 ])
             ]);
         }
-    }
-
-    protected function createForNextMonth($date, $userTax, $user)
-    {
-        UserTax::query()->create([
-            'user_id' => $userTax->user_id,
-            'tax_group_id' => $userTax->tax_group_id,
-            'status' => $userTax->status,
-            'from' => $date->addMonth()->firstOfMonth()->toDateString(),
-            'to' => $userTax->to,
-            'payload' => json_encode([
-                'editor_id' => $user->id,
-                'editor_name' => $user->name . " " . $user->last_name,
-                'date' => now()->format('Y-m-d'),
-                'comment' => '',
-                'action' => 'add'
-            ])
-        ]);
     }
 
     public function getUserTaxes($userId)
