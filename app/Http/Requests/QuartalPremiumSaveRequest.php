@@ -24,6 +24,7 @@ class QuartalPremiumSaveRequest extends FormRequest
             'text' => 'required|max:255',
             'plan' => 'required',
             'cell' => 'nullable|string',
+            'method' => 'nullable|string',
             'from' => 'required|date',
             'to' => 'required|date'
         ];
