@@ -692,6 +692,7 @@ class Salary extends Model
 
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+                dump_if($user->id == 25443, $hourly_pay);
 //                $hourly_pay = $user->full_time ? $hourly_pay : $hourly_pay / 2;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
