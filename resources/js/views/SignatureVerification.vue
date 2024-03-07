@@ -155,7 +155,7 @@ export default {
 		async onVerify(){
 			try {
 				await this.axios.post(`/signature/users/${this.user.id}/files/${this.doc.id}/verification`, {
-					code: this.userCode
+					code: +this.userCode
 				})
 				this.isVerifyModal = false
 				++this.activeDoc
