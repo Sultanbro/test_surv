@@ -158,6 +158,25 @@ class TaxesService
         /** @var UserTax $userTax */
         $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
 
+        if (!$userTax) {
+            UserTax::query()->create([
+                'user_id' => $dto->userId,
+                'tax_group_id' => $dto->taxGroupId,
+                'status' => UserTax::REMOVED,
+                'from' => $date->startOfMonth()->toDateString(),
+                'to' => $date->endOfMonth()->toDateString(),
+                'payload' => json_encode([
+                    'editor_id' => $user->id,
+                    'editor_name' => $user->name . " " . $user->last_name,
+                    'date' => now()->format('Y-m-d'),
+                    'comment' => $dto->reason,
+                    'action' => 'edt'
+                ])
+            ]);
+
+            return true;
+        }
+
         if ($userTax->status == UserTax::ACTIVE) {
             // For previous periods
             $userTax->update([
@@ -204,7 +223,8 @@ class TaxesService
                     ])
                 ]);
             }
-        } else {
+        }
+        else {
             UserTax::query()->create([
                 'user_id' => $dto->userId,
                 'tax_group_id' => $dto->taxGroupId,
@@ -234,17 +254,16 @@ class TaxesService
         /** @var UserTax $userTax */
         $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
 
+        if (!$userTax) return true;
+
         if ($userTax->status == UserTax::ACTIVE) {
             // Date's month is equal to current month
             if ($date->startOfMonth()->eq(now()->startOfMonth())) {
                 $this->detachActive((new SetUserTaxDTO(
                     taxGroupId: $userTax->tax_group_id, userId: $userTax->user_id, assigned: false
                 )));
-
-                $this->attachActive((new SetUserTaxDTO(
-                    taxGroupId: $dto->taxGroupId, userId: $userTax->user_id, assigned: true
-                )));
-            } else {
+            }
+            else {
                 $userTax->update([
                     'status' => UserTax::REMOVED,
                     'to' => $date->endOfMonth()->subDay()->toDateString(),
@@ -264,7 +283,8 @@ class TaxesService
                     'from' => $date->addMonth()->startOfMonth()->toDateString()
                 ]);
             }
-        } else {
+        }
+        else {
             if (Carbon::parse($userTax->to)->isAfter($date->endOfMonth())) {
                 UserTax::query()->create([
                     'user_id' => $userTax->user_id,
