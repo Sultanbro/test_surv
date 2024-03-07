@@ -308,7 +308,8 @@ class TaxesService
                 ])
             ]);
         }
-
+        $tax = $this->getUserTaxForGivenMonth($dto->userId, $date);
+        if ($tax) $this->deleteUserTax($dto);
         return true;
     }
 
