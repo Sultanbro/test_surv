@@ -9,14 +9,14 @@ class EditUserTaxDTO
      * @param int $month
      * @param int $userId
      * @param string $reason
-     * @param int $taxGroupId
+     * @param int|null $taxGroupId
      */
     public function __construct(
         public int $year,
         public int $month,
         public int $userId,
         public string $reason,
-        public int $taxGroupId,
+        public int|null $taxGroupId,
     )
     {}
 }

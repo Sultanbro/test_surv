@@ -19,7 +19,7 @@ class EditUserTaxGroupRequest extends FormRequest
             'month' => 'required|integer',
             'user_id' => 'required|integer',
             'reason' => 'required|string',
-            'tax_group_id' => 'required|integer'
+            'tax_group_id' => 'integer'
         ];
     }
 
