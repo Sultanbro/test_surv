@@ -3,10 +3,10 @@
 namespace App;
 
 use App\Repositories\Timetrack\TimetrackRepository;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 /**
  * @mixin Builder
@@ -14,15 +14,12 @@ use Carbon\Carbon;
 class Timetracking extends Model
 {
     const DEFAULT_WORK_START_TIME = '09:00';
-    const DEFAULT_WORK_END_TIME   = '19:00';
+    const DEFAULT_WORK_END_TIME = '19:00';
 
     const DAY_STARTED = 1;
     const DAY_ENDED = 0;
-
-    protected $table = 'timetracking';
-
     public $timestamps = true;
-
+    protected $table = 'timetracking';
     protected $fillable = [
         'user_id',
         'enter',
@@ -50,107 +47,6 @@ class Timetracking extends Model
         'times' => 'array',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo('App\User', 'user_id', 'id')->withTrashed();
-    }
-
-    public function scopeRunning($query)
-    {
-        $enter = app(TimetrackRepository::class);
-        return $query->whereDate('enter', $enter->getWorkStartTime())->where('exit', null);
-    }
-
-    public function isStarted()
-    {
-        return $this->status == self::DAY_STARTED;
-    }
-
-    public function isEnded()
-    {
-        return $this->status == self::DAY_ENDED;
-    }
-
-    public function setStatus(int $value)
-    {
-        $this->status = $value;
-        return $this;
-    }
-
-    public function setEnter(Carbon $value)
-    {
-        $this->enter = $value->setTimezone('UTC');
-        return $this;
-    }
-
-    public function setExit(Carbon $value)
-    {
-        $this->exit = $value->setTimezone('UTC');
-        return $this;
-    }
-
-    public function setTimes(array $value)
-    {
-        $this->times = $value;
-        return $this;
-    }
-
-    public function addTime(Carbon $value, $tz = 'UTC')
-    {
-        $arr = $this->times;
-
-        if(!$arr) {
-            $arr = [];
-            $arr[] = $this->enter->setTimezone($tz)->format('H:i');
-
-            if($this->exit) {
-                $arr[] = $this->exit->setTimezone($tz)->format('H:i');
-            }
-        }
-
-        $arr[] = $value->setTimezone($tz)->format('H:i');
-
-        return $this->setTimes($arr);
-    }
-
-    public function scopeWorkdayStarted($query)
-    {
-        return $query->where('status', self::DAY_STARTED);
-    }
-
-    public function isWorkEndTimeSetToNextDay(Carbon $worktimeEnd) : bool
-    {
-        return $worktimeEnd->hour < 9
-            && Carbon::now($worktimeEnd->timezone)
-                ->hour >= 9;
-    }
-
-    public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)
-    {
-        $hours = Timetracking::whereIn('user_id', $users_ids)
-            ->whereBetween('enter', [$from_date, $to_date])
-            ->get();
-
-        if($hours->count() == 0) {
-            return number_format(0, 2, '.', '');
-        }
-
-        $sum = 0;
-
-        foreach ($hours as $hour) {
-
-            $totalHours = $hour->total_hours / 60;
-
-            if($hour->updated != 1 && $totalHours > 9) {
-                $totalHours = 9;
-            }
-
-            $sum += $totalHours;
-        }
-
-        return number_format((float)$sum, 2, '.', '');
-    }
-
     public static function getSumHoursPerMonthByUsersIds($users_ids, $month, $year)
     {
         $query_date = $year . '-' . $month . '-01';
@@ -176,6 +72,32 @@ class Timetracking extends Model
         return $summary;
     }
 
+    public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)
+    {
+        $hours = Timetracking::whereIn('user_id', $users_ids)
+            ->whereBetween('enter', [$from_date, $to_date])
+            ->get();
+
+        if ($hours->count() == 0) {
+            return number_format(0, 2, '.', '');
+        }
+
+        $sum = 0;
+
+        foreach ($hours as $hour) {
+
+            $totalHours = $hour->total_hours / 60;
+
+            if ($hour->updated != 1 && $totalHours > 9) {
+                $totalHours = 9;
+            }
+
+            $sum += $totalHours;
+        }
+
+        return number_format((float)$sum, 2, '.', '');
+    }
+
     public static function getTimeTrackingReport($request, $users_ids, $year)
     {
 
@@ -195,7 +117,7 @@ class Timetracking extends Model
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
             }
         ])->whereIn('id', array_unique($users_ids))
-        ->orderBy('last_name', 'asc')
+            ->orderBy('last_name', 'asc')
             ->get(['id', 'email', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'full_time']);
 
         return $users;
@@ -237,19 +159,19 @@ class Timetracking extends Model
      */
     public static function totalHours(
         string $date,
-        int $group_id,
+        int    $group_id,
         ?array $positions = []
     ): float|int
     {
-        $users = \App\ProfileGroup::employees($group_id);
+        $users = ProfileGroup::employees($group_id);
 
         $users = User::withTrashed()
-            ->when(empty($positions), fn ($users) => $users->where('position_id', Position::OPERATOR_ID), fn ($users) => $users->whereIn('position_id', $positions))
+            ->when(empty($positions), fn($users) => $users->where('position_id', Position::OPERATOR_ID), fn($users) => $users->whereIn('position_id', $positions))
             ->whereIn('id', $users)->pluck('id')->toArray();
 
-        $total_hours =  self::select(
-                DB::raw('SUM(total_hours) as total_hours')
-            )
+        $total_hours = self::select(
+            DB::raw('SUM(total_hours) as total_hours')
+        )
             ->whereIn('user_id', $users)
             ->whereDate('enter', $date)
             ->first()
@@ -266,10 +188,9 @@ class Timetracking extends Model
             ->where('user_id', $employee_id)
             ->whereDate('enter', $date);
 
-        if ($timeTrack->exists())
-        {
+        if ($timeTrack->exists()) {
             $timeTrack?->update([
-                'total_hours' => (int) $total_hours,
+                'total_hours' => (int)$total_hours,
                 'updated' => 2
             ]);
         } else {
@@ -282,25 +203,101 @@ class Timetracking extends Model
             ]);
         }
 
-        \App\TimetrackingHistory::create([
+        TimetrackingHistory::create([
             'user_id' => $employee_id,
             'author_id' => 5,
             'author' => User::getUserById($auth)->full_name,
             'date' => $date,
-            'description' => 'Изменено время с аналитики на '.$total_hours.' минут',
+            'description' => 'Изменено время с аналитики на ' . $total_hours . ' минут',
         ]);
     }
 
-    public static function getItemInWeek($userId){
+    public static function getItemInWeek($userId)
+    {
         $firstDayOfWeek = now()->startOfWeek();
         $lastDayOfWeek = now()->endOfWeek();
         return self::where('user_id', $userId)
-        ->whereBetween('enter', [$firstDayOfWeek, $lastDayOfWeek])
-        ->get()
-        ->map(function($item){
-            return Carbon::parse($item['enter'])->toDateString();
-        })
-        ->unique()
-        ->count();
+            ->whereBetween('enter', [$firstDayOfWeek, $lastDayOfWeek])
+            ->get()
+            ->map(function ($item) {
+                return Carbon::parse($item['enter'])->toDateString();
+            })
+            ->unique()
+            ->count();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id')->withTrashed();
+    }
+
+    public function scopeRunning($query)
+    {
+        $enter = app(TimetrackRepository::class);
+        return $query->whereDate('enter', $enter->getWorkStartTime())->where('exit', null);
+    }
+
+    public function isStarted()
+    {
+        return $this->status == self::DAY_STARTED;
+    }
+
+    public function isEnded()
+    {
+        return $this->status == self::DAY_ENDED;
+    }
+
+    public function setStatus(int $value)
+    {
+        $this->status = $value;
+        return $this;
+    }
+
+    public function setEnter(Carbon $value)
+    {
+        $this->enter = $value->setTimezone('UTC');
+        return $this;
+    }
+
+    public function setExit(Carbon $value)
+    {
+        $this->exit = $value->setTimezone('UTC');
+        return $this;
+    }
+
+    public function addTime(Carbon $value, $tz = 'UTC')
+    {
+        $arr = $this->times;
+
+        if (!$arr) {
+            $arr = [];
+            $arr[] = $this->enter->setTimezone($tz)->format('H:i');
+
+            if ($this->exit) {
+                $arr[] = $this->exit->setTimezone($tz)->format('H:i');
+            }
+        }
+
+        $arr[] = $value->setTimezone($tz)->format('H:i');
+
+        return $this->setTimes($arr);
+    }
+
+    public function setTimes(array $value)
+    {
+        $this->times = $value;
+        return $this;
+    }
+
+    public function scopeWorkdayStarted($query)
+    {
+        return $query->where('status', self::DAY_STARTED);
+    }
+
+    public function isWorkEndTimeSetToNextDay(Carbon $worktimeEnd): bool
+    {
+        return $worktimeEnd->hour < 9
+            && Carbon::now($worktimeEnd->timezone)
+                ->hour >= 9;
     }
 }
