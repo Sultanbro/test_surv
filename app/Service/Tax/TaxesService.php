@@ -159,7 +159,7 @@ class TaxesService
         $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
 
         if (!$userTax) {
-            return UserTax::query()->create([
+            $newTax = UserTax::query()->create([
                 'user_id' => $dto->userId,
                 'tax_group_id' => $dto->taxGroupId,
                 'status' => UserTax::REMOVED,
@@ -173,6 +173,8 @@ class TaxesService
                     'action' => 'edit'
                 ])
             ]);
+            $newTax->load('taxGroup.items');
+            return $newTax;
         }
 
         if ($userTax->status == UserTax::ACTIVE) {
@@ -239,6 +241,7 @@ class TaxesService
             ]);
         }
 
+        $newTax->load('taxGroup.items');
         return $newTax;
     }
 
