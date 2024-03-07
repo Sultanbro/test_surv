@@ -2372,6 +2372,7 @@ export default {
 				// item.payload = JSON.parse(data.payload || '{}')
 				// this.formTaxEdit.isOpen = false
 				this.formTaxEdit.isOpen = false
+				this.isTaxesSidebar = false
 				this.$toast.success('Налог изменен')
 			}
 			catch (error) {
