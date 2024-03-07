@@ -496,8 +496,11 @@ class Salary extends Model
                         $q->where('status', UserTax::REMOVED)
                             ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
                             ->whereDate('to', '>=', $date->endOfMonth()->format('Y-m-d'));
-                    })->with('taxGroup.items');
-                    // то ни хам текшир, олдинги ой учун
+                    })->with([
+                        'taxGroup.items.histories_latest' => function ($query) use ($date) {
+                            $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
+                        },
+                    ]);
                 },
                 'profile_histories_latest' => function ($query) use ($date) {
                     $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
@@ -950,12 +953,17 @@ class Salary extends Model
             if ($editedSalary) {
                 $allTotal = $editedSalary->amount; // Edited salary ignores kpi,bonus,...
             }
+
             if ($user->userTax && $user->userTax->taxGroup && count($user->userTax->taxGroup->items) > 0) {
                 $taxItems = $user->userTax->taxGroup->items;
                 $method = 'new';
-            } else {
+            } elseif ($date->isBefore(Carbon::createFromDate(2024, 2))) {
+                // New taxes released 02.2024, So if date before that we should get old taxes else []
                 $taxItems = $oldTaxes;
                 $method = 'old';
+            } else {
+                $taxItems = collect();
+                $method = 'it does not matter';
             }
 
             $user->totalTaxes = UserTaxService::calculateTax($taxItems, $allTotal, $method);

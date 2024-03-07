@@ -22,4 +22,10 @@ class TaxGroupItem extends Model
     protected $fillable = [
         'tax_group_id', 'name', 'is_percent', 'end_subtraction', 'value', 'order', 'is_deduction'
     ];
+
+    public function histories_latest()
+    {
+        return $this->morphOne(History::class, 'historable', 'reference_table', 'reference_id')
+            ->orderBy('created_at', 'desc')->latest();
+    }
 }
