@@ -170,7 +170,7 @@ class TaxesService
                     'editor_name' => $user->name . " " . $user->last_name,
                     'date' => now()->format('Y-m-d'),
                     'comment' => $dto->reason,
-                    'action' => 'edt'
+                    'action' => 'edit'
                 ])
             ]);
 
