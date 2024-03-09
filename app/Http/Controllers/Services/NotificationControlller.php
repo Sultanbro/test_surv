@@ -18,25 +18,21 @@ use Illuminate\Http\Request;
 
 class NotificationControlller extends Controller
 {
-    /**
-     * @var AwardService
-     */
     private NotificationService $notificationService;
 
     public function __construct(NotificationService $notificationService)
     {
-//        $this->middleware('auth');
         $this->notificationService = $notificationService;
     }
 
     /**
      * @throws Exception
      */
-    public function get(Request $request)
+    public function get(): JsonResponse
     {
         return response()->json([
-            'read'   => $this->notificationService->getReadNotifications($request),
-            'unread' => $this->notificationService->getUnreadNotifications($request),
+            'read'   => $this->notificationService->getReadNotifications(),
+            'unread' => $this->notificationService->getUnreadNotifications(),
             'unreadQuantity' => $this->notificationService->countUnreadNotifications(),
         ]);
     }
@@ -50,11 +46,11 @@ class NotificationControlller extends Controller
      * перенос стажировки
      * сохранение отчета
      */
-    public function setRead(Request $request)
+    public function setRead(Request $request): int|string
     {
         $user_id = auth()->id();
 
-        $noti = UserNotification::where('user_id', $user_id)
+        $noti = UserNotification::query()->where('user_id', $user_id)
             ->where('id', $request->id)
             ->first();
 
@@ -148,11 +144,11 @@ class NotificationControlller extends Controller
     }
 
     /**
-     * setNotiReadAll
+     * set All Read
      */
-    public function setAllRead(Request $request)
+    public function setAllRead(): int
     {
-        UserNotification::where('user_id', auth()->id())
+        UserNotification::query()->where('user_id', auth()->id())
             ->whereNull('read_at')
             ->update([
                 'read_at' => now()
