@@ -667,7 +667,7 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                if ($user->profile_histories_latest) {
+                if ($user->profile_histories_latest && $user->id == 30959) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
                     $schedule = $user->schedule(true, $payload['work_chart_id']);
                     if (auth()->id() == 5 && !in_array($user->id, [14772])) {
