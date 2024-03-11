@@ -129,7 +129,7 @@ export function newQuartalPremium() {
 		created_by: 'Вы',
 		updated_by: 'Вы',
 		expanded: false,
-		is_active: true
+		is_active: true,
 	};
 }
 
