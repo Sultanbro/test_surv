@@ -676,7 +676,7 @@ class Salary extends Model
 //                else {
 //                }
 
-                $schedule = $user->schedule(false);
+                $schedule = $user->schedule(true);
 
                 // Проверяем установлена ли время отдыха
                 $lunchTime = 1;
@@ -704,8 +704,6 @@ class Salary extends Model
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
-//                dd_if($user->id == 28862, $zarplata . '/' . $workdays . '/' . $working_hours);
-
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
                 // add to array
@@ -722,6 +720,7 @@ class Salary extends Model
                         $hours[$i] = 0;
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
+                        dd_if($user->id == 28862, $total_hours . '/' . 60 . '*' . $hourly_pay);
 
                         $earning = ($total_hours / 60) * $hourly_pay;
                         $earnings[$i] = round($earning);
