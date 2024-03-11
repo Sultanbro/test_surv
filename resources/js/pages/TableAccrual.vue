@@ -887,22 +887,24 @@
 							>
 								<i class="fas fa-edit" />
 							</div>
-							<div
-								v-if="editedField.item.deleted_at"
-								class="AvansHistoryItem-restore pointer mr-2"
-								title="Восстановить"
-								@click="onTaxRR('restore', editedField.item)"
-							>
-								<i class="fas fa-undo" />
-							</div>
-							<div
-								v-else
-								class="AvansHistoryItem-delete pointer mr-2"
-								title="Удалить"
-								@click="onTaxRR('remove', editedField.item)"
-							>
-								<i class="fas fa-times" />
-							</div>
+							<template v-if="editedField.item.taxinfo.group">
+								<div
+									v-if="editedField.item.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onTaxRR('restore', editedField.item)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onTaxRR('remove', editedField.item)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
 						</div>
 					</template>
 				</div>
