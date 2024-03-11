@@ -639,15 +639,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function profile_histories_latest(): Model|MorphOne|null
     {
         return $this->morphOne(
-            'App\Models\History',
+            History::class,
             'reference',
             'reference_table',
             'reference_id',
             'id'
         )
             ->where('type', History::USER_PROFILE_CHANGED)
-            ->orderBy('created_at', 'desc')
-            ->latest();
+//            ->orderBy('created_at', 'desc')
+            ->latestOfMany();
     }
 
     /**

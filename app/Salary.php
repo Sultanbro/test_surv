@@ -667,16 +667,15 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-//                if ($user->profile_histories_latest && $user->id == 28862) {
-//                    $payload = json_decode($user->profile_histories_latest->payload, true);
-//                    $schedule = $user->schedule(true, $payload['work_chart_id']);
-//
-//                }
-//
-//                else {
-//                }
+                $fromHistoryWorkChart = null;
 
-                $schedule = $user->schedule(true);
+                if ($user->profile_histories_latest) {
+                    $payload = json_decode($user->profile_histories_latest->payload, true);
+                    $fromHistoryWorkChart = $payload['work_chart_id'] ?? null;
+                }
+
+                $schedule = $user->schedule(true, $fromHistoryWorkChart);
+
 
                 // Проверяем установлена ли время отдыха
                 $lunchTime = 1;
@@ -732,8 +731,7 @@ class Salary extends Model
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round(($total_hours / 60), 1);
-                    }
-                    else if ($r) { // переобучение
+                    } else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
 
@@ -746,8 +744,7 @@ class Salary extends Model
 
                         $hours[$i] = round($total_hours / 60, 1);
 
-                    }
-                    else if ($t) { // день отмечен как стажировка
+                    } else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
                         $earning = $hourly_pay * $working_hours * $internshipPayRate;
@@ -755,13 +752,11 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                }
-                else {
+                } else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
-                    }
-                    else if ($r) { // переобучение
+                    } else if ($r) { // переобучение
                         $trainings[$i] = true;
 
                         $earning = $statTotalHour * $hourly_pay * 0.5;
@@ -769,22 +764,19 @@ class Salary extends Model
 
                         $hours[$i] = round($statTotalHour, 1);
 
-                    }
-                    else if ($t) { // день отмечен как стажировка
+                    } else if ($t) { // день отмечен как стажировка
                         $trainings[$i] = true;
 
                         $earning = $hourly_pay * $worktime * $internshipPayRate;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
                         $hours[$i] = round($worktime / 2, 1);
-                    }
-                    else if ($x->count() > 0) { // отработанное врея есть
+                    } else if ($x->count() > 0) { // отработанное врея есть
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($statTotalHour, 2);
 
-                    }
-                    else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                    } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
                         $hours[$i] = round($statTotalHour, 1);
