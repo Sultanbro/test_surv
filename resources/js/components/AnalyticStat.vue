@@ -66,7 +66,7 @@
 						<td class="t-cell rownumber ruler-cells">
 							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
 								<span
-									v-if="editTableMode && i_index > (oldGroup ? 3 : 2)"
+									v-if="editTableMode && i_index > 0"
 									@click="deleteRow(i_index)"
 								>
 									<IconDelete
@@ -77,7 +77,7 @@
 									/>
 								</span>
 								<span
-									v-if="editTableMode && i_index > (oldGroup ? 2 : 0)"
+									v-if="editTableMode && i_index > 0"
 									class="AnalyticStat-addRow"
 									@click="add_row(i_index)"
 								>
