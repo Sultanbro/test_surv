@@ -674,6 +674,8 @@ class Salary extends Model
                     $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
 
+                dd_if($user->id == 28862, $workChartFromHistory);
+
                 $schedule = $user->schedule(true, $workChartFromHistory);
 
 
@@ -719,7 +721,6 @@ class Salary extends Model
                         $hours[$i] = 0;
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
-//                        dd_if($user->id == 28862, $total_hours . '/' . 60 . '*' . $hourly_pay);
 
                         $earning = ($total_hours / 60) * $hourly_pay;
                         $earnings[$i] = round($earning);
