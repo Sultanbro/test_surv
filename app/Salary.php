@@ -667,14 +667,14 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $fromHistoryWorkChart = null;
+                $workChartFromHistory = null;
 
                 if ($user->profile_histories_latest) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
-                    $fromHistoryWorkChart = $payload['work_chart_id'] ?? null;
+                    $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
 
-                $schedule = $user->schedule(true, $fromHistoryWorkChart);
+                $schedule = $user->schedule(true, $workChartFromHistory);
 
 
                 // Проверяем установлена ли время отдыха
