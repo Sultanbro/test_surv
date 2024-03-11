@@ -43,6 +43,7 @@
 									<tr>
 										<th />
 										<th>Название</th>
+										<th>Вид плана</th>
 										<th>План</th>
 										<th>Факт</th>
 										<th>Вознаграждение</th>
@@ -55,23 +56,18 @@
 									<tr>
 										<td />
 										<td>{{ page_item.items.title }}</td>
+										<td>{{ methods[page_item.items.method] || '' }}</td>
 										<td>{{ page_item.items.plan }}</td>
 										<td>{{ page_item.items.fact }}</td>
 										<td>{{ page_item.items.sum }}</td>
 										<td>{{ page_item.items.from }}</td>
 										<td>{{ page_item.items.to }}</td>
 										<td>{{ page_item.items.text }}</td>
-										<td v-if="page_item.items.plan <= page_item.items.fact">
-											Выполнено
+										<td>
+											{{ isCompleted(page_item.items.plan, page_item.items.fact, page_item.items.method) ? 'Выполнено' : 'Не выполнено' }}
 										</td>
-										<td v-else>
-											Не выполнено
-										</td>
-										<td v-if="page_item.items.plan <= page_item.items.fact">
-											{{ page_item.items.sum }}
-										</td>
-										<td v-else>
-											0
+										<td>
+											{{ isCompleted(page_item.items.plan, page_item.items.fact, page_item.items.method) ? page_item.items.sum : 0 }}
 										</td>
 									</tr>
 								</table>
@@ -140,6 +136,7 @@
 											<tr>
 												<th />
 												<th>Название</th>
+												<th>Вид плана</th>
 												<th>План</th>
 												<th>Факт</th>
 												<th>Вознаграждение</th>
@@ -152,68 +149,21 @@
 											<tr>
 												<td />
 												<td>{{ user.quartalPremiums.title }}</td>
+												<td>{{ methods[user.quartalPremiums.method] || '' }}</td>
 												<td>{{ user.quartalPremiums.plan }}</td>
 												<td>{{ user.fact }}</td>
 												<td>{{ user.quartalPremiums.sum }}</td>
 												<td>{{ user.quartalPremiums.from }}</td>
 												<td>{{ user.quartalPremiums.to }}</td>
 												<td>{{ user.quartalPremiums.text }}</td>
-												<td v-if="user.quartalPremiums.plan <= user.quartalPremiums.fact">
-													Выполнено
+												<td>
+													{{ isCompleted(user.quartalPremiums.plan, user.quartalPremiums.fact, user.quartalPremiums.method) ? 'Выполнено' : 'Не выполнено' }}
 												</td>
-												<td v-else>
-													Не выполнено
-												</td>
-												<td v-if="user.quartalPremiums.plan <= user.quartalPremiums.fact">
-													{{ page_item.quartalPremiums.sum }}
-												</td>
-												<td v-else>
-													0
+												<td>
+													{{ isCompleted(user.quartalPremiums.plan, user.quartalPremiums.fact, user.quartalPremiums.method) ? page_item.quartalPremiums.sum : 0 }}
 												</td>
 											</tr>
 										</template>
-										<!--<template v-if="user.expanded">
-                                        <tr>
-                                            <td></td>
-                                            <td>{{user.quartalPremiums.title}}</td>
-                                            <td>{{user.quartalPremiums.plan}}</td>
-                                            <td>{{user.fact}}</td>
-                                            <td>{{user.quartalPremiums.sum}}</td>
-                                            <td>{{user.quartalPremiums.from}}</td>
-                                            <td>{{user.quartalPremiums.to}}</td>
-                                            <td>{{user.quartalPremiums.text}}</td>
-                                            <td v-if="user.quartalPremiums.plan <= user.quartalPremiums.fact">Выполнено</td>
-                                            <td v-else>Не выполнено</td>
-                                            <td v-if="user.quartalPremiums.plan <= user.quartalPremiums.fact">{{page_item.quartalPremiums.sum}}</td>
-                                            <td v-else>0</td>
-                                        </tr>
-                                    </template>-->
-										<!--<tr>
-                                        <th></th>
-                                        <th>Название</th>
-                                        <th>План</th>
-                                        <th>Факт</th>
-                                        <th>Вознаграждение</th>
-                                        <th>Период с</th>
-                                        <th>Период по</th>
-                                        <th>Текст</th>
-                                        <th>Вып/Невып</th>
-                                        <th>Заработанная сумма</th>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>{{page_item.quartalPremiums.title}}</td>
-                                        <td>{{page_item.quartalPremiums.plan}}</td>
-                                        <td>{{page_item.fact}}</td>
-                                        <td>{{page_item.quartalPremiums.sum}}</td>
-                                        <td>{{page_item.quartalPremiums.from}}</td>
-                                        <td>{{page_item.quartalPremiums.to}}</td>
-                                        <td>{{page_item.quartalPremiums.text}}</td>
-                                        <td v-if="page_item.quartalPremiums.plan <= page_item.quartalPremiums.fact">Выполнено</td>
-                                        <td v-else>Не выполнено</td>
-                                        <td v-if="page_item.quartalPremiums.plan <= page_item.quartalPremiums.fact">{{page_item.quartalPremiums.sum}}</td>
-                                        <td v-else>0</td>
-                                    </tr>-->
 									</table>
 								</template>
 							</td>
@@ -227,6 +177,7 @@
 
 <script>
 /* eslint-disable vue/no-mutating-props */
+import { sumMethods } from './helpers.js';
 export default {
 	name: 'StatsTableQuartal',
 	props: {
@@ -245,6 +196,7 @@ export default {
 	},
 	data() {
 		return {
+			methods: sumMethods,
 		}
 	},
 	computed: {
@@ -266,6 +218,21 @@ export default {
 		},
 		expandGroupUser(i,p){
 			this.groups[p][i].expended = !this.groups[p][i].expended
+		},
+		isCompleted(plan, fact, method){
+			plan = Number(plan)
+			fact = Number(fact)
+			method = Number(method)
+
+			switch(method){
+			case 1:
+				return fact > plan
+			case 3:
+				return fact < plan
+			case 5:
+				return fact >= plan
+			}
+			return false
 		}
 	},
 

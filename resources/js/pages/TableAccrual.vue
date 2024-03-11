@@ -827,7 +827,7 @@
 						:key="fineIndex"
 						class="AvansHistoryItem"
 						:class="{
-							'AvansHistoryItem_deleted': fineItem.deleted_at
+							'AvansHistoryItem_deleted': fineItem.pivot.deleted_at
 						}"
 					>
 						<div class="AvansHistoryItem-header">
@@ -836,10 +836,10 @@
 							</div>
 							<template v-if="canEdit">
 								<div
-									v-if="fineItem.deleted_at"
+									v-if="fineItem.pivot.deleted_at"
 									class="AvansHistoryItem-restore pointer mr-2"
 									title="Восстановить"
-									@click="onRemoveRestore('restore', 'fine', fineItem)"
+									@click="onFineRR('restore', fineItem)"
 								>
 									<i class="fas fa-undo" />
 								</div>
@@ -847,7 +847,7 @@
 									v-else
 									class="AvansHistoryItem-delete pointer mr-2"
 									title="Удалить"
-									@click="onRemoveRestore('remove', 'fine', fineItem)"
+									@click="onFineRR('remove', fineItem)"
 								>
 									<i class="fas fa-times" />
 								</div>
@@ -1030,7 +1030,6 @@
 				</b-col>
 			</b-row>
 		</b-modal>
-
 
 		<!-- fine update/remove -->
 		<b-modal
@@ -1262,15 +1261,15 @@ export default {
 				action: '',
 				type: '',
 				reason: '',
+				item: null,
 			},
 
 			formFineRR: {
 				isOpen: false,
 				action: '',
-				type: '',
+				item: '',
 				reason: '',
 			},
-
 
 			formTaxRR: {
 				isOpen: false,
@@ -1545,7 +1544,7 @@ export default {
 				.then(response => {
 					const users = response.data?.users?.map(user => {
 						if(typeof user.profile_histories_latest?.payload === 'string'){
-							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload)
+							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload || '{}')
 							if(user.profile_histories_latest.payload.position_id){
 								user.position_id = user.profile_histories_latest.payload.position_id
 							}
@@ -1803,7 +1802,7 @@ export default {
 					trainings: item.trainings,
 					history: item.track_history?.map(hist => ({
 						...hist,
-						payload: hist.payload ? JSON.parse(hist.payload) : {},
+						payload: hist.payload ? JSON.parse(hist.payload || '{}') : {},
 					})),
 					edited_kpi: item.edited_kpi,
 					test_bonus: item.test_bonus,
@@ -2130,6 +2129,45 @@ export default {
 			loader.hide()
 		},
 
+		// Avans/Bonus history
+		async fetchBonusHistory(user_id) {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
+					user_id: user_id,
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+				})
+				this.bonus_history = data.map(bonus => ({
+					...bonus,
+					payload: bonus.payload ? JSON.parse(bonus.payload || '{}') : {}
+				}))
+			}
+			catch (error) {
+				this.$onError({error, silent: 1})
+			}
+		},
+
+		async showAvansSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.avans_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/advances',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.avans_history = data.map(avans => ({
+				...avans,
+				payload: avans.payload ? JSON.parse(avans.payload || '{}') : {}
+			}))
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Авансы'
+			this.isAvansSidebar = true
+			loader.hide()
+		},
+
 		onRemoveRestore(action, type, item){
 			if(type === 'fine') return this.$toast.info('В разработке')
 			this.removeRestoreForm = {
@@ -2157,7 +2195,7 @@ export default {
 			try {
 				const {data} = await this.axios.delete(`/timetracking/salaries/histories/${item.id}`, {params: {method: 'delete', reason: this.removeRestoreForm.reason}})
 				item.deleted_at = new Date().toISOString()
-				item.payload = JSON.parse(data.payload)
+				item.payload = JSON.parse(data.payload || '{}')
 				this.removeRestoreForm.isOpen = false
 			}
 			catch (error) {
@@ -2175,7 +2213,7 @@ export default {
 					reason: this.removeRestoreForm.reason,
 				})
 				item.deleted_at = null
-				item.payload = JSON.parse(data.payload)
+				item.payload = JSON.parse(data.payload || '{}')
 				this.removeRestoreForm.isOpen = false
 			}
 			catch (error) {

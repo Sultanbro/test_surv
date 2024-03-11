@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 
 import { defineStore } from 'pinia'
-import moment from 'moment'
+// import moment from 'moment'
 import axios from 'axios'
 import {
 	fetchProfileSalary,
@@ -148,7 +148,8 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			}
 			const sumQuartalPremiums = premiums.reduce((result, premium) => {
 				premium.forEach(el => {
-					if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
+					result += el.items.sum
+					// if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
 				})
 				return result
 			}, 0)

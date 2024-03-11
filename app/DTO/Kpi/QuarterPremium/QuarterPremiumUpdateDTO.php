@@ -27,6 +27,7 @@ class QuarterPremiumUpdateDTO
         public ?string $to,
         public ?int    $sum,
         public ?string $cell,
+        public ?string $method,
     )
     {
     }
@@ -46,6 +47,7 @@ class QuarterPremiumUpdateDTO
             'to' => $this->to,
             'sum' => $this->sum,
             'cell' => $this->cell,
+            'method' => $this->method,
         ];
     }
 }
