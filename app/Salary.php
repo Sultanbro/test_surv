@@ -696,11 +696,10 @@ class Salary extends Model
                     $workdays = workdays($date->year, $date->month, $ignore);
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                    $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
+                    $workdays = $user->getCountWorkDaysMonth();
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
-
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 

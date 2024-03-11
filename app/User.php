@@ -1591,8 +1591,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         $workTime = $this->workTime($workChartId);
 
-        dd_if($this->id == 28862, $workTime);
-
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
 
