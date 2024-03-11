@@ -674,7 +674,6 @@ class Salary extends Model
                     $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
 
-                dd_if($user->id == 28862, $workChartFromHistory);
 
                 $schedule = $user->schedule(true, $workChartFromHistory);
 

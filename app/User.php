@@ -1590,6 +1590,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $timezone = $this->timezone();
 
         $workTime = $this->workTime($workChartId);
+
+        dd_if($this->id == 28862, $workTime);
+
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
 
