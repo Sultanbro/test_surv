@@ -670,7 +670,7 @@ class Salary extends Model
                 if ($user->profile_histories_latest) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
                     $schedule = $user->schedule(true, $payload['work_chart_id']);
-                    if (auth()->id() == 5) {
+                    if (auth()->id() == 5 && !in_array($user->id, [14772])) {
                         dd($schedule, $payload['work_chart_id'], $user->id);
                     }
                 }
