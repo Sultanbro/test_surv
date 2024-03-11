@@ -8,7 +8,7 @@
 				<tr>
 					<th />
 					<th>Наименование активности</th>
-					<!-- <th>Вид плана</th> -->
+					<th>Вид плана</th>
 					<th>Целевое значение на месяц</th>
 					<!-- <th>Удельный вес, %</th> -->
 					<th>
@@ -30,9 +30,9 @@
 					<td class="px-2">
 						{{ item.title }}
 					</td>
-					<!-- <td class="text-center">
+					<td class="text-center">
 						{{ methods[item.method] }}
-					</td> -->
+					</td>
 					<td class="text-center">
 						<b>{{ item.plan }} {{ item.unit || '' }}</b>
 					</td>
@@ -43,13 +43,13 @@
 						{{ item.fact }}
 					</td>
 					<td class="text-center">
-						{{ item.plan <= item.fact ? 'Выполнено' : 'Не выполнено' }}
+						{{ isCompleted(item.plan, item.fact, item.method) ? 'Выполнено' : 'Не выполнено' }}
 					</td>
 					<td class="text-center">
 						{{ item.sum }}
 					</td>
 					<td class="text-center">
-						{{ item.plan <= item.fact ? item.sum : 0 }}
+						{{ isCompleted(item.plan, item.fact, item.method) ? item.sum : 0 }}
 					</td>
 				</tr>
 			</tbody>
@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import { sumMethods } from '@/pages/kpi/helpers.js';
+
 export default {
 	name: 'PopupQuartalItem',
 	components: {},
@@ -72,14 +74,32 @@ export default {
 		}
 	},
 	data(){
-		return {}
+		return {
+			methods: sumMethods,
+		}
 	},
 	computed: {},
 	watch: {},
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
-	methods: {},
+	methods: {
+		isCompleted(plan, fact, method = 1){
+			plan = Number(plan)
+			fact = Number(fact)
+			method = Number(method)
+
+			switch(method){
+			case 1:
+				return fact > plan
+			case 3:
+				return fact < plan
+			case 5:
+				return fact >= plan
+			}
+			return false
+		}
+	},
 }
 </script>
 

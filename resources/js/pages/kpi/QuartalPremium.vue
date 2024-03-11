@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="$can('kpi_edit')"
-		class="quartal-premiums px-3 py-1"
+		class="QuartalPremiums quartal-premiums px-3 py-1"
 	>
 		<!-- top line -->
 		<div class="d-flex my-4 jcsb aifs">
@@ -1262,3 +1262,11 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.QuartalPremiums{
+	.table__wrapper{
+		overflow: auto !important;
+	}
+}
+</style>
