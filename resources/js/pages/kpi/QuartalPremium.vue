@@ -902,7 +902,6 @@ export default {
 				}))
 			})
 			Promise.allSettled(this.statusRequest).then(() => {
-				this.$toast.success('Статус изменен')
 				this.statusRequest = false
 			})
 		},
@@ -1101,7 +1100,8 @@ export default {
 							type: item.target.type,
 							name: item.target.name,
 							items: [item],
-							expanded: false
+							expanded: false,
+							is_active: 1,
 						});
 					}
 
