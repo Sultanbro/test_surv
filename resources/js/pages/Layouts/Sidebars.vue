@@ -24,7 +24,7 @@
 		<Popup
 			v-if="popNotifications"
 			title="Уведомления"
-			desc="Дополнительное поле с описанием функционала данного окна"
+			desc=""
 			:open="popNotifications"
 			width="50%"
 			@close="popNotifications=false"

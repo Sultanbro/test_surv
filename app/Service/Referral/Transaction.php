@@ -34,6 +34,8 @@ class Transaction implements TransactionInterface
         $this->level = $level;
         $this->date = $this->date ?: now();
 
+        if ($this->date->isAfter(now())) return;
+
         if ($this->alreadyPaid()) return; // already has
 
         $this->calculateAmount();

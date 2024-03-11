@@ -24,7 +24,7 @@ class Referring extends Facade
 {
     protected static $cached = true;
 
-    public static function touchReferrerStatus(User $user): void
+    public static function syncReferrerStatus(User $user): void
     {
         $referrer = $user->referrer;
         if (!$referrer) return; // if a user doesn't have a referrer, then just return;
@@ -33,7 +33,7 @@ class Referring extends Facade
         $service->touch($user->referrer);
     }
 
-    public static function touchReferrerSalaryForCertificate(User $user, ?Carbon $date = null): void
+    public static function salaryForCertificate(User $user, ?Carbon $date = null): void
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
@@ -48,11 +48,11 @@ class Referring extends Facade
         $service->touch($user, PaidType::ATTESTATION);
     }
 
-    public static function touchReferrerSalaryDaily(User $user, Carbon $date): void
+    public static function salaryForTraining(User $user, Carbon $date): void
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
-        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
+        $userCurrentGroupStartingDate = $user->activeGroup()?->pivot?->from;
 
         /** @var User $exists */
         $exists = User::withTrashed()
@@ -60,7 +60,7 @@ class Referring extends Facade
             ->whereHas('daytypes', function (Builder $query) use ($date, $userCurrentGroupStartingDate) {
                 $query->whereIn("type", [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']]);
                 $query->where('date', $date->format("Y-m-d"));
-                $query->where('date', '>=', $userCurrentGroupStartingDate);
+//                $query->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate));
             })
             ->with([
                 'description',
@@ -69,22 +69,22 @@ class Referring extends Facade
             ->first();
 
         if (!$exists) {
-            self::deleteReferrerDailySalary($user->id, $date);
+            self::deleteTrainingSalary($user->id, $date);
             return;
         }
 
         if (!$exists->referrer) {
             return;
-        } // if a user doesn't have a referrer, then just return;
+        }
 
         $service->useDate($date); // this can be used when the date is not current
         $service->touch($exists, PaidType::TRAINEE);
     }
 
-    public static function deleteReferrerDailySalary(int $user_id, Carbon $date): void
+    public static function deleteTrainingSalary(int $user_id, Carbon $date): void
     {
         /** @var User $referral */
-        $referral = User::with(['description', 'referrer'])
+        $referral = User::withTrashed()->with(['description', 'referrer'])
             ->find($user_id);
 
         /** @var User $referrer */
@@ -100,38 +100,39 @@ class Referring extends Facade
             ?->delete();
     }
 
-    public static function touchReferrerSalaryWeekly(User|Authenticatable $user, Carbon $date): void
+    public static function salaryForWeek(User|Authenticatable $user, Carbon $date): void
     {
         /** @var TransactionInterface $service */
         $service = app(TransactionInterface::class);
         $service->useDate($date);
 
-        $userCurrentGroupStartingDate = $user->activeGroup()->pivot->from;
+        $userCurrentGroupStartingDate = $user->activeGroup()?->pivot?->from;
 
-        /** @var User $user */
-        $user = User::withTrashed()
+        /** @var User $exists */
+        $exists = User::withTrashed()
             ->where('id', $user->id)
-            ->with([
-                'description',
-                'referrer'
-            ])
+            ->withWhereHas('referrer')
+            ->withWhereHas('description', fn($query) => $query->where('is_trainee', 0))
             ->withCount(['timetracking' => fn(Builder $query) => $query->whereRaw("TIMESTAMPDIFF(minute, `enter`, `exit`) >= 180")
-                ->where("enter", '>=', $userCurrentGroupStartingDate)
+//                ->whereRaw("DATE_FORMAT(enter, '%Y-%m-%d') >= ?", [Carbon::parse($userCurrentGroupStartingDate)->format('Y-m-d')])
+                ->whereRaw("DATE_FORMAT(enter, '%Y-%m-%d') <= ?", [$date->format('Y-m-d')])
             ])
             ->withCount(['referralSalaries' => fn(Builder $query) => $query
-                ->where("date", '>=', $userCurrentGroupStartingDate)
+//                ->when($userCurrentGroupStartingDate, fn($query) => $query->where('date', '>=', $userCurrentGroupStartingDate))
                 ->where("type", PaidType::WORK->name)
             ])
             ->first();
 
-        if (!$user->referrer) return; // if a user doesn't have a referrer, then just return;
+        if (!$exists) return; // if a user doesn't have a referrer, then just return;
 
-        $workedWeeksCount = (int)floor($user->timetracking_count / 6);
+        $workedWeeksCount = (int)floor($exists->timetracking_count / 6);
+
+        $service->touch($exists, PaidType::ATTESTATION);
 
         if ($workedWeeksCount < 1) return;
 
         if ($workedWeeksCount == 1) {
-            $service->touch($user, PaidType::FIRST_WORK);
+            $service->touch($exists, PaidType::FIRST_WORK);
             return;
         }
 
@@ -141,11 +142,11 @@ class Referring extends Facade
 
         if (!in_array($workedWeeksCount, [2, 3, 4, 6, 8, 12])) return;
 
-        $toCreateCount = $workedWeeksCount - $user->referral_salaries_count;
+        $toCreateCount = $workedWeeksCount - $exists->referral_salaries_count;
 
-        $service->touch($user, PaidType::FIRST_WORK);
+        $service->touch($exists, PaidType::FIRST_WORK);
         for ($created = 0; $created < $toCreateCount; $created++) {
-            $service->touch($user, PaidType::WORK);
+            $service->touch($exists, PaidType::WORK);
         }
     }
 

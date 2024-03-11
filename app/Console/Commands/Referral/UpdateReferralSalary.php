@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Referral;
 
 use App\Service\Referral\ReferrerSalaryService;
 use Illuminate\Console\Command;
 
-class CheckForReferrerDaily extends Command
+class UpdateReferralSalary extends Command
 {
 
     /**
@@ -13,14 +13,14 @@ class CheckForReferrerDaily extends Command
      *
      * @var string
      */
-    protected $signature = 'referrer:daily {user?}';
+    protected $signature = 'referrer:daily {user?} {date?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Обнавлять расчеть начислений для рефералов';
 
     /**
      * Execute the console command.
@@ -30,7 +30,7 @@ class CheckForReferrerDaily extends Command
      */
     public function handle(ReferrerSalaryService $service): int
     {
-        $service->updateSalaries($this->argument('user'));
+        $service->updateSalaries($this->argument('date'), $this->argument('user'));
         return 1;
     }
 }

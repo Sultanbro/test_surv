@@ -14,6 +14,7 @@ use App\KnowBase;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use App\Models\GroupUser;
+use App\Models\Program;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
 use App\Models\UserRestored;
@@ -34,7 +35,12 @@ use App\WorkingTime;
 use App\Zarplata;
 use Carbon\Carbon;
 use Exception;
+use Hash;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -389,6 +395,27 @@ class EmployeeController extends Controller
         ];
     }
 
+    /**
+     * get user groups
+     *
+     * @param int $user_id
+     *
+     * @return array
+     */
+    public function getPersonGroup(int $user_id): array
+    {
+        $groups = GroupUser::where('user_id', $user_id)
+            ->where('status', 'active')
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
+
+        return ProfileGroup::whereIn('id', array_values($groups))
+            ->select(['id', 'name'])
+            ->get()
+            ->toArray();
+    }
+
     public function newGetPersons(Request $request)
     {
         $groups = ProfileGroup::query()
@@ -408,11 +435,10 @@ class EmployeeController extends Controller
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->with(['group_users']);
 
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -429,11 +455,10 @@ class EmployeeController extends Controller
                     $query->where('status', 'fired');
                 }]);
 
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'fired')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = User::query()
                 ->whereNull('deleted_at')
@@ -467,11 +492,10 @@ class EmployeeController extends Controller
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
@@ -488,11 +512,10 @@ class EmployeeController extends Controller
                     $query->where('status', 'active');
                 }]);
 
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -513,11 +536,10 @@ class EmployeeController extends Controller
                     $query->where('status', 'active');
                 }]);
 
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        else {
+        } else {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
@@ -533,7 +555,7 @@ class EmployeeController extends Controller
                     $query->where('status', 'active');
                 }]);
 
-            if ($request['group_id']) $users = $users->whereHas('group_users', function($q) use ($request) {
+            if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
         }
@@ -552,7 +574,7 @@ class EmployeeController extends Controller
 
         if ($request['search']) {
             $users = $users
-                ->where(function ($query) use ($request){
+                ->where(function ($query) use ($request) {
                     $query->where('users.email', 'like', $request['search'] . '%')
                         ->orWhere('users.id', $request['search'])
                         ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . $request['search'] . '%')
@@ -688,7 +710,8 @@ class EmployeeController extends Controller
         ];
     }
 
-    public function getPerson(Request $request){
+    public function getPerson(Request $request)
+    {
 
         $user = User::withTrashed()
             ->where('id', $request->id)
@@ -723,26 +746,6 @@ class EmployeeController extends Controller
     }
 
     /**
-     * editPerson
-     *
-     * @param Request $request
-     * @param null $type
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function editPerson(Request $request, $type = null)
-    {
-        if (!Auth::user()) return redirect('/');
-
-        View::share('title', 'Редактировать сотрудника');
-        View::share('menu', 'timetrackingusercreate');
-
-        if (!auth()->user()->can('users_view')) {
-            return redirect('/');
-        }
-        return view('admin.users.create', $this->preparePersonInputs($request->id));
-    }
-
-    /**
      * prepare user variables to settings page
      * @throws Exception
      */
@@ -767,7 +770,7 @@ class EmployeeController extends Controller
             }
         }
 
-        $programs = \App\Models\Program::orderBy('id', 'desc')->get();
+        $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
         $timezones = Setting::TIMEZONES;
@@ -905,11 +908,37 @@ class EmployeeController extends Controller
         return $arr;
     }
 
+    public function getLastFiredGroupForFiredEmployee(int $user_id)
+    {
+        $group = GroupUser::query()->where('user_id', $user_id)->where('status', 'fired')->latest()->first();
+        return ProfileGroup::query()->where('id', $group->group_id)->get(['id', 'name']);
+    }
+
+    /**
+     * editPerson
+     *
+     * @param Request $request
+     * @param null $type
+     * @return Application|Factory|\Illuminate\Contracts\View\View|RedirectResponse|Redirector
+     */
+    public function editPerson(Request $request, $type = null)
+    {
+        if (!Auth::user()) return redirect('/');
+
+        View::share('title', 'Редактировать сотрудника');
+        View::share('menu', 'timetrackingusercreate');
+
+        if (!auth()->user()->can('users_view')) {
+            return redirect('/');
+        }
+        return view('admin.users.create', $this->preparePersonInputs($request->id));
+    }
+
     /**
      * Update user profile from settings
      *
      * @param Request $request
-     * @throws \Exception
+     * @throws Exception
      */
     public function updatePerson(Request $request)
     {
@@ -1011,7 +1040,7 @@ class EmployeeController extends Controller
 
 
         if ($request->new_pwd != '') {
-            $user->password = \Hash::make($request->new_pwd);
+            $user->password = Hash::make($request->new_pwd);
         }
 
         $user->save();
@@ -1303,7 +1332,7 @@ class EmployeeController extends Controller
      *
      * @param Request $request
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function editPersonGroup(Request $request)
     {
@@ -1343,36 +1372,9 @@ class EmployeeController extends Controller
                     'is_head' => false
                 ]);
             }
-        } catch (\Exception $exception) {
-            throw new \Exception($exception);
+        } catch (Exception $exception) {
+            throw new Exception($exception);
         }
-    }
-
-    /**
-     * get user groups
-     *
-     * @param int $user_id
-     *
-     * @return array
-     */
-    public function getPersonGroup(int $user_id): array
-    {
-        $groups = GroupUser::where('user_id', $user_id)
-            ->where('status', 'active')
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
-
-        return ProfileGroup::whereIn('id', array_values($groups))
-            ->select(['id', 'name'])
-            ->get()
-            ->toArray();
-    }
-
-    public function getLastFiredGroupForFiredEmployee(int $user_id)
-    {
-        $group = GroupUser::query()->where('user_id', $user_id)->where('status', 'fired')->latest()->first();
-        return ProfileGroup::query()->where('id', $group->group_id)->get(['id', 'name']);
     }
 
     /**
@@ -1541,7 +1543,7 @@ class EmployeeController extends Controller
                 ]);
             }
 
-            Referring::touchReferrerStatus($user);
+            Referring::syncReferrerStatus($user);
         }
 
         View::share('title', 'Сотрудник восстановлен');
@@ -1626,7 +1628,7 @@ class EmployeeController extends Controller
     public function searchCountry(Request $request)
     {
         $data = DB::table('coordinates')->where('city', 'LIKE', '%' . $request->keyword . '%')->get();
-        return response()->json($data);;
+        return response()->json($data);
     }
 
     /**

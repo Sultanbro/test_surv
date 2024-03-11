@@ -4,20 +4,23 @@ namespace App\Service\Referral;
 
 use App\Facade\Referring;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ReferrerSalaryService
 {
 
-    public function updateSalaries(?User $user = null): void
+    public function updateSalaries(?string $date = null, ?int $userId = null): void
     {
-        $from = now()->startOfMonth();
-        $to = now()->endOfMonth();
+        $date = Carbon::parse($date ?: now());
+
+        $from = $date->copy()->startOfMonth();
+        $to = $date->isCurrentDay() ? $date->copy() : $date->copy()->endOfMonth();
 
         $referrals = User::withTrashed()
             ->withWhereHas('referrer')
             ->select(['id', 'referrer_id', 'referrer_status', 'deleted_at'])
-            ->when($user, fn($query) => $query->where('id', $user->id))
+            ->when($userId, fn($query) => $query->where('id', $userId))
             ->where(function (Builder $query) use ($to) {
                 $query->whereNull('deleted_at');
                 $query->orWhere('deleted_at', '>=', $to->format("Y-m-d"));
@@ -25,13 +28,14 @@ class ReferrerSalaryService
             ->get();
 
         while ($from <= $to) {
-            dump('date: ' . $from->format("Y-m-d"));
-
             foreach ($referrals as $referral) {
-                Referring::touchReferrerSalaryDaily($referral, $from);
-                Referring::touchReferrerSalaryWeekly($referral, $from);
-                Referring::touchReferrerStatus($referral->referrer);
-                dump('user_id: ' . $referral->id);
+                Referring::salaryForTraining($referral, $from);
+                Referring::salaryForWeek($referral, $from);
+                Referring::syncReferrerStatus($referral->referrer);
+                dump([
+                    'date:' => $from->format("Y-m-d"),
+                    'referral_id' => $referral->id
+                ]);
             }
 
             $from->addDay();

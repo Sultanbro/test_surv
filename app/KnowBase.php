@@ -8,6 +8,21 @@ use App\Contracts\CourseInterface;
 use App\Models\KnowBaseModel;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property $id
+ * @property $parent_id
+ * @property $user_id
+ * @property $editor_id
+ * @property $is_category
+ * @property $title
+ * @property $text
+ * @property $order
+ * @property $read_pairs
+ * @property $edit_pairs
+ * @property $access
+ * @property $created_at
+ * @property $updated_at
+ */
 class KnowBase extends Model implements CourseInterface
 {
     use SoftDeletes;

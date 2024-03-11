@@ -333,7 +333,7 @@
 					class="btn btn-danger mr-2 rounded"
 					@click.stop="deleted"
 				>
-					<i class="fa fa-trash" /> Удалить группу
+					<i class="fa fa-trash" /> Удалить отдел
 				</button>
 			</div>
 		</div>

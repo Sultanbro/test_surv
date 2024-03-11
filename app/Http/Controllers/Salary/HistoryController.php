@@ -40,6 +40,7 @@ class HistoryController extends Controller
     public function delete(ReasonRequest $request, TimetrackingHistory $history): JsonResponse
     {
         $payload = json_decode($history->payload, true);
+
         $type = $payload['type'];
 
         $amount = $payload['amount'];

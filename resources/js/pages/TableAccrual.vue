@@ -874,11 +874,40 @@
 			@close="isTaxesSidebar = false"
 		>
 			<div class="px-2">
-				<div class="bold">
-					{{ editedField.item.taxGroup }}
+				<div class="d-flex jcsb">
+					<span class="bold fz-18">
+						{{ editedField.item.taxGroup }}
+					</span>
+					<template v-if="canEdit">
+						<div class="d-flex">
+							<div
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Изменить"
+								@click="onTaxEdit(editedField.item)"
+							>
+								<i class="fas fa-edit" />
+							</div>
+							<div
+								v-if="editedField.item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="onTaxRR('restore', editedField.item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="onTaxRR('remove', editedField.item)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</div>
+					</template>
 				</div>
 				<div
-					v-for="taxItem, taxIndex in editedField.item.taxinfo"
+					v-for="taxItem, taxIndex in editedField.item.taxinfo.calc"
 					:key="taxIndex"
 					class="AvansHistoryItem"
 				>
@@ -891,6 +920,39 @@
 				</div>
 				<div class="bold">
 					Всего налогов: {{ editedField.item.totalTax }}
+				</div>
+
+				<!-- History -->
+				<div class="my-4 bold fz-18">
+					История
+				</div>
+				<div
+					v-for="hist in taxHistory"
+					:key="hist.id"
+					class="AvansHistoryItem"
+				>
+					<div class="">
+						c <span>{{ $moment(hist.from).format('DD.MM.YYYY') }}</span>
+						по <span>{{ hist.to ? $moment(hist.to).format('DD.MM.YYYY') : 'настоящее время' }}</span>
+					</div>
+					<div class="bold">
+						{{ hist.tax_group.name }}
+					</div>
+					<div
+						v-if="hist.payload"
+						class=""
+					>
+						<div class="">
+							{{ taxHistActions[hist.payload.action] }} {{ $moment(hist.payload.date).format('DD.MM.YYYY') }}
+						</div>
+						<div class="">
+							сотрудником {{ hist.payload.editor_name }}
+						</div>
+						<div class="">
+							комментарий: {{ hist.payload.comment }}
+						</div>
+					</div>
+					<hr>
 				</div>
 			</div>
 		</Sidebar>
@@ -956,11 +1018,11 @@
 					sm="3"
 					class="pt-3"
 				>
-					<label for="removeUpdateReason">Причина:</label>
+					<label for="salaryRRReason">Причина:</label>
 				</b-col>
 				<b-col sm="9">
 					<b-form-input
-						id="removeUpdateReason"
+						id="salaryRRReason"
 						v-model="removeRestoreForm.reason"
 						:placeholder="`Укажите причину ${removeRestoreForm.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
 						class="mb-2"
@@ -983,13 +1045,83 @@
 					sm="3"
 					class="pt-3"
 				>
-					<label for="removeUpdateReason">Причина:</label>
+					<label for="fineRRReason">Причина:</label>
 				</b-col>
 				<b-col sm="9">
 					<b-form-input
-						id="removeUpdateReason"
+						id="fineRRReason"
 						v-model="formFineRR.reason"
 						:placeholder="`Укажите причину ${formFineRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax update/remove -->
+		<b-modal
+			v-model="formTaxRR.isOpen"
+			:ok-text="formTaxRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formTaxRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmTaxRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxRRReason"
+						v-model="formTaxRR.reason"
+						:placeholder="`Укажите причину ${formTaxRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax edit -->
+		<b-modal
+			v-model="formTaxEdit.isOpen"
+			ok-text="Изменить"
+			cancel-text="Отмена"
+			title="Изменение налога"
+			size="md"
+			@ok="confirmTaxEdit"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditTax">Заменить на:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-select
+						id="taxEditTax"
+						v-model="formTaxEdit.newTax"
+						:options="taxOptions"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxEditReason"
+						v-model="formTaxEdit.reason"
+						placeholder="Укажите причину изменения"
 						class="mb-2"
 					/>
 				</b-col>
@@ -1138,6 +1270,28 @@ export default {
 				item: '',
 				reason: '',
 			},
+
+			formTaxRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			taxHistory: [],
+			allTaxes: [],
+			formTaxEdit: {
+				isOpen: false,
+				newTax: '',
+				item: '',
+				reason: '',
+			},
+			taxHistActions: {
+				delete: 'Удален',
+				edit: 'Изменен',
+				add: 'Добавлен',
+				restore: 'Восстановлен',
+			},
 		};
 	},
 	computed: {
@@ -1186,6 +1340,18 @@ export default {
 		},
 		canEdit(){
 			return this.$can('salaries_edit')
+		},
+		taxOptions(){
+			return this.allTaxes.map(tax => ({
+				value: tax.id,
+				text: tax.name,
+			}))
+		},
+		allTaxesMap(){
+			return this.allTaxes.reduce((result, tax) => {
+				result[tax.id] = tax
+				return result
+			}, {})
 		},
 	},
 	watch: {
@@ -1582,11 +1748,23 @@ export default {
 				});
 
 				const final = item.edited_salary ? item.edited_salary.amount : total
-				const taxes = item.user_tax?.tax_group?.items || []
-				const taxinfo = []
+				const taxItems = item.user_tax?.tax_group?.items || []
+				const taxes = taxItems.map(tax => {
+					if(!tax.histories_latest) return tax
+					const hist = typeof tax.histories_latest === 'string' ? JSON.parse(tax.histories_latest) : tax.histories_latest
+					return {
+						...tax,
+						...hist,
+					}
+				}).sort((a,b) => a.order - b.order)
+				const taxinfo = {
+					group: item.user_tax?.tax_group,
+					calc: []
+				}
 				let afterTaxes = final
 				let taxesSum = final
 				let totalTax = 0
+
 				taxes.forEach(tax => {
 					if(!tax.value) return
 					let amount
@@ -1596,7 +1774,7 @@ export default {
 					else{
 						amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
 					}
-					taxinfo.push({
+					taxinfo.calc.push({
 						name: tax.name,
 						value: tax.value + (tax.is_percent ? '%' : ''),
 						amount,
@@ -1712,24 +1890,6 @@ export default {
 			this.editedField = data
 			this.editPremiumSidebar = true
 			this.sidebarTitle = data.item.name + ' : ' + type
-		},
-
-		async showTaxesSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.texes_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/taxes',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.texes_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Налоги'
-			this.isTaxesSidebar = true
-			loader.hide()
 		},
 
 		editPremium() {
@@ -2137,6 +2297,134 @@ export default {
 			/* eslint-enable require-atomic-updates */
 		},
 		// Fine history
+
+		// tax history
+		async fetchTaxHistory(userId){
+			try {
+				const {data} = await this.axios.get(`/taxes/${userId}/history`)
+				this.taxHistory = data.data.map(hist => ({
+					...hist,
+					payload: JSON.parse(hist.payload || 'null'),
+				}))
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		async fetchTaxes(){
+			try {
+				const {data} = await this.axios.get('/taxes')
+				this.allTaxes = data.data
+			}
+			catch (error) {
+				this.$onError({error, silent: true})
+			}
+		},
+		async showTaxesSidebar(cellData){
+			if(this.dateInfo.currentYear < 2024) return
+			if(this.dateInfo.currentYear === 2024 && +this.dateInfo.month < 2) return
+			if(cellData.index === 0) return false
+
+			const loader = this.$loading.show()
+			await this.fetchTaxes()
+			await this.fetchTaxHistory(cellData.item.user_id)
+
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Налоги'
+			this.isTaxesSidebar = true
+			loader.hide()
+		},
+		onTaxRR(action, item){
+			this.formTaxRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxRR(){
+			if(this.formTaxRR.reason.length < 5) return alert('Укажите причину')
+			if(this.formTaxRR.action === 'remove') return this.removeTax()
+			this.restoreTax()
+		},
+		clearFromTaxRR(){
+			this.formTaxRR = {isOpen: false}
+		},
+		async removeTax(msg){
+			const {item, reason} = this.formTaxRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				await this.axios.post('/taxes/delete/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					// tax_group_id: taxinfo.group.id,
+				})
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formTaxRR.isOpen = false
+				this.$toast.success(msg || 'Налог удален')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		async restoreTax(){
+			// same api
+			return this.removeTax('Налог восстановлен')
+		},
+		onTaxEdit(item){
+			this.formTaxEdit = {
+				isOpen: true,
+				newTax: '',
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxEdit(){
+			if(this.formTaxEdit.reason.length < 5) return alert('Укажите причину')
+			this.editTax()
+		},
+		clearFromTaxEdit(){
+			this.formTaxEdit = {isOpen: false}
+		},
+		async editTax(){
+			const {item, reason, newTax} = this.formTaxEdit
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				const {data} = await this.axios.post('/taxes/edit/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					tax_group_id: newTax,
+				})
+				this.updateUserTax(user_id, data.data)
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				// this.formTaxEdit.isOpen = false
+				this.formTaxEdit.isOpen = false
+				this.isTaxesSidebar = false
+				this.$toast.success('Налог изменен')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		updateUserTax(userId, tax){
+			const user = this.data.users?.find(user => user.id === userId) || null
+			if(!user) return
+			user.user_tax = tax
+			this.loadItems()
+		}
+		// tax history
 	},
 };
 </script>

@@ -17,6 +17,7 @@ use Auth;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -465,6 +466,7 @@ class Salary extends Model
         $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
 
         $statValues = [];
+        $columnValue = [];
         if ($analyticStat) {
             $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
 
@@ -479,7 +481,7 @@ class Salary extends Model
                 $statValues[$nameColumn] = $value->value;
             }
         }
-
+        /** @var Collection<User> $users */
         $users = User::withTrashed()
             ->whereIn('users.id', array_unique($users_ids))
             ->with([
@@ -494,8 +496,11 @@ class Salary extends Model
                         $q->where('status', UserTax::REMOVED)
                             ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
                             ->whereDate('to', '>=', $date->endOfMonth()->format('Y-m-d'));
-                    })->with('taxGroup.items');
-                    // то ни хам текшир, олдинги ой учун
+                    })->with([
+                        'taxGroup.items.histories_latest' => function ($query) use ($date) {
+                            $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
+                        },
+                    ]);
                 },
                 'profile_histories_latest' => function ($query) use ($date) {
                     $query->whereDate('created_at', '<=', $date->endOfMonth()->format('Y-m-d'));
@@ -622,11 +627,7 @@ class Salary extends Model
             /**
              * worktime hours in day
              */
-            if ($user->working_time_id == 1) {
-                $worktime = 8;
-            } else {
-                $worktime = 9;
-            }
+            $worktime = $user->working_time_id == 1 ? 8 : 9;
 
             /**
              * Данные для колонки Налоги.
@@ -640,6 +641,11 @@ class Salary extends Model
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $statTotalHour = null;
+                $earnings[$i] = null;
+                $hourly_pays[$i] = null;
+                $hours[$i] = null;
+                $trainings[$i] = null;
+
                 if ($groupTimeAddress) {
                     $dayInMonth = Carbon::create($date->year, $date->month, $i);
                     $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
@@ -661,23 +667,22 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $schedule = $user->schedule(true);
                 $workChart = $user->workChart;
+                $schedule = $user->schedule(true);
 
                 // Проверяем установлена ли время отдыха
-                if ($workChart && $workChart->rest_time != null) {
-                    $lunchTime = $workChart->rest_time;
-                    $hour = floatval($lunchTime / 60);
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $hour;
-                } else {
-                    $lunchTime = 1;
-                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                $lunchTime = 1;
+                if ($workChart && $workChart->rest_time) {
+                    $lunchTime = floatval($workChart->rest_time / 60);
                 }
+
+                $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $workChart->work_charts_type ?? 0;
+
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);
@@ -688,16 +693,14 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
+
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+//                dd_if($user->id == 25443, $zarplata . '/' . $workdays . '/' . $working_hours);
+//                $hourly_pay = $user->full_time ? $hourly_pay : $hourly_pay / 2;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
                 // add to array
-
-                $earnings[$i] = null;
-                $hourly_pays[$i] = null;
-                $hours[$i] = null;
-                $trainings[$i] = null;
 
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
@@ -838,11 +841,6 @@ class Salary extends Model
 
             }
 
-            /**
-             * Bonus from settings
-             */
-            $award_date = Carbon::createFromFormat('m-Y', $date->month . '-' . $date->year);
-
             $awards = [];
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $d = '' . $i;
@@ -955,12 +953,17 @@ class Salary extends Model
             if ($editedSalary) {
                 $allTotal = $editedSalary->amount; // Edited salary ignores kpi,bonus,...
             }
+
             if ($user->userTax && $user->userTax->taxGroup && count($user->userTax->taxGroup->items) > 0) {
                 $taxItems = $user->userTax->taxGroup->items;
                 $method = 'new';
-            } else {
+            } elseif ($date->isBefore(Carbon::createFromDate(2024, 2))) {
+                // New taxes released 02.2024, So if date before that we should get old taxes else []
                 $taxItems = $oldTaxes;
                 $method = 'old';
+            } else {
+                $taxItems = collect();
+                $method = 'it does not matter';
             }
 
             $user->totalTaxes = UserTaxService::calculateTax($taxItems, $allTotal, $method);

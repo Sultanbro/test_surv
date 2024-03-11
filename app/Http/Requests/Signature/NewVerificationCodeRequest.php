@@ -19,7 +19,7 @@ class NewVerificationCodeRequest extends FormRequest
             'password_number' => ['nullable', 'string'],
             'address' => ['required', 'string'],
             'images' => [Rule::requiredIf($user->has('signatureHistories')->count()), 'array', 'max:2'],
-            'images.*' => ['sometimes', 'file', 'mimes:png,jpeg,jpg']
+            'images.*' => ['sometimes', 'file', 'mimes:png,jpeg,jpg,pdf']
         ];
     }
 }

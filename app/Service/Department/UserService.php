@@ -217,8 +217,7 @@ class UserService
      * @param string|null $last_date - Если указана дата, то выводим список, отсекая уволенных после этой даты
      * @return array
      */
-    private
-    function getGroupEmployees($groupUsers, string $last_date = null): array
+    private function getGroupEmployees($groupUsers, string $last_date = null): array
     {
         $userData = [];
         foreach ($groupUsers as $groupUser) {
@@ -366,7 +365,8 @@ class UserService
             ->whereHas('group_users', function (Builder $q) use ($groupId, $date) {
                 $q->whereIn('status', [GroupUser::STATUS_FIRED]);
                 $q->where('group_id', $groupId);
-                $q->whereDate('to', '>=', $date);
+                $q->whereYear('to', Carbon::parse($date)->year);
+                $q->whereMonth('to', Carbon::parse($date)->month);
             })->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
             ->get();
 

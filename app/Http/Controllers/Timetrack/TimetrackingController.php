@@ -423,7 +423,7 @@ class TimetrackingController extends Controller
             ->addTime($exit, $user->timezone())
             ->save();
 
-        Referring::touchReferrerSalaryWeekly($user, $exit);
+        Referring::salaryForWeek($user, $exit);
 
         return 'stopped';
     }
@@ -757,9 +757,9 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        Referring::touchReferrerStatus($user);
-        Referring::touchReferrerSalaryForCertificate($user);
-        Referring::deleteReferrerDailySalary($user->getKey(), $date);
+        Referring::syncReferrerStatus($user);
+        Referring::salaryForCertificate($user);
+        Referring::deleteTrainingSalary($user->getKey(), $date);
 
 
         return response()->json([
@@ -1330,7 +1330,8 @@ class TimetrackingController extends Controller
             }
 
             if (isset($request['filter']) && $request->filter == "deactivated") {
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->whereNotNull('deleted_at')
                     ->with([
                         'timetracking' => function ($q) use ($request) {
@@ -1363,7 +1364,8 @@ class TimetrackingController extends Controller
                     ->get();
             } else {
 
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->with([
                         'timetracking' => function ($q) use ($request) {
                             $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
@@ -1782,7 +1784,7 @@ class TimetrackingController extends Controller
 
             if ($trainee) {
 
-                Referring::deleteReferrerDailySalary($targetUser->id, $date);
+                Referring::deleteTrainingSalary($targetUser->id, $date);
 
                 $targetUser->salaries()->where('date', $date->format("Y-m-d"))->first()?->delete();
 
@@ -1954,7 +1956,7 @@ class TimetrackingController extends Controller
                     'date' => $date,
                     'user_id' => $request->get("user_id")
                 ]);
-            Referring::touchReferrerSalaryDaily($targetUser, $date);
+            Referring::salaryForTraining($targetUser, $date);
 
             if ($trainee) {
                 $bitrix = new Bitrix();
@@ -2002,7 +2004,7 @@ class TimetrackingController extends Controller
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
-                Referring::deleteReferrerDailySalary($targetUser->getKey(), $date);
+                Referring::deleteTrainingSalary($targetUser->getKey(), $date);
 
                 // Поиск ID лида или сделки
                 if ($trainee->lead_id != 0) {
@@ -2128,7 +2130,7 @@ class TimetrackingController extends Controller
                 }
 
             }
-            Referring::touchReferrerStatus($targetUser);
+            Referring::syncReferrerStatus($targetUser);
         }
 
         return ['success' => 1, 'history' => $history, 'type' => $daytype ? $daytype->type : 0];

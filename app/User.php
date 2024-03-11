@@ -1579,9 +1579,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     }
 
     /**
+     * @param bool $withOutHalf
      * @return array
      */
-    public function schedule($withOutHalf = false): array
+    public function schedule(bool $withOutHalf = false): array
     {
         $timezone = $this->timezone();
 
@@ -1591,13 +1592,14 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
-        //TODO: проверить логику, раньше не было число с *.30
+        $end = Carbon::parse("$date $workEndTime", $timezone);
+
         if ($withOutHalf) {
             $start = Carbon::parse("$date $workStartTime", $timezone);
         } else {
+            //TODO: проверить логику, раньше не было число с *.30
             $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         }
-        $end = Carbon::parse("$date $workEndTime", $timezone);
 
         if ($start->greaterThan($end)) {
             $end->addDay();
@@ -1718,17 +1720,18 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return match ($type) {
             "6-1" => [0],
             "5-2" => [6, 0],
-            "4-3" => [5, 6, 0],
+            "4-3", "1-1", "2-2", "3-3" => [5, 6, 0],
             "3-4" => [4, 5, 6, 0],
             "2-5" => [3, 4, 5, 6, 0],
             "1-6" => [2, 3, 4, 5, 6, 0],
-            "1-1", "2-2", "3-3" => [5, 6, 0],
             default => throw new InvalidArgumentException("Invalid chart type"),
         };
     }
 
     /**
      * Получаем дни работы для пользователя за месяц
+     * @param null $year
+     * @param null $month
      * @return int
      */
     public function getCountWorkDaysMonth($year = null, $month = null): int

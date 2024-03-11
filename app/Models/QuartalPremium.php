@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
-use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Kpi\Traits\WithActivityFields;
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Scopes\ActiveScope;
 use App\Traits\ActivateAbleModelTrait;
 use App\Traits\TargetJoin;
@@ -23,11 +23,11 @@ class QuartalPremium extends Model
     protected $table = 'quartal_premiums';
 
     protected $appends = ['target', 'group_id', 'source', 'expanded', 'read'];
-    
+
     protected $casts = [
-        'created_at'  => 'date:d.m.Y H:i',
-        'updated_at'  => 'date:d.m.Y H:i',
-        'read_by'     => 'array',
+        'created_at' => 'date:d.m.Y H:i',
+        'updated_at' => 'date:d.m.Y H:i',
+        'read_by' => 'array',
     ];
 
     protected $fillable = [
@@ -44,24 +44,14 @@ class QuartalPremium extends Model
         'created_by',
         'updated_by',
         'is_active',
-        'read_by'
+        'read_by',
+        'method'
     ];
 
     protected $dates = [
         'created_at',
         'updated_at',
     ];
-
-    /**
-     * Получает все активные кв-премий без доп запросов.
-     *
-     * @return void
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-        static::addGlobalScope(new ActiveScope);
-    }
 
     /**
      * @param int $id
@@ -83,11 +73,22 @@ class QuartalPremium extends Model
     }
 
     /**
+     * Получает все активные кв-премий без доп запросов.
+     *
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new ActiveScope);
+    }
+
+    /**
      * @return BelongsTo
      */
     public function activity(): BelongsTo
     {
-        return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
+        return $this->belongsTo('App\Models\Analytics\Activity', 'activity_id', 'id')
             ->withTrashed();
     }
 
@@ -99,7 +100,7 @@ class QuartalPremium extends Model
     {
         $id = Auth::id();
 
-        return $id 
+        return $id
             ? in_array($id, $this->read_by ?? [])
             : false;
     }

@@ -110,7 +110,7 @@ export default {
 			if(this.requisites.fio.length < 5) this.errors.fio = 'Заполните ФИО'
 			if(this.requisites.phone.replace(/[^\d+]/g, '').length < 10) this.errors.phone = 'Заполните номер телефона'
 			if(this.requisites.uin.length < 10) this.errors.uin = 'Заполните ИНН'
-			if(this.requisites.pasport.length < 10) this.errors.pasport = 'Заполните номер удостоверения/паспорта'
+			if(this.requisites.pasport.length < 8) this.errors.pasport = 'Заполните номер удостоверения/паспорта'
 			if(this.requisites.address.length < 10) this.errors.address = 'Заполните адрес'
 			if(!this.requisites.file1) this.errors.file1 = 'Загрузите лицевую сторону удостоверения/паспорта'
 			if(!this.requisites.file2) this.errors.file2 = 'Загрузите оборотную сторону удостоверения/паспорта'
@@ -155,7 +155,7 @@ export default {
 		async onVerify(){
 			try {
 				await this.axios.post(`/signature/users/${this.user.id}/files/${this.doc.id}/verification`, {
-					code: this.userCode
+					code: +this.userCode
 				})
 				this.isVerifyModal = false
 				++this.activeDoc

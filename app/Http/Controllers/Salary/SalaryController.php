@@ -142,7 +142,7 @@ class SalaryController extends Controller
         }
 
 
-        $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
+        $years = ['2020', '2021', '2022', '2023', '2024']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
         return view('admin.salary', compact('groups', 'years'));
     }
@@ -1096,7 +1096,7 @@ class SalaryController extends Controller
     public function taxes(Request $request): mixed
     {
         $date = Carbon::parse($request->date);
-        $user = User::query()->find($request->user_id);
+        $user = User::withTrashed()->find($request->user_id);
 
         return $user->taxes()
             ->whereYear('user_tax.created_at', $date->year)

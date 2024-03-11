@@ -25,7 +25,7 @@ class OtherSettingController extends Controller
     {
 
         $accountUser = User::userByEmail($request->email);
-        info($accountUser);
+
         if (!$accountUser) {
             return response()->json(['success' => false]);
         }
