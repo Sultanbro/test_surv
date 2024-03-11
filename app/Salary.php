@@ -676,7 +676,7 @@ class Salary extends Model
 //                else {
 //                }
 
-                $schedule = $user->schedule(true);
+                $schedule = $user->schedule(false);
 
                 // Проверяем установлена ли время отдыха
                 $lunchTime = 1;
@@ -704,7 +704,7 @@ class Salary extends Model
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
-                dd_if($user->id == 28862, $zarplata . '/' . $workdays . '/' . $working_hours);
+//                dd_if($user->id == 28862, $zarplata . '/' . $workdays . '/' . $working_hours);
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
@@ -723,16 +723,16 @@ class Salary extends Model
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
 
-                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earning = ($total_hours / 60) * $hourly_pay;
                         $earnings[$i] = round($earning);
 
-                        $hours[$i] = round($total_hours / 60, 1);
+                        $hours[$i] = round(($total_hours / 60), 1);
 
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $total_hours = $y->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
+                        $hours[$i] = round(($total_hours / 60), 1);
                     } else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
@@ -741,7 +741,7 @@ class Salary extends Model
                             $total_hours = $x->sum('total_hours');
                         }
 
-                        $earning = $total_hours / 60 * $hourly_pay * 0.5;
+                        $earning = ($total_hours / 60) * $hourly_pay * 0.5;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
                         $hours[$i] = round($total_hours / 60, 1);
