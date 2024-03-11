@@ -15,6 +15,7 @@ class Timetracking extends Model
 {
     const DEFAULT_WORK_START_TIME = '09:00';
     const DEFAULT_WORK_END_TIME = '19:00';
+    const DEFAULT_WORK_CHARTS_TYPE = 0;
 
     const DAY_STARTED = 1;
     const DAY_ENDED = 0;

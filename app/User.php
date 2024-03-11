@@ -1282,25 +1282,20 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * @delegate
      * @return array
      */
-    public function workTime()
+    public function workTime($workChartId = null)
     {
-        $userChart = $this->getWorkChart();
+        $userChart = $this->getWorkChart($workChartId);
 
         return WorkChartModel::getWorkTime($userChart);
     }
 
-    public function getWorkChart(): ?WorkChartModel
+    public function getWorkChart($workChartId = null)
     {
-        $userChart = $this->workChart()->first();
-
-        if ($userChart) {
-            return $userChart;
+        if ($workChartId && WorkChartModel::query()->where('id', $workChartId)->exists()) {
+            return WorkChartModel::query()->find($workChartId);
         }
 
-        $groups = $this->activeGroup();
-        $groupChart = $groups?->workChart()->first();
-
-        return $groupChart;
+        return $this->workChart()->first() ?? $this->activeGroup()?->workChart()->first();
     }
 
     /**
@@ -1565,6 +1560,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     {
         $schedule = $this->schedule(true);
         $workChart = $this->workChart;
+
         if ($workChart && $workChart->rest_time != null) {
             $lunchTime = $workChart->rest_time;
             $hour = floatval($lunchTime / 60);
@@ -1578,15 +1574,22 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $working_hours;
     }
 
+    public function countWorkingHours(int $workChartId)
+    {
+        $workChart = $workChartId ? WorkChartModel::query()->find($workChartId) : $this->workChart;
+
+    }
+
     /**
      * @param bool $withOutHalf
+     * @param null $workChartId
      * @return array
      */
-    public function schedule(bool $withOutHalf = false): array
+    public function schedule(bool $withOutHalf = false, $workChartId = null): array
     {
         $timezone = $this->timezone();
 
-        $workTime = $this->workTime();
+        $workTime = $this->workTime($workChartId);
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
 
@@ -1608,7 +1611,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return [
             'start' => $start,
             'end' => $end,
-            'rest_time' => $workTime['workRestTime']
+            'rest_time' => $workTime['workRestTime'],
+            'work_charts_type' => $workTime['workChartsType']
         ];
     }
 

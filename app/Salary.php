@@ -667,13 +667,19 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $workChart = $user->workChart;
-                $schedule = $user->schedule(true);
+                if ($user->profile_histories_latest) {
+                    $payload = json_decode($user->profile_histories_latest->payload, true);
+                    $schedule = $user->schedule(true, $payload['work_chart_id']);
+                }
+                else {
+                    $schedule = $user->schedule(true);
+                }
+
 
                 // Проверяем установлена ли время отдыха
                 $lunchTime = 1;
-                if ($workChart && $workChart->rest_time) {
-                    $lunchTime = floatval($workChart->rest_time / 60);
+                if ($schedule['rest_time']) {
+                    $lunchTime = floatval($schedule['rest_time'] / 60);
                 }
 
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
@@ -681,7 +687,7 @@ class Salary extends Model
 
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
-                $workChartType = $workChart->work_charts_type ?? 0;
+                $workChartType = $schedule['work_charts_type'];
 
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
