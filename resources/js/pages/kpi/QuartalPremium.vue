@@ -950,6 +950,10 @@ export default {
 			}).then(response => {
 				const items = response.data.items.map(item => ({
 					...item,
+					items: item.items.map(innerItem => ({
+						...innerItem,
+						method: innerItem.method || 1,
+					})),
 					is_active: item.items.reduce((result, itm) => result && itm.is_active, true)
 				}))
 				this.all_items = items
