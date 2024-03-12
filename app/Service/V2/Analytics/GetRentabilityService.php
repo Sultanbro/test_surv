@@ -29,7 +29,7 @@ class GetRentabilityService
 //                ->where('active', ProfileGroup::IS_ACTIVE)
                     ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query
                         ->whereYear('archived_date', '>=', $dto->year)
-//                        ->whereMonth('archived_date', '>=', $dto->month)
+                        ->whereMonth('archived_date', '>=', $dto->month)
                     ));
             })
             ->where('type', TopValue::RENTABILITY)->get();
