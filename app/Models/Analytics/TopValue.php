@@ -455,16 +455,14 @@ class TopValue extends Model
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
         //$groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
-        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)
-            ->pluck('id')
-            ->toArray();
+        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month);
 
         if (!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
 
-        foreach ($groups as $group_id) {
-            $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
+        foreach ($groups as $group) {
+            $gauges[] = self::getRentabilityGauge($date, $group, $common_name);
         }
 
         $values_asc = array_column($gauges, 'value');
@@ -473,7 +471,7 @@ class TopValue extends Model
         return $gauges;
     }
 
-    public static function getRentabilityGaugesOfGroup($date, $group_id, $common_name = ''): array
+    public static function getRentabilityGaugesOfGroup($date, $group, $common_name = ''): array
     {
         $gauges = [];
 
@@ -481,15 +479,13 @@ class TopValue extends Model
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
 
-        $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
+        $gauges[] = self::getRentabilityGauge($date, $group, $common_name);
 
         return $gauges;
     }
 
-    private static function getRentabilityGauge($date, $group_id, $common_name): array
+    private static function getRentabilityGauge($date, ProfileGroup $group, $common_name): array
     {
-        $group = ProfileGroup::find($group_id);
-
         $tv = new TopValue();
         $tv->options = '[]';
 
@@ -513,7 +509,7 @@ class TopValue extends Model
         $gauge = [
             'id' => 9991155,
             'name' => $common_name != '' ? $common_name : $group->name,
-            'value' => (float)AnalyticStat::getRentability($group_id, $date),
+            'value' => (float)AnalyticStat::getRentability($group, $date),
             'group_id' => $group_id,
             'place' => 1,
             'unit' => '%',
