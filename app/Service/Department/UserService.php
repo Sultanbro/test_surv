@@ -157,6 +157,7 @@ class UserService
             ->with('groups')
             ->whereHas('group_users', function ($q) use ($groupId, $last_date) {
                 $q->where('group_id', $groupId);
+                $q->whereDate('from', '<=', $last_date);
                 $q->where(function (Builder $query) use ($last_date) {
                     $query->whereDate('to', '>', $last_date);
                     $query->orWhereNull('to');
