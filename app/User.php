@@ -1747,8 +1747,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $payload = json_decode($this->profile_histories_latest->payload, true);
             $workChartFromHistory = $payload['work_chart_id'] ?? null;
         }
+
+        dd_if(!$this->workChart, $this->name);
         $workChartName = $workChartFromHistory ? WorkChartModel::query()->find($workChartFromHistory)->name : $this->workChart?->name;
-        dd_if($this->id == 28862, $workChartName);
 
         if ($this->first_work_day) {
             $firstWorkDay = Carbon::parse($this->first_work_day);
