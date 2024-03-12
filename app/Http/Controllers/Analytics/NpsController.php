@@ -33,7 +33,7 @@ class NpsController extends Controller
     public function fetch(Request $request): JsonResponse
     {
         $groupSubQuery = DB::table('profile_groups')
-            ->select(['profile_groups.user_id as user_id', 'group_id as group_id', 'profile_groups.name as group_name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
+            ->select(['user_id as user_id', 'group_id as group_id', 'profile_groups.name as group_name', 'work_start', 'work_end', 'has_analytics', 'is_head'])
             ->join('group_user', 'group_user.group_id', '=', 'profile_groups.id')
             ->join('users', 'group_user.user_id', '=', 'users.id')
             ->where('status', 'active')
