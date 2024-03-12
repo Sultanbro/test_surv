@@ -678,9 +678,9 @@ class ProfileGroup extends Model
     {
         return self::hasAnalytics()
             ->ignore([ProfileGroup::IT_DEPARTMENT_ID, ProfileGroup::BUSINESS_CENTER_ID])
-            ->isActive()
-            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
-                ->whereMonth('archived_date', '>=', $month)
+//            ->isActive()
+            ->where(fn($q) => $q->whereNull('archived_date')
+                ->orWhere(fn($query) => $query->whereDate('archived_date', '>=', Carbon::create($year,$month)->format("Y-m-d"))
             ))
             ->get();
     }

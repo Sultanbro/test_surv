@@ -455,7 +455,9 @@ class TopValue extends Model
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
         //$groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
-        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)->pluck('id')->toArray();
+        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)
+            ->pluck('id')
+            ->toArray();
 
         if (!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
