@@ -510,7 +510,7 @@ class TopValue extends Model
             'id' => 9991155,
             'name' => $common_name != '' ? $common_name : $group->name,
             'value' => (float)AnalyticStat::getRentability($group, $date),
-            'group_id' => $group_id,
+            'group_id' => $group->id,
             'place' => 1,
             'unit' => '%',
             'editable' => false,
@@ -526,7 +526,7 @@ class TopValue extends Model
             'value_type' => 'sum',
             'sections' => $options['staticLabels']['labels'],
             'options' => $options,
-            'diff' => AnalyticStat::getRentabilityDiff($group_id, $tdate)
+            'diff' => AnalyticStat::getRentabilityDiff($group->id, $tdate)
         ];
 
         return $gauge;
