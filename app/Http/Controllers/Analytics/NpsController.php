@@ -35,9 +35,7 @@ class NpsController extends Controller
         $groupSubQuery = DB::table('profile_groups')
             ->select(['user_id as user_id', 'group_id as group_id', 'profile_groups.name as group_name', 'profile_groups.work_start', 'profile_groups.work_end', 'profile_groups.has_analytics', 'is_head'])
             ->join('group_user', 'group_user.group_id', '=', 'profile_groups.id')
-            ->join('users', 'group_user.user_id', '=', 'users.id')
             ->where('status', 'active')
-            ->whereNull('users.deleted_at')
             ->whereNull('to')
             ->groupByRaw('group_id, user_id, profile_groups.name, profile_groups.work_start, profile_groups.work_end, profile_groups.has_analytics, is_head');
 
@@ -47,7 +45,7 @@ class NpsController extends Controller
         $users = [];
 
         /** @var Collection<User> $user */
-        $_users = User::withTrashed()
+        $_users = User::query()
             ->select([
                 DB::raw('users.id as id'),
                 DB::raw('concat(users.last_name," ",users.name) as name'),
@@ -59,7 +57,7 @@ class NpsController extends Controller
             ])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->joinSub($positionSubQuery, 'position', 'users.position_id', '=', 'position.id')
-            ->leftJoinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
+            ->joinSub($groupSubQuery, 'groups', 'groups.user_id', '=', 'users.id')
             ->whereIn('position_id', [45, 55])
             ->where('is_trainee', 0)
             ->orderBy('group_id', 'desc')
