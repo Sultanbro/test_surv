@@ -667,16 +667,15 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                if ($user->profile_histories_latest && $user->id == 28862) {
+                $workChartFromHistory = null;
+
+                if ($user->profile_histories_latest) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
-                    $schedule = $user->schedule(true, $payload['work_chart_id']);
-                    if (auth()->id() == 5 && !in_array($user->id, [14772])) {
-//                        dd($schedule, $payload['work_chart_id'], $user->id, $user->profile_histories_latest->id);
-                    }
+                    $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
-                else {
-                    $schedule = $user->schedule(true);
-                }
+
+
+                $schedule = $user->schedule(true, $workChartFromHistory);
 
 
                 // Проверяем установлена ли время отдыха
@@ -697,15 +696,12 @@ class Salary extends Model
                     $workdays = workdays($date->year, $date->month, $ignore);
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                    $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
+                    $workdays = $user->getCountWorkDaysMonth();
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-
                 $hourly_pay = $zarplata / $workdays / $working_hours;
-//                dd_if($user->id == 25443, $zarplata . '/' . $workdays . '/' . $working_hours);
-//                $hourly_pay = $user->full_time ? $hourly_pay : $hourly_pay / 2;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
@@ -724,16 +720,16 @@ class Salary extends Model
                     } else if ($x->count() > 0) { // отработанное время есть
                         $total_hours = $x->sum('total_hours');
 
-                        $earning = $total_hours / 60 * $hourly_pay;
+                        $earning = ($total_hours / 60) * $hourly_pay;
                         $earnings[$i] = round($earning);
 
-                        $hours[$i] = round($total_hours / 60, 1);
+                        $hours[$i] = round(($total_hours / 60), 1);
 
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $total_hours = $y->sum('total_hours');
                         $earning = $total_hours / 60 * $hourly_pay;
                         $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
+                        $hours[$i] = round(($total_hours / 60), 1);
                     } else if ($r) { // переобучение
                         $trainings[$i] = true;
                         $total_hours = 0;
@@ -742,7 +738,7 @@ class Salary extends Model
                             $total_hours = $x->sum('total_hours');
                         }
 
-                        $earning = $total_hours / 60 * $hourly_pay * 0.5;
+                        $earning = ($total_hours / 60) * $hourly_pay * 0.5;
                         $earnings[$i] = round($earning); // стажировочные на пол суммы
 
                         $hours[$i] = round($total_hours / 60, 1);
