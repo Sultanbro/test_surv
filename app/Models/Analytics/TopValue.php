@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool fixed
  * @property string value_type
  * @property bool reversed
- *@method static utility(int $groupId)
+ * @method static utility(int $groupId)
  * @method static rentability(int $groupId)
  */
 class TopValue extends Model
@@ -157,7 +157,7 @@ class TopValue extends Model
             $group = ProfileGroup::query()->find($group_id);
 
             // Retrieve top values for the current group and date.
-            /** @var Collection<TopValue> $top_values   */
+            /** @var Collection<TopValue> $top_values */
             $top_values = TopValue::query()
                 ->where('type', TopValue::UTILITY)
                 ->where([
@@ -449,7 +449,7 @@ class TopValue extends Model
 
     }
 
-    public static function  getRentabilityGauges($date, $common_name = ''): array
+    public static function getRentabilityGauges($date, $common_name = ''): array
     {
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
@@ -546,16 +546,6 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year, $month, 1);
 
-//        $groups = ProfileGroup::query()
-//            ->whereNotIn('id', [34, 58, 26])
-//            ->where('has_analytics', '=', 1)
-//            ->where('active', '=', 1)
-//            ->whereDate('created_at','<=',$date)
-//            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
-//                ->whereMonth('archived_date', '>=', $date->month)
-//            ))
-//            ->get();
-
         $groups = ProfileGroup::withRentability($year, $month);
 
         $r_counts = []; // for count avg rentability on every monht
@@ -570,6 +560,11 @@ class TopValue extends Model
 
         $edited_proceeds = TopEditedValue::query()
             ->whereYear('date', $year)
+            ->get();
+
+        $salaries = GroupSalary::query()
+            ->whereYear('date', $year)
+            ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
         foreach ($groups as $key => $group) {
@@ -592,10 +587,9 @@ class TopValue extends Model
                 /**
                  * get salary
                  */
-                $salary = GroupSalary::query()
+                $salary = $salaries
                     ->where('group_id', $group->id)
                     ->where('date', $xdate)
-                    ->get()
                     ->sum('total');
 
                 /**
@@ -603,28 +597,28 @@ class TopValue extends Model
                  * count ФОТ
                  */
                 $date_diff = $date->timestamp - Carbon::parse('2022-09-01')->timestamp;
-                if ($date_diff >= 0 && $group->id == 93) {
-
-                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
-                    $sum = 0;
-
-                    foreach ($data['users'] as $user) {
-                        $sum += array_sum(array_values($user['earnings']));
-                        if ($user['edited_bonus']) {
-                            $sum += $user->edited_bonus->amount;
-                        } else {
-                            $sum += array_sum(array_values($user['bonuses']));
-                            $sum += array_sum(array_values($user['awards']));
-                            $sum += array_sum(array_values($user['test_bonus']));
-                        }
-
-                        $sum += $user['edited_kpi']
-                            ? $user['edited_kpi']->amount
-                            : $user['kpi'];
-                    }
-
-                    $salary = $sum;
-                }
+//                if ($date_diff >= 0 && $group->id == 93) {
+//
+//                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
+//                    $sum = 0;
+//
+//                    foreach ($data['users'] as $user) {
+//                        $sum += array_sum(array_values($user['earnings']));
+//                        if ($user['edited_bonus']) {
+//                            $sum += $user->edited_bonus->amount;
+//                        } else {
+//                            $sum += array_sum(array_values($user['bonuses']));
+//                            $sum += array_sum(array_values($user['awards']));
+//                            $sum += array_sum(array_values($user['test_bonus']));
+//                        }
+//
+//                        $sum += $user['edited_kpi']
+//                            ? $user['edited_kpi']->amount
+//                            : $user['kpi'];
+//                    }
+//
+//                    $salary = $sum;
+//                }
 
                 // TEMP
                 $rentability = 0;

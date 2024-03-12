@@ -607,7 +607,9 @@ class AnalyticStat extends Model
 
     public static function getRentability($group_id, $date): float|int
     {
-        $date = Carbon::parse($date)->day(1)->format('Y-m-d');
+        $date = Carbon::parse($date)
+            ->day(1)
+            ->format('Y-m-d');
         $column = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'plan')

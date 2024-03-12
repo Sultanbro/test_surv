@@ -29,7 +29,6 @@ class GetRentabilityService
             ->whereHas('groups', function (Builder $group) use ($date) {
                 $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
                     ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
-                    ->when($date->isCurrentMonth(), fn($query) => $query->where('active', ProfileGroup::IS_ACTIVE))
                     ->where(function (Builder $q) use ($date) {
                         $q->where(fn($q) => $q
                             ->whereNull('archived_date')

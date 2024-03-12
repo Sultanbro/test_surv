@@ -679,7 +679,6 @@ class ProfileGroup extends Model
         $date = Carbon::create($year, $month);
         return self::hasAnalytics()
             ->ignore([ProfileGroup::IT_DEPARTMENT_ID, ProfileGroup::BUSINESS_CENTER_ID])
-            ->when($date->isCurrentMonth(), fn($query) => $query->where('active', ProfileGroup::IS_ACTIVE))
             ->where(function (Builder $q) use ($date) {
                 $q->where(fn($q) => $q->whereNull('archived_date')
                     ->where('active', ProfileGroup::IS_ACTIVE));
