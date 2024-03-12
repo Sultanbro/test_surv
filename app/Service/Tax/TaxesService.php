@@ -254,7 +254,7 @@ class TaxesService
 
         /** @var UserTax $userTax */
         $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
-dd($userTax, $dto);
+
         if (!$userTax) return true;
 
         if ($userTax->status == UserTax::ACTIVE) {
@@ -319,13 +319,15 @@ dd($userTax, $dto);
         return UserTax::query()
             ->where('user_id', $userId)
             ->where(function ($q) use ($date) {
-                $q->where('status', UserTax::ACTIVE)
-                    ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
-                    ->whereNull('to');
-            })->orWhere(function ($q) use ($date) {
-                $q->where('status', UserTax::REMOVED)
-                    ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
-                    ->whereDate('to', '>=', $date->endOfMonth()->format('Y-m-d'));
+                $q->where(function ($q) use ($date) {
+                    $q->where('status', UserTax::ACTIVE)
+                        ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                        ->whereNull('to');
+                })->orWhere(function ($q) use ($date) {
+                    $q->where('status', UserTax::REMOVED)
+                        ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                        ->whereDate('to', '>=', $date->endOfMonth()->format('Y-m-d'));
+                });
             })
             ->latest()
             ->first();
