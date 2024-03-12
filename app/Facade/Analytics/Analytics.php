@@ -425,7 +425,7 @@ final class Analytics
         $users = $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
             ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
-                $query->selectRaw('DAY(date) as day, user_id, FLOOR(value) as value, date')
+                $query->selectRaw('DAY(date) as day, user_id, value as value, date')
                     ->where('activity_id', $activity->id)
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
