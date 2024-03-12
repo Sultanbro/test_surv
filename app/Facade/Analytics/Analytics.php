@@ -558,19 +558,17 @@ final class Analytics
     {
         $val = 0;
 
-//        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
-//        $row = $this->getGroupImplRows($group_id, $date)->first() ?? [];
-
+        /** @var AnalyticStat $stat */
         $stat = AnalyticStat::query()
             ->where('group_id', $group_id)
             ->where('date', $date)
-            ->where('show_value', 'Рентабельность, %')
+            ->where('show_value', 'Impl')
             ->first();
 
         if ($stat) {
             $val = AnalyticStat::calcFormula($stat, $date, 2);
-            $stat->show_value = $val;
-            $stat->save();
+//            $stat->show_value = $val;
+//            $stat->save();
         }
 
         return $val;
