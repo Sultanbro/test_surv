@@ -319,8 +319,7 @@ class TaxesService
         return UserTax::query()
             ->where('user_id', $userId)
             ->where(function ($q) use ($date) {
-                $q->where('status', UserTax::ACTIVE)
-                    ->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
+                $q->whereDate('from', '<=', $date->endOfMonth()->format('Y-m-d'))
                     ->whereNull('to');
             })->orWhere(function ($q) use ($date) {
                 $q->where('status', UserTax::REMOVED)
