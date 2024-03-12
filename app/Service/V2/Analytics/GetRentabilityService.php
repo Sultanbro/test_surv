@@ -22,14 +22,17 @@ class GetRentabilityService
      */
     public function handle(GetRentabilityDto $dto): array
     {
-        $gauges = TopValue::query()->whereHas('groups', function (Builder $group) use ($dto) {
-            $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
-                ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
+        $gauges = TopValue::query()
+            ->whereHas('groups', function (Builder $group) use ($dto) {
+                $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
+                    ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
 //                ->where('active', ProfileGroup::IS_ACTIVE)
-                ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $dto->year)
-                    ->whereMonth('archived_date', '>=', $dto->month)
-                ));
-        })->where('type', TopValue::RENTABILITY)->get();
+                    ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query
+                        ->whereYear('archived_date', '>=', $dto->year)
+//                        ->whereMonth('archived_date', '>=', $dto->month)
+                    ));
+            })
+            ->where('type', TopValue::RENTABILITY)->get();
 
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
