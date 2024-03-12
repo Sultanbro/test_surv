@@ -676,12 +676,16 @@ class ProfileGroup extends Model
         string $month
     ): Collection
     {
+        $date = Carbon::create($year, $month);
         return self::hasAnalytics()
             ->ignore([ProfileGroup::IT_DEPARTMENT_ID, ProfileGroup::BUSINESS_CENTER_ID])
-//            ->isActive()
-            ->where(fn($q) => $q->whereNull('archived_date')
-                ->orWhere(fn($query) => $query->whereDate('archived_date', '>=', Carbon::create($year,$month)->format("Y-m-d"))
-            ))
+            ->when($date->isCurrentMonth(), fn($query) => $query->where('active', ProfileGroup::IS_ACTIVE))
+            ->where(function (Builder $q) use ($date) {
+                $q->where(fn($q) => $q->whereNull('archived_date')
+                    ->where('active', ProfileGroup::IS_ACTIVE));
+                $q->orWhere(fn($query) => $query->whereDate('archived_date', '>=', $date->format("Y-m-d"))
+                );
+            })
             ->get();
     }
 
