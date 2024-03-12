@@ -247,19 +247,19 @@ class TaxesService
 
     public function deleteUserTax(EditUserTaxDTO $dto): bool
     {
-        $date = Carbon::createFromDate($dto->year, $dto->month);
+        $givenMonth = Carbon::createFromDate($dto->year, $dto->month);
 
         /** @var User $user */
         $user = auth()->user();
 
         /** @var UserTax $userTax */
-        $userTax = $this->getUserTaxForGivenMonth($dto->userId, $date);
+        $userTax = $this->getUserTaxForGivenMonth($dto->userId, $givenMonth);
 
         if (!$userTax) return true;
 
         if ($userTax->status == UserTax::ACTIVE) {
             // Date's month is equal to current month
-            if ($date->startOfMonth()->eq(now()->startOfMonth())) {
+            if ((clone $givenMonth)->startOfMonth()->eq(now()->startOfMonth())) {
                 $this->detachActive((new SetUserTaxDTO(
                     taxGroupId: $userTax->tax_group_id, userId: $userTax->user_id, assigned: false
                 )));
@@ -267,7 +267,7 @@ class TaxesService
             else {
                 $userTax->update([
                     'status' => UserTax::REMOVED,
-                    'to' => $date->endOfMonth()->subDay()->toDateString(),
+                    'to' => (clone $givenMonth)->endOfMonth()->subDay()->toDateString(),
                     'payload' => json_encode([
                         'editor_id' => $user->id,
                         'editor_name' => $user->name . " " . $user->last_name,
@@ -281,17 +281,17 @@ class TaxesService
                     'user_id' => $userTax->user_id,
                     'tax_group_id' => $userTax->tax_group_id,
                     'status' => UserTax::REMOVED,
-                    'from' => $date->addMonth()->startOfMonth()->toDateString()
+                    'from' => (clone $givenMonth)->addMonth()->startOfMonth()->toDateString()
                 ]);
             }
         }
         else {
-            if (Carbon::parse($userTax->to)->isAfter($date->endOfMonth())) {
+            if (Carbon::parse($userTax->to)->isAfter((clone $givenMonth)->endOfMonth())) {
                 UserTax::query()->create([
                     'user_id' => $userTax->user_id,
                     'tax_group_id' => $userTax->tax_group_id,
                     'status' => UserTax::REMOVED,
-                    'from' => $date->addMonth()->startOfMonth()->toDateString(),
+                    'from' => (clone $givenMonth)->addMonth()->startOfMonth()->toDateString(),
                     'to' => $userTax->to,
                     'payload' => $userTax->payload
                 ]);
@@ -299,7 +299,7 @@ class TaxesService
 
             $userTax->update([
                 'status' => UserTax::REMOVED,
-                'to' => $date->endOfMonth()->subDay()->toDateString(),
+                'to' => (clone $givenMonth)->endOfMonth()->subDay()->toDateString(),
                 'payload' => json_encode([
                     'editor_id' => $user->id,
                     'editor_name' => $user->name . " " . $user->last_name,
@@ -309,7 +309,7 @@ class TaxesService
                 ])
             ]);
         }
-        $tax = $this->getUserTaxForGivenMonth($dto->userId, $date);
+        $tax = $this->getUserTaxForGivenMonth($dto->userId, $givenMonth);
         if ($tax) $this->deleteUserTax($dto);
         return true;
     }
