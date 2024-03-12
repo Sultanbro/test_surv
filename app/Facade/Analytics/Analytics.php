@@ -564,7 +564,7 @@ final class Analytics
         $stat = AnalyticStat::query()
             ->where('group_id', $group_id)
             ->where('date', $date)
-            ->where('show_value', 'Impl')
+            ->where('show_value', 'Рентабельность, %')
             ->first();
 
         if ($stat) {
