@@ -73,6 +73,23 @@ class MessengerChat extends Model {
                     } )->count();
     }
 
+    /**
+     * @param Authenticatable|null $user
+     *
+     * @return array
+     */
+    public function getUnreadMessagesIds( Authenticatable|null $user ): array
+    {
+        return $this->messages()
+            ->where( 'sender_id', '!=', $user->id )
+            ->where( 'deleted', false )
+            ->whereDoesntHave('readers', function ( $query ) use ( $user ) {
+                $query->where( 'user_id', $user->id );
+            })
+            ->pluck('id')
+            ->toArray();
+    }
+
     public function getPinnedMessages(): Collection {
         return $this->messages()->where( 'pinned', true )->get();
     }
