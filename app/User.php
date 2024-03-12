@@ -1742,6 +1742,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function getCountWorkDaysMonth($year = null, $month = null): int
     {
         $requestDate = Carbon::createFromDate($year, $month);
+        if ($this->profile_histories_latest) {
+            $payload = json_decode($this->profile_histories_latest->payload, true);
+            $workChartFromHistory = $payload['work_chart_id'] ?? null;
+        }
+
+        $workChartName = $workChartFromHistory ? WorkChartModel::query()->find($workChartFromHistory)->name : $this->workChart->name;
 
         if ($this->first_work_day) {
             $firstWorkDay = Carbon::parse($this->first_work_day);
@@ -1753,8 +1759,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         } else {
             $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
         }
-
-        $workChartName = $this->workChart->name;
 
 
         if ($workChartName == "2-2") {
