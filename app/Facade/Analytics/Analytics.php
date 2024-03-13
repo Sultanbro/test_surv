@@ -560,10 +560,11 @@ final class Analytics
 
         /** @var AnalyticStat $stat */
         $stat = $this->implStat($group_id, $date);
-        dd($stat);
         if ($stat) {
             $val = AnalyticStat::calcFormula($stat, $date, 2);
         }
+
+        dd($val);
 
         return $val;
     }
