@@ -1710,7 +1710,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function getCountWorkDays(): array
     {
-        $workChart = $this->getWorkChart();
+        $workChartFromHistory = null;
+        if ($this->profile_histories_latest) {
+            $payload = json_decode($this->profile_histories_latest->payload, true);
+            $workChartFromHistory = $payload['work_chart_id'] ?? null;
+        }
+
+        $workChart = $this->getWorkChart($workChartFromHistory);
 
         $floatingDayoffs = $workChart->floating_dayoffs ?? null;
         if ($workChart && $workChart->workdays !== null && empty($floatingDayoffs)) {
