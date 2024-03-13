@@ -621,7 +621,6 @@ final class Analytics
             ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_IMPL)->first() ?? null;
-        dd_if($groupId === 31, $column);
 
         if ($row && $column) {
             $implStat = AnalyticStat::query()
