@@ -702,7 +702,7 @@ class Salary extends Model
                 }
 
                 if ($i == 6 && auth()->id() == 5 && $user->id == 26420) {
-                    dd($zarplata . ' '.  $workdays . ' ' . $working_hours);
+                    dd($zarplata . ' '.  $workdays . ' ' . $working_hours, $workChartFromHistory . ' ' . $workChartType);
                 }
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
