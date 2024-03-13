@@ -50,40 +50,28 @@ class SaveGroupSalary extends Command
      */
     public function handle(): void
     {
-
-        $dates = [
-            $this->argument('date') ?? date('Y-m-d'),
-            Carbon::now()->subMonth()->format('Y-m-d')
-        ];
-
-        foreach ($dates as $date) {
-            $this->count($date);
-            $this->comment('----------------------');
-            $this->comment('----------------------');
-            $this->comment('----------------------');
-            $this->comment('----------------------');
-            $this->comment('----------------------');
-            $this->comment('----------------------');
+        $date = Carbon::parse($this->argument('date') ?? now());
+        $from = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
+        $to = Carbon::parse($this->argument('date') ?? now())->endOfMonth();
+        while ($from <= $to){
+            $this->count($from);
+            $this->line('----------------------');
+            $from->addDay();
         }
     }
 
     /**
      * @throws Exception
      */
-    public function count($date): void
+    public function count(Carbon $date): void
     {
-        if ($this->argument('group_id')) {
-            $groups = ProfileGroup::query()->where('id', $this->argument('group_id'))->get();
-            if (!$groups[0]) return;
-        } else {
-            $groups = ProfileGroup::query()->where('active', 1)->get();
-        }
+        $dateToString = $date->format("Y-m-d");
+        $groups = ProfileGroup::query()
+            ->when($this->argument('group_id'),fn($query)=>$query->where('id',$this->argument('group_id')))
+            ->get();
 
-
-        $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
-        $firedGroups = Salary::getAllTotals($date, $groups, Salary::FIRED_USERS);
-
-        $date = Carbon::parse($date)->firstOfMonth();
+        $workingGroups = Salary::getAllTotals($dateToString, $groups, Salary::WORKING_USERS);
+        $firedGroups = Salary::getAllTotals($dateToString, $groups, Salary::FIRED_USERS);
 
         foreach ($groups as $group) {
             $this->line($group->name);
@@ -97,6 +85,7 @@ class SaveGroupSalary extends Command
                 ->where('date', $date)
                 ->where('type', 1)
                 ->first();
+
             if ($workingGroupSalary) {
                 $workingGroupSalary->total = $workingGroups[$group->id];
                 $workingGroupSalary->save();
@@ -113,19 +102,20 @@ class SaveGroupSalary extends Command
             // save fired total
             $firedGroupSalary = GroupSalary::query()
                 ->where('group_id', $group->id)
-                ->where('date', $date)
+                ->where('date', $dateToString)
                 ->where('type', 2)
                 ->first();
             if ($firedGroupSalary) {
                 $firedGroupSalary->total = $firedGroups[$group->id];
                 $firedGroupSalary->save();
-            } else {
+            }
+            else {
                 GroupSalary::query()
                     ->create([
                         'group_id' => $group->id,
                         'total' => $firedGroups[$group->id],
                         'type' => 2,
-                        'date' => $date
+                        'date' => $dateToString
                     ]);
             }
         }

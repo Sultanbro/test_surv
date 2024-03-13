@@ -19,6 +19,7 @@ use App\Repositories\ActivityRepository;
 use App\Repositories\Analytics\AnalyticColumnRepository;
 use App\Repositories\Analytics\AnalyticRowRepository;
 use App\Repositories\Analytics\AnalyticStatRepository;
+use App\Salary;
 use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
@@ -210,8 +211,8 @@ final class Analytics
                             ->where('group_id', $dto->groupId)
                             ->where('date', $date)
                             ->whereDay('date', $column->name)
-                            ->get()
                             ->sum('total');
+
                         $val = floor($groupSalary);
                         $statistic->show_value = $val;
                         $statistic->save();
