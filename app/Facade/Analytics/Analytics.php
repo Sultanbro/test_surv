@@ -207,6 +207,12 @@ final class Analytics
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = 0;
+                        $groupSalary = GroupSalary::query()
+                            ->where('group_id', $dto->groupId)
+                            ->where('date', $date)
+                            ->get()
+                            ->sum('total');
+                        $val = floor($groupSalary);
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = $val;
