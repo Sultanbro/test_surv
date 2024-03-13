@@ -559,16 +559,10 @@ final class Analytics
         $val = 0;
 
         /** @var AnalyticStat $stat */
-        $stat = AnalyticStat::query()
-            ->where('group_id', $group_id)
-            ->where('date', $date)
-            ->where('show_value', 'Impl')
-            ->first();
-
+        $stat = $this->implStat($group_id, $date);
+        dd($stat);
         if ($stat) {
             $val = AnalyticStat::calcFormula($stat, $date, 2);
-//            $stat->show_value = $val;
-//            $stat->save();
         }
 
         return $val;
@@ -619,12 +613,15 @@ final class Analytics
         $implStat = null;
 
         $column = AnalyticColumn::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_PLAN)->first() ?? null;
 
         $row = AnalyticRow::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_IMPL)->first() ?? null;
+        dd_if($groupId === 31, $column);
 
         if ($row && $column) {
             $implStat = AnalyticStat::query()
