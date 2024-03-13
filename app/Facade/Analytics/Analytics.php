@@ -564,8 +564,6 @@ final class Analytics
             $val = AnalyticStat::calcFormula($stat, $date, 2);
         }
 
-        dd($val);
-
         return $val;
     }
 
