@@ -50,14 +50,10 @@ class SaveGroupSalary extends Command
      */
     public function handle(): void
     {
-        $date = Carbon::parse($this->argument('date') ?? now());
-        $from = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
-        $to = Carbon::parse($this->argument('date') ?? now())->endOfMonth();
-        while ($from <= $to){
-            $this->count($from);
-            $this->line('----------------------');
-            $from->addDay();
-        }
+        $from = Carbon::parse($this->argument('date') ?? now())->subMonth();
+        $to = Carbon::parse($this->argument('date') ?? now());
+        $this->count($from);
+        $this->count($to);
     }
 
     /**
@@ -67,7 +63,7 @@ class SaveGroupSalary extends Command
     {
         $dateToString = $date->format("Y-m-d");
         $groups = ProfileGroup::query()
-            ->when($this->argument('group_id'),fn($query)=>$query->where('id',$this->argument('group_id')))
+            ->when($this->argument('group_id'), fn($query) => $query->where('id', $this->argument('group_id')))
             ->get();
 
         $workingGroups = Salary::getAllTotals($dateToString, $groups, Salary::WORKING_USERS);
@@ -77,6 +73,7 @@ class SaveGroupSalary extends Command
             $this->line($group->name);
             $this->line('Р:' . $workingGroups[$group->id]);
             $this->line('У:' . $firedGroups[$group->id]);
+            $this->line('дата:' . $dateToString);
             $this->line('============');
 
             // save working
@@ -108,8 +105,7 @@ class SaveGroupSalary extends Command
             if ($firedGroupSalary) {
                 $firedGroupSalary->total = $firedGroups[$group->id];
                 $firedGroupSalary->save();
-            }
-            else {
+            } else {
                 GroupSalary::query()
                     ->create([
                         'group_id' => $group->id,
