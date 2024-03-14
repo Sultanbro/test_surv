@@ -70,7 +70,7 @@ final class ProfileGroupUsersQuery
                     });
                 }
             });
-
+dd($this->builder->toSql());
         return $this;
     }
 
@@ -85,7 +85,8 @@ final class ProfileGroupUsersQuery
     {
         if ($deleteType == 1) {
             $this->builder->whereNull('users.deleted_at');
-        } else {
+        }
+        else {
             if ($date) {
                 $this->builder->where(function (Builder $query) use ($date, $deleteType) {
                     $query->whereDate(
@@ -98,7 +99,8 @@ final class ProfileGroupUsersQuery
 //                        $query->orWhereNull('users.deleted_at');
 //                    }
                 });
-            } else if ($deleteType == 2) {
+            }
+            else if ($deleteType == 2) {
                 $this->builder->whereNotNull('users.deleted_at');
             }
         }
