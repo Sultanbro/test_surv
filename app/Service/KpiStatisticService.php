@@ -933,13 +933,11 @@ class KpiStatisticService
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
         // create final users array
-        $users = $this->getKpiStats(
+        return $this->getKpiStats(
             $kpi,
             $_users,
             $date,
         );
-
-        return $users;
     }
 
     /**
