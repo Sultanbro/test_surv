@@ -115,8 +115,8 @@ final class ProfileGroupUsersQuery
     {
         return $this->builder
             ->select(['users.id'])
-//            ->groupBy('users.id')
-//            ->get()
+            ->groupBy('users.id')
+            ->get()
             ->pluck('id')
             ->toArray();
     }
