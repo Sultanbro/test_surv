@@ -63,7 +63,7 @@ final class ProfileGroupUsersQuery
                 }
                 $join->on('group_user.user_id', '=', 'users.id');
                 if ($date) {
-                    $join->whereDate('group_user.from', '>=', $date->format('Y-m-d'));
+                    $join->whereDate('group_user.from', '<=', $date->endOfMonth()->format('Y-m-d'));
                     $join->where(function ($query) use ($date) {
                         $query->whereNull('group_user.to');
                         $query->orWhereDate('group_user.to', '<=', $date->format('Y-m-d'));
