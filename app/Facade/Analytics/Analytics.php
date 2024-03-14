@@ -19,6 +19,7 @@ use App\Repositories\ActivityRepository;
 use App\Repositories\Analytics\AnalyticColumnRepository;
 use App\Repositories\Analytics\AnalyticRowRepository;
 use App\Repositories\Analytics\AnalyticStatRepository;
+use App\Salary;
 use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
@@ -206,7 +207,13 @@ final class Analytics
                     }
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        $val = 0;
+                        $groupSalary = GroupSalary::query()
+                            ->where('group_id', $dto->groupId)
+                            ->where('date', $date)
+                            ->whereDay('date', $column->name)
+                            ->sum('total');
+
+                        $val = floor($groupSalary);
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = $val;
@@ -560,16 +567,9 @@ final class Analytics
         $val = 0;
 
         /** @var AnalyticStat $stat */
-        $stat = AnalyticStat::query()
-            ->where('group_id', $group_id)
-            ->where('date', $date)
-            ->where('show_value', 'Impl')
-            ->first();
-
+        $stat = $this->implStat($group_id, $date);
         if ($stat) {
             $val = AnalyticStat::calcFormula($stat, $date, 2);
-//            $stat->show_value = $val;
-//            $stat->save();
         }
 
         return $val;
@@ -620,10 +620,12 @@ final class Analytics
         $implStat = null;
 
         $column = AnalyticColumn::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_PLAN)->first() ?? null;
 
         $row = AnalyticRow::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_IMPL)->first() ?? null;
 
