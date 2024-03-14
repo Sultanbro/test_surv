@@ -67,7 +67,7 @@ final class ProfileGroupUsersQuery
                     $join->whereDate('group_user.from', '<=', $date->endOfMonth()->format('Y-m-d'));
                     $join->where(function ($query) use ($date) {
                         $query->whereNull('group_user.to');
-                        $query->orWhereDate('group_user.to', '>=', $date->format('Y-m-d'));
+                        $query->orWhereDate('group_user.to', '>=', $date->endOfMonth()->format('Y-m-d'));
                     });
                 }
             });
