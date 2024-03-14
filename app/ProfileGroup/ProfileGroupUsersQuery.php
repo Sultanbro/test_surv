@@ -11,7 +11,7 @@ final class ProfileGroupUsersQuery
     private Builder $builder;
 
     function __construct() {
-        $this->builder = \DB::table('users');
+        $this->builder = DB::table('users');
     }
 
     public function whereIsTrainee(bool $isTrainee): self
@@ -48,6 +48,7 @@ final class ProfileGroupUsersQuery
     /**
      * @param int|array<int> $groupId
      * @param ?Carbon $date
+     * @return ProfileGroupUsersQuery
      */
     public function groupeFilter(
         int|array $groupId,
@@ -72,13 +73,14 @@ final class ProfileGroupUsersQuery
                     });
                 }
             });
-//dd($this->builder->toSql());
+
         return $this;
     }
 
     /**
      * @param int $deleteType 0 - any 1 - normal 2 - deleted
      * @param ?Carbon $date
+     * @return ProfileGroupUsersQuery
      */
     public function deletedByMonthFilter(
         int $deleteType,
