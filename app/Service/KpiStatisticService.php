@@ -1511,18 +1511,15 @@ class KpiStatisticService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
-            'histories_latest' => function ($query) use ($date) {
-                $query->whereYear('created_at', $date->year);
-                $query->whereMonth('created_at', $date->month);
+            'histories_latest' => function ($query) use ($last_date, $date) {
+                $query->whereDate('created_at', '<=', $last_date);
             },
-            'items.histories_latest' => function ($query) use ($date) {
-                $query->whereYear('created_at', $date->year);
-                $query->whereMonth('created_at', $date->month);
+            'items.histories_latest' => function ($query) use ($last_date, $date) {
+                $query->whereDate('created_at', '<=', $last_date);
             },
             'items' => function (HasMany $query) use ($last_date, $date) {
                 $query->with(['histories' => function (MorphMany $query) use ($last_date, $date) {
-                    $query->whereYear('created_at', $date->year);
-                    $query->whereMonth('created_at', $date->month);
+                    $query->whereDate('created_at', '<=', $last_date);
                 }]);
                 $query->where(function (Builder $query) use ($last_date) {
                     $query->whereNull('deleted_at');
