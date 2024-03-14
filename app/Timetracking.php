@@ -171,9 +171,9 @@ class Timetracking extends Model
         $users = User::withTrashed()
             ->when(empty($positions), fn($users) => $users->where('position_id', Position::OPERATOR_ID), fn($users) => $users->whereIn('position_id', $positions))
             ->whereIn('id', $users)->pluck('id')->toArray();
-        if (auth()->id() == 5) {
-            dd($users);
-        }
+//        if (auth()->id() == 5) {
+//            dd($users);
+//        }
         $total_hours = self::select(
             DB::raw('SUM(total_hours) as total_hours')
         )
