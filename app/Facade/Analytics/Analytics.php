@@ -226,6 +226,7 @@ final class Analytics
                         $positions = $group->reportCards->pluck('position_id')->toArray();
                         $divide = $group->reportCards->first()->divide_to ?? 1;
                         $val = Timetracking::totalHours($day, $dto->groupId, $positions);
+                        dd($val, $divide, floor($val / 9 * 10) / $divide);
                         $val = floor($val / 9 * 10) / $divide;
                         $val = max($val, 0);
 
