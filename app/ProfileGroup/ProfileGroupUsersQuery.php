@@ -94,9 +94,9 @@ final class ProfileGroupUsersQuery
                         Carbon::createFromDate($date->year, $date->month, 1)
                         ->format('Y-m-d'),
                     );
-                    if ($deleteType == 0) {
-                        $query->orWhereNull('users.deleted_at');
-                    }
+//                    if ($deleteType == 0) {
+//                        $query->orWhereNull('users.deleted_at');
+//                    }
                 });
             } else if ($deleteType == 2) {
                 $this->builder->whereNotNull('users.deleted_at');
