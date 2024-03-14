@@ -164,7 +164,7 @@ class Timetracking extends Model
         ?array $positions = []
     ): float|int
     {
-        $users = ProfileGroup::employees($group_id);
+        $users = ProfileGroup::employees($group_id, $date);
         if (auth()->id() == 5) {
             dd($users);
         }
