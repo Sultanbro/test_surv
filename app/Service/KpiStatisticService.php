@@ -933,7 +933,7 @@ class KpiStatisticService
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
         // create final users array
-        return $this->getKpiStats(
+        return $this->connectKpiWithUserStats(
             $kpi,
             $_users,
             $date,
@@ -1708,13 +1708,11 @@ class KpiStatisticService
             }
 
             unset($kpi->users);
-            $records = $this->getAverageKpiPercent($kpi, $date);
-            dd($records);
+            $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
             $kpi_sum = 0;
-            foreach ($records as $user) {
+            foreach ($kpi->users as $user) {
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
-            $kpi->setAttribute('users', $records);
 
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users), 2) : 0; //AVG percent of all KPI of all USERS in GROUP
 
