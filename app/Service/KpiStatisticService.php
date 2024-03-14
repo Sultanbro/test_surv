@@ -1708,7 +1708,7 @@ class KpiStatisticService
             }
 
             unset($kpi->users);
-            $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+            $kpi->users = $this->getAverageKpiPercent($kpi, $date);
             $kpi_sum = 0;
             foreach ($kpi->users as $user) {
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
