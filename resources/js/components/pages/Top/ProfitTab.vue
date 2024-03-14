@@ -508,7 +508,7 @@ export default {
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
 			// const defaultAdmGroups = '[23]'
-			const defaultAdmGroups = '[23, 48, 102, 26]'
+			const defaultAdmGroups = '[23, 48, 26]'
 			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
 
 			const otherKey = 'profit_other_' + date
