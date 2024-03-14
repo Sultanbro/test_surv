@@ -101,6 +101,7 @@
 			:key="quartal_users"
 			:users="quartal_users"
 			:groups="quartal_groups"
+			:positions="quartal_pos"
 			:search-text="searchText"
 		/>
 
@@ -217,6 +218,7 @@ export default {
 			bonus_groups: [],
 			quartal_users: [],
 			quartal_groups: [],
+			quartal_pos: [],
 
 			currentPage: 1,
 			totalRows: 1,
@@ -344,11 +346,9 @@ export default {
 						query: this.searchText,
 					}
 				}).then(response => {
-					this.quartal_users = response.data.data[0].map(res=> ({
-						...res,
-						expanded: false,
-					}))
+					this.quartal_users = response.data.data[0].map(res=> ({...res, expanded: false}))
 					this.quartal_groups = response.data.data[1].map(res=> ({...res, expanded: false}))
+					this.quartal_pos = response.data.data[2].map(res=> ({...res, expanded: false}))
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
