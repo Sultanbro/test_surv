@@ -70,7 +70,7 @@ final class ProfileGroupUsersQuery
                     });
                 }
             });
-dd($this->builder->toSql());
+
         return $this;
     }
 
@@ -115,8 +115,8 @@ dd($this->builder->toSql());
     {
         return $this->builder
             ->select(['users.id'])
-            ->groupBy('users.id')
-            ->get()
+//            ->groupBy('users.id')
+//            ->get()
             ->pluck('id')
             ->toArray();
     }
