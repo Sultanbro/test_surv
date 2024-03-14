@@ -1510,7 +1510,8 @@ class KpiStatisticService
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
 
-        $kpis = Kpi::with([
+        $kpis = Kpi::withTrashed()
+            ->with([
             'histories_latest' => function ($query) use ($last_date, $date) {
                 $query->whereDate('created_at', '<=', $last_date);
             },
