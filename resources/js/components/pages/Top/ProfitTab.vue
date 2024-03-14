@@ -90,6 +90,7 @@
 		>
 			<template #cell(revenue)="row">
 				<div
+					v-if="row.item.id"
 					class="ProfitTab-editable"
 					:class="{
 						'ProfitTab-edited': row.value.edited
@@ -104,6 +105,9 @@
 					<div class="ProfitTab-editableValue ProfitTab-padding">
 						{{ separateNumber(numberToCurrency(row.value.now)) }}
 					</div>
+				</div>
+				<div v-else>
+					{{ separateNumber(numberToCurrency(row.value.now)) }}
 				</div>
 			</template>
 			<template #cell(revenue2)="row">
