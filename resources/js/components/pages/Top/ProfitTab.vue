@@ -31,7 +31,7 @@
 				<template v-else-if="row.index === 0">
 					{{ row.value }}
 					<img
-						v-b-popover.click.blur.html="`Итоги ${row.value} дней`"
+						v-b-popover.focus.html="`Итоги ${row.value} дней`"
 						src="/images/dist/profit-info.svg"
 						class="img-info"
 						alt="info icon"
@@ -66,7 +66,7 @@
 				{{ numberToCurrency(row.value) + ([2,5].includes(row.index) ? '%' : '') }}
 				<img
 					v-if="row.index === 5"
-					v-b-popover.click.blur.html="`Рентабельность на сегодня`"
+					v-b-popover.focus.html="`Рентабельность на сегодня`"
 					src="/images/dist/profit-info.svg"
 					class="img-info"
 					alt="info icon"
@@ -90,19 +90,31 @@
 		>
 			<template #cell(revenue)="row">
 				<div
-					class=""
+					class="ProfitTab-editable"
+					:class="{
+						'ProfitTab-edited': row.value.edited
+					}"
 				>
-					{{ separateNumber(numberToCurrency(row.value.now)) }}
+					<input
+						v-model="row.value.now"
+						type="number"
+						class="ProfitTab-input ProfitTab-padding text-center"
+						@change="onChangeRevenue(row)"
+					>
+					<div class="ProfitTab-editableValue ProfitTab-padding">
+						{{ separateNumber(numberToCurrency(row.value.now)) }}
+					</div>
 				</div>
 			</template>
 			<template #cell(revenue2)="row">
 				<div
-					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+					v-b-popover.focus.html="row.index !== secondTable.length ? [
 						`Последння дата: ${row.item.revenue.lastPositiveDate}`,
 						`За последнюю дату: ${row.item.revenue.lastPositive}`,
 						`За ${daysPassed}: ${row.item.revenue.lastRev}`,
 						`Расчет: ${daysInMonth - daysPassed}*${row.item.revenue.lastPositive}`
 					].join('<br>') : ''"
+					tabindex="-1"
 					class=""
 				>
 					{{ separateNumber(row.item.revenue.predict) }}
@@ -113,11 +125,12 @@
 			</template>
 			<template #cell(fot)="row">
 				<div
-					v-b-popover.click.blur.html="row.index !== secondTable.length ? [
+					v-b-popover.focus.html="row.index !== secondTable.length ? [
 						`Работающие: ${row.value.actual}`,
 						`Уволенные: ${row.value.fired}`,
 						`Стажеры: ${row.value.trainee}`,
 					].join('<br>') : ''"
+					tabindex="-1"
 					class=""
 				>
 					{{ separateNumber(numberToCurrency(row.item.fot.sum)) }}
@@ -206,6 +219,10 @@ import {
 	updateSettings,
 	fetchTop,
 } from '@/stores/api.js'
+import {
+	fetchEditedRevenue,
+	updateEditedRevenue,
+} from '@/stores/api/profit.js'
 // import { fetchRentabilityV2 } from '@/stores/api/analytics.js'
 
 
@@ -508,8 +525,14 @@ export default {
 
 			const {settings: admGroups} = await fetchSettings('profit_adm_groups')
 			// const defaultAdmGroups = '[23]'
-			const defaultAdmGroups = '[23, 48, 102, 26]'
+			const defaultAdmGroups = '[23, 48, 26]'
 			this.admGroups = JSON.parse(admGroups.custom_profit_adm_groups === '0' ? defaultAdmGroups : admGroups.custom_profit_adm_groups || defaultAdmGroups) // 96 - OO
+
+			const edited = await fetchEditedRevenue({
+				year: this.year,
+				month: this.month,
+				day: this.daysPassed,
+			})
 
 			const otherKey = 'profit_other_' + date
 			const {settings: other} = await fetchSettings(otherKey)
@@ -535,6 +558,7 @@ export default {
 					now: 0,
 					predict: 0,
 					total: 0,
+					edited: group.group_id in edited,
 				}
 
 				for(let i = 1; i <= this.daysPassed; ++i){
@@ -557,6 +581,10 @@ export default {
 						result.predict += result.lastPositive
 						result.total += result.lastPositive
 					}
+				}
+
+				if(group.group_id in edited){
+					result.now = edited[group.group_id]
 				}
 
 				return result
@@ -672,7 +700,8 @@ export default {
 
 		getCellColor(value) {
 			const perc = percentMinMax(value, this.secondMin, this.secondMax) * 100
-			return '#' + colors[Math.round((colors.length - 1) * perc / 100)]
+			return perc > 41 ? colors[colors.length - 1] : colors[2]
+			// return '#' + colors[Math.round((colors.length - 1) * perc / 100)]
 		},
 
 		onChangeOther(){
@@ -745,6 +774,16 @@ export default {
 				},
 			]
 		},
+
+		async onChangeRevenue(row){
+			await updateEditedRevenue({
+				year: this.year,
+				month: this.month,
+				day: this.daysPassed,
+				key: +row.item.id,
+				value: +row.item.revenue.now,
+			})
+		},
 	},
 }
 </script>
@@ -776,6 +815,7 @@ export default {
 	}
 
 	&-editable{
+		min-width: 150px;
 		margin: $margin;
 		&:hover{
 			.ProfitTab{
@@ -813,6 +853,9 @@ export default {
 	}
 	&-bad{
 		background-color: #f8696b;
+	}
+	&-edited{
+		background-color: #ffeb84;
 	}
 
 	.JobtronTable{

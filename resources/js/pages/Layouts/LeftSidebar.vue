@@ -471,7 +471,9 @@ export default {
 		...mapActions(useUserStore, ['fetchUser']),
 		onResize(){
 			if(!this.$refs.nav) return
-			this.height = this.$refs.nav.offsetHeight
+			this.$nextTick(() => {
+				this.height = this.$refs.nav?.offsetHeight
+			})
 		},
 		onNewProject(){
 			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return

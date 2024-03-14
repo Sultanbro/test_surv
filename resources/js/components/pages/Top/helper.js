@@ -145,7 +145,7 @@ export function calcGroupFOT(data, lastDay = 31, daysInMonth = 31){
 	const total = items.reduce((result, item) => result + (Number(item.total)|| 0), 0)
 
 	const totals = {
-		name: data.currentGroup.name,
+		name: data.currentGroup?.name || '[архивный отдел]',
 		final,
 		kpi,
 		bonus,
