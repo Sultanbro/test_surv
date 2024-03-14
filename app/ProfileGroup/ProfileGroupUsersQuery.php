@@ -55,7 +55,7 @@ final class ProfileGroupUsersQuery
     ): self
     {
         $date = $date->addMonth();
-        dd($date);
+
         $this->builder
             ->join('group_user', function (JoinClause $join) use ($groupId, $date) {
                 if (is_array($groupId)) {
