@@ -111,13 +111,23 @@
 								class="text-center"
 								:class="{'p-0': index != 0}"
 							>
-								<input
+								<div
 									v-if="index != 0"
-									v-model="item['l' + i]"
-									class="input"
-									:class="{'edited':item['ed' + i]}"
-									@change="update(i, index)"
+									class="d-flex gap-1"
 								>
+									<input
+
+										v-model="item['l' + i]"
+										class="input"
+										:class="{'edited':item['ed' + i]}"
+										@change="update(i, index)"
+									>
+									<input
+										v-model="checkData[item.group_id + '-' + i]"
+										type="checkbox"
+										@change="onCheck"
+									>
+								</div>
 								<div v-else>
 									{{ separateNumber(item['l' + i]) }}
 								</div>
@@ -195,6 +205,7 @@ export default {
 			skey: 1,
 			sorts: {},
 			speedometers: [],
+			checkData: {},
 		};
 	},
 	computed: {
@@ -263,6 +274,7 @@ export default {
 					})
 					return row
 				})
+				this.checkData = JSON.parse(localStorage.getItem('rent-check-' + this.year) || {})
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
@@ -519,7 +531,11 @@ export default {
 				]
 			}
 			return []
-		}
+		},
+
+		onCheck(){
+			localStorage.setItem('rent-check-' + this.year, JSON.stringify(this.checkData))
+		},
 	},
 };
 </script>
