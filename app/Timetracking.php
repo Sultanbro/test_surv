@@ -165,7 +165,7 @@ class Timetracking extends Model
     ): float|int
     {
         $users = ProfileGroup::employees($group_id);
-
+        dd($users);
         $users = User::withTrashed()
             ->when(empty($positions), fn($users) => $users->where('position_id', Position::OPERATOR_ID), fn($users) => $users->whereIn('position_id', $positions))
             ->whereIn('id', $users)->pluck('id')->toArray();
