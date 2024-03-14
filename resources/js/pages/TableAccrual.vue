@@ -547,7 +547,7 @@
 						<!-- eslint-disable -->
 						<p
 							class="fz14 mb-0"
-							v-html="item.description + (item.payload.deleted_by || '') + (item.payload.restored_by || '')"
+							v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
 						/>
 						<!-- eslint-enable -->
 						<br>
@@ -747,7 +747,7 @@
 								<!-- eslint-disable -->
 								<p
 									class="fz14 mb-0"
-									v-html="item.description + (item.payload.deleted_by || '') + (item.payload.restored_by || '')"
+									v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
 								/><br>
 								<!-- eslint-enable -->
 								<hr>
@@ -804,7 +804,7 @@
 					<!-- eslint-disable vue/no-v-html -->
 					<div
 						class="AvansHistoryItem-text"
-						v-html="avansItem.description + (avansItem.payload.deleted_by || '') + (avansItem.payload.restored_by || '')"
+						v-html="avansItem.description + (avansItem.payload ? avansItem.payload.deleted_by || '' : '') + (avansItem.payload ? avansItem.payload.restored_by || '' : '')"
 					/>
 					<hr>
 					<!-- eslint-enable vue/no-v-html -->
@@ -1925,6 +1925,7 @@ export default {
 					this.$toast.success('Сохранено');
 					this.editedField = {name:'', type:'kpi'}
 					this.editPremiunWindow = false
+					this.editPremiumSidebar = false
 
 				}).catch(error => {
 					this.$toast.error('Не сохранилось');
@@ -2021,8 +2022,9 @@ export default {
 				this.bonus.require = '';
 				this.bonus.visible = false;
 
-				this.sidebarHistory.unshift(response);
-				this.items[this.selectedCell.index].history.unshift(response)
+				this.sidebarHistory?.unshift(response);
+				this.items[this.selectedCell.index]?.history?.unshift(response)
+				this.openSidebar = false
 			}
 		},
 
