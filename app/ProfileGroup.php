@@ -452,7 +452,7 @@ class ProfileGroup extends Model
         Carbon|string $date = null,
         ?int          $deleteType = 0,
         ?array        $positionIds = [],
-    )
+    ): array
     {
         if ($date) {
             $date = Carbon::parse($date)->subMonth();

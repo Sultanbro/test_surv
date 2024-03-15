@@ -164,15 +164,14 @@ class Timetracking extends Model
         ?array $positions = []
     ): float|int
     {
-        $users = ProfileGroup::employees($group_id);
+        $users = ProfileGroup::employees($group_id, $date);
 
         $users = User::withTrashed()
             ->when(empty($positions), fn($users) => $users->where('position_id', Position::OPERATOR_ID), fn($users) => $users->whereIn('position_id', $positions))
             ->whereIn('id', $users)->pluck('id')->toArray();
 
-        $total_hours = self::select(
-            DB::raw('SUM(total_hours) as total_hours')
-        )
+        $total_hours = self::query()
+            ->select(DB::raw('SUM(total_hours) as total_hours'))
             ->whereIn('user_id', $users)
             ->whereDate('enter', $date)
             ->first()

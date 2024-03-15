@@ -1,5 +1,5 @@
 <template>
-	<div class="bonuses">
+	<div class="StatsTableQuartal bonuses">
 		<table class="table j-table table-bordered table-sm mb-3 collapse-table">
 			<tr>
 				<th class="b-table-sticky-column text-center px-1">
@@ -58,7 +58,14 @@
 										<td>{{ page_item.items.title }}</td>
 										<td>{{ methods[page_item.items.method] || '' }}</td>
 										<td>{{ page_item.items.plan }}</td>
-										<td>{{ page_item.items.fact }}</td>
+										<td>
+											<input
+												v-model="page_item.items.fact"
+												type="text"
+												class="StatsTableQuartal-input"
+												@change="updateStat('user', p)"
+											>
+										</td>
 										<td>{{ page_item.items.sum }}</td>
 										<td>{{ page_item.items.from }}</td>
 										<td>{{ page_item.items.to }}</td>
@@ -151,7 +158,13 @@
 												<td>{{ user.quartalPremiums.title }}</td>
 												<td>{{ methods[user.quartalPremiums.method] || '' }}</td>
 												<td>{{ user.quartalPremiums.plan }}</td>
-												<td>{{ user.fact }}</td>
+												<td>
+													<input
+														v-model="user.quartalPremiums.fact"
+														type="text"
+														class="StatsTableQuartal-input"
+													>
+												</td>
 												<td>{{ user.quartalPremiums.sum }}</td>
 												<td>{{ user.quartalPremiums.from }}</td>
 												<td>{{ user.quartalPremiums.to }}</td>
@@ -238,3 +251,17 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.StatsTableQuartal{
+	td{
+		vertical-align: middle;
+	}
+	&-input{
+		width: 100%;
+		border: none;
+		text-align: center;
+		background-color: transparent;
+	}
+}
+</style>

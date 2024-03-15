@@ -221,7 +221,7 @@ final class Analytics
                         $positions = $group->reportCards->pluck('position_id')->toArray();
                         $divide = $group->reportCards->first()->divide_to ?? 1;
                         $val = Timetracking::totalHours($day, $dto->groupId, $positions);
-                        $val = floor($val / 9 * 10) / $divide;
+                        $val = floor($val) / $divide;
                         $val = max($val, 0);
 
                         $statistic->show_value = $val;
@@ -230,7 +230,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {

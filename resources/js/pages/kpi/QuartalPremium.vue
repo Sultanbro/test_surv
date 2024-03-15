@@ -471,7 +471,7 @@
 																</option>
 															</select>
 															<input
-																v-if="Number(item.source) === 1 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
+																v-if="Number(item.source) === 1 && item.activity_id > 0 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
 																v-model="item.cell"
 																type="text"
 															>
@@ -957,7 +957,7 @@ export default {
 				}))
 				this.all_items = items
 				this.items = items
-				this.activities = response.data.activities;
+				this.activities = response.data.activities || [];
 				this.groups = response.data.groups;
 
 				this.defineSourcesAndGroups()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Learning;
 
 use App\Http\Resources\KB\KnowBaseTreeResource;
+use App\Service\NotificationService;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use App\Service\KB\KnowBaseService;
@@ -579,9 +580,19 @@ class KnowBaseController extends Controller
                     ->first();
 
                 if ($existingNotification) {
-                    $existingNotification->update([
-                        'message' => $existingNotification->message . "<br><br>" . $message, // Append the new message
-                    ]);
+                    $found = false;
+                    $splits = explode("<br><br>", $existingNotification->message);
+                    foreach ($splits as $split) {
+                        if (strpos($split, $TOP_parent->title) && strpos($split, $page->title)) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $existingNotification->update([
+                            'message' => $existingNotification->message . "<br><br>" . $message, // Append the new message
+                        ]);
+                    }
                 } else {
                     UserNotification::query()->create([
                         'user_id' => $user_id,
