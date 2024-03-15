@@ -49,21 +49,11 @@
 							</div>
 						</td>
 						<td
-							v-for="(letter, index) in letter_cells.slice(1, 4)"
+							v-for="(letter, index) in letter_cells.slice(0, 3)"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
-							<div
-								v-if="index == 0"
-								class="in-cell inner-div d-flex"
-							>
-								<span class="two-letter">A</span>
-								<span class="two-letter">B</span>
-							</div>
-							<div
-								v-else
-								class="in-cell inner-div"
-							>
+							<div class="in-cell inner-div">
 								{{ letter }}
 							</div>
 						</td>
@@ -76,7 +66,7 @@
 						<td class="t-cell rownumber ruler-cells">
 							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
 								<span
-									v-if="editTableMode && i_index > (oldGroup ? 3 : 2)"
+									v-if="editTableMode && i_index > 0"
 									@click="deleteRow(i_index)"
 								>
 									<IconDelete
@@ -87,7 +77,7 @@
 									/>
 								</span>
 								<span
-									v-if="editTableMode && i_index > (oldGroup ? 2 : 0)"
+									v-if="editTableMode && i_index > 0"
 									class="AnalyticStat-addRow"
 									@click="add_row(i_index)"
 								>
@@ -109,341 +99,246 @@
 								:class="item[field.key].class"
 								@click="focus(i_index, f_index)"
 							>
-								<template v-if="(field.key == 'name' && [1,2,3].includes(i_index) && oldGroup)/*  || field.key == 'name' && [2].includes(i_index) */">
-									<div class="d-flex justify-content-between">
-										<div
-											class="inner-div halfy"
-											:class="{
-												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 1,
-												'context': item[field.key].context,
-												'disabled': item[field.key].editable == 0
-											}"
-											@click="focusName(i_index, f_index, 1)"
-											@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
-										>
-											<div class="disabled" />
-
-											<div
-												v-if="item[field.key].context"
-												class="contextor"
-											>
-												<ul class="types">
-													<li @click="add_formula_1_31(item[field.key])">
-														Формула с 1 по 31
-													</li>
-												</ul>
-											</div>
-
-											<input
-												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
-												v-model="item['name'].value"
-												type="text"
-												class="in-cell"
-												@change="change_stat(i_index, 'name')"
-											>
-
-											<input
-												v-else
-												type="text"
-												class="in-cell"
-												:value="item['name'].show_value"
-											>
-
-											<div
-												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
-												class="bottom-angle"
-											>
-												<div class="angler" />
-											</div>
-
-											<div
-												class="top-angle"
-												:class="item[field.key].type"
-											/>
-										</div>
-										<div
-											class="inner-div halfy"
-											:class="{
-												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 2,
-												'context': item['plan'].context,
-												'disabled': item['plan'].editable == 0
-											}"
-											@click="focusName(i_index, f_index, 2)"
-											@contextmenu.prevent.stop="openContextMenu(item['plan'], i_index, f_index)"
-										>
-											<div class="disabled" />
-
-											<input
-												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
-												v-model="item['plan'].value"
-												type="text"
-												class="in-cell"
-												@change="change_stat(i_index, 'plan')"
-											>
-											<input
-												v-else
-												type="text"
-												class="in-cell"
-												:value="item['plan'].show_value + (i_index == 2 && oldGroup ? '%' : '')"
-											>
-
-											<div
-												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
-												class="bottom-angle"
-											>
-												<div class="angler" />
-											</div>
-
-											<div
-												class="top-angle"
-												:class="item[field.key].type"
-											/>
-										</div>
-									</div>
-								</template>
-
-								<template v-else>
+								<div
+									class="inner-div"
+									:class="{
+										'focused': focused_item === i_index && focused_field === f_index,
+										'context': item[field.key].context,
+										'disabled': item[field.key].editable == 0
+									}"
+									@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
+								>
+									<div class="disabled" />
 									<div
-										class="inner-div"
-										:class="{
-											'focused': focused_item === i_index && focused_field === f_index,
-											'context': item[field.key].context,
-											'disabled': item[field.key].editable == 0
-										}"
-										@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
+										v-if="item[field.key].context"
+										class="contextor"
 									>
-										<div class="disabled" />
 										<div
-											v-if="item[field.key].context"
-											class="contextor"
+											v-if="isMain && activeuserid == 5"
+											class="fonter d-flex justify-content-between"
 										>
+											<div @click="add_class(item[field.key], 'font-bold')">
+												Ж
+											</div>
+											<div @click="add_class(item[field.key], 'font-italic')">
+												К
+											</div>
+											<div @click="add_class(item[field.key], 'text-left')">
+												Л
+											</div>
+											<div @click="add_class(item[field.key], 'text-center')">
+												Ц
+											</div>
+											<div @click="add_class(item[field.key], 'text-right')">
+												П
+											</div>
+										</div>
+										<div class="color-choser d-flex justify-content-between">
 											<div
-												v-if="isMain && activeuserid == 5"
-												class="fonter d-flex justify-content-between"
+												class="bg-red"
+												@click="add_class(item[field.key], 'bg-red')"
+											/>
+											<div
+												class="bg-yellow"
+												@click="add_class(item[field.key], 'bg-yellow')"
+											/>
+											<div
+												class="bg-green"
+												@click="add_class(item[field.key], 'bg-green')"
+											/>
+											<div
+												class="bg-blue"
+												@click="add_class(item[field.key], 'bg-blue')"
+											/>
+											<div
+												class="bg-violet"
+												@click="add_class(item[field.key], 'bg-violet')"
+											/>
+										</div>
+										<ul class="types">
+											<li
+												v-if="(isMain && activeuserid == 5) || ['sum', 'avg'].includes(field.key)"
+												@click="change_type('initial', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], '')"
 											>
-												<div @click="add_class(item[field.key], 'font-bold')">
-													Ж
-												</div>
-												<div @click="add_class(item[field.key], 'font-italic')">
-													К
-												</div>
-												<div @click="add_class(item[field.key], 'text-left')">
-													Л
-												</div>
-												<div @click="add_class(item[field.key], 'text-center')">
-													Ц
-												</div>
-												<div @click="add_class(item[field.key], 'text-right')">
-													П
-												</div>
-											</div>
-											<div class="color-choser d-flex justify-content-between">
-												<div
-													class="bg-red"
-													@click="add_class(item[field.key], 'bg-red')"
-												/>
-												<div
-													class="bg-yellow"
-													@click="add_class(item[field.key], 'bg-yellow')"
-												/>
-												<div
-													class="bg-green"
-													@click="add_class(item[field.key], 'bg-green')"
-												/>
-												<div
-													class="bg-blue"
-													@click="add_class(item[field.key], 'bg-blue')"
-												/>
-												<div
-													class="bg-violet"
-													@click="add_class(item[field.key], 'bg-violet')"
-												/>
-											</div>
-											<ul class="types">
-												<li
-													v-if="(isMain && activeuserid == 5) || ['sum', 'avg'].includes(field.key)"
-													@click="change_type('initial', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], '')"
+												Обычный
+											</li>
+											<li
+												v-if="(isMain && activeuserid == 5)"
+												@click="change_type('formula', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Формула
+											</li>
+											<li
+												v-if="['name'].includes(field.key)"
+												@click="change_type('time', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], 'hours')"
+											>
+												Часы из табеля
+												<img
+													v-b-popover.hover.html="`Выберите должности часы которых будут считаться`"
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													alt="info icon"
+													tabindex="-1"
+													width="20"
 												>
-													Обычный
-												</li>
-												<li
-													v-if="(isMain && activeuserid == 5)"
-													@click="change_type('formula', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Формула
-												</li>
-												<li
-													v-if="['name'].includes(field.key)"
-													@click="change_type('time', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], 'hours')"
-												>
-													Часы из табеля
-													<img
-														v-b-popover.hover.html="`Выберите должности часы которых будут считаться`"
-														src="/images/dist/profit-info.svg"
-														class="img-info"
-														alt="info icon"
-														tabindex="-1"
-														width="20"
+											</li>
+											<li
+												v-if="['name'].includes(field.key)"
+												@click="change_type('stat', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Показатели
+											</li>
+											<li
+												v-if="['avg'].includes(field.key)"
+												@click="change_type('avg', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Среднее за месяц
+											</li>
+											<li
+												v-if="['sum'].includes(field.key)"
+												@click="change_type('sum', i_index, field.key)"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Сумма за месяц
+											</li>
+											<li
+												v-if="['name'].includes(field.key) && item[field.key].depend_id === null"
+												@click="selectDepend(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Зависимость от ряда
+											</li>
+											<li
+												v-else-if="['name'].includes(field.key)"
+												:title="`ряд: ${ rowsMap[item[field.key].depend_id].row }`"
+												@click="removeDependency(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Убрать зависимость
+											</li>
+											<li
+												v-if="['name'].includes(field.key)"
+												@click="add_formula_1_31(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Формула с 1 по 31
+											</li>
+											<!-- <li
+												v-if="['name'].includes(field.key)"
+												@click="add_inhouse(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Отсутствие минут inhouse
+											</li>
+											<li
+												v-if="['name'].includes(field.key)"
+												@click="add_remote(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Отсутствие минут remote
+											</li> -->
+											<li
+												v-if="['name'].includes(field.key)"
+												@click="add_salary(item[field.key])"
+												@mouseover="toggleContext2(item[field.key], '')"
+											>
+												Начисления отдела
+											</li>
+											<li @mouseover="toggleContext2(item[field.key], '')">
+												<div class="d-flex decimals">
+													<p>Дробные</p>
+													<input
+														v-model="item[field.key].decimals"
+														type="number"
+														@change="setDecimals(item[field.key])"
 													>
-												</li>
-												<li
-													v-if="['name'].includes(field.key)"
-													@click="change_type('stat', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Показатели
-												</li>
-												<li
-													v-if="['avg'].includes(field.key)"
-													@click="change_type('avg', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Среднее за месяц
-												</li>
-												<li
-													v-if="['sum'].includes(field.key)"
-													@click="change_type('sum', i_index, field.key)"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Сумма за месяц
-												</li>
-												<li
-													v-if="['name'].includes(field.key) && item[field.key].depend_id === null"
-													@click="selectDepend(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Зависимость от ряда
-												</li>
-												<li
-													v-else-if="['name'].includes(field.key)"
-													:title="`ряд: ${ rowsMap[item[field.key].depend_id].row }`"
-													@click="removeDependency(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Убрать зависимость
-												</li>
-												<li
-													v-if="['name'].includes(field.key)"
-													@click="add_formula_1_31(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Формула с 1 по 31
-												</li>
-												<!-- <li
-													v-if="['name'].includes(field.key)"
-													@click="add_inhouse(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Отсутствие минут inhouse
-												</li>
-												<li
-													v-if="['name'].includes(field.key)"
-													@click="add_remote(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Отсутствие минут remote
-												</li> -->
-												<li
-													v-if="['name'].includes(field.key)"
-													@click="add_salary(item[field.key])"
-													@mouseover="toggleContext2(item[field.key], '')"
-												>
-													Начисления отдела
-												</li>
-												<li @mouseover="toggleContext2(item[field.key], '')">
-													<div class="d-flex decimals">
-														<p>Дробные</p>
-														<input
-															v-model="item[field.key].decimals"
-															type="number"
-															@change="setDecimals(item[field.key])"
-														>
-													</div>
-												</li>
-											</ul>
-
-											<div
-												v-if="item[field.key].context2"
-												class="AnalyticStat-context2 AnContext2"
-												@context.capture.stop
-											>
-												<div
-													class="AnContext2-body"
-													:class="[`AnContext2-body_${item[field.key].context2}`]"
-												>
-													<template v-if="item[field.key].context2 === 'hours'">
-														<div class="AnContext2-row">
-															Выберите должность
-														</div>
-														<div class="AnContext2-row">
-															<AccessSelect
-																v-if="accessDictionaries.positions.length"
-																v-model="hoursPositions"
-																:access-dictionaries="accessDictionaries"
-																:tabs="['Должности']"
-																search-position="none"
-																submit-button=""
-															/>
-															<span v-else>В отделе нет сотрудников с должностями</span>
-														</div>
-														<label
-															v-if="isMain && [5].includes(+$laravel.userId)"
-															class="AnContext2-row AnContext2-field"
-														>
-															<div class="AnContext2-label">Делить на</div>
-															<input
-																v-model="hoursDivider"
-																type="number"
-																min="0.01"
-																class="AnContext2-input ml-3"
-															>
-														</label>
-														<div class="AnContext2-row">
-															<JobtronButton
-																small
-																class="ml-a"
-																@click="onSubmitHours(item[field.key])"
-															>
-																Применить
-															</JobtronButton>
-														</div>
-													</template>
 												</div>
+											</li>
+										</ul>
+
+										<div
+											v-if="item[field.key].context2"
+											class="AnalyticStat-context2 AnContext2"
+											@context.capture.stop
+										>
+											<div
+												class="AnContext2-body"
+												:class="[`AnContext2-body_${item[field.key].context2}`]"
+											>
+												<template v-if="item[field.key].context2 === 'hours'">
+													<div class="AnContext2-row">
+														Выберите должность
+													</div>
+													<div class="AnContext2-row">
+														<AccessSelect
+															v-if="accessDictionaries.positions.length"
+															v-model="hoursPositions"
+															:access-dictionaries="accessDictionaries"
+															:tabs="['Должности']"
+															search-position="none"
+															submit-button=""
+														/>
+														<span v-else>В отделе нет сотрудников с должностями</span>
+													</div>
+													<label
+														v-if="isMain && [5].includes(+$laravel.userId)"
+														class="AnContext2-row AnContext2-field"
+													>
+														<div class="AnContext2-label">Делить на</div>
+														<input
+															v-model="hoursDivider"
+															type="number"
+															min="0.01"
+															class="AnContext2-input ml-3"
+														>
+													</label>
+													<div class="AnContext2-row">
+														<JobtronButton
+															small
+															class="ml-a"
+															@click="onSubmitHours(item[field.key])"
+														>
+															Применить
+														</JobtronButton>
+													</div>
+												</template>
 											</div>
 										</div>
-
-										<input
-											v-if="focused_item === i_index && focused_field === f_index"
-											v-model="item[field.key].value"
-											type="text"
-											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-											class="in-cell name-input"
-											@change="change_stat(i_index, field.key)"
-										>
-										<input
-											v-else
-											type="text"
-											:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-											:value="item[field.key].show_value ? item[field.key].show_value : ''"
-											class="in-cell"
-										>
-
-										<div
-											v-if="focused_item === i_index && focused_field === f_index"
-											class="bottom-angle"
-										>
-											<div class="angler" />
-										</div>
-
-										<div
-											class="top-angle"
-											:class="item[field.key].type"
-										/>
 									</div>
-								</template>
+
+									<input
+										v-if="focused_item === i_index && focused_field === f_index"
+										v-model="item[field.key].value"
+										type="text"
+										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
+										class="in-cell name-input"
+										@change="change_stat(i_index, field.key)"
+									>
+									<input
+										v-else
+										type="text"
+										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
+										:value="item[field.key].show_value ? item[field.key].show_value : ''"
+										class="in-cell"
+									>
+
+									<div
+										v-if="focused_item === i_index && focused_field === f_index"
+										class="bottom-angle"
+									>
+										<div class="angler" />
+									</div>
+
+									<div
+										class="top-angle"
+										:class="item[field.key].type"
+									/>
+								</div>
 							</td>
 						</template>
 					</tr>
@@ -473,7 +368,7 @@
 				<table class="as-table">
 					<tr>
 						<td
-							v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)"
+							v-for="(letter, index) in letter_cells.slice(3, letter_cells.length - 1)"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
@@ -924,7 +819,7 @@ export default {
 			let arr = [];
 
 			this.items.forEach((item, index) => {
-				if(![0,1,2,3].includes(index)) {
+				if(![0].includes(index)) {
 					arr.push({
 						'row_id': item['name']['row_id'],
 						'name': index + 1,
