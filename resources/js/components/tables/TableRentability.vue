@@ -142,10 +142,8 @@
 								:key="i + 'b'"
 								class="text-center br1"
 								:class="{
-									'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
-									'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
-									'c-yellow': item['rc' + i] >= 50 && item['rc' + i] < 75,
-									'c-green text-white': item['rc' + i] >= 75,
+									'c-red text-white': item['rc' + i] < 41 && item['rc' + i] != '',
+									'c-green text-white': item['rc' + i] >= 41,
 								}"
 							>
 								{{ separateNumber(item['r' + i]) }}
