@@ -406,5 +406,11 @@ export default {
 	allFiles(chatId){
 		return axios.get(`${REST_URI}chat/${chatId}/files`)
 	},
+
+	messagesReadAll(chatId){
+		return axios.post(`${REST_URI}messages/all-read`, {
+			chatId,
+		})
+	},
 }
 </script>
