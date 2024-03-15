@@ -116,7 +116,6 @@
 									class="d-flex gap-1"
 								>
 									<input
-
 										v-model="item['l' + i]"
 										class="input"
 										:class="{'edited':item['ed' + i]}"

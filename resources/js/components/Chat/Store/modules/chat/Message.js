@@ -318,6 +318,10 @@ export default {
 				});
 			}
 		},
+		async markAllMessagesAsRead({commit}, {chat}) {
+			await API.messagesReadAll(chat.id);
+			commit('markChatAsSeen', 0);
+		},
 		async deleteMessage({commit}, message) {
 			return API.deleteMessage(message.id, () => {
 				commit('deleteMessage', message);
