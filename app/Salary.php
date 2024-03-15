@@ -375,15 +375,6 @@ class Salary extends Model
         return $text;
     }
 
-    /**
-     * Create salaries array
-     * with days as keys
-     * from 1 to 31 day
-     *
-     * @param array $data
-     * @return array
-     * @throws Exception
-     */
     public static function getSalaryForDays(array $data): array
     {
         $date = Carbon::parse($data['date']);
@@ -393,27 +384,13 @@ class Salary extends Model
         $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 
         $salaries = [];
-
-        // $group_users = $group->users()->pluck('id')->toArray();
-        $group_users = json_decode($group->users, true);
-
         $working = (new UserService)->getEmployees($group_id, $date->format('Y-m-d'));
         $working = collect($working)->pluck('id')->toArray();
 
         $fired = (new UserService)->getFiredEmployees($group_id, $date->format('Y-m-d'));
         $fired = collect($fired)->pluck('id')->toArray();
 
-
         $group_users = array_merge($fired, $working);
-
-        ////
-        /**
-         *
-         *
-         *
-         *
-         *
-         */
         $arr = Salary::salariesTable(
             3, // user_type
             $date->format('Y-m-d'),

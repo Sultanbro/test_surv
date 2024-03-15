@@ -125,11 +125,12 @@ final class Analytics
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
-
+        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -207,13 +208,7 @@ final class Analytics
                     }
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        $groupSalary = GroupSalary::query()
-                            ->where('group_id', $dto->groupId)
-                            ->where('date', $date)
-                            ->whereDay('date', $column->name)
-                            ->sum('total');
-
-                        $val = floor($groupSalary);
+                        $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = $val;
