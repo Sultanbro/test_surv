@@ -221,9 +221,6 @@ final class Analytics
                         $positions = $group->reportCards->pluck('position_id')->toArray();
                         $divide = $group->reportCards->first()->divide_to ?? 1;
                         $val = Timetracking::totalHours($day, $dto->groupId, $positions);
-                        if (auth()->id() == 5 && !in_array($val, [242, 263])) {
-                            dd($val);
-                        }
                         $val = floor($val) / $divide;
                         $val = max($val, 0);
 
