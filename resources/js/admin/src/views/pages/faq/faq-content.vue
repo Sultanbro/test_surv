@@ -1,201 +1,489 @@
+<script setup lang="ts">
+import Editor from '@tinymce/tinymce-vue';
+import type {Settings} from '@types/tinymce'
+
+type Question = {
+  id: number
+  title: string
+  content: string
+  page: string
+  children: Array<Question>
+}
+
+const props = defineProps<{
+  activeQuestion: Question
+  faqEdit: boolean
+}>()
+const emit = defineEmits<{
+  (e: 'change', q: Question): void
+}>()
+
+const divider = '___'
+const pageVariants = [
+  {
+    title: 'Профиль',
+    value: '/',
+  },
+  {
+    title: 'Новости',
+    value: `/news`,
+  },
+  {
+    title: 'Структура',
+    value: `/structure`,
+  },
+  {
+    title: 'База знаний',
+    value: `/kb`,
+  },
+  {
+    title: 'База знаний - Глоссарий',
+    value: `/kb${divider}glossary`,
+  },
+  {
+    title: 'Читать книги',
+    value: `/admin/upbooks`,
+  },
+  {
+    title: 'Смотреть видео',
+    value: `/video_playlists`,
+  },
+  {
+    title: 'Курсы',
+    value: `/courses`,
+  },
+  {
+    title: 'ТОП - Полезность',
+    value: `/timetracking/top`,
+  },
+  {
+    title: 'ТОП - Маржа',
+    value: `/timetracking/top/margin`,
+  },
+  {
+    title: 'ТОП - Выручка',
+    value: `/timetracking/top/revenue`,
+  },
+  {
+    title: 'ТОП - Прогноз',
+    value: `/timetracking/top/forecast`,
+  },
+  {
+    title: 'ТОП - NPS',
+    value: `/timetracking/top/nps`,
+  },
+  {
+    title: 'ТОП - Profit',
+    value: `/timetracking/top/profit`,
+  },
+  {
+    title: 'Табель',
+    value: `/timetracking/reports`,
+  },
+  {
+    title: 'Время прихода',
+    value: `/timetracking/reports/enter-report`,
+  },
+  {
+    title: 'HR - рекрутинг - сводная',
+    value: `/timetracking/analytics`,
+  },
+  {
+    title: 'HR - рекрутинг - стажеры',
+    value: `/timetracking/analytics${divider}recruts`,
+  },
+  {
+    title: 'HR - 2й этап - сводная',
+    value: `/timetracking/analytics${divider}2`,
+  },
+  {
+    title: 'HR - 2й этап - оценка',
+    value: `/timetracking/analytics${divider}rate`,
+  },
+  {
+    title: 'HR - 2й этап - отсутствие',
+    value: `/timetracking/analytics${divider}miss`,
+  },
+  {
+    title: 'HR - забота',
+    value: `/timetracking/analytics${divider}care`,
+  },
+  {
+    title: 'HR - Увольнение - текучка',
+    value: `/timetracking/analytics${divider}flood`,
+  },
+  {
+    title: 'HR - Увольнение - бот',
+    value: `/timetracking/analytics${divider}bot`,
+  },
+  {
+    title: 'HR - Увольнение - причины',
+    value: `/timetracking/analytics${divider}reasons`,
+  },
+  {
+    title: 'HR - маркетинг - рефералка',
+    value: `/timetracking/analytics${divider}ref`,
+  },
+  {
+    title: 'HR - маркетинг - лиды',
+    value: `/timetracking/analytics${divider}leads`,
+  },
+  {
+    title: 'Аналитика - сводная',
+    value: `/timetracking/an`,
+  },
+  {
+    title: 'Аналитика - подробная',
+    value: `/timetracking/an${divider}detail`,
+  },
+  {
+    title: 'Начисления',
+    value: `/timetracking/salaries`,
+  },
+  {
+    title: 'ОКК - оценка - неделя',
+    value: `/timetracking/salaries`,
+  },
+  {
+    title: 'ОКК - оценка - месяц',
+    value: `/timetracking/salaries${divider}month`,
+  },
+  {
+    title: 'ОКК - оценка - оценка',
+    value: `/timetracking/salaries${divider}rate`,
+  },
+  {
+    title: 'ОКК - курсы',
+    value: `/timetracking/salaries${divider}course`,
+  },
+  {
+    title: 'Карта',
+    value: `/maps`,
+  },
+  {
+    title: 'KPI',
+    value: `/kpi`,
+  },
+  {
+    title: 'KPI - бонусы',
+    value: `/kpi/bonus`,
+  },
+  {
+    title: 'KPI - квартальная',
+    value: `/kpi/premium`,
+  },
+  {
+    title: 'KPI - статистика',
+    value: `/kpi/statistics`,
+  },
+  {
+    title: 'KPI - показатели',
+    value: `/kpi/indicators`,
+  },
+  {
+    title: 'FAQ',
+    value: `/timetracking/info`,
+  },
+  {
+    title: 'Штрафы',
+    value: `/timetracking/fines`,
+  },
+  {
+    title: 'Настройки - сотрудники',
+    value: `/timetracking/settings`,
+  },
+  {
+    title: 'Настройки - создание сотрудника',
+    value: `/timetracking/create-person`,
+  },
+  {
+    title: 'Настройки - редактирование сотрудника',
+    value: `/timetracking/edit-person`,
+  },
+  {
+    title: 'Настройки - компания - должности',
+    value: `/timetracking/settings${divider}pos`,
+  },
+  {
+    title: 'Настройки - компания - отсделы',
+    value: `/timetracking/settings${divider}group`,
+  },
+  {
+    title: 'Настройки - компания - смены',
+    value: `/timetracking/settings${divider}shift`,
+  },
+  {
+    title: 'Настройки - компания - налоги',
+    value: `/timetracking/settings${divider}tax`,
+  },
+  {
+    title: 'Настройки - штрафы',
+    value: `/timetracking/settings${divider}fine`,
+  },
+  {
+    title: 'Настройки - уведомления',
+    value: `/timetracking/settings${divider}noti`,
+  },
+  {
+    title: 'Настройки - доступы',
+    value: `/timetracking/settings${divider}rules`,
+  },
+  {
+    title: 'Настройки - интеграции',
+    value: `/timetracking/settings${divider}api`,
+  },
+  {
+    title: 'Настройки - награды',
+    value: `/timetracking/settings${divider}awards`,
+  },
+]
+
+const mceKey = process.env.NODE_ENV === 'production' ? 'mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd' : 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt'
+const mceInit: Settings = {
+  images_upload_url: '/upload/images/',
+  automatic_uploads: true,
+  height: window.innerHeight - 320,
+  // setup(editor){
+  //   editor.on('init change', function () {
+  //     editor.uploadImages();
+  //   });
+  // },
+  images_upload_handler: onUploadImage,
+  //paste_data_images: false,
+  resize: true,
+  autosave_ask_before_unload: true,
+  // powerpaste_allow_local_images: true,
+  browser_spellcheck: true,
+  // contextmenu: true,
+  spellchecker_whitelist: ['Ephox', 'Moxiecode'],
+  language: 'ru',
+  convert_urls: false,
+  relative_urls: false,
+  language_url: '/static/langs/ru.js',
+  fontsize_formats: '8pt 10pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 36pt',
+  // lineheight_formats: '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 36pt',
+  plugins: [
+    'advlist',
+    'anchor',
+    'autolink',
+    'codesample',
+    'colorpicker',
+    'fullscreen',
+    'help',
+    'image',
+    'imagetools',
+    'lists',
+    'link',
+    'media',
+    'noneditable',
+    'preview',
+    'searchreplace',
+    'table',
+    'template',
+    'textcolor',
+    'visualblocks',
+    'wordcount',
+  ],
+  menubar: false, //'file edit view insert format tools table help',
+  toolbar_mode: 'sliding',
+  toolbar: [
+    'styleselect | bold italic underline strikethrough | ',
+    'table | fontselect fontsizeselect formatselect | ',
+    'alignleft aligncenter alignright alignjustify | ',
+    'outdent indent |  numlist bullist | forecolor backcolor removeformat | preview |  media  link | undo redo',
+  ].join(''),
+  // toolbar_sticky: true,
+  content_style:
+    '.lineheight20px { line-height: 20px; }' +
+    '.lineheight22px { line-height: 22px; }' +
+    '.lineheight24px { line-height: 24px; }' +
+    '.lineheight26px { line-height: 26px; }' +
+    '.lineheight28px { line-height: 28px; }' +
+    '.lineheight30px { line-height: 30px; }' +
+    '.lineheight32px { line-height: 32px; }' +
+    '.lineheight34px { line-height: 34px; }' +
+    '.lineheight36px { line-height: 36px; }' +
+    '.lineheight38px { line-height: 38px; }' +
+    '.lineheight40px { line-height: 40px; }' +
+    'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
+    '.tablerow1 { background-color: #D3D3D3; }',
+  formats: {
+    lineheight20px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight20px',
+    },
+    lineheight22px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight22px',
+    },
+    lineheight24px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight24px',
+    },
+    lineheight26px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight26px',
+    },
+    lineheight28px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight20px',
+    },
+    lineheight30px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight30px',
+    },
+    lineheight32px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight32px',
+    },
+    lineheight34px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight34px',
+    },
+    lineheight36px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight36px',
+    },
+    lineheight38px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight38px',
+    },
+    lineheight40px: {
+      selector:
+        'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      classes: 'lineheight40px',
+    },
+  },
+  style_formats: [
+    { title: 'lineheight20px', format: 'lineheight20px' },
+    { title: 'lineheight22px', format: 'lineheight22px' },
+    { title: 'lineheight24px', format: 'lineheight24px' },
+    { title: 'lineheight26px', format: 'lineheight26px' },
+    { title: 'lineheight28px', format: 'lineheight28px' },
+    { title: 'lineheight30px', format: 'lineheight30px' },
+    { title: 'lineheight32px', format: 'lineheight32px' },
+    { title: 'lineheight34px', format: 'lineheight34px' },
+    { title: 'lineheight36px', format: 'lineheight36px' },
+    { title: 'lineheight38px', format: 'lineheight38px' },
+    { title: 'lineheight40px', format: 'lineheight40px' },
+  ],
+  content_css: [
+    '/static/css/mycontent.css',
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+  ],
+
+  // media
+  media_alt_source: false,
+  media_dimensions: false,
+  media_poster: false,
+  iframe_template_callback({title, source, width, height}: {title: string, source: string, width: string, height: string}){
+    return `<iframe title="${title}" src="${source}" allowfullscreen="allowfullscreen" style="aspect-ratio: ${width}/${height}; width: 100%;"></iframe>`
+  },
+  // media
+}
+
+function onUploadImage(){}
+</script>
+
 <template>
-  <div v-if="questions.length">
-    <div v-if="faqEdit && activeQuestion">
-      <v-text-field class="faq-content-input" v-model="activeQuestion.name"/>
+  <div
+    v-if="activeQuestion"
+    class="faq-content"
+  >
+    <div v-if="faqEdit">
+      <VRow>
+        <VCol cols="9">
+          <VTextField
+            v-model="activeQuestion.title"
+          >
+            <template v-slot:append-inner>
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-icon v-bind="props" icon="mdi-help-circle-outline"/>
+                </template>
+                Название пункта меню в попапе FAQ
+              </v-tooltip>
+            </template>
+          </VTextField>
+        </VCol>
+        <VCol cols="3">
+          <VSelect
+            v-model="activeQuestion.page"
+            :items="pageVariants"
+          >
+            <template v-slot:append>
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-icon v-bind="props" icon="mdi-help-circle-outline"/>
+                </template>
+                На указанной странице автоматически выберется этот пункт
+              </v-tooltip>
+            </template>
+          </VSelect>
+        </VCol>
+        <VCol cols="6"></VCol>
+      </VRow>
     </div>
-    <div v-if="!faqEdit && activeQuestion">
-      <h4 class="faq-content-title">{{activeQuestion.name}}</h4>
-    </div>
-    <div v-if="faqEdit && editorContent">
+    <h4
+      v-else
+      class="faq-content-title"
+    >{{activeQuestion.title}}</h4>
+
+    <div
+      v-if="faqEdit"
+      class="faq-content-editor"
+    >
       <Editor
-        @onKeyUp="onChange"
-        @onChange="onChange"
-        v-model="editorContent.content"
-        api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
-        :init="{
-							images_upload_url: '/upload/images/',
-							automatic_uploads: true,
-							height: editorHeight,
-							setup: function (editor) {
-								editor.on('init change', function () {
-									editor.uploadImages();
-								});
-							},
-							images_upload_handler: submit_tinymce,
-							//paste_data_images: false,
-							resize: true,
-							autosave_ask_before_unload: true,
-							powerpaste_allow_local_images: true,
-							browser_spellcheck: true,
-							contextmenu: true,
-							spellchecker_whitelist: ['Ephox', 'Moxiecode'],
-							language: 'ru',
-							convert_urls: false,
-							relative_urls: false,
-							language_url: '/static/langs/ru.js',
-							content_css: '/static/css/mycontent.css',
-							fontsize_formats:
-								'8pt 10pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 36pt',
-							lineheight_formats:
-								'8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 36pt',
-							plugins: [
-								' advlist anchor autolink codesample colorpicker fullscreen help image imagetools ',
-								' lists link media noneditable  preview',
-								' searchreplace table template textcolor  visualblocks wordcount ',
-							],
-							menubar: false, //'file edit view insert format tools table help',
-							toolbar:
-								'styleselect  | bold italic underline strikethrough | table | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | fullscreen  preview |  media  link | undo redo',
-							toolbar_sticky: true,
-							content_style:
-								'.lineheight20px { line-height: 20px; }' +
-								'.lineheight22px { line-height: 22px; }' +
-								'.lineheight24px { line-height: 24px; }' +
-								'.lineheight26px { line-height: 26px; }' +
-								'.lineheight28px { line-height: 28px; }' +
-								'.lineheight30px { line-height: 30px; }' +
-								'.lineheight32px { line-height: 32px; }' +
-								'.lineheight34px { line-height: 34px; }' +
-								'.lineheight36px { line-height: 36px; }' +
-								'.lineheight38px { line-height: 38px; }' +
-								'.lineheight40px { line-height: 40px; }' +
-								'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
-								'.tablerow1 { background-color: #D3D3D3; }',
-							formats: {
-								lineheight20px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight20px',
-								},
-								lineheight22px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight22px',
-								},
-								lineheight24px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight24px',
-								},
-								lineheight26px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight26px',
-								},
-								lineheight28px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight20px',
-								},
-								lineheight30px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight30px',
-								},
-								lineheight32px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight32px',
-								},
-								lineheight34px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight34px',
-								},
-								lineheight36px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight36px',
-								},
-								lineheight38px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight38px',
-								},
-								lineheight40px: {
-									selector:
-										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-									classes: 'lineheight40px',
-								},
-							},
-							style_formats: [
-								{ title: 'lineheight20px', format: 'lineheight20px' },
-								{ title: 'lineheight22px', format: 'lineheight22px' },
-								{ title: 'lineheight24px', format: 'lineheight24px' },
-								{ title: 'lineheight26px', format: 'lineheight26px' },
-								{ title: 'lineheight28px', format: 'lineheight28px' },
-								{ title: 'lineheight30px', format: 'lineheight30px' },
-								{ title: 'lineheight32px', format: 'lineheight32px' },
-								{ title: 'lineheight34px', format: 'lineheight34px' },
-								{ title: 'lineheight36px', format: 'lineheight36px' },
-								{ title: 'lineheight38px', format: 'lineheight38px' },
-								{ title: 'lineheight40px', format: 'lineheight40px' },
-							],
-							content_css: [
-								'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-							],
-						}"
+        v-model="activeQuestion.content"
+        :api-key="mceKey"
+        :init="mceInit"
       />
     </div>
-    <div v-if="!faqEdit && editorContent">
-      <div v-html="editorContent.content"></div>
-    </div>
+    <div
+      v-else
+      class="faq-content-body scrollable"
+      v-html="activeQuestion.content"
+    />
   </div>
 </template>
 
-<script>
-  import Editor from '@tinymce/tinymce-vue';
-
-  export default {
-    name: 'faq-content',
-    emits: ['onChangeContent'],
-    components: {
-      Editor
-    },
-    props: {
-      questions:{
-        type: Array,
-        default: () => []
-      },
-      activeQuestion: {
-        type: Object,
-        default: null
-      },
-      faqEdit: {
-        type: Boolean,
-        default: false
-      },
-      faqContent: {
-        type: Object,
-        default: null
-      }
-    },
-    data() {
-      return {
-        editorContent: null,
-        editorHeight: window.innerHeight - 320,
-      };
-    },
-    watch: {
-      faqContent(val) {
-        this.editorContent = val;
-      }
-    },
-    methods: {
-      onReady(editor) {
-        console.log(editor);
-      },
-      onChange(data) {
-        console.log(data);
-        // const newData = {
-        //   qId: this.editorContent.qId,
-        //   content: data
-        // };
-        // this.$emit('onChangeContent', newData);
-      },
-      onChange2(data){
-        console.log(data);
-      }
-    }
+<style lang="scss">
+.faq-content{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  > .tox-tinymce{
+    flex: 1;
   }
-</script>
+}
+.faq-content-title{
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.faq-content-input{
+  margin-bottom: 20px;
+}
+.faq-content-editor{
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+}
+.faq-content-body{
+  flex: 1;
+  max-width: 960px;
+  margin: 0 auto;
+}
+</style>

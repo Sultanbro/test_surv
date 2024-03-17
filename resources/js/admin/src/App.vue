@@ -12,4 +12,7 @@
 .aic{
   align-items: center;
 }
+.scrollable{
+  overflow: auto;
+}
 </style>
