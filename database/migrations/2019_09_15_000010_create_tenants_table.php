@@ -17,7 +17,7 @@ class CreateTenantsTable extends Migration
      */
     public function up(): void
     {
-        if (!table_exists('tenants')) {
+        if (!table_exists('tenants', 'mysql')) {
             Schema::connection('mysql')->create('tenants', function (Blueprint $table) {
                 $table->string('id')->primary();
                 $table->integer('global_id');
