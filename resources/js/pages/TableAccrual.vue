@@ -65,7 +65,15 @@
 						<i class="fa fa-redo-alt" />
 					</a>
 				</div>
-				<div class="col-2" />
+				<div class="col-3 d-flex aic justify-end">
+					<a
+						href="https://www.youtube.com/watch?v=eQFva-h9ga0"
+						class="TableAccrual-video"
+						target="_blank"
+					>
+						Смотреть видео
+					</a>
+				</div>
 			</div>
 
 			<!-- filters -->
@@ -2848,6 +2856,13 @@ hr {
 	.SalaryCell-2,
 	.SalaryCell-weekend-2{
 		color: #62788b;
+	}
+	&-video{
+		color: red;
+		&:hover{
+			color: red;
+			text-decoration: underline;
+		}
 	}
 }
 </style>
