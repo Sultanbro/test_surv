@@ -885,6 +885,14 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
+
+    Route::group(['prefix' => 'faq', 'as' => 'faq.'], function () {
+        Route::get('/', [Root\FaqController::class, 'getAll']);
+        Route::post('/', [Root\FaqController::class, 'store']);
+        Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
+        Route::put('/update/{id}', [Root\FaqController::class, 'update']);
+        Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);
+    });
 });
 
 Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
