@@ -82,7 +82,7 @@
         type: Boolean,
         default: false
       },
-      activeQuestion: {
+      active: {
         type: Object,
         default: null
       },
@@ -99,7 +99,7 @@
     },
     computed: {
       activeQuest(){
-        return this.activeQuestion ? this.activeQuestion.id : null
+        return this.active ? this.active.id : null
       },
     },
     methods: {
@@ -126,7 +126,7 @@
         this.dialog = false;
       },
       isOpen(item){
-        return item.id === this.activeQuestion?.id || item.children.some(this.isOpen)
+        return item.id === this.active?.id || item.children.some(this.isOpen)
       },
     }
   }

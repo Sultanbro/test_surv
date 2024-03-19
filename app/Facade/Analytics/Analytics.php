@@ -19,6 +19,7 @@ use App\Repositories\ActivityRepository;
 use App\Repositories\Analytics\AnalyticColumnRepository;
 use App\Repositories\Analytics\AnalyticRowRepository;
 use App\Repositories\Analytics\AnalyticStatRepository;
+use App\Salary;
 use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
@@ -124,11 +125,12 @@ final class Analytics
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
-
+        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -206,7 +208,7 @@ final class Analytics
                     }
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
-                        $val = 0;
+                        $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = $val;
@@ -219,7 +221,7 @@ final class Analytics
                         $positions = $group->reportCards->pluck('position_id')->toArray();
                         $divide = $group->reportCards->first()->divide_to ?? 1;
                         $val = Timetracking::totalHours($day, $dto->groupId, $positions);
-                        $val = floor($val / 9 * 10) / $divide;
+                        $val = floor($val) / $divide;
                         $val = max($val, 0);
 
                         $statistic->show_value = $val;
@@ -228,7 +230,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
@@ -425,7 +428,7 @@ final class Analytics
         $users = $group->actualAndFiredEmployees($firstOfMoth, $dateTo)
             ->whereDoesntHave('activities')
             ->with('statistics', function (HasMany $query) use ($activity, $firstOfMoth, $dateFrom) {
-                $query->selectRaw('DAY(date) as day, user_id, FLOOR(value) as value, date')
+                $query->selectRaw('DAY(date) as day, user_id, value as value, date')
                     ->where('activity_id', $activity->id)
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
@@ -558,19 +561,10 @@ final class Analytics
     {
         $val = 0;
 
-//        $column = $this->getGroupPlanColumns($group_id, $date)->first() ?? [];
-//        $row = $this->getGroupImplRows($group_id, $date)->first() ?? [];
-
-        $stat = AnalyticStat::query()
-            ->where('group_id', $group_id)
-            ->where('date', $date)
-            ->where('show_value', 'Impl')
-            ->first();
-
+        /** @var AnalyticStat $stat */
+        $stat = $this->implStat($group_id, $date);
         if ($stat) {
             $val = AnalyticStat::calcFormula($stat, $date, 2);
-            $stat->show_value = $val;
-            $stat->save();
         }
 
         return $val;
@@ -621,10 +615,12 @@ final class Analytics
         $implStat = null;
 
         $column = AnalyticColumn::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_PLAN)->first() ?? null;
 
         $row = AnalyticRow::query()
+            ->where('group_id', $groupId)
             ->where('date', $date)
             ->where('name', self::VALUE_IMPL)->first() ?? null;
 

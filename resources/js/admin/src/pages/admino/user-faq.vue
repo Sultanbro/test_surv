@@ -1,3 +1,308 @@
+<script setup lang="ts">
+import FaqList from '@/views/pages/faq/faq-list.vue';
+import FaqContent from '@/views/pages/faq/faq-content.vue';
+import axios from 'axios';
+
+type Question = {
+  id: number
+  parent_id: number
+  order: number
+  title: string
+  page: string
+  body: string
+  isCollapsed: boolean
+  children: Array<Question>
+}
+
+let fakeId = 0
+const fakeItems: Array<Question> = [
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Профиль',
+    body: '<p>В профиле отображаются все ваши личные данные</p>',
+    isCollapsed: false,
+    page: '/',
+    children: [
+      {
+        id: ++fakeId,
+        parent_id: 0,
+        order: 0,
+        title: 'Баланс оклада',
+        body: '<p>В балансе оклада вы можете просмотреть детализацию вашего дохода за все время</p>',
+        isCollapsed: false,
+        page: '/${divider}balance',
+        children: [],
+      },
+    ]
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Новости',
+    body: '<p>Здесь вы можете просматривать новости и события вашей компании</p>',
+    isCollapsed: false,
+    page: '/news',
+    children: [
+      {
+        id: ++fakeId,
+        parent_id: 0,
+        order: 0,
+        title: 'Дни рождения',
+        body: '<p>В правом окне страницы новостей отображаются дни рождения всех сотрудников</p>',
+        isCollapsed: false,
+        page: '/news',
+        children: [
+          {
+            id: ++fakeId,
+            parent_id: 0,
+            order: 0,
+            title: 'Подарки',
+            body: '<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam officiis temporibus debitis libero fuga placeat quae at praesentium incidunt excepturi. At asperiores officia quasi fugit dignissimos minima non enim nisi?</p>' + (new Array(30)).join('<br>1'),
+            isCollapsed: false,
+            page: '/news',
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+  {
+    id: ++fakeId,
+    parent_id: 0,
+    order: 0,
+    title: 'Карта',
+    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
+    isCollapsed: false,
+    page: '/maps',
+    children: [],
+  },
+]
+
+const faqEdit = ref(false)
+const active = ref<null | Question>(null)
+const questions = ref(fakeItems)
+const newId = ref(0)
+
+onMounted(() => {
+  fetchFAQ()
+})
+
+async function fetchFAQ(){
+  try {
+    const {data} = await axios('/faq')
+    console.log(data)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function saveFAQ(){}
+async function deleteFAQ(){}
+function choiceQuestion(item: Question) {
+  active.value = item
+}
+function onChangeContent(data: any) {
+  console.log(data);
+}
+function addElement(parent_id: number, order: number) {
+  const id = --newId.value
+
+  questions.value.push({
+    id,
+    parent_id,
+    order,
+    title: 'Новый вопрос',
+    isCollapsed: false,
+    page: '',
+    body: '<h1>Заполните содержимое вопроса</h1>',
+    children: [],
+  })
+}
+</script>
+
 <template>
   <VCard class="faq-card">
     <VCardTitle class="faq-card-header">
@@ -20,7 +325,7 @@
           <div class="scrollable flex-grow-1">
             <FaqList
               v-if="questions.length"
-              :active-question="activeQuestion"
+              :active="active"
               :questions="questions"
               :faq-edit="faqEdit"
               :level="1"
@@ -44,7 +349,7 @@
         </VCol>
         <VCol cols="9" clasa="faq-card-content">
           <FaqContent
-            :active-question="activeQuestion"
+            :active="active"
             :faq-edit="faqEdit"
             @change="onChangeContent"
           />
@@ -53,244 +358,6 @@
     </VContainer>
   </VCard>
 </template>
-<script>
-  import FaqList from '@/views/pages/faq/faq-list.vue';
-  import FaqContent from '@/views/pages/faq/faq-content.vue';
-
-  let fakeId = 0
-  const fakeItems = [
-    {
-      id: ++fakeId,
-      title: 'Профиль',
-      content: '<p>В профиле отображаются все ваши личные данные</p>',
-      isCollapsed: false,
-      page: '/',
-      children: [
-        {
-          id: ++fakeId,
-          title: 'Баланс оклада',
-          content: '<p>В балансе оклада вы можете просмотреть детализацию вашего дохода за все время</p>',
-          isCollapsed: false,
-          page: '/${divider}balance',
-          children: [],
-        },
-      ]
-    },
-    {
-      id: ++fakeId,
-      title: 'Новости',
-      content: '<p>Здесь вы можете просматривать новости и события вашей компании</p>',
-      isCollapsed: false,
-      page: '/news',
-      children: [
-        {
-          id: ++fakeId,
-          title: 'Дни рождения',
-          content: '<p>В правом окне страницы новостей отображаются дни рождения всех сотрудников</p>',
-          isCollapsed: false,
-          page: '/news',
-          children: [
-            {
-              id: ++fakeId,
-              title: 'Подарки',
-              content: '<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam officiis temporibus debitis libero fuga placeat quae at praesentium incidunt excepturi. At asperiores officia quasi fugit dignissimos minima non enim nisi?</p>' + (new Array(30)).join('<br>1'),
-              isCollapsed: false,
-              page: '/news',
-              children: [],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-    {
-      id: ++fakeId,
-      title: 'Карта',
-      content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-      isCollapsed: false,
-      page: '/maps',
-      children: [],
-    },
-  ]
-
-  export default {
-    components: {
-      FaqList,
-      FaqContent,
-    },
-    data() {
-      return {
-        faqEdit: false,
-        activeQuestion: null,
-        questions: fakeItems,
-        newId: 0,
-      }
-    },
-    methods: {
-      choiceQuestion(item) {
-        this.activeQuestion = item;
-      },
-      onChangeContent(data) {
-        console.log(data);
-      },
-      addElement() {
-        const id = --this.newId
-
-        this.questions.push({
-          id,
-          title: 'Новый вопрос',
-          isCollapsed: false,
-          page: '',
-          content: '<h1>Заполните содержимое вопроса</h1>',
-          children: [],
-        })
-      },
-    }
-  }
-</script>
 
 
 <style lang="scss">

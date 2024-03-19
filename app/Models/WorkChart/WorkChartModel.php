@@ -130,6 +130,7 @@ class WorkChartModel extends Model
             'workStartTime' => $this->start_time,
             'workEndTime'   => $this->end_time,
             'workRestTime'   => $this->rest_time,
+            'workChartsType' => $this->work_charts_type,
         ];
     }
 
@@ -188,6 +189,7 @@ class WorkChartModel extends Model
             'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
             'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
             'workRestTime'   => 0,
+            'workChartsType' => Timetracking::DEFAULT_WORK_CHARTS_TYPE,
         ];
     }
 

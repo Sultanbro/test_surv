@@ -26,6 +26,7 @@ use App\TimetrackingHistory;
 use App\User;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -515,7 +516,7 @@ class AnalyticsController extends Controller
                 'value' => $dto->value,
             ]);
         }
-        
+
         UserStatUpdatedEvent::dispatch($dto);
 
         if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
@@ -658,27 +659,24 @@ class AnalyticsController extends Controller
      */
     public function addSalary(Request $request)
     {
-        $date = $request->date;
+        $date = Carbon::parse($request->get('date'));
         $type = 'salary_day'; // no comment please. Just salary is not free
 
-        $formula_row = AnalyticRow::find($request->row_id);
+        /** @var AnalyticRow $formula_row */
+        $formula_row = AnalyticRow::query()->find($request->get('row_id'));
 
-        $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+        /** @var Collection<AnalyticRow> $columns */
         $columns = AnalyticColumn::query()
             ->where('group_id', $formula_row->group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)
+            ->where('date', $date->format("Y-m-d"))
+            ->whereIn('name', $this->DaysInMonth($date))
             ->get();
 
         foreach ($columns as $column) {
-            $stat = AnalyticStat::query()
-                ->where('row_id', $formula_row->id)
-                ->where('column_id', $column->id)
-                ->first();
 
             $fields = [
                 'group_id' => $formula_row->group_id,
-                'date' => $date,
+                'date' => $date->format("Y-m-d"),
                 'row_id' => $formula_row->id,
                 'column_id' => $column->id,
                 'value' => 0,
@@ -688,11 +686,7 @@ class AnalyticsController extends Controller
                 'editable' => 1,
             ];
 
-            if ($stat) {
-                $stat->update($fields);
-            } else {
-                AnalyticStat::create($fields);
-            }
+            AnalyticStat::query()->updateOrCreate($fields);
         }
     }
 
@@ -897,6 +891,16 @@ class AnalyticsController extends Controller
     {
         $removedUsers = AnalyticsActivitiesSetting::where('group_id', $id)->first();
         return response()->success($removedUsers);
+    }
+
+    private function DaysInMonth(Carbon $date): array
+    {
+        $days = [];
+        $count = $date->daysInMonth;
+        for ($i = 1; $i <= $count; $i++) {
+            $days[] = $i;
+        }
+        return $days;
     }
 }
 

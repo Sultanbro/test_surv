@@ -11,7 +11,7 @@ final class ProfileGroupUsersQuery
     private Builder $builder;
 
     function __construct() {
-        $this->builder = \DB::table('users');
+        $this->builder = DB::table('users');
     }
 
     public function whereIsTrainee(bool $isTrainee): self
@@ -48,12 +48,15 @@ final class ProfileGroupUsersQuery
     /**
      * @param int|array<int> $groupId
      * @param ?Carbon $date
+     * @return ProfileGroupUsersQuery
      */
     public function groupeFilter(
         int|array $groupId,
         ?Carbon $date,
     ): self
     {
+        $date = $date->addMonth();
+
         $this->builder
             ->join('group_user', function (JoinClause $join) use ($groupId, $date) {
                 if (is_array($groupId)) {
@@ -63,10 +66,10 @@ final class ProfileGroupUsersQuery
                 }
                 $join->on('group_user.user_id', '=', 'users.id');
                 if ($date) {
-                    $join->whereDate('group_user.from', '>=', $date);
+                    $join->whereDate('group_user.from', '<=', $date->endOfMonth()->format('Y-m-d'));
                     $join->where(function ($query) use ($date) {
                         $query->whereNull('group_user.to');
-                        $query->orWhereDate('group_user.to', '<=', $date);
+                        $query->orWhereDate('group_user.to', '>=', $date->endOfMonth()->format('Y-m-d'));
                     });
                 }
             });
@@ -77,6 +80,7 @@ final class ProfileGroupUsersQuery
     /**
      * @param int $deleteType 0 - any 1 - normal 2 - deleted
      * @param ?Carbon $date
+     * @return ProfileGroupUsersQuery
      */
     public function deletedByMonthFilter(
         int $deleteType,
@@ -85,7 +89,8 @@ final class ProfileGroupUsersQuery
     {
         if ($deleteType == 1) {
             $this->builder->whereNull('users.deleted_at');
-        } else {
+        }
+        else {
             if ($date) {
                 $this->builder->where(function (Builder $query) use ($date, $deleteType) {
                     $query->whereDate(
@@ -98,7 +103,8 @@ final class ProfileGroupUsersQuery
                         $query->orWhereNull('users.deleted_at');
                     }
                 });
-            } else if ($deleteType == 2) {
+            }
+            else if ($deleteType == 2) {
                 $this->builder->whereNotNull('users.deleted_at');
             }
         }

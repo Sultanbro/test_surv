@@ -778,7 +778,7 @@ export default {
 			})).filter(pos => this.groupPositions.find(groupPos => pos.id === groupPos.id))
 
 			try {
-				this.hoursDivider = this.reportCards?.report_cards[0].divide_to
+				this.hoursDivider = this.reportCards?.report_cards[0]?.divide_to
 			}
 			catch (error) {
 				console.error(error)

@@ -4,14 +4,17 @@ import type {Settings} from '@types/tinymce'
 
 type Question = {
   id: number
+  parent_id: number
+  order: number
   title: string
-  content: string
+  body: string
   page: string
+  isCollapsed: boolean
   children: Array<Question>
 }
 
 const props = defineProps<{
-  activeQuestion: Question
+  active: Question
   faqEdit: boolean
 }>()
 const emit = defineEmits<{
@@ -397,14 +400,14 @@ function onUploadImage(){}
 
 <template>
   <div
-    v-if="activeQuestion"
+    v-if="active"
     class="faq-content"
   >
     <div v-if="faqEdit">
       <VRow>
         <VCol cols="9">
           <VTextField
-            v-model="activeQuestion.title"
+            v-model="active.title"
           >
             <template v-slot:append-inner>
               <v-tooltip location="bottom">
@@ -418,7 +421,7 @@ function onUploadImage(){}
         </VCol>
         <VCol cols="3">
           <VSelect
-            v-model="activeQuestion.page"
+            v-model="active.page"
             :items="pageVariants"
           >
             <template v-slot:append>
@@ -437,14 +440,14 @@ function onUploadImage(){}
     <h4
       v-else
       class="faq-content-title"
-    >{{activeQuestion.title}}</h4>
+    >{{active.title}}</h4>
 
     <div
       v-if="faqEdit"
       class="faq-content-editor"
     >
       <Editor
-        v-model="activeQuestion.content"
+        v-model="active.body"
         :api-key="mceKey"
         :init="mceInit"
       />
@@ -452,7 +455,7 @@ function onUploadImage(){}
     <div
       v-else
       class="faq-content-body scrollable"
-      v-html="activeQuestion.content"
+      v-html="active.body"
     />
   </div>
 </template>

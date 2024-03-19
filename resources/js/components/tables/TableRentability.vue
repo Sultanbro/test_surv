@@ -111,13 +111,22 @@
 								class="text-center"
 								:class="{'p-0': index != 0}"
 							>
-								<input
+								<div
 									v-if="index != 0"
-									v-model="item['l' + i]"
-									class="input"
-									:class="{'edited':item['ed' + i]}"
-									@change="update(i, index)"
+									class="d-flex gap-1"
 								>
+									<input
+										v-model="item['l' + i]"
+										class="input"
+										:class="{'edited':item['ed' + i]}"
+										@change="update(i, index)"
+									>
+									<input
+										v-model="checkData[item.group_id + '-' + i]"
+										type="checkbox"
+										@change="onCheck"
+									>
+								</div>
 								<div v-else>
 									{{ separateNumber(item['l' + i]) }}
 								</div>
@@ -132,10 +141,8 @@
 								:key="i + 'b'"
 								class="text-center br1"
 								:class="{
-									'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
-									'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
-									'c-yellow': item['rc' + i] >= 50 && item['rc' + i] < 75,
-									'c-green text-white': item['rc' + i] >= 75,
+									'c-red text-white': item['rc' + i] < 41 && item['rc' + i] != '',
+									'c-green text-white': item['rc' + i] >= 41,
 								}"
 							>
 								{{ separateNumber(item['r' + i]) }}
@@ -195,6 +202,7 @@ export default {
 			skey: 1,
 			sorts: {},
 			speedometers: [],
+			checkData: {},
 		};
 	},
 	computed: {
@@ -263,6 +271,7 @@ export default {
 					})
 					return row
 				})
+				this.checkData = JSON.parse(localStorage.getItem('rent-check-' + this.year) || {})
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
@@ -519,7 +528,11 @@ export default {
 				]
 			}
 			return []
-		}
+		},
+
+		onCheck(){
+			localStorage.setItem('rent-check-' + this.year, JSON.stringify(this.checkData))
+		},
 	},
 };
 </script>

@@ -6,6 +6,7 @@ use App\Facade\Analytics\Analytics;
 use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
+use App\ProfileGroup;
 use App\Timetracking;
 use Carbon\Carbon;
 use DivisionByZeroError;
@@ -605,15 +606,17 @@ class AnalyticStat extends Model
         return round($res, $round);
     }
 
-    public static function getRentability($group_id, $date): float|int
+    public static function getRentability(ProfileGroup $group, $date): float|int
     {
-        $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-        $column = Column::where('group_id', $group_id)
+        $date = Carbon::parse($date)
+            ->day(1)
+            ->format('Y-m-d');
+        $column = Column::where('group_id', $group->id)
             ->where('date', $date)
             ->where('name', 'plan')
             ->first();
 
-        $row = Row::where('group_id', $group_id)
+        $row = Row::where('group_id', $group->id)
             ->where('date', $date)
             ->where('name', 'Impl')
             ->first();

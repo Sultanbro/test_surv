@@ -168,14 +168,13 @@ const ActivityRecordsTable = {
 					avg += result[day]
 					++count
 				}
-
-				if(count > 0){
-					const weekAvg = Math.round((avg / count) * 100) / 100
-					result['avg' + (weekIndex + 1)] = weekAvg
-					result.total += weekAvg
-					++weeks
-				}
 			})
+			if(count > 0){
+				const weekAvg = Math.round((avg / count) * 100) / 100
+				result['avg' + (weekIndex + 1)] = weekAvg
+				result.total += weekAvg
+				++weeks
+			}
 		})
 
 		if(weeks > 0) {

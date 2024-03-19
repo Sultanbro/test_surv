@@ -105,7 +105,6 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'newGetPersons']);
     Route::get('/timetracking/get-person', [User\EmployeeController::class, 'getPerson']);
-    Route::any('/timetracking/get-persons-testing', [User\EmployeeController::class, 'newGetPersons']);
 //    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
@@ -886,6 +885,14 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
+
+    Route::group(['prefix' => 'faq', 'as' => 'faq.'], function () {
+        Route::get('/', [Root\FaqController::class, 'getAll']);
+        Route::post('/', [Root\FaqController::class, 'store']);
+        Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
+        Route::put('/update/{id}', [Root\FaqController::class, 'update']);
+        Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);
+    });
 });
 
 Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
