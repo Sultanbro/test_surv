@@ -123,7 +123,7 @@ async function saveOrder(parentId: number){
     }))
   }
   try {
-    // const {data} = axios.post('', request)
+    await axios.post('/faq/set-order', request)
   }
   catch (error) {
     console.error(error)
