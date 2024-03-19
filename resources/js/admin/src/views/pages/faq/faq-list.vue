@@ -7,9 +7,15 @@
     :list="questions"
     :group="{ name: 'g1' }"
     item-key="name"
+    :data-id="parentId || 0"
+    @end="$emit('order', $event)"
   >
     <template #item="{ element }">
-      <li class="faq-item" :class="{'edit': faqEdit}">
+      <li
+        class="faq-item"
+        :class="{'edit': faqEdit}"
+        :data-id="element.id"
+      >
         <div class="faq-item-content" :class="{'edit': faqEdit}">
           <v-icon
             v-if="faqEdit"
@@ -42,7 +48,10 @@
           :questions="element.children"
           :faqEdit="faqEdit"
           :level="level + 1"
-          @choiceQuestion="choiceQuestion"
+          :parentId="element.id"
+          @select="onSelect"
+          @delete="$emit('delete', $event)"
+          @order="$emit('order', $event)"
         />
       </li>
     </template>
@@ -69,7 +78,7 @@
 
   export default {
     name: 'FaqList',
-    emits: ['choiceQuestion'],
+    emits: ['select'],
     components: {
       draggable
     },
@@ -89,12 +98,16 @@
       level: {
         type: Number,
         default: 0
+      },
+      parentId: {
+        type: Number,
+        default: 0
       }
     },
     data() {
       return {
         dialog: false,
-        deleteElementItem: null
+        toDelete: null
       }
     },
     computed: {
@@ -104,27 +117,24 @@
     },
     methods: {
       toggleCollapse(item) {
-        if (item.child) {
+        if (item.children?.length) {
           item.isCollapsed = !item.isCollapsed;
         }
-        this.choiceQuestion(item);
+        this.onSelect(item);
       },
-      choiceQuestion(item) {
-        this.$emit('choiceQuestion', item)
+      onSelect(item) {
+        this.$emit('select', item)
       },
 
       openDialog(element) {
-        this.deleteElementItem = element;
-        this.dialog = true;
+        this.toDelete = element
+        this.dialog = true
       },
       deleteElement() {
-        const index = this.questions.indexOf(this.deleteElementItem);
-        if (index !== -1) {
-          this.questions.splice(index, 1);
-        }
-        this.deleteElementItem = null;
-        this.dialog = false;
+        this.$emit('delete', this.toDelete)
+        this.dialog = false
       },
+
       isOpen(item){
         return item.id === this.active?.id || item.children.some(this.isOpen)
       },

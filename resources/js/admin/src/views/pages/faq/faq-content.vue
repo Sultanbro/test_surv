@@ -4,10 +4,10 @@ import type {Settings} from '@types/tinymce'
 
 type Question = {
   id: number
-  parent_id: number
+  parent_id: number | null
   order: number
   title: string
-  body: string
+  body?: string
   page: string
   isCollapsed: boolean
   children: Array<Question>
@@ -23,6 +23,10 @@ const emit = defineEmits<{
 
 const divider = '___'
 const pageVariants = [
+  {
+    title: 'Выберите страницу',
+    value: divider,
+  },
   {
     title: 'Профиль',
     value: '/',
@@ -245,7 +249,7 @@ const mceKey = process.env.NODE_ENV === 'production' ? 'mve9w0n1tjerlwenki27p4wj
 const mceInit: Settings = {
   images_upload_url: '/upload/images/',
   automatic_uploads: true,
-  height: window.innerHeight - 320,
+  // height: window.innerHeight - 320,
   // setup(editor){
   //   editor.on('init change', function () {
   //     editor.uploadImages();
@@ -465,9 +469,6 @@ function onUploadImage(){}
   display: flex;
   flex-flow: column;
   height: 100%;
-  > .tox-tinymce{
-    flex: 1;
-  }
 }
 .faq-content-title{
   text-align: center;
@@ -483,6 +484,9 @@ function onUploadImage(){}
   display: flex;
   flex-flow: column;
   flex: 1;
+  .tox-tinymce{
+    height: 100% !important;
+  }
 }
 .faq-content-body{
   flex: 1;

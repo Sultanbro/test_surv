@@ -3,303 +3,142 @@ import FaqList from '@/views/pages/faq/faq-list.vue';
 import FaqContent from '@/views/pages/faq/faq-content.vue';
 import axios from 'axios';
 
+type MoveEvent = {
+  item: HTMLElement,
+  to: HTMLElement,
+}
+
 type Question = {
   id: number
-  parent_id: number
+  parent_id: number | null
   order: number
   title: string
   page: string
-  body: string
+  body?: string
   isCollapsed: boolean
   children: Array<Question>
 }
 
-let fakeId = 0
-const fakeItems: Array<Question> = [
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Профиль',
-    body: '<p>В профиле отображаются все ваши личные данные</p>',
-    isCollapsed: false,
-    page: '/',
-    children: [
-      {
-        id: ++fakeId,
-        parent_id: 0,
-        order: 0,
-        title: 'Баланс оклада',
-        body: '<p>В балансе оклада вы можете просмотреть детализацию вашего дохода за все время</p>',
-        isCollapsed: false,
-        page: '/${divider}balance',
-        children: [],
-      },
-    ]
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Новости',
-    body: '<p>Здесь вы можете просматривать новости и события вашей компании</p>',
-    isCollapsed: false,
-    page: '/news',
-    children: [
-      {
-        id: ++fakeId,
-        parent_id: 0,
-        order: 0,
-        title: 'Дни рождения',
-        body: '<p>В правом окне страницы новостей отображаются дни рождения всех сотрудников</p>',
-        isCollapsed: false,
-        page: '/news',
-        children: [
-          {
-            id: ++fakeId,
-            parent_id: 0,
-            order: 0,
-            title: 'Подарки',
-            body: '<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam officiis temporibus debitis libero fuga placeat quae at praesentium incidunt excepturi. At asperiores officia quasi fugit dignissimos minima non enim nisi?</p>' + (new Array(30)).join('<br>1'),
-            isCollapsed: false,
-            page: '/news',
-            children: [],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-  {
-    id: ++fakeId,
-    parent_id: 0,
-    order: 0,
-    title: 'Карта',
-    body: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>',
-    isCollapsed: false,
-    page: '/maps',
-    children: [],
-  },
-]
-
 const faqEdit = ref(false)
 const active = ref<null | Question>(null)
-const questions = ref(fakeItems)
-const newId = ref(0)
+const questions = ref<Array<Question>>([])
+
+const questionsMap = computed(() => {
+  return treeToMap(questions.value)
+})
 
 onMounted(() => {
   fetchFAQ()
 })
 
+function treeToMap(items: Array<Question>, result: {[key: string]: Question} = {}){
+  return items.reduce((result, item) => {
+    result[`${item.id}`] = item
+    if(item.children?.length) treeToMap(item.children, result)
+    return result
+  }, result)
+}
+
 async function fetchFAQ(){
   try {
-    const {data} = await axios('/faq')
-    console.log(data)
+    const {data} = await axios.get<{data: Array<Question>}>('/faq')
+    questions.value = data.data.map(item => ({...item, isCollapsed: false}))
   }
   catch (error) {
     console.error(error)
   }
 }
-async function saveFAQ(){}
-async function deleteFAQ(){}
-function choiceQuestion(item: Question) {
-  active.value = item
+async function createFAQ(item: Question){
+  try {
+    const {data} = await axios.post('/faq', item)
+    questions.value.push(data.data)
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
-function onChangeContent(data: any) {
-  console.log(data);
-}
-function addElement(parent_id: number, order: number) {
-  const id = --newId.value
+async function updateFAQ(){
+  if(!active.value) return
 
-  questions.value.push({
-    id,
-    parent_id,
+  try {
+      await axios.put(`/faq/update/${active.value.id}`, active.value)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function saveFAQ(){
+  if(!active.value) return
+  return updateFAQ()
+}
+async function deleteFAQ(item: Question){
+  try {
+    await axios.delete(`/faq/delete/${item.id}`)
+    const list = item.parent_id ? questionsMap.value[item.parent_id].children : questions.value
+    if(!list) return
+    const index = list.findIndex(i => i.id === item.id)
+    if(!~index) return
+    list.splice(index, 1)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function onSelect(item: Question) {
+  try {
+    const {data} = await axios.get(`/faq/get/${item.id}`)
+    active.value = {
+      ...data.data,
+      isCollapsed: true,
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+async function addElement(parent_id: number, order: number) {
+
+  await createFAQ({
+    id: 0,
+    parent_id : parent_id || null,
     order,
     title: 'Новый вопрос',
     isCollapsed: false,
-    page: '',
+    page: '___',
     body: '<h1>Заполните содержимое вопроса</h1>',
     children: [],
   })
+
+}
+
+async function saveOrder(parentId: number){
+  const items = parentId ? questionsMap.value[parentId]?.children : questions.value
+  if(!items) return
+  const request = {
+    items: items.map(({id, parent_id}, index) => ({
+      id,
+      parent_id,
+      order: index,
+    }))
+  }
+  try {
+    // const {data} = axios.post('', request)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+function onOrder({item, to}: MoveEvent){
+  const itemId = item.getAttribute('data-id') || ''
+  const toId = to.getAttribute('data-id') || ''
+  const $item = questionsMap.value[itemId]
+  // const $to = questionsMap.value[toId]
+  if(!$item) return
+  const prevParent = $item.parent_id
+  $item.parent_id = +toId || null
+  if(+toId !== prevParent) saveOrder(prevParent || 0)
+  saveOrder(+toId)
 }
 </script>
 
@@ -309,6 +148,15 @@ function addElement(parent_id: number, order: number) {
       <div>Вопросы и ответы</div>
       <VSpacer />
       <div class="faq-card-actions">
+        <VBtn
+          v-if="faqEdit && active"
+          variant="text"
+          color="green-darken-2"
+          size="small"
+          @click="saveFAQ"
+        >
+          Сохранить
+        </VBtn>
         <VBtn
           variant="text"
           icon="mdi-pencil"
@@ -329,7 +177,9 @@ function addElement(parent_id: number, order: number) {
               :questions="questions"
               :faq-edit="faqEdit"
               :level="1"
-              @choiceQuestion="choiceQuestion"
+              @select="onSelect"
+              @order="onOrder"
+              @delete="deleteFAQ"
             />
             <p
               v-else
@@ -343,7 +193,7 @@ function addElement(parent_id: number, order: number) {
             <VBtn
               v-if="faqEdit"
               block
-              @click="addElement"
+              @click="addElement(0, questions.length)"
             >Добавить</VBtn>
           </div>
         </VCol>
@@ -351,7 +201,6 @@ function addElement(parent_id: number, order: number) {
           <FaqContent
             :active="active"
             :faq-edit="faqEdit"
-            @change="onChangeContent"
           />
         </VCol>
       </VRow>
