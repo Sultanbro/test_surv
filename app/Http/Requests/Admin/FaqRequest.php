@@ -2,11 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\DTO\Admin\AddOrUpdateAdminDTO;
 use App\DTO\Admin\FaqDTO;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
 
 class FaqRequest extends FormRequest
 {
@@ -18,7 +15,7 @@ class FaqRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => 'int',
+            'parent_id' => 'int|nullable',
             'title' => 'required|string',
             'page' => 'required|string',
             'body' => 'required|string',
