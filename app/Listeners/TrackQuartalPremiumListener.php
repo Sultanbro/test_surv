@@ -39,7 +39,8 @@ class TrackQuartalPremiumListener
                 'plan' => $quartalPremium->plan ?? null,
                 'from' => $quartalPremium->from ?? null,
                 'to' => $quartalPremium->to ?? null,
-                'method' => $quartalPremium->method ?? null
+                'method' => $quartalPremium->method ?? null,
+                'fact' => $quartalPremium->fact ?? null,
             ]),
             'created_at' => now(),
             'updated_at' => now()

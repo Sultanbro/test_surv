@@ -45,7 +45,8 @@ class QuartalPremium extends Model
         'updated_by',
         'is_active',
         'read_by',
-        'method'
+        'method',
+        'fact',
     ];
 
     protected $dates = [

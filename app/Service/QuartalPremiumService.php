@@ -97,6 +97,7 @@ class QuartalPremiumService
                 'to' => $request->input('to'),
                 'sum' => $request->input('sum'),
                 'method' => $request->input('method'),
+                'fact' => $request->input('fact'),
             ]);
 
             return [
