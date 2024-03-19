@@ -896,6 +896,7 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
     Route::group(['prefix' => 'faq', 'as' => 'faq.'], function () {
         Route::get('/', [Root\FaqController::class, 'getAll']);
         Route::post('/', [Root\FaqController::class, 'store']);
+        Route::post('/set-order', [Root\FaqController::class, 'setOrder']);
         Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
         Route::put('/update/{id}', [Root\FaqController::class, 'update']);
         Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);

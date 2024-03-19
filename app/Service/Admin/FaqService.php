@@ -34,11 +34,12 @@ class FaqService
     /**
      * Recursively build all tree
      */
-    public function buildTree($items, $id = null, $link = 'parent_id') {
+    public function buildTree($items, $id = null, $link = 'parent_id')
+    {
         return $items->filter(function ($item) use ($id, $link) {
             return $item[$link] === $id;
         })->sortBy('order')->map(function ($item) use ($items, $link) {
-            $itemArray = $item instanceof Arrayable ? $item->toArray() : (array) $item;
+            $itemArray = $item instanceof Arrayable ? $item->toArray() : (array)$item;
             $children = $this->buildTree($items, $item['id'], $link);
             if ($children->isNotEmpty()) {
                 $itemArray['children'] = $children->values()->all();
@@ -69,6 +70,20 @@ class FaqService
             'body' => $dto->body,
             'order' => $dto->order,
         ]);
+    }
+
+    public function setOrder($items): bool
+    {
+        foreach ($items as $item) {
+            Faq::query()
+                ->where('id', $item['id'])
+                ->update([
+                    'parent_id' => $item['parent_id'],
+                    'order' => $item['order']
+                ]);
+        }
+
+        return true;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\FaqRequest;
+use App\Http\Requests\Admin\SetOrderFaqRequest;
 use App\Service\Admin\FaqService;
 use Illuminate\Http\JsonResponse;
 use Exception;
@@ -38,6 +39,18 @@ class FaqController extends Controller
         return $this->response(
             message: "Success",
             data: $this->service->store($request->toDto())
+        );
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     */
+    public function setOrder(SetOrderFaqRequest $request): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: $this->service->setOrder($request->get('items'))
         );
     }
 
