@@ -158,6 +158,13 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/integrations', [Root\Signature\IntegrationController::class, 'getIntegration']);
     });
 
+    // FAQ
+    Route::group(['prefix' => 'faq'], function (){
+        Route::get('/', [Root\FaqController::class, 'getAll']);
+        Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
+        Route::get('search', [Root\FaqController::class, 'search']);
+    });
+
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
     Route::get('/admin/courses/get', [Course\CourseController::class, 'get']);
@@ -235,7 +242,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/admin/upbooks/segments/save', [Learning\UpbookController::class, 'saveSegment']);
     Route::post('/admin/upbooks/segments/delete', [Learning\UpbookController::class, 'deleteSegment']);
 
-    // База знаний
+    #start База знаний
     Route::get('/kb', [Learning\KnowBaseController::class, 'index']);
     Route::get('/kb/get', [Learning\KnowBaseController::class, 'get']);
     Route::post('/kb/get', [Learning\KnowBaseController::class, 'getPage']);

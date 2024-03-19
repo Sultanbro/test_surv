@@ -6,6 +6,7 @@ use App\Http\Requests\Admin\FaqRequest;
 use App\Service\Admin\FaqService;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
@@ -81,6 +82,20 @@ class FaqController extends Controller
         return $this->response(
             message: "Success",
             data: $this->service->delete($id)
+        );
+    }
+
+    /**
+     * Search the specified resources from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: $this->service->search($request->get('query'))
         );
     }
 }
