@@ -103,4 +103,16 @@ class FaqService
         Faq::query()->where('id', $id)->delete();
         return true;
     }
+
+    public function search($query)
+    {
+        if ($query) {
+            return Faq::query()
+                ->where('title', 'LIKE', '%' . $query . '%')
+                ->where('body', 'LIKE', '%' . $query . '%')
+                ->pluck('id')
+                ->toArray();
+        }
+        return [];
+    }
 }
