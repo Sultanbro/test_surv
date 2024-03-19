@@ -1,9 +1,8 @@
 <template>
 	<div class="header__right">
 		<div class="header__right-nav">
-			<a
+			<div
 				v-if="isBp && user.is_admin === 1"
-				href="javascript:void(0)"
 				class="header__right-icon"
 				@click="$emit('pop', 'faq')"
 			>
@@ -12,7 +11,7 @@
 					alt="nav icon"
 					class="header__icon-img"
 				>
-			</a>
+			</div>
 			<a
 				v-if="isBp && user.is_admin !== 1"
 				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"

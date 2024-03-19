@@ -1,6 +1,6 @@
 <?php
   // формируем URL, на который будем отправлять запрос в битрикс24
-  $queryURL = "https://infinitys.bitrix24.kz/rest/94132/bwv77lob7c5jof7a/crm.lead.add.json";
+  $queryURL = "https://infinitys.bitrix24.kz/rest/1/t6jous7hbiy1dnlb/crm.lead.add.json";
 
   //собираем данные из формы
   $sName = htmlspecialchars($_POST["NAME"]);
@@ -9,7 +9,7 @@
 	// формируем параметры для создания лида
 	$queryData = http_build_query(array(
 		"fields" => array(
-		    "TITLE" => "jobtron.org - перезвоните мне " .$sName,
+			"TITLE" => "jobtron.org - перезвоните мне " .$sName,
 			"NAME" => $sName,	// имя
 			"PHONE" => $sPhone, // телефон
 		),
@@ -30,11 +30,10 @@
 	curl_close($curl);
 	$result = json_decode($result,1);
 
-	echo "Мы перезвоним Вам в ближайшее время"
+	echo "Мы перезвоним Вам в ближайшее время";
 
 	// если произошла какая-то ошибка - выведем её
-	if(array_key_exists('error', $result))
-	{
+	if(array_key_exists('error', $result)){
 		die("Ошибка при сохранении лида: ".$result['error_description']);
 	}
 ?>

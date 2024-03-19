@@ -53,7 +53,7 @@
 			width="80%"
 			@close="popFAQ=false"
 		>
-			<popup-faq />
+			<FaqPopup />
 		</Popup>
 
 		<!-- popup -->
@@ -84,11 +84,13 @@
 
 <script>
 import Popup from '@/pages/Layouts/Popup.vue'
+import FaqPopup from '@/pages/Layouts/FaqPopup.vue'
 
 export default {
 	name: 'LayoutSidebars',
 	components: {
 		Popup,
+		FaqPopup,
 	},
 	props: {
 		isLeft: Boolean,

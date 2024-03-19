@@ -3,12 +3,18 @@
 		class="IntegrationsPageItem"
 		@click="$emit('click', $event)"
 	>
+		<img
+			v-if="icon"
+			:src="icon"
+			alt=""
+			class="IntegrationsPageItem-icon"
+		>
 		{{ title }}
 		<span
 			class="IntegrationsPageItem-status"
 			:class="[status ? 'IntegrationsPageItem-status_enabled' : 'IntegrationsPageItem-status_disabled']"
 		>
-			{{ status ? 'Подклбючен' : 'Не настроен' }}
+			{{ status ? 'Подключена' : 'Не настроена' }}
 		</span>
 	</div>
 </template>
@@ -29,7 +35,11 @@ export default {
 		status: {
 			type: Boolean,
 			default: false
-		}
+		},
+		icon: {
+			type: String,
+			required: true
+		},
 	}
 }
 </script>
@@ -42,20 +52,37 @@ export default {
 	justify-content: center;
 
 	width: 150px;
-	height: 120px;
-	padding: 7.5px 10px;
+	height: 150px;
+	padding: 7.5px 10px 30px;
 	border: 1px solid #daecf5;
 
+	position: relative;
+
+	text-align: center;
 	cursor: pointer;
 	background: #f8fcfe;
+	border-radius: 4px;
+
 	&-status{
+		padding: 5px 10px;
+		position: absolute;
+		bottom: 10px;
+		left: -10px;
 		font-size: 8px;
+		font-weight: 700;
+		color: #fff;
 		&_enabled{
-			color: green;
+			background-color: #8bab00;
 		}
 		&_disabled{
-			color: red;
+			background-color: #e84f71;
 		}
+	}
+
+	&-icon{
+		width: 48px;
+		height: auto;
+		margin-bottom: 10px;
 	}
 }
 </style>
