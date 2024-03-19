@@ -1,268 +1,262 @@
+<script setup lang="ts">
+import FaqList from '@/views/pages/faq/faq-list.vue';
+import FaqContent from '@/views/pages/faq/faq-content.vue';
+import axios from 'axios';
+
+type MoveEvent = {
+  item: HTMLElement,
+  to: HTMLElement,
+}
+
+type Question = {
+  id: number
+  parent_id: number | null
+  order: number
+  title: string
+  page: string
+  body?: string
+  isCollapsed: boolean
+  children: Array<Question>
+}
+
+const faqEdit = ref(false)
+const active = ref<null | Question>(null)
+const questions = ref<Array<Question>>([])
+
+const questionsMap = computed(() => {
+  return treeToMap(questions.value)
+})
+
+onMounted(() => {
+  fetchFAQ()
+})
+
+function treeToMap(items: Array<Question>, result: {[key: string]: Question} = {}){
+  return items.reduce((result, item) => {
+    result[`${item.id}`] = item
+    if(item.children?.length) treeToMap(item.children, result)
+    return result
+  }, result)
+}
+
+async function fetchFAQ(){
+  try {
+    const {data} = await axios.get<{data: Array<Question>}>('/faq')
+    questions.value = data.data.map(item => ({...item, isCollapsed: false}))
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function createFAQ(item: Question){
+  try {
+    const {data} = await axios.post('/faq', item)
+    questions.value.push(data.data)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function updateFAQ(){
+  if(!active.value) return
+
+  try {
+      await axios.put(`/faq/update/${active.value.id}`, active.value)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function saveFAQ(){
+  if(!active.value) return
+  return updateFAQ()
+}
+async function deleteFAQ(item: Question){
+  try {
+    await axios.delete(`/faq/delete/${item.id}`)
+    const list = item.parent_id ? questionsMap.value[item.parent_id].children : questions.value
+    if(!list) return
+    const index = list.findIndex(i => i.id === item.id)
+    if(!~index) return
+    list.splice(index, 1)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+async function onSelect(item: Question) {
+  try {
+    const {data} = await axios.get(`/faq/get/${item.id}`)
+    active.value = {
+      ...data.data,
+      isCollapsed: true,
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+async function addElement(parent_id: number, order: number) {
+
+  await createFAQ({
+    id: 0,
+    parent_id : parent_id || null,
+    order,
+    title: 'Новый вопрос',
+    isCollapsed: false,
+    page: '___',
+    body: '<h1>Заполните содержимое вопроса</h1>',
+    children: [],
+  })
+
+}
+
+async function saveOrder(parentId: number){
+  const items = parentId ? questionsMap.value[parentId]?.children : questions.value
+  if(!items) return
+  const request = {
+    items: items.map(({id, parent_id}, index) => ({
+      id,
+      parent_id,
+      order: index,
+    }))
+  }
+  try {
+    await axios.post('/faq/set-order', request)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+function onOrder({item, to}: MoveEvent){
+  const itemId = item.getAttribute('data-id') || ''
+  const toId = to.getAttribute('data-id') || ''
+  const $item = questionsMap.value[itemId]
+  // const $to = questionsMap.value[toId]
+  if(!$item) return
+  const prevParent = $item.parent_id
+  $item.parent_id = +toId || null
+  if(+toId !== prevParent) saveOrder(prevParent || 0)
+  saveOrder(+toId)
+}
+</script>
+
 <template>
   <VCard class="faq-card">
-    <v-card-title>
-      <p class="faq-card-title">Вопросы и ответы</p>
+    <VCardTitle class="faq-card-header">
+      <div>Вопросы и ответы</div>
+      <VSpacer />
       <div class="faq-card-actions">
-        <v-btn
+        <VBtn
+          v-if="faqEdit && active"
+          variant="text"
+          color="green-darken-2"
+          size="small"
+          @click="saveFAQ"
+        >
+          Сохранить
+        </VBtn>
+        <VBtn
           variant="text"
           icon="mdi-pencil"
           color="blue-darken-2"
           size="small"
           @click="faqEdit = !faqEdit"
-        ></v-btn>
+        />
       </div>
-    </v-card-title>
-    <div class="faq-card-body">
+    </VCardTitle>
+    <VDivider />
+    <VContainer class="faq-card-body">
       <VRow>
-        <VCol cols="3">
-          <div class="faq-list-container">
-            <FaqList :activeQuestion="activeQuestion" :questions="questions" :faqEdit="faqEdit"
-                     @choiceQuestion="choiceQuestion" v-if="questions.length"/>
-            <p class="no-questions" v-else>Добавитьте новый вопрос</p>
-            <div class="faq-list-add">
-              <v-btn block v-if="faqEdit" @click="addElement">Добавить</v-btn>
-            </div>
+        <VCol cols="3" class="faq-card-list ">
+          <div class="scrollable flex-grow-1">
+            <FaqList
+              v-if="questions.length"
+              :active="active"
+              :questions="questions"
+              :faq-edit="faqEdit"
+              :level="1"
+              @select="onSelect"
+              @order="onOrder"
+              @delete="deleteFAQ"
+            />
+            <p
+              v-else
+              class="no-questions"
+            >
+              Добавитьте новый вопрос
+            </p>
+          </div>
+
+          <div class="faq-list-add">
+            <VBtn
+              v-if="faqEdit"
+              block
+              @click="addElement(0, questions.length)"
+            >Добавить</VBtn>
           </div>
         </VCol>
-        <VCol cols="9">
-          <div class="faq-content-container">
-            <FaqContent :activeQuestion="activeQuestion" :questions="questions" :faqEdit="faqEdit" :faqContent="faqContent" @onChangeContent="onChangeContent"/>
-          </div>
+        <VCol cols="9" clasa="faq-card-content">
+          <FaqContent
+            :active="active"
+            :faq-edit="faqEdit"
+          />
         </VCol>
       </VRow>
-    </div>
+    </VContainer>
   </VCard>
 </template>
 
-<script>
-  import FaqList from '@/views/pages/faq/faq-list.vue';
-  import FaqContent from '@/views/pages/faq/faq-content.vue';
-
-  export default {
-    components: {
-      FaqList,
-      FaqContent
-    },
-    data() {
-      return {
-        faqEdit: false,
-        activeQuestion: null,
-        contents: [
-          {
-            qId: 1,
-            content: '<p>В профиле отображаются все ваши личные данные</p>'
-          },
-          {
-            qId: 11,
-            content: '<p>В балансе оклада вы можете просмотреть детализацию вашего дохода за все время</p>'
-          },
-          {
-            qId: 2,
-            content: '<p>Здесь вы можете просматривать новости и события вашей компании</p>'
-          },
-          {
-            qId: 22,
-            content: '<p>В правом окне страницы новостей отображаются дни рождения всех сотрудников</p>'
-          },
-          {
-            qId: 3,
-            content: '<p>На этой карте вы можете посмотреть, где и сколько сотрудников находятся...</p>'
-          }
-        ],
-        faqContent: null,
-        questions: [
-          {
-            id: 1,
-            name: "Профиль",
-            isCollapsed: false,
-            child: [
-              {
-                id: 11,
-                name: "Баланс оклада",
-                isCollapsed: false,
-                child: []
-              }
-            ]
-          },
-          {
-            id: 2,
-            name: "Новости",
-            isCollapsed: false,
-            child: [
-              {
-                id: 22,
-                name: "Дни рождения",
-                isCollapsed: false,
-                child: []
-              }
-            ]
-          },
-          {
-            id: 3,
-            name: "Карта",
-            isCollapsed: false,
-            child: []
-          }
-        ]
-      }
-    },
-    methods: {
-      choiceQuestion(item) {
-        this.faqContent = this.contents.find(c => item.id === c.qId);
-        this.activeQuestion = item;
-      },
-      onChangeContent(data) {
-        console.log(data);
-      },
-      addElement() {
-        const id = Date.now();
-        this.questions.push({
-          id: id,
-          name: "Новый вопрос",
-          isCollapsed: false,
-          child: []
-        });
-        this.contents.push({
-          qId: id,
-          content: '<h1>Заполните содержимое вопроса</h1>'
-        })
-      },
-    }
-  }
-</script>
-
 
 <style lang="scss">
-  .faq-card {
-    .faq-list-add {
-      padding: 0 15px;
-    }
-
-    .no-questions{
-      opacity: 0.7;
-      padding: 0 15px;
-      margin-bottom: 20px;
-    }
-
-    .faq-content-title{
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .faq-content-input{
-      margin-bottom: 20px;
-    }
-
-    .v-card-title {
-      padding: 5px 15px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      line-height: 1;
-      border-bottom: 1px solid #ddd;
-
-      .faq-card-title {
-        margin: 0;
-      }
-    }
-
-    .v-row {
-      margin: 0 -12px;
-    }
-
-    .v-col-3 {
-      border-right: 1px solid #ddd;
-      padding-right: 0;
-      padding-top: 0;
-    }
-
-    .faq-content-container {
-      padding: 0 15px 0 0;
-      color: #333;
-    }
-
-    .faq-list-container, .faq-content-container {
-      min-height: calc(100vh - 210px);
-      max-height: calc(100vh - 210px);
-      overflow: auto;
-    }
-
-    ul {
-      list-style: none;
-    }
-
-    .faq-list {
-      padding: 15px 10px;
-
-      .faq-list {
-        padding: 0 0 0 15px;
-      }
-
-      .faq-item {
-        transition: 0.1s all ease;
-
-        &.edit {
-          padding: 5px 0;
-        }
-
-        &.sortable-ghost {
-          padding: 5px;
-          border: 1px dashed #ddd;
-        }
-
-        .faq-item-content {
-          display: flex;
-          align-items: center;
-
-          &.edit {
-            .faq-link {
-              margin-left: 10px;
-              margin-right: 10px;
-              background-color: #f2f2f2;
-            }
-          }
-
-          .remove-icon {
-            cursor: pointer;
-
-            &:hover {
-              color: red;
-            }
-          }
-
-          .move-icon {
-            cursor: move;
-
-            &:hover {
-              color: #9961fd;
-            }
-          }
-        }
-
-        .faq-link {
-          margin: 0;
-          min-height: 35px;
-          padding: 4px 10px;
-          line-height: 1.1;
-          border-radius: 6px;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          cursor: pointer;
-          transition: 0.15s all ease;
-
-          &:hover {
-            background-color: #f2f2f2;
-          }
-
-          &.active {
-            color: #9961fd;
-          }
-        }
-      }
-    }
+.faq-card {
+  display: flex;
+  flex-flow: column;
+  // 48px - pa-6  in layout
+  height: calc(100vh - (48px + var(--v-layout-top) + var(--v-layout-bottom)));
+  ul {
+    list-style: none;
   }
+}
+
+.faq-card-header{
+  display: flex;
+  align-items: center;
+}
+
+.faq-card-body{
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  max-height: calc(100% - 59px);
+  padding: 12px;
+  > .v-row{
+    flex: 1;
+    max-height: calc(100% + 24px);
+  }
+}
+
+.faq-card-list{
+  display: flex;
+  flex-flow: column;
+  max-height: 100%;
+  outline: 1px solid rgba(var(--v-border-color),var(--v-border-opacity));
+}
+
+.faq-list-add {
+  padding: 0 15px;
+}
+
+.no-questions{
+  opacity: 0.7;
+  padding: 0 15px;
+  margin-bottom: 20px;
+}
+
+.faq-card-content{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
 </style>

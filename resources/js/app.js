@@ -203,7 +203,6 @@ Vue.component('Sidebars', require('./pages/Layouts/Sidebars.vue').default);
 
 Vue.component('PopupChecklist', require('./pages/Layouts/CheckListPopup.vue').default);
 Vue.component('PopupNotifications', require('./pages/Layouts/NotificationsPopup.vue').default);
-Vue.component('PopupFaq', require('./pages/Layouts/FaqPopup.vue').default);
 Vue.component('PopupSearch', require('./pages/Layouts/SearchPopup.vue').default);
 Vue.component('PopupMail', require('./pages/Layouts/MailPopup.vue').default);
 
