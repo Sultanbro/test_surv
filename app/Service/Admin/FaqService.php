@@ -62,18 +62,13 @@ class FaqService
      */
     public function store(FaqDTO $dto)
     {
-        $parent = Faq::query()->where('id', $dto->parent_id)->exists();
-        if ($parent) {
-            return Faq::query()->create([
-                'parent_id' => $dto->parent_id,
-                'title' => $dto->title,
-                'page' => $dto->page,
-                'body' => $dto->body,
-                'order' => $dto->order,
-            ]);
-        } else {
-            throw new \Exception('Parent faq not found');
-        }
+        return Faq::query()->create([
+            'parent_id' => $dto->parent_id,
+            'title' => $dto->title,
+            'page' => $dto->page,
+            'body' => $dto->body,
+            'order' => $dto->order,
+        ]);
     }
 
     /**
