@@ -15,4 +15,7 @@
 .scrollable{
   overflow: auto;
 }
+.whsnw{
+  white-space: nowrap;
+}
 </style>

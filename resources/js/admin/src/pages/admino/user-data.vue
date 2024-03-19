@@ -36,14 +36,24 @@ const filters = ref<UserDataRequest>({
   'city': '',
   'country': '',
 })
+const filtersMenu = ref(false)
+
+function onSubmitFilters(){
+  filtersMenu.value = false
+  userDataStore.fetchUsers(filters.value)
+}
+function onSort(){
+  filtersMenu.value = false
+  userDataStore.fetchUsers(filters.value)
+}
 
 function nextPage(){
   if(userDataStore.lastPage > userDataStore.page) userDataStore.nextPage(filters.value)
 }
 
-watch(filters, value => {
-  userDataStore.fetchUsers(filters.value)
-})
+// watch(filters, value => {
+//   userDataStore.fetchUsers(filters.value)
+// })
 
 const blankManagerOption = {title: '', value: 0}
 const managerUserId = ref(0)
@@ -72,17 +82,34 @@ function saveManager(){
 <template>
   <VRow>
     <VCol cols="12">
-      <VCard title="Фильтры">
-        <UserDataFilters
-          v-model="filters"
-        />
-      </VCard>
+      <v-menu
+        v-model="filtersMenu"
+        :close-on-content-click="false"
+        location="end"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="indigo"
+            v-bind="props"
+          >
+            Фильтры
+          </v-btn>
+        </template>
+
+        <VCard title="Фильтры">
+          <UserDataFilters
+            v-model="filters"
+            @submit="onSubmitFilters"
+          />
+        </VCard>
+      </v-menu>
     </VCol>
     <VCol cols="12">
       <VCard title="Данные пользователей">
         <UserData
           @manager="managerUserId = $event"
           @scrollEnd="nextPage"
+          @sort="onSort"
         />
       </VCard>
     </VCol>

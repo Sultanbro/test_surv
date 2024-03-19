@@ -2,6 +2,7 @@ import axios from 'axios'
 import { onError } from './api/error'
 
 export * from './api/reflinker'
+export type * from './api.d.ts'
 
 export const logout = async () => {
   try {

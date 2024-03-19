@@ -33,6 +33,8 @@ declare interface UserManagerPivot {
 declare interface UserDataRequest {
   per_page?: number
   page?: number
+  order_by?: string
+  order_direction?: string
   '>balance'?: string | number
   '<balance'?: string | number
   '>login_at'?: string

@@ -3,43 +3,6 @@ import type { UserData, UserDataRequest, UserDataResponse } from './api'
 
 export type UserDataKeys = keyof UserData
 
-function compareNumbers(a: number, b: number) {
-  return parseFloat('' + a) - parseFloat('' + b)
-}
-function compareStrings(a: string, b: string) {
-  if(!a) return -1
-  if(!b) return 1
-  return a.localeCompare(b)
-}
-function compareDate(a: string, b: string) {
-  if(!a) return -1
-  if(!b) return 1
-  // пока как строки, позже прикручу moment
-  return a.localeCompare(b)
-}
-function unformateBalance(balance: string) {
-  return balance ? parseFloat(balance.split(' ').join('')) : 0
-}
-function formatedNumberCompare(a: string, b: string) {
-  return unformateBalance(a) - unformateBalance(b)
-}
-type SortFunctions<T> = {
-  [Property in keyof T]: Function
-}
-const sortFunctions: SortFunctions<UserData> = {
-  id: compareNumbers,
-  full_name: compareStrings,
-  email: compareStrings,
-  created_at: compareDate,
-  login_at: compareDate,
-  subdimains: compareNumbers,
-  lead: compareStrings,
-  balance: formatedNumberCompare,
-  birthday: compareDate,
-  country: compareStrings,
-  city: compareStrings,
-}
-
 export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
   const userManagers = ref<{[key: number]: number}>({})
@@ -47,24 +10,12 @@ export const useUserDataStore = defineStore('user-data', () => {
   const onPage = ref(10)
   const lastPage = ref(99999)
   const page = ref(1)
-  const sort = ref<[UserDataKeys | '', string]>(['', ''])
-  const sortedData = computed(() => {
-    if (!sort.value[0])
-      return userData.value
-
-    const field: UserDataKeys = sort.value[0]
-    if (!(field in sortFunctions))
-      return userData.value
-
-    return userData.value.sort((a: UserData, b: UserData) => {
-      if (sort.value[1] === 'desc')
-        return sortFunctions[field](b[field], a[field])
-
-      return sortFunctions[field](a[field], b[field])
-    })
-  })
+  const sortField = ref('id')
+  const sortOrder = ref('asc')
   function setSort(field: UserDataKeys | '', type: string) {
-    sort.value = [field, type]
+    sortField.value = field
+    sortOrder.value = type
+    page.value = 1
   }
   function fetchUsers(filters: UserDataRequest): void {
     page.value = 1
@@ -74,6 +25,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     }, {
       page: page.value,
       per_page: onPage.value,
+      order_by: sortField.value,
+      order_direction: sortOrder.value,
     })
     fetchUserData(options).then(data => {
       if (data !== undefined && 'items' in data) {
@@ -93,6 +46,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     }, {
       page: ++page.value,
       per_page: onPage.value,
+      order_by: sortField.value,
+      order_direction: sortOrder.value,
     })
     fetchUserData(options).then(data => {
       if (data !== undefined && 'items' in data){
@@ -104,17 +59,17 @@ export const useUserDataStore = defineStore('user-data', () => {
 
   return {
     userData,
-    sortedData,
     userManagers,
 
     total,
     onPage,
     page,
     lastPage,
+    sortField,
+    sortOrder,
 
     fetchUsers,
     nextPage,
-    sort,
     setSort,
   }
 })

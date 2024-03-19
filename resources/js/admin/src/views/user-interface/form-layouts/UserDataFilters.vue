@@ -9,6 +9,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', data: UserDataRequest): void
+  (e: 'submit'): void
 }>()
 
 const balanceFrom = ref<string | number>('')
@@ -141,6 +142,15 @@ watchEffect(() => {
             label="День рождения до"
             class="mb-2"
           />
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VBtn
+            @click="emit('submit')"
+          >
+            Применить
+          </VBtn>
         </VCol>
       </VRow>
     </VContainer>

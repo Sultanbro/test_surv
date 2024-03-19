@@ -13,18 +13,19 @@ const userDataStore = useUserDataStore()
 const managersStore = useManagersStore()
 
 function sortSymbol(field: string) {
-  if (field === userDataStore.sort[0])
-    return (userDataStore.sort[1] === 'desc' ? '▼' : '▲')
+  if (field === userDataStore.sortField)
+    return (userDataStore.sortOrder === 'desc' ? '▼' : '▲')
 
   return ''
 }
 function setSort(field: UserDataKeys | '') {
-  if (userDataStore.sort[0] === field) {
-    if (userDataStore.sort[1] === 'desc')
+  if (userDataStore.sortField === field) {
+    if (userDataStore.sortOrder === 'desc'){
       userDataStore.setSort('', '')
-
-    else
+    }
+    else{
       userDataStore.setSort(field, 'desc')
+    }
   }
   userDataStore.setSort(field, '')
 }
@@ -70,7 +71,6 @@ function getManagerName(userId: number){
   <VContainer class="UserData">
     <VTable
       v-if="userDataStore.userData.length"
-      height="250"
       fixed-header
     >
       <thead>
@@ -152,10 +152,10 @@ function getManagerName(userId: number){
           <td class="text-center">
             <a :href="`mailto:${item.email}`">{{ item.email }}</a>
           </td>
-          <td class="text-center">
+          <td class="text-center whsnw">
             {{ formatDateTime(item.created_at) }}
           </td>
-          <td class="text-center">
+          <td class="text-center whsnw">
             {{ item.login_at ? formatDateTime(item.login_at) : '' }}
           </td>
           <td class="text-center">
@@ -220,5 +220,9 @@ function getManagerName(userId: number){
 <style lang="scss">
 .UserData{
   margin-top: -16px;
+  .v-table__wrapper{
+    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 62px);
+    height: calc(100vh - var(--j-other-height));
+  }
 }
 </style>
