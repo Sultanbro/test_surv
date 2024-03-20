@@ -184,28 +184,17 @@ class Timetracking extends Model
     {
         $auth = auth()->id();
 
-        $timeTrack = Timetracking::query()
-            ->where('user_id', $employee_id)
-            ->whereDate('enter', $date)
-            ->first();
-
-        if ($timeTrack) {
-            Timetracking::query()->where('id', $timeTrack->id)
-                ->update([
-                    'total_hours' => (int)$total_hours,
-                    'updated' => 2
-                ]);
-        } else {
-            Timetracking::query()->create([
-                'enter' => $date,
-                'exit' => $date,
-                'updated' => 2,
+        Timetracking::query()
+            ->updateOrCreate([
                 'user_id' => $employee_id,
+                'enter' => $date,
+            ], [
                 'total_hours' => (int)$total_hours,
+                'exit' => $date,
+                'updated' => 2
             ]);
-        }
 
-        TimetrackingHistory::create([
+        TimetrackingHistory::query()->create([
             'user_id' => $employee_id,
             'author_id' => 5,
             'author' => User::getUserById($auth)->full_name,
