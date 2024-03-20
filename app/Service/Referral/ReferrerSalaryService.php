@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ReferrerSalaryService
 {
-
     public function updateSalaries(?string $date = null, ?int $userId = null): void
     {
         $date = Carbon::parse($date ?: now());

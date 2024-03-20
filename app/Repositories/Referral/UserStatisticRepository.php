@@ -199,7 +199,7 @@ class UserStatisticRepository implements UserStatisticRepositoryInterface
     private function parseSalary(?array $current): array
     {
         return [
-            'paid' => (bool)($current['is_paid'] ?? null),
+            'paid' => $current['is_paid'] ?? false,
             'sum' => $current['amount'] ?? null,
             'comment' => $current['comment'] ?? null,
             'id' => $current['id'] ?? null,

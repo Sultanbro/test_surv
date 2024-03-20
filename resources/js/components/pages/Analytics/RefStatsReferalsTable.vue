@@ -110,7 +110,7 @@
 					'RefStatsReferalsTable-money_paid': value.sum > 0 && value.paid,
 					'pointer usn': $can('referal_edit'),
 				}"
-				:title="hintComments ? '' : value.comment"
+				:title="(Laravel.is_admin ? value.id : '') + (hintComments ? '' : value.comment)"
 				@click="$emit('payment-click', {item, field})"
 			>
 				{{ value.sum || '' }}
