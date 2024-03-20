@@ -190,10 +190,11 @@ class Timetracking extends Model
             ->first();
 
         if ($timeTrack) {
-            $timeTrack->update([
-                'total_hours' => (int)$total_hours,
-                'updated' => 2
-            ]);
+            Timetracking::query()->where('id', $timeTrack->id)
+                ->update([
+                    'total_hours' => (int)$total_hours,
+                    'updated' => 2
+                ]);
         } else {
             Timetracking::query()->create([
                 'enter' => $date,
