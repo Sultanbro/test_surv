@@ -518,9 +518,10 @@ class AnalyticsController extends Controller
         }
 
         UserStatUpdatedEvent::dispatch($dto);
-        if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
-            Timetracking::updateTimes($dto->employeeId, $date, $dto->value * 60);
-        }
+        // ne nado poka izmenit chasi
+//        if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
+//            Timetracking::updateTimes($dto->employeeId, $date, $dto->value * 60);
+//        }
 
         if (tenant('id') != 'bp') {
             return null;
