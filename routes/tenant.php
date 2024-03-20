@@ -159,8 +159,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     });
 
     // FAQ
-    Route::group(['prefix' => 'faq'], function (){
-        Route::get('/', [Root\FaqController::class, 'getAll']);
+    Route::group(['prefix' => 'profile/faq'], function (){
+        Route::get('/', [Root\FaqController::class, 'getAll'])->name('faq.profile');
         Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
         Route::get('search', [Root\FaqController::class, 'search']);
     });
