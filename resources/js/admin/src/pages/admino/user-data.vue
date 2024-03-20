@@ -38,6 +38,12 @@ const filters = ref<UserDataRequest>({
 })
 const filtersMenu = ref(false)
 
+const onPage = computed(() => userDataStore.onPage)
+
+watch(onPage, () => {
+  userDataStore.fetchUsers(filters.value)
+})
+
 function onSubmitFilters(){
   filtersMenu.value = false
   userDataStore.fetchUsers(filters.value)
@@ -85,7 +91,7 @@ function saveManager(){
       <v-menu
         v-model="filtersMenu"
         :close-on-content-click="false"
-        location="end"
+        location="bottom"
       >
         <template v-slot:activator="{ props }">
           <v-btn
@@ -114,6 +120,7 @@ function saveManager(){
       </VCard>
     </VCol>
   </VRow>
+
   <VOverlay
     v-model="managerOverlay"
     class="justify-end"

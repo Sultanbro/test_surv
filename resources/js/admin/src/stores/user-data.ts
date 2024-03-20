@@ -6,9 +6,9 @@ export type UserDataKeys = keyof UserData
 export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
   const userManagers = ref<{[key: number]: number}>({})
-  const total = ref(2)
+  const total = ref(0)
   const onPage = ref(10)
-  const lastPage = ref(99999)
+  const lastPage = ref(1)
   const page = ref(1)
   const sortField = ref('id')
   const sortOrder = ref('asc')
@@ -35,6 +35,7 @@ export const useUserDataStore = defineStore('user-data', () => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
         userData.value = data.items.data
+        total.value = data.items.total || 0
         // userData.value = [...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data]
         data.manager.forEach(pivot => {
           userManagers.value[pivot.owner_id] = pivot.manager_id

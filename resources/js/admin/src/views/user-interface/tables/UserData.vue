@@ -69,142 +69,155 @@ function getManagerName(userId: number){
 
 <template>
   <VContainer class="UserData">
-    <VTable
-      v-if="userDataStore.userData.length"
-      fixed-header
-    >
-      <thead>
-        <tr>
-          <th @click="setSort('id')">
-            id{{ sortSymbol('id') }}
-          </th>
-          <th @click="setSort('full_name')">
-            ФИО{{ sortSymbol('full_name') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('email')"
+    <template v-if="userDataStore.userData.length">
+      <VTable fixed-header>
+        <thead>
+          <tr>
+            <th @click="setSort('id')">
+              id{{ sortSymbol('id') }}
+            </th>
+            <th @click="setSort('full_name')">
+              ФИО{{ sortSymbol('full_name') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('email')"
+            >
+              email{{ sortSymbol('email') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('created_at')"
+            >
+              Создан{{ sortSymbol('created_at') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('login_at')"
+            >
+              Вход{{ sortSymbol('login_at') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('subdimains')"
+            >
+              Домены{{ sortSymbol('subdimains') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('lead')"
+            >
+              Лид{{ sortSymbol('lead') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('balance')"
+            >
+              Баланс{{ sortSymbol('balance') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('birthday')"
+            >
+              День рождения{{ sortSymbol('birthday') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('country')"
+            >
+              Страна{{ sortSymbol('country') }}
+            </th>
+            <th
+              class="text-center"
+              @click="setSort('city')"
+            >
+              Город{{ sortSymbol('city') }}
+            </th>
+            <th
+              class="text-center"
+            >
+              Менеджер
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in userDataStore.userData"
+            :key="item.id"
           >
-            email{{ sortSymbol('email') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('created_at')"
-          >
-            Создан{{ sortSymbol('created_at') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('login_at')"
-          >
-            Вход{{ sortSymbol('login_at') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('subdimains')"
-          >
-            Домены{{ sortSymbol('subdimains') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('lead')"
-          >
-            Лид{{ sortSymbol('lead') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('balance')"
-          >
-            Баланс{{ sortSymbol('balance') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('birthday')"
-          >
-            День рождения{{ sortSymbol('birthday') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('country')"
-          >
-            Страна{{ sortSymbol('country') }}
-          </th>
-          <th
-            class="text-center"
-            @click="setSort('city')"
-          >
-            Город{{ sortSymbol('city') }}
-          </th>
-          <th
-            class="text-center"
-          >
-            Менеджер
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="item in userDataStore.userData"
-          :key="item.id"
+            <td>{{ item.id }}</td>
+            <td>{{ item.full_name }}</td>
+            <td class="text-center">
+              <a :href="`mailto:${item.email}`">{{ item.email }}</a>
+            </td>
+            <td class="text-center whsnw">
+              {{ formatDateTime(item.created_at) }}
+            </td>
+            <td class="text-center whsnw">
+              {{ item.login_at ? formatDateTime(item.login_at) : '' }}
+            </td>
+            <td class="text-center">
+              <template v-if="item.subdomains">
+                <VChip
+                  v-for="sub in item.subdomains"
+                  :key="sub"
+                  class="ma-2"
+                  size="small"
+                >{{ sub }}</VChip>
+              </template>
+            </td>
+            <td class="text-center">
+              <a v-if="item.lead" :href="item.lead" target="_blank">
+                {{ item.lead.split('/').reverse()[0] }}
+              </a>
+            </td>
+            <td class="text-center">
+              {{ item.balance }}
+            </td>
+            <td class="text-center">
+              {{ item.birthday ? formatDate(item.birthday) : '' }}
+            </td>
+            <td class="text-center">
+              {{ item.country }}
+            </td>
+            <td class="text-center">
+              {{ item.city }}
+            </td>
+            <td class="text-center">
+              <Action @click="$emit('manager', item.id)">{{ getManagerName(item.id) }}</Action>
+            </td>
+          </tr>
+        </tbody>
+      </VTable>
+      <VRow>
+        <VCol
+          cols="4"
+          class="d-flex aic"
         >
-          <td>{{ item.id }}</td>
-          <td>{{ item.full_name }}</td>
-          <td class="text-center">
-            <a :href="`mailto:${item.email}`">{{ item.email }}</a>
-          </td>
-          <td class="text-center whsnw">
-            {{ formatDateTime(item.created_at) }}
-          </td>
-          <td class="text-center whsnw">
-            {{ item.login_at ? formatDateTime(item.login_at) : '' }}
-          </td>
-          <td class="text-center">
-            <template v-if="item.subdomains">
-              <VChip
-                v-for="sub in item.subdomains"
-                :key="sub"
-                class="ma-2"
-                size="small"
-              >{{ sub }}</VChip>
-            </template>
-          </td>
-          <td class="text-center">
-            <a v-if="item.lead" :href="item.lead" target="_blank">
-              {{ item.lead.split('/').reverse()[0] }}
-            </a>
-          </td>
-          <td class="text-center">
-            {{ item.balance }}
-          </td>
-          <td class="text-center">
-            {{ item.birthday ? formatDate(item.birthday) : '' }}
-          </td>
-          <td class="text-center">
-            {{ item.country }}
-          </td>
-          <td class="text-center">
-            {{ item.city }}
-          </td>
-          <td class="text-center">
-            <Action @click="$emit('manager', item.id)">{{ getManagerName(item.id) }}</Action>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td
-            ref="scrollTD"
-            colspan="12"
-            class="text-center"
-          >
-            <!-- just for scroll -->
-            <VBtn @click="emit('scrollEnd')">
-              Загрузить еще
-            </VBtn>
-          </td>
-        </tr>
-      </tfoot>
-    </VTable>
+          {{ userDataStore.userData.length }} / {{ userDataStore.total }}
+        </VCol>
+        <VCol
+          cols="4"
+          class="d-flex aic justify-center"
+        >
+          <VBtn @click="emit('scrollEnd')">
+            Загрузить еще
+          </VBtn>
+        </VCol>
+        <VCol
+          cols="4"
+          class="d-flex aic justify-end"
+        >
+          <div class="UserData-perPage">
+            <VSelect
+              v-model="userDataStore.onPage"
+              :items="[5, 10, 20, 50, 100]"
+              density="compact"
+            />
+          </div>
+        </VCol>
+      </VRow>
+    </template>
     <div
       v-else-if="userDataStore.isLoading"
       class="text-center"
@@ -224,8 +237,12 @@ function getManagerName(userId: number){
 .UserData{
   margin-top: -16px;
   .v-table__wrapper{
-    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 62px);
+    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 140px + 50px);
     height: calc(100vh - var(--j-other-height));
+    overflow-y: auto;
+  }
+  &-perPage{
+    width: 100px;
   }
 }
 </style>
