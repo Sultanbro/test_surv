@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Класс для работы с Service.
@@ -31,7 +32,7 @@ final class ManuallyReportService
      * @param string $time
      * @param string|null $comment
      * @return int
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function handle(
         int     $userId,
@@ -45,24 +46,22 @@ final class ManuallyReportService
         $enter = $this->setEnterTime($userId, $year, $month, $day, $time);
 
         try {
+            DB::beginTransaction();
+            $updateOrCreate = $this->timeTrackingRepository->updateOrCreate(
+                $userId,
+                $year,
+                $month,
+                $day,
+                $time,
+                $enter,
+                $comment
+            );
 
-            DB::transaction(function () use ($userId, $year, $month, $day, $time, $enter, $comment) {
-                $updateOrCreate = $this->timeTrackingRepository->updateOrCreate(
-                    $userId,
-                    $year,
-                    $month,
-                    $day,
-                    $time,
-                    $enter,
-                    $comment
-                );
-
-                $this->historyRepository->createHistory($userId, $updateOrCreate, $enter);
-            });
-
+            $this->historyRepository->createHistory($userId, $updateOrCreate, $enter);
+            DB::commit();
             return Response::HTTP_CREATED;
-
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
+            DB::rollBack();
             throw new Exception($e->getMessage());
         }
     }
