@@ -73,7 +73,7 @@ class SalaryWorkChartService
     {
 
         $userSalary = Salary::where('user_id',$user->id)->first();
-        $salaryAmount = $userSalary->amount ? $userSalary->amount : 70000;
+        $salaryAmount = $userSalary->amount ?: 70000;
         $userWorkChart = WorkChartModel::find($user->working_day_id);
         $workingHours = (int)$userWorkChart->time_end - (int)$userWorkChart->time_beg;
         $hourlyPay = round($salaryAmount / $countDayWork / $workingHours, 2);
