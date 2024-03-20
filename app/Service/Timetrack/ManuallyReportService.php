@@ -5,21 +5,23 @@ namespace App\Service\Timetrack;
 
 use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\TimeTrackingRepository;
+use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 final class ManuallyReportService
 {
     public function __construct(
-        public TimeTrackingRepository $timeTrackingRepository,
+        public TimeTrackingRepository     $timeTrackingRepository,
         public TimeTrackHistoryRepository $historyRepository
     )
-    {}
+    {
+    }
 
     /**
      * @param int $userId
@@ -32,15 +34,15 @@ final class ManuallyReportService
      * @throws Exception
      */
     public function handle(
-        int $userId,
-        int $year,
-        int $month,
-        int $day,
-        string $time,
+        int     $userId,
+        int     $year,
+        int     $month,
+        int     $day,
+        string  $time,
         ?string $comment
     ): int
     {
-        $enter = $this->setEnterTime($year, $month, $day, $time);
+        $enter = $this->setEnterTime($userId, $year, $month, $day, $time);
 
         try {
 
@@ -66,6 +68,7 @@ final class ManuallyReportService
     }
 
     /**
+     * @param int $userId
      * @param int $year
      * @param int $month
      * @param int $day
@@ -73,12 +76,18 @@ final class ManuallyReportService
      * @return string
      */
     private function setEnterTime(
-        int $year,
-        int $month,
-        int $day,
+        int    $userId,
+        int    $year,
+        int    $month,
+        int    $day,
         string $time
     ): string
     {
-        return Carbon::create($year, $month, $day)->setTimeFromTimeString($time)->subHours(6)->format('Y-m-d H:i:s');
+        /** @var User $user */
+        $user = User::query()->find($userId);
+        return Carbon::create($year, $month, $day)
+            ->setTimeFromTimeString($time)
+            ->subHours((int)$user->timezone)
+            ->format('Y-m-d H:i:s');
     }
 }

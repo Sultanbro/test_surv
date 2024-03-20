@@ -34,7 +34,8 @@ class TimeTrackingRepository extends CoreRepository
         int $day
     )
     {
-        return $this->model()->where('user_id', $userId)
+        return $this->model()
+            ->where('user_id', $userId)
             ->whereYear('enter', $year)
             ->whereMonth('enter', $month)
             ->whereDay('enter', $day)
@@ -49,10 +50,9 @@ class TimeTrackingRepository extends CoreRepository
         string $time,
         string $enter,
         ?string $comment
-    )
+    ): string
     {
         $timeTrack = $this->getTrackingTimeForUser($userId, $year, $month, $day);
-        $description = '';
 
         if ($timeTrack) {
             $description = "Изменено: $time $comment";
