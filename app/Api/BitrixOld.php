@@ -99,11 +99,11 @@ class BitrixOld
 
         /***************** */
         if (strlen($start) == 10) {
-            $start = $start . "T00:00:00+06:00";
+            $start = $start . "T00:00:00+05:00";
         }
 
         if (strlen($end) == 10) {
-            $end = $end . "23:59:59+06:00";
+            $end = $end . "23:59:59+05:00";
         }
 
         $filter['>' . $date_type] = $start;
