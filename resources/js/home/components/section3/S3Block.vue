@@ -6,7 +6,7 @@
 		<div class="jSec3-block-image">
 			<img
 				:alt="alt"
-				:src="require('../../assets/img/s3-b1.png').default"
+				:src="image"
 				class="jSec3-block-img"
 			>
 		</div>
@@ -19,7 +19,7 @@
 <script>
 export default {
 	props: {
-		img: {
+		image: {
 			type: String,
 			default: ''
 		},
