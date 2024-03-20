@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings\Award;
 
+use App\Exceptions\News\BusinessLogicException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Award\AwardsByTypeRequest;
 use App\Http\Requests\Award\CourseAwardRequest;
@@ -16,7 +17,9 @@ use App\Service\Award\AwardBuilder;
 use App\Service\Award\AwardService;
 use App\Service\Award\AwardType\CertificateAwardService;
 use App\Service\Award\Reward\RewardBuilder;
+use App\Service\Interfaces\Award\AwardInterface;
 use App\User;
+use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,19 +75,24 @@ class AwardController extends Controller
      * @return mixed
      * @throws Exception
      */
-    public function update(Award $award, UpdateAwardRequest $request )
+    public function update(Award $award, UpdateAwardRequest $request)
     {
         $type = $this->awardService->getAwardType($request['award_category_id'], $award);
-        $response = $this->awardBuilder
-            ->handle($type)
-            ->update($request, $award);
+        /** @var AwardInterface $service */
+        $service = $this->awardBuilder->handle($type);
+        $service->update($request, $award);
 
-        return response()->success($response);
+        return response()->success($service);
     }
 
-    public function addPreview(Request $request,CertificateAwardService $service)
+    /**
+     * @throws BusinessLogicException
+     */
+    public function addPreview(Request $request, CertificateAwardService $service): bool|int
     {
-        $award = Award::query()->findOrFail($request->id);
+        $award = Award::query()->findOrFail($request->get('id'));
+
+        $parameters = [];
 
         if ($request->has('preview')) {
             $preview = $service->saveAwardPreview($request);
@@ -92,16 +100,22 @@ class AwardController extends Controller
             $parameters['preview_path'] = $preview['relative'];
         }
 
-        return  $award->update($parameters);
+        return $award->update($parameters);
     }
 
-    public function addPreviewSecond(Request $request,CertificateAwardService $service)
+    /**
+     * @throws BusinessLogicException
+     */
+    public function addPreviewSecond(Request $request, CertificateAwardService $service): int
     {
-        $award = \DB::table('award_course')
-            ->where('user_id',$request->user_id)
-            ->where('award_id',$request->award_id)
-            ->where('course_id',$request->course_id)
-            ->where('path',$request->path);
+        $award = DB::table('award_course')
+            ->where('user_id', $request->get('user_id'))
+            ->where('award_id', $request->get('award_id'))
+            ->where('course_id', $request->get('course_id'))
+            ->where('path', $request->get('path'));
+
+        $parameters = [];
+
         if ($request->has('preview')) {
             $preview = $service->saveAwardPreview($request);
             $parameters['preview_format'] = $preview['format'];
@@ -127,15 +141,14 @@ class AwardController extends Controller
      * @return StreamedResponse
      * @throws Exception
      */
-    public function downloadFile(Award $award)
+    public function downloadFile(Award $award): StreamedResponse
     {
         try {
-            return  Storage::disk('s3')->download('awards/' . $award->path);
+            return Storage::disk('s3')->download('awards/' . $award->path);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }
-
 
 
     /**
@@ -143,8 +156,9 @@ class AwardController extends Controller
      * @param AwardRepository $repository
      * @throws Exception
      */
-    public function reward(RewardRequest $request, AwardRepository $repository)
+    public function reward(RewardRequest $request, AwardRepository $repository): void
     {
+        /** @var RewardBuilder $app */
         $app = app(RewardBuilder::class);
         $app->handle($request->toDto(), $repository)->reward();
     }
@@ -154,7 +168,7 @@ class AwardController extends Controller
      * @param AwardRepository $repository
      * @return void
      */
-    public function deleteReward(RewardRequest $request, AwardRepository $repository)
+    public function deleteReward(RewardRequest $request, AwardRepository $repository): void
     {
         $app = app(RewardBuilder::class);
         $app->execute($request->toDto(), $repository)->deleteReward();
@@ -165,7 +179,7 @@ class AwardController extends Controller
      */
     public function myAwards()
     {
-        $authUser = Auth::user() ?? User::find(13865);
+        $authUser = Auth::user() ?? User::query()->find(13865);
         $response = $this->awardService->myAwards($authUser);
 
         return \response()->success($response);
@@ -176,37 +190,30 @@ class AwardController extends Controller
      */
     public function courseAward(CourseAwardRequest $request)
     {
-        $authUser = Auth::user() ?? User::find(5);
-
+        $authUser = Auth::user() ?? User::query()->find(5);
         $response = $this->awardService->courseAward($request, $authUser);
-
-
         return \response()->success($response);
     }
+
     /**
      * @throws Exception
      */
     public function coursesAward(GetCoursesAwardsRequest $request)
     {
-
         $response = $this->awardService->courseAwards($request);
-
-
         return \response()->success($response);
     }
+
     /**
      * @throws Exception
      */
     public function storeCoursesAward(StoreCoursesAwardsRequest $request, Award $award)
     {
-
         $response = $this->awardService->saveCourseAwards($request, $award);
-
-
         return \response()->success($response);
     }
 
-      /**
+    /**
      * @throws Exception
      */
     public function awardsByType(AwardsByTypeRequest $request)
@@ -220,13 +227,13 @@ class AwardController extends Controller
     }
 
 
-
     /**
      *
      */
     public function read()
     {
-        $user = User::find(Auth::id());
+        /** @var User $user */
+        $user = User::query()->find(Auth::id());
 
         if (is_null($user)) {
             throw new HttpException("Такого пользователя не существует");
@@ -240,7 +247,8 @@ class AwardController extends Controller
     }
 
 
-    public function fixPreviewPage(){
+    public function fixPreviewPage()
+    {
         // пустая страница
         return view('newprofile');
     }

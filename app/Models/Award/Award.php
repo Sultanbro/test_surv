@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property $path
+ */
 class Award extends Model
 {
     use HasFactory, SoftDeletes;
