@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Editor from '@tinymce/tinymce-vue';
 import type {Settings} from '@types/tinymce'
+import axios from 'axios';
 
 type Question = {
   id: number
@@ -297,7 +298,7 @@ const mceInit: Settings = {
     'styleselect | bold italic underline strikethrough | ',
     'table | fontselect fontsizeselect formatselect | ',
     'alignleft aligncenter alignright alignjustify | ',
-    'outdent indent |  numlist bullist | forecolor backcolor removeformat | preview |  media  link | undo redo',
+    'outdent indent |  numlist bullist | forecolor backcolor removeformat | preview |  image media  link | undo redo',
   ].join(''),
   // toolbar_sticky: true,
   content_style:
@@ -399,7 +400,21 @@ const mceInit: Settings = {
   // media
 }
 
-function onUploadImage(){}
+async function onUploadImage(blobInfo, progress){
+  const formData = new FormData()
+  formData.append('attachment', blobInfo.blob())
+  const onUploadProgress = event => {
+    progress(Math.round((event.loaded * 100) / event.total))
+  }
+  // formData.append('id', 0)
+  try {
+    const {data} = await axios.post('/admin/upload/images/', formData, {onUploadProgress})
+    return data.location
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>

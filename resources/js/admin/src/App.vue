@@ -15,6 +15,9 @@
 .scrollable{
   overflow: auto;
 }
+.vam{
+  vertical-align: middle;
+}
 .whsnw{
   white-space: nowrap;
 }

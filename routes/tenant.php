@@ -901,6 +901,8 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::put('/update/{id}', [Root\FaqController::class, 'update']);
         Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);
     });
+
+    Route::any('/admin/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
 });
 
 Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
