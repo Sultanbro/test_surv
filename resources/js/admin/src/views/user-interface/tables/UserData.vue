@@ -206,13 +206,16 @@ function getManagerName(userId: number){
       </tfoot>
     </VTable>
     <div
-      v-else
+      v-else-if="userDataStore.isLoading"
       class="text-center"
     >
       <VProgressCircular
         indeterminate
         color="primary"
       />
+    </div>
+    <div v-else>
+      Пользователи не найдены
     </div>
   </VContainer>
 </template>

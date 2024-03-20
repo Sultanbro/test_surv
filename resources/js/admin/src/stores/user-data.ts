@@ -12,6 +12,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   const page = ref(1)
   const sortField = ref('id')
   const sortOrder = ref('asc')
+  const isLoading = ref(false)
   function setSort(field: UserDataKeys | '', type: string) {
     sortField.value = field
     sortOrder.value = type
@@ -28,6 +29,8 @@ export const useUserDataStore = defineStore('user-data', () => {
       order_by: sortField.value,
       order_direction: sortOrder.value,
     })
+
+    isLoading.value = true
     fetchUserData(options).then(data => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
@@ -37,6 +40,7 @@ export const useUserDataStore = defineStore('user-data', () => {
           userManagers.value[pivot.owner_id] = pivot.manager_id
         });
       }
+      isLoading.value = false
     })
   }
   function nextPage(filters: UserDataRequest): void {
@@ -67,6 +71,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     lastPage,
     sortField,
     sortOrder,
+    isLoading,
 
     fetchUsers,
     nextPage,
