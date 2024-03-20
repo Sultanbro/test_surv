@@ -188,7 +188,7 @@ class Timetracking extends Model
             ->where('user_id', $employee_id)
             ->whereDate('enter', $date)
             ->first();
-dd($timeTrack);
+dd($timeTrack, (int)$total_hours);
         if ($timeTrack) {
             $timeTrack->update([
                 'total_hours' => (int)$total_hours,
