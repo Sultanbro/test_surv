@@ -186,10 +186,11 @@ class Timetracking extends Model
 
         $timeTrack = Timetracking::query()
             ->where('user_id', $employee_id)
-            ->whereDate('enter', $date);
+            ->whereDate('enter', $date)
+            ->first();
 
-        if ($timeTrack->exists()) {
-            $timeTrack?->update([
+        if ($timeTrack) {
+            $timeTrack->update([
                 'total_hours' => (int)$total_hours,
                 'updated' => 2
             ]);
