@@ -30,6 +30,7 @@ use App\Models\KnowBaseModel;
 use App\Models\Kpi\Bonus;
 use App\Models\Timetrack\UserPresence;
 use App\Models\User\NotificationTemplate;
+use App\Models\WorkChart\Workday;
 use App\Position;
 use App\PositionDescription;
 use App\ProfileGroup;
@@ -355,12 +356,15 @@ class TimetrackingController extends Controller
      */
     private function startDay($userId = null): string
     {
-        $user = $userId ? User::find($userId) : auth()->user();
+        /** @var User $user */
+        $user = User::query()->find($userId ?? auth()->id());
+
         $schedule = $user->schedule();
-
         $now = Carbon::now($user->timezone());
-
-        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+        /** @var Timetracking $workday */
+        $workday = $user->timetracking()
+            ->whereDate('enter', $now->format('Y-m-d'))
+            ->first();
 
         //Нажал "Начать день"
         if ($workday && $workday->isStarted()) {
@@ -377,15 +381,13 @@ class TimetrackingController extends Controller
 
         WorkdayEvent::dispatch($user);
 
-        if ($workday) {
-            $workday->setEnter($now)
-                ->setStatus(Timetracking::DAY_STARTED)
-                ->addTime($now, $user->timezone())
-                ->save();
-        }
+        $workday?->setEnter($now)
+            ->setStatus(Timetracking::DAY_STARTED)
+            ->addTime($now, $user->timezone())
+            ->save();
 
         if (!$workday) {
-            Timetracking::updateOrCreate(
+            Timetracking::query()->updateOrCreate(
                 [
                     'user_id' => $user->id,
                     'enter' => $now->setTimezone('UTC')
