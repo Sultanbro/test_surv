@@ -99,10 +99,16 @@ class SignatureController extends Controller
     {
         $filteredFiles = new Collection();
         $signedFiles = $user->signedFiles()->withTrashed()->get();
-        $groupFiles = $user->activeGroup()
-            ->files()
-            ->whereNotIn('id', $signedFiles->pluck('id')->toArray())
-            ->get();
+        $group = $user->activeGroup();
+        $groupFiles = collect();
+
+        if ($group) {
+            $groupFiles = $group
+                ->files()
+                ->whereNotIn('id', $signedFiles->pluck('id')->toArray())
+                ->get();
+        }
+
         $merged = $groupFiles->merge($signedFiles);
 
         foreach ($merged as $file) {
