@@ -38,6 +38,7 @@ class CountHours extends Command
         foreach ($timeTrackRecords as $record) {
             /** @var User $user */
             $user = $record->user;
+            dump('user ID:' . $user->id);
             if ($user) {
                 $userSchedule = $user->schedule();
                 $enterTime = $record->enter;
