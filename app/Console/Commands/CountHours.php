@@ -34,7 +34,7 @@ class CountHours extends Command
                 }
             )
             ->get();
-
+        dd($timeTrackRecords);
         foreach ($timeTrackRecords as $record) {
             /** @var User $user */
             $user = $record->user;
