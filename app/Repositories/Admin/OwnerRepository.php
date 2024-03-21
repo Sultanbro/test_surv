@@ -58,6 +58,7 @@ class OwnerRepository extends CoreRepository
                 'last_name',
                 'name',
                 'email',
+                'phone',
                 'created_at',
                 'login_at',
                 'birthday',
@@ -71,15 +72,15 @@ class OwnerRepository extends CoreRepository
 
         foreach ($owners as $owner) {
             $subDomains = [];
-            foreach ($owner->tenants as $tenant) {
+            foreach ($owner->portals as $portal) {
                 $subDomains[] = [
-                    'id' => $tenant->portal->tenant_id,
-                    'currency' => $tenant->portal->currency
+                    'id' => $portal->tenant_id,
+                    'currency' => $portal->currency
                 ];
             }
 
             $owner->subdomains = $subDomains;
-            $owner->balance = $owner->balance . ' KZT';
+            $owner->balance = $owner->balance . ' ' . strtoupper($owner->currency);
             unset($owner->tenants);
         }
 
@@ -94,7 +95,7 @@ class OwnerRepository extends CoreRepository
      */
     private function filter(Request $request)
     {
-        $owners = $this->model()->query()->withWhereHas('tenants.portal');
+        $owners = $this->model()->query()->withWhereHas('portals');
 
         if ($request->has('id')) {
             $owners->where('id', $request->id);

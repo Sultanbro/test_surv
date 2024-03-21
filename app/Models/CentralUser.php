@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enums\ErrorCode;
+use App\Models\Portal\Portal;
 use App\Support\Core\CustomException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string name
@@ -102,6 +104,11 @@ class CentralUser extends Model
     public function tenants(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
+    }
+
+    public function portals(): HasMany
+    {
+        return $this->hasMany(Portal::class, 'owner_id');
     }
 
 
