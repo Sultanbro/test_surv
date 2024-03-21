@@ -68,7 +68,6 @@ class CountHours extends Command
     ): float
     {
         $lunchTime = $this->getLaunchTime($schedule);
-        dd($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime);
         $maxWorkMinutesPerDay = max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
