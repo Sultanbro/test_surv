@@ -4,7 +4,9 @@
 		:class="{'jNav-menu-lang-active': active}"
 		class="jNav-menu-lang"
 		href="javascript:void(0)"
-		@click="active = !active"
+		@click="togglePopup"
+		@mouseover="showPopup"
+		@mouseleave="hidePopup"
 	>
 		{{ lang.toUpperCase() }}
 		<div
@@ -57,12 +59,23 @@ export default {
 	},
 	data() {
 		return {
-			active: false
+			active: false,
+			timeout: null,
 		}
 	},
 	methods: {
 		hidePopup() {
-			if (this.active) this.active = false
+			this.timeout = setTimeout(() => {
+				this.active = false
+			}, 300)
+		},
+		showPopup(){
+			clearTimeout(this.timeout)
+			this.active = true
+		},
+		togglePopup(){
+			clearTimeout(this.timeout)
+			this.active = !this.active
 		}
 	}
 }
@@ -94,9 +107,10 @@ export default {
 .jNav-menu-lang-popup {
   display: none;
   width: auto;
+	padding: 0.5rem;
   position: absolute;
   top: 115%;
-  right: -40px;
+  left: 0;
   background: #fff;
   box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
   border-radius: 0.8rem;
