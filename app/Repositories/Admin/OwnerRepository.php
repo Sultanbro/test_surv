@@ -66,7 +66,7 @@ class OwnerRepository extends CoreRepository
                 'lead',
                 'balance',
             ])
-            ->orderBy($request->get('order_by'), $request->get('order_direction') ?? 'ASC')
+            ->orderBy($request->get('order_by') ?? 'id', $request->get('order_direction') ?? 'ASC')
             ->paginate($perPage);
 
         foreach ($owners as $owner) {
