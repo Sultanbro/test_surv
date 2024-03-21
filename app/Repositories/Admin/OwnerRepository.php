@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\CentralUser;
 use Carbon\Carbon;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class OwnerRepository extends CoreRepository
 {
@@ -85,20 +86,17 @@ class OwnerRepository extends CoreRepository
     {
         $owners = $this->model()->query()->withWhereHas('portals');
 
-        if ($request->has('id')) {
-            $owners->where('id', $request->get('id'));
-        }
-
-        if ($request->has('name')) {
-            $owners->where('name', 'like', '%' . trim($request->get('name')) . '%');
-        }
-
-        if ($request->has('last_name')) {
-            $owners->where('last_name', 'like', '%' . trim($request->get('last_name')) . '%');
-        }
-
-        if ($request->has('email')) {
-            $owners->where('email', 'like', '%' . trim($request->get('email')) . '%');
+        $search = $request->get('query');
+        if ($search) {
+            $owners->where(function ($q) use ($search){
+                $q->where('id', $search)
+                    ->orWhere('email', 'like', '%' . trim($search) . '%')
+                    ->orWhere('phone', 'like', '%' . trim($search) . '%')
+                    ->orWhere('country', 'like', '%' . trim($search) . '%')
+                    ->orWhere('lead', 'like', '%' . trim($search) . '%')
+                    ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . trim($search) . '%')
+                    ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . trim($search) . '%');
+            });
         }
 
         if ($request->has('>login_at')) {
@@ -123,18 +121,6 @@ class OwnerRepository extends CoreRepository
 
         if ($request->has('<balance')) {
             $owners->where('balance', '<=', $request['<balance']);
-        }
-
-        if ($request->has('country')) {
-            $owners->where('country', 'like', '%' . $request->get('country') . '%');
-        }
-
-        if ($request->has('city')) {
-            $owners->where('city', 'like', '%' . trim($request->get('city')) . '%');
-        }
-
-        if ($request->has('lead')) {
-            $owners->where('lead', 'like', '%' . trim($request->get('lead')) . '%');
         }
 
         if ($request->has('subdomains')) {
