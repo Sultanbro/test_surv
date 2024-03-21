@@ -274,9 +274,14 @@ function getManagerName(userId: number){
           cols="4"
           class="d-flex aic justify-center"
         >
-          <VBtn @click="emit('scrollEnd')">
+          <!-- <VBtn @click="emit('scrollEnd')">
             Загрузить еще
-          </VBtn>
+          </VBtn> -->
+          <VPagination
+            v-model="userDataStore.page"
+            :length="userDataStore.lastPage"
+            :total-visible="5"
+          />
         </VCol>
         <VCol
           cols="4"

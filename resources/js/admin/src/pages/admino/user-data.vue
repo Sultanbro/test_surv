@@ -43,11 +43,15 @@ const sort = computed(() => ({
   field: userDataStore.sortField,
   order: userDataStore.sortOrder,
 }))
+const page = computed(() => userDataStore.page)
 
 watch(onPage, () => {
   userDataStore.fetchUsers(filters.value, {clear: true})
 })
 watch(sort, () => {
+  userDataStore.fetchUsers(filters.value, {clear: true})
+})
+watch(page, () => {
   userDataStore.fetchUsers(filters.value, {clear: true})
 })
 

@@ -43,7 +43,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     page.value = 1
   }
   function fetchUsers(filters: UserDataRequest, options: FetchUsersOptions = {}): void {
-    page.value = 1
+    if(options.clear) userData.value = []
     const request = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
       if (value !== '') opt[key] = value
       return opt
@@ -55,7 +55,6 @@ export const useUserDataStore = defineStore('user-data', () => {
     })
 
     isLoading.value = true
-    if(options.clear) userData.value = []
     fetchUserData(request).then(data => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
