@@ -39,7 +39,7 @@ class SetExitTimetrackingForMonth extends Command
 
             /** @var Timetracking $record */
             foreach ($records as $record) {
-                dump($record->user_id . ' date: ' . $currentDate->toDateTimeString());
+//                dump($record->user_id . ' date: ' . $currentDate->toDateTimeString());
                 /** @var Carbon $workEndTime */
                 $workEndTime = $record->user->schedule()['end'];
 
