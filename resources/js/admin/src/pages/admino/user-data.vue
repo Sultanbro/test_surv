@@ -91,6 +91,7 @@ const colname: {[key: string]: string} = {
   id: 'ID',
   fio: 'ФИО',
   email: 'Email',
+  phone: 'Телефон',
   created_at: 'Создан',
   login_at: 'Вход',
   tenants: 'Домены',
