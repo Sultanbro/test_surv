@@ -30,7 +30,7 @@ class CountHours extends Command
                     $query->whereDate('enter', '<=', $givenDate->endOfMonth());
                 },
                 function (Builder $query) use ($date) {
-                    $query->whereDate('date', $date);
+                    $query->whereDate('enter', $date);
                 }
             )
             ->get();
