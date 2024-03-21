@@ -28,6 +28,7 @@ class AddAdminService
         AddOrUpdateAdminDTO $dto
     ): Model
     {
+        $fileName = "";
         try {
             $fileName = $this->uploadFile('admins/images', $dto->image);
         } catch (Exception) {}
