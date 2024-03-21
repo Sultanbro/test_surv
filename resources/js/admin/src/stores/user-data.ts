@@ -2,6 +2,26 @@ import { fetchUserData } from './api'
 import type { UserData, UserDataRequest, UserDataResponse } from './api'
 
 export type UserDataKeys = keyof UserData
+export type FetchUsersOptions = {
+  clear?: boolean
+}
+export type ShowCols = {[key: string]: boolean}
+
+const defaultCols = {
+  id: true,
+  fio: true,
+  email: true,
+  created_at: true,
+  login_at: true,
+  tenants: true,
+  currency: true,
+  lead: true,
+  balance: true,
+  birthday: true,
+  country: true,
+  city: true,
+  manager: true,
+}
 
 export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
@@ -13,14 +33,17 @@ export const useUserDataStore = defineStore('user-data', () => {
   const sortField = ref('id')
   const sortOrder = ref('asc')
   const isLoading = ref(false)
-  function setSort(field: UserDataKeys | '', type: string) {
+
+
+
+  function setSort(field: string, type: string) {
     sortField.value = field
     sortOrder.value = type
     page.value = 1
   }
-  function fetchUsers(filters: UserDataRequest): void {
+  function fetchUsers(filters: UserDataRequest, options: FetchUsersOptions = {}): void {
     page.value = 1
-    const options = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
+    const request = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
       if (value !== '') opt[key] = value
       return opt
     }, {
@@ -31,7 +54,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     })
 
     isLoading.value = true
-    fetchUserData(options).then(data => {
+    if(options.clear) userData.value = []
+    fetchUserData(request).then(data => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
         userData.value = data.items.data
@@ -62,6 +86,16 @@ export const useUserDataStore = defineStore('user-data', () => {
     })
   }
 
+  // showcols
+  const showCols = ref({
+    ...defaultCols,
+    ...JSON.parse(localStorage.getItem('UserData-showCols') || '{}')
+  })
+  function saveShowCols(){
+    localStorage.setItem('UserData-showCols', JSON.stringify(showCols.value))
+  }
+  // showcols
+
   return {
     userData,
     userManagers,
@@ -73,9 +107,11 @@ export const useUserDataStore = defineStore('user-data', () => {
     sortField,
     sortOrder,
     isLoading,
+    showCols,
 
     fetchUsers,
     nextPage,
     setSort,
+    saveShowCols,
   }
 })
