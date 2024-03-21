@@ -48,7 +48,7 @@
 		<Popup
 			v-if="popFAQ"
 			title="Вопросы и ответы"
-			desc="Часто задаваемые вопрпосы и ГИД по системе jobjtron"
+			desc="Часто задаваемые вопрпосы и ГИД по системе jobtron"
 			:open="popFAQ"
 			width="80%"
 			@close="popFAQ=false"
