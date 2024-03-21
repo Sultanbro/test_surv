@@ -105,6 +105,11 @@ function getManagerName(userId: number){
             </th>
             <th
               class="text-center"
+            >
+              Валюта
+            </th>
+            <th
+              class="text-center"
               @click="setSort('lead')"
             >
               Лид{{ sortSymbol('lead') }}
@@ -160,10 +165,20 @@ function getManagerName(userId: number){
               <template v-if="item.subdomains">
                 <VChip
                   v-for="sub in item.subdomains"
-                  :key="sub"
+                  :key="sub.id"
                   class="ma-2"
                   size="small"
-                >{{ sub }}</VChip>
+                >{{ sub.id }}</VChip>
+              </template>
+            </td>
+            <td class="text-center">
+              <template v-if="item.subdomains">
+                <VChip
+                  v-for="sub in item.subdomains"
+                  :key="sub.id"
+                  class="ma-2"
+                  size="small"
+                >{{ sub.currency }}</VChip>
               </template>
             </td>
             <td class="text-center">
