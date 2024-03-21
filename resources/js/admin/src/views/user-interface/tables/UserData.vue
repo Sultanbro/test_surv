@@ -18,16 +18,12 @@ function sortSymbol(field: string) {
 
   return ''
 }
-function setSort(field: UserDataKeys | '') {
-  if (userDataStore.sortField === field) {
-    if (userDataStore.sortOrder === 'desc'){
-      userDataStore.setSort('', '')
-    }
-    else{
-      userDataStore.setSort(field, 'desc')
-    }
+function setSort(field: string) {
+  console.log('setSort', field, userDataStore.sortField, userDataStore.sortOrder)
+  if (userDataStore.sortField === field && userDataStore.sortOrder === 'asc') {
+    return userDataStore.setSort(field, 'desc')
   }
-  userDataStore.setSort(field, '')
+  userDataStore.setSort(field, 'asc')
 }
 function o(n: number){
   if(n < 10) return '0' + n
@@ -73,37 +69,48 @@ function getManagerName(userId: number){
       <VTable fixed-header>
         <thead>
           <tr>
-            <th @click="setSort('id')">
+            <th
+              v-if="userDataStore.showCols.id"
+              @click="setSort('id')"
+            >
               id{{ sortSymbol('id') }}
             </th>
-            <th @click="setSort('full_name')">
-              ФИО{{ sortSymbol('full_name') }}
+            <th
+              v-if="userDataStore.showCols.fio"
+              @click="setSort('last_name')"
+            >
+              ФИО{{ sortSymbol('last_name') }}
             </th>
             <th
+              v-if="userDataStore.showCols.email"
               class="text-center"
               @click="setSort('email')"
             >
               email{{ sortSymbol('email') }}
             </th>
             <th
+              v-if="userDataStore.showCols.created_at"
               class="text-center"
               @click="setSort('created_at')"
             >
               Создан{{ sortSymbol('created_at') }}
             </th>
             <th
+              v-if="userDataStore.showCols.login_at"
               class="text-center"
               @click="setSort('login_at')"
             >
               Вход{{ sortSymbol('login_at') }}
             </th>
             <th
+              v-if="userDataStore.showCols.tenants"
               class="text-center"
               @click="setSort('subdimains')"
             >
               Домены{{ sortSymbol('subdimains') }}
             </th>
             <th
+              v-if="userDataStore.showCols.lead"
               class="text-center"
             >
               Валюта
@@ -115,30 +122,35 @@ function getManagerName(userId: number){
               Лид{{ sortSymbol('lead') }}
             </th>
             <th
+              v-if="userDataStore.showCols.balance"
               class="text-center"
               @click="setSort('balance')"
             >
               Баланс{{ sortSymbol('balance') }}
             </th>
             <th
+              v-if="userDataStore.showCols.birthday"
               class="text-center"
               @click="setSort('birthday')"
             >
               День рождения{{ sortSymbol('birthday') }}
             </th>
             <th
+              v-if="userDataStore.showCols.country"
               class="text-center"
               @click="setSort('country')"
             >
               Страна{{ sortSymbol('country') }}
             </th>
             <th
+              v-if="userDataStore.showCols.city"
               class="text-center"
               @click="setSort('city')"
             >
               Город{{ sortSymbol('city') }}
             </th>
             <th
+              v-if="userDataStore.showCols.manager"
               class="text-center"
             >
               Менеджер
@@ -150,18 +162,30 @@ function getManagerName(userId: number){
             v-for="item in userDataStore.userData"
             :key="item.id"
           >
-            <td>{{ item.id }}</td>
-            <td>{{ item.full_name }}</td>
-            <td class="text-center">
+            <td v-if="userDataStore.showCols.id">{{ item.id }}</td>
+            <td v-if="userDataStore.showCols.fio">{{ item.full_name }}</td>
+            <td
+              v-if="userDataStore.showCols.email"
+              class="text-center"
+            >
               <a :href="`mailto:${item.email}`">{{ item.email }}</a>
             </td>
-            <td class="text-center whsnw">
+            <td
+              v-if="userDataStore.showCols.created_at"
+              class="text-center whsnw"
+            >
               {{ formatDateTime(item.created_at) }}
             </td>
-            <td class="text-center whsnw">
+            <td
+              v-if="userDataStore.showCols.login_at"
+              class="text-center whsnw"
+            >
               {{ item.login_at ? formatDateTime(item.login_at) : '' }}
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.tenants"
+              class="text-center"
+            >
               <template v-if="item.subdomains">
                 <VChip
                   v-for="sub in item.subdomains"
@@ -181,24 +205,42 @@ function getManagerName(userId: number){
                 >{{ sub.currency }}</VChip>
               </template>
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.lead"
+              class="text-center"
+            >
               <a v-if="item.lead" :href="item.lead" target="_blank">
                 {{ item.lead.split('/').reverse()[0] }}
               </a>
             </td>
-            <td class="text-center">
-              {{ item.balance }}
+            <td
+              v-if="userDataStore.showCols.balance"
+              class="text-center"
+            >
+              {{ item.balance === 'KZT' ? '0' : '' }} {{ item.balance }}
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.birthday"
+              class="text-center"
+            >
               {{ item.birthday ? formatDate(item.birthday) : '' }}
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.country"
+              class="text-center"
+            >
               {{ item.country }}
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.city"
+              class="text-center"
+            >
               {{ item.city }}
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.manager"
+              class="text-center"
+            >
               <Action @click="$emit('manager', item.id)">{{ getManagerName(item.id) }}</Action>
             </td>
           </tr>

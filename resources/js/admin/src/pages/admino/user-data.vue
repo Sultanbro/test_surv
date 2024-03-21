@@ -39,18 +39,21 @@ const filters = ref<UserDataRequest>({
 const filtersMenu = ref(false)
 
 const onPage = computed(() => userDataStore.onPage)
+const sort = computed(() => ({
+  field: userDataStore.sortField,
+  order: userDataStore.sortOrder,
+}))
 
 watch(onPage, () => {
-  userDataStore.fetchUsers(filters.value)
+  userDataStore.fetchUsers(filters.value, {clear: true})
+})
+watch(sort, () => {
+  userDataStore.fetchUsers(filters.value, {clear: true})
 })
 
 function onSubmitFilters(){
   filtersMenu.value = false
-  userDataStore.fetchUsers(filters.value)
-}
-function onSort(){
-  filtersMenu.value = false
-  userDataStore.fetchUsers(filters.value)
+  userDataStore.fetchUsers(filters.value, {clear: true})
 }
 
 function nextPage(){
@@ -83,11 +86,33 @@ watch(managerUserId, value => {
 function saveManager(){
   managersStore.setManager(managerUserId.value, manager.value.value)
 }
+
+const colname: {[key: string]: string} = {
+  id: 'ID',
+  fio: 'ФИО',
+  email: 'Email',
+  created_at: 'Создан',
+  login_at: 'Вход',
+  tenants: 'Домены',
+  currency: 'Валюта',
+  lead: 'Лид',
+  balance: 'Баланс',
+  birthday: 'День рождения',
+  country: 'Страна',
+  city: 'Город',
+  manager: 'Менеджер',
+}
+const showColsMenu = ref(false)
+const showCols = computed(() => userDataStore.showCols)
+watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
 </script>
 
 <template>
   <VRow>
-    <VCol cols="12">
+    <VCol
+      cols="12"
+      class="d-flex aic gap-4"
+    >
       <v-menu
         v-model="filtersMenu"
         :close-on-content-click="false"
@@ -109,13 +134,52 @@ function saveManager(){
           />
         </VCard>
       </v-menu>
+      <v-menu
+        v-model="showColsMenu"
+        :close-on-content-click="false"
+        location="bottom"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="indigo"
+            icon="mdi-eye"
+            density="comfortable"
+            v-bind="props"
+          />
+        </template>
+
+        <VCard title="Показывать колонки">
+          <VContainer>
+            <VRow>
+              <VCol
+                v-for="val, col in userDataStore.showCols"
+                :key="col"
+                cols="4"
+                class="py-0"
+              >
+
+                <VCheckbox
+                  v-model="userDataStore.showCols[col]"
+                  :label="colname[col] || `${col}`"
+                />
+              </VCol>
+              <!-- <VCol cols="12">
+                <v-btn
+                  color="indigo"
+                >
+                  Сохранить
+                </v-btn>
+              </VCol> -->
+            </VRow>
+          </VContainer>
+        </VCard>
+      </v-menu>
     </VCol>
     <VCol cols="12">
       <VCard title="Данные пользователей">
         <UserData
           @manager="managerUserId = $event"
           @scrollEnd="nextPage"
-          @sort="onSort"
         />
       </VCard>
     </VCol>

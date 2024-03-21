@@ -24,7 +24,9 @@
 						:class="{'jNav-menu-lang-active': active}"
 						class="jNav-menu-hamburger jButton"
 						href="javascript:void(0)"
-						@click="active = !active"
+						@click="toggleActive"
+						@mouseover="showActive"
+						@mouseleave="hideActive"
 					>
 						<div class="jNav-menu-lang-popup">
 							<li class="jNav-menu-item jNav-menu-item-md">
@@ -155,6 +157,7 @@ export default {
 			isScroll: false,
 			active: false,
 			isUserMenuActive: false,
+			timeout: null,
 		}
 	},
 
@@ -204,6 +207,21 @@ export default {
 			this.$nextTick(() => {
 				this.isUserMenuActive = !this.isUserMenuActive
 			})
+		},
+		toggleActive(){
+			clearTimeout(this.timeout)
+			this.$nextTick(() => {
+				this.active = !this.active
+			})
+		},
+		showActive(){
+			clearTimeout(this.timeout)
+			this.active = true
+		},
+		hideActive(){
+			this.timeout = setTimeout(() => {
+				this.active = false
+			}, 300)
 		},
 		cabinetRedirect(tenantId){
 			const url = new URL(window.location.href)
@@ -326,7 +344,7 @@ export default {
 
 .jNav-menu-item .jNav-menu-link {
 	font-size: 0.9rem;
-	padding: 1.25rem;
+	padding: 0.5rem;
 }
 
 @media (max-width: $small) {
@@ -491,7 +509,7 @@ export default {
 	.jNav-menu-lang-popup .jNav-menu-item {
 		margin-left: 0;
 		display: flex;
-		justify-content: center;
+		justify-content: start;
 	}
 
 	.jNav-menu-lang-popup .jNav-menu-lang:after {
