@@ -885,7 +885,7 @@ class TimetrackingController extends Controller
             $user->dayTypes = $daytypes;
             $user->weekdays = $weekdays;
 
-            $user_applied_at = UserDescription::where('user_id', $user->id)->first();
+            $user_applied_at = UserDescription::query()->where('user_id', $user->id)->first();
             if ($user_applied_at && $user_applied_at->applied) {
                 $user_applied_at = $user_applied_at->applied;
             } else {
@@ -904,7 +904,7 @@ class TimetrackingController extends Controller
             $data['users'][] = $user;
 
             foreach ($user->timetracking as $tt) {
-                $tt->minutes = $tt->total_hours;
+                $tt->minutes = $tt->minutes / 60;
             }
 
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $user->id)->first();
