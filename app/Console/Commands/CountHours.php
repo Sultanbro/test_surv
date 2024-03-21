@@ -26,15 +26,14 @@ class CountHours extends Command
         $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUser($userId)
             ->when($givenDate,
                 function (Builder $query) use ($givenDate) {
-                    $query->whereDate('enter', '>=', $givenDate->startOfMonth());
-                    $query->whereDate('enter', '<=', $givenDate->endOfMonth());
+                    $query->whereDate('enter', '>=', $givenDate->toDateTimeString());
+                    $query->whereDate('enter', '<=', $givenDate->toDateTimeString());
                 },
                 function (Builder $query) use ($date) {
                     $query->whereDate('enter', $date);
                 }
             )
             ->get();
-        dd($timeTrackRecords);
         foreach ($timeTrackRecords as $record) {
             /** @var User $user */
             $user = $record->user;
