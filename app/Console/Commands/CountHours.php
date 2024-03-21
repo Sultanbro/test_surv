@@ -44,9 +44,9 @@ class CountHours extends Command
                 $enterTime = $record->enter;
                 $exitTime = $record->exit;
                 $minutes = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
-                dump('user ID:' . $user->id);
-                dump('рабочые минуты:' . $minutes);
-                dump('дата:' . Carbon::parse($record->enter)->toDateTimeString());
+                dump('user ID: ' . $user->id);
+                dump('рабочые минуты: ' . $minutes);
+                dump('дата: ' . Carbon::parse($record->enter)->toDateTimeString());
 
                 $record->update([
                     'total_hours' => $minutes
