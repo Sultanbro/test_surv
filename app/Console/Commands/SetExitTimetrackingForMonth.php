@@ -28,6 +28,7 @@ class SetExitTimetrackingForMonth extends Command
         $from = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
         $to = Carbon::parse($this->argument('date') ?? now())->endOfMonth();
         while ($from->lessThan($to)) {
+            dump($from->toDateTimeString());
             $currentDate = $from;
             $dayBeforeCurrentDate = $from->copy()->subDay();
             $records = Timetracking::with('user')
