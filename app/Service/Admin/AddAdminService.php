@@ -28,7 +28,7 @@ class AddAdminService
         AddOrUpdateAdminDTO $dto
     ): Model
     {
-        $fileName = FileHelper::save($dto->image, 'admins/images');
+        $fileName = $this->uploadFile('admins/images', $dto->image);
         $user = User::getByEmail($dto->email)->exists();
 
         if ($user)
@@ -50,5 +50,17 @@ class AddAdminService
 
             return  $user;
         });
+    }
+
+    private function uploadFile(String $path, $file)
+    {
+        $disk = \Storage::disk('s3');
+
+        $extension = $file->getClientOriginalExtension();
+        $fileName = uniqid() . '_' . md5((string) time()) . '.' . $extension;
+
+        $disk->putFileAs($path, $file, $fileName);
+
+        return $path . '/' . $fileName;
     }
 }
