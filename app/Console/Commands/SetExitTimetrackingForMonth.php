@@ -38,7 +38,7 @@ class SetExitTimetrackingForMonth extends Command
                 ->get();
 
             $this->touch($records, $currentDate);
-
+            dump($from->toDateTimeString());
             $from->addDay();
         }
     }
