@@ -30,7 +30,7 @@ class SetExitTimetrackingForMonth extends Command
 
         while ($from->lessThan($to)) {
             dump($from->toDateTimeString());
-            $currentDate = $from;
+            $currentDate = $from->copy();
             $dayBeforeCurrentDate = $from->copy()->subDay();
             $records = Timetracking::with('user')
                 ->whereHas('user')
@@ -38,7 +38,6 @@ class SetExitTimetrackingForMonth extends Command
                 ->get();
 
             $this->touch($records, $currentDate);
-            dump($from->toDateTimeString());
             $from->addDay();
         }
     }
