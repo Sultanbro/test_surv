@@ -28,7 +28,10 @@ class AddAdminService
         AddOrUpdateAdminDTO $dto
     ): Model
     {
-        $fileName = $this->uploadFile('admins/images', $dto->image);
+        try {
+            $fileName = $this->uploadFile('admins/images', $dto->image);
+        } catch (Exception) {}
+
         $user = User::getByEmail($dto->email)->exists();
 
         if ($user)
