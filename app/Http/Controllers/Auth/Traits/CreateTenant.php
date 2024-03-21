@@ -37,6 +37,7 @@ trait CreateTenant
             ->create([
                 'tenant_id' => $tenant->id,
                 'owner_id' => $centralUser->getKey(),
+                'currency' => $centralUser->currency
             ]);
 
         $mail = new PortalCreatedMail([

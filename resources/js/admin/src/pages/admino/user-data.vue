@@ -43,11 +43,15 @@ const sort = computed(() => ({
   field: userDataStore.sortField,
   order: userDataStore.sortOrder,
 }))
+const page = computed(() => userDataStore.page)
 
 watch(onPage, () => {
   userDataStore.fetchUsers(filters.value, {clear: true})
 })
 watch(sort, () => {
+  userDataStore.fetchUsers(filters.value, {clear: true})
+})
+watch(page, () => {
   userDataStore.fetchUsers(filters.value, {clear: true})
 })
 
@@ -91,6 +95,7 @@ const colname: {[key: string]: string} = {
   id: 'ID',
   fio: 'ФИО',
   email: 'Email',
+  phone: 'Телефон',
   created_at: 'Создан',
   login_at: 'Вход',
   tenants: 'Домены',
