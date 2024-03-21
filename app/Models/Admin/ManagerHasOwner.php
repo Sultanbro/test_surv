@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class ManagerHasOwner extends Model
 {
     use HasFactory;
-    protected $connection = 'tenant';
+    protected $connection = 'tenant'; // model only for tenantadmin !
     protected $table = 'manager_has_owner';
 
     protected $fillable = [
@@ -95,5 +96,13 @@ class ManagerHasOwner extends Model
     public function managers(): HasMany
     {
         return $this->hasMany(User::class, 'id', 'manager_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function manager(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'manager_id');
     }
 }

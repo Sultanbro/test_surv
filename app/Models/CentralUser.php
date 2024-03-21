@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\ErrorCode;
+use App\Models\Admin\ManagerHasOwner;
 use App\Models\Portal\Portal;
 use App\Support\Core\CustomException;
+use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -116,6 +118,11 @@ class CentralUser extends Model
     {
         return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id')
             ->withPivot(['owner as owner', 'user_id as user_id', 'tenant_id as tenant_id']);
+    }
+
+    public function managerHasOwner()
+    {
+        return $this->hasOne(ManagerHasOwner::class, 'owner_id');
     }
 
     public function getFullNameAttribute()

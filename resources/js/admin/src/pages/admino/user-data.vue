@@ -29,12 +29,7 @@ const filters = ref<UserDataRequest>({
   '<login_at': '',
   '>birthday': '',
   '<birthday': '',
-  'name': '',
-  'last_name': '',
-  'email': '',
-  'lead': '',
-  'city': '',
-  'country': '',
+  'query': '',
 })
 const filtersMenu = ref(false)
 
@@ -113,10 +108,10 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
 </script>
 
 <template>
-  <VRow>
+  <VRow class="por">
     <VCol
       cols="12"
-      class="d-flex aic gap-4"
+      class="userdata-filters"
     >
       <v-menu
         v-model="filtersMenu"
@@ -132,7 +127,10 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
           </v-btn>
         </template>
 
-        <VCard title="Фильтры">
+        <VCard
+          max-width="600"
+          title="Фильтры"
+        >
           <UserDataFilters
             v-model="filters"
             @submit="onSubmitFilters"
@@ -207,3 +205,14 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
     </SideBar>
   </VOverlay>
 </template>
+
+<style lang="scss">
+.userdata-filters{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  z-index: 999;
+  top: -75px;
+}
+</style>

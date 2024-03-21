@@ -4,6 +4,7 @@ import FlatPickr from 'vue-flatpickr-component'
 interface Props {
   modelValue: string
   label: string
+  density: string
 }
 const props = defineProps<Props>()
 const emit = defineEmits<{
@@ -20,7 +21,10 @@ const dateConfig = {
 <template>
   <label
     class="v-date-time"
-    :class="{'v-date-time_value': modelValue}"
+    :class="[
+      `v-date-time--density-${density || 'comfortable'}`,
+      {'v-date-time_value': modelValue},
+    ]"
   >
     <FlatPickr
       :model-value="modelValue"
@@ -92,5 +96,8 @@ const dateConfig = {
   transform: translateY(-50%);
   transition: 300ms ease all;
   white-space: nowrap;
+}
+.v-date-time--density-compact .v-date-time-input{
+  padding: 8px 16px;
 }
 </style>

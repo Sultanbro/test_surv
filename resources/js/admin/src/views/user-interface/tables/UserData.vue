@@ -258,7 +258,7 @@ function getManagerName(userId: number){
               v-if="userDataStore.showCols.manager"
               class="text-center"
             >
-              <Action @click="$emit('manager', item.id)">{{ getManagerName(item.id) }}</Action>
+              <Action @click="$emit('manager', item.id)">{{ item.manager?.last_name || '' }} {{ item.manager?.name || '' }}</Action>
             </td>
           </tr>
         </tbody>
