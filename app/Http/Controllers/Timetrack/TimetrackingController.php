@@ -903,9 +903,9 @@ class TimetrackingController extends Controller
 
             $data['users'][] = $user;
 
-//            foreach ($user->timetracking as $tt) {
-//                $tt->minutes = $tt->total_hourse;
-//            }
+            foreach ($user->timetracking as $tt) {
+                $tt->minutes = $tt->minutes / 60;
+            }
 
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $user->id)->first();
 
