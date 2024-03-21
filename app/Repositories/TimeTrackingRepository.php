@@ -7,8 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
-* Класс для работы с Repository.
-*/
+ * Класс для работы с Repository.
+ */
 class TimeTrackingRepository extends CoreRepository
 {
     /**
@@ -43,12 +43,12 @@ class TimeTrackingRepository extends CoreRepository
     }
 
     public function updateOrCreate(
-        int $userId,
-        int $year,
-        int $month,
-        int $day,
-        string $time,
-        string $enter,
+        int     $userId,
+        int     $year,
+        int     $month,
+        int     $day,
+        string  $time,
+        string  $enter,
         ?string $comment
     ): string
     {
@@ -75,20 +75,18 @@ class TimeTrackingRepository extends CoreRepository
 
     /**
      * @param ?int $userId
-     * @param string $date
      * @return Builder
      */
-    public function getNonUpdatedTimeTrackWithUserByDate(
-        ?int $userId,
-        string $date,
+    public function getNonUpdatedTimeTrackWithUser(
+        ?int   $userId = null,
     ): Builder
     {
-        return $this->model()->with('user')
+        return $this->model()
+            ->with('user')
             ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
             ->when($userId, fn($query) => $query->where('user_id', $userId))
             ->where('updated', 0)
             ->where('total_hours', 0)
-            ->whereDate('enter',  $date)
             ->whereNotNull('exit');
     }
 }

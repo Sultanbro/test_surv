@@ -817,9 +817,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         }
         //test bonuses
-        $bonusesSum += $this->testBonuses
-            ->where('date', '>=', now()->format('Y-m-d'))
-            ->sum('amount');
+        $bonusesSum += 0;
 
         $kpi = SavedKpi::where('user_id', $this->id)
             ->where('date', $date->format('Y-m-d'))

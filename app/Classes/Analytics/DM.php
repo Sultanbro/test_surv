@@ -157,14 +157,10 @@ class DM
     public static function updateTimesNew(int $user_id, $date) {
         $setting = UserStat::where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 20])->first();
 
-        $carbon = Carbon::parse($date);
-        
-        if($setting) {  
+        if($setting) {
             $actions = (float)$setting->value;
 
             $activity19 = UserStat::where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 19])->first();
-
-            $div = $actions / 12;
 
             $value_for_19 = self::getHoursByActionsForRussia($actions);
 

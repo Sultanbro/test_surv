@@ -28,7 +28,7 @@ class CellTimeService extends CellService
             $columnDate = $this->getDate($dto->year, $dto->month, $column->name);
             $stat = $this->statRepository->getStatisticOrNull($columnDate, $dto->rowId, $column->id);
             $totalForDay = Timetracking::totalHours($date, $dto->groupId);
-            $totalForDay = floor($totalForDay / 9 * 10) / 10;
+            $totalForDay = floor($totalForDay / 9 * 10 / 10);
 
             $stat?->update([
                 'value' => $totalForDay,

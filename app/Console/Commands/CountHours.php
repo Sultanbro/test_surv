@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Repositories\TimeTrackingRepository;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 
 class CountHours extends Command
 {
@@ -45,11 +47,23 @@ class CountHours extends Command
     public function handle(): void
     {
         $userId = (int)$this->argument('user_id') ?? null;
-        $date = $this->argument('date') ?? now()->format('Y-m-d');
+        $date = now()->format('Y-m-d');
+        $givenDate = $this->argument('date') ? Carbon::parse($this->argument('date')) : null;
 
-        $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUserByDate($userId, $date)->get();
+        $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUser($userId)
+            ->when($givenDate,
+                function (Builder $query) use ($givenDate) {
+                    $query->where('date', '>=', $givenDate->startOfMonth());
+                    $query->where('date', '<=', $givenDate->endOfMonth());
+                },
+                function (Builder $query) use ($date) {
+                    $query->where('date', $date);
+                }
+            )
+            ->get();
 
         foreach ($timeTrackRecords as $record) {
+            /** @var User $user */
             $user = $record->user;
             if ($user) {
                 $userSchedule = $user->schedule();
