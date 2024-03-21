@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string country
  * @property string city
  * @property string balance
+ * @property string currency
  * relations
  * @property Collection $cabinets
  * @property Collection $tenants
@@ -33,7 +34,7 @@ class CentralUser extends Model
 
     protected $connection = 'mysql';
     protected $table = 'users';
-    
+
     protected $appends = ['full_name'];
 
     protected $fillable = [

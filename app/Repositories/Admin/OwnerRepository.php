@@ -36,7 +36,7 @@ class OwnerRepository extends CoreRepository
             ])->get();
 
         foreach ($owners as $owner) {
-            $owner->subdomains = $owner->tenants->pluck('id')->toArray();
+            $owner->subdomains = $owner->tenants->select('id', 'currency');
             $owner->balance = $owner->balance . ' KZT';
             unset($owner->tenants);
         }
@@ -70,7 +70,15 @@ class OwnerRepository extends CoreRepository
             ->paginate($perPage);
 
         foreach ($owners as $owner) {
-            $owner->subdomains = $owner->tenants->pluck('id')->toArray();
+            $subDomains = [];
+            foreach ($owner->tenants as $tenant) {
+                $subDomains[] = [
+                    'id' => $tenant->portal->tenant_id,
+                    'currency' => $tenant->portal->currency
+                ];
+            }
+
+            $owner->subdomains = $subDomains;
             $owner->balance = $owner->balance . ' KZT';
             unset($owner->tenants);
         }
@@ -86,7 +94,7 @@ class OwnerRepository extends CoreRepository
      */
     private function filter(Request $request)
     {
-        $owners = $this->model()->query()->has('tenants');
+        $owners = $this->model()->query()->withWhereHas('tenants.portal');
 
         if ($request->has('id')) {
             $owners->where('id', $request->id);
