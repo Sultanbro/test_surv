@@ -46,6 +46,7 @@ class CountHours extends Command
                 $minutes = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
                 dump('user ID:' . $user->id);
                 dump('рабочые минуты:' . $minutes);
+                dump('дата:' . Carbon::parse($record->enter)->toDateTimeString());
 
                 $record->update([
                     'total_hours' => $minutes
@@ -67,7 +68,7 @@ class CountHours extends Command
     ): float
     {
         $lunchTime = $schedule['rest_time'] ?? 60;
-
+        dd($schedule);
         $maxWorkMinutesPerDay = max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
