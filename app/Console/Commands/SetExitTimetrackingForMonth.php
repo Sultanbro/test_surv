@@ -25,8 +25,11 @@ class SetExitTimetrackingForMonth extends Command
      */
     public function handle(): void
     {
-        $from = Carbon::parse($this->argument('date') ?? now()->toDateString())->startOfMonth();
-        $to = Carbon::parse($this->argument('date') ?? now()->toDateString())->endOfMonth();
+        $from = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
+        $to = Carbon::parse($this->argument('date') ?? now())->endOfMonth();
+        dd($from->toDateTimeString(),
+            $to->toDateTimeString()
+        );
         while ($from <= $to) {
             $currentDate = $from;
             $dayBeforeCurrentDate = $from->copy()->subDay();
@@ -38,7 +41,7 @@ class SetExitTimetrackingForMonth extends Command
 
             /** @var Timetracking $record */
             foreach ($records as $record) {
-                dump($record->user_id . ' date: ' . $from->toDateTimeString());
+                dump($record->user_id . ' date: ' . $currentDate->toDateTimeString());
                 /** @var Carbon $workEndTime */
                 $workEndTime = $record->user->schedule()['end'];
 
