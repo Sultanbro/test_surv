@@ -89,6 +89,13 @@ function getManagerName(userId: number){
               email{{ sortSymbol('email') }}
             </th>
             <th
+              v-if="userDataStore.showCols.phone"
+              class="text-center"
+              @click="setSort('phone')"
+            >
+              Телефон{{ sortSymbol('phone') }}
+            </th>
+            <th
               v-if="userDataStore.showCols.created_at"
               class="text-center"
               @click="setSort('created_at')"
@@ -108,6 +115,12 @@ function getManagerName(userId: number){
               @click="setSort('subdimains')"
             >
               Домены{{ sortSymbol('subdimains') }}
+            </th>
+            <th
+              v-if="userDataStore.showCols.currency"
+              class="text-center"
+            >
+              Валюта
             </th>
             <th
               v-if="userDataStore.showCols.lead"
@@ -166,6 +179,12 @@ function getManagerName(userId: number){
               <a :href="`mailto:${item.email}`">{{ item.email }}</a>
             </td>
             <td
+              v-if="userDataStore.showCols.phone"
+              class="text-center"
+            >
+              {{ item.phone }}
+            </td>
+            <td
               v-if="userDataStore.showCols.created_at"
               class="text-center whsnw"
             >
@@ -184,10 +203,23 @@ function getManagerName(userId: number){
               <template v-if="item.subdomains">
                 <VChip
                   v-for="sub in item.subdomains"
-                  :key="sub"
+                  :key="sub.id"
                   class="ma-2"
                   size="small"
-                >{{ sub }}</VChip>
+                >{{ sub.id }}</VChip>
+              </template>
+            </td>
+            <td
+              v-if="userDataStore.showCols.currency"
+              class="text-center"
+            >
+              <template v-if="item.subdomains">
+                <VChip
+                  v-for="sub in item.subdomains"
+                  :key="sub.id"
+                  class="ma-2"
+                  size="small"
+                >{{ sub.currency }}</VChip>
               </template>
             </td>
             <td
@@ -242,9 +274,14 @@ function getManagerName(userId: number){
           cols="4"
           class="d-flex aic justify-center"
         >
-          <VBtn @click="emit('scrollEnd')">
+          <!-- <VBtn @click="emit('scrollEnd')">
             Загрузить еще
-          </VBtn>
+          </VBtn> -->
+          <VPagination
+            v-model="userDataStore.page"
+            :length="userDataStore.lastPage"
+            :total-visible="5"
+          />
         </VCol>
         <VCol
           cols="4"
