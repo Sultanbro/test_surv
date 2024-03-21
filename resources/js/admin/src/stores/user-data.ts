@@ -11,6 +11,7 @@ const defaultCols = {
   id: true,
   fio: true,
   email: true,
+  phone: true,
   created_at: true,
   login_at: true,
   tenants: true,

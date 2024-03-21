@@ -89,6 +89,13 @@ function getManagerName(userId: number){
               email{{ sortSymbol('email') }}
             </th>
             <th
+              v-if="userDataStore.showCols.phone"
+              class="text-center"
+              @click="setSort('phone')"
+            >
+              Телефон{{ sortSymbol('phone') }}
+            </th>
+            <th
               v-if="userDataStore.showCols.created_at"
               class="text-center"
               @click="setSort('created_at')"
@@ -110,12 +117,13 @@ function getManagerName(userId: number){
               Домены{{ sortSymbol('subdimains') }}
             </th>
             <th
-              v-if="userDataStore.showCols.lead"
+              v-if="userDataStore.showCols.currency"
               class="text-center"
             >
               Валюта
             </th>
             <th
+              v-if="userDataStore.showCols.lead"
               class="text-center"
               @click="setSort('lead')"
             >
@@ -171,6 +179,12 @@ function getManagerName(userId: number){
               <a :href="`mailto:${item.email}`">{{ item.email }}</a>
             </td>
             <td
+              v-if="userDataStore.showCols.phone"
+              class="text-center"
+            >
+              {{ item.phone }}
+            </td>
+            <td
               v-if="userDataStore.showCols.created_at"
               class="text-center whsnw"
             >
@@ -195,7 +209,10 @@ function getManagerName(userId: number){
                 >{{ sub.id }}</VChip>
               </template>
             </td>
-            <td class="text-center">
+            <td
+              v-if="userDataStore.showCols.currency"
+              class="text-center"
+            >
               <template v-if="item.subdomains">
                 <VChip
                   v-for="sub in item.subdomains"
