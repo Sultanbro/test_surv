@@ -23,17 +23,19 @@ class CountHours extends Command
         $date = now()->format('Y-m-d');
         $givenDate = $this->argument('date') ? Carbon::parse($this->argument('date')) : null;
 
-        $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUser($userId)
+        $timeTrackRecords = (new TimeTrackingRepository)
+            ->getNonUpdatedTimeTrackWithUser($userId)
             ->when($givenDate,
                 function (Builder $query) use ($givenDate) {
-                    $query->whereDate('enter', '>=', $givenDate->toDateTimeString());
-                    $query->whereDate('enter', '<=', $givenDate->toDateTimeString());
+                    $query->whereYear('enter', '>=', $givenDate->year);
+                    $query->whereMonth('enter', '>=', $givenDate->month);
                 },
                 function (Builder $query) use ($date) {
                     $query->whereDate('enter', $date);
                 }
             )
             ->get();
+        dd($timeTrackRecords);
         foreach ($timeTrackRecords as $record) {
             /** @var User $user */
             $user = $record->user;
