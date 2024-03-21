@@ -39,14 +39,8 @@ class AdminController extends Controller
      */
     public function owners(Request $request, OwnerRepository $ownerRepository): JsonResponse
     {
-        $owners = $ownerRepository->getOwnersPaginate($request->get('per_page'), $request);
-        $ownerIds = $owners->pluck('id')->toArray();
-
-        // TODO разделить на отдельные endpoint
-
         return response()->json([
-            'items' => $ownerRepository->getOwnersPaginate($request->get('per_page'), $request),
-            'manager' => ManagerHasOwner::getOwnersManagers($ownerIds)
+            'items' => $ownerRepository->getOwnersPaginate($request)
         ]);
     }
 
@@ -54,11 +48,10 @@ class AdminController extends Controller
      * Admins list
      * Who can log in to admin.jobtron.org
      *
-     * @param Request $request
      * @param OwnerRepository $ownerRepository
      * @return JsonResponse
      */
-    public function admins(Request $request, OwnerRepository $ownerRepository)
+    public function admins(OwnerRepository $ownerRepository)
     {
         return response()->json([
             'items' => $ownerRepository->getAdmins()

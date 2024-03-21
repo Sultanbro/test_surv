@@ -2,19 +2,20 @@
 
 namespace App\Repositories\Admin;
 
-use App\Models\CentralUser;
-use App\Repositories\CoreRepository;
-use App\User;
-use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use App\Repositories\CoreRepository;
 use Illuminate\Http\Request;
+use App\Models\CentralUser;
+use Carbon\Carbon;
+use App\User;
 
 class OwnerRepository extends CoreRepository
 {
     /**
      * @return string
      */
-    protected function getModelClass()
+    protected function getModelClass(): string
     {
         return CentralUser::class;
     }
@@ -22,37 +23,22 @@ class OwnerRepository extends CoreRepository
     /**
      * List of owners
      *
-     * @return \Illuminate\Support\Collection
      */
-    public function getOwners()
+    public function getOwnerIds(Request $request): array
     {
-        $owners = $this->model()
-            ->with('tenants')
-            ->select([
-                'id',
-                'last_name',
-                'name',
-                'email',
-            ])->get();
-
-        foreach ($owners as $owner) {
-            $owner->subdomains = $owner->tenants->select('id', 'currency');
-            $owner->balance = $owner->balance . ' KZT';
-            unset($owner->tenants);
-        }
-
-        return $owners;
+        return $this->filter($request)->pluck('id')->toArray();
     }
 
     /**
      * List of owners
      *
-     * @param int $perPage
      * @param Request $request
+     * @return LengthAwarePaginator
      */
-    public function getOwnersPaginate(int $perPage = 20, Request $request)
+    public function getOwnersPaginate(Request $request): LengthAwarePaginator
     {
         $owners = $this->filter($request)
+            ->with('managerHasOwner.manager')
             ->select([
                 'id',
                 'last_name',
@@ -68,7 +54,7 @@ class OwnerRepository extends CoreRepository
                 'balance',
             ])
             ->orderBy($request->get('order_by') ?? 'id', $request->get('order_direction') ?? 'ASC')
-            ->paginate($perPage);
+            ->paginate($request->get('per_page') ?? 20);
 
         foreach ($owners as $owner) {
             $subDomains = [];
@@ -80,8 +66,10 @@ class OwnerRepository extends CoreRepository
             }
 
             $owner->subdomains = $subDomains;
+            $owner->manager = $owner->managerHasOwner?->manager;
             $owner->balance = $owner->balance . ' ' . strtoupper($owner->currency);
-            unset($owner->tenants);
+            unset($owner->portals);
+            unset($owner->managerHasOwner);
         }
 
         return $owners;
@@ -93,24 +81,24 @@ class OwnerRepository extends CoreRepository
      * @param Request $request
      * @return Builder
      */
-    private function filter(Request $request)
+    private function filter(Request $request): Builder
     {
         $owners = $this->model()->query()->withWhereHas('portals');
 
         if ($request->has('id')) {
-            $owners->where('id', $request->id);
+            $owners->where('id', $request->get('id'));
         }
 
         if ($request->has('name')) {
-            $owners->where('name', 'like', '%' . trim($request->name) . '%');
+            $owners->where('name', 'like', '%' . trim($request->get('name')) . '%');
         }
 
         if ($request->has('last_name')) {
-            $owners->where('last_name', 'like', '%' . trim($request->last_name) . '%');
+            $owners->where('last_name', 'like', '%' . trim($request->get('last_name')) . '%');
         }
 
         if ($request->has('email')) {
-            $owners->where('email', 'like', '%' . trim($request->email) . '%');
+            $owners->where('email', 'like', '%' . trim($request->get('email')) . '%');
         }
 
         if ($request->has('>login_at')) {
@@ -138,22 +126,22 @@ class OwnerRepository extends CoreRepository
         }
 
         if ($request->has('country')) {
-            $owners->where('country', 'like', '%' . $request->country . '%');
+            $owners->where('country', 'like', '%' . $request->get('country') . '%');
         }
 
         if ($request->has('city')) {
-            $owners->where('city', 'like', '%' . trim($request->city) . '%');
+            $owners->where('city', 'like', '%' . trim($request->get('city')) . '%');
         }
 
         if ($request->has('lead')) {
-            $owners->where('lead', 'like', '%' . trim($request->lead) . '%');
+            $owners->where('lead', 'like', '%' . trim($request->get('lead')) . '%');
         }
 
         if ($request->has('subdomains')) {
-            if (is_array($request->subdomains)) {
-                $owners->whereIn('tenants.id', $request->subdomains);
+            if (is_array($request->get('subdomains'))) {
+                $owners->whereIn('tenants.id', $request->get('subdomains'));
             } else {
-                $owners->where('tenants.id', $request->subdomains);
+                $owners->where('tenants.id', $request->get('subdomains'));
             }
         }
 
