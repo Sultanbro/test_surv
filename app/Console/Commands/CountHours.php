@@ -39,12 +39,13 @@ class CountHours extends Command
         foreach ($timeTrackRecords as $record) {
             /** @var User $user */
             $user = $record->user;
-            dump('user ID:' . $user->id);
             if ($user) {
                 $userSchedule = $user->schedule();
                 $enterTime = $record->enter;
                 $exitTime = $record->exit;
                 $minutes = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
+                dump('user ID:' . $user->id);
+                dump('рабочые минуты:' . $minutes);
 
                 $record->update([
                     'total_hours' => $minutes
