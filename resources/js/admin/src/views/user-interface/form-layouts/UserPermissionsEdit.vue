@@ -123,7 +123,9 @@ function onSelectImage(files: FileList){
 </script>
 
 <template>
-  <VCard class="UserPermissionsEdit">
+  <VCard
+    class="UserPermissionsEdit"
+  >
     <VCardTitle>
       <span class="text-h5">Добавить доступ</span>
     </VCardTitle>
@@ -260,6 +262,10 @@ function onSelectImage(files: FileList){
         border-radius: 2rem;
       }
     }
+  }
+  .FilePicker{
+    width: 48px;
+    margin: 0 auto;
   }
 }
 

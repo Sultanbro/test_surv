@@ -7,10 +7,20 @@ const props = defineProps<{
 }>()
 
 const vuetifyTheme = useTheme()
-const { state: currentTheme, next: getNextThemeName, index: currentThemeIndex } = useCycleList(props.themes.map(t => t.name), { initialValue: vuetifyTheme.global.name.value })
+const {
+    state: currentTheme,
+    next: getNextThemeName,
+    index: currentThemeIndex
+} = useCycleList(props.themes.map(t => t.name), { initialValue: vuetifyTheme.global.name.value })
+
 const changeTheme = () => {
-  vuetifyTheme.global.name.value = getNextThemeName()
+  const newTheme = getNextThemeName()
+  localStorage.setItem('AdminTheme', newTheme)
+  vuetifyTheme.global.name.value = newTheme
 }
+
+const savedTheme = localStorage.getItem('AdminTheme')
+if(savedTheme) vuetifyTheme.global.name.value = savedTheme
 
 const getThemeIcon = computedWithControl(vuetifyTheme.global.name, () => {
   const nextThemeIndex = currentThemeIndex.value + 1 === props.themes.length ? 0 : currentThemeIndex.value + 1
