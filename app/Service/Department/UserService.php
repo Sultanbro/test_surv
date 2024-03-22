@@ -470,7 +470,7 @@ class UserService
      * @param String|null $date
      * @return void
      */
-``    public function fireUser(int $userID, $date = null): void
+    public function fireUser(int $userID, $date = null): void
     {
         if ($date == null) $date = date('Y-m-d');
 
