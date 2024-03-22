@@ -48,10 +48,11 @@ export default {
 		this.updateIcon()
 	},
 	beforeDestroy(){
-		const scriptTag = document.getElementById('bitrix-loader')
-		if(!scriptTag) return
-		scriptTag.remove()
 		// remove bitrix site button
+		const scriptTag = document.getElementById('bitrix-loader')
+		if(scriptTag) scriptTag.remove()
+
+		// stop pong
 		this.stopOlineTracking()
 	},
 	methods: {
