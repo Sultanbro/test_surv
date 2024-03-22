@@ -5,7 +5,7 @@ import type { UserDataKeys } from '@/stores/user-data'
 import Action from '@core/components/Action.vue'
 
 const emit = defineEmits<{
-  (e: 'manager', id: number): void
+  (e: 'manager', owner: {id: number, manager: {id: number}}): void
   (e: 'scrollEnd'): void
 }>()
 
@@ -258,7 +258,18 @@ function getManagerName(userId: number){
               v-if="userDataStore.showCols.manager"
               class="text-center"
             >
-              <Action @click="$emit('manager', item.id)">{{ item.manager?.last_name || '' }} {{ item.manager?.name || '' }}</Action>
+              <Action
+                v-if="item.manager"
+                @click="$emit('manager', item)"
+              >
+                {{ item.manager?.last_name || '' }} {{ item.manager?.name || '' }}
+              </Action>
+              <VBtn
+                v-else
+                icon="mdi-account-question"
+                density="compact"
+                @click="$emit('manager', item)"
+              />
             </td>
           </tr>
         </tbody>
@@ -316,7 +327,7 @@ function getManagerName(userId: number){
 .UserData{
   margin-top: -16px;
   .v-table__wrapper{
-    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 140px + 50px);
+    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 140px);
     height: calc(100vh - var(--j-other-height));
     overflow-y: auto;
   }

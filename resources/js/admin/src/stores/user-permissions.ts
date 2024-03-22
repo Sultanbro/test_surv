@@ -23,6 +23,7 @@ export const useUserPermissionsStore = defineStore('user-permissions', () => {
     fetchUserPermissions(options).then(data => {
       if (data !== undefined && 'items' in data)
       permissions.value = data.items
+      total.value = data.items?.length || 0
     })
   }
 

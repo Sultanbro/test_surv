@@ -24,4 +24,7 @@
 .por{
   position: relative;
 }
+.layout-nav-type-vertical .layout-vertical-nav .nav-header.nav-header{
+  margin: 0;
+}
 </style>

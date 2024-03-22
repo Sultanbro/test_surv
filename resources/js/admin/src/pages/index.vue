@@ -31,6 +31,16 @@ const newProject = {
 
 <template>
   <VRow class="match-height">
+    <VCol cols="12">
+      <h1>Тут обычно выводится всякая статистика</h1>
+      <p>Например можно выводить ожидаемую прибыль от подписок на платные планы, или кол-во активно использующихся кабинетов и т.д.</p>
+    </VCol>
+    <VCol
+      cols="12"
+      sm="3"
+    >
+      <CardStatisticsVertical v-bind="totalProfit" />
+    </VCol>
     <!-- <VCol
       cols="12"
       md="4"

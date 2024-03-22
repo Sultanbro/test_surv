@@ -17,7 +17,7 @@ const totalProfit = {
 	icon: 'mdi-poll',
 	stats: '$25.6k',
 	change: 42,
-	subtitle: 'Weekly Project',
+	subtitle: '',
 }
 
 const newProject = {
