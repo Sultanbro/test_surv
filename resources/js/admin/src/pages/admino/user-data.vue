@@ -84,6 +84,8 @@ watch(managerOwner, value => {
 async function saveManager(){
   if(!managerOwner.value?.id) return
   await managersStore.setManager(managerOwner.value?.id , manager.value)
+  const mgr = managersStore.managers.find(mgr => mgr.id === manager.value)
+  managerOwner.value.manager = mgr
   managerOverlay.value = false
 }
 
