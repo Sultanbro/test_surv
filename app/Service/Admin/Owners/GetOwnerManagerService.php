@@ -7,21 +7,33 @@ use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\CentralUser;
 use App\Support\Core\CustomException;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 /**
 * Класс для работы с Service.
 */
 class GetOwnerManagerService
 {
+    /**
+     * @throws TenantCouldNotBeIdentifiedById
+     * @throws Exception
+     */
     public function handle(
     )
     {
+        /** @var CentralUser $owner */
         $owner = $this->getOwner();
         CentralUser::checkDomainExistOrFail($owner->id);
 
-        return ManagerHasOwner::getManagerByOwnerIdOrFail($owner->id);
+        tenancy()->initialize(tenant: 'admin');
+        $model = ManagerHasOwner::with('manager')->where('owner_id', $owner->id)->first();
+
+        if(!$model) throw new Exception('Клиент еще не имеет своего менеджера');
+
+        return $model->manager;
     }
 
     /**

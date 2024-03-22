@@ -68,7 +68,7 @@ class OwnerRepository extends CoreRepository
 
             $owner->subdomains = $subDomains;
             $owner->manager = $owner->managerHasOwner?->manager;
-            $owner->balance = $owner->balance . ' ' . strtoupper($owner->currency);
+            $owner->balance = ($owner->balance ?? 0) . ' ' . strtoupper($owner->currency);
             unset($owner->portals);
             unset($owner->managerHasOwner);
         }
