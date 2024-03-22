@@ -302,7 +302,7 @@ export default {
 	&-definition{
 		flex: 0 1 content;
 		width: max-content;
-		max-width: 400px;
+		max-width: 200px;
 		padding: 5px 10px;
 		border: 1px solid #000;
 
