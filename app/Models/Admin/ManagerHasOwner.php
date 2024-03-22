@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 class ManagerHasOwner extends Model
 {
     use HasFactory;
+
     protected $connection = 'tenant'; // model only for tenantadmin !
     protected $table = 'manager_has_owner';
 
@@ -49,8 +50,7 @@ class ManagerHasOwner extends Model
     {
         $owner = $query->where('owner_id', $ownerId)->first();
 
-        if($owner == null)
-        {
+        if ($owner == null) {
             throw new Exception('Клиент еще не имеет своего менеджера');
         }
 
@@ -70,24 +70,29 @@ class ManagerHasOwner extends Model
     /**
      * @param int $ownerId
      * @param int $managerId
-     * @return Builder|Model
+     * @return bool
      */
     public static function createRecord(
         int $ownerId,
         int $managerId
-    ): Builder|Model
+    ): bool
     {
-        $exist = self::query()->where('owner_id', $ownerId)->exists();
-
-        if ($exist)
+        if ($managerId == 0)
         {
-            new CustomException("Клиент с ID $ownerId уже имеет привязанного менеджера", ErrorCode::BAD_REQUEST, []);
+            self::query()->where('owner_id', $ownerId)->delete();
         }
+        else
+        {
+            $model = self::query()->whereHas('manager')->where('owner_id', $ownerId)->first();
 
-        return self::query()->create([
-            'owner_id' => $ownerId,
-            'manager_id' => $managerId
-        ]);
+            if ($model) {
+                $model->update(['manager_id' => $managerId]);
+            }
+            else {
+                self::query()->create(['manager_id' => $managerId, 'owner_id' => $ownerId]);
+            }
+        }
+        return true;
     }
 
     /**

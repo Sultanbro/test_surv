@@ -21,8 +21,7 @@ class GetOwnerManagerService
      * @throws TenantCouldNotBeIdentifiedById
      * @throws Exception
      */
-    public function handle(
-    )
+    public function handle()
     {
         /** @var CentralUser $owner */
         $owner = $this->getOwner();
@@ -31,9 +30,7 @@ class GetOwnerManagerService
         tenancy()->initialize(tenant: 'admin');
         $model = ManagerHasOwner::query()->withWhereHas('manager')->where('owner_id', $owner->id)->first();
 
-        if(!$model) throw new Exception('Клиент еще не имеет своего менеджера');
-
-        return $model->manager;
+        return $model?->manager;
     }
 
     /**
