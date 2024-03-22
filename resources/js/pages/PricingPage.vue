@@ -57,13 +57,13 @@
 					</JobtronButton>
 				</div>
 				<img
-					v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
+					v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
 					src="/images/dist/profit-info.svg"
 					alt=""
 				>
 			</div>
 			<div
-				v-if="selectedRate"
+				v-if="false && selectedRate"
 				class="PricingPage-auto mt-4"
 			>
 				<b-form-checkbox
@@ -91,7 +91,7 @@
 				</div>
 				<template v-else>
 					<div class="PricingPage-promo-title">
-						Есть бонусный код? <span class="price-beta">beta</span>
+						Есть бонусный код?
 					</div>
 					<div class="PricingPage-promo-text">
 						Активируйте его, чтобы получить бонус на первую оплату
