@@ -275,7 +275,7 @@ export default {
 					return result
 				}, [])
 			}
-			return this.cards.reduce((result, child) => {
+			return this.fixedCards.reduce((result, child) => {
 				if(child.parent_id === this.card.id){
 					result.push(child)
 				}
@@ -349,6 +349,12 @@ export default {
 		status(){
 			if(!this.manager) return ''
 			return this.manager.referrer_status
+		},
+		fixedCards(){
+			return this.cards.filter(card => {
+				const invalidGroup = card.group_id && !this.dictionaries.profile_groups.find(group => group.id === card.group_id)
+				return !invalidGroup
+			})
 		},
 	},
 	watch: {
