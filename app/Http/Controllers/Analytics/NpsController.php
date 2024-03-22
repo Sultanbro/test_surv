@@ -33,7 +33,7 @@ class NpsController extends Controller
     public function fetch(Request $request): JsonResponse
     {
         $necessaryPositions = Position::query()->where('is_spec', 1)->orWhere('is_head', 1)->pluck('id')->toArray();
-        dd($necessaryPositions);
+
         $groupSubQuery = DB::table('profile_groups')
             ->select(['user_id as user_id', 'group_id as group_id', 'profile_groups.name as group_name', 'profile_groups.work_start', 'profile_groups.work_end', 'profile_groups.has_analytics', 'is_head'])
             ->join('group_user', 'group_user.group_id', '=', 'profile_groups.id')
