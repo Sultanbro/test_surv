@@ -35,16 +35,20 @@ function onPerPage(value: number){
 </script>
 
 <template>
-  <VCard title="Права пользователей">
+  <VCard
+    title="Права пользователей"
+    class="user-permissions"
+  >
     <VContainer>
       <VRow>
-        <VCol cols="12">  
+        <VCol cols="12">
           <UserPermissions/>
         </VCol>
       </VRow>
     </VContainer>
   </VCard>
   <TableFooter
+    v-if="false"
     :page="page"
     :pages="pages"
     :perPage="perPage"
@@ -54,3 +58,13 @@ function onPerPage(value: number){
     @update:perPage="onPerPage"
   />
 </template>
+
+<style lang="scss">
+.user-permissions{
+  .v-table__wrapper{
+    --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 140px + 18px);
+    height: calc(100vh - var(--j-other-height));
+    overflow-y: auto;
+  }
+}
+</style>
