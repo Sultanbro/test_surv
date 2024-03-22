@@ -29,7 +29,7 @@ class GetOwnerManagerService
         CentralUser::checkDomainExistOrFail($owner->id);
 
         tenancy()->initialize(tenant: 'admin');
-        $model = ManagerHasOwner::with('manager')->where('owner_id', $owner->id)->first();
+        $model = ManagerHasOwner::query()->withWhereHas('manager')->where('owner_id', $owner->id)->first();
 
         if(!$model) throw new Exception('Клиент еще не имеет своего менеджера');
 

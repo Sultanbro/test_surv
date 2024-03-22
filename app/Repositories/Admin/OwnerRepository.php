@@ -5,11 +5,11 @@ namespace App\Repositories\Admin;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use App\Repositories\CoreRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\CentralUser;
 use Carbon\Carbon;
 use App\User;
-use Illuminate\Support\Facades\DB;
 
 class OwnerRepository extends CoreRepository
 {
