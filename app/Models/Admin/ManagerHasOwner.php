@@ -83,7 +83,7 @@ class ManagerHasOwner extends Model
         }
         else
         {
-            $model = self::query()->whereHas('manager')->where('owner_id', $ownerId)->first();
+            $model = self::query()->where('owner_id', $ownerId)->first();
 
             if ($model) {
                 $model->update(['manager_id' => $managerId]);
