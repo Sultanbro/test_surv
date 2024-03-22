@@ -81,9 +81,10 @@ const managerOptions = computed(() => {
 watch(managerOwner, value => {
   manager.value = managerOwner.value?.manager?.id || 0
 })
-function saveManager(){
+async function saveManager(){
   if(!managerOwner.value?.id) return
-  managersStore.setManager(managerOwner.value?.id , manager.value)
+  await managersStore.setManager(managerOwner.value?.id , manager.value)
+  managerOverlay.value = false
 }
 
 const colname: {[key: string]: string} = {
