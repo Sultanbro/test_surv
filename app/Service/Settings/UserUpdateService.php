@@ -12,6 +12,7 @@ use App\Events\UserUpdatedEvent;
 use App\Facade\Referring;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
+use App\Models\CentralUser;
 use App\Models\Coordinate;
 use App\Models\UserCoordinate;
 use App\Repositories\UserRepository;
@@ -135,11 +136,14 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::query()->where('email', $user->email)->first();
+
         if ($userDTO->newPassword) {
             $user->password = Hash::make($userDTO->newPassword);
         }
 
-        $user->new_email = $userDTO->email;
+        $user->email = $userDTO->email;
         $user->name = $userDTO->name;
         $user->last_name = $userDTO->lastName;
         $user->phone = $userDTO->phone;
@@ -163,9 +167,22 @@ final class UserUpdateService
         $user->working_city = $userDTO->workingCity;
         $user->uin = $userDTO->uin;
         if ($userDTO->coordinates) $user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
-//         $this->setCountryAndCity($user, $userDTO->workingCountry);
 
         $user->save();
+
+        if ($centralUser) {
+            if ($userDTO->newPassword) {
+                $centralUser->password = Hash::make($userDTO->newPassword);
+            }
+            $centralUser->email = $userDTO->email;
+            $centralUser->name = $userDTO->name;
+            $centralUser->last_name = $userDTO->lastName;
+            $centralUser->phone = $userDTO->phone;
+            $centralUser->birthday = $userDTO->birthday;
+            $centralUser->currency = $userDTO->currency ?? 'kzt';
+            $centralUser->country = $userDTO->workingCountry;
+            $centralUser->save();
+        }
 
         event(new UserUpdatedEvent($user->id));
         return $user;
