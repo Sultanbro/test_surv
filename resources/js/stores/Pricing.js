@@ -33,7 +33,7 @@ export const usePricingStore = defineStore('pricing', {
 			this.isLoading = true
 			try{
 				const data = await fetchPricingManager()
-				this.manager = renameProps(data, {last_name: 'lastName'})
+				this.manager = renameProps(data.data, {last_name: 'lastName'})
 			}
 			catch(error){
 				console.error('fetchPricingManager', error)
