@@ -367,7 +367,7 @@
     });
     $('#submit2').click(function(e) {
 
-        if(stars > 0 && !isAllChecked($('#form-2')) {
+        if(stars > 0 && !isAllChecked($('#form-2'))) {
             e.preventDefault();
             $('.error').text('Вы не поставили оценку!');
         } else {
