@@ -158,7 +158,8 @@ class EmployeeController extends Controller
                                     ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
                                         $subSubSubQuery->select('file_id')
                                             ->from('files')
-                                            ->whereRaw('files.group_id = g.id');
+                                            ->where(DB::raw('files.fileable_id = g.id'))
+                                            ->where(DB::raw("files.fileable_type = App\ProfileGroup"));
                                     });
                             });
                     });
