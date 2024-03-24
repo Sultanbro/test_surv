@@ -147,7 +147,7 @@ class EmployeeController extends Controller
                     $query->whereNotExists(function ($subQuery) {
                         $subQuery->select(DB::raw(1))
                             ->from('group_user AS gu')
-                            ->join('groups AS g', 'gu.group_id', '=', 'g.group_id')
+                            ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
                             ->leftJoin('user_signed_files AS usf', function ($join) {
                                 $join->on('gu.user_id', '=', 'usf.user_id');
                             })
@@ -158,7 +158,7 @@ class EmployeeController extends Controller
                                     ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
                                         $subSubSubQuery->select('file_id')
                                             ->from('files')
-                                            ->whereRaw('files.group_id = g.group_id');
+                                            ->whereRaw('files.group_id = g.id');
                                     });
                             });
                     });
