@@ -143,8 +143,9 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
-                ->where(function ($query) {
-                    $query->whereNotExists(function ($subQuery) {
+                ->where(function (Builder $query) {
+                    $query->where('required_signed_docs', false);
+                    $query->orWhereNotExists(function ($subQuery) {
                         $subQuery->select(DB::raw(1))
                             ->from('group_user AS gu')
                             ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
