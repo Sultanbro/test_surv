@@ -111,6 +111,7 @@ import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
 import { fetchTopNPS } from '@/stores/api/top.js'
+import { bus } from '@/bus'
 
 export default {
 	name: 'NPS',
@@ -174,6 +175,10 @@ export default {
 		this.setMonth();
 		this.setMonthsTableFields();
 		this.fetchData();
+		bus.$on('tt-top-update', this.fetchData)
+	},
+	beforeDestroy(){
+		bus.$off('tt-top-update', this.fetchData)
 	},
 	methods: {
 		setMonth() {

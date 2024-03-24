@@ -13,6 +13,14 @@
 						class="PricingRates-header text-center"
 					>
 						{{ item.name }}
+						<b-form-checkbox
+							v-if="item.name === 'PRO' && !proUsed"
+							v-model="proUsed"
+							name="check-button"
+							switch
+							title="Пробный месяц"
+							class="PricingRates-usePro"
+						/>
 					</th>
 				</tr>
 				<tr class="PricingRates-row">
@@ -122,6 +130,7 @@
 <script>
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
+import { useSettingsStore } from '@/stores/Settings'
 import {
 	ChatIconMassReaded,
 } from '@icons'
@@ -170,7 +179,8 @@ export default {
 				base: '0%',
 				standard: '20%',
 				pro: '20%',
-			}
+			},
+			proUsed: false,
 		}
 	},
 	computed: {
@@ -194,15 +204,30 @@ export default {
 			return ({
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'dollar'
+				'$': 'usd'
 			})[this.currency]
+		},
+	},
+	watch: {
+		proUsed(){
+			if(this.proUsed) this.useProDemo()
 		}
 	},
-	created(){
+	async created(){
 		this.fetchPricing()
+		const {settings} = await this.fetchSettings('pricing_pro_used')
+		this.proUsed = settings.custom_pricing_pro_used === '1'
 	},
 	methods: {
-		...mapActions(usePricingStore, ['fetchPricing'])
+		...mapActions(usePricingStore, ['fetchPricing']),
+		...mapActions(useSettingsStore, ['fetchSettings', 'updateSettings']),
+		useProDemo(){
+			this.$emit('use-pro')
+			// this.updateSettings({
+			// 	type: 'pricing_pro_used',
+			// 	custom_pricing_pro_used: 1
+			// })
+		}
 	}
 }
 </script>
@@ -215,6 +240,7 @@ export default {
 		border: 1px solid #fff;
 	}
 	&-header{
+		position: relative;
 		color: #fff;
 		background-color: #3361FF;
 		&_empty{
@@ -250,6 +276,17 @@ export default {
 		color: #3361FF;
 		&:hover{
 			color: lighten(#3361FF, 10);
+		}
+	}
+	&-usePro{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(30px, -50%);
+
+		&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label{
+			padding: 10px 0 0 50px;
+			margin: 0;
 		}
 	}
 }

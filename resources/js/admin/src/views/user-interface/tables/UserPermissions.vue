@@ -57,7 +57,6 @@ function onAdd(){
   >Дать доступ</VBtn>
   <VTable
     v-if="userPermissionsStore.permissions.length"
-    height="250"
     fixed-header
   >
     <thead>
@@ -117,7 +116,10 @@ function onAdd(){
       color="primary"
     />
   </div>
-  <VDialog v-model="editDialog">
+  <VDialog
+    v-model="editDialog"
+    max-width="600"
+  >
     <UserPermissionsEdit
       :errors="errors"
       :user="user"

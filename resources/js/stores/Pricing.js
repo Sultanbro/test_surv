@@ -11,6 +11,7 @@ import {
 } from '@/stores/api'
 
 function renameProps(obj, renames){
+	if(!obj) return null
 	return Object.keys(obj).reduce((result, key) => {
 		if(renames[key]) result[renames[key]] = obj[key]
 		else result[key] = obj[key]
@@ -32,12 +33,20 @@ export const usePricingStore = defineStore('pricing', {
 			this.isLoading = true
 			try{
 				const data = await fetchPricingManager()
-				this.manager = renameProps(data, {last_name: 'lastName'})
+				this.manager = renameProps(data.data, {last_name: 'lastName'})
 			}
 			catch(error){
 				console.error('fetchPricingManager', error)
 				this.manager = null
 			}
+			// this.manager = {
+			// 	id: 1,
+			// 	photo: '/users_img/1708419167.png',
+			// 	name: 'test',
+			// 	lastName: 'test123',
+			// 	phone: '123123123',
+			// 	email: 'asdas@adsas.asd'
+			// }
 			this.isLoading = false
 		},
 		async fetchCurrent(){

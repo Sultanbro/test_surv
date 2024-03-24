@@ -55,7 +55,7 @@ final class ProfileGroupUsersQuery
         ?Carbon $date,
     ): self
     {
-        $date = $date->addMonth();
+//        $date = $date->addMonth();
 
         $this->builder
             ->join('group_user', function (JoinClause $join) use ($groupId, $date) {

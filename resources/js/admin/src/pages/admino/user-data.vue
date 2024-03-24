@@ -63,13 +63,13 @@ function nextPage(){
 //   userDataStore.fetchUsers(filters.value)
 // })
 
-const blankManagerOption = {title: '', value: 0}
-const managerUserId = ref(0)
+const blankManagerOption = {title: 'Выберите менеджера', value: 0}
+const managerOwner = ref<null | {id: number, manager: {id: number}}>(null)
 const managerOverlay = computed({
-  get: () => !!managerUserId.value,
-  set: (v) => (managerUserId.value = 0),
+  get: () => !!managerOwner.value,
+  set: (v) => (managerOwner.value = null),
 })
-const manager = ref(blankManagerOption)
+const manager = ref(0)
 const managerOptions = computed(() => {
   return [blankManagerOption, ...managersStore.managers.map(manager => {
     return {
@@ -78,12 +78,15 @@ const managerOptions = computed(() => {
     }
   })]
 })
-watch(managerUserId, value => {
-  const managerId = userDataStore.userManagers[value] || 0
-  manager.value = managerOptions.value.find(item => item.value === managerId) || blankManagerOption
+watch(managerOwner, value => {
+  manager.value = managerOwner.value?.manager?.id || 0
 })
-function saveManager(){
-  managersStore.setManager(managerUserId.value, manager.value.value)
+async function saveManager(){
+  if(!managerOwner.value?.id) return
+  await managersStore.setManager(managerOwner.value?.id , manager.value)
+  const mgr = managersStore.managers.find(mgr => mgr.id === manager.value)
+  managerOwner.value.manager = mgr
+  managerOverlay.value = false
 }
 
 const colname: {[key: string]: string} = {
@@ -110,7 +113,7 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
 <template>
   <VRow class="por">
     <VCol
-      cols="12"
+      cols="6"
       class="userdata-filters"
     >
       <v-menu
@@ -181,7 +184,7 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
     <VCol cols="12">
       <VCard title="Данные пользователей">
         <UserData
-          @manager="managerUserId = $event"
+          @manager="managerOwner = $event"
           @scrollEnd="nextPage"
         />
       </VCard>
@@ -197,7 +200,6 @@ watch(showCols, () => userDataStore.saveShowCols(), {deep: true})
         label="Выберите менеджера"
         v-model="manager"
         :items="managerOptions"
-        return-object
       />
       <template #footer>
         <VBtn @click="saveManager">Save</VBtn>

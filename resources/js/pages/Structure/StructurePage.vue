@@ -189,8 +189,8 @@ export default {
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
 		},
 		cardsOrFirst(){
-			if(this.cards && this.cards.lengtkh){
-				return this.cards
+			if(this.fixedCards && this.fixedCards.lengtkh){
+				return this.fixedCards
 			}
 			/* eslint-disable camelcase */
 			const ownerCard = {
@@ -220,6 +220,12 @@ export default {
 		rootCard(){
 			if(this.isDemo) return this.demo.structure.find(card => !card.parentId)
 			return this.cardsOrFirst.find(card => !card.parentId)
+		},
+		fixedCards(){
+			return this.cards.filter(card => {
+				const invalidGroup = card.group_id && !this.actualDictionaries.profile_groups.find(group => group.id === card.group_id)
+				return !invalidGroup
+			})
 		},
 	},
 	watch: {
@@ -402,7 +408,7 @@ export default {
 
 		async autoDeleteCards(){
 			if(!this.dictionaries?.profile_groups?.length) return
-			for(const card of this.cards){
+			for(const card of this.fixedCards){
 				if(!card.group_id) continue
 				const cardGroup = this.dictionaries.profile_groups.find(group => group.id === card.group_id)
 				if(!cardGroup || !cardGroup.active) await this.deleteCard(card.id)
@@ -411,7 +417,7 @@ export default {
 
 		async updateManagers(parent = null, parentManagers = [this.owner.id]){
 			if(!this.dictionaries.users) return
-			for(const card of this.cards){
+			for(const card of this.fixedCards){
 				if(card.parent_id !== parent) continue
 				if(!card.group_id) {
 					// if(card.manager.user_id) parentManagers.push(card.manager.user_id)

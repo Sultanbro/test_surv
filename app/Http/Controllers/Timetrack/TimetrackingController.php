@@ -2051,10 +2051,11 @@ class TimetrackingController extends Controller
 
                 ////////////
                 User::deleteUser($request);
-            } else {
-                UserDescription::query()->make([
-                    'user_id' => $request->get("user_id"),
+            }
+            else {
+                UserDescription::query()->where('user_id', $request->get('user_id'))->update([
                     'fired' => now(),
+                    'fire_date' => $date->format('Y-m-d'),
                     'fire_cause' => $request->get("comment")
                 ]);
 
@@ -2063,7 +2064,8 @@ class TimetrackingController extends Controller
                         ->where('user_id', $request->get("user_id"))->orderBy('id', 'desc')->first();
                     $delete_plan?->delete();
                     User::deleteUser($request);
-                } else { //отработкой
+                }
+                else { //отработкой
                     if ($request->hasFile('file')) { // Заявление об увольнении
                         $file = $request->file('file');
                         $resignation = $targetUser->id . '_' . time() . '.' . $file->getClientOriginalExtension();
