@@ -148,7 +148,7 @@ class EmployeeController extends Controller
                         $subQuery->select(DB::raw(1))
                             ->from('group_user AS gu')
                             ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
-                            ->leftJoin('user_signed_files AS usf', function ($join) {
+                            ->leftJoin('user_signed_file AS usf', function ($join) {
                                 $join->on('gu.user_id', '=', 'usf.user_id');
                             })
                             ->where('gu.user_id', '=', DB::raw('users.id'))
