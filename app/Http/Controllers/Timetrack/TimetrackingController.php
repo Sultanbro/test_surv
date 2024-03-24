@@ -1776,7 +1776,6 @@ class TimetrackingController extends Controller
                 $salary->save();
             }
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
@@ -1948,7 +1947,6 @@ class TimetrackingController extends Controller
                 ->first();
             $up?->delete();
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
             $trainee = UserDescription::query()
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
@@ -1999,7 +1997,6 @@ class TimetrackingController extends Controller
                 $salary->save();
             }
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()

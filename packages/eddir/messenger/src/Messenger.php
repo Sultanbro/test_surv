@@ -77,7 +77,8 @@ class Messenger
 
         MessengerChat::query()
             ->whereHas('members', function (Builder $query) use ($user) {
-                $query->whereNull('deleted_at')->where('user_id', $user->id);
+                $query->whereNull('deleted_at')
+                    ->where('user_id', $user->id);
             })
             ->get()
             ->each(function (MessengerChat $chat) use ($user, $chats) {
