@@ -159,7 +159,7 @@ class EmployeeController extends Controller
                                         $subSubSubQuery->select('file_id')
                                             ->from('files')
                                             ->where(DB::raw('files.fileable_id = g.id'))
-                                            ->where(DB::raw("files.fileable_type = App\ProfileGroup"));
+                                            ->where(DB::raw("files.fileable_type = 'App\ProfileGroup'"));
                                     });
                             });
                     });
