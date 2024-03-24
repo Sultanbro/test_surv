@@ -38,6 +38,7 @@ use Exception;
 use Hash;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -100,8 +101,7 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -121,8 +121,7 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'fired')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = User::query()
                 ->whereNull('deleted_at')
@@ -132,7 +131,8 @@ class EmployeeController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $downloads = Downloads::whereIn('user_id', array_unique($users_1))
+            $downloads = Downloads::query()
+                ->whereIn('user_id', array_unique($users_1))
                 ->get(['user_id'])
                 ->pluck('user_id')
                 ->toArray();
@@ -143,6 +143,26 @@ class EmployeeController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
+                ->where(function ($query) {
+                    $query->whereNotExists(function ($subQuery) {
+                        $subQuery->select(DB::raw(1))
+                            ->from('group_user AS gu')
+                            ->join('groups AS g', 'gu.group_id', '=', 'g.group_id')
+                            ->leftJoin('user_signed_files AS usf', function ($join) {
+                                $join->on('gu.user_id', '=', 'usf.user_id');
+                            })
+                            ->where('gu.user_id', '=', DB::raw('users.id'))
+                            ->where('gu.status', 'active')
+                            ->where(function ($subSubQuery) {
+                                $subSubQuery->whereNull('usf.user_id')
+                                    ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
+                                        $subSubSubQuery->select('file_id')
+                                            ->from('files')
+                                            ->whereRaw('files.group_id = g.group_id');
+                                    });
+                            });
+                    });
+                })
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
                     $query->whereNull('users.position_id')
@@ -159,8 +179,7 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
@@ -180,8 +199,7 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
+        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -205,8 +223,7 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        }
-        else {
+        } else {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
@@ -295,12 +312,6 @@ class EmployeeController extends Controller
         $part_time_count = $part_time->distinct('users.id')->where('full_time', 0)->count();
         $full_time_count = $full_time->distinct('users.id')->where('full_time', 1)->count();
         $users = $users->select($columns);
-
-        //////
-        ///
-        /// Sort by column and direction
-        ///
-        //////
 
         $sortDirection = 'asc';
         if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';

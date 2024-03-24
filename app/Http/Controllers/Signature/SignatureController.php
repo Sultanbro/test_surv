@@ -17,10 +17,12 @@ use App\Repositories\Signature\SignatureHistoryRepositoryInterface;
 use App\Service\Sms\CodeGeneratorInterface;
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
+use App\Support\Response\JsonApiResponse;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SignatureController extends Controller
@@ -98,7 +100,9 @@ class SignatureController extends Controller
     public function signedFiles(User $user): AnonymousResourceCollection
     {
         $filteredFiles = new Collection();
-        $signedFiles = $user->signedFiles()->withTrashed()->get();
+        $signedFiles = $user->signedFiles()
+            ->withTrashed()
+            ->get();
         $group = $user->activeGroup();
         $groupFiles = collect();
 
@@ -116,5 +120,13 @@ class SignatureController extends Controller
             $filteredFiles->add($file);
         }
         return FileResource::collection($filteredFiles);
+    }
+
+    public function requireDocs(Request $request, User $user): JsonResponse
+    {
+        $user->update([
+            'required_signed_docs' => $request->get('required_signed_docs', false)
+        ]);
+        return $this->response('The field is updated');
     }
 }

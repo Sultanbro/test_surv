@@ -99,6 +99,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $phone_3
  * @property string $phone_4
  * @property string $uin
+ * @property bool $required_signed_docs
  * @property int $work_chart_id
  * @property int $coordinate_id
  * @property int $referrer_id
@@ -179,7 +180,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         'welcome_message',
         'inviter_id',
         'uin',
+        'required_signed_docs'
     ];
+
     protected $casts = [
         'timezone' => 'float',
     ];
