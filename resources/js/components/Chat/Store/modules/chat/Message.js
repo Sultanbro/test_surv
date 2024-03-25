@@ -185,9 +185,11 @@ export default {
 			dispatch('requestScroll', 0);
 			commit('setCitedMessage', null);
 			const result = await API.sendMessage(getters.chat.id, message, citedMessageId, response => {
-				response.new_id = response.id;
-				response.id = guid;
-				commit('updateMessage', response);
+				response.forEach(message => {
+					message.new_id = message.id;
+					message.id = guid;
+					commit('updateMessage', message);
+				})
 			}, () => {
 				newMessage.id = guid;
 				newMessage.failed = true;
@@ -395,9 +397,14 @@ export default {
 
 			if (index !== -1 && message.new_id) {
 				message.id = message.new_id;
+				Vue.set(state.messages, index, message);
 			}
-
-			Vue.set(state.messages, index, message);
+			else{
+				state.messages.push({
+					...message,
+					id: message.new_id,
+				})
+			}
 		},
 		deleteMessage(state, message) {
 			let index = state.messages.findIndex(m => m.id === message.id);

@@ -101,19 +101,20 @@ class MessagesController {
         if ( $request->message == "" ) {
             return response()->json( [ 'message' => 'Message is empty: ' ], 400 );
         }
+        $response = [];
         // check if message is too long
         if ( strlen( $request->message ) > 1000 ) {
             // split message to parts
             $parts = str_split( $request->message, 1000 );
             // send each part
             foreach ( $parts as $part ) {
-                $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part, [], $request->get( 'cite_message_id' ) );
+                $response[] = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part, [], $request->get( 'cite_message_id' ) );
             }
         } else {
-            $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), [], $request->get( 'cite_message_id' ) );
+            $response[] = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), [], $request->get( 'cite_message_id' ) );
         }
 
-        return response()->json( $message );
+        return response()->json( $response );
     }
 
     /**
