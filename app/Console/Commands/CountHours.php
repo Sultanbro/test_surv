@@ -49,7 +49,8 @@ class CountHours extends Command
                 dump('дата: ' . Carbon::parse($record->enter)->toDateTimeString());
 
                 $record->update([
-                    'total_hours' => $minutes
+                    'total_hours' => $minutes,
+                    'updated' => 1,
                 ]);
             }
         }
