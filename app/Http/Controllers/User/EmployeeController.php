@@ -398,8 +398,8 @@ class EmployeeController extends Controller
     {
 
         $user = User::withTrashed()
-            ->where('id', $request->id)
-            ->first();
+            ->with('user_description')
+            ->find($request->get('id'));
 
         return [
             'user' => $user,
