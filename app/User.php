@@ -1704,10 +1704,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * Получаем дни работы для пользователя за неделю.
      * @return int[]
      */
-    public function getCountWorkDays(): array
+    public function getCountWorkDays(bool $useHistory = true): array
     {
         $workChartFromHistory = null;
-        if ($this->profile_histories_latest) {
+        if ($this->profile_histories_latest && $useHistory) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
             $workChartFromHistory = $payload['work_chart_id'] ?? null;
         }
