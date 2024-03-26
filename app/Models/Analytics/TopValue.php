@@ -562,6 +562,7 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
+        timer();
         foreach ($groups as $group) {
             $row = [];
 
@@ -610,7 +611,7 @@ class TopValue extends Model
 
             $table[] = $row;
         }
-
+        timer();
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);
             $total_row['c' . $i] = round($total_row['c' . $i]);
