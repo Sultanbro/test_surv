@@ -1647,6 +1647,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($dayNum == 1) {
                 return true;
             }
+
             return false;
         } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
             $days = explode('-', $workChart->name);
@@ -1659,19 +1660,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
             $total = $workingDay + $dayOff; // 2+2=4
 
+            $remains = $differBetweenFirstAndLastDay % $total;
             if ($workingDay === 1) {
-                $remains = $differBetweenFirstAndLastDay % $total;
-                if ($remains === 0) {
-                    return true;
-                }
-                return false;
+                return $remains === 0;
             }
 
-            $remains = $differBetweenFirstAndLastDay % $total;
-            if ($remains < $workingDay) {
-                return true;
-            }
-            return false;
+            return $remains < $workingDay;
         }
         return true;
     }
@@ -1755,6 +1749,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $requestDate = Carbon::createFromDate($year, $month);
+
         $workChartFromHistory = null;
         if (!$requestDate->isCurrentMonth() && $this->profile_histories_latest) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
@@ -1786,7 +1781,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso == 1 ? 0 : Carbon::parse($firstWorkDay)->dayOfWeekIso;
         $daysInMonth = $requestDate->daysInMonth;
         $workDayInMonth = 0;
-        $date2 = Carbon::parse($firstWorkDay)->addDays($firstWorkDayInWeek);
+        $date2 = Carbon::parse($firstWorkDay)->addDays(7 - $firstWorkDayInWeek);
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
             $date1 = Carbon::parse($dayInMonth);
@@ -1797,7 +1792,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
+
+            if ($this->id == 29161) {
+                dump("$remains < $workingDay, $workDayInMonth , $dayInMonth");
+            }
         }
+
+        dd_if($this->id == 29161, $workDayInMonth);
 
         return $workDayInMonth;
     }
