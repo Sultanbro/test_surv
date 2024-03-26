@@ -1723,8 +1723,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             ? (string)WorkChartModel::DAYS_IN_WEEK - $floatingDayoffs . "-" . $floatingDayoffs
             : $workChart?->name ?? "6-1";
 
-        dd_if($this->id == 29161, $type);
-
         return match ($type) {
             "6-1" => [0],
             "5-2" => [6, 0],
