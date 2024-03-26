@@ -1765,7 +1765,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         if ($this->first_work_day) {
             $firstWorkDay = Carbon::parse($this->first_work_day);
-            if ($firstWorkDay->year >= $year && $firstWorkDay->month >= $month) {
+            if ($requestDate->lessThan($firstWorkDay)) {
                 $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
             } else {
                 $firstWorkDay = $firstWorkDay->format('Y-m-d');
@@ -1773,7 +1773,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         } else {
             $firstWorkDay = $requestDate->firstOfMonth()->format('Y-m-d');
         }
-
 
         if ($workChartName == "2-2") {
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
@@ -1785,6 +1784,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $total = $workingDay + $dayOff;
 
         $daysInMonth = $requestDate->daysInMonth;
+        dd_if($this->id == 18123, $total);
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
@@ -1799,7 +1799,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             }
         }
 
-        dd_if($this->id == 18123, $this->first_work_day);
 
         return $workDayInMonth;
     }
