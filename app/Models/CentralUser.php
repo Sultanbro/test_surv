@@ -55,6 +55,7 @@ class CentralUser extends Model
         'country',
         'city',
         'balance',
+        'currency'
     ];
 
     protected $hidden = [
