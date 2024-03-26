@@ -1797,10 +1797,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
-
-            if ($this->id == 18123) {
-                dump("$remains < $workingDay && $dayInMonth $firstWorkDay $workDayInMonth");
-            }
         }
 
         return $workDayInMonth;
