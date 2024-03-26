@@ -1370,7 +1370,7 @@ export default {
 		booksAccess(books){
 			books.forEach(book => {
 				book.canEdit = this.$can('books_edit')
-				// if(book.children) this.booksAccess(book.children)
+				if(book.children) this.booksAccess(book.children)
 			})
 		},
 		/* === ACCESS === */
