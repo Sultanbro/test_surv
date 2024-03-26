@@ -1704,10 +1704,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * Получаем дни работы для пользователя за неделю.
      * @return int[]
      */
-    public function getCountWorkDays(): array
+    public function getCountWorkDays(bool $useHistory = true): array
     {
         $workChartFromHistory = null;
-        if ($this->profile_histories_latest) {
+        if ($this->profile_histories_latest && $useHistory) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
             $workChartFromHistory = $payload['work_chart_id'] ?? null;
         }
@@ -1722,7 +1722,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $type = $floatingDayoffs
             ? (string)WorkChartModel::DAYS_IN_WEEK - $floatingDayoffs . "-" . $floatingDayoffs
             : $workChart?->name ?? "6-1";
-
 
         return match ($type) {
             "6-1" => [0],
@@ -1778,10 +1777,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $dayOf = (int)$days[1];
         $total = $dayOf + $workingDay;
 
-        $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso == 1 ? 0 : Carbon::parse($firstWorkDay)->dayOfWeekIso;
+        $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso - 1;
         $daysInMonth = $requestDate->daysInMonth;
         $workDayInMonth = 0;
         $date2 = Carbon::parse($firstWorkDay)->addDays(7 - $firstWorkDayInWeek);
+
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
             $date1 = Carbon::parse($dayInMonth);
@@ -1792,14 +1792,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
-
             if ($this->id == 29161) {
-                dump("$remains < $workingDay, $workDayInMonth , $dayInMonth");
+                dump("$remains < $workingDay && $dayInMonth $workDayInMonth");
             }
         }
 
         dd_if($this->id == 29161, $workDayInMonth);
-
         return $workDayInMonth;
     }
 

@@ -158,7 +158,9 @@ export default {
 			const elem = document.querySelector('.b24-widget-button-shadow')
 			if(elem){
 				const parent = elem.parentNode
-				return parent.remove()
+				parent?.remove()
+				document.querySelector('.bx-livechat-wrapper')?.remove()
+				return
 			}
 
 			const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';

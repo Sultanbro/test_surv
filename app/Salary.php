@@ -646,7 +646,7 @@ class Salary extends Model
 
                 $workChartFromHistory = null;
 
-                if ($user->profile_histories_latest) {
+                if ($user->profile_histories_latest && !$date->isCurrentMonth()) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
                     $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
@@ -669,8 +669,7 @@ class Salary extends Model
                 $workChartType = $schedule['work_charts_type'];
 
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
-
-                    $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
+                    $ignore = $user->getCountWorkDays(!$date->isCurrentMonth());   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {

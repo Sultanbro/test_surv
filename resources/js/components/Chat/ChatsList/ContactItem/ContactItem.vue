@@ -22,6 +22,13 @@
 			>
 				{{ item.unread_messages_count }}
 			</div>
+
+			<div
+				v-if="!item.is_mute && item.is_mentioned"
+				class="messenger__chat-mentioned"
+			>
+				@
+			</div>
 		</div>
 
 		<!-- Title -->
@@ -65,6 +72,12 @@
 						class="messenger__chat-unread"
 					>
 						{{ item.unread_messages_count }}
+					</div>
+					<div
+						v-if="!item.is_mute && item.is_mentioned"
+						class="messenger__chat-mentioned"
+					>
+						@
 					</div>
 				</div>
 			</div>
@@ -286,14 +299,34 @@ export default {
 	color: #FFFFFF;
 	background-color: #3361FF;
 }
+
+.messenger__chat-mentioned{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 22px;
+	height: 22px;
+	padding: 5px;
+
+	border-radius: 22px;
+	font-weight: 700;
+
+	font-size: 11px;
+	line-height: 12px;
+	letter-spacing: -0.05em;
+
+	color: #FFFFFF;
+	background-color: #3361FF;
+}
 .messenger__chat-muted ~ .messenger__chat-unread{
 	background-color: #8BABD8;
 }
 
 .messenger__chat-name-label .messenger__chat-unread{
-	position: absolute;
+	/* position: absolute;
 	top: 8px;
-	right: 2px;
+	right: 2px; */
 }
 
 /* .messenger__chat-selected .messenger__last-message {
