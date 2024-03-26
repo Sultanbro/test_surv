@@ -1780,26 +1780,24 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         $days = explode('-', $workChartName);
         $workingDay = (int)$days[0];
-        $dayOff = (int)$days[1];
-        $total = $workingDay + $dayOff;
+        $dayOf = (int)$days[1];
+        $total = $dayOf + $workingDay;
 
+        $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso == 1 ? 0 : Carbon::parse($firstWorkDay)->dayOfWeekIso;
         $daysInMonth = $requestDate->daysInMonth;
-
         $workDayInMonth = 0;
+        $date2 = Carbon::parse($firstWorkDay)->addDays($firstWorkDayInWeek);
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
-            $date1 = date_create($dayInMonth);
-            $date2 = date_create($firstWorkDay);
+            $date1 = Carbon::parse($dayInMonth);
             $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
 
             $remains = $differBetweenFirstAndLastDay % $total;
-            dd_if($this->id == 18123, $remains);
 
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
         }
-
 
         return $workDayInMonth;
     }
