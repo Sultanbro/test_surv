@@ -24,7 +24,6 @@ class GetRentabilityService
     public function handle(GetRentabilityDto $dto): array
     {
         $date = Carbon::create($dto->year, $dto->month);
-        dd($date);
         $gauges = TopValue::query()
             ->whereHas('groups', function (Builder $group) use ($date) {
                 $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
@@ -40,6 +39,7 @@ class GetRentabilityService
             })
             ->where('type', TopValue::RENTABILITY)
             ->get();
+        dd($gauges);
         dd(TopValue::getPivotRentability(
             $dto->year,
             $dto->month
