@@ -1793,7 +1793,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 $workDayInMonth++;
             }
         }
-        dd_if($this->id == 29161, $workDayInMonth);
+        dd_if($this->id == 29161, $firstWorkDayInWeek);
 
         return $workDayInMonth;
     }
