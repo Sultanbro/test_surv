@@ -643,7 +643,6 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-                dd_if($user->id == 29161, "$zarplata / $d");
 
                 $workChartFromHistory = null;
 
@@ -654,6 +653,7 @@ class Salary extends Model
 
 
                 $schedule = $user->schedule(true, $workChartFromHistory);
+                dd_if($user->id == 29161, $schedule);
 
 
                 // Проверяем установлена ли время отдыха
