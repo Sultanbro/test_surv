@@ -897,6 +897,8 @@ export default {
 				})
 				book.canRead = true
 				book.canEdit = true
+				book.children = []
+
 				this.showCreate = false
 				this.sectionName = ''
 
