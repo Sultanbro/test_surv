@@ -35,7 +35,6 @@ class Lead
         );
 
         if (is_array($result) && array_key_exists('error', $result)) {
-            dd($result);
             throw new Exception('publish lead error');
         }
 
