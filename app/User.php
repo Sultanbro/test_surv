@@ -1647,6 +1647,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             if ($dayNum == 1) {
                 return true;
             }
+
             return false;
         } elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
             $days = explode('-', $workChart->name);
@@ -1659,19 +1660,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
             $total = $workingDay + $dayOff; // 2+2=4
 
+            $remains = $differBetweenFirstAndLastDay % $total;
             if ($workingDay === 1) {
-                $remains = $differBetweenFirstAndLastDay % $total;
-                if ($remains === 0) {
-                    return true;
-                }
-                return false;
+                return $remains === 0;
             }
 
-            $remains = $differBetweenFirstAndLastDay % $total;
-            if ($remains < $workingDay) {
-                return true;
-            }
-            return false;
+            return $remains < $workingDay;
         }
         return true;
     }
