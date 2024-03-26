@@ -1749,7 +1749,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $requestDate = Carbon::createFromDate($year, $month);
-        dd_if($this->id == 29161, $requestDate);
 
         $workChartFromHistory = null;
         if (!$requestDate->isCurrentMonth() && $this->profile_histories_latest) {
@@ -1794,6 +1793,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 $workDayInMonth++;
             }
         }
+        dd_if($this->id == 29161, $workDayInMonth);
 
         return $workDayInMonth;
     }
