@@ -43,7 +43,7 @@ class MonthHours extends Command
         $argDate1 = $this->argument('date');
         $argUserId = $this->argument('user_id');
 
-        $timeZone = Setting::TIMEZONES[6];
+        $timeZone = Setting::TIMEZONES[5];
         if (!is_null($argDate1)) {
 
 
