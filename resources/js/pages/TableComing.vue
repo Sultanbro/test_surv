@@ -349,7 +349,7 @@ export default {
 			this.currentTime = target.value;
 		},
 		setCurrentEditingCell(data) {
-			this.currentTime = null;
+			// this.currentTime = null;
 			this.currentEditingCell = data;
 		},
 		openModal() {
