@@ -1797,7 +1797,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             }
 
             if ($this->id == 18123) {
-                var_dump("$remains < $workingDay && $dayInMonth $firstWorkDay $workDayInMonth");
+                dump("$remains < $workingDay && $dayInMonth $firstWorkDay $workDayInMonth");
             }
         }
 
