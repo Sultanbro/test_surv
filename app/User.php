@@ -1802,7 +1802,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 dump("$remains < $workingDay && $dayInMonth $firstWorkDay $workDayInMonth");
             }
         }
-        dd_if($this->id == 18123, $firstWorkDayInWeek);
+        dd_if($this->id == 18123, $workDayInMonth);
         return $workDayInMonth;
     }
 
