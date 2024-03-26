@@ -1778,6 +1778,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
         }
 
+        if ($this->id == 18123) {
+            $firstWorkDay = '2023-12-25';
+        }
+
         $days = explode('-', $workChartName);
         $workingDay = (int)$days[0];
 
