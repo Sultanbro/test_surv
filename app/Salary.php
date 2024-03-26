@@ -671,7 +671,6 @@ class Salary extends Model
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);
-                    dd_if($user->id == 18123, $workdays);
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                     $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
