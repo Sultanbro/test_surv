@@ -100,7 +100,7 @@ if (!function_exists('point')) {
 
         if ($action === 'end') {
             $start = Carbon::createFromTimeString(Cache::pull('point-start'));
-            dd($start->diffInMicroseconds(now()));
+            dd($start->diffInRealSeconds(now()));
         }
     }
 }
