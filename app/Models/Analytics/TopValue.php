@@ -574,7 +574,7 @@ class TopValue extends Model
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
             $row['archived_date'] = $group->archived_date;
-
+            point();
             for ($i = 1; $i <= 12; $i++) {
 
                 $xdate = $date->month($i)
@@ -608,10 +608,10 @@ class TopValue extends Model
                 $total_row['c' . $i] += $salary;
                 $total_row['r' . $i] += $rentability;
             }
+            point('end');
 
             $table[] = $row;
         }
-        point('end');
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);
             $total_row['c' . $i] = round($total_row['c' . $i]);
