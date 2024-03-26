@@ -2098,7 +2098,7 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-
+dd($this->updatedValues);
         /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
