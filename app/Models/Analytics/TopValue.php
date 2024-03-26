@@ -544,7 +544,7 @@ class TopValue extends Model
 
         $groups = ProfileGroup::withRentability($year, $month);
 
-        $r_counts = []; // for count avg rentability on every monht
+        $r_counts = [];   // for count avg rentability on every monht
         $total_row = []; // first row
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = 0;
@@ -552,7 +552,6 @@ class TopValue extends Model
             $total_row['r' . $i] = 0;
             $r_counts[$i] = 0;
         }
-
 
         $edited_proceeds = TopEditedValue::query()
             ->whereYear('date', $year)
@@ -563,7 +562,7 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
-        foreach ($groups as $key => $group) {
+        foreach ($groups as $group) {
             $row = [];
 
             $row['group_id'] = $group->id;
@@ -580,48 +579,12 @@ class TopValue extends Model
                 $xdate = $date->month($i)
                     ->format('Y-m-d');
 
-                /**
-                 * get salary
-                 */
                 $salary = $salaries
                     ->where('group_id', $group->id)
                     ->where('date', $xdate)
                     ->sum('total');
 
-                /**
-                 * Temp for DM2
-                 * count ФОТ
-                 */
-                $date_diff = $date->timestamp - Carbon::parse('2022-09-01')->timestamp;
-//                if ($date_diff >= 0 && $group->id == 93) {
-//
-//                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
-//                    $sum = 0;
-//
-//                    foreach ($data['users'] as $user) {
-//                        $sum += array_sum(array_values($user['earnings']));
-//                        if ($user['edited_bonus']) {
-//                            $sum += $user->edited_bonus->amount;
-//                        } else {
-//                            $sum += array_sum(array_values($user['bonuses']));
-//                            $sum += array_sum(array_values($user['awards']));
-//                            $sum += array_sum(array_values($user['test_bonus']));
-//                        }
-//
-//                        $sum += $user['edited_kpi']
-//                            ? $user['edited_kpi']->amount
-//                            : $user['kpi'];
-//                    }
-//
-//                    $salary = $sum;
-//                }
-
-                // TEMP
-                $rentability = 0;
-                $proceeds = 0;
-
                 $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
-
 
                 $edited_proceed = $edited_proceeds->where('date', $xdate)
                     ->where('group_id', $group->id)
@@ -643,13 +606,10 @@ class TopValue extends Model
                 $total_row['l' . $i] += $proceeds;
                 $total_row['c' . $i] += $salary;
                 $total_row['r' . $i] += $rentability;
-
-
             }
 
             $table[] = $row;
         }
-
 
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);

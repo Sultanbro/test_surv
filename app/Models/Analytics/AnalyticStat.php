@@ -671,6 +671,9 @@ class AnalyticStat extends Model
     public static function getProceeds($group_id, $date, $only_days = []): array
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
+        $stats = self::query()
+            ->where('date', $date)
+            ->get();
 
         if (count($only_days) > 0) {
             $days = $only_days;
@@ -678,12 +681,14 @@ class AnalyticStat extends Model
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
-        $columns = Column::where('group_id', $group_id)
+        $columns = Column::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->whereIn('name', $days)
             ->get();
 
-        $row = Row::where('group_id', $group_id)
+        $row = Row::query()
+            ->where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'second')
             ->first();
@@ -695,9 +700,10 @@ class AnalyticStat extends Model
 
         if ($row) {
             foreach ($columns as $column) {
-                $stat = self::where('column_id', $column->id)
+                /** @var AnalyticStat $stat */
+                $stat = $stats
+                    ->where('column_id', $column->id)
                     ->where('row_id', $row->id)
-                    ->where('date', $date)
                     ->first();
 
                 if ($stat) {
@@ -707,8 +713,6 @@ class AnalyticStat extends Model
                     } else {
                         $values[(int)$column->name] = (int)$stat->show_value;
                     }
-
-
                 }
             }
 
@@ -721,7 +725,7 @@ class AnalyticStat extends Model
     {
         $values = self::getProceeds($group_id, $date);
         $sum = 0;
-        foreach ($values as $key => $value) {
+        foreach ($values as $value) {
             $sum += $value;
         }
         return $sum;

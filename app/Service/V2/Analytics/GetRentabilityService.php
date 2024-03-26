@@ -40,10 +40,15 @@ class GetRentabilityService
             })
             ->where('type', TopValue::RENTABILITY)
             ->get();
-
-
+        dd(TopValue::getPivotRentability(
+            $dto->year,
+            $dto->month
+        ));
         return [
-            'table' => TopValue::getPivotRentability($dto->year, $dto->month),
+            'table' => TopValue::getPivotRentability(
+                $dto->year,
+                $dto->month
+            ),
             'speedometers' => $gauges,
             'static_rentability' => TopValue::getRentabilityGauges($date->format("Y-m-d"))
         ];

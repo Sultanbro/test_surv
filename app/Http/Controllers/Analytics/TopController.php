@@ -289,7 +289,7 @@ class TopController extends Controller
     public function getRentability(Request $request): array
     {
         return TopValue::getPivotRentability(
-            $request->get("year")
+              $request->get("year")
             , $request->get("month")
         );
     }
