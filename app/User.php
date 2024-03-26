@@ -1749,6 +1749,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $requestDate = Carbon::createFromDate($year, $month);
+        dd_if($this->id == 29161, $requestDate);
+
         $workChartFromHistory = null;
         if (!$requestDate->isCurrentMonth() && $this->profile_histories_latest) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
