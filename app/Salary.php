@@ -669,7 +669,7 @@ class Salary extends Model
                 $workChartType = $schedule['work_charts_type'];
 
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
-
+                    dd_if($user->id == 29161, $schedule);
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);
 
@@ -729,7 +729,8 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                } else {
+                }
+                else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
