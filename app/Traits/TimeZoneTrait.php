@@ -9,7 +9,7 @@ trait TimeZoneTrait
 {
     public function getUserTimezone(): int
     {
-        return auth()->user()->timezone ?? 6;
+        return auth()->user()->timezone ?? 5;
     }
 
     public function getTimezoneSetting(): string

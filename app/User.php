@@ -1375,7 +1375,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function timezone()
     {
         $userTimeZone = (int)$this->timezone;
-        $userTimeZone = $userTimeZone ?: 5;
+        $userTimeZone = $userTimeZone ?: +5;
         return Setting::TIMEZONES[$userTimeZone];
     }
 
