@@ -85,6 +85,30 @@ class MessengerChat extends Model
     }
 
     /**
+     * @param \App\User|Authenticatable|null $user
+     *
+     * @return bool
+     */
+    public function checkIsMentioned(\App\User|Authenticatable $user = null): bool
+    {
+        $messages = $this->messages()
+            ->where('sender_id', '!=', $user->id)
+            ->where('deleted', false)
+            ->where('created_at', '>=', $user->created_at)
+            ->whereDoesntHave('readers', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->pluck('body')->toArray();
+        foreach ($messages as $message) {
+            if (preg_match_all('/@[^#]+#(\d+);/', $message, $matches)) {
+                if (in_array($user->id, $matches[1])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param Authenticatable|null $user
      *
      * @return array

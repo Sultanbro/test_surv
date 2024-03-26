@@ -108,6 +108,7 @@ class Messenger
     public function getChatAttributesForUser(MessengerChat $chat, User $user): ?MessengerChat
     {
         $chat->unread_messages_count = $chat->getUnreadMessagesCount($user);
+        $chat->is_mentioned = $chat->checkIsMentioned($user);
         // last message with sender
         $chat->last_message = $chat->getLastMessage();
         if ($chat->last_message) {
