@@ -1749,6 +1749,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      */
     public function getCountWorkDaysMonth($year = null, $month = null): int
     {
+        if ($year == null && $month == null) {
+            $year = Carbon::now()->year;
+            $month = Carbon::now()->month;
+        }
+
         $requestDate = Carbon::createFromDate($year, $month);
         $workChartFromHistory = null;
         if (!$requestDate->isCurrentMonth() && $this->profile_histories_latest) {
@@ -1757,8 +1762,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $workChartName = $workChartFromHistory ? WorkChartModel::query()->find($workChartFromHistory)->name : $this->workChart?->name;
-
-        dd_if($this->id == 18123, $workChartName);
 
         if ($this->first_work_day) {
             $firstWorkDay = Carbon::parse($this->first_work_day);
@@ -1781,11 +1784,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $dayOff = (int)$days[1];
         $total = $workingDay + $dayOff;
 
-        if ($year == null && $month == null) {
-            $year = Carbon::now()->year;
-            $month = Carbon::now()->month;
-        }
-
         $daysInMonth = $requestDate->daysInMonth;
 
         $workDayInMonth = 0;
@@ -1801,7 +1799,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             }
         }
 
-
+        dd($workDayInMonth);
         return $workDayInMonth;
     }
 
