@@ -653,7 +653,6 @@ class Salary extends Model
 
 
                 $schedule = $user->schedule(true, $workChartFromHistory);
-                dd_if($user->id == 29161, $schedule);
 
 
                 // Проверяем установлена ли время отдыха
@@ -681,6 +680,7 @@ class Salary extends Model
                 }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
+                dd_if($user->id == 29161, "$zarplata / $workdays / $working_hours");
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
