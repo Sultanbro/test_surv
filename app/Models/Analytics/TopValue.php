@@ -611,7 +611,7 @@ class TopValue extends Model
 
             $table[] = $row;
         }
-        point();
+        point('end');
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);
             $total_row['c' . $i] = round($total_row['c' . $i]);
