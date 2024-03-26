@@ -1784,7 +1784,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $total = $workingDay + $dayOff;
 
         $daysInMonth = $requestDate->daysInMonth;
-        dd_if($this->id == 18123, $total);
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
@@ -1792,6 +1791,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $date1 = date_create($dayInMonth);
             $date2 = date_create($firstWorkDay);
             $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
+            dd_if($this->id == 18123, $differBetweenFirstAndLastDay);
+
             $remains = $differBetweenFirstAndLastDay % $total;
 
             if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
