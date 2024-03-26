@@ -2098,7 +2098,7 @@ class KpiStatisticService
             ->whereYear('date', $this->from->year)
             ->orderBy('date', 'desc')
             ->get();
-dd($this->updatedValues);
+dd($this->updatedValues->where('user_id', 6401)->where('kpi_item_id', 601)->first()->toArray());
         /** @var Kpi $kpi */
         $kpi = Kpi::withTrashed()
             ->with([
