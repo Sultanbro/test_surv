@@ -1781,7 +1781,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso == 1 ? 0 : Carbon::parse($firstWorkDay)->dayOfWeekIso;
         $daysInMonth = $requestDate->daysInMonth;
         $workDayInMonth = 0;
-        $date2 = Carbon::parse($firstWorkDay)->addDays($firstWorkDayInWeek);
+        $date2 = Carbon::parse($firstWorkDay)->addDays(7 - $firstWorkDayInWeek);
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
             $date1 = Carbon::parse($dayInMonth);
