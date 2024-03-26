@@ -1786,7 +1786,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $firstWorkDayInWeek = Carbon::parse($firstWorkDay)->dayOfWeekIso;
         $daysInMonth = $requestDate->daysInMonth;
         $workDayInMonth = 0;
-        $date2 = Carbon::parse($firstWorkDay)->addDays($firstWorkDayInWeek);
+        $date2 = Carbon::parse($firstWorkDay)->addDays($firstWorkDayInWeek-1);
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
             $date1 = Carbon::parse($dayInMonth);
@@ -1802,7 +1802,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
                 dump("$remains < $workingDay && $dayInMonth $firstWorkDay $workDayInMonth");
             }
         }
-        dd_if($this->id == 18123, $workDayInMonth);
+
         return $workDayInMonth;
     }
 
