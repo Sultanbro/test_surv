@@ -27,6 +27,7 @@ class LeadController extends Controller
                 'data' => $result
             ]);
         } catch(Exception $err) {
+            dd($err);
             return response()->json([
                 'message' => 'Lead creation failed'
             ], 400);
