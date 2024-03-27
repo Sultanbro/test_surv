@@ -328,8 +328,8 @@ function getManagerName(userId: number){
   margin-top: -16px;
   .v-table__wrapper{
     --j-other-height: calc(var(--v-layout-top) + var(--v-layout-bottom) + 48px + 140px);
-    height: calc(100vh - var(--j-other-height));
-    overflow-y: auto;
+    // height: calc(100vh - var(--j-other-height));
+    // overflow-y: auto;
   }
   &-perPage{
     width: 100px;
