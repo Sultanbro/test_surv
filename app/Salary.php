@@ -499,7 +499,7 @@ class Salary extends Model
                         ->groupBy('day', 'type', 'user_id', 'date');
                 },
                 'fines' => function (BelongsToMany $q) use ($date) {
-                    $q->wherePivot('deleted_at', Null);
+                    $q->wherePivot('deleted_at', null);
                     $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")
                         ->whereMonth('day', $date->month)
                         ->whereYear('day', $date->year)

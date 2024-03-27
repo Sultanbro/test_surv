@@ -33,8 +33,8 @@ class PaymentController extends Controller
     public function payment(DoPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $authUserId = Auth::id();
-        $authUser = User::getAuthUser($authUserId);
+        /** @var User $authUser */
+        $authUser = Auth::user();
         $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto(), $authUser);
 
         return $this->response(

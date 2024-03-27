@@ -19,7 +19,6 @@ final class TariffGetAllService
     }
 
     /**
-     * @param int $ownerId
      * @return array
      * @throws Exception
      */

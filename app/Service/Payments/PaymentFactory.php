@@ -14,15 +14,10 @@ final class PaymentFactory
      */
     public function getPaymentsProviderByCurrency(string $currency): BasePaymentService
     {
-        switch ($currency) {
-            case 'rub':
-                $factory = new YooKassa();
-                break;
-            default:
-                throw new \InvalidArgumentException("Не известная валюта $currency");
-        }
-
-        return $factory;
+        return match ($currency) {
+            'rub' => new YooKassa(),
+            default => throw new \InvalidArgumentException("Не известная валюта $currency"),
+        };
     }
 
     /**

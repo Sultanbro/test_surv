@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tariffs;
 use App\Http\Controllers\Controller;
 use App\Models\Tariff\Tariff;
 use App\Service\Payments\TariffGetAllService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,9 +18,10 @@ class TariffController extends Controller
         public TariffGetAllService $tariffGetAllService
     )
     {}
-    
+
     /**
      * @return JsonResponse
+     * @throws Exception
      */
     public function get(): JsonResponse
     {
