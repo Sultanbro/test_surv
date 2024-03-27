@@ -13,24 +13,14 @@ class SetExitTimetracking extends Command
 
     protected $description = 'Автоматическое завершение рабочего дня';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
     public function handle(): void
     {
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
-        $records = Model::with('user')
-            ->whereHas('user')
+        $records = Model::query()
+            ->withWhereHas('user')
             ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
-//            ->where('status', Model::DAY_STARTED)
+            ->where('status', Model::DAY_STARTED)
             ->get();
 
         /** @var Timetracking $record */
@@ -44,9 +34,7 @@ class SetExitTimetracking extends Command
                 $workEndTime->addDays();
             }
 
-            if (!$workEndTime->isBefore($currentDate->addDay())) {
-                continue;
-            }
+            if (!$workEndTime->isBefore($currentDate->addDay())) continue;
 
 
             $record->setExit($workEndTime)

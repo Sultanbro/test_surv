@@ -20,6 +20,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property string note
@@ -497,7 +498,8 @@ class Salary extends Model
                         ->whereYear('date', $date->year)
                         ->groupBy('day', 'type', 'user_id', 'date');
                 },
-                'fines' => function ($q) use ($date) {
+                'fines' => function (BelongsToMany $q) use ($date) {
+                    $q->wherePivot('deleted_at', Null);
                     $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")
                         ->whereMonth('day', $date->month)
                         ->whereYear('day', $date->year)

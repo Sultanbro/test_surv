@@ -78,14 +78,14 @@ class TimeTrackingRepository extends CoreRepository
      * @return Builder
      */
     public function getNonUpdatedTimeTrackWithUser(
-        ?int   $userId = null,
+        ?int $userId = null,
     ): Builder
     {
         return $this->model()
             ->with('user')
             ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
             ->when($userId, fn($query) => $query->where('user_id', $userId))
-//            ->where('updated', 0)
+            ->where('updated', 0)
             ->where('total_hours', 0)
             ->whereNotNull('exit');
     }

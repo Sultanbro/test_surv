@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Timetracking;
+use App\Timetracking as Model;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,9 +33,10 @@ class SetExitTimetrackingForMonth extends Command
             dump($from->toDateTimeString());
             $currentDate = $from->copy();
             $dayBeforeCurrentDate = $from->copy()->subDay();
-            $records = Timetracking::with('user')
-                ->whereHas('user')
+            $records = Model::query()
+                ->withWhereHas('user')
                 ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
+                ->where('status', Model::DAY_STARTED)
                 ->get();
 
             $this->touch($records, $currentDate);
