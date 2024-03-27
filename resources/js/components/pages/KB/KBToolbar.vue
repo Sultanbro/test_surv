@@ -93,7 +93,7 @@
 			</template>
 			<template v-else>
 				<div
-					v-if="canEdit"
+					v-if="isAdmin"
 					class="KBToolbar-action"
 				>
 					<i
