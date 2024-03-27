@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
+				:can-edit="!!(currentBook && currentBook.canEdit) || !!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
