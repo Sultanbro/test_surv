@@ -236,7 +236,7 @@ export default {
 					name: 'Вакантная',
 					/* eslint-disable-next-line camelcase */
 					last_name: 'позиция',
-					avatar: '/user.png',
+					avatar: '/static/img/user.png',
 				}
 				: this.card.manager
 					? this.users.find(user => user.id === this.card.manager.user_id)
@@ -284,7 +284,7 @@ export default {
 					name: 'Вакантная',
 					/* eslint-disable-next-line camelcase */
 					last_name: 'позиция',
-					avatar: '/user.png',
+					avatar: '/static/img/user.png',
 				},
 				...this.users,
 			]
@@ -372,6 +372,7 @@ export default {
 			}
 		},
 		async deleteDepartment() {
+			if(!confirm('Удалить?')) return
 			try {
 				const data = await this.deleteCard(this.card.id)
 				if(data) this.$toast.success('Карточка удалена')

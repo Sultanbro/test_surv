@@ -62,16 +62,22 @@
 				ref="departmentsArea"
 				class="departments-area"
 			>
-				<template v-if="rootCard">
-					<StructureItem
-						ref="rootCard"
-						:card="rootCard"
-						:level="0"
-						:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
-						@scrollToBlock="scrollToBlock"
-						@updateLines="drawLines"
-					/>
-				</template>
+				<StructureItem
+					v-if="rootCard"
+					ref="rootCard"
+					:card="rootCard"
+					:level="0"
+					:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
+					@scrollToBlock="scrollToBlock"
+					@updateLines="drawLines"
+				/>
+				<div
+					v-else-if="isReady && isEditMode"
+					class="structure-add-root"
+					@click="addCard(null)"
+				>
+					Добавить карточку
+				</div>
 			</div>
 		</div>
 
@@ -109,7 +115,15 @@
 					switch
 					size="lg"
 				>
-					Конревая карточка
+					Показывать собственника
+					<img
+						v-b-popover.hover.html="`Тот кто создал корпоративный портал`"
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						tabindex="-1"
+						width="20"
+					>
 				</b-form-checkbox>
 			</template>
 			<template #footer>
@@ -177,6 +191,7 @@ export default {
 			'isDemo',
 			'demo',
 			'moreUsers',
+			'isReady',
 		]),
 		actualDictionaries(){
 			return {
@@ -205,6 +220,7 @@ export default {
 					parent_id: null,
 					name: 'Генеральный директор',
 					is_vacant: false,
+					locked: true,
 				}
 				/* eslint-enable camelcase */
 
@@ -273,6 +289,7 @@ export default {
 			'getEmptyCard',
 			'closeEditCard',
 			'setDemo',
+			'addCard',
 			'updateCard',
 			'deleteCard',
 		]),
@@ -485,3 +502,31 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.structure-container{
+
+	.custom-switch{
+		.custom-control-label{
+			&:before,
+			&:after{
+				top: 50% !important;
+				transform: translateY(-50%) !important;
+			}
+		}
+	}
+}
+.structure-add-root{
+	align-self: start;
+	padding: 20px;
+	border: 1px dashed #777;
+	font-size: 24px;
+	line-height: 1.2;
+	border-radius: 16px;
+	cursor: pointer;
+	&:hover{
+		color: #608EE9;
+		border-color: #608EE9;
+	}
+}
+</style>

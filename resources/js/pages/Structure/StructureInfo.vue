@@ -2,7 +2,7 @@
 	<div class="StructureInfo additional-info">
 		<slot>
 			<JobtronAvatar
-				:image="info.avatar ? info.avatar : '/user.png'"
+				:image="info.avatar ? info.avatar : '/static/img/user.png'"
 				:title="`${info.name || ''} ${info.last_name || ''}`"
 				:size="info.avatarSize"
 				class="StructureInfo-avatar"
