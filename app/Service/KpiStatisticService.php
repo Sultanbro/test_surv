@@ -931,6 +931,7 @@ class KpiStatisticService
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
+        dd($_users);
 
         // create final users array
         return $this->connectKpiWithUserStats(
