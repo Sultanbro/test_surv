@@ -1354,7 +1354,7 @@ export default {
 
 			/* eslint-disable require-atomic-updates */
 			book.canRead = this.isAdmin || canRead || canEdit || canReadPair || canEditPair || (!whoCanRead.length && !whoCanReadPairs.length)
-			book.canEdit = this.isAdmin || canEdit || canEditPair
+			book.canEdit = this.isAdmin || canEdit || canEditPair || book.can_edit
 			/* eslint-enable require-atomic-updates */
 
 			if(book.children && book.children.length){
