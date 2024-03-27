@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
+use App\Models\CentralUser;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -84,7 +85,7 @@ class LoginController extends Controller
      *
      * @param Request $request
      *
-     * @return array
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
@@ -104,14 +105,20 @@ class LoginController extends Controller
             ], 401);
         }
 
+        // record login time
+        $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        $user?->update([
+            'login_at' => now()
+        ]);
+
         // login was success
         $request->session()->regenerate();
 
         // redirect to - admin.jobtron.org
         if (request()->getHost() == 'admin.' . config('app.domain')) {
-            return [
+            return response()->json([
                 'link' => $this->redirectTo
-            ];
+            ]);
         }
 
         // login from central app  - jobtron.org/login
@@ -119,8 +126,10 @@ class LoginController extends Controller
         if (request()->getHost() == config('app.domain')) {
             $links = $this->loginLinks($request->email);
 
+            $data = [];
             if (!empty($links)) {
-                return count($links) > 1
+
+                $data = count($links) > 1
                     ? [
                         'links' => $links
                     ]
@@ -129,13 +138,13 @@ class LoginController extends Controller
                     ];
             }
 
-            return [];
+            return response()->json($data);
         }
 
         // login from tenant app
-        return [
+        return response()->json([
             'link' => $this->redirectTo
-        ];
+        ]);
     }
 }
 
