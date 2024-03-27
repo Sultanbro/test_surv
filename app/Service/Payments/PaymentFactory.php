@@ -16,8 +16,6 @@ final class PaymentFactory
     {
         return match ($currency) {
             'rub' => new YooKassa(),
-            'kzt' => new YooKassa(),
-            'usd' => new YooKassa(),
             default => throw new \InvalidArgumentException("Не известная валюта $currency"),
         };
     }

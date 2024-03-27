@@ -38,7 +38,7 @@
 				</p>
 
 				<i
-					v-if="isEditMode"
+					v-if="isEditMode && !card.locked"
 					class="fa fa-cog structure-edit"
 					@click="editCard(card)"
 				/>
@@ -51,7 +51,7 @@
 			>
 				<template v-if="isVacant">
 					<JobtronAvatar
-						image="/user.png"
+						image="/static/img/user.png"
 						title="Вакантная позиция"
 						:size="130"
 						class="StructureItem-userAvatar"
@@ -308,7 +308,7 @@ export default {
 				name: 'Вакантная',
 				/* eslint-disable-next-line camelcase */
 				last_name: 'позиция',
-				avatar: '/user.png',
+				avatar: '/static/img/user.png',
 			}
 			return null
 		},

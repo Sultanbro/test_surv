@@ -18,7 +18,7 @@
 
     </div>
     <div class=" d-flex justify-content-end">
-       
+
         <div class="user-area dropdown " style="display: flex; align-items: center;">
             <profile user="{{json_encode(auth()->user())}}"></profile>
         </div>
@@ -48,13 +48,13 @@
     <div class=" non-pillar">
           <profile-salary-info :user_id="{{ auth()->id() }}"/>
     </div>
-    
 
- 
+
+
     @if($show_payment_terms || ($position_desc && $position_desc->show == 1))
     <!-- Как можно зарабатывать больше -->
     <div id="how_earn_more" class="p-3">
-        
+
         <div class="col-xl-12 ublock mt-3">
             <h2 class="big-title">Как можно зарабатывать больше</h2>
             <div class="boxes">
@@ -83,7 +83,7 @@
                 @if($position_desc && $position_desc->show == 1)
                 <div class="box" id="box-1">
                     <div style="height:100%;overflow-x:auto">
-                        <h2 class="small-title">Растите по карьерной лестнице 
+                        <h2 class="small-title">Растите по карьерной лестнице
                             <i class="fa fa-info-circle toooltip">
                                 <div>
                                 У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.
@@ -152,33 +152,33 @@
                                 </table>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
-                @endif 
+                @endif
             </div>
         </div>
-        
+
     </div>
-    @endif 
-    
+    @endif
+
     <div id="personal_info" class=" rw non-pillar px-3">
         <div class="col-xl2 mt-3">
             <div class="ublock">
                 <h2 class="big-title">Ваша личная информация</h2>
                 <div class="row">
 
-                
+
                     <!-- Контактная информация -->
                     <div class="col-xl-7">
                         <div class="contact-information ublockx h-autoч">
-                    
+
                             <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                                 {{ csrf_field() }}
                                 <input type="hidden" name="id" value="{{$user->id}}">
                                 <div class="data-information">
 
 
-                                    <div class="flex-1" style=" 
+                                    <div class="flex-1" style="
                                                                     border: 1px solid #eff2f3;
                                                                     padding: 15px;">
                                         <div >
@@ -206,7 +206,7 @@
                                                 </td>
                                             </tr>
 
-                                            
+
 
                                             <tr>
                                                 <td colspan="3">
@@ -226,10 +226,10 @@
                                                     <div class="d-flex justify-content-between">
                                                         <input  type="text" name="workday" disabled style="width:48%"
                                                             value="@if($user->working_day_id == 1) 5-2 @else 6-1 @endif">
-                                                        <input  type="text" name="workday" disabled style="width:48%" 
+                                                        <input  type="text" name="workday" disabled style="width:48%"
                                                             value="{{ $user->workTime()['workStartTime'] }} - {{ $user->workTime()['workEndTime'] }}">
                                                     </div>
-                                                    
+
                                                 </td>
                                             </tr>
 
@@ -242,10 +242,10 @@
                                                         value="@if($user->working_time_id == 1) 8 @else 9 @endif часов">
                                                 </td>
                                             </tr>
-                                    
-                                            
 
-                                            <tr class="after-edit"> 
+
+
+                                            <tr class="after-edit">
                                                 <td colspan="3">
                                                     <p class="name pr-1 mt-2">Валюта</p>
                                                 </td>
@@ -259,9 +259,9 @@
                                                         <option value="byn" @if($user->currency == 'byn')selected @endif>BYN Белорусский рубль</option>
                                                     </select>
                                                 </td>
-                                            </tr>    
+                                            </tr>
 
-                                            <tr class="after-edit"> 
+                                            <tr class="after-edit">
                                                 <td colspan="3">
                                                     <p class="name pr-1">Email</p>
                                                 </td>
@@ -274,7 +274,7 @@
 
                                             <tr id="saveProfile" style="display:none">
                                                 <td colspan="3">
-                                                    
+
                                                 </td>
                                                 <td colspan="1">
                                                     <button class="btn btn-primary btn-sm rounded mt-2" style="float:right;" >Сохранить</button>
@@ -294,39 +294,39 @@
                     <!-- План чтения книг и важная информация -->
                     <div class="col-xl-5 pl-md-0">
                         <div class="wrappy" style="overlflow-y:hidden;overflow-x:auto;">
-                           
+
                         <div class="pre mb-2" style="font-size:20px;font-weight:600">ИНФОРМАЦИЯ О КУРСЕ</div>
 
                         <div class=" d-flex">
                             @foreach($courses as $course)
-                            
+
                             <div class="my-course mr-3" style="width:220px;    flex: 0 0 220px;">
                                 <div>
                                     <a href="/my-courses?id={{$course['id']}}" class="title">
-                                        <img src="{{ $course['img'] }}" onerror="this.src = '/images/course.jpg';" style="max-width: 100%;border-radius:8px" class="mb-3"> 
+                                        <img src="{{ $course['img'] }}" onerror="this.src = '/images/course.jpg';" style="max-width: 100%;border-radius:8px" class="mb-3">
                                     </a>
                                     <a href="/my-courses?id={{$course['id']}}" class="title">{{ $course['name'] }}</a>
                                     <!-- <div>
                                         <div>Пройдено: {{ $course['id'] }}%</div>
                                         <progress value="{{ $course['id'] }}" max="100" id="progressBar"></progress>
                                     </div> -->
-                                    
+
                                     <div>{{ $course['text'] }}</div>
                                 </div>
                             </div>
                             @endforeach
 
-                            @if(count($courses) == 0) 
+                            @if(count($courses) == 0)
                             <p>Нет активных курсов</p>
                             @endif
                         </div>
-                      
+
                     </div>
                 </div>
             </div>
-            
+
         </div>
-        
+
         </div>
     </div>
 
@@ -346,7 +346,7 @@
     @if($is_recruiter)
     <!-- Информация для рекрутера -->
     <div id="recruiter_info" >
-       
+
         <div class="col-xl-12 mt-3 mb-3">
             <div class="ublock">
                 <h2 class="big-title">Информация по показателям вашей группы</h2>
@@ -355,18 +355,18 @@
                 </div>
                 <div class="ublocxk mb-4">
                     <t-recruting-user
-                        :month="{{json_encode($month)}}" 
+                        :month="{{json_encode($month)}}"
                         :records="{{ json_encode($recruiter_records) }}"
                         name="{{auth()->user()->last_name . ' ' . auth()->user()->name}}"
                         :workdays="{{ $workdays }}"
                         ></t-recruting-user>
-                    </div> 
+                    </div>
                 <div class="ublocxk">
                 <g-recruting :records="{{ $indicators }}" :isAnalyticsPage="false"></g-recruting>
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     @elseif(count(json_decode($activities)) > 0)
@@ -383,7 +383,7 @@
         </div>
 
     </div>
-    
+
     @endif
 
 </div>
@@ -444,10 +444,10 @@ $('#hoverPulse').mouseout(function() {
 });
 </script>
 <script>
-    (function(w,d,u){
-        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-    })(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
+    // (function(w,d,u){
+    //     var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+    //     var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+    // })(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
 </script>
 <script>
     function copyClipboard() {
@@ -455,7 +455,7 @@ $('#hoverPulse').mouseout(function() {
     copyText.select();
     copyText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(copyText.value);
-    
+
     var tooltip = document.getElementById("myTooltip");
     tooltip.innerHTML = "Скопировано: " + copyText.value;
     }
@@ -486,19 +486,19 @@ $('.answer').submit(function(e) {
         send(id, answer);
     } else if(id == 5){
         sendFile();
-    } else { 
+    } else {
         answer = $('textarea', this).val();
         if(answer.length > 10) {
             send(id, answer);
         }
     }
-    
 
-    
+
+
 });
 
 function send(question, answer) {
-   
+
 }
 
 function sendFile() {
@@ -599,7 +599,7 @@ $('#owl').owlCarousel({
 <style>
 #header {
     display: block !important;
-}   
+}
 </style>
 <style>
     html {
@@ -668,7 +668,7 @@ $('#owl').owlCarousel({
 .owl-stage {
     flex-wrap: wrap;
 }
-.pillars,  
+.pillars,
 .pillars2 {
     transition: 0.5s ease all;
 }
@@ -706,7 +706,7 @@ $('#owl').owlCarousel({
 }
 </style>
 <style>
-    
+
     #currency {
         background: #f8fcfe;
         border: 1px solid #daecf5;
@@ -731,7 +731,7 @@ $('#owl').owlCarousel({
         background: #fff;
         border: 1px solid rgba(12,83,125,.14);
         border-radius: 5px;
-    } 
+    }
 
     .mt-27 {
         margin-top: 25px;
@@ -800,7 +800,7 @@ $('#owl').owlCarousel({
         color: #202226;
         margin-bottom: 10px;
         font-size: 13px;
-        
+
     }
 
     .data-information input {
@@ -884,7 +884,7 @@ $('#owl').owlCarousel({
         margin: auto;
     }
 
-   
+
     .active a {
         color: green;
     }
@@ -1029,7 +1029,7 @@ $('#owl').owlCarousel({
     text-align: center !important;
     font-weight: 700;
     color: #272c32;
-    text-transform: uppercase; 
+    text-transform: uppercase;
     font-size: 24px;
 }
 h2.small-title {

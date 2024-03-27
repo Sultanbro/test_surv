@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\CentralUser;
 use App\Setting;
 use App\User;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class OtherSettingController extends Controller
     public function reset(Request $request)
     {
 
-        $accountUser = User::userByEmail($request->email);
+        $accountUser = CentralUser::userByEmail($request->email);
 
         if (!$accountUser) {
             return response()->json(['success' => false]);

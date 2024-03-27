@@ -25,7 +25,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="!!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
+				:can-edit="!!(!activeBook && currentBook && currentBook.canEdit) || !!(parentBook && parentBook.canEdit) || !!(activeBook && activeBook.canEdit) || isAdmin"
 				:edit-book="editBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
@@ -1354,7 +1354,7 @@ export default {
 
 			/* eslint-disable require-atomic-updates */
 			book.canRead = this.isAdmin || canRead || canEdit || canReadPair || canEditPair || (!whoCanRead.length && !whoCanReadPairs.length)
-			book.canEdit = this.isAdmin || canEdit || canEditPair
+			book.canEdit = this.isAdmin || canEdit || canEditPair || book.can_edit
 			/* eslint-enable require-atomic-updates */
 
 			if(book.children && book.children.length){
@@ -1369,7 +1369,7 @@ export default {
 		},
 		booksAccess(books){
 			books.forEach(book => {
-				book.canEdit = this.$can('books_edit')
+				book.canEdit = this.$can('books_edit') || book.who_can_edit
 				if(book.children) this.booksAccess(book.children)
 			})
 		},

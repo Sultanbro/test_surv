@@ -1122,7 +1122,8 @@ class KpiStatisticService
 
                     }
 
-                } else {
+                }
+                else {
                     $item['fact'] = 0;
                     $item['avg'] = 0;
                     $item['records_count'] = 0;
@@ -1385,8 +1386,7 @@ class KpiStatisticService
         $activity = null;
         if ($kpi_item->activity_id) $activity = Activity::query()->find($kpi_item->activity_id);
 
-        if ($activity
-            && $activity->view == Activity::VIEW_CELL) {
+        if ($activity && $activity->view == Activity::VIEW_CELL) {
 
             $item['fact'] = AnalyticStat::getCellValue(
                 $activity->group_id,
