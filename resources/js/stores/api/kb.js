@@ -54,6 +54,7 @@ function booksOpen(books){
 function canRead(tree){
 	tree.forEach(book => {
 		book.canRead = true
+		book.canEdit = book.can_edit
 		if(book.children) canRead(book.children)
 	})
 }
