@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tariffs;
+namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tariff\Tariff;

@@ -41,16 +41,16 @@ abstract class BasePaymentService
     public function pay(DoPaymentDTO $dto, User $authUser): string
     {
         $activePayment = TariffPayment::getActivePaymentIfExist();
+
         if ($activePayment) {
             throw new Exception("activePaymentIsExist");
         }
 
-        $response   = $this->getPaymentProvider()->doPayment($dto, $authUser);
-        $paymentId  = $response->getId();
-        $tariff     = Tariff::getTariffById($dto->tariffId);
+        $response = $this->getPaymentProvider()->doPayment($dto, $authUser);
+        $paymentId = $response->getId();
+        $tariff = Tariff::getTariffById($dto->tariffId);
 
-        if ($response->getStatus() != PaymentStatusEnum::STATUS_PENDING)
-        {
+        if ($response->getStatus() != PaymentStatusEnum::STATUS_PENDING) {
             throw new Exception("При генераций платежа $paymentId произошла ошибка");
         }
 
@@ -88,8 +88,7 @@ abstract class BasePaymentService
             $payment->status = $paymentStatus;
             $payment->save();
 
-            if ($paymentStatus != PaymentStatusEnum::STATUS_SUCCESS)
-            {
+            if ($paymentStatus != PaymentStatusEnum::STATUS_SUCCESS) {
                 $this->createPaymentLead($authUser, $payment);
                 new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
             }
@@ -108,6 +107,7 @@ abstract class BasePaymentService
     public function doAutoPayment(TariffPayment $payment): void
     {
         $this->autoPayment()->makeAutoPayment($payment);
+        /** @var Tariff $tariff */
         $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
@@ -117,14 +117,12 @@ abstract class BasePaymentService
             $tariff->calculateExpireDate(),
             $payment->payment_id,
             $payment->service_for_payment,
-            (bool)$payment->auto_payment
+            $payment->auto_payment
         );
     }
 
-    private function createPaymentLead(
-        User $user,
-        TariffPayment $payment,
-    ) {
+    private function createPaymentLead(User $user, TariffPayment $payment): void
+    {
         try {
             (new PaymentLead(
                 $user,
@@ -134,7 +132,7 @@ abstract class BasePaymentService
             ))
                 ->setNeedCallback(false)
                 ->publish();
-        } catch(Exception $err) {
+        } catch (Exception $err) {
             return; //TODO add logs
         }
     }

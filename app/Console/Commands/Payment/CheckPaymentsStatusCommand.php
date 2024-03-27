@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Api;
+namespace App\Console\Commands\Payment;
 
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\TariffPayment;
@@ -41,19 +41,18 @@ class CheckPaymentsStatusCommand extends Command
      *
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $payments = TariffPayment::query()
             ->with('owner')
             ->where('status', '=', PaymentStatusEnum::STATUS_PENDING)
             ->get();
 
-        foreach ($payments as $payment)
-        {
+        foreach ($payments as $payment) {
             try {
-                /** @var User */
+                /** @var User $user */
                 $user = $payment['owner'];
-    
+
                 $this->factory
                     ->getPaymentProviderByPayment($payment)
                     ->updateStatusByPayment($payment, $user);

@@ -35,7 +35,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
 });
 
 // Portal Api
@@ -720,8 +720,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Api\PaymentController::class, 'payment']);
-        Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
+        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
     });
 
     Route::group([
@@ -851,10 +851,10 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         //Api Structure
 
         Route::group(['prefix' => 'structure', 'as' => 'structure.'], function () {
-            Route::post('/store', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'store'])->name('store');
-            Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'all'])->name('get-all');
-            Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
-            Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
+            Route::post('/store', [Root\Structure\StructureCardController::class, 'store'])->name('store');
+            Route::get('/', [Root\Structure\StructureCardController::class, 'all'])->name('get-all');
+            Route::put('/{structureCard}', [Root\Structure\StructureCardController::class, 'update']);
+            Route::delete('/{id}', [Root\Structure\StructureCardController::class, 'destroy'])->name('destroy');
         });
 
         Route::get('coordinates', [App\Http\Controllers\Coordinate\getCoordinateController::class, 'get'])->name('get-coordinate');
@@ -892,6 +892,7 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::post('/edit/{user}', [Admin\AdminController::class, 'edit']);
         Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
+
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
 
     Route::group(['prefix' => 'faq', 'as' => 'faq.'], function () {

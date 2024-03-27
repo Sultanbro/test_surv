@@ -60,7 +60,7 @@ class YooKassaAutoPayment implements AutoPayment
         $builder->setCapture(true);
         $builder->setPaymentMethodId($tariffPayment->payment_id);
         $builder->setDescription('Заказ №' . time());
-        $builder->setReceipt($price->createYooKassaReceipt($user));
+        $builder->setReceipt($price->createYoKassReceipt($user));
 
         $idempotenceKey = uniqid('', true);
 

@@ -16,6 +16,8 @@ final class PaymentFactory
     {
         return match ($currency) {
             'rub' => new YooKassa(),
+            'kzt' => new YooKassa(),
+            'usd' => new YooKassa(),
             default => throw new \InvalidArgumentException("Не известная валюта $currency"),
         };
     }
@@ -26,16 +28,10 @@ final class PaymentFactory
      */
     public function getPaymentsProviderByType(string $type): BasePaymentService
     {
-        switch ($type)
-        {
-            case 'yookassa':
-                $paymentType = new YooKassa();
-                break;
-            default:
-                throw new \InvalidArgumentException("Не известный тип провайдера $type");
-        }
-
-        return $paymentType;
+        return match ($type) {
+            'yookassa' => new YooKassa(),
+            default => throw new \InvalidArgumentException("Не известный тип провайдера $type"),
+        };
     }
 
     /**
@@ -46,7 +42,10 @@ final class PaymentFactory
         string $paymentId
     ): BasePaymentService
     {
-        $tariffPayment = TariffPayment::query()->where('payment_id', $paymentId)->firstOrFail();
+        /**@var TariffPayment $tariffPayment */
+        $tariffPayment = TariffPayment::query()
+            ->where('payment_id', $paymentId)
+            ->firstOrFail();
 
         return $this->getPaymentProviderByPayment($tariffPayment);
     }

@@ -104,3 +104,18 @@ if (!function_exists('point')) {
         }
     }
 }
+
+if (!function_exists('phone_or_email')) {
+    /**
+     * @param array $toCheck
+     * @return string|null
+     */
+    function phone_or_email(array $toCheck): ?string
+    {
+        return match (true) {
+            isset($toCheck['email']) => 'email',
+            isset($toCheck['phone']) => 'phone',
+            default => null,
+        };
+    }
+}

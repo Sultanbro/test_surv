@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Structure;
+namespace App\Http\Controllers\Structure;
 
 use App\DTO\Structure\StructureCardDTO;
 use App\DTO\Structure\StructureCardUpdateDTO;

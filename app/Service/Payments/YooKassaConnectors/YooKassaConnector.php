@@ -23,7 +23,8 @@ class YooKassaConnector implements PaymentTypeConnector
     public function __construct(
         public Client $client
     )
-    {}
+    {
+    }
 
     /**
      * Делает оплату.
@@ -34,9 +35,10 @@ class YooKassaConnector implements PaymentTypeConnector
     {
         try {
             $idempotenceKey = uniqid('', true);
+            $buildRequest = $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUser, $dto->autoPayment);
 
-            $response =  $this->client->createPayment(
-                $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUser, $dto->autoPayment),
+            $response = $this->client->createPayment(
+                $buildRequest,
                 $idempotenceKey
             );
 
@@ -60,36 +62,35 @@ class YooKassaConnector implements PaymentTypeConnector
      * @throws Exception
      */
     private function getPaymentRequest(
-        int $tariffId,
-        int $extraUsersLimit,
+        int  $tariffId,
+        int  $extraUsersLimit,
         User $authUser,
         bool $autoPayment = false
     ): CreatePaymentRequestInterface
     {
         $tariff = Tariff::getTariffById($tariffId);
-        $price  = $tariff
+        $price = $tariff
             ->getPrice($extraUsersLimit)
             ->setCurrency('rub');
         $origin = request()->headers->get('origin');
 
         $builder = CreatePaymentRequest::builder();
-
         $builder->setAmount(array(
             'value' => $price->getTotal(),
             'currency' => CurrencyCode::RUB,
         ));
         $builder->setConfirmation(array(
-            'type'       => 'redirect',
-            'locale'     => 'ru_RU',
+            'type' => 'redirect',
+            'locale' => 'ru_RU',
             'return_url' => $origin . '/pricing?status=1',
         ));
         $builder->setCapture(true);
         $builder->setDescription('Заказ №' . time());
         $builder->setSavePaymentMethod($autoPayment);
         $builder->setMetadata(array(
-            'orderNumber'   => time()
+            'orderNumber' => time()
         ));
-        $builder->setReceipt($price->createYooKassaReceipt($authUser));
+        $builder->setReceipt($price->createYoKassReceipt($authUser));
 
         return $builder->build();
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Api;
+namespace App\Console\Commands\Payment;
 
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\PaymentFactory;
@@ -40,7 +40,7 @@ class RunAutoPaymentCommand extends Command
      *
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $payments = TariffPayment::query()
             ->orderBy('expire_date', 'desc')

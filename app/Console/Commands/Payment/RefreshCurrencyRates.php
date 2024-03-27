@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Api;
+namespace App\Console\Commands\Payment;
 
 use Illuminate\Console\Command;
 use App\Classes\Helpers\Currency;

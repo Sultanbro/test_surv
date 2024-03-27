@@ -2,8 +2,8 @@
 
 namespace App\Console;
 
-use App\Console\Commands\Api\CheckPaymentsStatusCommand;
-use App\Console\Commands\Api\RunAutoPaymentCommand;
+use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
+use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;

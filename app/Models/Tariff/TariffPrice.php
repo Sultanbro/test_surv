@@ -4,6 +4,7 @@ namespace App\Models\Tariff;
 
 use App\Traits\CurrencyTrait;
 use App\User;
+use Exception;
 use YooKassa\Model\Receipt;
 use YooKassa\Model\ReceiptItem;
 
@@ -13,7 +14,7 @@ final class TariffPrice {
 
     private float $priceForOnePersonInKzt;
 
-    private static $currencyMap = [
+    private static array $currencyMap = [
         'kzt' => [
             'rub' => 'kztToRub',
         ],
@@ -23,14 +24,15 @@ final class TariffPrice {
     public int $extraUsersPrice;
     public int $priceForOnePerson;
 
-    private $currency = 'kzt';
+    private string $currency = 'kzt';
 
     /**
      * @param Tariff $tariff
+     * @param int $extraUsers
      */
     public function __construct(
-        private Tariff $tariff,
-        public int $extraUsers
+        private readonly Tariff $tariff,
+        public int              $extraUsers
     )
     {
         $this->priceForOnePersonInKzt = (float) config('payment.payment_for_one_person');
@@ -76,15 +78,13 @@ final class TariffPrice {
         $this->extraUsersPrice = $this->extraUsers * $this->priceForOnePerson;
     }
 
-    public function kztToRub(float $v): float
-    {
-        return $this::converterToRub($v);
-    }
-
-    public function createYooKassaReceipt(User $user): Receipt
+    /**
+     * @throws Exception
+     */
+    public function createYoKassReceipt(User $user): Receipt
     {
         if ($this->currency != 'rub') {
-            throw new \Exception('cannot createYooKassaReceipt: wrong currency');
+            throw new Exception('cannot createYooKassReceipt: wrong currency');
         }
 
         $tariffKind = $this->tariff->kind;

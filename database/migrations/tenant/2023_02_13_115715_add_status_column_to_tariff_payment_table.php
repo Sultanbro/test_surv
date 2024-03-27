@@ -11,7 +11,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('tariff_payment', function (Blueprint $table) {
             $table->string('status')->after('payment_id')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('tariff_payment', function (Blueprint $table) {
             $table->dropColumn('status');

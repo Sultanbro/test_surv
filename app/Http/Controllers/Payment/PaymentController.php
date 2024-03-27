@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\DoPaymentRequest;
@@ -35,11 +35,13 @@ class PaymentController extends Controller
         $dto = $request->toDto();
         /** @var User $authUser */
         $authUser = Auth::user();
-        $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto(), $authUser);
+        $response = $this->factory
+            ->getPaymentsProviderByCurrency($dto->currency)
+            ->pay($request->toDto(), $authUser);
 
         return $this->response(
             message: 'Success',
-            data:  $response
+            data: $response
         );
     }
 
