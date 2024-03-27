@@ -4,7 +4,7 @@
 		id="page-profile"
 	>
 		<router-link
-			v-if="profileUnfilled || unsignedDocs.length"
+			v-if="isReady && (profileUnfilled || unsignedDocs.length)"
 			to="/cabinet"
 			class="ProfilePage-fillProfile"
 		>
@@ -224,6 +224,7 @@ export default {
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 
 			documents: [],
+			person: null,
 		};
 	},
 	computed: {
@@ -237,8 +238,8 @@ export default {
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		...mapState(useReferralStore, {refReady: 'isReady'}),
 		isTrainee(){
-			if(!this.user) return false
-			return !this.user.applied_at
+			if(!this.person) return true
+			return !!this.person?.user_description?.is_trainee
 		},
 		coursesFinished(){
 			const completed = this.courses.filter(course => course.all_stages && (course.all_stages === course.completed_stages))
@@ -289,6 +290,7 @@ export default {
 		if(this.isReady) this.initAnimOnScroll()
 		if(this.isBP) this.fetchUserStats()
 		this.fetchDocs()
+		this.fetchPerson()
 	},
 	beforeDestroy(){
 		this.intersectionObserver.disconnect()
@@ -305,6 +307,10 @@ export default {
 				file: this.isDebug ? '/static/td.pdf' : doc.url,
 				signed: doc.signed_at,
 			}))
+		},
+		async fetchPerson(){
+			const { data } = await this.axios.get('/timetracking/get-person', {params: {id: this.$laravel.userId}})
+			this.person = data.user
 		},
 		pop(window) {
 			if(window == 'balance') this.popBalance = true;
