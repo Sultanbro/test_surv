@@ -4,7 +4,7 @@
 		id="page-profile"
 	>
 		<router-link
-			v-if="profileUnfilled || unsignedDocs.length"
+			v-if="isReady && (profileUnfilled || unsignedDocs.length)"
 			to="/cabinet"
 			class="ProfilePage-fillProfile"
 		>

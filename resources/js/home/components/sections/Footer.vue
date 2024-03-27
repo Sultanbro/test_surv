@@ -163,23 +163,6 @@
 				</div>
 			</div>
 		</div>
-		<div
-			v-if="!cookieViewed"
-			class="cookie-alert"
-		>
-			<span>Мы используем файлы cookie на нашем веб-сайте для поддержки технических функций, которые улучшают ваш
-				пользовательский опыт. Мы также собираем анонимные аналитические данные, как описано в нашей
-				<a
-					href="/docs/privacy-policy.pdf"
-					target="_blank"
-				>Политике конфиденциальности</a></span>
-			<button
-				class="jButton"
-				@click="saveCookieView"
-			>
-				Понятно
-			</button>
-		</div>
 	</footer>
 </template>
 
@@ -239,32 +222,6 @@ export default {
 	}
 	.mb-0{
 		margin-bottom: 0!important;
-	}
-}
-.cookie-alert{
-	position: fixed;
-	bottom: 20px;
-	left: 20px;
-	max-width: 700px;
-	padding: 20px;
-	background-color: #43a9fe;
-	color: #fff;
-	border-radius: 10px;
-	z-index: 1001;
-	display: flex;
-	align-items: center;
-	a{
-		color: #fff;
-	}
-	.jButton{
-		margin-left: 30px;
-		background-color: #fff;
-		color: #43a9fe;
-		font-size: 14px;
-		&:hover{
-			background-color: #fafafa;
-			color: #337fc0;
-		}
 	}
 }
 
