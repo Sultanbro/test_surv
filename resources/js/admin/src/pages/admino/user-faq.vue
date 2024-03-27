@@ -51,7 +51,11 @@ async function fetchFAQ(){
 async function createFAQ(item: Question){
   try {
     const {data} = await axios.post('/faq', item)
-    questions.value.push(data.data)
+    questions.value.push({
+      ...data.data,
+      children: [],
+      isCollapsed: false,
+    })
   }
   catch (error) {
     console.error(error)
