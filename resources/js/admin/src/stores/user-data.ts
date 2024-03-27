@@ -32,7 +32,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   const lastPage = ref(1)
   const page = ref(1)
   const sortField = ref('id')
-  const sortOrder = ref('asc')
+  const sortOrder = ref('desc')
   const isLoading = ref(false)
 
 
