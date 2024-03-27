@@ -29,6 +29,7 @@ function booksTree(books){
 	books.forEach(book => {
 		// eslint-disable-next-line camelcase
 		book.parent_id = book.parent_id || null
+		book.canEdit = !!book.can_edit
 	})
 	const map = books.reduce((map, book) => {
 		map[book.id] = structuredClone(book)
