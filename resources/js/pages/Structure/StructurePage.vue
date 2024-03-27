@@ -104,6 +104,13 @@
 				>
 					Обновлять автоматически информацию о&nbsp;руководителях отделов
 				</b-form-checkbox>
+				<b-form-checkbox
+					v-model="settings.rootBlock"
+					switch
+					size="lg"
+				>
+					Конревая карточка
+				</b-form-checkbox>
 			</template>
 			<template #footer>
 				<JobtronButton
@@ -153,7 +160,8 @@ export default {
 			leftMarginMainCard: 0,
 			isSettings: false,
 			settings: {
-				autoManager: false
+				autoManager: false,
+				rootBlock: false,
 			}
 		}
 	},
@@ -189,33 +197,34 @@ export default {
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
 		},
 		cardsOrFirst(){
-			if(this.fixedCards && this.fixedCards.lengtkh){
-				return this.fixedCards
-			}
-			/* eslint-disable camelcase */
-			const ownerCard = {
-				...this.getEmptyCard(),
-				id: null,
-				parent_id: null,
-				name: 'Генеральный директор',
-				is_vacant: false,
-			}
-			/* eslint-enable camelcase */
-
-			if(this.owner){
+			if(this.settings.rootBlock) {
 				/* eslint-disable camelcase */
-				ownerCard.manager = {
-					user_id: this.owner.id,
-					position_id: this.owner.position_id
+				const ownerCard = {
+					...this.getEmptyCard(),
+					id: null,
+					parent_id: null,
+					name: 'Генеральный директор',
+					is_vacant: false,
 				}
 				/* eslint-enable camelcase */
-				ownerCard.users = [
-					{
-						id: this.owner.id
+
+				if(this.owner){
+					/* eslint-disable camelcase */
+					ownerCard.manager = {
+						user_id: this.owner.id,
+						position_id: this.owner.position_id
 					}
-				]
+					/* eslint-enable camelcase */
+					ownerCard.users = [
+						{
+							id: this.owner.id
+						}
+					]
+				}
+				return [ownerCard]
 			}
-			return [ownerCard]
+
+			return this.fixedCards || []
 		},
 		rootCard(){
 			if(this.isDemo) return this.demo.structure.find(card => !card.parentId)
@@ -357,12 +366,19 @@ export default {
 		async fetchSettings(){
 			const {settings} = await fetchSettings('structure_auto_manager')
 			this.settings.autoManager = !!parseInt(settings.custom_structure_auto_manager)
+			const {settings: settings2} = await fetchSettings('structure_root_block')
+			this.settings.rootBlock = !!parseInt(settings2.custom_structure_root_block)
 		},
 		async updateSettings(){
 			await updateSettings({
 				type: 'structure_auto_manager',
 				// eslint-disable-next-line camelcase
 				custom_structure_auto_manager: this.settings.autoManager
+			})
+			await updateSettings({
+				type: 'structure_root_block',
+				// eslint-disable-next-line camelcase
+				custom_structure_root_block: this.settings.rootBlock
 			})
 			this.$toast.success('Настройки сохранены')
 		},
