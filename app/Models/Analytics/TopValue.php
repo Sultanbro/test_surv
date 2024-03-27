@@ -575,6 +575,7 @@ class TopValue extends Model
                 ->format('d.m.Y');
             $row['archived_date'] = $group->archived_date;
             point();
+            point('end');
             for ($i = 1; $i <= 12; $i++) {
                 $xdate = $date->month($i)
                     ->format('Y-m-d');
@@ -592,8 +593,7 @@ class TopValue extends Model
                     $proceeds = (int)$edited_proceed->value;
                     $row['ed' . $i] = true;
                 } else {
-//                    $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
-                    $proceeds = 0;
+                    $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
                     $row['ed' . $i] = false;
                 }
 
@@ -607,7 +607,6 @@ class TopValue extends Model
                 $total_row['c' . $i] += $salary;
                 $total_row['r' . $i] += $rentability;
             }
-            point('end');
 
             $table[] = $row;
         }

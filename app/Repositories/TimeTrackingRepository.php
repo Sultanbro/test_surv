@@ -66,7 +66,7 @@ class TimeTrackingRepository extends CoreRepository
             $this->model()->create([
                 'enter' => $enter,
                 'user_id' => $userId,
-                'updated' => 1
+                'updated' => 0
             ]);
         }
 
@@ -85,7 +85,7 @@ class TimeTrackingRepository extends CoreRepository
             ->with('user')
             ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
             ->when($userId, fn($query) => $query->where('user_id', $userId))
-            ->where('updated', 0)
+//            ->where('updated', 0)
             ->where('total_hours', 0)
             ->whereNotNull('exit');
     }
