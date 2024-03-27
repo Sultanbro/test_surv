@@ -339,8 +339,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public static function userByEmail($user_email)
     {
-        $user = User::whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
-        return $user;
+        return User::query()->whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
     }
 
     public static function generateRandomString($length = 8)

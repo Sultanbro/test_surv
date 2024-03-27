@@ -131,4 +131,9 @@ class CentralUser extends Model
     {
 		return $this->last_name . ' ' . $this->name;
 	}
+
+    public static function userByEmail($user_email)
+    {
+        return self::query()->whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
+    }
 }
