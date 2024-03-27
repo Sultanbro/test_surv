@@ -196,7 +196,7 @@ export default {
 		actualDictionaries(){
 			return {
 				users: this.dictionaries.users.filter(user => {
-					return !user.deleted_at && (user.last_seen || +this.$moment(user.created_at).format('YYYY') > 2023)
+					return !user.deleted_at && (user.last_seen || (user.created_at && +this.$moment(user.created_at).format('YYYY') > 2023))
 				}),
 				/* eslint-disable-next-line camelcase */
 				profile_groups: this.dictionaries.profile_groups.filter(group => {

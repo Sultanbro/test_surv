@@ -74,7 +74,7 @@ export default {
 			return {
 				users: getters.users.reduce((users, user) => {
 					if(user.deleted_at) return users
-					if(!user.last_seen && +moment(user.created_at).format('YYYY') < 2024) return users
+					if(!user.last_seen && (!user.created_at || +moment(user.created_at).format('YYYY') < 2024)) return users
 					users.push({
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
