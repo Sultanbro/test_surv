@@ -111,6 +111,7 @@ class LoginController extends Controller
 
 
         $tenants = $centralUser->cabinets()->first();
+        dd($tenants);
         tenancy()->initialize($tenants);
 
         if (!Auth::attempt($credentials)) {
