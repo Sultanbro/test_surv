@@ -24,6 +24,7 @@ return new class extends Migration {
                 $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 
                 $table->foreignId('owner_id')
+                    ->constrained('users')
                     ->references('id')
                     ->on('users')
                     ->onUpdate('cascade');
