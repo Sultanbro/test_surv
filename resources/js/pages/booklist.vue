@@ -251,7 +251,7 @@
 				<template v-if="activesbook != null && edit_actives_book">
 					<Editor
 						v-model="activesbook.text"
-						api-key="pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt"
+						api-key="iijzasm8i8kh2in9jk178tu9bfl7ud3p5kav9w802sggs11c"
 						:init="{
 							...editorConfig,
 							height: editorHeight,
