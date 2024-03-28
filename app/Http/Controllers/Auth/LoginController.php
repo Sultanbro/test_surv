@@ -96,7 +96,6 @@ class LoginController extends Controller
      */
     public function login(Request $request): array|JsonResponse
     {
-        dd(1);
         // create credentials
         $field = $this->username();
 
