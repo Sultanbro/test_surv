@@ -382,8 +382,11 @@ export default {
 			return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
 		},
 		showButton(){
-			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-			return this.status === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+			if(this.isBP){
+				if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+				return this.status === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+			}
+			return true
 		},
 		isReady(){
 			return this.settingsReady
