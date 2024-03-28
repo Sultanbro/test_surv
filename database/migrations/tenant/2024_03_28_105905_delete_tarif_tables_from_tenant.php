@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tariff', function (Blueprint $table) {
+        Schema::table('tariff_payment', function (Blueprint $table) {
             $table->dropIfExists();
         });
-        Schema::table('tariff_payment', function (Blueprint $table) {
+
+        Schema::table('tariff', function (Blueprint $table) {
             $table->dropIfExists();
         });
     }
