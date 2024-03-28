@@ -170,7 +170,7 @@ export default {
 	'footer-pay': 'Способы оплаты:',
 	'footer-sellcenter': 'Отдел продаж:',
 	'footer-support': 'Отдел поддержки:',
-	'footer-copy': '«Jobton», Все права защищены',
+	'footer-copy': '«Jobtron», Все права защищены',
 	'contract-offer': 'Договор оферты',
 	'site-agreement': 'Соглашение о пользовании сайтом',
 	'personal-data': 'Политика обработки персональных данных',
