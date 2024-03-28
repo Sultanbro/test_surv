@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\DoPaymentRequest;
-use App\Service\Payments\PaymentFactory;
-use App\Service\Payments\PaymentUpdateStatusService;
+use App\Service\Payments\Core\PaymentFactory;
+use App\Service\Payments\Core\PaymentUpdateStatusService;
 use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -32,12 +32,11 @@ class PaymentController extends Controller
      */
     public function payment(DoPaymentRequest $request): JsonResponse
     {
-        $dto = $request->toDto();
+        $data = $request->toDto();
         /** @var User $authUser */
         $authUser = Auth::user();
-        $response = $this->factory
-            ->getPaymentsProviderByCurrency($dto->currency)
-            ->pay($request->toDto(), $authUser);
+        $provider = $this->factory->currencyProvider($data->currency);
+        $response = $provider->pay($data, $authUser);
 
         return $this->response(
             message: 'Success',

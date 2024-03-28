@@ -233,6 +233,7 @@ return [
         App\Providers\AnalyticServicesProvider::class,
         App\Providers\SmsServiceProvider::class,
         App\Providers\FileServiceProvider::class,
+        App\Providers\ProdamusPaymentServiceProvider::class
     ],
 
     /*

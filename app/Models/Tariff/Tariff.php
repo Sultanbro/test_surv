@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Tariff extends Model
 {
+    protected $connection = 'mysql';
+
     protected $table = 'tariff';
 
     public static int $defaultUserLimit = 5;

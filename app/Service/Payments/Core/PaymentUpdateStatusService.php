@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Payments;
+namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\TariffPayment;
 use App\User;
@@ -17,7 +17,7 @@ final class PaymentUpdateStatusService
     }
 
     /**
-     * @param int $ownerId
+     * @param User $owner
      * @return bool
      * @throws Exception
      */

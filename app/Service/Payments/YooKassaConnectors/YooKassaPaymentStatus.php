@@ -3,10 +3,7 @@
 namespace App\Service\Payments\YooKassaConnectors;
 
 use App\DTO\Api\StatusPaymentDTO;
-use App\Enums\ErrorCode;
-use App\Enums\Payments\PaymentStatusEnum;
-use App\Service\Payments\PaymentStatus;
-use App\Support\Core\CustomException;
+use App\Service\Payments\Core\PaymentStatus;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -45,7 +42,7 @@ class YooKassaPaymentStatus implements PaymentStatus
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
      */
-    public function getPaymentInfo(): Payment
+    public function getPaymentStatus(): Payment
     {
         return $this->client->getPaymentInfo($this->paymentId);
     }

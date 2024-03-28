@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
             $table->string('payment_id')->after('auto_payment')->nullable();
             $table->string('service_for_payment')->after('payment_id')->nullable();
         });
@@ -25,7 +25,7 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
             if (column_exists('tariff_payment', 'payment_id', $this->getConnection())) {
                 $table->dropColumn('payment_id');
             }

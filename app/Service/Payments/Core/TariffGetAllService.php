@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Payments;
+namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\Tariff;
 use App\Traits\CurrencyTrait;

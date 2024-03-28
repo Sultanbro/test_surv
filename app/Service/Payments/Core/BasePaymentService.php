@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Payments;
+namespace App\Service\Payments\Core;
 
 use App\Api\BitrixOld\Lead\PaymentLead;
-use App\DTO\Api\DoPaymentDTO;
+use App\DTO\Api\PaymentDTO;
 use App\Enums\ErrorCode;
-use App\Enums\Payments\PaymentEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
@@ -17,9 +16,9 @@ use Exception;
 abstract class BasePaymentService
 {
     /**
-     * @return PaymentTypeConnector
+     * @return PaymentConnector
      */
-    abstract public function getPaymentProvider(): PaymentTypeConnector;
+    abstract public function getPaymentConnector(): PaymentConnector;
 
     /**
      * @param string $paymentId
@@ -27,18 +26,14 @@ abstract class BasePaymentService
      */
     abstract public function getPaymentInfo(string $paymentId): PaymentStatus;
 
-    /**
-     * @return AutoPayment
-     */
-    abstract public function autoPayment(): AutoPayment;
 
     /**
-     * @param DoPaymentDTO $dto
+     * @param PaymentDTO $data
      * @param User $authUser
-     * @return string
+     * @return ConfirmationResponse
      * @throws Exception
      */
-    public function pay(DoPaymentDTO $dto, User $authUser): string
+    public function pay(PaymentDTO $data, User $authUser): ConfirmationResponse
     {
         $activePayment = TariffPayment::getActivePaymentIfExist();
 
@@ -46,27 +41,23 @@ abstract class BasePaymentService
             throw new Exception("activePaymentIsExist");
         }
 
-        $response = $this->getPaymentProvider()->doPayment($dto, $authUser);
-        $paymentId = $response->getId();
-        $tariff = Tariff::getTariffById($dto->tariffId);
+        $connector = $this->getPaymentConnector();
+        $response = $connector->pay($data, $authUser);
+        $paymentId = $response->getPaymentId();
 
-        if ($response->getStatus() != PaymentStatusEnum::STATUS_PENDING) {
-            throw new Exception("При генераций платежа $paymentId произошла ошибка");
-        }
-
+        $tariff = Tariff::getTariffById($data->tariffId);
         $payment = TariffPayment::createPaymentOrFail(
             $authUser->id,
-            $dto->tariffId,
-            $dto->extraUsersLimit,
+            $data->tariffId,
+            $data->extraUsersLimit,
             $tariff->calculateExpireDate(),
-            $response->getId(),
-            PaymentEnum::YOOKASSA,
-            $dto->autoPayment
+            $paymentId,
+            $data->provider
         );
 
         $this->createPaymentLead($authUser, $payment);
 
-        return $response->getConfirmation()->getConfirmationUrl();
+        return $response;
     }
 
     /**
@@ -78,12 +69,8 @@ abstract class BasePaymentService
     public function updateStatusByPayment(TariffPayment $payment, User $authUser): bool
     {
         try {
-            $paymentInfo = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
-            $paymentStatus = $paymentInfo->status;
-
-            if (!PaymentStatusEnum::isInEnum($paymentStatus)) {
-                $paymentStatus = PaymentStatusEnum::STATUS_UNKNOWN;
-            }
+            $paymentInfo = $this->getPaymentInfo($payment->payment_id);
+            $paymentStatus = $paymentInfo->getPaymentStatus();
 
             $payment->status = $paymentStatus;
             $payment->save();
@@ -99,28 +86,6 @@ abstract class BasePaymentService
         }
     }
 
-    /**
-     * @param TariffPayment $payment
-     * @return void
-     * @throws Exception
-     */
-    public function doAutoPayment(TariffPayment $payment): void
-    {
-        $this->autoPayment()->makeAutoPayment($payment);
-        /** @var Tariff $tariff */
-        $tariff = Tariff::query()->findOrFail($payment->tariff_id);
-
-        TariffPayment::createPaymentOrFail(
-            $payment->owner_id,
-            $payment->tariff_id,
-            $payment->extra_user_limit,
-            $tariff->calculateExpireDate(),
-            $payment->payment_id,
-            $payment->service_for_payment,
-            $payment->auto_payment
-        );
-    }
-
     private function createPaymentLead(User $user, TariffPayment $payment): void
     {
         try {
@@ -132,7 +97,7 @@ abstract class BasePaymentService
             ))
                 ->setNeedCallback(false)
                 ->publish();
-        } catch (Exception $err) {
+        } catch (Exception) {
             return; //TODO add logs
         }
     }

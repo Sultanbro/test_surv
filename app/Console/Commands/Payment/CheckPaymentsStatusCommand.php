@@ -4,7 +4,7 @@ namespace App\Console\Commands\Payment;
 
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\TariffPayment;
-use App\Service\Payments\PaymentFactory;
+use App\Service\Payments\Core\PaymentFactory;
 use App\User;
 use Exception;
 use Illuminate\Console\Command;

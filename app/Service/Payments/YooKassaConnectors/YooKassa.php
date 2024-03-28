@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\YooKassaConnectors;
 
-use App\Service\Payments\AutoPayment;
-use App\Service\Payments\BasePaymentService;
-use App\Service\Payments\PaymentStatus;
-use App\Service\Payments\PaymentTypeConnector;
+use App\Service\Payments\Core\AutoPayment;
+use App\Service\Payments\Core\BasePaymentService;
+use App\Service\Payments\Core\PaymentStatus;
+use App\Service\Payments\Core\PaymentConnector;
 use YooKassa\Client;
 
 class YooKassa extends BasePaymentService
@@ -36,9 +36,9 @@ class YooKassa extends BasePaymentService
     }
 
     /**
-     * @return PaymentTypeConnector
+     * @return PaymentConnector
      */
-    public function getPaymentProvider(): PaymentTypeConnector
+    public function getPaymentConnector(): PaymentConnector
     {
         return new YooKassaConnector($this->client);
     }

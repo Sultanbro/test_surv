@@ -4,7 +4,7 @@ namespace App\Service\Payments\YooKassaConnectors;
 
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
-use App\Service\Payments\AutoPayment;
+use App\Service\Payments\Core\AutoPayment;
 use App\User;
 use Exception;
 use YooKassa\Client;

@@ -3,6 +3,7 @@
 namespace App\Models\Tariff;
 
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Models\CentralUser;
 use App\User;
 use DB;
 use Exception;
@@ -24,6 +25,8 @@ use Carbon\Carbon;
  */
 class TariffPayment extends Model
 {
+    protected $connection = 'mysql';
+
     protected $table = 'tariff_payment';
 
     public $timestamps = true;
@@ -58,7 +61,7 @@ class TariffPayment extends Model
      */
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id', 'owner_id');
+        return $this->belongsTo(CentralUser::class, 'id', 'owner_id');
     }
 
     /**

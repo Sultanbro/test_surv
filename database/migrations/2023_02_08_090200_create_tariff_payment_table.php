@@ -11,9 +11,9 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->create('tariff_payment', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('owner_id')
                 ->unsigned()
@@ -43,8 +43,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('tariff_payment');
+        Schema::connection('mysql')->dropIfExists('tariff_payment');
     }
 };

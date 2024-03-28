@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0614edb46b6dc4288ce602c6c607a45",
+    "content-hash": "f6361e0e52e6dbbb0732cdbcd4d5bc56",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -154,6 +154,61 @@
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.300.16"
             },
             "time": "2024-03-12T18:04:55+00:00"
+        },
+        {
+            "name": "begateway/begateway-api-php",
+            "version": "5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/begateway/begateway-api-php.git",
+                "reference": "a58aa709182710f8eab692333131995e76beb808"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/begateway/begateway-api-php/zipball/a58aa709182710f8eab692333131995e76beb808",
+                "reference": "a58aa709182710f8eab692333131995e76beb808",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "ext-openssl": "*",
+                "friendsofphp/php-cs-fixer": "^3.10",
+                "phpunit/phpunit": "^9.5",
+                "symfony/var-dumper": "^6.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "BeGateway\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "BeGateway",
+                    "email": "admin@begateway.com"
+                }
+            ],
+            "description": "BeGateway PHP API library",
+            "keywords": [
+                "api",
+                "begateway",
+                "bepaid",
+                "payment processing"
+            ],
+            "support": {
+                "issues": "https://github.com/begateway/begateway-api-php/issues",
+                "source": "https://github.com/begateway/begateway-api-php/tree/5.1.0"
+            },
+            "time": "2022-08-29T08:27:36+00:00"
         },
         {
             "name": "beyondcode/laravel-websockets",

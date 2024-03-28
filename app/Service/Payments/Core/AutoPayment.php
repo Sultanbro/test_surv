@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Payments;
+namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\TariffPayment;
 

@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\YooKassaConnectors;
 
-use App\DTO\Api\DoPaymentDTO;
+use App\DTO\Api\PaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
-use App\Service\Payments\PaymentTypeConnector;
+use App\Service\Payments\Core\PaymentConnector;
 use App\User;
 use Exception;
 use YooKassa\Client;
 use YooKassa\Model\CurrencyCode;
+use YooKassa\Request\Payments\CreatePaymentRequest;
 use YooKassa\Request\Payments\CreatePaymentRequestInterface;
 use YooKassa\Request\Payments\CreatePaymentResponse;
-use YooKassa\Request\Payments\CreatePaymentRequest;
 
-class YooKassaConnector implements PaymentTypeConnector
+class YooKassaConnector implements PaymentConnector
 {
     /**
      * @param Client $client
@@ -31,11 +31,11 @@ class YooKassaConnector implements PaymentTypeConnector
      *
      * @throws Exception
      */
-    public function doPayment(DoPaymentDTO $dto, User $authUser): ?CreatePaymentResponse
+    public function pay(PaymentDTO $data, User $user): ?CreatePaymentResponse
     {
         try {
             $idempotenceKey = uniqid('', true);
-            $buildRequest = $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUser, $dto->autoPayment);
+            $buildRequest = $this->getPaymentRequest($data->tariffId, $data->extraUsersLimit, $user, $data->autoPayment);
 
             $response = $this->client->createPayment(
                 $buildRequest,

@@ -14,22 +14,22 @@ class TariffSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        $tarifKinds = TariffKindEnum::getAllValues();
-        $validities = TariffValidityEnum::getAllValues();
+        $tariffKinds = TariffKindEnum::getAllValues();
+        $validates = TariffValidityEnum::getAllValues();
 
         $data = array();
         $usersLimit = [5, 20, 50, 100];
         $price = [0, 0, 7158, 92460, 22966, 220711, 85004, 817227];
 
         $counter = 0;
-        foreach ($tarifKinds as $kindKey => $tarifKind){
-            foreach ($validities as $validity){
+        foreach ($tariffKinds as $kindKey => $tariffKind){
+            foreach ($validates as $validity){
                 $data[] = [
                     'id' => $counter+1,
                     'validity' => $validity,
-                    'kind' => $tarifKind,
+                    'kind' => $tariffKind,
                     'users_limit' => $usersLimit[$kindKey],
                     'price' => $price[$counter]
                 ];
@@ -37,8 +37,8 @@ class TariffSeeder extends Seeder
             }
         }
 
-        DB::table('tariff_payment')->delete();
-        DB::table('tariff')->delete();
-        DB::table('tariff')->insert($data);
+        DB::connection('mysql')->table('tariff_payment')->delete();
+        DB::connection('mysql')->table('tariff')->delete();
+        DB::connection('mysql')->table('tariff')->insert($data);
     }
 }

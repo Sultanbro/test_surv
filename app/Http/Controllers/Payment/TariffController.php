@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tariff\Tariff;
-use App\Service\Payments\TariffGetAllService;
+use App\Service\Payments\Core\TariffGetAllService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TariffController extends Controller
 {
