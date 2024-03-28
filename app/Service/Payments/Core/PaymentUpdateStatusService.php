@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Core;
 
+use App\Models\CentralUser;
 use App\Models\Tariff\TariffPayment;
-use App\User;
 use Exception;
 
 final class PaymentUpdateStatusService
@@ -17,16 +17,16 @@ final class PaymentUpdateStatusService
     }
 
     /**
-     * @param User $owner
+     * @param CentralUser $owner
      * @return bool
      * @throws Exception
      */
-    public function handle(User $owner): bool
+    public function handle(CentralUser $owner): bool
     {
         $lastPayment = TariffPayment::getLastPendingTariffPayment($owner->id);
 
         $paymentProvider = $this->factory->getPaymentProviderByPayment($lastPayment);
 
-        return $paymentProvider->updateStatusByPayment($lastPayment, $owner);
+        return $paymentProvider->updateStatusByPayment($lastPayment);
     }
 }

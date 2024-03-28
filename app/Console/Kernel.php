@@ -54,7 +54,18 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
+    {       /*
+        |--------------------------------------------------------------------------
+        | Команды кабинета bp.jobtron.org
+        |--------------------------------------------------------------------------
+        |
+        | Только запускаются в централной
+
+        |
+        */
+        $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
+        $schedule->command('check-payments-status:run')->everyFiveMinutes();
+//        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         /*
         |--------------------------------------------------------------------------
         | Команды кабинета bp.jobtron.org
@@ -75,7 +86,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run whatsapp:estimate_first_day --tenants=bp')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('tenants:run recruiting:trainee_report --tenants=bp')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
         $schedule->command('tenants:run callibro:fetch --tenants=bp')->hourly(); // Отработанное время сотрудников Евраз 1 Хоум
-        $schedule->command('tenants:run currency:refresh --tenants=bp')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
         $schedule->command('tenants:run usernotification:estimate_trainer --tenants=bp')->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
         $schedule->command('tenants:run intellect:send --tenants=bp')->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
@@ -113,8 +123,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run fine:check')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
         $schedule->command('tenants:run analytics:pivots')->withoutOverlapping()->monthly(); // создать сводные таблицы отделов в аналитике
         $schedule->command('tenants:run analytics:parts')->withoutOverlapping()->monthly(); // создать декомпозицию и спидометры в аналитике
-        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
-        $schedule->command('check-payments-status:run')->everyFiveMinutes();
         $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
     }
 

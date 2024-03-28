@@ -4,27 +4,20 @@ namespace App\Service\Payments\Prodamus;
 
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Service\Payments\Core\PaymentStatus;
-use BeGateway\PaymentOperation;
-use BeGateway\Response;
+use BeGateway\QueryByPaymentToken;
 
 class ProdamusPaymentStatus implements PaymentStatus
 {
-    private Response $response;
-
-    /**
-     * @param PaymentOperation $client
-     * @param string $paymentId
-     */
     public function __construct(
-        public PaymentOperation $client,
-        public string           $paymentId
+        private readonly string              $paymentId,
+        private readonly QueryByPaymentToken $client
     )
     {
     }
 
     public function getPaymentStatus(): string
     {
-        $this->client->setTrackingId($this->paymentId);
+        $this->client->setToken($this->paymentId);
         $response = $this->client->submit();
 
         return match (true) {
@@ -32,8 +25,6 @@ class ProdamusPaymentStatus implements PaymentStatus
             $response->isSuccess() => PaymentStatusEnum::STATUS_SUCCESS,
             $response->isError() => PaymentStatusEnum::STATUS_FAIL,
             $response->isValid() => PaymentStatusEnum::STATUS_SUCCESS,
-            $response->isPending() => PaymentStatusEnum::STATUS_PENDING,
-            $response->isFailed() => PaymentStatusEnum::STATUS_FAILED,
             default => PaymentStatusEnum::STATUS_UNKNOWN
         };
     }

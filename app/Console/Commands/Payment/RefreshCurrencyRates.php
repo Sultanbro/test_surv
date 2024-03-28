@@ -22,21 +22,11 @@ class RefreshCurrencyRates extends Command
     protected $description = 'Обновить курс валют';
 
     /**
-     * Create a new command instance.
+     * Execute the console command.
      *
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
         /**
          * API разрешено 1 раз в день

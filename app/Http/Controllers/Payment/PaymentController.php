@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\DoPaymentRequest;
+use App\Models\CentralUser;
 use App\Service\Payments\Core\PaymentFactory;
 use App\Service\Payments\Core\PaymentUpdateStatusService;
 use App\User;
@@ -33,8 +34,8 @@ class PaymentController extends Controller
     public function payment(DoPaymentRequest $request): JsonResponse
     {
         $data = $request->toDto();
-        /** @var User $authUser */
-        $authUser = Auth::user();
+        /** @var CentralUser $authUser */
+        $authUser = CentralUser::query()->where('email', Auth::user()->email)->firstOrFail();
         $provider = $this->factory->currencyProvider($data->currency);
         $response = $provider->pay($data, $authUser);
 
@@ -52,9 +53,9 @@ class PaymentController extends Controller
      */
     public function updateToTariffPayments(): JsonResponse
     {
-        $ownerId = auth()->id(); // validated by middleware guard
-        $owner = User::getAuthUser($ownerId);
-        $response = $this->updateStatusService->handle($owner);
+        /** @var CentralUser $authUser */
+        $authUser = CentralUser::query()->where('email', Auth::user()->email)->firstOrFail();
+        $response = $this->updateStatusService->handle($authUser);
 
         return $this->response(
             message: 'Success',

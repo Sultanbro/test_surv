@@ -53,7 +53,7 @@ class TariffPayment extends Model
      */
     public function tariff(): BelongsTo
     {
-        return $this->belongsTo(Tariff::class, 'id', 'tariff_id');
+        return $this->belongsTo(Tariff::class, 'tariff_id', 'id');
     }
 
     /**
@@ -61,7 +61,7 @@ class TariffPayment extends Model
      */
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(CentralUser::class, 'id', 'owner_id');
+        return $this->belongsTo(CentralUser::class, 'owner_id', 'id');
     }
 
     /**
@@ -99,14 +99,16 @@ class TariffPayment extends Model
     /**
      * Returns bool active payment exists.
      *
+     * @param CentralUser $owner
      * @return ?TariffPayment
      */
-    public static function getActivePaymentIfExist(): ?TariffPayment
+    public static function getActivePaymentIfExist(CentralUser $owner): ?TariffPayment
     {
         $today = Carbon::today();
 
         /** @var TariffPayment */
-        return self::query()
+        return $owner
+            ->subscription()
             ->where('expire_date', '>', $today)
             ->where(function ($query) {
                 $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)

@@ -7,6 +7,7 @@ use App\Service\Payments\Core\BasePaymentService;
 use App\Service\Payments\Core\PaymentStatus;
 use App\Service\Payments\Core\PaymentConnector;
 use BeGateway\GetPaymentToken;
+use BeGateway\QueryByPaymentToken;
 
 class Prodamus extends BasePaymentService
 {
@@ -19,7 +20,7 @@ class Prodamus extends BasePaymentService
     /**
      * @return PaymentConnector
      */
-    public function getPaymentConnector(): PaymentConnector
+    public function connector(): PaymentConnector
     {
         return new ProdamusConnector($this->client);
     }
@@ -28,8 +29,8 @@ class Prodamus extends BasePaymentService
      * @param string $paymentId
      * @return PaymentStatus
      */
-    public function getPaymentInfo(string $paymentId): PaymentStatus
+    public function info(string $paymentId): PaymentStatus
     {
-        return new ProdamusPaymentStatus($this->client, $paymentId);
+        return new ProdamusPaymentStatus($paymentId, new QueryByPaymentToken());
     }
 }

@@ -8,7 +8,8 @@ use Exception;
 use YooKassa\Model\Receipt;
 use YooKassa\Model\ReceiptItem;
 
-final class TariffPrice {
+final class TariffPrice
+{
 
     use CurrencyTrait;
 
@@ -35,15 +36,17 @@ final class TariffPrice {
         public int              $extraUsers
     )
     {
-        $this->priceForOnePersonInKzt = (float) config('payment.payment_for_one_person');
+        $this->priceForOnePersonInKzt = (float)config('payment.payment_for_one_person');
         $this->setKztPrices();
     }
 
-    public function getTotal(): float {
+    public function getTotal(): float
+    {
         return $this->tariffPrice + $this->extraUsersPrice;
     }
 
-    public function setCurrency(string $newCurrency): self {
+    public function setCurrency(string $newCurrency): self
+    {
         $oldCurrency = $this->currency;
 
         if ($newCurrency == $oldCurrency) {
@@ -58,7 +61,6 @@ final class TariffPrice {
         }
 
         $convertMethod = (self::$currencyMap[$oldCurrency])[$newCurrency];
-
         $this->tariffPrice = $this->{$convertMethod}($this->tariffPrice);
         $this->priceForOnePerson = $this->{$convertMethod}($this->priceForOnePerson);
         $this->updateExtraUsersPrice();
@@ -92,16 +94,16 @@ final class TariffPrice {
         $receipt = new Receipt(array(
             'customer' => array(
                 'full_name' => $user->full_name,
-                'email'     => $user->email,
-                'phone'     => $user->phone
+                'email' => $user->email,
+                'phone' => $user->phone
             ),
             'items' => array(
                 array(
-                    'description'   =>  "Покупка тарифа $tariffKind",
-                    'quantity'      => 1,
+                    'description' => "Покупка тарифа $tariffKind",
+                    'quantity' => 1,
                     'amount' => array(
-                        'value'     => $this->tariffPrice,
-                        'currency'  => 'RUB'
+                        'value' => $this->tariffPrice,
+                        'currency' => 'RUB'
                     ),
                     'vat_code' => '1',
                     'payment_mode' => 'full_payment',
@@ -118,11 +120,11 @@ final class TariffPrice {
 
         if ($extraUsers > 0) {
             $extraUsersReceiptItem = new ReceiptItem(array(
-                'description'   =>  "Кол-во пользователей: $extraUsers, цена за одного пользователя $this->priceForOnePerson.",
-                'quantity'      => $extraUsers,
+                'description' => "Кол-во пользователей: $extraUsers, цена за одного пользователя $this->priceForOnePerson.",
+                'quantity' => $extraUsers,
                 'amount' => array(
-                    'value'     => $this->extraUsersPrice,
-                    'currency'  => 'RUB'
+                    'value' => $this->extraUsersPrice,
+                    'currency' => 'RUB'
                 ),
                 'vat_code' => '1',
                 'payment_mode' => 'full_payment',
@@ -137,5 +139,13 @@ final class TariffPrice {
         }
 
         return $receipt;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function kztToRub(float $v): float
+    {
+        return $this::converterToRub($v);
     }
 }

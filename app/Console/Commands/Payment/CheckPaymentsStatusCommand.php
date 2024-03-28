@@ -50,13 +50,10 @@ class CheckPaymentsStatusCommand extends Command
 
         foreach ($payments as $payment) {
             try {
-                /** @var User $user */
-                $user = $payment['owner'];
-
                 $this->factory
                     ->getPaymentProviderByPayment($payment)
-                    ->updateStatusByPayment($payment, $user);
-            } catch (Exception $exception) {
+                    ->updateStatusByPayment($payment);
+            } catch (Exception) {
                 //TODO log exception
             }
         }

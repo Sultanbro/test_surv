@@ -10,7 +10,6 @@ use Tests\TestCase;
 
 class ProdamusServiceTest extends TestCase
 {
-
     /**
      * @throws Exception
      */
