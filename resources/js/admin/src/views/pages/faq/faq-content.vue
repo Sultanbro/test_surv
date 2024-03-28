@@ -246,7 +246,7 @@ const pageVariants = [
   },
 ]
 
-const mceKey = process.env.NODE_ENV === 'production' ? 'mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd' : 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt'
+const mceKey = process.env.NODE_ENV === 'production' ? 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt' : 'pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt'
 const mceInit: Settings = {
   images_upload_url: '/upload/images/',
   automatic_uploads: true,

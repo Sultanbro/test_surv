@@ -7,7 +7,7 @@
 		>
 		<Editor
 			v-model="bookForm.text"
-			api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
+			api-key="pkzfksqtgrm6lo8hkwxq5p1522u96q0vgpnqxh024n3493dt"
 			:init="{
 				...editorConfig,
 				height: editorHeight,
