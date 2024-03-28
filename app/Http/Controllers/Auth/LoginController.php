@@ -96,6 +96,7 @@ class LoginController extends Controller
      */
     public function login(Request $request): array|JsonResponse
     {
+        dd(1);
         // create credentials
         $field = $this->username();
 
@@ -107,8 +108,7 @@ class LoginController extends Controller
         ];
         // failed to login
         /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->first();
-        dd($centralUser);
+        $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
 
         $tenants = $centralUser->cabinets()->first();
 
