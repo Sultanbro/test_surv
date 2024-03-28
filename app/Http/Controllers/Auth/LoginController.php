@@ -107,11 +107,11 @@ class LoginController extends Controller
         ];
         // failed to login
         /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
-
+        $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->first();
+        dd($centralUser);
 
         $tenants = $centralUser->cabinets()->first();
-        dd($tenants);
+
         tenancy()->initialize($tenants);
 
         if (!Auth::attempt($credentials)) {
