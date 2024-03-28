@@ -122,6 +122,13 @@ export default {
 									)
 								)} ₸`;
 							}
+							if (this.selectedValute === '₽') {
+								return `${this.separateThousands(
+									Math.round(
+										Number(tariffItem.slice(0, tariffItem.length - 1)) * 1.15
+									)
+								)} ₸`;
+							}
 							return item;
 						} else {
 							return item;
