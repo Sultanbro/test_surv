@@ -44,7 +44,7 @@ trait CreateTenant
             'name' => $centralUser->name,
         ]);
 
-        if (!app()->environment('testing')) {
+        if (!app()->environment('local')) {
             Mail::to($centralUser->email)->send($mail);
         }
 

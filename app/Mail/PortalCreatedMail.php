@@ -18,13 +18,9 @@ class PortalCreatedMail extends Mailable
      */
     public function __construct($mailData)
     {
-        $tenantId = tenant('id');
+        $mailData['host'] = config('app.domain');
 
-        $mailData['host'] = $host = $tenantId
-            ? $tenantId .'.' . config('app.domain')
-            : config('app.domain');
-
-        $mailData['hostname'] = 'https://' . $host;
+        $mailData['hostname'] = 'https://' . config('app.domain');
 
         $this->mailData = $mailData;
     }

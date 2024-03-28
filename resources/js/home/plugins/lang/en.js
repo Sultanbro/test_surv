@@ -173,7 +173,7 @@ export default {
 	'footer-lic': 'License agreement',
 	'footer-pay': 'Payment Methods:',
 	'footer-sellcenter': 'Sales department:',
-	'footer-copy': '"Jobton", All rights reserved',
+	'footer-copy': '"Jobtron", All rights reserved',
 	'contract-offer': 'Contract offer',
 	'site-agreement': 'Site agreement',
 	'personal-data': 'Personal data processing policy',

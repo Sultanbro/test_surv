@@ -106,18 +106,27 @@ class LoginController extends Controller
             'password' => $request->get('password'),
         ];
         // failed to login
-        /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
 
-        $tenants = $centralUser->cabinets()->first();
+        if (request()->getHost() == config('app.domain')) {
+            /** @var CentralUser $centralUser */
+            $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
 
-        tenancy()->initialize($tenants);
+            $tenants = $centralUser->cabinets()->first();
+
+            tenancy()->initialize($tenants);
+        }
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email или пароль не совпадает'
             ], 401);
         }
+
+        // record login time
+        $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        $user?->update([
+            'login_at' => now()
+        ]);
 
         // login was success
         $request->session()->regenerate();
