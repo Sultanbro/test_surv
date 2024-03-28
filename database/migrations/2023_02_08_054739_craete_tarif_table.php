@@ -16,7 +16,7 @@ return new class extends Migration {
     {
         Schema::connection('mysql')
             ->create('tariff', function (Blueprint $table) {
-                $table->bigIncrements('id');
+                $table->id();
                 $table->enum('kind', TariffKindEnum::getAllValues())->comment('Вид тарифа');
                 $table->enum('validity', TariffValidityEnum::getAllValues())
                     ->comment('Период действия monthly-ежемесячно, annual-ежегодно');
