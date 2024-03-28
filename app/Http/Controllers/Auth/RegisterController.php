@@ -44,6 +44,7 @@ class RegisterController extends Controller
         $data = $request->validated();
 
         $centralUser = $this->createCentralUser($data);
+        $centralUser->update(['login_at' => now()]);
 
         $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
 
