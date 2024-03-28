@@ -119,6 +119,12 @@ class LoginController extends Controller
             ], 401);
         }
 
+        // record login time
+        $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        $user?->update([
+            'login_at' => now()
+        ]);
+
         // login was success
         $request->session()->regenerate();
 
