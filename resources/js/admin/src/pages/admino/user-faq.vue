@@ -218,7 +218,7 @@ function onOrder({item, to}: MoveEvent){
   display: flex;
   flex-flow: column;
   // 48px - pa-6  in layout
-  // height: calc(100vh - (48px + var(--v-layout-top) + var(--v-layout-bottom)));
+  height: calc(100vh - (48px + var(--v-layout-top) + var(--v-layout-bottom)));
   ul {
     list-style: none;
   }
