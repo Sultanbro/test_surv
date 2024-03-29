@@ -168,6 +168,7 @@ class DM
             $value_for_19 = self::getHoursByActionsForRussia($actions);
 
             if ($activity19) {
+                dd($value_for_19);
                 $activity19->value = $value_for_19;
                 $activity19->save();
             } else {
@@ -233,39 +234,18 @@ class DM
      */
     public static function getHoursByActionsForRussia($actions)
     {
-        switch ($actions) {
-            case $actions >= 15 && $actions <= 29:
-                $value = 1;
-                break;
-            case $actions >= 30 && $actions <= 44:
-                $value = 2;
-                break;
-            case $actions >= 45 && $actions <= 59:
-                $value = 3;
-                break;
-            case $actions >= 60 && $actions <= 74:
-                $value = 4;
-                break;
-            case $actions >= 75 && $actions <= 89:
-                $value = 5;
-                break;
-            case $actions >= 90 && $actions <= 104:
-                $value = 6;
-                break;
-            case $actions >= 105 && $actions <= 119:
-                $value = 7;
-                break;
-            case $actions >= 120 && $actions <= 134:
-                $value = 8;
-                break;
-            case $actions >= 135:
-                $value = 9;
-                break;
-            default:
-                $value = 0;
-        }
-
-        return $value;
+        return match ($actions) {
+            $actions >= 15 && $actions <= 29 => 1,
+            $actions >= 30 && $actions <= 44 => 2,
+            $actions >= 45 && $actions <= 59 => 3,
+            $actions >= 60 && $actions <= 74 => 4,
+            $actions >= 75 && $actions <= 89 => 5,
+            $actions >= 90 && $actions <= 104 => 6,
+            $actions >= 105 && $actions <= 119 => 7,
+            $actions >= 120 && $actions <= 134 => 8,
+            $actions >= 135 => 9,
+            default => 0,
+        };
     }
 
     /**
