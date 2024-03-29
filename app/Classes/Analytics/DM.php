@@ -168,7 +168,6 @@ class DM
             $value_for_19 = self::getHoursByActionsForRussia($actions);
 
             if ($activity19) {
-                dd($value_for_19);
                 $activity19->value = $value_for_19;
                 $activity19->save();
             } else {
