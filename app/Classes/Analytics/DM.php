@@ -162,7 +162,6 @@ class DM
 
         if ($setting) {
             $actions = (float)$setting->value;
-            dd($actions);
             // часы работы
             $activity19 = UserStat::query()->where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 19])->first();
 
@@ -183,6 +182,7 @@ class DM
             $activity21 = UserStat::query()->where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 21])->first();
 
             $value_for_21 = self::getHoursByActions($actions);
+            dd($value_for_21);
             if ($activity21) {
                 $activity21->value = $value_for_21;
                 $activity21->save();
@@ -215,39 +215,18 @@ class DM
      */
     public static function getHoursByActions($actions)
     {
-        switch ($actions) {
-            case $actions >= 17 && $actions <= 33:
-                $value = 1;
-                break;
-            case $actions >= 34 && $actions <= 50:
-                $value = 2;
-                break;
-            case $actions >= 51 && $actions <= 67:
-                $value = 3;
-                break;
-            case $actions >= 68 && $actions <= 84:
-                $value = 4;
-                break;
-            case $actions >= 85 && $actions <= 101:
-                $value = 5;
-                break;
-            case $actions >= 102 && $actions <= 118:
-                $value = 6;
-                break;
-            case $actions >= 119 && $actions <= 135:
-                $value = 7;
-                break;
-            case $actions >= 136 && $actions <= 152:
-                $value = 8;
-                break;
-            case $actions >= 153:
-                $value = 9;
-                break;
-            default:
-                $value = 0;
-        }
-
-        return $value;
+        return match ($actions) {
+            $actions >= 17 && $actions <= 33 => 1,
+            $actions >= 34 && $actions <= 50 => 2,
+            $actions >= 51 && $actions <= 67 => 3,
+            $actions >= 68 && $actions <= 84 => 4,
+            $actions >= 85 && $actions <= 101 => 5,
+            $actions >= 102 && $actions <= 118 => 6,
+            $actions >= 119 && $actions <= 135 => 7,
+            $actions >= 136 && $actions <= 152 => 8,
+            $actions >= 153 => 9,
+            default => 0,
+        };
     }
 
     /**
