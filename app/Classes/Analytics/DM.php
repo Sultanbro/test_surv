@@ -185,7 +185,7 @@ class DM
             if ($activity21) {
                 $activity21->value = $value_for_21;
                 $activity21->save();
-                dd($activity21);
+                dd($activity21, $value_for_21);
             } else {
                 UserStat::query()->create([
                     'date' => $date,
