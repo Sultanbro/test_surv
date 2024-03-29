@@ -237,7 +237,7 @@ class ActivityController extends Controller
             ]);
         }
 
-        if ($value > 0 && in_array($activity_id, [151])) {
+        if ($value > 0 && $activity_id == 151) {
             Timetracking::updateTimes($item['id'], $date, $value * 60);
         }
     }
