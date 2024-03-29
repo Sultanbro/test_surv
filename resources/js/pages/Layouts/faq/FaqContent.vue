@@ -1,5 +1,8 @@
 <template>
-	<div class="faq-content">
+	<div
+		v-if="active"
+		class="faq-content"
+	>
 		<p class="faq-content-title">
 			{{ active.title }}
 		</p>
