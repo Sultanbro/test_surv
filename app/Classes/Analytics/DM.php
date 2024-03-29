@@ -193,10 +193,9 @@ class DM
                     'value' => $value_for_21
                 ]);
             }
-            dd($activity21, $value_for_21);
 
             $carbon_date = Carbon::parse($date);
-
+            dd($value_for_21);
             self::updateOrCreateTimeTrack($user_id, $value_for_21, $carbon_date);
         }
     }
@@ -324,7 +323,7 @@ class DM
             ->whereDate('enter', $carbon->format('Y-m-d'));
 
         if ($timeTrack->exists()) {
-            $timeTrack?->update([
+            $timeTrack->update([
                 'total_hours' => $value * 60,
                 'updated' => 1
             ]);
