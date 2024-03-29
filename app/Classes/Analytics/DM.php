@@ -162,6 +162,7 @@ class DM
 
         if ($setting) {
             $actions = (float)$setting->value;
+            dd($actions);
             // часы работы
             $activity19 = UserStat::query()->where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 19])->first();
 
