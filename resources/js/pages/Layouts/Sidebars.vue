@@ -129,13 +129,13 @@ export default {
 		/**
      * pop window
      */
-		pop(window) {
-			if(window == 'faq') this.popFAQ = true;
-			if(window == 'notifications') this.popNotifications = true;
-			if(window == 'search') this.popSearch = true;
-			if(window == 'messenger') this.popMessenger = true;
-			if(window == 'mail') this.popMail = true;
-			if(window == 'checklist') this.popChecklist = true;
+		pop(item) {
+			if(item == 'faq') this.popFAQ = true;
+			if(item == 'notifications') this.popNotifications = true;
+			if(item == 'search') this.popSearch = true;
+			if(item == 'messenger') this.popMessenger = true;
+			if(item == 'mail') this.popMail = true;
+			if(item == 'checklist') this.popChecklist = true;
 		},
 
 		fetchChecklist(){

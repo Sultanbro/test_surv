@@ -36,6 +36,7 @@ export default {
 	created() {
 		this.fetchFAQ()
 	},
+	mounted(){},
 	methods: {
 		async fetchFAQ(){
 			try {

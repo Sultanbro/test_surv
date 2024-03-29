@@ -114,7 +114,7 @@
 				</template>
 			</template>
 			<div
-				v-if="chat.unread_messages_count"
+				v-if="chat && chat.unread_messages_count"
 				title="Пометить все сообщения прочитанными"
 				class="relative"
 			>

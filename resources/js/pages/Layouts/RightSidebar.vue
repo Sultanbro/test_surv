@@ -2,7 +2,8 @@
 	<div class="header__right">
 		<div class="header__right-nav">
 			<div
-				v-if="isBp && user.is_admin === 1"
+				v-if="isBp && $laravel.is_admin"
+				v-b-popover.hover.left.html="'Вопросы и ответы'"
 				class="header__right-icon"
 				@click="$emit('pop', 'faq')"
 			>
@@ -12,18 +13,6 @@
 					class="header__icon-img"
 				>
 			</div>
-			<a
-				v-if="isBp && user.is_admin !== 1"
-				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
-				href="javascript:void(0)"
-				class="header__right-icon"
-			>
-				<img
-					src="/images/dist/header-right-1.svg"
-					alt="nav icon"
-					class="header__icon-img"
-				>
-			</a>
 			<a
 				href="javascript:void(0)"
 				class="header__right-icon bell red"
@@ -53,6 +42,8 @@
 			</a>
 
 			<a
+				v-if="$laravel.is_admin"
+				v-b-popover.hover.left.html="'спросите нас о чем угодно'"
 				href="javascript:void(0)"
 				class="header__right-icon"
 			>
@@ -191,7 +182,7 @@ export default {
 				user.work_end.substring(0, 5),
 			]
 			return null
-		}
+		},
 	}
 };
 </script>
