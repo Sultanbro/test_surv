@@ -243,7 +243,7 @@ class DM
             $actions >= 105 && $actions <= 119 => 7,
             $actions >= 120 && $actions <= 134 => 8,
             $actions >= 135 => 9,
-            default => 0,
+            default => 0
         };
     }
 
