@@ -182,7 +182,6 @@ class DM
             $activity21 = UserStat::query()->where(['date' => $date, 'user_id' => $user_id, 'activity_id' => 21])->first();
 
             $value_for_21 = self::getHoursByActions($actions);
-            dd($value_for_21);
             if ($activity21) {
                 $activity21->value = $value_for_21;
                 $activity21->save();
