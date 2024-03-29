@@ -1043,11 +1043,11 @@ class TimetrackingController extends Controller
         }
 
         /** @var UserStat $userStat */
-        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
-        if ($userStat) {
-            $userStat->value = intval($request->minutes) / 60;
-            $userStat->save();
-        }
+//        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
+//        if ($userStat) {
+//            $userStat->value = intval($request->minutes) / 60;
+//            $userStat->save();
+//        }
         ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
             ->afterCommit();
 
