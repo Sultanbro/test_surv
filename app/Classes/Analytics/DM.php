@@ -343,6 +343,5 @@ class DM
             'date' => $carbon->format('Y-m-d')
         ]);
 
-        dd($value * 60);
     }
 }
