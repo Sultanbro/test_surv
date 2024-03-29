@@ -185,6 +185,7 @@ class Timetracking extends Model
         $auth = auth()->id();
 
         Timetracking::query()
+//            ->whereNot('updated', 1)
             ->updateOrCreate([
                 'user_id' => $employee_id,
                 'enter' => $date,

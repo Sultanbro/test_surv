@@ -24,7 +24,7 @@ class PayByProdamusTest extends TenantTestCase
     public function test_user_can_pay_tariff_plan()
     {
         $user = CentralUser::factory()->create();
-        $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
+        $tariff = Tariff::query()->where('kind', TariffKindEnum::Base)->first();
         $data = new PaymentDTO(
             'RUB',
             $tariff->getKey(),
