@@ -195,7 +195,6 @@ class DM
             }
 
             $carbon_date = Carbon::parse($date);
-            dd($value_for_21);
             self::updateOrCreateTimeTrack($user_id, $value_for_21, $carbon_date);
         }
     }
@@ -343,5 +342,7 @@ class DM
             'description' => 'Изменено время с Аналитики на ' . $value,
             'date' => $carbon->format('Y-m-d')
         ]);
+
+        dd($value * 60);
     }
 }
