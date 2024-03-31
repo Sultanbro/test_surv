@@ -29,6 +29,12 @@ class GetPredictsService
         $activeTraineeSubQuery = $baseSubQuery->where('ud.is_trainee', 0);
         $activeEmployeeSubQuery = $baseSubQuery->where('ud.is_trainee', 1);
 
+        dd(
+            $activeUsersSubQuery->count(),
+            $activeTraineeSubQuery->count(),
+            $activeEmployeeSubQuery->count()
+        );
+
         return ProfileGroup::isActive()
             ->leftJoinSub($activeUsersSubQuery, 'active_users', 'profile_groups.id', 'active_users.group_id')
             ->leftJoinSub($activeTraineeSubQuery, 'active_trainees', 'profile_groups.id', 'active_trainees.group_id')
