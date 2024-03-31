@@ -22,7 +22,7 @@ class GetPredictsService
             ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
             ->where('piv.status', 'active')
-            ->where('users.created_at', '>=', $from)
+//            ->where('users.created_at', '>=', $from)
             ->groupBy('piv.group_id');
 
         $activeUsersSubQuery = $baseSubQuery;
@@ -40,14 +40,13 @@ class GetPredictsService
             ->hasAnalytics()
             ->get()
             ->map(function ($group) {
-                dd($group);
                 return [
                     'id' => $group->id,
                     'name' => $group->name,
                     'users' => [
-                        'total' => $group->activeUsers->count(),
-                        'trainees' => $group->activeTrainees->count(),
-                        'employees' => $group->activeEmployees->count()
+                        'total' => $group->users_total,
+                        'trainees' => $group->users_trainees,
+                        'employees' => $group->users_employees
                     ],
                     'plan' => $group->required
                 ];
