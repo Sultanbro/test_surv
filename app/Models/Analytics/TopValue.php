@@ -562,7 +562,6 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
-        point();
         foreach ($groups as $group) {
             $row = [];
 
@@ -574,8 +573,6 @@ class TopValue extends Model
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
             $row['archived_date'] = $group->archived_date;
-            point();
-            point('end');
             for ($i = 1; $i <= 12; $i++) {
                 $xdate = $date->month($i)
                     ->format('Y-m-d');

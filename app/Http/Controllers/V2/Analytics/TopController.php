@@ -9,6 +9,7 @@ use App\Models\Analytics\TopValue;
 use App\Service\V2\Analytics\GetPredictsService;
 use App\Service\V2\Analytics\GetRentabilityService;
 use App\Service\V2\Analytics\RentabilitySpeedometerService;
+use Cache;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -45,9 +46,13 @@ class TopController extends Controller
      */
     public function getRentability(GetRentabilityRequest $request, GetRentabilityService $rentabilityService): JsonResponse
     {
+        $date = Carbon::create($request->toDto()->year, $request->toDto()->month);
+        $cacheKey = $date->isCurrentMonth() ? now()->format("Y-m-d") : $date->format('Y-m');
+        $cacheKey .= 'getRentability';
+
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: $rentabilityService->handle($request->toDto())
+            data: $rentabilityService->handle(Cache::remember($cacheKey, 24 * 60 * 60, fn() => $request->toDto()))
         );
     }
 
@@ -60,8 +65,8 @@ class TopController extends Controller
     public function rentabilitySpeedometers(SpeedometersRequest $request, RentabilitySpeedometerService $service): JsonResponse
     {
         return $this->response(
-          message: self::SUCCESS_MESSAGE,
-          data: $service->handle($request->toDto())
+            message: self::SUCCESS_MESSAGE,
+            data: $service->handle($request->toDto())
         );
     }
 
