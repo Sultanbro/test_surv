@@ -17,7 +17,7 @@ class GetPredictsService
         $baseSubQuery = DB::table('users')
             ->select(DB::raw('group_user.id as group_id'))
             ->select(DB::raw('count(*) as count'))
-            ->join(DB::raw('user_description as ud'), 'ud.user_id', '=', 'users.id')
+            ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
             ->where('piv.status', 'active')
             ->where('users.created_at', '>=', $from)
