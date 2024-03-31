@@ -30,9 +30,9 @@ class GetPredictsService
         $activeEmployeeSubQuery = $baseSubQuery->where('ud.is_trainee', 1);
 
         dd(
-            $activeUsersSubQuery->count(),
-            $activeTraineeSubQuery->count(),
-            $activeEmployeeSubQuery->count()
+            $activeUsersSubQuery->toSql(),
+            $activeTraineeSubQuery->toSql(),
+            $activeEmployeeSubQuery->toSql()
         );
 
         return ProfileGroup::isActive()
