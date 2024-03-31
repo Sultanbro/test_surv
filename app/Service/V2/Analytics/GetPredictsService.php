@@ -15,7 +15,7 @@ class GetPredictsService
     {
         $from = now()->firstOfMonth();
         $baseSubQuery = DB::table('users')
-            ->select(DB::raw('group_user.id as group_id'))
+            ->select(DB::raw('group_user.group_id as group_id'))
             ->select(DB::raw('count(*) as count'))
             ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
