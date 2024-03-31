@@ -17,6 +17,7 @@ class GetPredictsService
         $baseSubQuery = DB::table('users')
             ->select([
                 DB::raw('piv.group_id as group_id'),
+                DB::raw('piv.user_id as user_id'),
             ])
             ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
@@ -36,11 +37,19 @@ class GetPredictsService
                 'id',
                 'name',
                 'required',
-                DB::raw('count(active_users.group_id) as users_total'),
-                DB::raw('count(active_trainees.group_id) as users_trainees'),
-                DB::raw('count(active_employees.group_id) as users_employees')
+                DB::raw('count(active_users.user_id) as users_total'),
+                DB::raw('count(active_trainees.user_id) as users_trainees'),
+                DB::raw('count(active_employees.user_id) as users_employees')
             ])
             ->hasAnalytics()
+            ->groupBy([
+                'id',
+                'name',
+                'required',
+                'active_users.user_id',
+                'active_trainees.user_id',
+                'active_employees.user_id',
+            ])
             ->get()
             ->map(function ($group) {
                 return [
