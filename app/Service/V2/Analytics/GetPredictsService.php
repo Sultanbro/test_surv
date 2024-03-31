@@ -31,10 +31,10 @@ class GetPredictsService
         return ProfileGroup::isActive()
             ->leftJoinSub($activeUsersSubQuery, 'active_users', 'profile_groups.id', 'active_users.group_id')
             ->leftJoinSub($activeTraineeSubQuery, 'active_trainees', 'profile_groups.id', 'active_trainees.group_id')
-            ->leftJoinSub($activeEmployeeSubQuery, 'active_employees', 'profile_groups.id', 'active_employees.group_id')
+//            ->leftJoinSub($activeEmployeeSubQuery, 'active_employees', 'profile_groups.id', 'active_employees.group_id')
             ->addSelect(DB::raw('active_users.count as users_total'))
             ->addSelect(DB::raw('active_trainees.count as users_trainees'))
-            ->addSelect(DB::raw('active_employees.count as users_employees'))
+//            ->addSelect(DB::raw('active_employees.count as users_employees'))
             ->hasAnalytics()
             ->get()
             ->map(function ($group) {
