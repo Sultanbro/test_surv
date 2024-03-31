@@ -16,7 +16,7 @@ class GetPredictsService
     public function handle()
     {
         $from = now()->firstOfMonth();
-        dd($from->toDateTimeString());
+
         $activeUsersSubQuery = $this->baseSubQuery($from);
         $activeTraineeSubQuery = $this->baseSubQuery($from)
             ->where('ud.is_trainee', 1);
