@@ -18,13 +18,15 @@ class GetPredictsService
         $from = now()->firstOfMonth();
         $activeUsersSubQuery = $this->baseSubQuery($from);
 
-        $activeTraineeSubQuery = $this->baseSubQuery($from)->where('ud.is_trainee', 0);
-        $activeEmployeeSubQuery = $this->baseSubQuery($from)->where('ud.is_trainee', 1);
+        $activeTraineeSubQuery = $this->baseSubQuery($from)->where('ud.is_trainee', 1);
+        $activeEmployeeSubQuery = $this->baseSubQuery($from)
+            ->where('ud.is_trainee', 0)
+            ->where('ud.applied', ">=", $from);
 
         dd(
-            $activeUsersSubQuery->toSql(),
-            $activeTraineeSubQuery->toSql(),
-            $activeEmployeeSubQuery->toSql()
+            $activeUsersSubQuery->count(),
+            $activeTraineeSubQuery->count(),
+            $activeEmployeeSubQuery->count()
         );
 
         return ProfileGroup::isActive()
