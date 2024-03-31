@@ -36,9 +36,9 @@ class GetPredictsService
                 'id',
                 'name',
                 'required',
-                DB::raw('count(active_users) as users_total'),
-                DB::raw('count(active_trainees) as users_trainees'),
-                DB::raw('count(active_employees) as users_employees')
+                DB::raw('count(active_users.group_id) as users_total'),
+                DB::raw('count(active_trainees.group_id) as users_trainees'),
+                DB::raw('count(active_employees.group_id) as users_employees')
             ])
             ->hasAnalytics()
             ->groupBy('group_id')
