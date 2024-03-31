@@ -24,22 +24,22 @@ class GetPredictsService
             ->where('ud.is_trainee', 0);
 
         return ProfileGroup::isActive()
-            ->leftJoinSub($activeUsersSubQuery, 'active_users', 'profile_groups.id', 'active_users.group_id')
-            ->leftJoinSub($activeTraineeSubQuery, 'active_trainees', 'profile_groups.id', 'active_trainees.group_id')
-            ->leftJoinSub($activeEmployeeSubQuery, 'active_employees', 'profile_groups.id', 'active_employees.group_id')
+            ->hasAnalytics()
+            ->leftJoinSub($activeUsersSubQuery, 'active_users', 'active_users.group_id', 'profile_groups.id')
+            ->leftJoinSub($activeTraineeSubQuery, 'active_trainees', 'active_trainees.group_id', 'profile_groups.id')
+            ->leftJoinSub($activeEmployeeSubQuery, 'active_employees', 'active_employees.group_id', 'profile_groups.id')
             ->select([
                 'id',
                 'name',
                 'required',
                 DB::raw('count(active_users.user_id) as users_total'),
-                DB::raw('count(active_trainees.user_id) as users_trainees'),
-                DB::raw('count(active_employees.user_id) as users_employees')
+                DB::raw('count(active_trainees.user_id) as trainees_total'),
+                DB::raw('count(active_employees.user_id) as employees_total')
             ])
-            ->hasAnalytics()
             ->groupBy([
                 'id',
                 'name',
-                'required',
+                'required'
             ])
             ->get()
             ->map(function ($group) {
@@ -48,8 +48,8 @@ class GetPredictsService
                     'name' => $group->name,
                     'users' => [
                         'total' => $group->users_total,
-                        'trainees' => $group->users_trainees,
-                        'employees' => $group->users_employees
+                        'trainees' => $group->trainees_total,
+                        'employees' => $group->employees_total
                     ],
                     'plan' => $group->required
                 ];
