@@ -49,7 +49,6 @@ class TopController extends Controller
         $date = Carbon::create($request->toDto()->year, $request->toDto()->month);
         $cacheKey = $date->isCurrentMonth() ? now()->format("Y-m-d") : $date->format('Y-m');
         $cacheKey .= 'getRentability';
-        dd($cacheKey);
         return $this->response(
             message: self::SUCCESS_MESSAGE,
             data: Cache::remember($cacheKey, 24 * 60 * 60, fn() => $rentabilityService->handle($request->toDto()))
