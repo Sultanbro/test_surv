@@ -67,7 +67,7 @@
 				</div>
 				<div class="col-3 d-flex aic justify-end">
 					<a
-						href="https://www.youtube.com/watch?v=eQFva-h9ga0"
+						href="javascript:vpid(0)"
 						class="TableAccrual-video"
 						target="_blank"
 					>

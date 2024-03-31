@@ -127,7 +127,7 @@ export default {
 									Math.round(
 										Number(tariffItem.slice(0, tariffItem.length - 1)) * 1.15
 									)
-								)} ₸`;
+								)} ₽`;
 							}
 							return item;
 						} else {

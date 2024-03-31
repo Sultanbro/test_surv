@@ -138,6 +138,7 @@
                                                      data-sitekey="{{ config('services.recaptcha.key') }}">
                                                 </div>
                                             @endif
+                                            <br>
 
                                             <div class="form-subregistration-text">
                                                 <label for="pravila" class="control control-checkbox"
@@ -178,7 +179,7 @@
             <div id="sub-footer">
                 <div class="sub-footer">
                     <div class="col-lg-12 col-xs-12">
-                        <p class="copy">© 2022 jobtron.org</p>
+                        <p class="copy">© 2024 jobtron.org</p>
                     </div>
 
                 </div>

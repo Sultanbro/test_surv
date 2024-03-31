@@ -124,7 +124,7 @@
                     <div id="sub-footer">
                         <div class="sub-footer">
                             <div class="col-lg-12 col-xs-12">
-                                <p class="copy">© 2023 jobtron.org</p>
+                                <p class="copy">© 2024 jobtron.org</p>
                             </div>
 
                         </div>
