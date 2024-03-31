@@ -46,9 +46,6 @@ class GetPredictsService
                 'id',
                 'name',
                 'required',
-                'active_users.user_id',
-                'active_trainees.user_id',
-                'active_employees.user_id',
             ])
             ->get()
             ->map(function ($group) {
