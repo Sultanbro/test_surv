@@ -41,7 +41,6 @@ class GetPredictsService
                 DB::raw('count(active_employees.group_id) as users_employees')
             ])
             ->hasAnalytics()
-            ->groupBy('group_id')
             ->get()
             ->map(function ($group) {
                 return [
