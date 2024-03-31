@@ -22,7 +22,7 @@ class GetPredictsService
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
             ->where('piv.status', 'active')
             ->where('users.created_at', '>=', $from);
-        dd($baseSubQuery->count());
+
         $activeUsersSubQuery = $baseSubQuery;
 
         $activeTraineeSubQuery = $baseSubQuery->where('ud.is_trainee', 0);
@@ -36,11 +36,12 @@ class GetPredictsService
                 'id',
                 'name',
                 'required',
-                DB::raw('active_users.count as users_total'),
-                DB::raw('active_trainees.count as users_trainees'),
-                DB::raw('active_employees.count as users_employees')
+                DB::raw('count(active_users) as users_total'),
+                DB::raw('count(active_trainees) as users_trainees'),
+                DB::raw('count(active_employees) as users_employees')
             ])
             ->hasAnalytics()
+            ->groupBy('group_id')
             ->get()
             ->map(function ($group) {
                 return [
