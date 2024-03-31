@@ -16,18 +16,12 @@ class GetPredictsService
     public function handle()
     {
         $from = now()->firstOfMonth();
-
+        dd($from->toDateTimeString());
         $activeUsersSubQuery = $this->baseSubQuery($from);
         $activeTraineeSubQuery = $this->baseSubQuery($from)
             ->where('ud.is_trainee', 1);
         $activeEmployeeSubQuery = $this->baseSubQuery($from)
             ->where('ud.is_trainee', 0);
-
-        dd(
-            $activeUsersSubQuery->toSql(),
-            $activeTraineeSubQuery->toSql(),
-            $activeEmployeeSubQuery->toSql()
-        );
 
         return ProfileGroup::isActive()
             ->leftJoinSub($activeUsersSubQuery, 'active_users', 'profile_groups.id', 'active_users.group_id')
