@@ -5,6 +5,8 @@ namespace App\Service\V2\Analytics;
 
 use App\ProfileGroup;
 use DB;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 
 /**
  * Класс для работы с Service.
@@ -14,20 +16,10 @@ class GetPredictsService
     public function handle()
     {
         $from = now()->firstOfMonth();
-        $baseSubQuery = DB::table('users')
-            ->select([
-                DB::raw('piv.group_id as group_id'),
-                DB::raw('piv.user_id as user_id'),
-            ])
-            ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
-            ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
-            ->where('piv.status', 'active');
-//            ->where('users.created_at', '>=', $from);
+        $activeUsersSubQuery = $this->baseSubQuery($from);
 
-        $activeUsersSubQuery = $baseSubQuery;
-
-        $activeTraineeSubQuery = $baseSubQuery->where('ud.is_trainee', 0);
-        $activeEmployeeSubQuery = $baseSubQuery->where('ud.is_trainee', 1);
+        $activeTraineeSubQuery = $this->baseSubQuery($from)->where('ud.is_trainee', 0);
+        $activeEmployeeSubQuery = $this->baseSubQuery($from)->where('ud.is_trainee', 1);
 
         dd(
             $activeUsersSubQuery->toSql(),
@@ -66,5 +58,18 @@ class GetPredictsService
                     'plan' => $group->required
                 ];
             });
+    }
+
+    private function baseSubQuery(Carbon $from): Builder
+    {
+        return DB::table('users')
+            ->select([
+                DB::raw('piv.group_id as group_id'),
+                DB::raw('piv.user_id as user_id'),
+            ])
+            ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
+            ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
+            ->where('piv.status', 'active')
+            ->where('users.created_at', '>=', $from);
     }
 }
