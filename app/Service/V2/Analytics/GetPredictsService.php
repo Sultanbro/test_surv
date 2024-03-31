@@ -17,14 +17,12 @@ class GetPredictsService
         $baseSubQuery = DB::table('users')
             ->select([
                 DB::raw('piv.group_id as group_id'),
-                DB::raw('count(*) as count')
             ])
             ->join(DB::raw('user_descriptions as ud'), 'ud.user_id', '=', 'users.id')
             ->join(DB::raw('group_user as piv'), 'piv.user_id', '=', 'users.id')
             ->where('piv.status', 'active')
-            ->where('users.created_at', '>=', $from)
-            ->groupBy('piv.group_id');
-
+            ->where('users.created_at', '>=', $from);
+        dd($baseSubQuery->count());
         $activeUsersSubQuery = $baseSubQuery;
 
         $activeTraineeSubQuery = $baseSubQuery->where('ud.is_trainee', 0);
