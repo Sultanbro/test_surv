@@ -9,11 +9,13 @@ use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\Core\PaymentFactory;
+use DB;
 use Exception;
 use Tests\TenantTestCase;
+use Tests\TestCase;
 use Throwable;
 
-class PayByProdamusTest extends TenantTestCase
+class PayByWalletOneTest extends TenantTestCase
 {
     /**
      * @throws Exception
@@ -24,13 +26,13 @@ class PayByProdamusTest extends TenantTestCase
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Base)->first();
         $data = new PaymentDTO(
-            'RUB',
+            'KZT',
             $tariff->getKey(),
             20,
-            'prodamus'
+            'wallet1'
         );
         $factory = new PaymentFactory;
-        $provider = $factory->currencyProvider('rub');
+        $provider = $factory->currencyProvider('kzt');
         $response = $provider->pay($data, $user);
 
         $this->assertDatabaseHas('tariff_payment', [
@@ -46,13 +48,13 @@ class PayByProdamusTest extends TenantTestCase
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
         $data = new PaymentDTO(
-            'RUB',
+            'KZT',
             $tariff->getKey(),
             20,
-            'prodamus'
+            'wallet1'
         );
         $factory = new PaymentFactory;
-        $provider = $factory->currencyProvider('rub');
+        $provider = $factory->currencyProvider('kzt');
         $response = $provider->pay($data, $user);
         $response = $provider->info($response->getPaymentId())->getPaymentStatus();
         $this->assertEquals(PaymentStatusEnum::STATUS_SUCCESS, $response);
@@ -66,14 +68,14 @@ class PayByProdamusTest extends TenantTestCase
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
         $data = new PaymentDTO(
-            'RUB',
+            'KZT',
             $tariff->getKey(),
             20,
             'prodamus'
         );
 
         $factory = new PaymentFactory;
-        $provider = $factory->currencyProvider('rub');
+        $provider = $factory->currencyProvider('kzt');
         $response = $provider->pay($data, $user);
 
         /** @var TariffPayment $transaction */

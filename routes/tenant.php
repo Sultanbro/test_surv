@@ -160,7 +160,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     });
 
     // FAQ
-    Route::group(['prefix' => 'profile/faq'], function (){
+    Route::group(['prefix' => 'profile/faq'], function () {
         Route::get('/', [Root\FaqController::class, 'getAll'])->name('faq.profile');
         Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
         Route::get('search', [Root\FaqController::class, 'search']);
@@ -722,6 +722,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
         Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
+        Route::withoutMiddleware(['auth', 'tenant'])
+            ->name('callback')
+            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
     });
 
     Route::group([

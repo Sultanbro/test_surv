@@ -79,4 +79,6 @@ abstract class BasePaymentService
             throw new Exception($exception->getMessage());
         }
     }
+
+    abstract public function invoice(array $data): PaymentInvoice;
 }

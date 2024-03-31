@@ -30,7 +30,7 @@ class DoPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency' => 'required|in:kzt,rub,dollar',
+            'currency' => 'required|in:kzt,rub,usd',
             'tariff_id' => ['required', 'integer', 'exists:tariff,id', new TariffExist],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
         ];

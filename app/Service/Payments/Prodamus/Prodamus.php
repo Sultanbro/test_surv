@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Payments\Prodamus;
 
 use App\Service\Payments\Core\BasePaymentService;
+use App\Service\Payments\Core\PaymentInvoice;
 use App\Service\Payments\Core\PaymentStatus;
 use App\Service\Payments\Core\PaymentConnector;
 use BeGateway\GetPaymentToken;
@@ -32,5 +33,10 @@ class Prodamus extends BasePaymentService
     public function info(string $paymentId): PaymentStatus
     {
         return new ProdamusPaymentStatus($paymentId, new QueryByPaymentToken());
+    }
+
+    public function invoice(array $data): PaymentInvoice
+    {
+        return new ProdamusInvoice($data);
     }
 }

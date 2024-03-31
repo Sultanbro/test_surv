@@ -37,7 +37,7 @@ class ProdamusConnector implements PaymentConnector
 
             return new ConfirmationResponse(
                 $response->getRedirectUrl(),
-                $response->getToken(),
+                $this->client->getTrackingId(),
                 $response->isSuccess()
             );
 
@@ -52,8 +52,8 @@ class ProdamusConnector implements PaymentConnector
      * @return void
      */
     private function buildRequest(
-        PaymentDTO $data,
-        CentralUser       $authUser
+        PaymentDTO  $data,
+        CentralUser $authUser
     ): void
     {
         $price = $this->getPrice($data);

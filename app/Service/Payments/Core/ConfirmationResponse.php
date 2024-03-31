@@ -2,12 +2,15 @@
 
 namespace App\Service\Payments\Core;
 
-class ConfirmationResponse
+use JsonSerializable;
+
+class ConfirmationResponse implements JsonSerializable
 {
     public function __construct(
         private readonly string $url,
         private readonly string $paymentId,
-        private readonly bool   $success,
+        private readonly bool   $success = true,
+        private readonly array  $params = [],
     )
     {
     }
@@ -27,12 +30,18 @@ class ConfirmationResponse
         return $this->success;
     }
 
-    public function __serialize(): array
+    public function jsonSerialize(): array
     {
         return [
             'payment_id' => $this->getPaymentId(),
             'redirect_url' => $this->getUrl(),
             'is_success' => $this->getIsSuccess(),
+            'params' => $this->getParams()
         ];
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
     }
 }

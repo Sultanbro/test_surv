@@ -5,6 +5,7 @@ namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\Prodamus\Prodamus;
+use App\Service\Payments\WalletOne\WalletOne;
 use InvalidArgumentException;
 
 final class PaymentFactory
@@ -16,7 +17,8 @@ final class PaymentFactory
     public function currencyProvider(string $currency): BasePaymentService
     {
         return match ($currency) {
-            'rub' => new Prodamus(),
+            'rub' => app(Prodamus::class),
+            'kzt', 'usd' => app(WalletOne::class),
             default => throw new InvalidArgumentException("Не известная валюта $currency"),
         };
     }
@@ -28,7 +30,8 @@ final class PaymentFactory
     public function getPaymentsProviderByType(string $type): BasePaymentService
     {
         return match ($type) {
-            'prodamus' => new Prodamus(),
+            'prodamus' => app(Prodamus::class),
+            'wallet1' => app(WalletOne::class),
             default => throw new InvalidArgumentException("Не известный тип провайдера $type"),
         };
     }

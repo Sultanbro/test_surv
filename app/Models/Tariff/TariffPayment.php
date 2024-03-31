@@ -48,6 +48,13 @@ class TariffPayment extends Model
         'status'
     ];
 
+    public static function getStatus($paymentId): string
+    {
+        /**  @var TariffPayment $payment */
+        $payment = self::query()->where('payment_id', $paymentId)->first();
+        return $payment->status;
+    }
+
     /**
      * @return BelongsTo
      */
@@ -85,6 +92,7 @@ class TariffPayment extends Model
                 'tariff.kind',
                 'tariff.validity',
                 'tariff.users_limit',
+                'tariff.payment_id',
                 DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
             )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
@@ -181,5 +189,12 @@ class TariffPayment extends Model
         } catch (Exception) {
             throw new Exception('При сохранений данных произошла ошибка');
         }
+    }
+
+    public function updateStatusToSuccess(): void
+    {
+        $this->update([
+            'status' => PaymentStatusEnum::STATUS_SUCCESS
+        ]);
     }
 }

@@ -2,13 +2,15 @@
 
 namespace App\Providers;
 
+use App\Service\Payments\WalletOne\WalletOne;
+use App\Service\Payments\WalletOne\WalletOneConnector;
 use BeGateway\GetPaymentToken;
 use BeGateway\Logger;
 use BeGateway\QueryByPaymentToken;
 use BeGateway\Settings;
 use Illuminate\Support\ServiceProvider;
 
-class ProdamusPaymentServiceProvider extends ServiceProvider
+class PaymentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -17,11 +19,11 @@ class ProdamusPaymentServiceProvider extends ServiceProvider
             Settings::$shopKey = config('payment.prodamus.shop_key');
             $transaction = new GetPaymentToken();
             $transaction->setTestMode($this->app->environment('testing'));
-            $transaction->setNotificationUrl('http://www.example.com/notify');
-            $transaction->setSuccessUrl('http://www.example.com/success');
-            $transaction->setDeclineUrl('http://www.example.com/decline');
-            $transaction->setFailUrl('http://www.example.com/fail');
-            $transaction->setCancelUrl('http://www.example.com/cancel');
+            $transaction->setSuccessUrl(config('payment.prodamus.success_url'));
+            $transaction->setDeclineUrl(config('payment.prodamus.failed_url'));
+            $transaction->setFailUrl(config('payment.prodamus.failed_url'));
+            $transaction->setCancelUrl(config('payment.prodamus.failed_url'));
+            $transaction->setNotificationUrl(route('payment.callback', ['currency' => 'rub']));
             $transaction->setLanguage('ru');
             $transaction->money->setCurrency('RUB');
             return $transaction;
@@ -33,5 +35,13 @@ class ProdamusPaymentServiceProvider extends ServiceProvider
             return new QueryByPaymentToken();
         });
 
+        $this->app->bind(WalletOne::class, function () {
+            $connector = new WalletOneConnector(
+                config('payment.wallet1.merchant_id'),
+                config('payment.wallet1.success_url'),
+                config('payment.wallet1.failed_url')
+            );
+            return new WalletOne($connector);
+        });
     }
 }
