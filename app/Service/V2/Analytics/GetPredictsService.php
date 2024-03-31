@@ -21,8 +21,7 @@ class GetPredictsService
         $activeTraineeSubQuery = $this->baseSubQuery($from)
             ->where('ud.is_trainee', 1);
         $activeEmployeeSubQuery = $this->baseSubQuery($from)
-            ->where('ud.is_trainee', 0)
-            ->where('ud.applied', ">=", $from);
+            ->where('ud.is_trainee', 0);
 
         dd(
             $activeUsersSubQuery->count(),
