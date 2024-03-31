@@ -58,8 +58,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property $switch_proceeds
  * @property $switch_rentability
  * @property $id
- * @method static hasAnalytics()
- * @method static isActive()
+ * @method static Builder hasAnalytics()
+ * @method static Builder isActive()
  */
 class ProfileGroup extends Model
 {

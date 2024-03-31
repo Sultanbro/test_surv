@@ -2,12 +2,13 @@
 
 namespace App\Repositories\Tariffs;
 
+use App\Models\CentralUser;
 use App\Repositories\CoreRepository;
 use App\Models\Tariff\TariffPayment as Model;
 
 /**
-* Класс для работы с Repository.
-*/
+ * Класс для работы с Repository.
+ */
 class TariffPaymentRepository extends CoreRepository
 {
     /**
@@ -25,13 +26,16 @@ class TariffPaymentRepository extends CoreRepository
      */
     public function tariffForOwnerAlreadyExist(): bool
     {
-        $currentUser = auth()->id();
-
-        return $this->model()->where('owner_id', $currentUser)
+        $authUser = auth()->id();
+        $centralUser = CentralUser::query()->where('email', $authUser)->first();
+        return $this->model()
+            ->query()
+            ->where('owner_id', $centralUser)
             ->where('expire_date', '<', now()->format('Y-m-d'))
             ->where('status', 'succeeded')
             ->exists();
     }
+
     /**
      * @param int $ownerId
      * @return object|null
@@ -40,12 +44,13 @@ class TariffPaymentRepository extends CoreRepository
         int $ownerId
     ): ?object
     {
-        return $this->model()->with('tariff')
+        return $this->model()
+            ->with('tariff')
             ->orderBy('expire_date', 'desc')
             ->where([
-            ['status', '=', 'succeeded'],
-            ['expire_date', '<', now()],
-            ['owner_id', '=', $ownerId]
-        ])->first();
+                ['status', '=', 'succeeded'],
+                ['expire_date', '<', now()],
+                ['owner_id', '=', $ownerId]
+            ])->first();
     }
 }

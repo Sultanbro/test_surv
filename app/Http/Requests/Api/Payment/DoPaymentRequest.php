@@ -5,7 +5,6 @@ namespace App\Http\Requests\Api\Payment;
 
 use App\DTO\Api\PaymentDTO;
 use App\Enums\Payments\CurrencyEnum;
-use App\Rules\CheckTariffLimit;
 use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -31,7 +30,7 @@ class DoPaymentRequest extends FormRequest
     {
         return [
             'currency' => 'required|in:kzt,rub,usd',
-            'tariff_id' => ['required', 'integer', 'exists:tariff,id', new TariffExist],
+            'tariff_id' => ['required', 'integer', new TariffExist],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
         ];
     }
