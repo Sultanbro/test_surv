@@ -188,7 +188,7 @@ export default {
 										/>
 									</div>
 									<div
-										v-if="activeTab === '2' && can(['positions_view', 'groups_view', 'settings_view'])"
+										v-if="activeTab === '2' && can(['positions_view', 'groups_view', 'shifts_view', 'taxes_view', 'settings_view'])"
 										id="nav-company"
 										class="tab-pane fade show active py-3"
 										role="tabpanel"
