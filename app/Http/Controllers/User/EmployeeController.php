@@ -95,7 +95,7 @@ class EmployeeController extends Controller
                         ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
                 });
             });
-        dd($usersBaseQuery->toSql());
+        dd($usersBaseQuery->get());
         if (isset($request['filter']) && $request['filter'] == 'all') {
             if ($request['job'] != 0) {
                 $users = $usersBaseQuery
