@@ -256,15 +256,15 @@ class EmployeeController extends Controller
         if ($request['part'] && $request['part'] == 'part') $users = $users->where('full_time', 0);
 
         if ($request['search']) {
-            dd($users->toSql());
             $users = $users
-                ->where(function ($query) use ($request) {
+                ->where(function (Builder $query) use ($request) {
                     $query->where('users.email', 'like', '%' . $request['search'] . '%')
                         ->orWhere('users.id', $request['search'])
                         ->orWhere('users.phone', 'like', '%' . $request['search'] . '%')
                         ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . $request['search'] . '%')
                         ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . $request['search'] . '%')
                         ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
+                    dd($query->toSql());
                 });
 
         }
