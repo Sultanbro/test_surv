@@ -118,9 +118,9 @@ class TimetrackingController extends Controller
             if ($active_tab == 1 && !auth()->user()->can('users_view')) return redirect('/');
             if ($active_tab == 2
                 && !auth()->user()->can('positions_view')
-                && auth()->user()->can('taxes_view')
-                && auth()->user()->can('shifts_view')
-                && auth()->user()->can('groups_view')
+                && !auth()->user()->can('taxes_view')
+                && !auth()->user()->can('shifts_view')
+                && !auth()->user()->can('groups_view')
             ) return redirect('/');
             if ($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
             if ($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
