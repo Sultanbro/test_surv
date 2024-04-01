@@ -600,12 +600,15 @@ class UserService
         string $action
     ): void
     {
+        /** @var ProfileGroup $group */
         $group = ProfileGroup::query()->find($groupId);
-        $exist = $group->users()->where([
-            ['user_id', $userId],
-            ['status', 'active']
-        ])->whereNull('to')->exists();
-
+        $exist = $group->users()
+            ->where([
+                ['user_id', $userId],
+                ['status', 'active']
+            ])
+            ->whereNull('to')->exists();
+        dd($exist);
         try {
             if ($action == 'add' && !$exist) {
                 $group->users()->attach($userId, [
