@@ -278,6 +278,10 @@ export default {
 					placeholder="Оклад"
 					@input="checkNumber"
 				>
+				<UserEditError
+					:errors="errors"
+					name="zarplata"
+				/>
 			</div>
 
 
@@ -332,6 +336,10 @@ export default {
 						BYN Белорусский рубль
 					</option> -->
 				</select>
+				<UserEditError
+					:errors="errors"
+					name="currency"
+				/>
 			</div>
 
 			<div class="col-sm-1">

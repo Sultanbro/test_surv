@@ -196,6 +196,7 @@ export default {
 		},
 		async submitPayment(){
 			if(!this.selectedRate) return
+			if(this.currencyCode) return this.submitRUB()
 			try{
 				/* eslint-disable camelcase */
 				const url = await this.postPaymentData({
@@ -212,6 +213,7 @@ export default {
 				this.$toast.error('Ошибка при попытке оплаты')
 			}
 		},
+		async submitRUB(){},
 		async activatePromo(){
 			this.isPromoLoading = true
 			this.promoData = await this.fetchPromo(this.promo)
