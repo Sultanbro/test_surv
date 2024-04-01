@@ -2111,9 +2111,6 @@ class KpiStatisticService
                 },
                 'items' => function (HasMany $query) {
                     $query->with(['histories' => function (MorphMany $query) {
-                        dd(
-                            $this->from->format("Y-m-d")
-                        );
                         $query->whereYear('created_at', $this->from);
                         $query->whereMonth('created_at', $this->from);
                     }]);
