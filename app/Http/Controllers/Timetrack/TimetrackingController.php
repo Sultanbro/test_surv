@@ -100,18 +100,6 @@ class TimetrackingController extends Controller
         ////////////
         $active_tab = 1;
 
-        $userAbilities = [
-            auth()->user()->can('users_view'),
-            auth()->user()->can('positions_view'),
-            auth()->user()->can('groups_view'),
-            auth()->user()->can('fines_view'),
-            auth()->user()->can('notifications_view'),
-            auth()->user()->can('permissions_view'),
-            auth()->user()->can('checklists_view'),
-            auth()->user()->can('taxes_view'),
-            auth()->user()->can('shifts_view'),
-        ];
-
         if (isset($_GET['tab'])) {
             $active_tab = (int)$_GET['tab'];
 
