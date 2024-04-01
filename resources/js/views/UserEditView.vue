@@ -115,10 +115,6 @@ export default {
 				zarplata: true,
 				uin: true,
 			},
-			counter: 0,
-			profile_errors: 0,
-			phone_errors: 0,
-			zarplata_errors: 0,
 			isBeforeSubmit: false,
 			trainee: false,
 			increment_provided: false,
@@ -459,7 +455,7 @@ export default {
 			if(formData.get('last_name').length < 2){
 				errors.last_name = 'Введите фамилию'
 			}
-			if(emailReg.test(formData.get('email'))){
+			if(!emailReg.test(formData.get('email'))){
 				errors.email = 'Введите корректный email'
 			}
 			if(!formData.get('position')){
@@ -478,7 +474,7 @@ export default {
 				errors.new_pwd = 'Пароль должен содержать минимум одну строчную и одну заглавную буквы'
 			}
 			if(!this.workChartId){
-				errors.workChart = 'Укажите график работы'
+				errors['work-chart'] = 'Укажите график работы'
 			}
 
 			return errors
@@ -493,51 +489,15 @@ export default {
 			await this.$nextTick()
 			const formData = new FormData(this.$refs.form)
 
-			this.counter = 0;
-			this.profile_errors = 0;
-			this.phone_errors = 0;
-			this.zarplata_errors = 0;
-
-			const name = formData.get('name');
-			const email = formData.get('email');
-			const lastName = formData.get('last_name');
-			const position = formData.get('position');
-			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
 
 			const phone = formData.get('phone').replace(/[^\d]+/g, '')
 			formData.set('phone', phone)
 
-
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
 			if(formData.get('file7').size === 0) formData.delete('file7');
-
-			if (name.length < 3) {
-				this.frontValid.name = false;
-				this.showBlock(1);
-			}
-
-			if (lastName.length < 3) {
-				this.frontValid.lastName = false;
-				this.showBlock(1);
-			}
-
-			if (!this.validateEmail(email)) {
-				this.frontValid.email = false;
-				this.showBlock(1);
-			}
-
-			if(!position){
-				this.frontValid.position = false;
-				this.showBlock(1);
-			}
-
-			if(!group && isNew){
-				this.frontValid.group = false;
-				this.showBlock(1);
-			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
 
@@ -549,9 +509,10 @@ export default {
 
 			const errors = this.validateForm(formData)
 			const errorKeys = Object.keys(errors)
+			this.fieldErrors = errors
 			if(errorKeys.length){
 				this.$toast.error('Заполните обязательные поля')
-				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'workChartId']).length){
+				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work-chart']).length){
 					this.showBlock(1)
 				}
 				else if(arrayIntersects(errorKeys || [], ['zarplata']).length){
@@ -563,20 +524,14 @@ export default {
 				else{
 					this.showBlock(7)
 				}
+				return loader.hide()
 			}
-
-			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.workchart){
-				this.sendForm(formData, isNew);
-			}
-			else {
-				this.$toast.error('Заполните обязательные поля');
-			}
-			loader.hide();
+			this.sendForm(formData, isNew)
+			loader.hide()
 		},
 
 		async sendForm(formData, isNew){
 			this.fieldErrors = {}
-			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
 			const loader = this.$loading.show()
 
 			try{
