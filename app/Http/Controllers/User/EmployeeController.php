@@ -145,7 +145,7 @@ class EmployeeController extends Controller
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where(function (Builder $query) {
                     $query->where(function (Builder $query) {
-                        $query->where('required_signed_docs', true);
+//                        $query->where('required_signed_docs', true);
                         $query->whereNotExists(function ($subQuery) {
                             $subQuery->select(DB::raw(1))
                                 ->from('group_user AS gu')
