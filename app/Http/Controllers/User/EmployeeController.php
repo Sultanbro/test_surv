@@ -144,25 +144,21 @@ class EmployeeController extends Controller
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where(function (Builder $query) {
-//                        $query->where('required_signed_docs', true);
-                    $query->whereNotExists(function ($subQuery) {
-                        $subQuery->select(DB::raw(1))
-                            ->from('group_user AS gu')
-                            ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
-                            ->leftJoin('user_signed_file AS usf', function ($join) {
-                                $join->on('gu.user_id', '=', 'usf.user_id');
-                            })
-                            ->where('gu.user_id', '=', DB::raw('users.id'))
-                            ->where('gu.status', 'active')
-                            ->where(function ($subSubQuery) {
-                                $subSubQuery->whereNull('usf.user_id')
-                                    ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
-                                        $subSubSubQuery->select('file_id')
-                                            ->from('files')
-                                            ->where(DB::raw('files.fileable_id = g.id'))
-                                            ->where(DB::raw("files.fileable_type = 'App\ProfileGroup'"));
-                                    });
-                            });
+                    $query->where(function (Builder $query) {
+                        $query->where('required_signed_docs', true);
+                        $query->whereNotExists(function ($subQuery) {
+                            $subQuery->select(DB::raw(1))
+                                ->from('group_user AS gu')
+                                ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
+                                ->leftJoin('user_signed_file AS usf', 'gu.user_id', '=', 'usf.user_id')
+                                ->leftJoin('files AS f', 'usf.file_id', '=', 'f.file_id')
+                                ->where('gu.user_id', '=', DB::raw('users.id'))
+                                ->where('gu.status', 'active')
+                                ->where('f.fileable_id', '=', DB::raw('g.id'))
+                                ->where('f.fileable_type', '=', 'App\ProfileGroup')
+                                ->groupBy('gu.user_id', 'g.id')
+                                ->havingRaw('COUNT(DISTINCT f.file_id) > COUNT(DISTINCT usf.file_id)');
+                        });
                     });
                     $query->orwhere('required_signed_docs', false);
                 })
