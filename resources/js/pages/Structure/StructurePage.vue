@@ -448,7 +448,7 @@ export default {
 			}
 		},
 
-		async updateManagers(parent = null, parentManagers = [this.owner.id]){
+		async updateManagers(parent = null, parentManagers = []){
 			if(!this.dictionaries.users) return
 			for(const card of this.fixedCards){
 				if(card.parent_id !== parent) continue
