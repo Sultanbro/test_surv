@@ -101,7 +101,7 @@ class NotificationTemplatePusher extends Command
             ->orderBy('last_name')
             ->get();
 
-        dd($recipients->pluck(['name', 'id']));
+        dd($recipients->pluck('name', 'id'));
 
 
         $message = $notification->title;
