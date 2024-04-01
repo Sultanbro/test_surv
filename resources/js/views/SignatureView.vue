@@ -19,7 +19,6 @@ export default {
 			isVerifyModal: false,
 			userCode: '',
 			user: null,
-			buttonPressed: false,
 			isDebug: false,
 			activeDoc: 0,
 			requisites: {
