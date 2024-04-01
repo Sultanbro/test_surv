@@ -1122,8 +1122,7 @@ class KpiStatisticService
 
                     }
 
-                }
-                else {
+                } else {
                     $item['fact'] = 0;
                     $item['avg'] = 0;
                     $item['records_count'] = 0;
@@ -1512,26 +1511,26 @@ class KpiStatisticService
 
         $kpis = Kpi::withTrashed()
             ->with([
-            'histories_latest' => function ($query) use ($last_date, $date) {
-                $query->whereDate('created_at', '<=', $last_date);
-            },
-            'items.histories_latest' => function ($query) use ($last_date, $date) {
-                $query->whereDate('created_at', '<=', $last_date);
-            },
-            'items' => function (HasMany $query) use ($last_date, $date) {
-                $query->with(['histories' => function (MorphMany $query) use ($last_date, $date) {
+                'histories_latest' => function ($query) use ($last_date, $date) {
                     $query->whereDate('created_at', '<=', $last_date);
-                }]);
-                $query->where(function (Builder $query) use ($last_date) {
-                    $query->whereNull('deleted_at');
-                    $query->orWhere('deleted_at', '>', $last_date);
-                });
-            },
-            'items.activity',
-            'groups',
-            'users',
-            'positions'
-        ]);
+                },
+                'items.histories_latest' => function ($query) use ($last_date, $date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items' => function (HasMany $query) use ($last_date, $date) {
+                    $query->with(['histories' => function (MorphMany $query) use ($last_date, $date) {
+                        $query->whereDate('created_at', '<=', $last_date);
+                    }]);
+                    $query->where(function (Builder $query) use ($last_date) {
+                        $query->whereNull('deleted_at');
+                        $query->orWhere('deleted_at', '>', $last_date);
+                    });
+                },
+                'items.activity',
+                'groups',
+                'users',
+                'positions'
+            ]);
 
         $user = User::withTrashed()->with([
             'groups',
@@ -2103,14 +2102,17 @@ class KpiStatisticService
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
+                    $query->whereYear('created_at', $this->from->year);
+                    $query->whereMonth('created_at', $this->from->month);
                 },
                 'items.histories_latest' => function ($query) {
-                    $query->whereBetween('created_at', [$this->from, $this->to]);
+                    $query->whereYear('created_at', $this->from->year);
+                    $query->whereMonth('created_at', $this->from->month);
                 },
                 'items' => function (HasMany $query) {
                     $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereBetween('created_at', [$this->from, $this->to]);
+                        $query->whereYear('created_at', $this->from);
+                        $query->whereMonth('created_at', $this->from);
                     }]);
                     $query->where(function (Builder $query) {
                         $query->whereNull('deleted_at');
