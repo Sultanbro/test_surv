@@ -144,29 +144,27 @@ class EmployeeController extends Controller
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
                 ->where(function (Builder $query) {
-                    $query->where(function (Builder $query) {
 //                        $query->where('required_signed_docs', true);
-                        $query->whereNotExists(function ($subQuery) {
-                            $subQuery->select(DB::raw(1))
-                                ->from('group_user AS gu')
-                                ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
-                                ->leftJoin('user_signed_file AS usf', function ($join) {
-                                    $join->on('gu.user_id', '=', 'usf.user_id');
-                                })
-                                ->where('gu.user_id', '=', DB::raw('users.id'))
-                                ->where('gu.status', 'active')
-                                ->where(function ($subSubQuery) {
-                                    $subSubQuery->whereNull('usf.user_id')
-                                        ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
-                                            $subSubSubQuery->select('file_id')
-                                                ->from('files')
-                                                ->where(DB::raw('files.fileable_id = g.id'))
-                                                ->where(DB::raw("files.fileable_type = 'App\ProfileGroup'"));
-                                        });
-                                });
-                        });
+                    $query->whereNotExists(function ($subQuery) {
+                        $subQuery->select(DB::raw(1))
+                            ->from('group_user AS gu')
+                            ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
+                            ->leftJoin('user_signed_file AS usf', function ($join) {
+                                $join->on('gu.user_id', '=', 'usf.user_id');
+                            })
+                            ->where('gu.user_id', '=', DB::raw('users.id'))
+                            ->where('gu.status', 'active')
+                            ->where(function ($subSubQuery) {
+                                $subSubQuery->whereNull('usf.user_id')
+                                    ->orWhereNotIn('usf.file_id', function ($subSubSubQuery) {
+                                        $subSubSubQuery->select('file_id')
+                                            ->from('files')
+                                            ->where(DB::raw('files.fileable_id = g.id'))
+                                            ->where(DB::raw("files.fileable_type = 'App\ProfileGroup'"));
+                                    });
+                            });
                     });
-//                    $query->orwhere('required_signed_docs', false);
+                    $query->orwhere('required_signed_docs', false);
                 })
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
