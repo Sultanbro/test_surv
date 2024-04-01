@@ -1847,6 +1847,7 @@ class KpiStatisticService
                 },
                 'items' => function (HasMany $query) use ($last_date, $date) {
                     $query->with(['histories' => function (MorphMany $query) use ($date) {
+                        dd($query->get());
                         $query->whereYear('created_at', $date->year);
                         $query->whereMonth('created_at', $date->month);
                     }]);
