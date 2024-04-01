@@ -101,9 +101,6 @@ class NotificationTemplatePusher extends Command
             ->orderBy('last_name')
             ->get();
 
-        dd($recipients->pluck('name', 'id'));
-
-
         $message = $notification->title;
         if (tenant('id') == 'bp') {
             $link = '<br> <a href="/estimate_your_trainer" class="btn btn-primary btn-sm rounded mt-1" target="_blank">Оценить</a>';

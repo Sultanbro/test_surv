@@ -86,7 +86,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run whatsapp:estimate_first_day --tenants=bp')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('tenants:run recruiting:trainee_report --tenants=bp')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
         $schedule->command('tenants:run callibro:fetch --tenants=bp')->hourly(); // Отработанное время сотрудников Евраз 1 Хоум
-        $schedule->command('tenants:run usernotification:estimate_trainer --tenants=bp')->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
         $schedule->command('tenants:run intellect:send --tenants=bp')->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
