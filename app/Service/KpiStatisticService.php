@@ -1837,17 +1837,14 @@ class KpiStatisticService
             ->when($searchWord, fn(Builder $whenQuery) => (new KpiFilter($whenQuery))->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function ($query) use ($date) {
-                    $query->whereYear('created_at', $date->year);
-                    $query->whereMonth('created_at', $date->month);
+                    $query->whereDate('created_at', '<=', $date);
                 },
                 'items.histories_latest' => function ($query) use ($date) {
-                    $query->whereYear('created_at', $date->year);
-                    $query->whereMonth('created_at', $date->month);
+                    $query->whereDate('created_at', '<=', $date);
                 },
                 'items' => function (HasMany $query) use ($last_date, $date) {
                     $query->with(['histories' => function (MorphMany $query) use ($date) {
-                        $query->whereYear('created_at', $date->year);
-                        $query->whereMonth('created_at', $date->month);
+                        $query->whereDate('created_at', '<=', $date);
                     }]);
                     $query->where(function (Builder $query) use ($last_date) {
                         $query->whereNull('deleted_at');
