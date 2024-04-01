@@ -256,6 +256,7 @@ class EmployeeController extends Controller
         if ($request['part'] && $request['part'] == 'part') $users = $users->where('full_time', 0);
 
         if ($request['search']) {
+            dd($request['search']);
             $users = $users
                 ->where(function ($query) use ($request) {
                     $query->where('users.email', 'like', '%' . $request['search'] . '%')
