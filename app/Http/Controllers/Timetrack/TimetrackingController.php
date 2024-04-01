@@ -100,16 +100,34 @@ class TimetrackingController extends Controller
         ////////////
         $active_tab = 1;
 
+        $userAbilities = [
+            auth()->user()->can('users_view'),
+            auth()->user()->can('positions_view'),
+            auth()->user()->can('groups_view'),
+            auth()->user()->can('fines_view'),
+            auth()->user()->can('notifications_view'),
+            auth()->user()->can('permissions_view'),
+            auth()->user()->can('checklists_view'),
+            auth()->user()->can('taxes_view'),
+            auth()->user()->can('shifts_view'),
+        ];
+
         if (isset($_GET['tab'])) {
             $active_tab = (int)$_GET['tab'];
 
             if ($active_tab == 1 && !auth()->user()->can('users_view')) return redirect('/');
-            if ($active_tab == 2 && !auth()->user()->can('positions_view')) return redirect('/');
+            if ($active_tab == 2
+                && !auth()->user()->can('positions_view')
+                && auth()->user()->can('taxes_view')
+                && auth()->user()->can('shifts_view')
+                && auth()->user()->can('groups_view')
+            ) return redirect('/');
             if ($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
             if ($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
             if ($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
             if ($active_tab == 6 && !auth()->user()->can('permissions_view')) return redirect('/');
             if ($active_tab == 7 && !auth()->user()->can('checklists_view')) return redirect('/');
+
         } else {
             if (!(auth()->user()->can('settings_view') ||
                 auth()->user()->can('users_view') ||

@@ -166,7 +166,7 @@ class EmployeeController extends Controller
                                 });
                         });
                     });
-                    $query->orwhere('required_signed_docs', false);
+//                    $query->orwhere('required_signed_docs', false);
                 })
                 ->where('is_trainee', 0)
                 ->where(function ($query) {
