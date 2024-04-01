@@ -151,13 +151,13 @@ class EmployeeController extends Controller
                                 ->from('group_user AS gu')
                                 ->join('profile_groups AS g', 'gu.group_id', '=', 'g.id')
                                 ->leftJoin('user_signed_file AS usf', 'gu.user_id', '=', 'usf.user_id')
-                                ->leftJoin('files AS f', 'usf.file_id', '=', 'f.file_id')
+                                ->leftJoin('files AS f', 'usf.file_id', '=', 'f.id')
                                 ->where('gu.user_id', '=', DB::raw('users.id'))
                                 ->where('gu.status', 'active')
                                 ->where('f.fileable_id', '=', DB::raw('g.id'))
                                 ->where('f.fileable_type', '=', 'App\ProfileGroup')
                                 ->groupBy('gu.user_id', 'g.id')
-                                ->havingRaw('COUNT(DISTINCT f.file_id) > COUNT(DISTINCT usf.file_id)');
+                                ->havingRaw('COUNT(DISTINCT f.id) > COUNT(DISTINCT usf.file_id)');
                         });
                     });
                     $query->orwhere('required_signed_docs', false);
