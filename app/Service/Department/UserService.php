@@ -607,8 +607,8 @@ class UserService
                 ['user_id', $userId],
                 ['status', 'active']
             ])
-            ->whereNull('to')->exists();
-        dd($exist);
+            ->whereNull('to')
+            ->exists();
         try {
             if ($action == 'add' && !$exist) {
                 $group->users()->attach($userId, [
