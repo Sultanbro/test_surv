@@ -84,13 +84,26 @@ class EmployeeController extends Controller
         $groups = ProfileGroup::query()
             ->where('active', 1)
             ->get();
+        $usersBaseQuery = User::query()
+            ->when($request['search'], function (Builder $query) use ($request) {
+                $query->where(function (Builder $query) use ($request) {
+                    $query->where('users.email', 'like', '%' . $request['search'] . '%')
+                        ->orWhere('users.id', $request['search'])
+                        ->orWhere('users.phone', 'like', '%' . $request['search'] . '%')
+                        ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . $request['search'] . '%')
+                        ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . $request['search'] . '%')
+                        ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
+                });
+            });
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = $usersBaseQuery
+                    ->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = $usersBaseQuery
+                    ->withTrashed();
             }
             $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -103,10 +116,12 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = $usersBaseQuery
+                    ->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = $usersBaseQuery
+                    ->withTrashed();
             }
             $users
                 ->whereNotNull('users.deleted_at')
@@ -122,7 +137,6 @@ class EmployeeController extends Controller
                 $q->where('status', 'fired')->where('group_id', $request['group_id']);
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
-
             $users_1 = User::query()
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -139,7 +153,7 @@ class EmployeeController extends Controller
 
             $users_1 = array_diff($users_1, array_unique($downloads));
 
-            $users = User::query()
+            $users = $usersBaseQuery
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
@@ -180,10 +194,10 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
-                $users = User::query()
+                $users = $usersBaseQuery
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::query();
+                $users = $usersBaseQuery;
             }
             $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -200,10 +214,10 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
-                $users = User::withTrashed()
+                $users = $usersBaseQuery->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::withTrashed();
+                $users = $usersBaseQuery->withTrashed();
             }
             $users
                 ->join('users_restored as ur', function ($join) {
@@ -224,10 +238,10 @@ class EmployeeController extends Controller
             });
         } else {
             if ($request['job'] != 0) {
-                $users = User::query()
+                $users = $usersBaseQuery
                     ->where('position_id', $request['job']);
             } else {
-                $users = User::query();
+                $users = $usersBaseQuery;
             }
             $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -254,18 +268,6 @@ class EmployeeController extends Controller
         if ($request['type']) $users->where('user_type', $request['type']);
         if ($request['part'] && $request['part'] == 'full') $users->where('full_time', 1);
         if ($request['part'] && $request['part'] == 'part') $users->where('full_time', 0);
-
-        if ($request['search']) {
-            $users->where(function (Builder $query) use ($request) {
-                $query->where('users.email', 'like', '%' . $request['search'] . '%')
-                    ->orWhere('users.id', $request['search'])
-                    ->orWhere('users.phone', 'like', '%' . $request['search'] . '%')
-                    ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . $request['search'] . '%')
-                    ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . $request['search'] . '%')
-                    ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
-            });
-            dd($users->toSql());
-        }
 
         $columns = [
             'users.id',
@@ -309,7 +311,7 @@ class EmployeeController extends Controller
         $full_time = clone $users;
         $part_time_count = $part_time->distinct('users.id')->where('full_time', 0)->count();
         $full_time_count = $full_time->distinct('users.id')->where('full_time', 1)->count();
-        $users = $users->select($columns);
+        $users->select($columns);
 
         $sortDirection = 'asc';
         if ($request['sortDirection'] && $request['sortDirection'] == 'desc') $sortDirection = 'desc';
@@ -358,7 +360,6 @@ class EmployeeController extends Controller
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
             }
         }
-
 
         ////////////////////////
 
