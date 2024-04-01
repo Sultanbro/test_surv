@@ -265,6 +265,7 @@ class EmployeeController extends Controller
         if ($request['part'] && $request['part'] == 'full') $users->where('full_time', 1);
         if ($request['part'] && $request['part'] == 'part') $users->where('full_time', 0);
 
+        dd($users->get());
         $columns = [
             'users.id',
             'users.email',
