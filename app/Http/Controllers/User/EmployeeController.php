@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\AdaptationTalk;
 use App\Api\BitrixOld as Bitrix;
+use App\Classes\Helpers\Phone;
 use App\Downloads;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
@@ -266,7 +267,7 @@ class EmployeeController extends Controller
                 ->where(function ($query) use ($request) {
                     $query->where('users.email', 'like', '%' . $request['search'] . '%')
                         ->orWhere('users.id', $request['search'])
-                        ->orWhere('users.phone', 'like', '%' . $request['search'] . '%')
+                        ->orWhere('users.phone', 'like', '%' . Phone::normalize($request['search']) . '%')
                         ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . $request['search'] . '%')
                         ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . $request['search'] . '%')
                         ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
