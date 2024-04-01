@@ -2110,6 +2110,7 @@ class KpiStatisticService
                     $query->whereMonth('created_at', $this->from->month);
                 },
                 'items' => function (HasMany $query) {
+                dd($query->get());
                     $query->with(['histories' => function (MorphMany $query) {
                         $query->whereYear('created_at', $this->from);
                         $query->whereMonth('created_at', $this->from);
