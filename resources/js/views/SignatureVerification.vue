@@ -144,11 +144,13 @@ export default {
 			}
 			catch (error) {
 				this.$onError({error})
+				this.buttonPressed = false
 			}
 			/* eslint-enable camelcase */
 		},
 		onSignAgain(){
 			this.buttonPressed = false
+			this.userCode = ''
 			++this.signCount
 			this.onSign()
 		},
@@ -162,6 +164,7 @@ export default {
 				if(this.documents[this.activeDoc]){
 					this.signCount = 0
 					this.buttonPressed = false
+					this.userCode = ''
 				}
 				else{
 					this.isFinish = true
@@ -173,6 +176,10 @@ export default {
 			catch (error) {
 				this.$onError({error})
 			}
+		},
+		onCancel(){
+			this.userCode = ''
+			this.buttonPressed = false
 		},
 		getImage(file){
 			return new Promise((resolve) => {
@@ -427,6 +434,7 @@ export default {
 		<b-modal
 			v-model="isVerifyModal"
 			@ok="onVerify"
+			@hidden="onCancel"
 		>
 			<div class="mb-4">
 				На Ваш основной номер было отправлено смс с кодом подтверждения
