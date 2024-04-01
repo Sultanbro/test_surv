@@ -2102,17 +2102,14 @@ class KpiStatisticService
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
-                    $query->whereYear('created_at', $this->from->year);
-                    $query->whereMonth('created_at', $this->from->month);
+                    $query->whereDate('created_at', '<=', $this->from);
                 },
                 'items.histories_latest' => function ($query) {
-                    $query->whereYear('created_at', $this->from->year);
-                    $query->whereMonth('created_at', $this->from->month);
+                    $query->whereDate('created_at', '<=', $this->from);
                 },
                 'items' => function (HasMany $query) {
                     $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereYear('created_at', $this->from);
-                        $query->whereMonth('created_at', $this->from);
+                        $query->whereDate('created_at', '<=', $this->from);
                     }]);
                     $query->where(function (Builder $query) {
                         $query->whereNull('deleted_at');
