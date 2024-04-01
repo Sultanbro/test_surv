@@ -32,7 +32,6 @@ class PayByProdamusTest extends TenantTestCase
         $factory = new PaymentFactory;
         $provider = $factory->currencyProvider('rub');
         $response = $provider->pay($data, $user);
-
         $this->assertDatabaseHas('tariff_payment', [
             'payment_id' => $response->getPaymentId()
         ], 'mysql');

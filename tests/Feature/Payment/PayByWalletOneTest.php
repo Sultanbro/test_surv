@@ -34,7 +34,6 @@ class PayByWalletOneTest extends TenantTestCase
         $factory = new PaymentFactory;
         $provider = $factory->currencyProvider('kzt');
         $response = $provider->pay($data, $user);
-
         $this->assertDatabaseHas('tariff_payment', [
             'payment_id' => $response->getPaymentId()
         ], 'mysql');

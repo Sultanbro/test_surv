@@ -40,6 +40,7 @@ class PaymentServiceProvider extends ServiceProvider
                 config('payment.wallet1.merchant_id'),
                 config('payment.wallet1.success_url'),
                 config('payment.wallet1.failed_url')
+            // https://{tenant}.jobtron.org/pricing#success
             );
             return new WalletOne($connector);
         });
