@@ -84,7 +84,7 @@ class EmployeeController extends Controller
         $groups = ProfileGroup::query()
             ->where('active', 1)
             ->get();
-        $usersBaseQuery = User::query()
+        $users = User::query()
             ->when($request['search'], function (Builder $query) use ($request) {
                 $query->where(function (Builder $query) use ($request) {
                     $query->where('users.email', 'like', '%' . $request['search'] . '%')
@@ -95,14 +95,14 @@ class EmployeeController extends Controller
                         ->orWhere('working_country', 'like', '%' . $request['search'] . '%');
                 });
             });
-        dd($usersBaseQuery->get());
+
         if (isset($request['filter']) && $request['filter'] == 'all') {
             if ($request['job'] != 0) {
-                $users = $usersBaseQuery
+                $users
                     ->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = $usersBaseQuery
+                $users
                     ->withTrashed();
             }
             $users
@@ -116,11 +116,11 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
-                $users = $usersBaseQuery
+                $users
                     ->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = $usersBaseQuery
+                $users
                     ->withTrashed();
             }
             $users
@@ -153,7 +153,7 @@ class EmployeeController extends Controller
 
             $users_1 = array_diff($users_1, array_unique($downloads));
 
-            $users = $usersBaseQuery
+            $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->leftJoin('bitrix_leads as bl', 'users.id', '=', 'bl.user_id')
                 ->leftJoin('position', 'users.position_id', '=', 'position.id')
@@ -194,10 +194,8 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
-                $users = $usersBaseQuery
+                $users
                     ->where('position_id', $request['job']);
-            } else {
-                $users = $usersBaseQuery;
             }
             $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -214,10 +212,10 @@ class EmployeeController extends Controller
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
-                $users = $usersBaseQuery->withTrashed()
+                $users->withTrashed()
                     ->where('position_id', $request['job']);
             } else {
-                $users = $usersBaseQuery->withTrashed();
+                $users->withTrashed();
             }
             $users
                 ->join('users_restored as ur', function ($join) {
@@ -238,10 +236,8 @@ class EmployeeController extends Controller
             });
         } else {
             if ($request['job'] != 0) {
-                $users = $usersBaseQuery
+                $users
                     ->where('position_id', $request['job']);
-            } else {
-                $users = $usersBaseQuery;
             }
             $users
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
