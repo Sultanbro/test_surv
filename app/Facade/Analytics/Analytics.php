@@ -24,6 +24,7 @@ use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -117,6 +118,9 @@ final class Analytics
         return '[' . $column['id'] . ':' . $row['id'] . ']';
     }
 
+    /**
+     * @throws Exception
+     */
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
@@ -126,6 +130,7 @@ final class Analytics
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
         $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
+        dd($fot);
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
 

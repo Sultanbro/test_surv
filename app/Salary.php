@@ -376,12 +376,13 @@ class Salary extends Model
         return $text;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function getSalaryForDays(array $data): array
     {
         $date = Carbon::parse($data['date']);
-        $last_day = Carbon::parse($data['date'])->endOfMonth()->day;
         $group_id = $data['group_id'];
-        $group = ProfileGroup::query()->findOrFail($group_id);
         $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 
         $salaries = [];

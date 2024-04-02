@@ -82,17 +82,18 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
         foreach ($this->monthDifference() as $diffDay) {
-            foreach ($lastColumnStats as $key => $columnStat) {
+            foreach ($lastColumnStats as $columnStat) {
                 AnalyticStat::query()->updateOrCreate(
                     [
                         'group_id' => $columnStat->group_id,
                         'date' => $currentDate,
-                        'show_value' => $key == 0 ? $diffDay : ''],
-                    [
+                        'show_value' => $diffDay,
                         'row_id' => $columnStat->row_id,
                         'column_id' => ++$columnStat->column_id,
+                        'activity_id' => $columnStat->value,
                         'value' => '',
-                        'activity_id' => null,
+                    ],
+                    [
                         'editable' => $columnStat->editable,
                         'class' => $columnStat->class,
                         'type' => $columnStat->type,
@@ -132,14 +133,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         /**
          * depend rows
          */
-        $rows = AnalyticRow::query()
-            ->where('date', $currentDate)
+        $rowsWithDependRows = AnalyticRow::query()
+            ->whereDate('date', $currentDate)
             ->where('group_id', $group_id)
             ->whereNotNull('depend_id')
             ->orderBy('order', 'desc')
             ->get();
 
-        foreach ($rows as $row) {
+        foreach ($rowsWithDependRows as $row) {
             $row->depend_id = in_array($row->id, $newRows)
             && array_key_exists($row->depend_id, $newRows)
                 ? $newRows[$row->depend_id]
@@ -156,35 +157,34 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $currentDate = $this->currentMonth();
 
         DB::table('analytic_columns')
-            ->where('date', $currentDate)
+            ->whereDate('date', $currentDate)
             ->where('group_id', $group_id)
             ->delete();
 
         /**
+         * @var Collection<AnalyticColumn> $prevMonthCols
          * Получаем данные за прошлый месяц.
          */
         $prevMonthCols = AnalyticColumn::query()
-            ->where([
-                'date' => $prevDate,
-                'group_id' => $group_id
-            ])
+            ->whereDate('date', $prevDate)
+            ->whereDate('group_id', $group_id)
             ->whereIn('name', $this->getMonthlyTemplate($currentDate))
             ->orderBy('order')
             ->get();
 
         $newColumns = [];
         $lastOrder = 0;
-        foreach ($prevMonthCols as $col) {
-            $newColumn = $col->replicate();
+        foreach ($prevMonthCols as $prevColumns) {
+            $newColumn = $prevColumns->replicate();
             $newColumn->date = $currentDate;
             $newColumn->save();
 
-            $lastOrder = $col->order;
+            $lastOrder = $prevColumns->order;
 
             /**
              * Сохраняем ID новой колонки в массиве.
              */
-            $newColumns[$col->id] = $newColumn->getKey();
+            $newColumns[$prevColumns->id] = $newColumn->getKey();
         }
 
         foreach ($this->monthDifference() as $diffDay) {
@@ -220,7 +220,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'sum',
                 'avg',
             ])
-            ->get('id')
             ->pluck('id')
             ->toArray();
     }
@@ -325,11 +324,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
          */
         $nameColumn = ['name', 'plan', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
-
+        $daysColumns = [];
         for ($column = 1; $column <= $daysInMonth; $column++) {
-            $nameColumn[] = $column;
+            $daysColumns[] = $column;
         }
 
-        return $nameColumn;
+        return array_merge($nameColumn, $daysColumns);
     }
 }
