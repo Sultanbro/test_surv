@@ -573,37 +573,39 @@ class TopValue extends Model
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
             $row['archived_date'] = $group->archived_date;
-//            for ($i = 1; $i <= 12; $i++) {
-//                $xdate = $date->month($i)
-//                    ->format('Y-m-d');
-//
-//                $salary = $salaries
-//                    ->where('group_id', $group->id)
-//                    ->where('date', $xdate)
-//                    ->sum('total');
-//
-//                $edited_proceed = $edited_proceeds->where('date', $xdate)
-//                    ->where('group_id', $group->id)
-//                    ->first();
-//
-//                if ($edited_proceed) {
-//                    $proceeds = (int)$edited_proceed->value;
-//                    $row['ed' . $i] = true;
-//                } else {
-//                    $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
-//                    $row['ed' . $i] = false;
-//                }
-//
-//                $rentability = $proceeds > 0 ? ($proceeds - $salary) / $proceeds : 0;
-//                if ($rentability > 0) $r_counts[$i]++;
-//                $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
-//                $row['c' . $i] = $salary > 0 ? round($salary) : '';
-//                $row['r' . $i] = $rentability > 0 ? round($rentability, 1) . '%' : '';
-//                $row['rc' . $i] = $rentability > 0 ? round($rentability, 1) : -1;
-//                $total_row['l' . $i] += $proceeds;
-//                $total_row['c' . $i] += $salary;
-//                $total_row['r' . $i] += $rentability;
-//            }
+
+            for ($i = 1; $i <= 12; $i++) {
+                $xdate = $date->month($i)
+                    ->format('Y-m-d');
+
+                $salary = $salaries
+                    ->where('group_id', $group->id)
+                    ->where('date', $xdate)
+                    ->sum('total');
+
+                $edited_proceed = $edited_proceeds->where('date', $xdate)
+                    ->where('group_id', $group->id)
+                    ->first();
+
+                if ($edited_proceed) {
+                    $proceeds = (int)$edited_proceed->value;
+                    $row['ed' . $i] = true;
+                } else {
+                    $proceeds = 0;
+//                        AnalyticStat::getProceedsSum($group->id, $xdate);
+                    $row['ed' . $i] = false;
+                }
+
+                $rentability = $proceeds > 0 ? ($proceeds - $salary) / $proceeds : 0;
+                if ($rentability > 0) $r_counts[$i]++;
+                $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
+                $row['c' . $i] = $salary > 0 ? round($salary) : '';
+                $row['r' . $i] = $rentability > 0 ? round($rentability, 1) . '%' : '';
+                $row['rc' . $i] = $rentability > 0 ? round($rentability, 1) : -1;
+                $total_row['l' . $i] += $proceeds;
+                $total_row['c' . $i] += $salary;
+                $total_row['r' . $i] += $rentability;
+            }
 
             $table[] = $row;
         }
