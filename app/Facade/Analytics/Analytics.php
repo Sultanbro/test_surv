@@ -135,7 +135,6 @@ final class Analytics
 
         $table = [];
 
-        dd($columns->pluck('name'));
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -213,6 +212,7 @@ final class Analytics
 
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
+                        dd_if($column->name == '31',$val);
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = $val;
