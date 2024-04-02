@@ -143,7 +143,7 @@ export default {
 			currencyTranslate: {
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'dollar',
+				'$': 'usd',
 			},
 			promo: '',
 			promoData: {},
@@ -196,24 +196,49 @@ export default {
 		},
 		async submitPayment(){
 			if(!this.selectedRate) return
-			if(this.currencyCode) return this.submitRUB()
+			if(this.currency !== '₽') return this.submitWalletOne()
 			try{
 				/* eslint-disable camelcase */
-				const url = await this.postPaymentData({
+				const { data } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
 					auto_payment: this.autoPayment
 				})
 				/* eslint-enable camelcase */
-				window.location.assign(url)
+				window.location.assign(data.url || data.redirect_url)
 			}
 			catch(error){
 				console.error('submitPayment', error)
 				this.$toast.error('Ошибка при попытке оплаты')
 			}
 		},
-		async submitRUB(){},
+		async submitWalletOne(){
+			try{
+				/* eslint-disable camelcase */
+				const { data } = await this.postPaymentData({
+					currency: this.currencyCode,
+					tariff_id: this.selectedRate.id,
+					extra_users_limit: this.users > 0 ? this.users : 0,
+					auto_payment: this.autoPayment
+				})
+				const form = document.createElement('form')
+				form.method = 'post'
+				form.action = data.url || data.redirect_url
+				Object.keys(data.params).forEach(key => {
+					const inp = document.createElement('input')
+					inp.name = 'hidden'
+					inp.value = data.params[key]
+					form.appendChild(inp)
+				})
+				document.body.appendChild(form)
+				form.submit()
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
+		},
 		async activatePromo(){
 			this.isPromoLoading = true
 			this.promoData = await this.fetchPromo(this.promo)
