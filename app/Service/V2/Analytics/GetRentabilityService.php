@@ -41,10 +41,10 @@ class GetRentabilityService
             ->get();
         return [
             'table' => [],
-//                TopValue::getPivotRentability(
-//                $dto->year,
-//                $dto->month
-//            ),
+                TopValue::getPivotRentability(
+                $dto->year,
+                $dto->month
+            ),
             'speedometers' => $gauges,
             'static_rentability' => TopValue::getRentabilityGauges($date->format("Y-m-d"))
         ];
