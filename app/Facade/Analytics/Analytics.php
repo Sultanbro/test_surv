@@ -130,17 +130,16 @@ final class Analytics
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
         $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
-        dd($fot);
         $keys = $this->getKeys($rows, $columns);
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
 
+        dd($columns->pluck('name'));
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
-
             foreach ($columns as $columnIndex => $column) {
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
@@ -235,8 +234,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
