@@ -51,7 +51,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->where('group_id', $group_id)
             ->get();
 
-        $lastColumnId = 0;
+        $lastPrevColId = 0;
 
         foreach ($prevMonthStats as $statistic) {
 
@@ -61,7 +61,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
-            $lastColumnId = $newCols[$statistic->column_id];
+            $lastPrevColId = $newCols[$statistic->column_id];
 
             $newStat = $statistic->replicate();
             $newStat->row_id = $newRows[$statistic->row_id];
@@ -72,8 +72,9 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newStat->save();
         }
 
+        /** @var Collection<AnalyticStat> $lastColumnStats */
         $lastColumnStats = AnalyticStat::query()
-            ->where('column_id', $lastColumnId)
+            ->where('column_id', $lastPrevColId)
             ->where('group_id', $group_id)
             ->where('date', $currentDate)
             ->get();
@@ -82,18 +83,26 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
         foreach ($this->monthDifference() as $diffDay) {
+            $difColumn = AnalyticColumn::query()
+                ->where([
+                    'group_id' => $group_id,
+                    'name' => (string)$diffDay,
+                    'date' => $currentDate
+                ])
+                ->first();
+            /** @var Collection<AnalyticStat> $lastColumnStats */
             foreach ($lastColumnStats as $columnStat) {
                 AnalyticStat::query()->updateOrCreate(
                     [
+                        'column_id' => $difColumn?->id ?? ++$columnStat->column_id,
+                        'row_id' => $columnStat->row_id,
                         'group_id' => $columnStat->group_id,
                         'date' => $currentDate,
-                        'show_value' => $diffDay,
-                        'row_id' => $columnStat->row_id,
-                        'column_id' => ++$columnStat->column_id,
-                        'activity_id' => $columnStat->value,
-                        'value' => '',
                     ],
                     [
+                        'value' => '',
+                        'activity_id' => $columnStat->activity_id,
+                        'show_value' => $diffDay,
                         'editable' => $columnStat->editable,
                         'class' => $columnStat->class,
                         'type' => $columnStat->type,
