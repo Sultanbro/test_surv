@@ -139,7 +139,7 @@ final class Analytics
             foreach ($columns as $columnIndex => $column) {
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -230,8 +230,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {
