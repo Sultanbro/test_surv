@@ -671,18 +671,6 @@ class AnalyticsController extends Controller
 
         foreach ($columns as $column) {
 
-            $fields = [
-                'group_id' => $formula_row->group_id,
-                'date' => $date->format("Y-m-d"),
-                'row_id' => $formula_row->id,
-                'column_id' => $column->id,
-                'value' => 0,
-                'show_value' => 0,
-                'type' => $type,
-                'class' => 'text-center',
-                'editable' => 1,
-            ];
-
             AnalyticStat::query()->updateOrCreate([
                 'group_id' => $formula_row->group_id,
                 'date' => $date->format("Y-m-d"),

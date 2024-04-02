@@ -102,7 +102,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                     [
                         'value' => '',
                         'activity_id' => $columnStat->activity_id,
-                        'show_value' => $diffDay,
+                        'show_value' => '',
                         'editable' => $columnStat->editable,
                         'class' => $columnStat->class,
                         'type' => $columnStat->type,

@@ -51,7 +51,7 @@ class TopController extends Controller
         $cacheKey .= 'getRentability';
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: Cache::remember($cacheKey, 24 * 60 * 60, fn() => $rentabilityService->handle($request->toDto()))
+            data: $rentabilityService->handle($request->toDto())
         );
     }
 
