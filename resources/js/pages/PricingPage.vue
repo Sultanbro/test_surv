@@ -4,6 +4,7 @@
 		<PricingCurrent />
 		<PricingRates
 			:currency="currency"
+			:selected-rate="selectedRate"
 			@update="updateRate"
 		/>
 
@@ -82,7 +83,10 @@
 				</JobtronButton>
 			</div>
 			<hr class="my-4">
-			<div class="PricingPage-promo mt-4">
+			<div
+				v-if="isBP"
+				class="PricingPage-promo mt-4"
+			>
 				<div
 					v-if="promoData.code"
 					class="PricingPage-promo-active"
@@ -148,6 +152,7 @@ export default {
 			promo: '',
 			promoData: {},
 			isPromoLoading: false,
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		}
 	},
 	computed: {
