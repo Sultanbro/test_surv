@@ -24,6 +24,7 @@ use App\Timetracking;
 use App\Traits\AnalyticTrait;
 use App\WorkingDay;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -117,6 +118,9 @@ final class Analytics
         return '[' . $column['id'] . ':' . $row['id'] . ']';
     }
 
+    /**
+     * @throws Exception
+     */
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
@@ -135,11 +139,10 @@ final class Analytics
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
-
             foreach ($columns as $columnIndex => $column) {
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 2) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -230,8 +233,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
 
                     if ($column->name == 'sum' && $rowIndex > 3) {

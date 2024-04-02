@@ -1,5 +1,11 @@
 <template>
-	<div class="PricingRates mt-4">
+	<div
+		class="PricingRates mt-4"
+		:class="[
+			(selectedRate ? 'PricingRates_' + selectedRate.kind : ''),
+			(selectedRate ? 'PricingRates_' + selectedRate.validity : ''),
+		]"
+	>
 		<template v-if="items && items.length">
 			<h3 class="PricingRates-title">
 				Сменить тариф:
@@ -85,6 +91,9 @@
 						v-for="item in tarifs"
 						:key="'monthly' + item.name"
 						class="PricingRates-col PricingRates-action text-center"
+						:class="{
+							'PricingRates-selected': item.monthly.id === (selectedRate ? selectedRate.id : 0),
+						}"
 						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 					>
 						{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
@@ -98,6 +107,9 @@
 						v-for="item in tarifs"
 						:key="'annual' + item.name"
 						class="PricingRates-col PricingRates-action text-center"
+						:class="{
+							'PricingRates-selected': item.annual.id === (selectedRate ? selectedRate.id : 0),
+						}"
 						@click="$emit('update', {rate: item.annual, period: 'annual'})"
 					>
 						{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
@@ -130,10 +142,14 @@
 <script>
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
-import { useSettingsStore } from '@/stores/Settings'
 import {
 	ChatIconMassReaded,
 } from '@icons'
+
+// import {
+// 	fetchSettings,
+// 	updateSettings,
+// } from '@/stores/api.js'
 
 export default {
 	name: 'PricingRates',
@@ -144,7 +160,11 @@ export default {
 		currency: {
 			type: String,
 			default: '₽'
-		}
+		},
+		selectedRate: {
+			type: Object,
+			default: null,
+		},
 	},
 	data(){
 		return {
@@ -213,21 +233,23 @@ export default {
 			if(this.proUsed) this.useProDemo()
 		}
 	},
-	async created(){
+	created(){
 		this.fetchPricing()
-		const {settings} = await this.fetchSettings('pricing_pro_used')
-		this.proUsed = settings.custom_pricing_pro_used === '1'
+		this.fetchDemo()
 	},
 	methods: {
 		...mapActions(usePricingStore, ['fetchPricing']),
-		...mapActions(useSettingsStore, ['fetchSettings', 'updateSettings']),
 		useProDemo(){
 			this.$emit('use-pro')
-			// this.updateSettings({
+			// updateSettings({
 			// 	type: 'pricing_pro_used',
 			// 	custom_pricing_pro_used: 1
 			// })
-		}
+		},
+		async fetchDemo(){
+			// const {settings} = await fetchSettings('pricing_pro_used')
+			// this.proUsed = settings.custom_pricing_pro_used === '1'
+		},
 	}
 }
 </script>
@@ -289,5 +311,63 @@ export default {
 			margin: 0;
 		}
 	}
+	&-selected{
+		background-color: darken(#3361FF, 5%) !important;
+		font-weight: 700;
+	}
+	&_free{
+		.PricingRates{
+			&-header:nth-child(2),
+			&-col:nth-child(2){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_base{
+		.PricingRates{
+			&-header:nth-child(3),
+			&-col:nth-child(3){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_standard{
+		.PricingRates{
+			&-header:nth-child(4),
+			&-col:nth-child(4){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_pro{
+		.PricingRates{
+			&-header:nth-child(5),
+			&-col:nth-child(5){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_monthly{}
+	&_annual{}
 }
 </style>
