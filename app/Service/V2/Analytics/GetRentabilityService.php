@@ -23,27 +23,15 @@ class GetRentabilityService
      */
     public function handle(GetRentabilityDto $dto): array
     {
-        $date = Carbon::create($dto->year, $dto->month);
-        $gauges = TopValue::query()
-            ->whereHas('groups', function (Builder $group) use ($date) {
-                $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
-                    ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
-                    ->where(function (Builder $q) use ($date) {
-                        $q->where(fn($q) => $q
-                            ->whereNull('archived_date')
-                            ->where('active', ProfileGroup::IS_ACTIVE));
-                        $q->orWhere(fn($q) => $q
-                            ->whereDate('archived_date', '>=', $date->format("Y-m-d"))
-                        );
-                    });
-            })
-            ->where('type', TopValue::RENTABILITY)
-            ->get();
+        $gauges = ProfileGroup::withRentability($dto->year, $dto->month)
+            ->map(fn($group) => TopValue::query()->where('group_id', $group->id)->where('type', 2)->get())
+            ->filter(fn($group) => $group->count() > 0)->toArray();
+        $date = DateHelper::firstOfMonth($dto->year, $dto->month);
+
         return [
-            'table' => [],
-            TopValue::getPivotRentability($dto->year, $dto->month),
+            'table' => TopValue::getPivotRentability($dto->year, $dto->month),
             'speedometers' => $gauges,
-            'static_rentability' => TopValue::getRentabilityGauges($date->format("Y-m-d"))
+            'static_rentability' => TopValue::getRentabilityGauges($date)
         ];
     }
 }
