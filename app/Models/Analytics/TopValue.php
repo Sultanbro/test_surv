@@ -563,7 +563,6 @@ class TopValue extends Model
             ->get();
 
         $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
-        dd($allProceeds);
         foreach ($groups as $group) {
             $row = [];
 
@@ -593,7 +592,7 @@ class TopValue extends Model
                     $proceeds = (int)$edited_proceed->value;
                     $row['ed' . $i] = true;
                 } else {
-                    $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
+                    $proceeds = $allProceeds[$group->id];
                     $row['ed' . $i] = false;
                 }
 
