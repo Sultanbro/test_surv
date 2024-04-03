@@ -139,7 +139,7 @@ class AnalyticsController extends Controller
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
             'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
             'table' => AnalyticStat::form($group_id, $date->format('Y-m-d')),
-            'columns' => AnalyticStat::columns($group_id, $date->format('Y-m-d')),
+            'columns' => AnalyticStat::getColumns($group_id, $date->format('Y-m-d')),
             'utility' => $util,
             'totals' => [],
             'groups' => $groups,

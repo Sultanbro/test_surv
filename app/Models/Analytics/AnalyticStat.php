@@ -69,6 +69,24 @@ class AnalyticStat extends Model
     const INHOUSE = 'inhouse'; // additional inhouse minutes
     const SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
 
+    public function columns(): BelongsTo
+    {
+        return $this->belongsTo(
+            AnalyticColumn::class,
+            'column_id',
+            'id'
+        );
+    }
+
+    public function rows(): BelongsTo
+    {
+        return $this->belongsTo(
+            AnalyticRow::class,
+            'row_id',
+            'id'
+        );
+    }
+
     /**
      * Form pivot table to vue
      */
@@ -314,7 +332,7 @@ class AnalyticStat extends Model
     /**
      * Columns array for pivot table
      */
-    public static function columns($group_id, $date): array
+    public static function getColumns($group_id, $date): array
     {
         $columns = [];
 
