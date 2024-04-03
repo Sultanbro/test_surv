@@ -583,8 +583,8 @@ class TopValue extends Model
                 $xdate = $date->month($i)->format('Y-m-d');
 
                 // Fetch salary and edited proceed data from pre-fetched arrays
-                $salary = array_key_exists($group->id, $salariesData) ? $salariesData[$group->id][$xdate]->sum('total') ?? 0 : 0;
-                $edited_proceed = array_key_exists($group->id, $editedProceedsData) ? $editedProceedsData[$group->id][$xdate]->first() ?? null : null;
+                $salary = array_key_exists($group->id, $salariesData->toArray()) ? $salariesData[$group->id][$xdate]->sum('total') ?? 0 : 0;
+                $edited_proceed = array_key_exists($group->id, $editedProceedsData->toArray()) ? $editedProceedsData[$group->id][$xdate]->first() ?? null : null;
 
                 if ($edited_proceed) {
                     $proceeds = (int)$edited_proceed->value;
