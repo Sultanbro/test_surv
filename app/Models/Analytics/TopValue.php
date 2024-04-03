@@ -562,6 +562,10 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
+        point();
+        $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
+        point($allProceeds);
+
         foreach ($groups as $group) {
             $row = [];
 
@@ -638,9 +642,6 @@ class TopValue extends Model
         $edited_proceeds = TopEditedValue::query()
             ->whereYear('date', $year)
             ->get();
-        point();
-        $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $xdate);
-        point($allProceeds);
 
         foreach ($groups as $group) {
             $row = [];

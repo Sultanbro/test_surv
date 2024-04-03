@@ -885,7 +885,7 @@ class AnalyticStat extends Model
             ->get();
     }
 
-    public static function getProceedsSumForListOfGroups(array $groups, string $date, array $only_days = []): array
+    public static function getProceedsSumForListOfGroups(array $groups, Carbon $date, array $only_days = []): array
     {
         $values = [];
 
@@ -898,7 +898,7 @@ class AnalyticStat extends Model
         $stats = self::query()
             ->withWhereHas('columns', fn($query) => $query->whereIn('name', $days))
             ->withWhereHas('rows', fn($query) => $query->where('name', 'second'))
-            ->where('date', $date)
+            ->whereDate('date', $date)
             ->whereIn('group_id', $groups)
             ->get()
             ->keyBy('group_id');
