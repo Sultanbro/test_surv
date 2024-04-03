@@ -920,7 +920,7 @@ class AnalyticStat extends Model
             ->whereIn('group_id', $groups)
             ->get()
             ->keyBy('group_id');
-
+        dd($stats);
         $values = [];
         for ($i = 1; $i <= Carbon::parse($date)->daysInMonth; $i++) {
             $values[$i] = 0;

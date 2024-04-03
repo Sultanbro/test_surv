@@ -562,9 +562,7 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
-        point();
         $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
-        point($allProceeds);
 
         foreach ($groups as $group) {
             $row = [];
