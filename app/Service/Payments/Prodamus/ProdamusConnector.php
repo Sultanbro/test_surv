@@ -27,23 +27,23 @@ class ProdamusConnector implements PaymentConnector
      */
     public function pay(PaymentDTO $data, CentralUser $user): ConfirmationResponse
     {
-        try {
-            $this->buildRequest($data, $user);
-            $response = $this->client->submit();
-            // Check the status of the payment
-            if (!$response->isSuccess()) {
-                throw new Exception('Payment failed');
-            }
-
-            return new ConfirmationResponse(
-                $response->getRedirectUrl(),
-                $this->client->getTrackingId(),
-                $response->isSuccess()
-            );
-
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+//        try {
+        $this->buildRequest($data, $user);
+        $response = $this->client->submit();
+        // Check the status of the payment
+        if (!$response->isSuccess()) {
+            throw new Exception('Payment failed');
         }
+
+        return new ConfirmationResponse(
+            $response->getRedirectUrl(),
+            $this->client->getTrackingId(),
+            $response->isSuccess()
+        );
+
+//        } catch (Exception $e) {
+//            throw new Exception($e->getMessage());
+//        }
     }
 
     /**
