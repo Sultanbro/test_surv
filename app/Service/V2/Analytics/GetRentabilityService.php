@@ -39,6 +39,7 @@ class GetRentabilityService
             })
             ->where('type', TopValue::RENTABILITY)
             ->get();
+        dd(TopValue::getRentabilityGauges($date->format("Y-m-d")));
         return [
             'table' => [],
                 TopValue::getPivotRentability(
