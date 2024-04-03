@@ -592,7 +592,7 @@ class TopValue extends Model
                     $proceeds = (int)$edited_proceed->value;
                     $row['ed' . $i] = true;
                 } else {
-                    $proceeds = $allProceeds[$group->id];
+                    $proceeds = $allProceeds[$group->id] ?? 0;
                     $row['ed' . $i] = false;
                 }
 

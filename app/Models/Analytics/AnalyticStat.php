@@ -924,7 +924,6 @@ class AnalyticStat extends Model
         foreach ($stats as $groupId => $stat) {
             $sum = 0;
             if ($stat->type == 'formula') {
-
                 $sum += self::calcFormula($stat, $date);
             } else {
                 $sum += (int)$stat->show_value;
