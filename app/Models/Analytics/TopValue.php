@@ -563,7 +563,7 @@ class TopValue extends Model
             ->get();
 
         $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
-        dd($groups);
+
         foreach ($groups as $group) {
             $row = [];
 

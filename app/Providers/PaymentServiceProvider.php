@@ -18,7 +18,8 @@ class PaymentServiceProvider extends ServiceProvider
             Settings::$shopId = config('payment.prodamus.shop_id');
             Settings::$shopKey = config('payment.prodamus.shop_key');
             $transaction = new GetPaymentToken();
-            $transaction->setTestMode($this->app->environment('testing'));
+            $transaction->setTestMode();
+            // $this->app->environment('testing')
             $transaction->setSuccessUrl(config('payment.prodamus.success_url'));
             $transaction->setDeclineUrl(config('payment.prodamus.failed_url'));
             $transaction->setFailUrl(config('payment.prodamus.failed_url'));
