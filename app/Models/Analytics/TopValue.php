@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Arr;
 
 /**
  * @property string name
@@ -584,8 +583,8 @@ class TopValue extends Model
                 $xdate = $date->month($i)->format('Y-m-d');
 
                 // Fetch salary and edited proceed data from pre-fetched arrays
-                $salary = Arr::get($group->id, $salariesData)[$xdate]?->sum('total') ?? 0;
-                $edited_proceed = Arr::get($group->id, $editedProceedsData)[$xdate]?->first();
+                $salary = array_key_exists($group->id, $salariesData) ? $salariesData[$group->id][$xdate]->sum('total') ?? 0 : 0;
+                $edited_proceed = array_key_exists($group->id, $editedProceedsData) ? $editedProceedsData[$group->id][$xdate]->first() ?? null : null;
 
                 if ($edited_proceed) {
                     $proceeds = (int)$edited_proceed->value;
