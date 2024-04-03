@@ -20,6 +20,7 @@ return new class extends Migration {
                     ->comment('Extra user amount added upon tariff user_limit')
                     ->nullable();
                 $table->string('service_for_payment');
+                $table->string('payment_id');
                 $table->string('status')->nullable();
                 $table->date('expire_date')->comment('Срок истечения тарифа');
                 $table->boolean('auto_payment')->default(0)->comment('1 - Автоплатеж включен');
