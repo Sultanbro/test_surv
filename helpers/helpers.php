@@ -92,15 +92,17 @@ if (!function_exists('timer')) {
 }
 
 if (!function_exists('point')) {
-    function point(string $action = 'start'): void
+    function point(mixed $dataToDump = null): void
     {
-        if ($action === 'start') {
+        if (!Cache::has('point-start')) {
             Cache::put('point-start', now()->toDateTimeString());
-        }
-
-        if ($action === 'end') {
+        } else {
             $start = Carbon::createFromTimeString(Cache::pull('point-start'));
-            dd($start->diffInRealSeconds(now()));
+
+            dd([
+                'execution_seconds' => $start->diffInRealSeconds(now()),
+                'data' => $dataToDump
+            ]);
         }
     }
 }

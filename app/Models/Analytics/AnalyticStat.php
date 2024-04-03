@@ -885,6 +885,60 @@ class AnalyticStat extends Model
             ->get();
     }
 
+    public static function getProceedsSumForListOfGroups(array $groups, string $date, array $only_days = []): array
+    {
+        $values = [];
+
+        if (count($only_days) > 0) {
+            $days = $only_days;
+        } else {
+            $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+        }
+
+        $stats = self::query()
+            ->withWhereHas('columns', fn($query) => $query->whereIn('name', $days))
+            ->withWhereHas('rows', fn($query) => $query->where('name', 'second'))
+            ->where('date', $date)
+            ->whereIn('group_id', $groups)
+            ->get()
+            ->keyBy('group_id');
+
+        $values = [];
+        for ($i = 1; $i <= Carbon::parse($date)->daysInMonth; $i++) {
+            $values[$i] = 0;
+        }
+
+        foreach ($stats as $groupId => $stat) {
+
+        }
+
+//        foreach ($columns as $column) {
+//            /** @var AnalyticStat $stat */
+//            $stat = self::query()
+//                ->where('date', $date)
+//                ->where('column_id', $column->id)
+//                ->where('row_id', $row->id)
+//                ->first();
+//
+//            if ($stat) {
+//
+//                if ($stat->type == 'formula') {
+//                    $values[(int)$column->name] = self::calcFormula($stat, $date);
+//                } else {
+//                    $values[(int)$column->name] = (int)$stat->show_value;
+//                }
+//            }
+//
+//        }
+//
+//        $sum = 0;
+//        foreach ($values as $value) {
+//            $sum += $value;
+//        }
+//        return $sum;
+        return [];
+    }
+
     public function activity(): BelongsTo
     {
         return $this->belongsTo(Activity::class);
