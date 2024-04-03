@@ -174,7 +174,7 @@ class TariffPayment extends Model
     ): TariffPayment
     {
 
-        try {
+//        try {
             /** @var TariffPayment */
             return self::query()->create([
                 'owner_id' => $ownerId,
@@ -186,9 +186,9 @@ class TariffPayment extends Model
                 'status' => PaymentStatusEnum::STATUS_PENDING,
                 'service_for_payment' => $serviceForPayment
             ]);
-        } catch (Exception) {
-            throw new Exception('При сохранений данных произошла ошибка');
-        }
+//        } catch (Exception) {
+//            throw new Exception('При сохранений данных произошла ошибка');
+//        }
     }
 
     public function updateStatusToSuccess(): void
