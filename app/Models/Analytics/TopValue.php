@@ -544,13 +544,11 @@ class TopValue extends Model
 
         $groups = ProfileGroup::withRentability($year, $month);
 
-        $r_counts = [];   // for count avg rentability on every monht
         $total_row = []; // first row
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = 0;
             $total_row['c' . $i] = 0;
             $total_row['r' . $i] = 0;
-            $r_counts[$i] = 0;
         }
 
         $edited_proceeds = TopEditedValue::query()
@@ -562,34 +560,31 @@ class TopValue extends Model
             ->whereIn('group_id', $groups->pluck('id')->toArray())
             ->get();
 
+
         $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
 
-        point();
-        point($allProceeds);
+        $salariesData = $salaries->whereIn('group_id', $groups->pluck('id'))
+            ->groupBy(['group_id', 'date']);
+
+        $editedProceedsData = $edited_proceeds->whereIn('group_id', $groups->pluck('id'))
+            ->groupBy(['group_id', 'date']);
+
+        $r_counts = array_fill(1, 12, 0);
         foreach ($groups as $group) {
-            $row = [];
-
-            $row['group_id'] = $group->id;
-            $row['name'] = $group->name;
-
-            $row['date'] = $group->created_at
-                ->diffInDays();
-            $row['date_formatted'] = $group->created_at
-                ->format('d.m.Y');
-            $row['archived_date'] = $group->archived_date;
+            $row = [
+                'group_id' => $group->id,
+                'name' => $group->name,
+                'date' => $group->created_at->diffInDays(),
+                'date_formatted' => $group->created_at->format('d.m.Y'),
+                'archived_date' => $group->archived_date,
+            ];
 
             for ($i = 1; $i <= 12; $i++) {
-                $xdate = $date->month($i)
-                    ->format('Y-m-d');
+                $xdate = $date->month($i)->format('Y-m-d');
 
-                $salary = $salaries
-                    ->where('group_id', $group->id)
-                    ->where('date', $xdate)
-                    ->sum('total');
-
-                $edited_proceed = $edited_proceeds->where('date', $xdate)
-                    ->where('group_id', $group->id)
-                    ->first();
+                // Fetch salary and edited proceed data from pre-fetched arrays
+                $salary = $salariesData[$group->id][$xdate]->sum('total') ?? 0;
+                $edited_proceed = $editedProceedsData[$group->id][$xdate]->first();
 
                 if ($edited_proceed) {
                     $proceeds = (int)$edited_proceed->value;
@@ -599,17 +594,23 @@ class TopValue extends Model
                     $row['ed' . $i] = false;
                 }
 
+                // Calculate rentability
                 $rentability = $proceeds > 0 ? ($proceeds - $salary) / $proceeds : 0;
                 if ($rentability > 0) $r_counts[$i]++;
+
+                // Populate row data
                 $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
                 $row['c' . $i] = $salary > 0 ? round($salary) : '';
                 $row['r' . $i] = $rentability > 0 ? round($rentability, 1) . '%' : '';
                 $row['rc' . $i] = $rentability > 0 ? round($rentability, 1) : -1;
-                $total_row['l' . $i] += $proceeds;
-                $total_row['c' . $i] += $salary;
-                $total_row['r' . $i] += $rentability;
+
+                // Update total row data
+                $total_row['l' . $i] = ($total_row['l' . $i] ?? 0) + $proceeds;
+                $total_row['c' . $i] = ($total_row['c' . $i] ?? 0) + $salary;
+                $total_row['r' . $i] = ($total_row['r' . $i] ?? 0) + $rentability;
             }
 
+            // Add row to the table
             $table[] = $row;
         }
 
@@ -620,7 +621,6 @@ class TopValue extends Model
         }
 
         array_unshift($table, $total_row);
-
         return $table;
     }
 
