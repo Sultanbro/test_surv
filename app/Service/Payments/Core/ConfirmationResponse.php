@@ -34,7 +34,7 @@ class ConfirmationResponse implements JsonSerializable
     {
         return [
             'payment_id' => $this->getPaymentId(),
-            'redirect_url' => $this->getUrl(),
+            'url' => $this->getUrl(),
             'is_success' => $this->getIsSuccess(),
             'params' => $this->getParams()
         ];
