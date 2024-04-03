@@ -69,7 +69,7 @@ class AnalyticStat extends Model
     const INHOUSE = 'inhouse'; // additional inhouse minutes
     const SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
 
-    public function columns(): BelongsTo
+    public function column(): BelongsTo
     {
         return $this->belongsTo(
             AnalyticColumn::class,
@@ -78,7 +78,7 @@ class AnalyticStat extends Model
         );
     }
 
-    public function rows(): BelongsTo
+    public function row(): BelongsTo
     {
         return $this->belongsTo(
             AnalyticRow::class,
@@ -914,47 +914,24 @@ class AnalyticStat extends Model
         }
 
         $stats = self::query()
-            ->withWhereHas('columns', fn($query) => $query->whereIn('name', $days))
-            ->withWhereHas('rows', fn($query) => $query->where('name', 'second'))
+            ->withWhereHas('column', fn($query) => $query->whereIn('name', $days))
+            ->withWhereHas('row', fn($query) => $query->where('name', 'second'))
             ->whereDate('date', $date)
             ->whereIn('group_id', $groups)
             ->get()
             ->keyBy('group_id');
-        dd($stats);
-        $values = [];
-        for ($i = 1; $i <= Carbon::parse($date)->daysInMonth; $i++) {
-            $values[$i] = 0;
-        }
 
         foreach ($stats as $groupId => $stat) {
+            $sum = 0;
+            if ($stat->type == 'formula') {
 
+                $sum += self::calcFormula($stat, $date);
+            } else {
+                $sum += (int)$stat->show_value;
+            }
+            $values[$groupId] = $sum;
         }
-
-//        foreach ($columns as $column) {
-//            /** @var AnalyticStat $stat */
-//            $stat = self::query()
-//                ->where('date', $date)
-//                ->where('column_id', $column->id)
-//                ->where('row_id', $row->id)
-//                ->first();
-//
-//            if ($stat) {
-//
-//                if ($stat->type == 'formula') {
-//                    $values[(int)$column->name] = self::calcFormula($stat, $date);
-//                } else {
-//                    $values[(int)$column->name] = (int)$stat->show_value;
-//                }
-//            }
-//
-//        }
-//
-//        $sum = 0;
-//        foreach ($values as $value) {
-//            $sum += $value;
-//        }
-//        return $sum;
-        return [];
+        return $values;
     }
 
     public function activity(): BelongsTo
