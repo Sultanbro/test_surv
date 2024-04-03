@@ -930,6 +930,11 @@ class AnalyticStat extends Model
             }
             $values[$groupId] = $sum;
         }
+
+        foreach ($groups as $group) {
+            if (!array_key_exists($group, $values)) $values[$group] = 0;
+        }
+
         return $values;
     }
 
