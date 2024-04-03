@@ -7,12 +7,12 @@ return [
     'prodamus' => [
         'shop_id' => env('PRODAMUS_SHOP_ID', 361),
         'shop_key' => env('PRODAMUS_SHOP_KEY', 'b8647b68898b084b836474ed8d61ffe117c9a01168d867f24953b776ddcb134d'),
-        'success_url' => '',
-        'failed_url' => '',
+        'success_url' => 'https://exmaple.com',
+        'failed_url' => 'https://exmaple.com',
     ],
     'wallet1' => [
         'merchant_id' => env('WALLET1_SHOP_ID', 164796334920),
-        'success_url' => '',
-        'failed_url' => '',
+        'success_url' => 'https://exmaple.com',
+        'failed_url' => 'https://exmaple.com',
     ]
 ];
