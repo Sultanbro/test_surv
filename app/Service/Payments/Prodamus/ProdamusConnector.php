@@ -32,7 +32,7 @@ class ProdamusConnector implements PaymentConnector
         $response = $this->client->submit();
         // Check the status of the payment
         if (!$response->isSuccess()) {
-            throw new Exception('Payment failed');
+            throw new Exception($response->getMessage());
         }
 
         return new ConfirmationResponse(
