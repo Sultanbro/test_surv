@@ -579,7 +579,8 @@ class TopValue extends Model
                 'archived_date' => $group->archived_date,
             ];
 
-            for ($i = 1; $i <= 12; $i++) {
+            $to = $date->isCurrentYear() ? $date->month : 12;
+            for ($i = 1; $i <= $to; $i++) {
                 $xdate = $date->month($i)->format('Y-m-d');
 
                 // Fetch salary and edited proceed data from pre-fetched arrays
