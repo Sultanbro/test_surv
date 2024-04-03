@@ -542,9 +542,19 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year, $month, 1);
 
+//        $groups = ProfileGroup::query()
+//            ->whereNotIn('id', [34, 58, 26])
+//            ->where('has_analytics', '=', 1)
+//            ->where('active', '=', 1)
+//            ->whereDate('created_at','<=',$date)
+//            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $year)
+//                ->whereMonth('archived_date', '>=', $date->month)
+//            ))
+//            ->get();
+
         $groups = ProfileGroup::withRentability($year, $month);
 
-        $r_counts = [];   // for count avg rentability on every monht
+        $r_counts = []; // for count avg rentability on every monht
         $total_row = []; // first row
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = 0;
@@ -553,18 +563,12 @@ class TopValue extends Model
             $r_counts[$i] = 0;
         }
 
+
         $edited_proceeds = TopEditedValue::query()
             ->whereYear('date', $year)
             ->get();
 
-        $salaries = GroupSalary::query()
-            ->whereYear('date', $year)
-            ->whereIn('group_id', $groups->pluck('id')->toArray())
-            ->get();
-
-        $allProceeds = AnalyticStat::getProceedsSumForListOfGroups($groups->pluck('id')->toArray(), $date);
-
-        foreach ($groups as $group) {
+        foreach ($groups as $key => $group) {
             $row = [];
 
             $row['group_id'] = $group->id;
@@ -574,16 +578,55 @@ class TopValue extends Model
                 ->diffInDays();
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
-            $row['archived_date'] = $group->archived_date;
 
             for ($i = 1; $i <= 12; $i++) {
+
                 $xdate = $date->month($i)
                     ->format('Y-m-d');
 
-                $salary = $salaries
+                /**
+                 * get salary
+                 */
+                $salary = GroupSalary::query()
                     ->where('group_id', $group->id)
                     ->where('date', $xdate)
+                    ->get()
                     ->sum('total');
+
+                /**
+                 * Temp for DM2
+                 * count ФОТ
+                 */
+                $date_diff = $date->timestamp - Carbon::parse('2022-09-01')->timestamp;
+                if ($date_diff >= 0 && $group->id == 93) {
+
+                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
+                    $sum = 0;
+
+                    foreach ($data['users'] as $user) {
+                        $sum += array_sum(array_values($user['earnings']));
+                        if ($user['edited_bonus']) {
+                            $sum += $user->edited_bonus->amount;
+                        } else {
+                            $sum += array_sum(array_values($user['bonuses']));
+                            $sum += array_sum(array_values($user['awards']));
+                            $sum += array_sum(array_values($user['test_bonus']));
+                        }
+
+                        $sum += $user['edited_kpi']
+                            ? $user['edited_kpi']->amount
+                            : $user['kpi'];
+                    }
+
+                    $salary = $sum;
+                }
+
+                // TEMP
+                $rentability = 0;
+                $proceeds = 0;
+
+                $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
+
 
                 $edited_proceed = $edited_proceeds->where('date', $xdate)
                     ->where('group_id', $group->id)
@@ -593,7 +636,6 @@ class TopValue extends Model
                     $proceeds = (int)$edited_proceed->value;
                     $row['ed' . $i] = true;
                 } else {
-                    $proceeds = $allProceeds[$group->id];
                     $row['ed' . $i] = false;
                 }
 
@@ -606,10 +648,13 @@ class TopValue extends Model
                 $total_row['l' . $i] += $proceeds;
                 $total_row['c' . $i] += $salary;
                 $total_row['r' . $i] += $rentability;
+
+
             }
 
             $table[] = $row;
         }
+
 
         for ($i = 1; $i <= 12; $i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);

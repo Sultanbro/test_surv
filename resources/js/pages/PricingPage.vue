@@ -211,7 +211,7 @@ export default {
 					auto_payment: this.autoPayment
 				})
 				/* eslint-enable camelcase */
-				window.location.assign(data.url || data.redirect_url)
+				window.location.assign(data.data.url || data.data.redirect_url)
 			}
 			catch(error){
 				console.error('submitPayment', error)
@@ -229,11 +229,11 @@ export default {
 				})
 				const form = document.createElement('form')
 				form.method = 'post'
-				form.action = data.url || data.redirect_url
-				Object.keys(data.params).forEach(key => {
+				form.action = data.data.url || data.data.redirect_url
+				Object.keys(data.data.params).forEach(key => {
 					const inp = document.createElement('input')
 					inp.name = 'hidden'
-					inp.value = data.params[key]
+					inp.value = data.data.params[key]
 					form.appendChild(inp)
 				})
 				document.body.appendChild(form)
