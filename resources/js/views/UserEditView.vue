@@ -474,7 +474,7 @@ export default {
 				errors.new_pwd = 'Пароль должен содержать минимум одну строчную и одну заглавную буквы'
 			}
 			if(!this.workChartId){
-				errors['work-chart'] = 'Укажите график работы'
+				errors.work_chart = 'Укажите график работы'
 			}
 
 			return errors
@@ -512,7 +512,7 @@ export default {
 			this.fieldErrors = errors
 			if(errorKeys.length){
 				this.$toast.error('Заполните обязательные поля')
-				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work-chart']).length){
+				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work_chart']).length){
 					this.showBlock(1)
 				}
 				else if(arrayIntersects(errorKeys || [], ['zarplata']).length){
@@ -554,29 +554,6 @@ export default {
 						tax_group_id: this.taxGroup,
 						assigned: (this.taxGroup && 1) || 0,
 					})
-				}
-
-				// if (this.taxesFillData) {
-				// 	// редактирование сущуствующих
-				// 	for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
-				// 		if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-				// 			await this.axios.post('/tax/set-assignee', {
-				// 				user_id: userId,
-				// 				tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
-				// 				is_assigned: 1,
-				// 				end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
-				// 				is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
-				// 				value: this.taxesFillData.editTaxes[i].value,
-				// 			});
-				// 		}
-				// 	}
-				// }
-
-				if (this.workChartId) {
-					await axios.post('/work-chart/user/add', {
-						user_id: userId,
-						work_chart_id: this.workChartId,
-					});
 				}
 
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'

@@ -609,7 +609,7 @@ export default {
 				<div class="col-sm-8">
 					<b-form-select
 						v-model="workChartId"
-						name="work-chart"
+						name="work_chart"
 						@change="onChangeChart(workChartId)"
 					>
 						<b-form-select-option
@@ -637,7 +637,7 @@ export default {
 				</div>
 				<UserEditError
 					:errors="errors"
-					name="work-chart"
+					name="work_chart"
 				/>
 			</div>
 
