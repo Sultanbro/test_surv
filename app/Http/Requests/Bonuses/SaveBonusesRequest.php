@@ -57,7 +57,7 @@ class SaveBonusesRequest extends FormRequest
         $validated = $this->validated();
 
         $bonuses = Arr::get($validated, 'bonuses');
-
+        dd($bonuses);
         return new SaveBonusesDTO($bonuses);
     }
 }
