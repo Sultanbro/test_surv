@@ -20,7 +20,7 @@ class PaymentController extends Controller
     /**
      * @param PaymentFactory $factory
      */
-    public function __construct(private PaymentFactory $factory)
+    public function __construct(private readonly PaymentFactory $factory)
     {
         $this->updateStatusService = new PaymentUpdateStatusService($factory);
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Service\Payments\Core\TariffGetAllService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class TariffController extends Controller
 {
@@ -15,7 +16,8 @@ class TariffController extends Controller
     public function __construct(
         public TariffGetAllService $tariffGetAllService
     )
-    {}
+    {
+    }
 
     /**
      * @return JsonResponse
@@ -25,7 +27,7 @@ class TariffController extends Controller
     {
         return $this->response(
             message: 'success',
-            data: $this->tariffGetAllService->handle(),
+            data: Cache::remember('currencies', 60 * 24, fn() => $this->tariffGetAllService->handle()),
         );
     }
 }
