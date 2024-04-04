@@ -271,7 +271,7 @@ export default {
 					})
 					return row
 				})
-				this.checkData = JSON.parse(localStorage.getItem('rent-check-' + this.year) || {})
+				this.checkData = JSON.parse(localStorage.getItem('rent-check-' + this.year) || '{}')
 				this.speedometers = this.actualSpeedmeters(speedometers, staticRent)
 				this.countRents();
 				this.countTop();
