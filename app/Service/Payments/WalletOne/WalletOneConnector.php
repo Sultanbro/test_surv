@@ -64,7 +64,7 @@ class WalletOneConnector implements PaymentConnector
 
         return $tariff
             ->getPrice($data->extraUsersLimit)
-            ->setCurrency('rub');
+            ->setCurrency($data->currency);
     }
 
     private function generateIdempotenceKey(): string

@@ -11,7 +11,7 @@ return [
         'failed_url' => 'https://exmaple.com',
     ],
     'wallet1' => [
-        'merchant_id' => env('WALLET1_SHOP_ID', 164796334920),
+            'merchant_id' => env('WALLET1_SHOP_ID', 164796334920),
         'success_url' => 'https://exmaple.com',
         'failed_url' => 'https://exmaple.com',
     ]

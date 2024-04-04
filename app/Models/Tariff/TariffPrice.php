@@ -5,6 +5,7 @@ namespace App\Models\Tariff;
 use App\Traits\CurrencyTrait;
 use App\User;
 use Exception;
+use Illuminate\Support\Str;
 use YooKassa\Model\Receipt;
 use YooKassa\Model\ReceiptItem;
 
@@ -47,6 +48,7 @@ final class TariffPrice
 
     public function setCurrency(string $newCurrency): self
     {
+        $newCurrency = Str::lower($newCurrency);
         $oldCurrency = $this->currency;
 
         if ($newCurrency == $oldCurrency) {
