@@ -134,6 +134,12 @@ export default {
 				this.position = ''
 			}
 		},
+		workChartId(value){
+			if(value === -1) {
+				window.open('/timetracking/settings?tab=2#nav-home', '_blank')
+				this.workChartId = ''
+			}
+		},
 	},
 	mounted() {
 		document.body.addEventListener('click', ({target}) => {
@@ -620,6 +626,13 @@ export default {
 								{{ getShiftDays(chart) }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 							</b-form-select-option>
 						</template>
+						<option
+							v-if="!workChart.length"
+							:value="-1"
+							class="UserEdit-new-position"
+						>
+							Добавить новый график
+						</option>
 					</b-form-select>
 				</div>
 				<UserEditError
