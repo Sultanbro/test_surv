@@ -24,11 +24,9 @@ class UpdateUserDTO
      * @param string|null $phoneRelatives
      * @param string|null $phoneChildren
      * @param int|null $fullTime
-     * @param string|null $workStartTime
-     * @param string|null $workEndTime
      * @param string|null $currency
      * @param string|null $weekdays
-     * @param string $workingCountry
+     * @param string|null $workingCountry
      * @param string|null $workingCity
      * @param UploadedFile|null $fileName
      * @param int|null $headGroup
@@ -57,7 +55,10 @@ class UpdateUserDTO
      * @param array|null $taxes
      * @param int|null $bitrixId
      * @param float|null $timezone
+     * @param string|null $firstWorkDay
      * @param array|null $coordinates
+     * @param string|null $uin
+     * @param int|null $workChartId
      */
     public function __construct(
         public int           $userId,
@@ -111,6 +112,7 @@ class UpdateUserDTO
         public ?string       $firstWorkDay,
         public ?array        $coordinates,
         public ?string       $uin,
+        public ?int          $workChartId,
     )
     {
     }
@@ -169,6 +171,7 @@ class UpdateUserDTO
             'first_work_day' => $this->firstWorkDay,
             'coordinates' => $this->coordinates,
             'uin' => $this->uin,
+            'work_chart' => $this->workChartId,
         ];
     }
 }

@@ -192,43 +192,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * @return void
      */
 
-    protected static function booted(): void
-    {
-        $tenantId = tenant('id');
-        static::created(function (User $user) use ($tenantId) {
-            $phoneOrEmail = phone_or_email($user->toArray());
-            if (!$phoneOrEmail) return;
-            /**@var CentralUser $central */
-            $central = CentralUser::query()->firstOrCreate([
-                $phoneOrEmail => $user->{$phoneOrEmail},
-            ], [
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'password' => $user->password
-            ]);
-
-            if (!$central->cabinets()->find($tenantId)) {
-                $central->cabinets()->attach($tenantId);
-            }
-
-        });
-        static::updated(function (User $user) use ($tenantId) {
-            $phoneOrEmail = phone_or_email($user->toArray());
-            /**@var CentralUser $central */
-            $central = CentralUser::query()->firstOrCreate([
-                $phoneOrEmail => $user->{$phoneOrEmail},
-            ], [
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'password' => $user->password
-            ]);
-
-            if (!$central->cabinets()->find($tenantId)) {
-                $central->cabinets()->attach($tenantId);
-            }
-        });
-    }
-
     public static function getAuthUser(int $id): User
     {
         /** @var User $user */

@@ -204,14 +204,14 @@ export default {
 			if(this.currency !== '₽') return this.submitWalletOne()
 			try{
 				/* eslint-disable camelcase */
-				const { data } = await this.postPaymentData({
+				const { url } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
 					auto_payment: this.autoPayment
 				})
 				/* eslint-enable camelcase */
-				window.location.assign(data.url || data.redirect_url)
+				window.location.assign(url)
 			}
 			catch(error){
 				console.error('submitPayment', error)
@@ -221,7 +221,7 @@ export default {
 		async submitWalletOne(){
 			try{
 				/* eslint-disable camelcase */
-				const { data } = await this.postPaymentData({
+				const { url, params } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
@@ -229,11 +229,11 @@ export default {
 				})
 				const form = document.createElement('form')
 				form.method = 'post'
-				form.action = data.url || data.redirect_url
-				Object.keys(data.params).forEach(key => {
+				form.action = url
+				Object.keys(params).forEach(key => {
 					const inp = document.createElement('input')
-					inp.name = 'hidden'
-					inp.value = data.params[key]
+					inp.name = key
+					inp.value = params[key]
 					form.appendChild(inp)
 				})
 				document.body.appendChild(form)

@@ -1664,7 +1664,10 @@ class KpiStatisticService
                         $kpi->priority = 4;
                     }
                 }
+            } else {
+                $kpi->priority = 9999; // chtobi ne meshat v sortirovke
             }
+
 
             $history = $kpi->histories_latest;
 
@@ -1705,7 +1708,7 @@ class KpiStatisticService
             }
 
             foreach ($kpi->items as $item) {
-                $history = $item->histories_latest;
+                $history = $item->histories->sortByDesc('id')->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 $item['daily_plan'] = (float)$item->plan;
                 if ($has_edited_plan) {
@@ -2099,14 +2102,14 @@ class KpiStatisticService
         $kpi = Kpi::withTrashed()
             ->with([
                 'histories_latest' => function ($query) {
-                    $query->whereDate('created_at', '<=', $this->from);
+                    $query->whereDate('created_at', '<=', $this->to);
                 },
                 'items.histories_latest' => function ($query) {
-                    $query->whereDate('created_at', '<=', $this->from);
+                    $query->whereDate('created_at', '<=', $this->to);
                 },
                 'items' => function (HasMany $query) {
                     $query->with(['histories' => function (MorphMany $query) {
-                        $query->whereDate('created_at', '<=', $this->from);
+                        $query->whereDate('created_at', '<=', $this->to);
                     }]);
                     $query->where(function (Builder $query) {
                         $query->whereNull('deleted_at');
@@ -2153,7 +2156,7 @@ class KpiStatisticService
         }
 
         foreach ($kpi->items as $item) {
-            $history = $item->histories->whereBetween('created_at', [$this->from, $this->to])->first();
+            $history = $item->histories->sortByDesc('id')->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
             $item['daily_plan'] = (float)$item->plan;
             if ($has_edited_plan) {

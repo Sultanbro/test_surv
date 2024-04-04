@@ -111,7 +111,8 @@ class UpdateUserRequest extends FormRequest
             'taxes.*.name' => ['string'],
             'bitrix_id' => ['numeric'],
             'first_work_day' => ['date', 'nullable'],
-            'coordinates' => ['array']
+            'coordinates' => ['array'],
+            'work_chart' => ['int']
         ];
     }
 
@@ -170,6 +171,7 @@ class UpdateUserRequest extends FormRequest
         $bitrixId = Arr::get($validated, 'bitrix_id');
         $firstWorkDay = Arr::get($validated, 'first_work_day');
         $coordinates = Arr::get($validated, 'coordinates');
+        $workChartId = Arr::get($validated, 'work_chart');
 
         return new UpdateUserDTO(
             $id,
@@ -223,6 +225,7 @@ class UpdateUserRequest extends FormRequest
             $firstWorkDay,
             $coordinates,
             $uin,
+            $workChartId,
         );
     }
 }
