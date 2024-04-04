@@ -2153,7 +2153,7 @@ class KpiStatisticService
         }
 
         foreach ($kpi->items as $item) {
-            dd($item->histories, $item->histories->sortByDesc('id')->first());
+            dd($item->histories->toArray(), $item->histories->sortByDesc('id')->first());
             $history = $item->histories->latest()->first();
             $has_edited_plan = $history ? json_decode($history->payload, true) : false;
             $item['daily_plan'] = (float)$item->plan;
