@@ -44,14 +44,14 @@ class WalletOneConnector implements PaymentConnector
                 "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
                 "WMI_DESCRIPTION" => urlencode('Заказ №' . time()),
                 "WMI_CUSTOMER_EMAIL" => $user->email,
-                "WMI_ORDER_ITEMS" => json_encode([
+                "WMI_ORDER_ITEMS" => json_encode([[
                     "Title" => urlencode("Покупка тарифа"),
                     "Quantity" => 1,
                     "UnitPrice" => 150.00,
                     "SubTotal" => 450.00,
                     "TaxType" => "tax_ru_1",
                     "Tax" => 0.00
-                ]),
+                ]]),
                 "WMI_SUCCESS_URL" => $this->successUrl,
                 "WMI_FAIL_URL" => $this->failUrl,
             ],
