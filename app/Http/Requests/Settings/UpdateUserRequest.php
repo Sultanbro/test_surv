@@ -171,7 +171,7 @@ class UpdateUserRequest extends FormRequest
         $bitrixId = Arr::get($validated, 'bitrix_id');
         $firstWorkDay = Arr::get($validated, 'first_work_day');
         $coordinates = Arr::get($validated, 'coordinates');
-        $workChart = Arr::get($validated, 'work_chart');
+        $workChartId = Arr::get($validated, 'work_chart');
 
         return new UpdateUserDTO(
             $id,
@@ -225,7 +225,7 @@ class UpdateUserRequest extends FormRequest
             $firstWorkDay,
             $coordinates,
             $uin,
-            $workChart,
+            $workChartId,
         );
     }
 }

@@ -58,7 +58,7 @@ class UpdateUserDTO
      * @param string|null $firstWorkDay
      * @param array|null $coordinates
      * @param string|null $uin
-     * @param int|null $workChart
+     * @param int|null $workChartId
      */
     public function __construct(
         public int           $userId,
@@ -112,7 +112,7 @@ class UpdateUserDTO
         public ?string       $firstWorkDay,
         public ?array        $coordinates,
         public ?string       $uin,
-        public ?int          $workChart,
+        public ?int          $workChartId,
     )
     {
     }
@@ -171,7 +171,7 @@ class UpdateUserDTO
             'first_work_day' => $this->firstWorkDay,
             'coordinates' => $this->coordinates,
             'uin' => $this->uin,
-            'work_chart' => $this->workChart,
+            'work_chart' => $this->workChartId,
         ];
     }
 }

@@ -135,40 +135,45 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
-        /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()->where('email', $user->email)->first();
+        $params = [
+            'email' => $userDTO->email,
+            'name' => $userDTO->name,
+            'last_name' => $userDTO->lastName,
+            'phone' => $userDTO->phone,
+            'phone_1' => $userDTO->phoneHome,
+            'phone_2' => $userDTO->phoneHusband,
+            'phone_3' => $userDTO->phoneRelatives,
+            'phone_4' => $userDTO->phoneChildren,
+            'birthday' => $userDTO->birthday,
+            'full_time' => $userDTO->fullTime,
+            'description' => $userDTO->description,
+            'currency' => $userDTO->currency ?? 'kzt',
+            'position_id' => $userDTO->positionId ?? 0,
+            'user_type' => $userDTO->userType,
+            'timezone' => $userDTO->timezone,
+            'program_id' => $userDTO->programType,
+            'working_day_id' => $userDTO->workingDays,
+            'working_time_id' => $userDTO->workTimes,
+            'work_chart_id' => $userDTO->workChartId,
+            'weekdays' => $userDTO->weekdays,
+            'first_work_day' => $userDTO->firstWorkDay,
+            'working_country' => $userDTO->workingCountry,
+            'working_city' => $userDTO->workingCity,
+            'uin' => $userDTO->uin,
+        ];
 
-        if ($userDTO->newPassword) {
-            $user->password = Hash::make($userDTO->newPassword);
+        if (!empty($userDTO->newPassword)) {
+            $params['password'] = Hash::make($userDTO->newPassword);
         }
 
-        $user->email = $userDTO->email;
-        $user->name = $userDTO->name;
-        $user->last_name = $userDTO->lastName;
-        $user->phone = $userDTO->phone;
-        $user->phone_1 = $userDTO->phoneHome;
-        $user->phone_2 = $userDTO->phoneHusband;
-        $user->phone_3 = $userDTO->phoneRelatives;
-        $user->phone_4 = $userDTO->phoneChildren;
-        $user->birthday = $userDTO->birthday;
-        $user->full_time = $userDTO->fullTime;
-        $user->description = $userDTO->description;
-        $user->currency = $userDTO->currency ?? 'kzt';
-        $user->position_id = $userDTO->positionId ?? 0;
-        $user->user_type = $userDTO->userType;
-        $user->timezone = $userDTO->timezone;
-        $user->program_id = $userDTO->programType;
-        $user->working_day_id = $userDTO->workingDays;
-        $user->working_time_id = $userDTO->workTimes;
-        $user->work_chart_id = $userDTO->workChart;
-        $user->weekdays = $userDTO->weekdays;
-        $user->first_work_day = $userDTO->firstWorkDay;
-        $user->working_country = $userDTO->workingCountry;
-        $user->working_city = $userDTO->workingCity;
-        $user->uin = $userDTO->uin;
-        if ($userDTO->coordinates) $user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
+        if (!empty($userDTO->coordinates)) {
+            $params['coordinate_id'] = $this->setCoordinate($userDTO->coordinates);
+        }
 
-        $user->save();
+        User::query()->where('id', $user->id)->update($params);
+
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::query()->where('email', $user->email)->first();
 
         if ($centralUser) {
             if ($userDTO->newPassword) {
