@@ -75,7 +75,7 @@ class SaveUserKpi extends Command
             }
 
             foreach ($kpi->items as $item) {
-                $history = $item->histories->latest()->first();
+                $history = $item->histories->sortByDesc('id')->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 $item['daily_plan'] = (float)$item->plan;
                 if ($has_edited_plan) {
