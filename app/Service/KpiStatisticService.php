@@ -1625,7 +1625,7 @@ class KpiStatisticService
             ->get();
         $subset = $kpis->map(function ($user) {
             return collect($user->toArray())
-                ->only(['id', 'targetable_id', 'targetable_type'])
+                ->only(['id', 'targetable_id', 'targetable_type', 'has_user', 'has_position', 'has_group', 'has_dropped_group', 'targetable'])
                 ->all();
         });
         dd($subset->toArray());
