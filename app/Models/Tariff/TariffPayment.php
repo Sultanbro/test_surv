@@ -119,8 +119,7 @@ class TariffPayment extends Model
             ->subscription()
             ->where('expire_date', '>', $today)
             ->where(function ($query) {
-                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
-                    ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS);
             })
             ->first();
     }
