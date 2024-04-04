@@ -1623,6 +1623,7 @@ class KpiStatisticService
                     });
             })
             ->get();
+        dd($kpis->toArray());
 
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
