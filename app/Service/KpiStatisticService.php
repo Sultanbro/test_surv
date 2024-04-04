@@ -1623,7 +1623,12 @@ class KpiStatisticService
                     });
             })
             ->get();
-        dd($kpis->only(['id', 'targetable_id', 'targetable_type'])->toArray());
+        $subset = $kpis->map(function ($user) {
+            return collect($user->toArray())
+                ->only(['id', 'targetable_id', 'targetable_type'])
+                ->all();
+        });
+        dd($kpis->toArray());
 
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
