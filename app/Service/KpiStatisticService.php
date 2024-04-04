@@ -1623,12 +1623,6 @@ class KpiStatisticService
                     });
             })
             ->get();
-        $subset = $kpis->map(function ($user) {
-            return collect($user->toArray())
-                ->only(['id', 'targetable_id', 'targetable_type', 'has_user', 'has_position', 'has_group', 'has_dropped_group', 'targetable'])
-                ->all();
-        });
-        dd($subset->toArray());
 
         $kpis = $kpis->filter(function ($kpi) use ($droppedGroups, $activeGroups, $position_id, $user_id) {
             // This code supports old and new relations
@@ -1682,6 +1676,13 @@ class KpiStatisticService
 
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
+
+        $subset = $kpis->map(function ($user) {
+            return collect($user->toArray())
+                ->only(['id', 'priority', 'targetable_id', 'targetable_type', 'has_user', 'has_position', 'has_group', 'has_dropped_group', 'targetable'])
+                ->all();
+        });
+        dd($subset->toArray());
 
         if ($limitForProfile && $kpis->count() > 1) {
             $currentKpi = $kpis->sortBy('priority')->first();
