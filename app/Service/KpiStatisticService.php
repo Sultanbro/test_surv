@@ -1682,7 +1682,7 @@ class KpiStatisticService
                 ->only(['id', 'priority', 'targetable_id', 'targetable_type', 'has_user', 'has_position', 'has_group', 'has_dropped_group', 'targetable'])
                 ->all();
         });
-        dd($subset->toArray());
+        dd($subset->sortBy('priority')->toArray());
 
         if ($limitForProfile && $kpis->count() > 1) {
             $currentKpi = $kpis->sortBy('priority')->first();
