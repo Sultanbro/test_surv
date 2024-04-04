@@ -474,7 +474,7 @@ export default {
 				errors.new_pwd = 'Пароль должен содержать минимум одну строчную и одну заглавную буквы'
 			}
 			if(!this.workChartId){
-				errors['work-chart'] = 'Укажите график работы'
+				errors.work_chart = 'Укажите график работы'
 			}
 
 			return errors
@@ -512,7 +512,7 @@ export default {
 			this.fieldErrors = errors
 			if(errorKeys.length){
 				this.$toast.error('Заполните обязательные поля')
-				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work-chart']).length){
+				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work_chart']).length){
 					this.showBlock(1)
 				}
 				else if(arrayIntersects(errorKeys || [], ['zarplata']).length){
