@@ -7,15 +7,13 @@ use App\Service\Payments\Core\BasePaymentService;
 use App\Service\Payments\Core\PaymentInvoice;
 use App\Service\Payments\Core\PaymentStatus;
 use App\Service\Payments\Core\PaymentConnector;
-use BeGateway\GetPaymentToken;
-use BeGateway\QueryByPaymentToken;
 
 class Prodamus extends BasePaymentService
 {
-
-    public function __construct(private ?GetPaymentToken $client = null)
+    public function __construct(
+        private readonly ProdamusConnector $connector
+    )
     {
-        $this->client = $this->client ?: app(GetPaymentToken::class);
     }
 
     /**
@@ -23,7 +21,7 @@ class Prodamus extends BasePaymentService
      */
     public function connector(): PaymentConnector
     {
-        return new ProdamusConnector($this->client);
+        return $this->connector;
     }
 
     /**
@@ -32,7 +30,7 @@ class Prodamus extends BasePaymentService
      */
     public function info(string $paymentId): PaymentStatus
     {
-        return new ProdamusPaymentStatus($paymentId, new QueryByPaymentToken());
+        return new ProdamusPaymentStatus($paymentId);
     }
 
     public function invoice(array $data): PaymentInvoice

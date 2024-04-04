@@ -8,14 +8,21 @@ use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPrice;
 use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\HasIdempotenceKey;
+use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\PaymentConnector;
 use BeGateway\GetPaymentToken;
 use Exception;
 
 class ProdamusConnector implements PaymentConnector
 {
+    use HasIdempotenceKey;
+    use HasPriceConverter;
+
     public function __construct(
-        private readonly GetPaymentToken $client
+        private readonly string $shopKey,
+        private readonly string $successUrl,
+        private readonly string $failUrl
     )
     {
     }
@@ -67,19 +74,5 @@ class ProdamusConnector implements PaymentConnector
         $this->client->customer->setEmail($authUser->email);
         $this->client->customer->setCity($authUser->city);
         $this->client->customer->setIp(request()->ip());
-    }
-
-    private function getPrice(PaymentDTO $data): TariffPrice
-    {
-        $tariff = Tariff::getTariffById($data->tariffId);
-
-        return $tariff
-            ->getPrice($data->extraUsersLimit)
-            ->setCurrency('rub');
-    }
-
-    private function generateIdempotenceKey(): string
-    {
-        return uniqid('', true);
     }
 }

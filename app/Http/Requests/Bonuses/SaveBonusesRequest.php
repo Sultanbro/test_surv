@@ -28,23 +28,23 @@ class SaveBonusesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bonuses'               => 'required|array',
-            'bonuses.*.title'       => 'required|string',
-            'bonuses.*.sum'         => 'required|integer',
-            'bonuses.*.group_id'    => 'required|integer',
+            'bonuses' => 'required|array',
+            'bonuses.*.title' => 'required|string',
+            'bonuses.*.sum' => 'required|numeric',
+            'bonuses.*.group_id' => 'required|integer',
             'bonuses.*.activity_id' => 'required|integer',
-            'bonuses.*.unit'        => 'required|string|in:all,one,first,percent',
-            'bonuses.*.quantity'    => [
+            'bonuses.*.unit' => 'required|string|in:all,one,first,percent',
+            'bonuses.*.quantity' => [
                 'required_unless:bonuses.*.unit,percent',
                 'integer',
                 'min:1',
                 'nullable'
             ],
-            'bonuses.*.daypart'     => 'required|integer|in:0,1,2',
-            'bonuses.*.text'        => 'nullable',
-            'bonuses.*.from'        => 'nullable',
-            'bonuses.*.to'          => 'nullable',
-            'bonuses.*.targetable_id'   => 'required|integer',
+            'bonuses.*.daypart' => 'required|integer|in:0,1,2',
+            'bonuses.*.text' => 'nullable',
+            'bonuses.*.from' => 'nullable',
+            'bonuses.*.to' => 'nullable',
+            'bonuses.*.targetable_id' => 'required|integer',
             'bonuses.*.targetable_type' => 'required|integer|in:1,2,3',
         ];
     }

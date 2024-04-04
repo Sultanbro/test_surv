@@ -5,14 +5,17 @@ namespace App\Service\Payments\WalletOne;
 use App\Classes\Helpers\Phone;
 use App\DTO\Api\PaymentDTO;
 use App\Models\CentralUser;
-use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPrice;
 use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\HasIdempotenceKey;
+use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\PaymentConnector;
 use Illuminate\Support\Str;
 
 class WalletOneConnector implements PaymentConnector
 {
+    use HasIdempotenceKey;
+    use HasPriceConverter;
+
     const CURRENCIES = [
         'usd' => 840,
         'kzt' => 398
@@ -56,19 +59,5 @@ class WalletOneConnector implements PaymentConnector
                 "WMI_FAIL_URL" => $this->failUrl,
             ],
         );
-    }
-
-    private function getPrice(PaymentDTO $data): TariffPrice
-    {
-        $tariff = Tariff::getTariffById($data->tariffId);
-
-        return $tariff
-            ->getPrice($data->extraUsersLimit)
-            ->setCurrency($data->currency);
-    }
-
-    private function generateIdempotenceKey(): string
-    {
-        return uniqid('', true);
     }
 }

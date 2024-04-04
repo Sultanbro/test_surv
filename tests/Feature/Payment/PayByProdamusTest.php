@@ -34,7 +34,9 @@ class PayByProdamusTest extends TenantTestCase
         $response = $provider->pay($data, $user);
         $this->assertDatabaseHas('tariff_payment', [
             'payment_id' => $response->getPaymentId()
-        ], 'mysql');
+        ],
+            'mysql'
+        );
     }
 
     /**
