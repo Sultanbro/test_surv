@@ -31,7 +31,7 @@ class PaymentServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(QueryByPaymentToken::class, function () {
-            Settings::$shopId = config('payment.prodamus.shop_id');
+//            Settings::$shopId = config('payment.prodamus.shop_id');
             Settings::$shopKey = config('payment.prodamus.shop_key');
             return new QueryByPaymentToken();
         });
