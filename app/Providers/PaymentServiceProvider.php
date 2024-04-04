@@ -15,10 +15,10 @@ class PaymentServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(GetPaymentToken::class, function () {
-            Settings::$shopId = config('payment.prodamus.shop_id');
+//            Settings::$shopId = config('payment.prodamus.shop_id');
             Settings::$shopKey = config('payment.prodamus.shop_key');
             $transaction = new GetPaymentToken();
-//            $transaction->setTestMode();
+            $transaction->setTestMode();
             // $this->app->environment('testing')
             $transaction->setSuccessUrl(config('payment.prodamus.success_url'));
             $transaction->setDeclineUrl(config('payment.prodamus.failed_url'));
