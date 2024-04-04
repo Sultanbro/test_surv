@@ -75,7 +75,7 @@ class SaveUserKpi extends Command
             }
 
             foreach ($kpi->items as $item) {
-                $history = $item->histories->whereBetween('created_at', [$startOfMonth, $endOfMonth])->first();
+                $history = $item->histories->sortBy('id')->last();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 $item['daily_plan'] = (float)$item->plan;
                 if ($has_edited_plan) {
