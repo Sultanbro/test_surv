@@ -107,7 +107,6 @@ final class UserUpdateService
     ): void
     {
         $existEmail = $this->userRepository->getUserByEmail($email);
-        $existEmail = $this->userRepository->getUserByEmail($email);
         if ($existEmail && $email != $user->email) {
             if ($existEmail->deleted_at != null) {
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
@@ -161,6 +160,7 @@ final class UserUpdateService
         $user->program_id = $userDTO->programType;
         $user->working_day_id = $userDTO->workingDays;
         $user->working_time_id = $userDTO->workTimes;
+        $user->work_chart_id = $userDTO->workChart;
         $user->weekdays = $userDTO->weekdays;
         $user->first_work_day = $userDTO->firstWorkDay;
         $user->working_country = $userDTO->workingCountry;
