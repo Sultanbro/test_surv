@@ -232,7 +232,7 @@ export default {
 				form.action = url
 				Object.keys(params).forEach(key => {
 					const inp = document.createElement('input')
-					inp.name = 'hidden'
+					inp.name = key
 					inp.value = params[key]
 					form.appendChild(inp)
 				})
