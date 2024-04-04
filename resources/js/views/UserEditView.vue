@@ -556,29 +556,6 @@ export default {
 					})
 				}
 
-				// if (this.taxesFillData) {
-				// 	// редактирование сущуствующих
-				// 	for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
-				// 		if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-				// 			await this.axios.post('/tax/set-assignee', {
-				// 				user_id: userId,
-				// 				tax_id: this.taxesFillData.editTaxes[i].id || this.taxesFillData.editTaxes[i].tax_id,
-				// 				is_assigned: 1,
-				// 				end_subtraction: this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0,
-				// 				is_percent: this.taxesFillData.editTaxes[i].isPercent ? 1 : 0,
-				// 				value: this.taxesFillData.editTaxes[i].value,
-				// 			});
-				// 		}
-				// 	}
-				// }
-
-				if (this.workChartId) {
-					await axios.post('/work-chart/user/add', {
-						user_id: userId,
-						work_chart_id: this.workChartId,
-					});
-				}
-
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
 				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
 
