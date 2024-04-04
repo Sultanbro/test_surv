@@ -1664,7 +1664,10 @@ class KpiStatisticService
                         $kpi->priority = 4;
                     }
                 }
+            } else {
+                $kpi->priority = 9999; // chtobi ne meshat v sortirovke
             }
+
 
             $history = $kpi->histories_latest;
 
@@ -1676,13 +1679,6 @@ class KpiStatisticService
 
             return !isset($payload['is_active']) || $payload['is_active'] != 0;
         });
-
-        $subset = $kpis->map(function ($user) {
-            return collect($user->toArray())
-                ->only(['id', 'priority', 'targetable_id', 'targetable_type', 'has_user', 'has_position', 'has_group', 'has_dropped_group', 'targetable'])
-                ->all();
-        });
-        dd($subset->sortBy('priority')->toArray());
 
         if ($limitForProfile && $kpis->count() > 1) {
             $currentKpi = $kpis->sortBy('priority')->first();
