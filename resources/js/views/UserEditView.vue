@@ -932,7 +932,7 @@ export default {
 							:class="{'active': showBlocks.documents}"
 							@click="showBlock(9)"
 						>
-							<span>Документы <span class="red">*</span></span>
+							<span>Документы</span>
 						</li>
 						<li
 							id="bg-this-4"
