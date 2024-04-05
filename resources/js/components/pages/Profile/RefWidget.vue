@@ -122,7 +122,7 @@
 			>
 				статистика
 				<PopupMenu
-					v-if="isHoverStat"
+					v-if="isHoverStats"
 					position="topLeft"
 					class="px-3"
 					style="width: 150px;"
