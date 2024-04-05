@@ -26,10 +26,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string note
  * @property int user_id
  * @property string date
- * @property string amount
- * @property string paid
- * @property string bonus
- * @property string award
+ * @property float amount
+ * @property int paid
+ * @property int bonus
+ * @property int award
  * @property string comment_paid
  * @property string comment_bonus
  * @property string comment_award
