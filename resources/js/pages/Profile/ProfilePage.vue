@@ -4,7 +4,7 @@
 		id="page-profile"
 	>
 		<router-link
-			v-if="isReady && (profileUnfilled || unsignedDocs.length)"
+			v-if="isWarnReady && (profileUnfilled || unsignedDocs.length)"
 			to="/cabinet"
 			class="ProfilePage-fillProfile"
 		>
@@ -225,6 +225,7 @@ export default {
 
 			documents: [],
 			person: null,
+			isWarnReady: false,
 		};
 	},
 	computed: {
@@ -283,11 +284,11 @@ export default {
 	},
 	watch: {
 		isReady(value){
-			if(value) this.initAnimOnScroll()
+			if(value) this.init()
 		}
 	},
 	mounted(){
-		if(this.isReady) this.initAnimOnScroll()
+		if(this.isReady) this.init()
 		if(this.isBP) this.fetchUserStats()
 		this.fetchDocs()
 		this.fetchPerson()
@@ -298,6 +299,12 @@ export default {
 	},
 	methods: {
 		...mapActions(useReferralStore, ['fetchUserStats']),
+		init(){
+			setTimeout(() => {
+				this.initAnimOnScroll()
+				this.isWarnReady = true
+			}, 100)
+		},
 		async fetchDocs(){
 			const { data } = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
 			const docs = data.data || []

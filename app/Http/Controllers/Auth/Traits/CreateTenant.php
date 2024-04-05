@@ -45,7 +45,9 @@ trait CreateTenant
         ]);
 
         if (!app()->environment('local')) {
-            Mail::to($centralUser->email)->send($mail);
+            try {
+                Mail::to($centralUser->email)->send($mail);
+            } catch (\Exception) {}
         }
 
         return $tenant;

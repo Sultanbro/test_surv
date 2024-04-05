@@ -294,6 +294,7 @@ export default {
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
+			this.workChartId = data.user?.work_chart_id
 			this.updateTaxes();
 			if(data?.user?.inviter_id){
 				try {

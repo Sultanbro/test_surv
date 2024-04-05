@@ -414,6 +414,9 @@ class SalaryController extends Controller
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function exportExcel(Request $request)
     {
         $rules = [
@@ -430,16 +433,17 @@ class SalaryController extends Controller
             return redirect()->to('/timetracking/salaries')->withErrors('Поля не введены');
         }
 
-        $group = ProfileGroup::find($request->group_id);
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        /** @var ProfileGroup $group */
+        $group = ProfileGroup::query()->find($request->get('group_id'));
+        $date = Carbon::createFromDate($request->get('year'), $request->get('month'), 1);
 
         /**
          * get users
          */
-        $working_users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
+        $working_users = (new UserService)->getEmployeesForSalaries($request->get('group_id'), $date->format('Y-m-d'));
         $working_users = collect($working_users)->pluck('id')->toArray();
 
-        $fired_users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
+        $fired_users = (new UserService)->getFiredEmployeesForSalaries($request->get('group_id'), $date->format('Y-m-d'));
         $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $editors_id = json_decode($group->editors_id);
@@ -479,10 +483,10 @@ class SalaryController extends Controller
 
         $data = [];
 
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        $date = Carbon::createFromDate($request->get('year'), $request->get('month'), 1);
 
-        $working_users = $this->getSheet($working_users, $date, $request->group_id);
-        $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
+        $working_users = $this->getSheet($working_users, $date, $request->get('group_id'));
+        $fired_users = $this->getSheet($fired_users, $date, $request->get('group_id'));
 
         $_users = array_merge([['']], $working_users['users']);
         $_users = array_merge($_users, [[''], [''], ['']]);
@@ -507,11 +511,22 @@ class SalaryController extends Controller
     /**
      * @throws Exception
      */
-    private function getSheet($users_ids, $date, $group_id)
+    private function getSheet($users_ids, Carbon $date, $group_id)
     {
+        $lastDay = $date->copy()->endOfMonth()->toDateString();
+        $latestHistories = \DB::table('histories')
+            ->selectRaw('MAX(id) as id, reference_id')
+            ->where('reference_table', 'App\\User')
+            ->where('type', 2)
+            ->whereDate('created_at', '<=', $lastDay)
+            ->groupBy('reference_id');
+
         $users = \DB::table('users')
+            ->leftJoinSub($latestHistories, 'latest_histories', function ($join) {
+                $join->on('users.id', '=', 'latest_histories.reference_id');
+            })
+            ->leftJoin('histories as h', 'h.id', '=', 'latest_histories.id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
-            ->leftJoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
             ->selectRaw("users.id as id,
                         users.phone as phone,
@@ -530,13 +545,15 @@ class SalaryController extends Controller
                         users.currency as currency,
                         CONCAT('KASPI', '') as card,
                         users.uin as uin,
-                        users.user_type as user_type
+                        users.user_type as user_type,
+                        h.payload as history_payload,
+                        h.created_at as history_created_at
                         ")
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
                 'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'user_type', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
             ->get();
 
-        $fines = Fine::pluck('penalty_amount', 'id')->toArray();
+        $fines = Fine::query()->pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
         $allTotal = [
@@ -569,17 +586,20 @@ class SalaryController extends Controller
         $tax_amount = 0;
         foreach ($users as $user) {
             /** @var User $user */
-
+            /** @var User $_user */
             $_user = User::withTrashed()->find($user->id);
 
-            $ud = UserDescription::where('user_id', $user->id)->first();
+            /** @var UserDescription $ud */
+            $ud = UserDescription::query()->where('user_id', $user->id)->first();
 
             if ($ud && $ud->is_trainee != 0) {
                 continue;
             }
 
             // Суммы на месяц
-            $month_salary = Salary::where('user_id', $user->id)
+            /** @var Salary $month_salary */
+            $month_salary = Salary::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->select([
@@ -589,7 +609,9 @@ class SalaryController extends Controller
                 ->first();
 
             // edited salary
-            $edited_salary = EditedSalary::where('user_id', $user->id)
+            /** @var EditedSalary $edited_salary */
+            $edited_salary = EditedSalary::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
@@ -611,7 +633,8 @@ class SalaryController extends Controller
                 $cardholder = $user->jysan_cardholder;
                 $cards = 'JYSAN: ' . $this->card_space($user->card_jysan);
             } else {
-                $user_card = Card::where('user_id', $user->id)->first();
+                /** @var Card $user_card */
+                $user_card = Card::query()->where('user_id', $user->id)->first();
                 if ($user_card) {
                     $cardholder = $user_card->cardholder;
                     $_card = ($user_card->number) ? $this->card_space($user_card->number) . '; ' . $this->phone_space($user_card->phone) : $this->phone_space($user_card->phone);
@@ -620,18 +643,24 @@ class SalaryController extends Controller
             }
 
             // рабочие дни
-            $userModel = User::where('id', $user->id)->first();
+            $workChartFromHistory = null;
+            if ($user->history_payload && !$date->isCurrentMonth()) {
+                $payload = json_decode($user->history_payload, true);
+                $workChartFromHistory = $payload['work_chart_id'] ?? null;
+            }
 
-            if ($userModel) $workDays = $userModel->getWorkDays($date);
-            else if ($_user) $workDays = $_user->getWorkDays($date);
+            if ($_user) $workDays = $_user->getWorkDays($date, $workChartFromHistory);
             else return throw new Exception("User not found");
 
-            if (!$edited_salary) $allTotal[8] += intval($workDays);
+//            if (auth()->id() == 5 && $user->id == 27565) {
+//                dd($workDays, $workChartFromHistory, $_user->workTime($workChartFromHistory), $date);
+//            }
+
+            if (!$edited_salary) $allTotal[8] += $workDays;
 
             // стажировочные
-            $trainee_days = DayType::select([
-                DB::raw('DAY(date) as day')
-            ])
+            $trainee_days = DayType::query()
+                ->select([DB::raw('DAY(date) as day')])
                 ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
@@ -681,7 +710,9 @@ class SalaryController extends Controller
             }
 
             // KPI
-            $editedKpi = EditedKpi::where('user_id', $user->id)
+            /** @var EditedKpi $editedKpi */
+            $editedKpi = EditedKpi::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
@@ -695,7 +726,9 @@ class SalaryController extends Controller
             }
 
             // Бонусы
-            $editedBonus = EditedBonus::where('user_id', $user->id)
+            /** @var EditedBonus $editedBonus */
+            $editedBonus = EditedBonus::query()
+                ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
@@ -719,7 +752,7 @@ class SalaryController extends Controller
             if (!$edited_salary) $allTotal[13] += $bonus;
 
             // ИТОГО доход
-            $total_income = round($salary + $bonus + $kpi + $trainee_fees, 0);
+            $total_income = round($salary + $bonus + $kpi + $trainee_fees);
 
             if (!$edited_salary) $allTotal[14] += $total_income;
 
@@ -748,7 +781,8 @@ class SalaryController extends Controller
 
             // Штрафы
             $penalty = 0;
-            $userFines = UserFine::whereYear('day', $date->year)
+            $userFines = UserFine::query()
+                ->whereYear('day', $date->year)
                 ->whereMonth('day', $date->month)
                 ->where('user_id', $user->id)
                 ->where('status', UserFine::STATUS_ACTIVE)
@@ -803,14 +837,14 @@ class SalaryController extends Controller
              */
             $allTotal[17] += $totalTaxesUser;
 
-            $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
+            $on_currency = number_format($total_payment * $currency_rate, 0, '.', '') . strtoupper($user->currency);
 
             try {
                 if ($edited_salary) {
                     $allTotal[10] += (float)$edited_salary->amount;
-                    $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
+                    $on_currency = number_format((float)$edited_salary->amount * $currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $totalColumns[10] = 15;
-                    $totalColumns[14] = (int)$edited_salary->amount;
+                    $totalColumns[14] = $edited_salary->amount;
                     $totalColumns[20] = $this->space($edited_salary->amount, 3, true);
 
                 } else {
@@ -855,7 +889,7 @@ class SalaryController extends Controller
         return $phone;
     }
 
-    private function add_space($str, array $spaces)
+    private function add_space($str, array $spaces): string
     {
         $result = '';
         for ($i = 0; $i < strlen($str); $i++) {
@@ -865,43 +899,47 @@ class SalaryController extends Controller
         return $result;
     }
 
-    private function card_space($card)
+    private function card_space($card): string
     {
         $card = preg_replace('/\s+/', '', $card);
         return $this->add_space($card, [4, 8, 12, 16]);
     }
 
-    private function space($str, $step, $reverse = false)
+    private function space($str, $step, $reverse = false): string
     {
-
         if ($reverse)
             return strrev(chunk_split(strrev($str), $step, ' '));
 
         return chunk_split($str, $step, ' ');
     }
 
-    public function getTransfers(Request $request)
+    public function getTransfers(Request $request): array
     {
         $request->validate([
             'id' => 'required|int'
         ]);
-        return GroupUser::with('profile_group:id,name')->where('user_id', $request['id'])->where('status', GroupUser::STATUS_DROP)->get()->toArray();
+        return GroupUser::with('profile_group:id,name')
+            ->where('user_id', $request['id'])
+            ->where('status', GroupUser::STATUS_DROP)
+            ->get()
+            ->toArray();
     }
 
     /**
      * approve salary was checked for previous month
      */
-    public function approveSalary(Request $request)
+    public function approveSalary(Request $request): void
     {
-        $approval = SalaryApproval::where('group_id', $request->group_id)
-            ->whereMonth('date', $request->month)
-            ->whereYear('date', $request->year)
+        $approval = SalaryApproval::query()
+            ->where('group_id', $request->get('group_id'))
+            ->whereMonth('date', $request->get('month'))
+            ->whereYear('date', $request->get('year'))
             ->first();
 
         if (!$approval) {
-            SalaryApproval::create([
-                'group_id' => $request->group_id,
-                'date' => Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'),
+            SalaryApproval::query()->create([
+                'group_id' => $request->get('group_id'),
+                'date' => Carbon::createFromDate($request->get('year'), $request->get('month'), 1)->format('Y-m-d'),
                 'user_id' => Auth::user()->id
             ]);
         }
@@ -912,15 +950,15 @@ class SalaryController extends Controller
      */
     public function editPremium(Request $request)
     {
-
-        $type = $request->type; // bonus or kpi
-        $user_id = $request->user_id;
-        $amount = $request->amount;
-        $comment = $request->comment;
-        $date = $request->date;
+        $type = $request->get('type'); // bonus or kpi
+        $user_id = $request->get('user_id');
+        $amount = $request->get('amount');
+        $comment = $request->get('comment');
+        $date = $request->get('date');
 
         if ($type == 'kpi') {
-            $edited = EditedKpi::where('user_id', $user_id)
+            $edited = EditedKpi::query()
+                ->where('user_id', $user_id)
                 ->whereYear('date', Carbon::parse($date)->year)
                 ->whereMonth('date', Carbon::parse($date)->month)
                 ->first();
@@ -940,7 +978,8 @@ class SalaryController extends Controller
         }
 
         if ($type == 'bonus') {
-            $edited = EditedBonus::where('user_id', $user_id)
+            $edited = EditedBonus::query()
+                ->where('user_id', $user_id)
                 ->whereYear('date', Carbon::parse($date)->year)
                 ->whereMonth('date', Carbon::parse($date)->month)
                 ->first();

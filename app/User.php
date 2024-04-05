@@ -1657,31 +1657,27 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFired(): bool
-    {
-        dd($this);
-        return !($this->deleted_at == null);
-    }
 
     /**
      * Получаем дни работы для пользователя за месяц
      * @param $date
+     * @param null $workChartId
      * @return int
      * @throws Exception
      */
-    public function getWorkDays($date): int
+    public function getWorkDays($date, $workChartId = null): int
     {
         $date = is_string($date) ? Carbon::parse($date) : $date;
-        $workChartType = $this->workChart->work_charts_type ?? 0;
+        $workChartType = $this->workTime($workChartId)['workChartsType'];
+
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
-            $ignore = $this->getCountWorkDays();   // Какие дни не учитывать в месяце
+            $ignore = $this->getCountWorkDays(false, $workChartId);   // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
-        } elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+        }
+        elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
             $workDays = $this->getCountWorkDaysMonth($date->year, $date->month);
-        } else {
+        }
+        else {
             throw new Exception(message: 'Проверьте график работы', code: 400);
         }
         return $workDays;
@@ -1691,9 +1687,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * Получаем дни работы для пользователя за неделю.
      * @return int[]
      */
-    public function getCountWorkDays(bool $useHistory = true): array
+    public function getCountWorkDays(bool $useHistory = true, $workChartFromHistory = null): array
     {
-        $workChartFromHistory = null;
         if ($this->profile_histories_latest && $useHistory) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
             $workChartFromHistory = $payload['work_chart_id'] ?? null;
