@@ -653,7 +653,7 @@ class SalaryController extends Controller
             else return throw new Exception("User not found");
 
             if (auth()->id() == 5 && $user->id == 27565) {
-                dd($workDays, $workChartFromHistory);
+                dd($workDays, $workChartFromHistory, $_user->getWorkChart($workChartFromHistory), $date);
             }
 
             if (!$edited_salary) $allTotal[8] += $workDays;
