@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Service\Payments\Prodamus\Prodamus;
+use App\Service\Payments\Prodamus\ProdamusConnector;
 use App\Service\Payments\WalletOne\WalletOne;
 use App\Service\Payments\WalletOne\WalletOneConnector;
 use BeGateway\GetPaymentToken;
@@ -14,36 +16,25 @@ class PaymentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(GetPaymentToken::class, function () {
-//            Settings::$shopId = config('payment.prodamus.shop_id');
-            Settings::$shopKey = config('payment.prodamus.shop_key');
-            $transaction = new GetPaymentToken();
-            $transaction->setTestMode();
-            // $this->app->environment('testing')
-            $transaction->setSuccessUrl(config('payment.prodamus.success_url'));
-            $transaction->setDeclineUrl(config('payment.prodamus.failed_url'));
-            $transaction->setFailUrl(config('payment.prodamus.failed_url'));
-            $transaction->setCancelUrl(config('payment.prodamus.failed_url'));
-            $transaction->setNotificationUrl(route('payment.callback', ['currency' => 'rub']));
-            $transaction->setLanguage('ru');
-            $transaction->money->setCurrency('RUB');
-            return $transaction;
-        });
-
-        $this->app->bind(QueryByPaymentToken::class, function () {
-//            Settings::$shopId = config('payment.prodamus.shop_id');
-            Settings::$shopKey = config('payment.prodamus.shop_key');
-            return new QueryByPaymentToken();
-        });
 
         $this->app->bind(WalletOne::class, function () {
             $connector = new WalletOneConnector(
+                config('payment.wallet1.payment_url'),
                 config('payment.wallet1.merchant_id'),
                 config('payment.wallet1.success_url'),
                 config('payment.wallet1.failed_url')
-            // https://{tenant}.jobtron.org/pricing#success
             );
             return new WalletOne($connector);
+        });
+
+        $this->app->bind(Prodamus::class, function () {
+            $connector = new ProdamusConnector(
+                config('payment.prodamus.payment_url'),
+                config('payment.prodamus.secret_key'),
+                config('payment.prodamus.success_url'),
+                config('payment.prodamus.failed_url')
+            );
+            return new Prodamus($connector);
         });
     }
 }

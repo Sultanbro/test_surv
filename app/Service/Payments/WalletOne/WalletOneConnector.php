@@ -22,6 +22,7 @@ class WalletOneConnector implements PaymentConnector
     ];
 
     public function __construct(
+        private readonly string $paymentUrl,
         private readonly string $merchantId,
         private readonly string $successUrl,
         private readonly string $failUrl
@@ -35,7 +36,7 @@ class WalletOneConnector implements PaymentConnector
         $idempotenceKey = $this->generateIdempotenceKey();
 
         return new ConfirmationResponse(
-            'https://wl.walletone.com/checkout/checkout/Index',
+            $this->paymentUrl,
             $idempotenceKey,
             true,
             [

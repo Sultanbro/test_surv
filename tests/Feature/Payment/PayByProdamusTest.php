@@ -21,8 +21,10 @@ class PayByProdamusTest extends TenantTestCase
      */
     public function test_user_can_pay_tariff_plan()
     {
-        $user = CentralUser::factory()->create();
-        $tariff = Tariff::query()->where('kind', TariffKindEnum::Base)->first();
+        $user = CentralUser::factory()->create([
+            'phone' => '+37493270709'
+        ]);
+        $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
         $data = new PaymentDTO(
             'RUB',
             $tariff->getKey(),
@@ -37,6 +39,8 @@ class PayByProdamusTest extends TenantTestCase
         ],
             'mysql'
         );
+
+        dump($response->getUrl());
     }
 
     /**

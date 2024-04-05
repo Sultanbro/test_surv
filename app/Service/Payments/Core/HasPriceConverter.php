@@ -8,12 +8,12 @@ use App\Models\Tariff\TariffPrice;
 
 trait HasPriceConverter
 {
-    private function getPrice(PaymentDTO $data): TariffPrice
+    private function getPrice(PaymentDTO $data, ?string $currency = null): TariffPrice
     {
         $tariff = Tariff::getTariffById($data->tariffId);
 
         return $tariff
             ->getPrice($data->extraUsersLimit)
-            ->setCurrency($data->currency);
+            ->setCurrency($currency ?? $data->currency);
     }
 }

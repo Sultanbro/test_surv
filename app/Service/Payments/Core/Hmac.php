@@ -5,7 +5,7 @@ namespace App\Service\Payments\Core;
 class Hmac
 {
     public function __construct(
-        private readonly string $data,
+        private readonly array $data,
         private readonly string $key,
         private readonly string $algo = 'sha256'
     )
@@ -16,7 +16,7 @@ class Hmac
     {
         if (!in_array($this->algo, hash_algos()))
             return false;
-        $data = (array)$this->data;
+        $data = $this->data;
         array_walk_recursive($data, function (&$v) {
             $v = strval($v);
         });

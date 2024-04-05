@@ -10,9 +10,13 @@ use App\Models\Tariff\TariffPrice;
 use App\Service\Payments\Core\ConfirmationResponse;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
+use App\Service\Payments\Core\Hmac;
 use App\Service\Payments\Core\PaymentConnector;
 use BeGateway\GetPaymentToken;
 use Exception;
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
 
 class ProdamusConnector implements PaymentConnector
 {
@@ -20,6 +24,7 @@ class ProdamusConnector implements PaymentConnector
     use HasPriceConverter;
 
     public function __construct(
+        private readonly string $shopUrl,
         private readonly string $shopKey,
         private readonly string $successUrl,
         private readonly string $failUrl
@@ -34,45 +39,50 @@ class ProdamusConnector implements PaymentConnector
      */
     public function pay(PaymentDTO $data, CentralUser $user): ConfirmationResponse
     {
-//        try {
-        $this->buildRequest($data, $user);
-        $response = $this->client->submit();
+        $price = $this->getPrice($data);
+        $paymentId = $this->generateIdempotenceKey();
+        $data = [
+            'do' => 'link',
+            'type' => 'json',
+            'demo_mode' => 0,
+            'callbackType' => 'json',
+            'installments_disabled' => 1,
+            'order_id' => $paymentId,
+            'customer_phone' => $user->phone,
+            'currency' => $data->currency,
+            'products' => [
+                [
+                    'sku' => $paymentId,
+                    'name' => 'Оплата тарифа',
+                    'price' => (string)$price->getTotal(),
+                    'quantity' => '1'
+                ]
+            ]
+        ];
+
+        $signature = new Hmac($data, $this->shopKey);
+        $data['signature'] = $signature->create();
+
+        $response = $this->submit($data);
+
         // Check the status of the payment
-        if (!$response->isSuccess()) {
-            throw new Exception($response->getMessage());
+        if (!$response->successful()) {
+            throw new Exception($response->reason());
         }
 
+        $resp = json_decode($response->body(), true);
         return new ConfirmationResponse(
-            $response->getRedirectUrl(),
-            $this->client->getTrackingId(),
-            $response->isSuccess()
+            $resp['payment_link'],
+            $paymentId,
+            $response->successful()
         );
-
-//        } catch (Exception $e) {
-//            throw new Exception($e->getMessage());
-//        }
     }
 
-    /**
-     * @param PaymentDTO $data
-     * @param CentralUser $authUser
-     * @return void
-     */
-    private function buildRequest(
-        PaymentDTO  $data,
-        CentralUser $authUser
-    ): void
+    private function submit(array $data): PromiseInterface|Response
     {
-        $price = $this->getPrice($data);
-        $idempotenceKey = $this->generateIdempotenceKey();
-
-        $this->client->setTrackingId($idempotenceKey);
-        $this->client->money->setAmount($price->getTotal());
-        $this->client->setDescription('Заказ №' . time());
-        $this->client->customer->setFirstName($authUser->name);
-        $this->client->customer->setLastName($authUser->last_name);
-        $this->client->customer->setEmail($authUser->email);
-        $this->client->customer->setCity($authUser->city);
-        $this->client->customer->setIp(request()->ip());
+        return Http::withHeaders([
+            'Content-type' => 'text/plain',
+            'charset' => 'utf-8'
+        ])->get($this->shopUrl, $data);
     }
 }
