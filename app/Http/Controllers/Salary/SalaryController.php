@@ -552,9 +552,7 @@ class SalaryController extends Controller
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
                 'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'user_type', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
             ->get();
-        if (auth()->id() == 5) {
-            dd($users);
-        }
+
         $fines = Fine::query()->pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
@@ -653,6 +651,10 @@ class SalaryController extends Controller
 
             if ($_user) $workDays = $_user->getWorkDays($date, $workChartFromHistory);
             else return throw new Exception("User not found");
+
+            if (auth()->id() == 5 && $user->id == 27565) {
+                dd($workDays, $workChartFromHistory);
+            }
 
             if (!$edited_salary) $allTotal[8] += $workDays;
 
