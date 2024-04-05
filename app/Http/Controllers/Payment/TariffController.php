@@ -27,7 +27,8 @@ class TariffController extends Controller
     {
         return $this->response(
             message: 'success',
-            data: Cache::remember('currencies', 60 * 24, fn() => $this->tariffGetAllService->handle()),
+            data: Cache::driver('central')
+                ->remember('currencies', 60 * 24, fn() => $this->tariffGetAllService->handle()),
         );
     }
 }
