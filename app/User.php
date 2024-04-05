@@ -1671,7 +1671,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workChartType = $this->workTime($workChartId)['workChartsType'];
 
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
-            $ignore = $this->getCountWorkDays(!$date->isCurrentMonth());   // Какие дни не учитывать в месяце
+            $ignore = $this->getCountWorkDays(false, $workChartId);   // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
         }
         elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
@@ -1687,9 +1687,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      * Получаем дни работы для пользователя за неделю.
      * @return int[]
      */
-    public function getCountWorkDays(bool $useHistory = true): array
+    public function getCountWorkDays(bool $useHistory = true, $workChartFromHistory = null): array
     {
-        $workChartFromHistory = null;
         if ($this->profile_histories_latest && $useHistory) {
             $payload = json_decode($this->profile_histories_latest->payload, true);
             $workChartFromHistory = $payload['work_chart_id'] ?? null;
