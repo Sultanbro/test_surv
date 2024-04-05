@@ -2,7 +2,7 @@
 	<div class="header__right">
 		<div class="header__right-nav">
 			<div
-				v-if="isBp && $laravel.is_admin"
+				v-if="$laravel.is_admin"
 				v-b-popover.hover.left.html="'Вопросы и ответы'"
 				class="header__right-icon"
 				@click="$emit('pop', 'faq')"
