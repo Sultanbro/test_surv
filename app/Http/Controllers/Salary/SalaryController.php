@@ -414,6 +414,9 @@ class SalaryController extends Controller
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function exportExcel(Request $request)
     {
         $rules = [
@@ -430,16 +433,17 @@ class SalaryController extends Controller
             return redirect()->to('/timetracking/salaries')->withErrors('Поля не введены');
         }
 
-        $group = ProfileGroup::find($request->group_id);
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        /** @var ProfileGroup $group */
+        $group = ProfileGroup::query()->find($request->get('group_id'));
+        $date = Carbon::createFromDate($request->get('year'), $request->get('month'), 1);
 
         /**
          * get users
          */
-        $working_users = (new UserService)->getEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
+        $working_users = (new UserService)->getEmployeesForSalaries($request->get('group_id'), $date->format('Y-m-d'));
         $working_users = collect($working_users)->pluck('id')->toArray();
 
-        $fired_users = (new UserService)->getFiredEmployeesForSalaries($request->group_id, $date->format('Y-m-d'));
+        $fired_users = (new UserService)->getFiredEmployeesForSalaries($request->get('group_id'), $date->format('Y-m-d'));
         $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $editors_id = json_decode($group->editors_id);
@@ -479,10 +483,10 @@ class SalaryController extends Controller
 
         $data = [];
 
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        $date = Carbon::createFromDate($request->get('year'), $request->get('month'), 1);
 
-        $working_users = $this->getSheet($working_users, $date, $request->group_id);
-        $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
+        $working_users = $this->getSheet($working_users, $date, $request->get('group_id'));
+        $fired_users = $this->getSheet($fired_users, $date, $request->get('group_id'));
 
         $_users = array_merge([['']], $working_users['users']);
         $_users = array_merge($_users, [[''], [''], ['']]);
@@ -548,8 +552,10 @@ class SalaryController extends Controller
             ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
                 'card_kaspi', 'card_jysan', 'jysan', 'kaspi', 'kaspi_cardholder', 'jysan_cardholder', 'card', 'user_type', 'program_id', 'birthday', 'currency', 'working_day_id', 'uin')
             ->get();
-//dd($users);
-        $fines = Fine::pluck('penalty_amount', 'id')->toArray();
+        if (auth()->id() == 5) {
+            dd($users);
+        }
+        $fines = Fine::query()->pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
         $allTotal = [
