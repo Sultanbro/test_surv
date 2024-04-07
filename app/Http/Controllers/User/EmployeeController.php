@@ -101,7 +101,8 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('group_id', $request['group_id']);
             });
-        } elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'deactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -121,7 +122,8 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'fired')->where('group_id', $request['group_id']);
             });
-        } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = User::query()
                 ->whereNull('deleted_at')
@@ -184,7 +186,8 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        } elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'trainees') {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
@@ -204,7 +207,8 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        } elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
+        }
+        elseif (isset($request['filter']) && $request['filter'] == 'reactivated') {
             if ($request['job'] != 0) {
                 $users = User::withTrashed()
                     ->where('position_id', $request['job']);
@@ -228,7 +232,8 @@ class EmployeeController extends Controller
             if ($request['group_id']) $users = $users->whereHas('group_users', function ($q) use ($request) {
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
-        } else {
+        }
+        else {
             if ($request['job'] != 0) {
                 $users = User::query()
                     ->where('position_id', $request['job']);
