@@ -37,6 +37,7 @@ yarn-error.log
 .vagrant
 .env
 .env.testing
+.git-old
 .htaccess
 .DS_Store
 /database/sql/*.sql
