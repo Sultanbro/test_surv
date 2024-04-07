@@ -39,6 +39,7 @@ yarn-error.log
 .env.testing
 .htaccess
 .DS_Store
+.git-old
 /database/sql/*.sql
 
 /deployment
