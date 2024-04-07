@@ -151,7 +151,7 @@ class BonusService
           
             $all = $request->all();
             $all['updated_by'] = auth()->id();
-
+            dd($all);
             Bonus::query()->findOrFail($id)->update($all);
 
         } catch (Exception $exception){
