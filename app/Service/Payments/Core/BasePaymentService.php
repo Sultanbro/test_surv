@@ -36,9 +36,9 @@ abstract class BasePaymentService
     public function pay(PaymentDTO $data, CentralUser $authUser): ConfirmationResponse
     {
         $activePayment = TariffPayment::getActivePaymentIfExist($authUser);
-        if ($activePayment) {
-            throw new Exception("activePaymentIsExist");
-        }
+//        if ($activePayment) {
+//            throw new Exception("activePaymentIsExist");
+//        }
 
         $connector = $this->connector();
         $response = $connector->pay($data, $authUser);
