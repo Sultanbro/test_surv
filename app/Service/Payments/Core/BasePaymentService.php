@@ -88,18 +88,14 @@ abstract class BasePaymentService
         TariffPayment $payment,
     ): void
     {
-        try {
-            (new PaymentLead(
-                $user,
-                $payment,
-                tenant('id'),
-                null,
-            ))
-                ->setNeedCallback(false)
-                ->publish();
-        } catch (Exception $err) {
-            return; //TODO add logs
-        }
+        (new PaymentLead(
+            $user,
+            $payment,
+            tenant('id'),
+            null,
+        ))
+            ->setNeedCallback(false)
+            ->publish();
     }
 
     abstract public function invoice(array $data): PaymentInvoice;
