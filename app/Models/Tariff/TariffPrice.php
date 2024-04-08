@@ -19,7 +19,9 @@ final class TariffPrice
     private static array $currencyMap = [
         'kzt' => [
             'rub' => 'kztToRub',
+            'usd' => 'kztToUsd'
         ],
+
     ];
 
     public int $tariffPrice;
@@ -149,5 +151,10 @@ final class TariffPrice
     public function kztToRub(float $v): float
     {
         return $this::converterToRub($v);
+    }
+
+    public function kztToUsd(float $v): float
+    {
+        return $this::converterToUsd($v);
     }
 }

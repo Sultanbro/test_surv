@@ -23,7 +23,7 @@ final class AnalyticCacheStorage
         Collection $data
     ): bool
     {
-        return Cache::driver("central")->put($key, $data, self::$ttl);
+        return Cache::put($key, $data, self::$ttl);
     }
 
     /**
@@ -50,7 +50,7 @@ final class AnalyticCacheStorage
         string $key
     ): bool
     {
-        return Cache::driver("central")->has($key);
+        return Cache::has($key);
     }
 
     /**
@@ -60,7 +60,7 @@ final class AnalyticCacheStorage
      */
     public static function flush(): bool
     {
-        return Cache::driver("central")->flush();
+        return Cache::flush();
     }
 
     /**
@@ -73,7 +73,7 @@ final class AnalyticCacheStorage
         string $key
     ): bool
     {
-        return Cache::driver("central")->forget($key);
+        return Cache::forget($key);
     }
 
     /**

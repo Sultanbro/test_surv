@@ -20,6 +20,18 @@ trait CurrencyTrait
     }
 
     /**
+     * @param float $price price in KZT
+     * @throws Exception
+     */
+    public static function converterToUsd(
+        float $price
+    ): float
+    {
+        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL, 10);
+        return $rates->convertFromTenge('USD', $price);
+    }
+
+    /**
      * @param float $price
      * @return float
      * @throws Exception
