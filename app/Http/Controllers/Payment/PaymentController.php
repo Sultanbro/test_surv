@@ -68,6 +68,7 @@ class PaymentController extends Controller
     {
         $headers = $request->header();
         $fields = $request->all();
+        dd($fields);
         $response = $this->factory
             ->currencyProvider($currency)
             ->invoice([
