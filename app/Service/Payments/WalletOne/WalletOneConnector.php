@@ -23,6 +23,7 @@ class WalletOneConnector implements PaymentConnector
 
     public function __construct(
         private readonly string $paymentUrl,
+        private readonly string $shopKey,
         private readonly string $merchantId,
         private readonly string $successUrl,
         private readonly string $failUrl
@@ -46,7 +47,7 @@ class WalletOneConnector implements PaymentConnector
                 "WMI_PAYMENT_NO" => $idempotenceKey,
                 "WMI_CURRENCY_ID" => self::CURRENCIES[Str::lower($data->currency)],
                 "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
-                "WMI_DESCRIPTION" => urlencode('Заказ №' . time()),
+                "WMI_DESCRIPTION" => 'Заказ №' . time(),
                 "WMI_CUSTOMER_EMAIL" => $user->email,
                 "WMI_ORDER_ITEMS" => json_encode([[
                     "Title" => urlencode("Покупка тарифа"),
@@ -60,5 +61,10 @@ class WalletOneConnector implements PaymentConnector
                 "WMI_FAIL_URL" => $this->failUrl,
             ],
         );
+    }
+
+    public function getShopKey(): string
+    {
+        return $this->shopKey;
     }
 }

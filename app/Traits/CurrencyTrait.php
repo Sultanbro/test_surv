@@ -52,7 +52,6 @@ trait CurrencyTrait
         float $price
     ): array
     {
-        //TODO make enum keys
         return [
             'kzt' => $price,
             'rub' => self::converterToRub($price),
