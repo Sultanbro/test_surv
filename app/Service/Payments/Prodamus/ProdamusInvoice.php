@@ -20,8 +20,8 @@ class ProdamusInvoice extends PaymentInvoice
 
     public function handle(): InvoiceResponse
     {
-        $paymentId = $this->data['order_id'];
-        $status = $this->data['payment_status'] ?? null;
+        $paymentId = $this->data['fields']['order_id'];
+        $status = $this->data['fields']['payment_status'] ?? null;
         /** @var TariffPayment $payment */
         $payment = TariffPayment::query()->where('payment_id', $paymentId)->first();
         if ($payment && $status == 'success') {
