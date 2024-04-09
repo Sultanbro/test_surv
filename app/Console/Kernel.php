@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
 use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
@@ -44,7 +45,8 @@ class Kernel extends ConsoleKernel
         SetExitTimetracking::class,
         TenantMigrateFreshCommand::class,
         TestingCommand::class,
-        UpdateReferralSalary::class
+        UpdateReferralSalary::class,
+        CacheTopRentabilityPerDay::class,
     ];
 
     /**
@@ -61,7 +63,7 @@ class Kernel extends ConsoleKernel
         |
         | Только запускаются в централной
 
-        |
+             |
         */
         $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
@@ -123,6 +125,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run analytics:pivots')->withoutOverlapping()->monthly(); // создать сводные таблицы отделов в аналитике
         $schedule->command('tenants:run analytics:parts')->withoutOverlapping()->monthly(); // создать декомпозицию и спидометры в аналитике
         $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
+
+        // for caching
+        $schedule->command('tenants:run --tenants=bp cache:rentability')->everySixHours();
     }
 
     /**

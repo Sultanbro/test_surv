@@ -40,19 +40,21 @@ class BonusService
      */
     public function getUserBonuses(int $user_id): array
     {
-        $groups =  GroupUser::where('user_id', $user_id)
+        $groups = GroupUser::query()
+            ->where('user_id', $user_id)
             ->where('status', 'active')
             ->get()
             ->pluck('group_id')
             ->toArray();
 
-        $user = User::find($user_id);
+        $user = User::query()->find($user_id);
 
-        $bonuses = Bonus::whereIn('targetable_id', $groups)
+        $bonuses = Bonus::query()->whereIn('targetable_id', $groups)
             ->where('targetable_type', 'App\ProfileGroup')->get();
+
         return [
-            'bonuses'    => $this->groupItems($bonuses),
-            'read'       => $user->obtainedBonuses->isEmpty() || $user->obtainedBonuses->where('read', true)->isNotEmpty(),
+            'bonuses' => $this->groupItems($bonuses),
+            'read' => $user->obtainedBonuses->isEmpty() || $user->obtainedBonuses->where('read', true)->isNotEmpty(),
         ];
     }
 
@@ -72,9 +74,9 @@ class BonusService
     public function get(int $id): array
     {
         return [
-            'bonuses'    => Bonus::query()->findOrFail($id),
+            'bonuses' => Bonus::query()->findOrFail($id),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
+            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -83,25 +85,26 @@ class BonusService
      * @param array $filters
      */
     public function fetch($filters): array
-    {   
-        if($filters !== null) {} 
+    {
+        if ($filters !== null) {
+        }
         $searchWord = $filters['query'] ?? null;
 
         $bonuses = Bonus::query()->when($searchWord,
             fn() => (new KpiBonusFilter)->globalSearch($searchWord)
         )->with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
- 
+
         return [
-            'bonuses'    => $this->groupItems($bonuses),
+            'bonuses' => $this->groupItems($bonuses),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
+            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
     /**
      * Группировать бонусы
      */
-    private function groupItems($items) : array
+    private function groupItems($items): array
     {
         $arr = [];
 
@@ -110,15 +113,15 @@ class BonusService
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
-                    'type'     => $type,
-                    'name'     => $name,
-                    'id'       => $name_items[0]->target['id'],
-                    'items'    => $name_items,
+                    'type' => $type,
+                    'name' => $name,
+                    'id' => $name_items[0]->target['id'],
+                    'items' => $name_items,
                     'expanded' => false
                 ];
             }
         }
-        
+
         return $arr;
     }
 
@@ -142,21 +145,20 @@ class BonusService
     /**
      * Обновляем данные и сохраняем в histories старые данные.
      */
-    public function update(BonusUpdateRequest $request) : void
+    public function update(BonusUpdateRequest $request): void
     {
         try {
 
             $id = $request->id;
             event(new BonusUpdated($id));
-          
+
             $all = $request->all();
             $all['updated_by'] = auth()->id();
-
             Bonus::query()->findOrFail($id)->update($all);
 
-        } catch (Exception $exception){
+        } catch (Exception $exception) {
             Log::error($exception);
-            
+
             throw new Exception($exception);
         }
     }
@@ -164,15 +166,14 @@ class BonusService
     /**
      * Удалить бонус
      */
-    public function delete(int $id) : void
+    public function delete(int $id): void
     {
         Bonus::query()->findOrFail($id)->delete();
     }
 
     private function getData(array $data)
     {
-        foreach ($data as $item)
-        {
+        foreach ($data as $item) {
             return $item;
         }
     }
@@ -183,13 +184,13 @@ class BonusService
      */
     private function getBonusData(array $data): array
     {
-        $data['title']       = $data['title'][0];
-        $data['sum']         = $data['sum'][0];
+        $data['title'] = $data['title'][0];
+        $data['sum'] = $data['sum'][0];
         $data['activity_id'] = $data['activity_id'][0];
-        $data['unit']        = $data['unit'][0];
-        $data['quantity']    = $data['quantity'][0];
-        $data['daypart']     = $data['daypart'][0];
-        $data['text']        = $data['text'][0];
+        $data['unit'] = $data['unit'][0];
+        $data['quantity'] = $data['quantity'][0];
+        $data['daypart'] = $data['daypart'][0];
+        $data['text'] = $data['text'][0];
         $data['targetable_type'] = $this->getModel($data['targetable_type']);
 
         return $data;
