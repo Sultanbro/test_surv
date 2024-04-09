@@ -88,14 +88,16 @@ abstract class BasePaymentService
         TariffPayment $payment,
     ): void
     {
-        (new PaymentLead(
+        $lead = (new PaymentLead(
             $user,
             $payment,
             tenant('id'),
-            null,
+            null
         ))
             ->setNeedCallback(false)
             ->publish();
+        $payment->lead_id = $lead['result'];
+        $payment->save();
     }
 
     abstract public function invoice(array $data): PaymentInvoice;

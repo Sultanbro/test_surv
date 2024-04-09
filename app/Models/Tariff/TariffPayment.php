@@ -21,7 +21,8 @@ use Carbon\Carbon;
  * @property bool $auto_payment
  * @property string $payment_id
  * @property string $service_for_payment
- * @property string $status
+ * @property string $status,
+ * @property string $lead_id
  */
 class TariffPayment extends Model
 {
@@ -45,7 +46,8 @@ class TariffPayment extends Model
         'auto_payment',
         'payment_id',
         'service_for_payment',
-        'status'
+        'status',
+        'lead_id'
     ];
 
     public static function getStatus($paymentId): string
