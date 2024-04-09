@@ -9,7 +9,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('tariff_payment', function (Blueprint $table) {
-            $table->string('lead_id')->after('tariff_id');
+            $table->string('lead_id')
+                ->nullable();
         });
     }
 
