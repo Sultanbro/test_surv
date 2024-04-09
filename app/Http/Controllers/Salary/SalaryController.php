@@ -325,6 +325,7 @@ class SalaryController extends Controller
         $realType = null;
         $date = Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
 
+        /** @var Salary $salary */
         $salary = Salary::query()
             ->where('user_id', $user_id)
             ->whereYear('date', $year)
@@ -378,7 +379,7 @@ class SalaryController extends Controller
             if ($type == 'bonus') $text = 'бонус';
 
             $author = Auth::user()->last_name . ' ' . Auth::user()->name;
-            UserNotification::create([
+            UserNotification::query()->create([
                 'user_id' => $user_id,
                 'about_id' => $user_id,
                 'title' => 'Добавлен ' . $text,

@@ -4,7 +4,7 @@
 		id="page-profile"
 	>
 		<router-link
-			v-if="isWarnReady && (profileUnfilled || unsignedDocs.length)"
+			v-if="!isOwner && isWarnReady && (profileUnfilled || unsignedDocs.length)"
 			to="/cabinet"
 			class="ProfilePage-fillProfile"
 		>
@@ -172,6 +172,7 @@ import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 import { useReferralStore } from '@/stores/Referral'
+import { usePortalStore } from '@/stores/Portal'
 
 export default {
 	name: 'ProfilePage',
@@ -238,6 +239,7 @@ export default {
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		...mapState(useReferralStore, {refReady: 'isReady'}),
+		...mapState(usePortalStore, ['isOwner']),
 		isTrainee(){
 			if(!this.person) return true
 			return !!this.person?.user_description?.is_trainee
