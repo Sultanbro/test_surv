@@ -73,8 +73,7 @@ class UserService
      * @param string $date
      * @return int
      */
-    private
-    function getYear(string $date): int
+    private function getYear(string $date): int
     {
         return $date == null ? Carbon::now()->year : Carbon::createFromFormat('Y-m-d', $date)->year;
     }

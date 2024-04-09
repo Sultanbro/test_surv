@@ -39,8 +39,8 @@ class SaveGroupSalary extends Command
      */
     public function handle()
     {
-        $givenDate = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
-        $pervMonth = Carbon::parse($this->argument('date') ?? now())->subMonth()->startOfMonth();
+        $givenDate = Carbon::parse($this->argument('date') ?? now())->startOfMonth()->format('Y-m-d');
+        $pervMonth = Carbon::parse($this->argument('date') ?? now())->subMonth()->startOfMonth()->format('Y-m-d');
 
         $dates = [
             $pervMonth,
