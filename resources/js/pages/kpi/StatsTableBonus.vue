@@ -1,63 +1,70 @@
 <template>
 	<div class="bonuses 1">
 		<table class="table j-table table-bordered table-sm mb-3 collapse-table">
-			<tr>
-				<th class="b-table-sticky-column text-center px-1">
-					<!-- <i
-						class="fa fa-cog"
-						@click="adjustFields"
-					/> -->
-				</th>
-				<th class="text-left">
-					Кому
-				</th>
-			</tr>
-			<tr />
-			<template v-for="(page_item, index) in groups">
-				<tr :key="index">
-					<td
-						class="pointer b-table-sticky-column"
-						@click="page_item.expanded = !page_item.expanded"
-					>
-						<div class="d-flex px-2">
-							<i
-								v-if="page_item.expanded"
-								class="fa fa-minus mt-1"
-							/>
-							<i
-								v-else
-								class="fa fa-plus mt-1"
-							/>
-							<span class="ml-2">{{ index + 1 }}</span>
-						</div>
-					</td>
-					<td class="text-left">
-						<div class="d-flex aic p-1">
-							<span class="ml-2">{{ page_item.name }}</span>
-						</div>
-					</td>
+			<thead>
+				<tr>
+					<th class="text-center px-1 table-heading">
+						<!-- <i
+							class="fa fa-cog"
+							@click="adjustFields"
+						/> -->
+					</th>
+					<th class="text-left">
+						Кому
+					</th>
 				</tr>
-				<template v-if="page_item.expanded">
-					<tr
-						:key="'tr' + index"
-						class="collapsable"
-						:class="{'active': page_item.expanded }"
-					>
-						<td :colspan="fields.length + 2">
-							<StatsTableBonusUser
-								v-if="page_item.targetable_type === 'App\\User'"
-								:user="page_item"
-								class="table__wrapper"
-							/>
-							<StatsTableBonusGroup
-								v-else
-								:group="page_item"
-								class="table__wrapper"
-							/>
+			</thead>
+			<tbody>
+				<template v-for="(page_item, index) in groups">
+					<tr :key="index">
+						<td
+							class="pointer"
+							@click="page_item.expanded = !page_item.expanded"
+						>
+							<div class="d-flex px-2">
+								<i
+									v-if="page_item.expanded"
+									class="fa fa-minus mt-1"
+								/>
+								<i
+									v-else
+									class="fa fa-plus mt-1"
+								/>
+								<span class="ml-2">{{ index + 1 }}</span>
+							</div>
+						</td>
+						<td class="text-left">
+							<div class="d-flex aic p-1">
+								<span class="ml-2">
+									{{ page_item.targetable_type === 'App\User' ? `${page_item.last_name} ${page_item.name}` : page_item.name }}
+								</span>
+							</div>
 						</td>
 					</tr>
+					<template v-if="page_item.expanded">
+						<tr
+							:key="'tr' + index"
+							:class="{'active': page_item.expanded }"
+						>
+							<td
+								colspan="2"
+								class="p-0"
+							>
+								<StatsTableBonusUser
+									v-if="page_item.targetable_type === 'App\User'"
+									:user="page_item"
+									class="table__wrapper"
+								/>
+								<StatsTableBonusGroup
+									v-else
+									:group="page_item"
+									class="table__wrapper"
+								/>
+							</td>
+						</tr>
+					</template>
 				</template>
-			</template>
+			</tbody>
 			<tr />
 		</table>
 	</div>
