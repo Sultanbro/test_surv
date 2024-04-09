@@ -52,8 +52,9 @@ class TopController extends Controller
 
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: Cache::driver('central')
-                ->rememberForever($cacheKey, fn() => $rentabilityService->handle($request->toDto())),
+            data:$rentabilityService->handle($request->toDto())
+//            data: Cache::driver('central')
+//                ->rememberForever($cacheKey, fn() => $rentabilityService->handle($request->toDto())),
         );
     }
 
