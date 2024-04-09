@@ -39,17 +39,15 @@ class SaveGroupSalary extends Command
      */
     public function handle()
     {
+        $givenDate = Carbon::parse($this->argument('date') ?? now())->startOfMonth();
+        $pervMonth = Carbon::parse($this->argument('date') ?? now())->subMonth()->startOfMonth();
 
-        if($this->argument('date')) {
-            $dates = [$this->argument('date')];
-        } else {
-            $dates = [
-                date('Y-m-d'),
-                Carbon::now()->subMonth()->format('Y-m-d')
-            ];
-        }
+        $dates = [
+            $pervMonth,
+            $givenDate
+        ];
 
-        foreach ($dates as $key => $date) {
+        foreach ($dates as $date) {
             $this->count($date);
             $this->comment('----------------------');
             $this->comment('----------------------');
@@ -60,7 +58,8 @@ class SaveGroupSalary extends Command
         }
     }
 
-    public function count($date) {
+    public function count($date)
+    {
         $groups = ProfileGroup::where('active', 1)->get();
 
         $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
@@ -71,7 +70,7 @@ class SaveGroupSalary extends Command
         foreach ($groups as $key => $group) {
             $this->line($group->name);
             $this->line('Р:' . $workingGroups[$group->id]);
-            $this->line('У:'. $firedGroups[$group->id]);
+            $this->line('У:' . $firedGroups[$group->id]);
             $this->line('============');
 
             // save working
@@ -79,7 +78,7 @@ class SaveGroupSalary extends Command
                 ->where('date', $date)
                 ->where('type', 1)
                 ->first();
-            if($workingGroupSalary) {
+            if ($workingGroupSalary) {
                 $workingGroupSalary->total = $workingGroups[$group->id];
                 $workingGroupSalary->save();
             } else {
@@ -93,7 +92,7 @@ class SaveGroupSalary extends Command
 
             // save fired total
             $firedGroupSalary = GroupSalary::where('group_id', $group->id)->where('date', $date)->where('type', 2)->first();
-            if($firedGroupSalary) {
+            if ($firedGroupSalary) {
                 $firedGroupSalary->total = $firedGroups[$group->id];
                 $firedGroupSalary->save();
             } else {
