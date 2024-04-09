@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # переход в каталог сервиса
 cd /var/www/job
