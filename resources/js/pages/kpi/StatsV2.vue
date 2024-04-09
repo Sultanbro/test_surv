@@ -332,7 +332,12 @@ export default {
 				});
 			}
 			else if(this.s_type_main == 2){
-				this.axios.get('/statistics/bonuses').then(response => {
+				this.axios.post('/statistics/bonuses', {
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
+				}).then(response => {
 					this.bonus_groups = response.data.filter(target => target.bonuses.length).map(this.parseBonus);
 					++this.key
 					loader.hide();
