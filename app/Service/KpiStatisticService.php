@@ -20,6 +20,7 @@ use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -317,6 +318,7 @@ class KpiStatisticService
     public function fetchBonuses(BonusesFilterRequest $request): array
     {
         $bonuses = $this->getBonuses($request);
+
         $kpiBonuses = [];
 
         foreach ($bonuses as $bonus) {
@@ -338,6 +340,7 @@ class KpiStatisticService
 
     /**
      * @param Request $request
+     * @return LengthAwarePaginator
      */
     private function getBonuses(Request $request)
     {
@@ -345,17 +348,18 @@ class KpiStatisticService
         $type = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
         $id = $parameters['targetable_id'] ?? null;
 
-        return Bonus::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
-            ['targetable_type', $type],
-            ['targetable_id', $id]
-        ]))->paginate(50);
+        return Bonus::query()
+            ->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
+                ['targetable_type', $type],
+                ['targetable_id', $id]
+            ]))
+            ->get();
     }
 
     /**
      * Получаем по Отделам.
      * @param $bonus
      * @param $request
-     * @return Builder[]|Collection
      */
     private function getProfileGroupBonus($bonus, $request)
     {
@@ -363,17 +367,22 @@ class KpiStatisticService
         $month = $request->month ?? null;
         $year = $request->year ?? null;
 
-        return ProfileGroup::with([
-            'bonuses' => fn($bs) => $bs->where('activity_id', $bonus->activity_id)
-                ->when($year && $month, fn($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
-            'users' => fn($user) => $user->select('id', DB::raw('CONCAT(name,\' \',last_name) as full_name')),
-            'users.obtainedBonuses' => fn($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
-        ])->where('id', $bonus->targetable_id)
-            ->get(['id', 'name'])->each(function ($data) use ($bonus) {
-                $data->targetable_type = $bonus->targetable_type;
-                $data->targetable_id = $bonus->targetable_id;
-                $data->activity_id = $bonus->activity_id;
-            });
+        $group = ProfileGroup::with([
+                'bonuses' => fn($bs) => $bs->where('activity_id', $bonus->activity_id)
+                    ->when($year && $month, fn($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+                'users' => fn($user) => $user->select('id', 'name', 'last_name'),
+                'users.obtainedBonuses' => fn($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+            ])
+            ->where('id', $bonus->targetable_id)
+            ->select(['id', 'name'])->first();
+
+        if ($group) {
+            $group->targetable_type = $bonus->targetable_type;
+            $group->targetable_id = $bonus->targetable_id;
+            $group->activity_id = $bonus->activity_id;
+        }
+
+        return $group;
     }
 
     /**
@@ -384,7 +393,7 @@ class KpiStatisticService
         $month = $request->month ?? null;
         $year = $request->year ?? null;
 
-        return User::with([
+        $user = User::with([
             'bonuses' => function ($bs) use ($bonus, $month, $year) {
                 $bs
                     ->when($year && $month, fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
@@ -393,7 +402,16 @@ class KpiStatisticService
             'bonuses.obtainedBonuses'
         ])
             ->where('id', $bonus->targetable_id)
-            ->first(['id', 'name']);
+            ->select(['id', 'name', 'last_name'])
+            ->first();
+
+        if ($user) {
+            $user->targetable_type = $bonus->targetable_type;
+            $user->targetable_id = $bonus->targetable_id;
+            $user->activity_id = $bonus->activity_id;
+        }
+
+        return $user;
     }
 
     /**
@@ -408,18 +426,22 @@ class KpiStatisticService
         $month = $request->month ?? null;
         $year = $request->year ?? null;
 
-        return Position::with([
+        $position = Position::with([
             'bonuses' => fn($bs) => $bs
                 ->where('activity_id', $bonus->activity_id)
                 ->when($year && $month, fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month)),
-            'users' => fn($user) => $user->select('id', 'position_id', DB::raw('CONCAT(name,\' \',last_name) as full_name')),
+            'users' => fn($user) => $user->select('id', 'position_id', 'name', 'last_name'),
             'users.obtainedBonuses' => fn($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
-        ])->where('id', $bonus->targetable_id)->get(['id', 'position'])
-            ->each(function ($data) use ($bonus) {
-                $data->targetable_type = $bonus->targetable_type;
-                $data->targetable_id = $bonus->targetable_id;
-                $data->activity_id = $bonus->activity_id;
-            });
+        ])
+            ->where('id', $bonus->targetable_id)->select(['id', 'position'])->first();
+
+        if ($position) {
+            $position->targetable_type = $bonus->targetable_type;
+            $position->targetable_id = $bonus->targetable_id;
+            $position->activity_id = $bonus->activity_id;
+        }
+
+        return $position;
     }
 
     /**
