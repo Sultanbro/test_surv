@@ -386,25 +386,23 @@ class TimetrackingController extends Controller
             throw new Exception('Вы не можете работать после ' . $schedule['end']->format('H:i'));
         }
 
-        WorkdayEvent::dispatch($user);
-
-        $workday?->setEnter($now)
-            ->setStatus(Timetracking::DAY_STARTED)
-            ->addTime($now, $user->timezone())
-            ->save();
-
         if (!$workday) {
-            Timetracking::query()->updateOrCreate(
+            $workday = Timetracking::query()->create(
                 [
                     'user_id' => $user->id,
-                    'enter' => $now->setTimezone('UTC')
-                ],
-                [
+                    'enter' => $now->setTimezone('UTC'),
                     'times' => [$now->setTimezone('UTC')->format('H:i')],
                     'status' => Timetracking::DAY_STARTED
                 ]
             );
         }
+
+        WorkdayEvent::dispatch($user);
+
+        $workday->setEnter($now)
+            ->setStatus(Timetracking::DAY_STARTED)
+            ->addTime($now, $user->timezone())
+            ->save();
 
         return 'started';
     }
@@ -1373,7 +1371,7 @@ class TimetrackingController extends Controller
                     ->get();
             } else {
 
-                /**@var Collection<User> $users*/
+                /**@var Collection<User> $users */
                 $users = User::withTrashed()
                     ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->with([
@@ -1399,7 +1397,7 @@ class TimetrackingController extends Controller
                     ->where('status', 1)
                     ->whereIn('fine_id', [1, 2])
                     ->get();
-
+                $timezone = $userData->timezone();
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
@@ -1411,7 +1409,7 @@ class TimetrackingController extends Controller
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-                        ->setTimezone(Setting::TIMEZONES[5])
+                        ->setTimezone($timezone)
                         ->format('H:i');
                 }
 
