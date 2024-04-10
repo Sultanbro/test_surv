@@ -433,6 +433,27 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return self::withTrashed()->findOrFail($id);
     }
 
+    public static function setExit(Timetracking $record, Carbon|string $date): void
+    {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+
+        /** @var Carbon $workEndTime */
+        $workEndTime = $record->user->schedule()['end'];
+
+
+        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+            $workEndTime->addDays();
+        }
+
+        if (!$workEndTime->isBefore($date->addDay())) return;
+
+
+        $record->setExit($workEndTime)
+            ->setStatus(Timetracking::DAY_ENDED)
+            ->addTime($workEndTime, $record->user->timezone())
+            ->save();
+    }
+
     /**
      * @param Builder $query
      * @param string $email
@@ -1673,11 +1694,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
             $ignore = $this->getCountWorkDays(false, $workChartId);   // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
-        }
-        elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+        } elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
             $workDays = $this->getCountWorkDaysMonth($date->year, $date->month);
-        }
-        else {
+        } else {
             throw new Exception(message: 'Проверьте график работы', code: 400);
         }
         return $workDays;

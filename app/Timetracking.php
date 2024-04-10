@@ -180,24 +180,33 @@ class Timetracking extends Model
         return $total_hours / 60;
     }
 
-    public static function updateTimes($employee_id, $date, $total_hours)
+    public static function updateTimes($employee_id, $date, $total_hours): void
     {
         $auth = auth()->id();
+        $record = Timetracking::query()
+            ->where('employee_id', $employee_id)
+            ->whereDate('enter', $date);
 
-        Timetracking::query()
-//            ->whereNot('updated', 1)
-            ->updateOrCreate([
-                'user_id' => $employee_id,
-                'enter' => $date,
-            ], [
-                'total_hours' => (int)$total_hours,
-                'exit' => $date,
-                'updated' => 2
+        if ($record->exists()) {
+            $record->update([
+                'total_hours' => $total_hours,
+                'updated' => 2,
             ]);
+        } else {
+            $record = Timetracking::query()->create([
+                'employee_id' => $employee_id,
+                'enter' => $date,
+                'total_hours' => $total_hours,
+                'updated' => 2,
+                'status' => Timetracking::DAY_STARTED
+            ]);
+        }
+
+        User::setExit($record, $date);
 
         TimetrackingHistory::query()->create([
             'user_id' => $employee_id,
-            'author_id' => 5,
+            'author_id' => $auth,
             'author' => User::getUserById($auth)->full_name,
             'date' => $date,
             'description' => 'Изменено время с аналитики на ' . $total_hours . ' минут',

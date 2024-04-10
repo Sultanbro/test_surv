@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\GroupSalary;
+use App\Models\Analytics\TopValue;
 use App\ProfileGroup;
 use App\Salary;
+use Cache;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
@@ -32,12 +34,7 @@ class SaveGroupSalary extends Command
      */
     public $date; // Дата пересчета
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
         $givenDate = Carbon::parse($this->argument('date') ?? now())->startOfMonth()->format('Y-m-d');
         $pervMonth = Carbon::parse($this->argument('date') ?? now())->subMonth()->startOfMonth()->format('Y-m-d');
@@ -55,6 +52,7 @@ class SaveGroupSalary extends Command
             $this->comment('----------------------');
             $this->comment('----------------------');
             $this->comment('----------------------');
+            Cache::driver('central')->forget(TopValue::rentabilityCacheKey(Carbon::parse($date)));
         }
     }
 
@@ -104,5 +102,6 @@ class SaveGroupSalary extends Command
                 ]);
             }
         }
+
     }
 }

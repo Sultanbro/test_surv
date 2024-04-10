@@ -797,4 +797,11 @@ class TopValue extends Model
     {
         return $this->belongsTo(ProfileGroup::class, 'group_id', 'id');
     }
+
+    public static function rentabilityCacheKey(Carbon $date): string
+    {
+        $cacheKey = $date->isCurrentMonth() ? now()->format("Y-m-d") : $date->format('Y-m');
+        $cacheKey .= 'getRentability';
+        return $cacheKey;
+    }
 }
