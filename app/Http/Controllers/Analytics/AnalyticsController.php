@@ -508,7 +508,8 @@ class AnalyticsController extends Controller
         if ($us) {
             $us->value = $dto->value;
             $us->save();
-        } else {
+        }
+        else {
             UserStat::query()->create([
                 'date' => $date,
                 'user_id' => $dto->employeeId,

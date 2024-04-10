@@ -9,8 +9,7 @@ use BeGateway\QueryByPaymentToken;
 class ProdamusPaymentStatus implements PaymentStatus
 {
     public function __construct(
-        private readonly string              $paymentId,
-        private readonly QueryByPaymentToken $client
+        private readonly string $paymentId
     )
     {
     }

@@ -20,6 +20,7 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->bind(WalletOne::class, function () {
             $connector = new WalletOneConnector(
                 config('payment.wallet1.payment_url'),
+                config('payment.wallet1.shop_key'),
                 config('payment.wallet1.merchant_id'),
                 config('payment.wallet1.success_url'),
                 config('payment.wallet1.failed_url')

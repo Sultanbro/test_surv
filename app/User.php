@@ -112,6 +112,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Zarplata $zarplata
  * @property Collection<ReferralSalary> $referralSalaries
  * @property Collection<DayType> $daytypes
+ * @property Collection<Timetracking> $timetracking
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable, ReferrerInterface
@@ -431,6 +432,27 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     ): Model
     {
         return self::withTrashed()->findOrFail($id);
+    }
+
+    public static function setExit(Timetracking $record, Carbon|string $date): void
+    {
+        $date = is_string($date) ? Carbon::parse($date) : $date;
+
+        /** @var Carbon $workEndTime */
+        $workEndTime = $record->user->schedule()['end'];
+
+
+        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+            $workEndTime->addDays();
+        }
+
+        if (!$workEndTime->isBefore($date->addDay())) return;
+
+
+        $record->setExit($workEndTime)
+            ->setStatus(Timetracking::DAY_ENDED)
+            ->addTime($workEndTime, $record->user->timezone())
+            ->save();
     }
 
     /**
@@ -1359,10 +1381,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
      *
      * @return String
      */
-    public function timezone()
+    public function timezone(): string
     {
-        $userTimeZone = (int)$this->timezone;
-        $userTimeZone = $userTimeZone ?: +5;
+        $userTimeZone = +(int)$this->timezone ?: +5;
         return Setting::TIMEZONES[$userTimeZone];
     }
 
@@ -1673,11 +1694,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL) {
             $ignore = $this->getCountWorkDays(false, $workChartId);   // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
-        }
-        elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+        } elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
             $workDays = $this->getCountWorkDaysMonth($date->year, $date->month);
-        }
-        else {
+        } else {
             throw new Exception(message: 'Проверьте график работы', code: 400);
         }
         return $workDays;

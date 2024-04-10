@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Core;
 
+use App\Api\BitrixOld\Lead\PaymentLead;
 use App\DTO\Api\PaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
@@ -35,16 +36,16 @@ abstract class BasePaymentService
     public function pay(PaymentDTO $data, CentralUser $authUser): ConfirmationResponse
     {
         $activePayment = TariffPayment::getActivePaymentIfExist($authUser);
-        if ($activePayment) {
-            throw new Exception("activePaymentIsExist");
-        }
+//        if ($activePayment) {
+//            throw new Exception("activePaymentIsExist");
+//        }
 
         $connector = $this->connector();
         $response = $connector->pay($data, $authUser);
         $paymentId = $response->getPaymentId();
 
         $tariff = Tariff::getTariffById($data->tariffId);
-        TariffPayment::createPaymentOrFail(
+        $payment = TariffPayment::createPaymentOrFail(
             $authUser->id,
             $data->tariffId,
             $data->extraUsersLimit,
@@ -52,6 +53,8 @@ abstract class BasePaymentService
             $paymentId,
             $data->provider
         );
+
+        $this->createPaymentLead($authUser, $payment);
 
         return $response;
     }
@@ -78,6 +81,23 @@ abstract class BasePaymentService
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    private function createPaymentLead(
+        CentralUser   $user,
+        TariffPayment $payment,
+    ): void
+    {
+        $lead = (new PaymentLead(
+            $user,
+            $payment,
+            tenant('id'),
+            null
+        ))
+            ->setNeedCallback(false)
+            ->publish();
+        $payment->lead_id = $lead['result'];
+        $payment->save();
     }
 
     abstract public function invoice(array $data): PaymentInvoice;

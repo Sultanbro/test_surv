@@ -85,4 +85,9 @@ class ProdamusConnector implements PaymentConnector
             'charset' => 'utf-8'
         ])->get($this->shopUrl, $data);
     }
+
+    public function getShopKey(): string
+    {
+        return $this->shopKey;
+    }
 }

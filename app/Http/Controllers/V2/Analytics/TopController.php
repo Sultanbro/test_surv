@@ -47,8 +47,7 @@ class TopController extends Controller
     public function getRentability(GetRentabilityRequest $request, GetRentabilityService $rentabilityService): JsonResponse
     {
         $date = Carbon::create($request->toDto()->year, $request->toDto()->month);
-        $cacheKey = $date->isCurrentMonth() ? now()->format("Y-m-d") : $date->format('Y-m');
-        $cacheKey .= 'getRentability';
+        $cacheKey = TopValue::rentabilityCacheKey($date);
 
         return $this->response(
             message: self::SUCCESS_MESSAGE,

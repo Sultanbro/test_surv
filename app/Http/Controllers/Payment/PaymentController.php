@@ -66,9 +66,14 @@ class PaymentController extends Controller
 
     public function callback(Request $request, string $currency): JsonResponse
     {
+        $headers = $request->header();
+        $fields = $request->all();
         $response = $this->factory
             ->currencyProvider($currency)
-            ->invoice($request->all())
+            ->invoice([
+                'headers' => $headers,
+                'fields' => $fields
+            ])
             ->handle();
 
         return response()->json($response);

@@ -35,6 +35,6 @@ class Prodamus extends BasePaymentService
 
     public function invoice(array $data): PaymentInvoice
     {
-        return new ProdamusInvoice($data);
+        return new ProdamusInvoice($this->connector->getShopKey(), $data);
     }
 }

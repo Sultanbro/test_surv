@@ -9,4 +9,6 @@ use App\Models\CentralUser;
 interface PaymentConnector
 {
     public function pay(PaymentDTO $data, CentralUser $user): ConfirmationResponse;
+
+    public function getShopKey(): string;
 }
