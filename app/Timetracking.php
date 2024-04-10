@@ -256,13 +256,13 @@ class Timetracking extends Model
 
     public function setEnter(Carbon $value)
     {
-        $this->enter = $value;
+        $this->enter = $value->setTimezone('UTC');
         return $this;
     }
 
     public function setExit(Carbon $value)
     {
-        $this->exit = $value;
+        $this->exit = $value->setTimezone('UTC');
         return $this;
     }
 
