@@ -112,6 +112,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Zarplata $zarplata
  * @property Collection<ReferralSalary> $referralSalaries
  * @property Collection<DayType> $daytypes
+ * @property Collection<Timetracking> $timetracking
  * @mixin Builder
  */
 class User extends Authenticatable implements Authorizable, ReferrerInterface

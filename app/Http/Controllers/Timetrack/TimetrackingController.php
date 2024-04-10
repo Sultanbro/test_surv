@@ -57,6 +57,7 @@ use App\UserFine;
 use App\UserNotification;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -1372,6 +1373,7 @@ class TimetrackingController extends Controller
                     ->get();
             } else {
 
+                /**@var Collection<User> $users*/
                 $users = User::withTrashed()
                     ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->with([
@@ -1409,7 +1411,7 @@ class TimetrackingController extends Controller
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-                        ->setTimezone(Setting::TIMEZONES[5])
+//                        ->setTimezone(Setting::TIMEZONES[5])
                         ->format('H:i');
                 }
 

@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
+use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
 use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
@@ -47,6 +48,7 @@ class Kernel extends ConsoleKernel
         TestingCommand::class,
         UpdateReferralSalary::class,
         CacheTopRentabilityPerDay::class,
+        DeleteTimeTrackingDuplicates::class,
     ];
 
     /**
@@ -128,6 +130,9 @@ class Kernel extends ConsoleKernel
 
         // for caching
         $schedule->command('tenants:run --tenants=bp cache:rentability')->everySixHours();
+
+        // for duplicates in db
+        $schedule->command('tenants:run --tenants=bp delete:track-duplicates')->everySixHours();
     }
 
     /**
