@@ -7,6 +7,7 @@ use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\TimeTrackingRepository;
 use App\User;
 use Carbon\Carbon;
+use DateTimeZone;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,8 +85,8 @@ final class ManuallyReportService
     {
         $user = User::query()->find($userId);
         /** @var User $user */
-        $time = Carbon::parse($time);
-        dd($time->utc()->toTimeString());
+        $time = Carbon::parse($time)->shiftTimezone(new DateTimeZone("UTC"));
+        dd($time);
 
         return Carbon::create($year, $month, $day, $time, $user->timezone())
 //            ->subHours((int)$user->timezone - 1)
