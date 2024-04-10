@@ -294,6 +294,7 @@ export default {
 		fetchData(filters, page = 1, limit = 10) {
 			let loader = this.$loading.show();
 			this.s_type_main = filters.data_from ? Number(filters.data_from.s_type) : 1;
+			// this.s_type_main = filters.data_from ? Number(filters.data_from.s_type) : 1;
 			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
 			this.filters = filters
 
@@ -332,7 +333,12 @@ export default {
 				});
 			}
 			else if(this.s_type_main == 2){
-				this.axios.get('/statistics/bonuses').then(response => {
+				this.axios.post('/statistics/bonuses', {
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
+				}).then(response => {
 					this.bonus_groups = response.data.filter(target => target.bonuses.length).map(this.parseBonus);
 					++this.key
 					loader.hide();

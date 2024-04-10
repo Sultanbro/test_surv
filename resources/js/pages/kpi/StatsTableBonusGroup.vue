@@ -6,7 +6,7 @@
 		<table
 			v-for="(user, userIndex) in group.users"
 			:key="userIndex"
-			class="table b-table table-bordered table-sm table-responsive mb-0 table-inner child-table"
+			class="StatsTableBonusGroup-table table b-table table-bordered table-sm mb-0 table-inner child-table"
 		>
 			<tr class="child-row">
 				<td
@@ -45,6 +45,7 @@
 					</b>
 					<b v-else> 0 тг</b>
 				</td>
+				<!-- <td /> -->
 			</tr>
 			<tr v-if="user.expanded && user.obtained_bonuses && user.obtained_bonuses.length">
 				<td
@@ -57,7 +58,7 @@
 								<th>Наименование активности</th>
 								<th>Кол-во</th>
 								<th>Вознаграждение</th>
-								<th>Период</th>
+								<th>Дата</th>
 								<th>Заработано</th>
 							</tr>
 						</thead>
@@ -72,7 +73,7 @@
 								<td>{{ bonus.comment.split(':')[0] }}</td>
 								<td>{{ bonus.quantity }}</td>
 								<td>{{ bonus.amount }}</td>
-								<td>{{ bonus.date }}</td>
+								<td>{{ ymd2dmy(bonus.date) }}</td>
 								<td>{{ bonus.amount * bonus.quantity }}</td>
 							</tr>
 						</tbody>
@@ -84,6 +85,8 @@
 </template>
 
 <script>
+import { ymd2dmy } from '@/lib/date.js'
+
 export default {
 	name: 'StatsTableBonusGroup',
 	components: {},
@@ -101,18 +104,24 @@ export default {
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
-	methods: {},
+	methods: {
+		ymd2dmy,
+	},
 }
 </script>
 
 <style lang="scss">
 .StatsTableBonusGroup{
+	&-table{}
 	&-name{
 		width: 225px;
 		max-width: 225px;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		overflow: hidden;
+	}
+	&-spacer{
+		width: 100%;
 	}
 }
 </style>

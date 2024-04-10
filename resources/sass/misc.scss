@@ -662,3 +662,16 @@ span.red{
 /**
     end of new design integration
 */
+
+/* fix bootstrap scrollable dialog */
+.modal-dialog-scrollable{
+    display: flex;
+    max-height: calc(100% - 3.5rem);
+    .modal-content{
+        max-height: calc(100% - 3.5rem);
+        overflow: hidden;
+    }
+    .modal-body{
+        overflow: auto;
+    }
+}
