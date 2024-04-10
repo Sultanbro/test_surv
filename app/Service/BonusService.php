@@ -125,7 +125,7 @@ class BonusService
         $arr = [];
 
         $types = $items->where('target', '!=', null)->groupBy('target.type');
-
+        dd($types);
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
