@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\CacheStorage\KpiItemsCacheStorage;
 use App\Classes\Helpers\Currency;
+use App\Filters\Articles\BonusFilter;
 use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
@@ -315,9 +316,11 @@ class KpiStatisticService
      * @param BonusesFilterRequest $request
      * @return array
      */
-    public function fetchBonuses(BonusesFilterRequest $request): array
+    public function fetchBonuses(BonusesFilterRequest $request, BonusFilter $filter): array
     {
+//        dd($request->all());
         $bonuses = $this->getBonuses($request);
+        $bonuses = Bonus::filter($filter)->get();
 
         $kpiBonuses = [];
 
@@ -380,6 +383,7 @@ class KpiStatisticService
             $group->targetable_type = $bonus->targetable_type;
             $group->targetable_id = $bonus->targetable_id;
             $group->activity_id = $bonus->activity_id;
+            $group->bonus_id = $bonus->id;
         }
 
         return $group;
@@ -409,6 +413,7 @@ class KpiStatisticService
             $user->targetable_type = $bonus->targetable_type;
             $user->targetable_id = $bonus->targetable_id;
             $user->activity_id = $bonus->activity_id;
+            $user->bonus_id = $bonus->id;
         }
 
         return $user;
@@ -418,7 +423,6 @@ class KpiStatisticService
      * Получаем по позициям.
      * @param $bonus
      * @param $request
-     * @return Builder[]|Collection
      */
     private function getPositionBonus($bonus, $request)
     {
@@ -439,6 +443,7 @@ class KpiStatisticService
             $position->targetable_type = $bonus->targetable_type;
             $position->targetable_id = $bonus->targetable_id;
             $position->activity_id = $bonus->activity_id;
+            $position->bonus_id = $bonus->id;
         }
 
         return $position;

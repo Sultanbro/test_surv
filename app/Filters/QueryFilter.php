@@ -26,7 +26,6 @@ abstract class QueryFilter
 
         foreach ($this->fields() as $field => $value) {
             $method = Str::camel($field);
-
             if (method_exists($this, $method)) {
                 call_user_func_array([$this, $method], [$value]);
             }
