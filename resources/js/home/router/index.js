@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView'
 import ContactsView from '../views/ContactsView'
-import ArticleView from '../views/ArticleView'
 import PaymentsView from '../views/PaymentsView'
 import ContractOffer from '../views/ContractOffer'
 import SiteUseAgreement from '../views/SiteUseAgreement'
@@ -64,14 +63,6 @@ const router = new VueRouter({
 			path: '/payments',
 			name: 'PaymentsView',
 			component: PaymentsView,
-			meta: {
-				title: 'Jobtron',
-			},
-		},
-		{
-			path: '/articles/:id',
-			name: 'articles',
-			component: ArticleView,
 			meta: {
 				title: 'Jobtron',
 			},
