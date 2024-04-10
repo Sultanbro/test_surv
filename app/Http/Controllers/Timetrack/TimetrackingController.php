@@ -391,8 +391,8 @@ class TimetrackingController extends Controller
             $workday = Timetracking::query()->create(
                 [
                     'user_id' => $user->id,
-                    'enter' => $now,
-                    'times' => [$now->format('H:i')],
+                    'enter' => $now->setTimezone('UTC'),
+                    'times' => [$now->setTimezone('UTC')->format('H:i')],
                     'status' => Timetracking::DAY_STARTED
                 ]
             );
