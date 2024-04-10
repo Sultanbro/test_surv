@@ -108,7 +108,7 @@ class BonusService
 
         $bonuses = Bonus::query()->when($searchWord,
             fn() => (new KpiBonusFilter)->globalSearch($searchWord)
-        )->with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
+        )->with('creator', 'updater', 'targetable')->withoutGlobalScope(ActiveScope::class)->get();
 
         return [
             'bonuses' => $this->groupItems($bonuses),
@@ -123,7 +123,8 @@ class BonusService
     private function groupItems($items): array
     {
         $arr = [];
-        $types = $items->groupBy('target.type');
+
+        $types = $items->where('targetable', '!=', null)->groupBy('target.type');
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
