@@ -53,10 +53,6 @@ class TimeTrackingRepository extends CoreRepository
     ): string
     {
         $timeTrack = $this->getTrackingTimeForUser($userId, $year, $month, $day);
-        dd(
-            $timeTrack,
-            $enter
-        );
         if ($timeTrack) {
             $description = "Изменено: $time $comment";
             $timeTrack->update([

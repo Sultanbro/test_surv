@@ -86,7 +86,7 @@ final class ManuallyReportService
         $user = User::query()->find($userId);
         return Carbon::create($year, $month, $day)
             ->setTimeFromTimeString($time)
-            ->subHours((int)$user->timezone)
+            ->setTimezone($user->timezone())
             ->format('Y-m-d H:i:s');
     }
 }
