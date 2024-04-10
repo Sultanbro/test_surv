@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Kpi;
 
+use App\Filters\Articles\BonusFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\Kpi\Statistics\UserGroupsRequest;
@@ -142,9 +143,9 @@ class KpiStatController extends Controller
      * @param BonusesFilterRequest $request
      * @return JsonResponse
      */
-    public function fetchBonuses(BonusesFilterRequest $request): JsonResponse
+    public function fetchBonuses(BonusesFilterRequest $request, BonusFilter $filter): JsonResponse
     {
-        $response = $this->service->fetchBonuses($request);
+        $response = $this->service->fetchBonuses($request, $filter);
 
         return response()->json($response);
     }
