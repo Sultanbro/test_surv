@@ -1308,7 +1308,8 @@ class TimetrackingController extends Controller
         View::share('menu', 'timetrackingenters');
 
         $groups = ProfileGroup::where('active', 1)->get();
-        $userTimezone = new DateTimeZone(auth()->user()->timezone());
+        $userTimezone = new DateTimeZone(Setting::TIMEZONES[5]);
+
         if (auth()->user()->is_admin != 1) {
 
             $_groups = [];
