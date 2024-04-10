@@ -368,6 +368,7 @@ class TimetrackingController extends Controller
 
         $schedule = $user->schedule();
         $now = Carbon::now($user->timezone());
+        dd($now);
         /** @var Timetracking $workday */
         $workday = $user->timetracking()
             ->whereDate('enter', $now->format('Y-m-d'))
