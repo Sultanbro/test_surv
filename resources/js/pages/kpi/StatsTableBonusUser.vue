@@ -26,7 +26,7 @@
 						<td>{{ bonus.comment.split(':')[0] }}</td>
 						<td>{{ bonus.quantity }}</td>
 						<td>{{ bonus.amount }}</td>
-						<td>{{ bonus.date }}</td>
+						<td>{{ ymd2dmy(bonus.date) }}</td>
 						<td>{{ bonus.amount * bonus.quantity }}</td>
 					</tr>
 				</template>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { ymd2dmy } from '@/lib/date.js'
+
 export default {
 	name: 'StatsTableBonusUser',
 	components: {},
@@ -58,7 +60,9 @@ export default {
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
-	methods: {},
+	methods: {
+		ymd2dmy,
+	},
 }
 </script>
 

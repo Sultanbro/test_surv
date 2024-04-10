@@ -5,15 +5,13 @@ namespace App\Service\V2\Analytics;
 
 use App\ProfileGroup;
 use DB;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Carbon;
 
 /**
  * Класс для работы с Service.
  */
 class GetPredictsService
 {
-    public function handle()
+    public function handle2()
     {
         $from = now()->firstOfMonth();
 
@@ -43,6 +41,45 @@ class GetPredictsService
                         'total' => $group->users_total,
                         'trainees' => $group->trainees_total,
                         'employees' => $group->employees_total
+                    ],
+                    'plan' => $group->required
+                ];
+            });
+    }
+
+    public function handle()
+    {
+        $date = now()->firstOfMonth();
+
+        return ProfileGroup::query()
+            ->select('id', 'name', 'required')
+            ->withCount([
+                'users as employees_count' => function ($query) use ($date) {
+                    $query->where('group_user.status', 'active')
+                        ->whereHas('description', function ($q) use ($date) {
+                            $q->where('is_trainee', 0);
+                            $q->where('applied', '>=', $date);
+                        });
+                },
+                'users as trainees_count' => function ($query) use ($date) {
+                    $query->where('group_user.status', 'active')
+                        ->whereHas('description', function ($q) use ($date) {
+                            $q->where('is_trainee', 1);
+                            $q->where('applied', '>=', $date);
+                        });
+                }
+            ])
+            ->where('profile_groups.active', ProfileGroup::IS_ACTIVE)
+            ->whereIn('profile_groups.has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
+            ->get()
+            ->map(function ($group) {
+                return [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'users' => [
+                        'total' => $group->employees_count + $group->trainees_count,
+                        'trainees' => $group->trainees_count,
+                        'employees' => $group->employees_count
                     ],
                     'plan' => $group->required
                 ];
