@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\User;
 
+/**
+ * @property int id
+ */
 class UserCoordinate extends Model
 {
     use HasFactory;
@@ -19,7 +22,7 @@ class UserCoordinate extends Model
     ];
 
 
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'coordinate_id');
     }

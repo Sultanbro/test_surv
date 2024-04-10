@@ -27,25 +27,27 @@ class CabinetController extends Controller
      */
     public function editUserProfile(Request $request, UserSyncService $service)
     {
-        $user = User::find(auth()->id());
+        /** @var User $user */
+        $user = auth()->user();
 
         $updateUser = $service->update($user->email, [
             'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
-            'working_country' => $request->working_country,
-            'working_city' => $request->working_city,
-            'birthday' => $request->birthday,
+            'email' => $request['query']['email'],
             'name' => $request['query']['name'],
             'last_name' => $request['query']['last_name'],
             'phone' => $request['query']['phone'],
             'phone_1' => $request['query']['phone_1'],
+            'birthday' => $request['birthday'],
+            'working_country' => $request['working_country'],
+            'working_city' => $request['working_city'],
             'coordinates' => $request->get('coordinates'),
         ]);
 
         if (isset($request->cards)) {
-            Card::where('user_id', $user->id)->delete();
+            Card::query()->where('user_id', $user->id)->delete();
 
             foreach ($request->cards as $card) {
-                Card::create([
+                Card::query()->create([
                     'user_id' => $user->id,
                     'bank' => $card['bank'],
                     'country' => $card['country'],
@@ -57,7 +59,7 @@ class CabinetController extends Controller
             }
         }
 
-        if ($updateUser == false) {
+        if (!$updateUser) {
             return response(['message' => 'Вы не можете изменит данные!']);
         } else {
             return response(['success' => '1']);

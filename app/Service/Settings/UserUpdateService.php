@@ -21,6 +21,7 @@ use App\User;
 use Carbon\Carbon;
 use Exception;
 use Hash;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
 final class UserUpdateService
@@ -129,11 +130,53 @@ final class UserUpdateService
      * @param User $user
      * @param UpdateUserDTO $userDTO
      * @return User
+     * @throws TenantCouldNotBeIdentifiedById
      */
     private function updateUserData(
         User          $user,
         UpdateUserDTO $userDTO
     ): User
+    {
+        $keyEmail = $user->email;
+        $currentTenant = tenant('id');
+        $generalParams = $this->getGeneralParams($userDTO);
+
+        // 1-step. Update central user
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::with('cabinets')->where('email', $keyEmail)->first();
+        $centralUser->update($generalParams);
+
+        // 2-step. Update current tenant user data with all params
+        $this->updateCurrentTenantUserData($user->id, $userDTO);
+
+        // 3-step. Update other tenants
+        self::updateTenantUserData($centralUser, $currentTenant, $generalParams, $keyEmail);
+
+        // 4-step. Back all connections to current tenant
+        tenancy()->initialize($currentTenant);
+
+        return $user;
+    }
+
+    public function getGeneralParams(UpdateUserDTO $userDTO)
+    {
+        $params = [];
+
+        if ($userDTO->newPassword) {
+            $params['password'] = Hash::make($userDTO->newPassword);
+        }
+        $params['email'] = $userDTO->email;
+        $params['name'] = $userDTO->name;
+        $params['last_name'] = $userDTO->lastName;
+        $params['phone'] = $userDTO->phone;
+        $params['birthday'] = $userDTO->birthday;
+        $params['currency'] = $userDTO->currency ?? 'kzt';
+        $params['country'] = $userDTO->workingCountry;
+
+        return $params;
+    }
+
+    public function updateCurrentTenantUserData(int $userId, UpdateUserDTO $userDTO): void
     {
         $params = [
             'email' => $userDTO->email,
@@ -170,27 +213,30 @@ final class UserUpdateService
             $params['coordinate_id'] = $this->setCoordinate($userDTO->coordinates);
         }
 
-        User::query()->where('id', $user->id)->update($params);
+        User::query()->where('id', $userId)->update($params);
+        event(new UserUpdatedEvent($userId));
+    }
 
-        /** @var CentralUser $centralUser */
-        $centralUser = CentralUser::query()->where('email', $user->email)->first();
+    public static function updateTenantUserData($centralUser, $currentTenant, $generalParams, $keyEmail): void
+    {
+        $portals = $centralUser->cabinets->pluck('id')->toArray();
 
-        if ($centralUser) {
-            if ($userDTO->newPassword) {
-                $centralUser->password = Hash::make($userDTO->newPassword);
-            }
-            $centralUser->email = $userDTO->email;
-            $centralUser->name = $userDTO->name;
-            $centralUser->last_name = $userDTO->lastName;
-            $centralUser->phone = $userDTO->phone;
-            $centralUser->birthday = $userDTO->birthday;
-            $centralUser->currency = $userDTO->currency ?? 'kzt';
-            $centralUser->country = $userDTO->workingCountry;
-            $centralUser->save();
+        // remove current tenant from list
+        if (($key = array_search($currentTenant, $portals)) !== false) {
+            unset($portals[$key]);
         }
 
-        event(new UserUpdatedEvent($user->id));
-        return $user;
+        // change key
+        $generalParams['working_country'] = $generalParams['country'];
+        unset($generalParams['country']);
+
+        // update general params
+        foreach ($portals as $portal) {
+            try {
+                tenancy()->initialize($portal);
+                User::query()->where('email', $keyEmail)->update($generalParams);
+            } catch (Exception) {}
+        }
     }
 
     private function setCoordinate(array $coordinatesArray)
