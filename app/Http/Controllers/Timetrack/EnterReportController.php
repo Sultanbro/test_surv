@@ -9,8 +9,10 @@ use App\Http\Requests\TimeTrack\StoreManuallyReportRequest;
 use App\Service\Timetrack\ManuallyReportService;
 use App\Service\Timetrack\ReportService as TimeTrackReport;
 use App\User;
+use Exception;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 final class EnterReportController extends Controller
 {
@@ -65,7 +67,8 @@ final class EnterReportController extends Controller
      * }
      *
      * Изменение время прихода в вручную.
-     * @throws \Exception
+     * @throws Exception
+     * @throws Throwable
      */
     public function manually(StoreManuallyReportRequest $request, ManuallyReportService $service)
     {
