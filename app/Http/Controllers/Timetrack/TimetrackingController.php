@@ -56,6 +56,7 @@ use App\UserDescription;
 use App\UserFine;
 use App\UserNotification;
 use Carbon\Carbon;
+use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -1294,6 +1295,9 @@ class TimetrackingController extends Controller
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function enterreport(Request $request)
     {
         if (!auth()->user()->can('entertime_view')) {
@@ -1399,6 +1403,8 @@ class TimetrackingController extends Controller
                     ->whereIn('fine_id', [1, 2])
                     ->get();
 
+                $userTimezone = new DateTimeZone($userData->timezone());
+
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
@@ -1411,8 +1417,7 @@ class TimetrackingController extends Controller
                         $userData->timetracking
                             ->where('date', $day)
                             ->min('enter')
-                            ->setTimezone($userData->timezone())
-                            ->shiftTimezone("UTC")
+                            ->setTiemzone($userTimezone)
                             ->format('H:i')
                     );
                     $data[$userData->id][$day] = $userData->timetracking
