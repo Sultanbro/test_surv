@@ -82,6 +82,7 @@ final class ManuallyReportService
         string $time
     ): string
     {
+        dd($time);
         /** @var User $user */
         $user = User::query()->find($userId);
         return Carbon::create($year, $month, $day)
