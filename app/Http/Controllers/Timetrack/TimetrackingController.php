@@ -1308,7 +1308,7 @@ class TimetrackingController extends Controller
         View::share('menu', 'timetrackingenters');
 
         $groups = ProfileGroup::where('active', 1)->get();
-
+        $userTimezone = new DateTimeZone(auth()->user()->timezone());
         if (auth()->user()->is_admin != 1) {
 
             $_groups = [];
@@ -1403,8 +1403,6 @@ class TimetrackingController extends Controller
                     ->whereIn('fine_id', [1, 2])
                     ->get();
 
-                $userTimezone = new DateTimeZone($userData->timezone());
-
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
@@ -1413,17 +1411,10 @@ class TimetrackingController extends Controller
 
 
                 foreach ($days as $day) {
-                    dd_if($userData->id == 5 && $day == 10,
-                        $userData->timetracking
-                            ->where('date', $day)
-                            ->min('enter')
-                            ->setTimezone($userTimezone)
-                            ->format('H:i')
-                    );
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-//                        ->setTimezone(Setting::TIMEZONES[5])
+                        ->setTimezone($userTimezone)
                         ->format('H:i');
                 }
 
