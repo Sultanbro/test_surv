@@ -367,7 +367,7 @@ class TimetrackingController extends Controller
         $user = User::query()->find($userId ?? auth()->id());
 
         $schedule = $user->schedule();
-        $now = Carbon::now($user->timezone());
+        $now = now($user->timezone());
         dd($now);
         /** @var Timetracking $workday */
         $workday = $user->timetracking()
