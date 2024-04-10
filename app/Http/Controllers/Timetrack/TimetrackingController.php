@@ -1398,7 +1398,6 @@ class TimetrackingController extends Controller
                     ->whereIn('fine_id', [1, 2])
                     ->get();
                 $timezone = $userData->timezone();
-                dd_if($userData->id == 4001,$timezone);
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
