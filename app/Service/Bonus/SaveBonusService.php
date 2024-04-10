@@ -31,7 +31,7 @@ final class SaveBonusService
                 return $bonus;
             }, $bonuses);
 
-            return Bonus::query()->insert($bonuses);
+            return Bonus::query()->create($bonuses);
         } catch (Throwable $exception) {
             throw new Exception($exception->getMessage());
         }

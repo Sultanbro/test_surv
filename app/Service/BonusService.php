@@ -11,6 +11,7 @@ use App\Models\Analytics\Activity;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\Scopes\ActiveScope;
+use App\Position;
 use App\ReadModels\KpiBonusReadModel;
 use App\Repositories\KpiBonusRepository;
 use App\Traits\KpiHelperTrait;
@@ -40,6 +41,9 @@ class BonusService
      */
     public function getUserBonuses(int $user_id): array
     {
+        /** @var User $user */
+        $user = User::query()->find($user_id);
+
         $groups = GroupUser::query()
             ->where('user_id', $user_id)
             ->where('status', 'active')
@@ -47,10 +51,22 @@ class BonusService
             ->pluck('group_id')
             ->toArray();
 
-        $user = User::query()->find($user_id);
+        $position_id = $user->position_id;
 
-        $bonuses = Bonus::query()->whereIn('targetable_id', $groups)
-            ->where('targetable_type', 'App\ProfileGroup')->get();
+        $bonuses = Bonus::query()
+            ->whereHas('targetable', function ($q) use ($position_id, $groups, $user_id) {
+                if ($q->getModel() instanceof User) {
+                    $q->where('targetable_id', $user_id)
+                        ->where('targetable_type', User::class);
+                } elseif ($q->getModel() instanceof Position) {
+                    $q->where('targetable_id', $position_id)
+                        ->where('targetable_type', Position::class);
+                } elseif ($q->getModel() instanceof ProfileGroup) {
+                    $q->whereIn('targetable_id', $groups)
+                        ->where('targetable_type', ProfileGroup::class);
+                }
+            })
+            ->get();
 
         return [
             'bonuses' => $this->groupItems($bonuses),
@@ -107,9 +123,7 @@ class BonusService
     private function groupItems($items): array
     {
         $arr = [];
-
-        $types = $items->where('target', '!=', null)->groupBy('target.type');
-
+        $types = $items->groupBy('target.type');
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
