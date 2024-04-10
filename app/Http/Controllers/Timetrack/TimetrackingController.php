@@ -1411,7 +1411,7 @@ class TimetrackingController extends Controller
                         $userData->timetracking
                             ->where('date', $day)
                             ->min('enter')
-                            ->subHours(Setting::TIMEZONES[5])
+                            ->subHours(5)
                             ->format('H:i')
                     );
                     $data[$userData->id][$day] = $userData->timetracking
