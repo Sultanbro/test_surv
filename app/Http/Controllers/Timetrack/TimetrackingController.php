@@ -1407,10 +1407,17 @@ class TimetrackingController extends Controller
 
 
                 foreach ($days as $day) {
+                    dd_if($userData->id == 5 && $day == 10,
+                        $userData->timetracking
+                            ->where('date', $day)
+                            ->min('enter')
+//                        ->setTimezone(Setting::TIMEZONES[5])
+                            ->format('H:i')
+                    );
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-                        ->setTimezone(Setting::TIMEZONES[5])
+//                        ->setTimezone(Setting::TIMEZONES[5])
                         ->format('H:i');
                 }
 
