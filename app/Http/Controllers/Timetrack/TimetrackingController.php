@@ -1411,7 +1411,7 @@ class TimetrackingController extends Controller
                         $userData->timetracking
                             ->where('date', $day)
                             ->min('enter')
-                            ->setTimezone("UTC")
+                            ->setTimezone($userData->timezone())
                             ->shiftTimezone("UTC")
                             ->format('H:i')
                     );
