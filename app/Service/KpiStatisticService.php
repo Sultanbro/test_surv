@@ -318,8 +318,6 @@ class KpiStatisticService
      */
     public function fetchBonuses(BonusesFilterRequest $request, BonusFilter $filter): array
     {
-//        dd($request->all());
-        $bonuses = $this->getBonuses($request);
         $bonuses = Bonus::filter($filter)->get();
 
         $kpiBonuses = [];
