@@ -1398,7 +1398,9 @@ class TimetrackingController extends Controller
                     ->where('status', 1)
                     ->whereIn('fine_id', [1, 2])
                     ->get();
+
                 $timezone = $userData->timezone();
+
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
@@ -1410,7 +1412,7 @@ class TimetrackingController extends Controller
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-                        ->setTimezone($timezone)
+                        ->subHours((int)$userData->timezone)
                         ->format('H:i');
                 }
 
