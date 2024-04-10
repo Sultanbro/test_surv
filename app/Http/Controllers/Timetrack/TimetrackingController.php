@@ -368,7 +368,11 @@ class TimetrackingController extends Controller
 
         $schedule = $user->schedule();
         $now = now($user->timezone());
-        dd($now);
+        dd(
+            $now,
+            now(),
+            $user->timezone(),
+        );
         /** @var Timetracking $workday */
         $workday = $user->timetracking()
             ->whereDate('enter', $now->format('Y-m-d'))
