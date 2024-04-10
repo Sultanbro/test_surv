@@ -7,7 +7,6 @@
 		<Tariffs />
 		<Section3 />
 		<Section4 />
-		<Section5 />
 		<SectionFooter />
 	</div>
 </template>
@@ -18,7 +17,6 @@ import Section1 from '../components/sections/Section1.vue'
 import Section2 from '../components/sections/Section2.vue'
 import Section3 from '../components/sections/Section3.vue'
 import Section4 from '../components/sections/Section4.vue'
-import Section5 from '../components/sections/Section5.vue'
 import Reviews from '../components/sections/Reviews.vue'
 import Tariffs from '../components/sections/Tariffs.vue'
 import SectionFooter from '../components/sections/Footer.vue'
@@ -31,7 +29,6 @@ export default {
 		Section2,
 		Section3,
 		Section4,
-		Section5,
 		Reviews,
 		Tariffs,
 		SectionFooter

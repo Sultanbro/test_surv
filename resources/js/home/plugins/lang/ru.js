@@ -2,7 +2,6 @@ export default {
 	prices: 'Цены',
 	reviews: 'Отзывы',
 	features: 'Особенности платформы',
-	articles: 'Статьи',
 	auth: 'Вход',
 	register: 'Регистрация',
 	logout: 'Выход',
