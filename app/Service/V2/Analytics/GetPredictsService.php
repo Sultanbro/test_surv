@@ -32,7 +32,7 @@ class GetPredictsService
             ->where('piv.status', 'active')
             ->where('profile_groups.active', ProfileGroup::IS_ACTIVE)
             ->whereIn('profile_groups.has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
-            ->where('piv.from', '>=', $from)
+            ->whereDate('ud.applied', '>=', $from)
             ->groupBy('profile_groups.id', 'profile_groups.name', 'profile_groups.required')
             ->get()
             ->map(function ($group) {
