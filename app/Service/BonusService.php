@@ -123,9 +123,7 @@ class BonusService
     private function groupItems($items): array
     {
         $arr = [];
-
-        dd($items->groupBY('targetable_type'));
-        $types = $items->where('target', '!=', null)->groupBy('target.type');
+        $types = $items->groupBy('target.type');
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
