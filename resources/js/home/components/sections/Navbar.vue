@@ -50,6 +50,14 @@
 									text="features"
 								/>
 							</li>
+
+							<li class="jNav-menu-item jNav-menu-item-md">
+								<NavbarLink
+									:lang="lang"
+									href="#articles"
+									text="articles"
+								/>
+							</li>
 						</div>
 					</a>
 					<li class="jNav-menu-item">
@@ -158,6 +166,8 @@ export default {
 			active: false,
 			isUserMenuActive: false,
 			timeout: null,
+
+			contact:'contact'
 		}
 	},
 

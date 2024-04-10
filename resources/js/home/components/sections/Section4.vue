@@ -68,14 +68,16 @@
 					{{ $lang(lang, 's4-footer') }}
 				</p>
 				<div class="jSec4-form-inputs">
-					<InputText
+					<input
 						v-model="name"
+						class="input-text-input jSec4-form-inputs-field"
 						:placeholder="$lang(lang, 's4-name')"
-					/>
-					<InputText
+					>
+					<input
 						v-model="phone"
+						class="input-text-input jSec4-form-inputs-field"
 						:placeholder="$lang(lang, 's4-phone')"
-					/>
+					>
 				</div>
 				<button
 					:disabled="isButtonDisabled"
@@ -92,13 +94,11 @@
 <script>
 import {Hooper, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
-import InputText from '../../components/InputText'
 import axios from 'axios';
 
 export default {
 	name: 'SectionSection4',
 	components: {
-		InputText,
 		Hooper,
 		Slide,
 	},
@@ -164,9 +164,15 @@ export default {
 					this.isButtonDisabled = true
 				}
 				alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
+				this.isButtonDisabled = false
+
 			} else {
 				alert('Заполните пожалуйста все поля.')
+				this.isButtonDisabled = false
 			}
+
+			this.name = ''
+			this.phone = ''
 		},
 		wait(ms) {
 			return new Promise(resolve => {
@@ -321,6 +327,13 @@ export default {
   flex-flow: column;
   align-items: center;
   gap: 1rem;
+  &-field{
+	padding: 0.875rem 1.1875rem;
+    outline: none;
+    border: none;
+    border-radius: 3.125rem;
+	border:1px solid gray;
+  }
 }
 
 @media screen and (min-width: $medium) {
