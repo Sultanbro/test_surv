@@ -1413,13 +1413,13 @@ class TimetrackingController extends Controller
 
 
                 foreach ($days as $day) {
-//                    dd_if($userData->id == 5 && $day == 10,
-//                        $userData->timetracking
-//                            ->where('date', $day)
-//                            ->min('enter')
-//                            ->setTimezone($userTimezone)
-//                            ->format('H:i')
-//                    );
+                    dd_if($userData->id == 3957 && $day == 8,
+                        $userData->timetracking
+                            ->where('date', $day)
+                            ->min('enter')
+                            ->setTimezone($userTimezone)
+                            ->format('H:i')
+                    );
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
