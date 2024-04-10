@@ -5,8 +5,10 @@ namespace App\Service\Timetrack;
 
 use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\TimeTrackingRepository;
+use App\Setting;
 use App\User;
 use Carbon\Carbon;
+use DateTimeZone;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,6 +75,7 @@ final class ManuallyReportService
      * @param int $day
      * @param string $time
      * @return string
+     * @throws Exception
      */
     private function setEnterTime(
         int    $userId,
@@ -84,7 +87,7 @@ final class ManuallyReportService
     {
         /** @var User $user */
         $user = User::query()->find($userId);
-        $timezone = $user->timezone();
+//        $timezone = new DateTimeZone("UTC");
 
         return Carbon::create($year, $month, $day)
             ->setTimeFromTimeString($time)
