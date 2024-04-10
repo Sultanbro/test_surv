@@ -82,12 +82,12 @@ final class ManuallyReportService
         string $time
     ): string
     {
-        dd($time);
-        /** @var User $user */
         $user = User::query()->find($userId);
-        return Carbon::create($year, $month, $day)
-            ->setTimeFromTimeString($time)
-            ->setTimezone($user->timezone())
+        /** @var User $user */
+        $time = Carbon::parse($time, $user->timezone());
+        dd($time);
+
+        return Carbon::create($year, $month, $day, $time, $user->timezone())
 //            ->subHours((int)$user->timezone - 1)
             ->format('Y-m-d H:i:s');
     }
