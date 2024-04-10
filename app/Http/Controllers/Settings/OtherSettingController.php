@@ -2,48 +2,67 @@
 
 namespace App\Http\Controllers\Settings;
 
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Mail\PasswordReset;
 use App\Models\CentralUser;
 use App\Setting;
 use App\User;
-use Illuminate\Http\Request;
+use Exception;
+use Mail;
+use Hash;
 
 class OtherSettingController extends Controller
 {
-
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
-
-    protected function password_generate($chars)
+    protected function password_generate($chars): string
     {
         $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
         return substr(str_shuffle($data), 0, $chars);
     }
 
-    public function reset(Request $request)
+    /**
+     * @throws TenantCouldNotBeIdentifiedById
+     */
+    public function reset(Request $request): JsonResponse
     {
+        $currentTenant = tenant('id');
 
-        $accountUser = CentralUser::userByEmail($request->email);
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::userByEmail($request->get('email'));
 
-        if (!$accountUser) {
+        if (!$centralUser) {
             return response()->json(['success' => false]);
         }
-
-
+        // New pass
         $pass = $this->password_generate(7);
-        $accountUser->password = \Hash::make($pass);
-        $accountUser->save();
+        $hashedPass = Hash::make($pass);
+
+        // Update central user
+        $centralUser->password = $hashedPass;
+        $centralUser->save();
+
+        // Update tenants
+        $portals = $centralUser->cabinets->pluck('id')->toArray();
+        foreach ($portals as $portal) {
+            try {
+                tenancy()->initialize($portal);
+                User::query()->where('email', $centralUser->email)->update([
+                    'password' => $hashedPass
+                ]);
+            } catch (Exception) {}
+        }
+        tenancy()->initialize($currentTenant);
 
         $mailData = [
             'password' => $pass,
             'subdomain' => tenant('id')
         ];
 
-        $mail = new \App\Mail\PasswordReset($mailData);
+        $mail = new PasswordReset($mailData);
 
-        \Mail::to($request->email)->send($mail);
+        Mail::to($request->get('email'))->send($mail);
 
 
         return response()->json(['success' => true]);
@@ -62,33 +81,34 @@ class OtherSettingController extends Controller
      *  ]
      *
      */
-    public function getSettings(Request $request)
+    public function getSettings(Request $request): array
     {
-        $keys = $this->setting_names($request->type);
+        $keys = $this->setting_names($request->get('type'));
 
         $settings = []; // array to return
         $disk = \Storage::disk('s3');
 
         foreach ($keys as $key => $value) {
-            $setting = Setting::where('name', $key)->first();
+            /** @var Setting $setting */
+            $setting = Setting::query()->where('name', $key)->first();
 
             if ($setting) {
                 $settings[$key] = $setting->value == 1;
 
-                if ($request->type == 'company' && $setting->value) {
+                if ($request->get('type') == 'company' && $setting->value) {
                     $settings['logo'] = $disk->temporaryUrl(
                         $setting->value, now()->addMinutes(360)
 
                     );
                 }
 
-                if (substr($key, 0, 7) == 'custom_') {
+                if (str_starts_with($key, 'custom_')) {
                     $settings[$key] = $setting->value;
                 }
             }
 
             if (!$setting) {
-                Setting::create([
+                Setting::query()->create([
                     'name' => $key,
                     'value' => false,
                     'description' => $value
@@ -104,10 +124,11 @@ class OtherSettingController extends Controller
 
     /**
      * @param Request $request
+     * @return array
      */
-    public function saveSettings(Request $request)
+    public function saveSettings(Request $request): array
     {
-        $keys = $this->setting_names($request->type);
+        $keys = $this->setting_names($request->get('type'));
 
         $settings = [];
         foreach ($keys as $key => $value) {
@@ -120,16 +141,18 @@ class OtherSettingController extends Controller
 
             }
 
-            Setting::where('name', $key)
+            Setting::query()
+                ->where('name', $key)
                 ->update([
                     'value' => $request[$key]
                 ]);
         }
+
         return $settings;
     }
 
 
-    private function setting_names($type)
+    private function setting_names($type): array
     {
         $arr = [];
 
@@ -160,10 +183,11 @@ class OtherSettingController extends Controller
     /**
      * @param $file
      * @param $key
+     * @return array
      */
     public function upload_image($file, $key): array
     {
-        $setting = Setting::where('name', $key)->first();
+        $setting = Setting::query()->where('name', $key)->first();
 
         $disk = \Storage::disk('s3');
 
@@ -173,7 +197,7 @@ class OtherSettingController extends Controller
                     $disk->delete($setting['logo']);
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             // League \ Flysystem \ UnableToCheckDirectoryExistence
         }
 
@@ -189,6 +213,4 @@ class OtherSettingController extends Controller
             )
         ];
     }
-
-
 }
