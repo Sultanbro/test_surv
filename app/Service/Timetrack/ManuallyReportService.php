@@ -86,7 +86,7 @@ final class ManuallyReportService
         $user = User::query()->find($userId);
         /** @var User $user */
         $time = Carbon::createFromTimeString($time, "UTC");
-        $convertedTime = $time->setTimezone($user->timezone()); // Convert to user's timezone
+//        $convertedTime = $time->setTimezone($user->timezone()); // Convert to user's timezone
         dd($time);
 
         return Carbon::create($year, $month, $day, $time, $user->timezone())
