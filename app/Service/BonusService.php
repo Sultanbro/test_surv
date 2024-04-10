@@ -108,7 +108,7 @@ class BonusService
 
         $bonuses = Bonus::query()->when($searchWord,
             fn() => (new KpiBonusFilter)->globalSearch($searchWord)
-        )->with('creator', 'updater', 'target')->withoutGlobalScope(ActiveScope::class)->get();
+        )->with('creator', 'updater', 'targetable')->withoutGlobalScope(ActiveScope::class)->get();
 
         return [
             'bonuses' => $this->groupItems($bonuses),
