@@ -18,7 +18,7 @@ final class PaymentFactory
     {
         return match ($currency) {
             'rub' => app(Prodamus::class),
-            'zkt', 'usd', 'zktOrUsd' => app(WalletOne::class),
+            'kzt', 'usd', 'kztOrUsd' => app(WalletOne::class),
             default => throw new InvalidArgumentException("Не известная валюта $currency"),
         };
     }
