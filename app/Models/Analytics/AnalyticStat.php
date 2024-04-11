@@ -582,13 +582,13 @@ class AnalyticStat extends Model
                 ->where('date', $date)
                 ->first();
 
-            dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $cell, $date);
-
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
+                    dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $value);
+
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
