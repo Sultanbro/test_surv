@@ -159,9 +159,9 @@ final class Analytics
                     }
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
-                        dd_if($statistic->column_id = 23378 && $statistic->row_id = 13211, $val);
+//                        dd_if($statistic->column_id = 23378 && $statistic->row_id = 13211, $val);
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
