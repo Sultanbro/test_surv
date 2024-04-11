@@ -132,7 +132,7 @@
 				<i class="fa fa-play" />
 			</div>
 
-			<RefWidget v-if="isBP" />
+			<!-- <RefWidget v-if="isBP" /> -->
 
 			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
 			<div
@@ -314,7 +314,7 @@ import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions, useMonthOptions } from '@/composables/yearOptions'
 import DateSelect from '../Profile/DateSelect'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 export default {
 	name: 'ProfileSidebar',
@@ -324,7 +324,7 @@ export default {
 		Questions,
 		Cropper,
 		DateSelect,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
