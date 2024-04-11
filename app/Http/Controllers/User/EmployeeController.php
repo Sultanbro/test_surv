@@ -122,7 +122,6 @@ class EmployeeController extends Controller
                 $q->where('status', 'fired')->where('group_id', $request['group_id']);
             });
         } elseif (isset($request['filter']) && $request['filter'] == 'nonfilled') {
-            dd_if(auth()->id = 5 && $request['filter'] == 'nonfilled',$request);
             $users_1 = User::query()
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -137,7 +136,23 @@ class EmployeeController extends Controller
                 ->pluck('user_id')
                 ->toArray();
 
-            $users_1 = array_diff($users_1, array_unique($downloads));
+            $usersIdsWhoHasNotDownloadedFiles = array_diff($users_1, array_unique($downloads));
+
+            $usersIdsWhoHasNotSignedFiles = DB::table('users')
+                ->select('users.id')
+                ->join('group_user', 'users.id', '=', 'group_user.user_id')
+                ->join('groups', 'group_user.group_id', '=', 'groups.id')
+                ->leftJoin('files', 'groups.id', '=', 'files.group_id')
+                ->leftJoin('user_signed_file', function ($join) {
+                    $join->on('users.id', '=', 'user_signed_file.user_id')
+                        ->on('files.id', '=', 'user_signed_file.file_id');
+                })
+                ->where('group_user.status', '=', 'active')
+                ->whereNull('user_signed_file.id')
+                ->where('users.required_signed_docs', '=', 1)
+                ->pluck('user_id')
+                ->toArray();
+
 
             $users = User::query()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -177,7 +192,10 @@ class EmployeeController extends Controller
                         ->orWhereNull('users.working_time_id');
                 })
                 ->orWhere('is_trainee', 0)
-                ->whereIn('users.id', array_values($users_1))
+                ->where(function (Builder $query) use ($usersIdsWhoHasNotDownloadedFiles, $usersIdsWhoHasNotSignedFiles) {
+                    $query->whereIn('users.id', array_values($usersIdsWhoHasNotDownloadedFiles));
+                    $query->orWhereIn('users.id', array_values($usersIdsWhoHasNotSignedFiles));
+                })
                 ->with(['group_users' => function ($query) {
                     $query->where('status', 'active');
                 }]);
@@ -248,7 +266,6 @@ class EmployeeController extends Controller
                 $q->where('status', 'active')->where('group_id', $request['group_id']);
             });
         }
-
         if ($request['notrainees']) $users = $users->whereNot('is_trainee', $request['notrainees']);
         if ($request['start_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '>=', $request['start_date']);
         if ($request['end_date']) $users = $users->where(DB::raw("date(COALESCE(bl.skyped, users.created_at))"), '<=', $request['end_date']);
