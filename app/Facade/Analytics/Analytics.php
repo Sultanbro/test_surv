@@ -174,7 +174,7 @@ final class Analytics
                             $val = $this->totalForDay($statistic->activity, $day);
                         }
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
 
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
@@ -184,7 +184,7 @@ final class Analytics
                         $val = $this->daysSum($columns, $stats, $row->id);
                         $val = round($val, 1);
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
 
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
@@ -193,7 +193,7 @@ final class Analytics
                     if ($statistic->type == 'avg') {
                         $val = $this->daysAvg($columns, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
-                        $statistic->save();
+//                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -206,7 +206,7 @@ final class Analytics
                             ->sum('total');
                         $val = floor($groupSalary);
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -214,7 +214,7 @@ final class Analytics
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -229,7 +229,7 @@ final class Analytics
                         $val = max($val, 0);
 
                         $statistic->show_value = $val;
-                        $statistic->save();
+//                        $statistic->save();
 
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
@@ -244,19 +244,18 @@ final class Analytics
                     if ($column->name == 'avg' && $rowIndex > 3) {
                         $type = 'avg';
                     }
-
-                    AnalyticStat::query()->create([
-                        'group_id' => $dto->groupId,
-                        'date' => $date,
-                        'row_id' => $row->id,
-                        'column_id' => $column->id,
-                        'value' => '',
-                        'show_value' => '',
-                        'decimals' => 0,
-                        'type' => $type,
-                        'class' => 'text-center' . $addClass,
-                        'editable' => $rowIndex == 0 ? 0 : 1,
-                    ]);
+//                    AnalyticStat::query()->create([
+//                        'group_id' => $dto->groupId,
+//                        'date' => $date,
+//                        'row_id' => $row->id,
+//                        'column_id' => $column->id,
+//                        'value' => '',
+//                        'show_value' => '',
+//                        'decimals' => 0,
+//                        'type' => $type,
+//                        'class' => 'text-center' . $addClass,
+//                        'editable' => $rowIndex == 0 ? 0 : 1,
+//                    ]);
                     $arr = [
                         'value' => '',
                         'show_value' => '',

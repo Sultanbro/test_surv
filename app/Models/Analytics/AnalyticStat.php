@@ -581,7 +581,6 @@ class AnalyticStat extends Model
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
-
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
@@ -621,6 +620,9 @@ class AnalyticStat extends Model
 
             $res = 0;
         }
+
+        dd_if($stat->column_id = 23378 && $stat->row_id = 13211, round($res, $round));
+
         return round($res, $round);
     }
 
