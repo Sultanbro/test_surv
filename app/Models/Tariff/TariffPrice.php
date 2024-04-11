@@ -42,7 +42,6 @@ final class TariffPrice
 
     public function getTotal(): float
     {
-        dd($this->priceForOnePersonInKzt);
         return $this->tariffPrice + $this->extraUsersPrice;
     }
 
