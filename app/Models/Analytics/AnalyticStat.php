@@ -587,7 +587,6 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
-                    dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $value);
 
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
@@ -618,6 +617,8 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}", "", $math_string);
             }
             $math_string = str_replace("%", "", $math_string);
+            dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $math_string);
+
             $res = eval($math_string);
         } catch (DivisionByZeroError|Throwable) {
 
