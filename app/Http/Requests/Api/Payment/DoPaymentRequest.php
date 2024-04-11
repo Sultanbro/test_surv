@@ -44,7 +44,7 @@ class DoPaymentRequest extends FormRequest
 
         $currency = Arr::get($validated, 'currency');
         $tariffId = Arr::get($validated, 'tariff_id');
-        $extraUsersLimit = Arr::get($validated, 'extra_users_limit');
+        $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $provider = CurrencyEnum::provider($currency);
 
         return new PaymentDTO(

@@ -14,7 +14,7 @@ final class PaymentDTO
     public function __construct(
         public string $currency,
         public int    $tariffId,
-        public        $extraUsersLimit,
+        public int    $extraUsersLimit,
         public string $provider = 'prodamus'
     )
     {
@@ -25,7 +25,7 @@ final class PaymentDTO
         return [
             'currency' => $this->currency,
             'tariff_id' => $this->tariffId,
-            'extra_users_limit' => (int)$this->extraUsersLimit,
+            'extra_users_limit' => $this->extraUsersLimit,
             'provider' => $this->provider
         ];
     }
