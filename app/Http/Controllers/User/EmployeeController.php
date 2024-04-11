@@ -139,17 +139,20 @@ class EmployeeController extends Controller
             $usersIdsWhoHasNotDownloadedFiles = array_diff($users_1, array_unique($downloads));
 
             $usersIdsWhoHasNotSignedFiles = DB::table('users AS u')
-                ->select('u.user_id')
-                ->join('group_user AS gu', 'u.user_id', '=', 'gu.user_id')
-                ->join('files AS f', 'gu.group_id', '=', 'f.group_id')
+                ->select(Db::raw('u.id as id'))
+                ->join('group_user AS gu', 'u.id', '=', 'gu.user_id')
+                ->join('files AS f', function ($join) {
+                    $join->on('gu.group_id', '=', 'f.fileable_id');
+                    $join->where('f.fileable_type', '=', 'App\ProfileGroup');
+                })
                 ->leftJoin('user_signed_file AS usf', function ($join) {
-                    $join->on('u.user_id', '=', 'usf.user_id')
+                    $join->on('u.id', '=', 'usf.user_id')
                         ->on('f.file_id', '=', 'usf.file_id');
                 })
                 ->whereNull('usf.user_id')
                 ->where('gu.status', '=', 'active')
                 ->distinct()
-                ->pluck('u.user_id')
+                ->pluck('id')
                 ->toArray();
 
             $users = User::query()
