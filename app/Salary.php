@@ -1141,8 +1141,17 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-                if ($user->id == 15193) {
-                    dump($earnings);
+                /**
+                 * If user has edited Salary check it for 0
+                 */
+                $editedSalary = EditedSalary::query()->where('user_id', $user->id)
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->first();
+
+                // Не показывать если все по нулям
+                if ($editedSalary && $editedSalary->amount == 0) {
+                    continue;
                 }
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
