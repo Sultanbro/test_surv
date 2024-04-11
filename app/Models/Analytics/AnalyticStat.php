@@ -581,6 +581,9 @@ class AnalyticStat extends Model
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
+
+            dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $cell, $date);
+
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
@@ -620,8 +623,6 @@ class AnalyticStat extends Model
 
             $res = 0;
         }
-
-        dd_if($stat->column_id = 23378 && $stat->row_id = 13211, round($res, $round));
 
         return round($res, $round);
     }
@@ -692,10 +693,10 @@ class AnalyticStat extends Model
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
-        if(count($only_days) > 0) {
+        if (count($only_days) > 0) {
             $days = $only_days;
-        }  else {
-            $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+        } else {
+            $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
         $columns = Column::where('group_id', $group_id)
@@ -713,21 +714,20 @@ class AnalyticStat extends Model
             $values[$i] = 0;
         }
 
-        if($row) {
-            foreach($columns as $column) {
+        if ($row) {
+            foreach ($columns as $column) {
                 $stat = self::where('column_id', $column->id)
                     ->where('row_id', $row->id)
                     ->where('date', $date)
                     ->first();
 
-                if($stat) {
+                if ($stat) {
 
-                    if($stat->type == 'formula') {
+                    if ($stat->type == 'formula') {
                         $values[(int)$column->name] = self::calcFormula($stat, $date);
                     } else {
                         $values[(int)$column->name] = (int)$stat->show_value;
                     }
-
 
 
                 }
