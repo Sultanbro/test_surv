@@ -26,12 +26,12 @@ final class SaveBonusService
     ): bool
     {
         try {
-            $bonuses = array_map(function ($bonus) {
-                $bonus['targetable_type'] = $this->getModel($bonus['targetable_type']);
-                return $bonus;
-            }, $bonuses);
 
-            Bonus::query()->create($bonuses);
+            foreach ($bonuses as $bonus) {
+                $bonus['targetable_type'] = $this->getModel($bonus['targetable_type']);
+                Bonus::query()->create($bonus);
+            }
+
 
             return true;
         } catch (Throwable $exception) {
