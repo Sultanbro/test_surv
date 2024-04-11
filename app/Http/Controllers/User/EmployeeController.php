@@ -147,7 +147,7 @@ class EmployeeController extends Controller
                 })
                 ->leftJoin('user_signed_file AS usf', function ($join) {
                     $join->on('u.id', '=', 'usf.user_id')
-                        ->on('f.file_id', '=', 'usf.file_id');
+                        ->on('f.id', '=', 'usf.file_id');
                 })
                 ->whereNull('usf.user_id')
                 ->where('gu.status', '=', 'active')
