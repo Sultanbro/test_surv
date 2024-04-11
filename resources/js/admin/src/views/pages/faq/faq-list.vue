@@ -8,6 +8,7 @@
     :group="{ name: 'g1' }"
     item-key="name"
     :data-id="parentId || 0"
+    @start="$emit('move', $event)"
     @end="$emit('order', $event)"
   >
     <template #item="{ element }">
@@ -155,6 +156,9 @@
 
   &.edit {
     padding: 5px 0;
+    .faq-list {
+      padding: 0 0 5px 15px;
+    }
   }
 
   &.sortable-ghost {

@@ -1014,6 +1014,12 @@ class Salary extends Model
 
                 $user_applied_at = null;
                 $ud = $user->user_description;
+
+                if ($ud && $ud->is_trainee != 0) {
+                    // Stajeri
+                    continue;
+                }
+
                 if ($ud && $ud->applied) {
                     $user_applied_at = $ud->applied;
                 }
@@ -1032,14 +1038,34 @@ class Salary extends Model
 
                 $trainings = [];
 
-                $schedule = $user->scheduleFast();
+                $workChartFromHistory = null;
+
+                if ($user->profile_histories_latest) {
+                    $payload = json_decode($user->profile_histories_latest->payload, true);
+                    $workChartFromHistory = $payload['work_chart_id'] ?? null;
+                }
+
+                $schedule = $user->schedule(true, $workChartFromHistory);
+
+                // Проверяем установлена ли время отдыха
                 $lunchTime = 1;
+                if ($schedule['rest_time']) {
+                    $lunchTime = floatval($schedule['rest_time'] / 60);
+                }
+                $worktime = $working_hours = max( round($schedule['end']->diffInHours($schedule['start']), 1) - $lunchTime, 0);
 
-                $worktime = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+                // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
+                $workChartType = $schedule['work_charts_type'];
 
-//                $ignore = $user->working_day_id == 1 ? [6, 0] : [0]; Дорогие новые разрабы не материтесь
+                if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
+                    $ignore = $user->getCountWorkDays(!$month_start->isCurrentMonth());   // Какие дни не учитывать в месяце
+                    $workdays = workdays($month_start->year, $month_start->month, $ignore);
 
-                $workdays = $user->getWorkDays($date);
+                } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+                    $workdays = $user->getCountWorkDaysMonth($month_start->year, $month_start->month);
+                } else {
+                    throw new Exception(message: 'Проверьте график работы', code: 400);
+                }
 
                 dump($user->id . " " . $workdays . " " . $working_hours);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
@@ -1113,8 +1139,17 @@ class Salary extends Model
                 $total_bonuses = (float)$awards;
                 $total_salary = 0;
 
-                if ($user->id == 15193) {
-                    dump($earnings);
+                /**
+                 * If user has edited Salary check it for 0
+                 */
+                $editedSalary = EditedSalary::query()->where('user_id', $user->id)
+                    ->whereYear('date', $month_start->year)
+                    ->whereMonth('date', $month_start->month)
+                    ->first();
+
+                // Не показывать если все по нулям
+                if ($editedSalary && $editedSalary->amount == 0) {
+                    continue;
                 }
 
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
@@ -1156,12 +1191,14 @@ class Salary extends Model
         return $all_total;
     }
 
-    public static function getUsersDataV2($month, $user_ids)
+    public static function getUsersDataV2(Carbon $startOfMonth, $user_ids)
     {
+        $endOfMonth = $startOfMonth->copy()->endOfMonth()->format('Y-m-d');
+
         return User::withTrashed()
-            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', array_unique($user_ids))
             ->with([
-                'groups' => function ($q) use ($month) {
+                'groups' => function ($q) {
                     $q->with('workChart');
 //                        ->where([
 //                            ['status', 'active'],
@@ -1169,80 +1206,81 @@ class Salary extends Model
 //                        ])
 //                        ->whereNull('to');
                 },
+                'profile_histories_latest' => function ($q) use ($endOfMonth) {
+                    $q->whereDate('created_at', '<=', $endOfMonth);
+                },
                 'zarplata',
                 'workingTime',
                 'user_description',
                 'workChart',
-                'salaries' => function ($q) use ($month) {
+                'salaries' => function ($q) use ($startOfMonth) {
                     $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year);
+                        ->whereMonth('date', $startOfMonth->month)
+                        ->whereYear('date', $startOfMonth->year);
                 },
-                'daytypes' => function ($q) use ($month) {
+                'daytypes' => function ($q) use ($startOfMonth) {
                     $q->select([
                         'user_id',
                         DB::raw('DAY(date) as day'),
                         'type'
                     ])
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $startOfMonth->month)
+                        ->whereYear('date', $startOfMonth->year)
                         ->groupBy('day', 'type', 'user_id', 'date');
                 },
-                'timetracking' => function ($q) use ($month) {
+                'timetracking' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id',
                         DB::raw('DAY(enter) as day'),
                         DB::raw('sum(total_hours) as total_hours'),
                         DB::raw('UNIX_TIMESTAMP(enter) as time'),
                     ])
-                        ->whereMonth('enter', $month->month)
-                        ->whereYear('enter', $month->year)
+                        ->whereMonth('enter', $startOfMonth->month)
+                        ->whereYear('enter', $startOfMonth->year)
                         ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
 
                 },
-                'testBonuses' => function ($q) use ($month) {
+                'testBonuses' => function ($q) use ($startOfMonth) {
                     $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                        ->whereMonth('date', '=', $month->month)
-                        ->whereYear('date', $month->year);
+                        ->whereMonth('date', '=', $startOfMonth->month)
+                        ->whereYear('date', $startOfMonth->year);
                 },
-                'kpi_obtained_bonuses' => function ($q) use ($month) {
+                'kpi_obtained_bonuses' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $startOfMonth->year)
+                        ->whereMonth('date', $startOfMonth->month)
                         ->get();
                 },
-                'edited_salaries' => function ($q) use ($month) {
+                'edited_salaries' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $startOfMonth->year)
+                        ->whereMonth('date', $startOfMonth->month)
                         ->get();
                 },
-                'edited_kpi' => function ($q) use ($month) {
+                'edited_kpi' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $startOfMonth->year)
+                        ->whereMonth('date', $startOfMonth->month)
                         ->get();
                 },
-                'saved_kpi' => function ($q) use ($month) {
+                'saved_kpi' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'total'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $startOfMonth->year)
+                        ->whereMonth('date', $startOfMonth->month)
                         ->get();
                 },
-                'edited_bonuses' => function ($q) use ($month) {
+                'edited_bonuses' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
-                        ->whereYear('date', $month->year)
-                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $startOfMonth->year)
+                        ->whereMonth('date', $startOfMonth->month)
                         ->get();
                 },
-                'fines' => function ($q) use ($month) {
-                    $q->whereYear('day', $month->year)
-                        ->whereMonth('day', $month->month)
+                'fines' => function ($q) use ($startOfMonth) {
+                    $q->whereYear('day', $startOfMonth->year)
+                        ->whereMonth('day', $startOfMonth->month)
                         ->where('status', 1)
                         ->get();
                 },
             ])
-            ->whereIn('users.id', $user_ids)
-            ->oldest('users.last_name')
             ->get();
     }
 }

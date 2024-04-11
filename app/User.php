@@ -1446,8 +1446,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function getWorkChartFast(): ?WorkChartModel
     {
-        $userChart = $this->workChart;
-
         if ($this->workChart) {
             return $this->workChart;
         }

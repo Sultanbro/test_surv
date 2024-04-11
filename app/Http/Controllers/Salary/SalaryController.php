@@ -209,12 +209,9 @@ class SalaryController extends Controller
 
 
         // total on group
-
-        $group = ProfileGroup::find($request->group_id);
-
-        $sdate = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
-        $users_ids = json_decode($group->users);
-        $data['group_total'] = GroupSalary::where('group_id', $request->group_id)
+        $sdate = Carbon::createFromDate($request->get('year'), $request->get('month'), 1)->format('Y-m-d');
+        $data['group_total'] = GroupSalary::query()
+            ->where('group_id', $request->get('group_id'))
             ->where('date', $sdate)
             ->where('type', GroupSalary::WORKING)
             ->get()
@@ -231,7 +228,8 @@ class SalaryController extends Controller
         $data['accruals'] = GroupSalary::getAccruals($sdate);
 
         if (Auth::user()->is_admin == 1) {
-            $data['all_total'] = GroupSalary::where('date', $sdate)
+            $data['all_total'] = GroupSalary::query()
+                ->where('date', $sdate)
                 ->where('type', GroupSalary::WORKING)
                 ->whereNotIn('group_id', [34])
                 ->get()->sum('total');
@@ -251,7 +249,6 @@ class SalaryController extends Controller
                 fn($query) => $query->whereNotNull('archived_date')->where(fn($query) => $query->whereDate('archived_date', '>=', $date->format('Y-m-d')))))
             ->get();
 
-        $salary_approved = []; // костыль
 
         $_groups = [];
 
@@ -274,14 +271,11 @@ class SalaryController extends Controller
                 $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
                 $group->salary_approved = 1;
 
-                if ($group->id == $request->group_id) {
-                    $currentGroup = $group;
-                }
             } else {
                 $group->salary_approved = 0;
-                if ($group->id == $request->group_id) {
-                    $currentGroup = $group;
-                }
+            }
+            if ($group->id == $request->group_id) {
+                $currentGroup = $group;
             }
 
             $_groups[] = $group;

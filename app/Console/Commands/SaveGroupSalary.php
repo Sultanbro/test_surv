@@ -56,9 +56,12 @@ class SaveGroupSalary extends Command
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function count($date)
     {
-        $groups = ProfileGroup::where('active', 1)->get();
+        $groups = ProfileGroup::query()->where('active', 1)->get();
 
         $workingGroups = Salary::getAllTotals($date, $groups, Salary::WORKING_USERS);
         $firedGroups = Salary::getAllTotals($date, $groups, Salary::FIRED_USERS);
