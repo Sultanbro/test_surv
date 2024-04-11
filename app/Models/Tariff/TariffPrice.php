@@ -42,7 +42,6 @@ final class TariffPrice
 
     public function getTotal(): float
     {
-        dd($this->extraUsersPrice);
         return $this->tariffPrice + $this->extraUsersPrice;
     }
 
@@ -79,6 +78,7 @@ final class TariffPrice
 
     private function updateExtraUsersPrice(): void
     {
+        dd($this->extraUsers);
         $this->extraUsersPrice = $this->extraUsers * $this->priceForOnePerson;
     }
 
