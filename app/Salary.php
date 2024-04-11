@@ -1054,11 +1054,11 @@ class Salary extends Model
                 $workChartType = $schedule['work_charts_type'];
 
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL) {
-                    $ignore = $user->getCountWorkDays(!$date->isCurrentMonth());   // Какие дни не учитывать в месяце
-                    $workdays = workdays($date->year, $date->month, $ignore);
+                    $ignore = $user->getCountWorkDays(!$month_start->isCurrentMonth());   // Какие дни не учитывать в месяце
+                    $workdays = workdays($month_start->year, $month_start->month, $ignore);
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                    $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
+                    $workdays = $user->getCountWorkDaysMonth($month_start->year, $month_start->month);
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
