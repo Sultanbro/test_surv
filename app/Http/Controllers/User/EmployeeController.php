@@ -141,7 +141,7 @@ class EmployeeController extends Controller
             $usersIdsWhoHasNotSignedFiles = DB::table('users')
                 ->select(DB::raw('users.id as id'))
                 ->join('group_user', 'users.id', '=', 'group_user.user_id')
-                ->join('profile_groups', 'group_user.group_id', '=', 'groups.id')
+                ->join('profile_groups', 'group_user.group_id', '=', 'profile_groups.id')
                 ->leftJoin('files', 'groups.id', '=', 'files.group_id')
                 ->leftJoin('user_signed_file', function ($join) {
                     $join->on('users.id', '=', 'user_signed_file.user_id')
@@ -152,7 +152,6 @@ class EmployeeController extends Controller
                 ->where('users.required_signed_docs', '=', 1)
                 ->pluck('id')
                 ->toArray();
-
 
             $users = User::query()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
