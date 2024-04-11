@@ -5,7 +5,10 @@
 			class="ancor"
 			name="prices"
 		/>
-		<div class="section-content">
+		<div
+			v-if="tariffs.length"
+			class="section-content"
+		>
 			<div class="jTariffs-header-wrapper jTariffs-header">
 				<h2 class="jTariffs-header jHeader">
 					{{ $lang(lang, 'prices-header') }}
@@ -91,10 +94,23 @@ export default {
 	data() {
 		return {
 			activeCol: -1,
-			image: require('../../assets/img/tariffs.png').default,
+			// image: require('../../assets/img/tariffs.png').default,
 			usdRate: 0,
 			kztRate: 0,
-			selectedValute: '₽'
+			selectedValute: '₽',
+			plans: [
+				'',
+				'', // free
+				'base',
+				'standard',
+				'pro',
+			],
+			currecyCode: {
+				'₽': 'rub',
+				'$': 'usd',
+				'₸': 'kzt',
+			},
+			tariffs: [],
 		}
 	},
 	computed: {
@@ -103,40 +119,25 @@ export default {
 		},
 		table() {
 			return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
-				if (rowIndex >= 12 && rowIndex <= 13) {
+				if(rowIndex === 12){
 					return row.map((item, index) => {
-						if (index >= 2 && index <= 4) {
-							const tariffItem = item.split(' ').join('');
-							if (this.selectedValute === '$') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
-									)
-								)} $`;
-							}
-							if (this.selectedValute === '₸') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) *
-												(100 / this.kztRate)
-									)
-								)} ₸`;
-							}
-							if (this.selectedValute === '₽') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) * 1.15
-									)
-								)} ₽`;
-							}
-							return item;
-						} else {
-							return item;
-						}
-					});
-				} else {
-					return row;
+						const plan = this.plans[index]
+						if(!plan) return item
+						const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'monthly')
+						if(!tariff) return item
+						return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
+					})
 				}
+				if(rowIndex === 13){
+					return row.map((item, index) => {
+						const plan = this.plans[index]
+						if(!plan) return item
+						const tariff = this.tariffs.find(tariff => tariff.kind === plan && tariff.validity === 'annual')
+						if(!tariff) return item
+						return this.separateThousands(parseInt(tariff.multiCurrencyPrice[this.currecyCode[this.selectedValute]])) + ' ' + this.selectedValute
+					})
+				}
+				return row
 			});
 		},
 		isMedium() {
@@ -144,7 +145,7 @@ export default {
 		}
 	},
 	async mounted() {
-		await this.USD()
+		await this.fetchTariffs()
 	},
 	methods: {
 		async USD() {
@@ -158,6 +159,16 @@ export default {
 		},
 		getSelectedValute(selectedValute) {
 			this.selectedValute = selectedValute
+		},
+		async fetchTariffs(){
+			try {
+				var {data} = await axios.get('/api/tariffs/get')
+				this.tariffs = data.data?.tariffs || []
+			}
+			catch (error) {
+				console.error('[fetchTariffs]', error)
+				return
+			}
 		}
 	}
 }

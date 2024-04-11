@@ -3,11 +3,8 @@
 namespace App\Models\Tariff;
 
 use App\Traits\CurrencyTrait;
-use App\User;
 use Exception;
 use Illuminate\Support\Str;
-use YooKassa\Model\Receipt;
-use YooKassa\Model\ReceiptItem;
 
 final class TariffPrice
 {
@@ -87,72 +84,14 @@ final class TariffPrice
     /**
      * @throws Exception
      */
-    public function createYoKassReceipt(User $user): Receipt
-    {
-        if ($this->currency != 'rub') {
-            throw new Exception('cannot createYooKassReceipt: wrong currency');
-        }
-
-        $tariffKind = $this->tariff->kind;
-
-        $receipt = new Receipt(array(
-            'customer' => array(
-                'full_name' => $user->full_name,
-                'email' => $user->email,
-                'phone' => $user->phone
-            ),
-            'items' => array(
-                array(
-                    'description' => "Покупка тарифа $tariffKind",
-                    'quantity' => 1,
-                    'amount' => array(
-                        'value' => $this->tariffPrice,
-                        'currency' => 'RUB'
-                    ),
-                    'vat_code' => '1',
-                    'payment_mode' => 'full_payment',
-                    'payment_subject' => 'service',
-                    'supplier' => array(
-                        'name' => 'string',
-                        'phone' => 'string'
-                    )
-                ),
-            ),
-        ));
-
-        $extraUsers = $this->extraUsers;
-
-        if ($extraUsers > 0) {
-            $extraUsersReceiptItem = new ReceiptItem(array(
-                'description' => "Кол-во пользователей: $extraUsers, цена за одного пользователя $this->priceForOnePerson.",
-                'quantity' => $extraUsers,
-                'amount' => array(
-                    'value' => $this->extraUsersPrice,
-                    'currency' => 'RUB'
-                ),
-                'vat_code' => '1',
-                'payment_mode' => 'full_payment',
-                'payment_subject' => 'service',
-                'supplier' => array(
-                    'name' => 'string',
-                    'phone' => 'string'
-                )
-            ));
-
-            $receipt->addItem($extraUsersReceiptItem);
-        }
-
-        return $receipt;
-    }
-
-    /**
-     * @throws Exception
-     */
     public function kztToRub(float $v): float
     {
         return $this::converterToRub($v);
     }
 
+    /**
+     * @throws Exception
+     */
     public function kztToUsd(float $v): float
     {
         return $this::converterToUsd($v);

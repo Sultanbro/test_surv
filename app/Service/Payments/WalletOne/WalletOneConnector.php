@@ -47,7 +47,7 @@ class WalletOneConnector implements PaymentConnector
                 "WMI_PAYMENT_NO" => $idempotenceKey,
                 "WMI_CURRENCY_ID" => self::CURRENCIES[Str::lower($data->currency)],
                 "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
-                "WMI_DESCRIPTION" => 'Заказ №' . time(),
+                "WMI_DESCRIPTION" => "BASE64:".base64_encode('Заказ №' . time()),
                 "WMI_CUSTOMER_EMAIL" => $user->email,
                 "WMI_ORDER_ITEMS" => json_encode([[
                     "Title" => urlencode("Покупка тарифа"),
