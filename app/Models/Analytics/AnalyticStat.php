@@ -602,6 +602,8 @@ class AnalyticStat extends Model
             }
         }
 
+        dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $text);
+
         try {
             $text = str_replace(",", ".", $text);
             $text = str_replace("=", "", $text);
@@ -617,7 +619,6 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}", "", $math_string);
             }
             $math_string = str_replace("%", "", $math_string);
-            dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $math_string);
 
             $res = eval($math_string);
         } catch (DivisionByZeroError|Throwable) {
