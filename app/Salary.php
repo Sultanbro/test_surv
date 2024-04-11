@@ -1016,6 +1016,12 @@ class Salary extends Model
 
                 $user_applied_at = null;
                 $ud = $user->user_description;
+
+                if ($ud && $ud->is_trainee != 0) {
+                    // Stajeri
+                    continue;
+                }
+
                 if ($ud && $ud->applied) {
                     $user_applied_at = $ud->applied;
                 }
