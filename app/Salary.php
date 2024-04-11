@@ -1145,8 +1145,8 @@ class Salary extends Model
                  * If user has edited Salary check it for 0
                  */
                 $editedSalary = EditedSalary::query()->where('user_id', $user->id)
-                    ->whereYear('date', $date->year)
-                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $month_start->year)
+                    ->whereMonth('date', $month_start->month)
                     ->first();
 
                 // Не показывать если все по нулям
