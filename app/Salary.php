@@ -649,7 +649,7 @@ class Salary extends Model
 
                 $workChartFromHistory = null;
 
-                if ($user->profile_histories_latest && !$date->isCurrentMonth()) {
+                if ($user->profile_histories_latest) {
                     $payload = json_decode($user->profile_histories_latest->payload, true);
                     $workChartFromHistory = $payload['work_chart_id'] ?? null;
                 }
