@@ -13,8 +13,8 @@ final class PaymentDTO
      */
     public function __construct(
         public string $currency,
-        public int $tariffId,
-        public int $extraUsersLimit,
+        public int    $tariffId,
+        public        $extraUsersLimit,
         public string $provider = 'prodamus'
     )
     {
@@ -23,10 +23,10 @@ final class PaymentDTO
     public function toArray(): array
     {
         return [
-            'currency'          => $this->currency,
-            'tariff_id'         => $this->tariffId,
-            'extra_users_limit' => $this->extraUsersLimit,
-            'provider'         => $this->provider
+            'currency' => $this->currency,
+            'tariff_id' => $this->tariffId,
+            'extra_users_limit' => (int)$this->extraUsersLimit,
+            'provider' => $this->provider
         ];
     }
 }
