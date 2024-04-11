@@ -184,7 +184,7 @@ class Timetracking extends Model
     {
         $auth = auth()->id();
         $record = Timetracking::query()
-            ->where('employee_id', $employee_id)
+            ->where('user_id', $employee_id)
             ->whereDate('enter', $date);
 
         if ($record->exists()) {
@@ -194,7 +194,7 @@ class Timetracking extends Model
             ]);
         } else {
             $record = Timetracking::query()->create([
-                'employee_id' => $employee_id,
+                'user_id' => $employee_id,
                 'enter' => $date,
                 'total_hours' => $total_hours,
                 'updated' => 2,
