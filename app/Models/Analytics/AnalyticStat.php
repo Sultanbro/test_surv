@@ -565,6 +565,7 @@ class AnalyticStat extends Model
 
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
+        $recursionCount = 0;
         $text = $stat->value;
 
         $matches = [];
@@ -586,6 +587,7 @@ class AnalyticStat extends Model
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
+                    ++$recursionCount;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
 
                     //  dump('formula ' .$value);
@@ -602,7 +604,7 @@ class AnalyticStat extends Model
             }
         }
 
-        dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $text);
+        dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $recursionCount);
 
         try {
             $text = str_replace(",", ".", $text);
