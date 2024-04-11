@@ -681,14 +681,12 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-//                if (auth()->id() == 5 && $user->id == 4357) {
-//                    dd($zarplata, $workdays, $working_hours, $workChartFromHistory, $schedule);
-//                }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
+                dd_if(auth()->id() == 18 && $user->id == 30279, "$hourly_pay = $zarplata / $workdays / $working_hours;");
                 // add to array
 
                 $x = $tts->where('day', $i);
