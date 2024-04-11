@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Timetracking;
 use App\TimetrackingHistory;
 use App\Models\Analytics\UserStat;
+use DateTimeZone;
 
 class DM
 {
@@ -57,100 +58,6 @@ class DM
             ['rownumber' => 12, 'headers' => 'Кол-во некоррект диалогов', 'pr' => 0, 'avg' => 0],
         ];
     }
-
-    /**
-     * Обновить часы работы и учет времени от количества действий
-     * @param int $user_id
-     * @param String $date 'Y-m-d'
-     * @param String $day
-     * @return void
-     */
-    public static function updateTimes(int $user_id, $date, $day)
-    {
-
-        $carbon = Carbon::parse($date)->day($day);
-
-        $stat = UserStat::where([
-            'date' => $carbon->format('Y-m-d'),
-            'employee_id' => $user_id,
-            'activity_id' => 20
-        ])->first();
-
-        if ($stat) {
-
-            $actions = (int)$stat->value;
-
-            $activity19 = UserStat::where([
-                'date' => $carbon->format('Y-m-d'),
-                'employee_id' => $user_id,
-                'activity_id' => 19
-            ])->first();
-
-            $value_for_19 = self::getHoursByActionsForRussia($actions);
-
-            if ($activity19) {
-                $activity19->value = $value_for_19;
-                $activity19->save();
-            } else {
-                UserStat::create([
-                    'date' => $carbon->format('Y-m-d'),
-                    'employee_id' => $user_id,
-                    'activity_id' => 19,
-                    'value' => $value_for_19
-                ]);
-            }
-
-            $activity21 = UserStat::where([
-                'date' => $carbon->format('Y-m-d'),
-                'employee_id' => $user_id,
-                'activity_id' => 21
-            ])->first();
-
-            $value_for_21 = self::getHoursByActions($actions);
-
-            if ($activity21) {
-                $activity21->data = $value_for_21;
-                $activity21->save();
-            } else {
-                UserStat::create([
-                    'date' => $carbon->format('Y-m-d'),
-                    'employee_id' => $user_id,
-                    'activity_id' => 21,
-                    'value' => $value_for_21
-                ]);
-            }
-
-            $carbon_date = Carbon::parse($date)->day($day);
-
-            $tt = Timetracking::where('user_id', $user_id)
-                ->whereYear('enter', $carbon_date->year)
-                ->whereMonth('enter', $carbon_date->month)
-                ->whereDay('enter', $day)
-                ->orderBy('id', 'desc')->first();
-
-            if ($tt) {
-                $tt->total_hours = $value_for_21 * 60;
-                $tt->updated = 1;
-                $tt->save();
-            } else {
-                Timetracking::create([
-                    'enter' => $carbon_date,
-                    'user_id' => $user_id,
-                    'updated' => 1,
-                    'total_hours' => $value_for_21 * 60,
-                ]);
-            }
-
-            TimetrackingHistory::create([
-                'author_id' => Auth::user()->id,
-                'author' => Auth::user()->name . ' ' . Auth::user()->last_name,
-                'user_id' => $user_id,
-                'description' => 'Изменено время с Аналитики на ' . $value_for_21,
-                'date' => $carbon_date->format('Y-m-d')
-            ]);
-        }
-    }
-
 
     /**
      * Alt for updateTimes with new UserStat
@@ -286,7 +193,7 @@ class DM
             ]);
         } else {
             Timetracking::query()->create([
-                'enter' => $carbon,
+                'enter' => $carbon->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s'),
                 'user_id' => $userId,
                 'updated' => 1,
                 'total_hours' => $value * 60,
