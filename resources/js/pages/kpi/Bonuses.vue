@@ -981,12 +981,12 @@ export default {
 			return false;
 		},
 		addBonus() {
-			this.newBonusesArray.unshift(newBonus());
+			this.newBonusesArray.push(newBonus());
 			this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
 		},
 		addItemRow() {
 			if (this.counter == 0) {
-				this.newBonusesArray.unshift(newBonus());
+				this.newBonusesArray.push(newBonus());
 				this.bonus = this.newBonusesArray[0];
 				this.counter++;
 			}
