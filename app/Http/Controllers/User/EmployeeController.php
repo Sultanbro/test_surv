@@ -147,6 +147,7 @@ class EmployeeController extends Controller
                         ->on('f.file_id', '=', 'usf.file_id');
                 })
                 ->whereNull('usf.user_id')
+                ->where('gu.status', '=', 'active')
                 ->distinct()
                 ->pluck('u.user_id')
                 ->toArray();
