@@ -587,7 +587,7 @@ class AnalyticStat extends Model
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
-                    $recursionCount++;
+                    $recursionCount +=1 ;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
 
                     //  dump('formula ' .$value);
