@@ -275,10 +275,10 @@
 												<td>{{ item.updated_by }}</td>
 												<td class="ho-hover">
 													<div class="d-flex px-2">
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveNewBonus(i)"
-														/>
+														/> -->
 														<i
 															class="fa fa-trash btn btn-danger btn-icon"
 															@click="deleteNewBonus(i)"
@@ -551,10 +551,10 @@
 														>
 															&nbsp;
 														</b-form-checkbox>
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveItemFromTable(p, i)"
-														/>
+														/> -->
 														<!--													<i-->
 														<!--															class="fa fa-pen btn btn-primary btn-icon"-->
 														<!--															@click="openSidebar(p, i)"-->
@@ -981,7 +981,7 @@ export default {
 			return false;
 		},
 		addBonus() {
-			this.newBonusesArray.unshift(newBonus());
+			this.newBonusesArray.push(newBonus());
 			this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
 		},
 		addItemRow() {

@@ -1076,7 +1076,7 @@ export default {
 			this.cell_comment = item.comment
 			this.cell_type = this.cell_types[item.type]
 			this.cell_show_value = item.show_value
-			this.coords = item.cell
+			this.coords = this.nextCellCoord(item.cell)
 		},
 
 		focusName(i,f, s) {
@@ -1095,7 +1095,15 @@ export default {
 
 			this.cell_type = this.cell_types[this.items[i][field].type]
 
-			this.coords = this.items[i][field].cell
+			this.coords = this.nextCellCoord(this.items[i][field].cell)
+		},
+
+		nextCellCoord(coord){
+			const col = coord.replace(/(\d)/gi, '')
+			const row = coord.replace(/(\D)/gi, '')
+			const index = this.letter_cells.indexOf(col)
+			if(index < 3) return coord
+			return this.letter_cells[index - 1] + row
 		},
 
 		hideContextMenu() {

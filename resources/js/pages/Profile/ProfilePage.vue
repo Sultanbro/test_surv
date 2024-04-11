@@ -55,9 +55,9 @@
 			:class="{ _active: anim.courses }"
 			@init="intro['courses'] = true"
 		/>
-		<RefWidget
+		<!-- <RefWidget
 			v-if="isBP && isMobileVisible"
-		/>
+		/> -->
 		<Profit
 			ref="profit"
 			:class="{ _active: anim.profit }"
@@ -74,12 +74,12 @@
 			@init="intro['indicators'] = true"
 		/>
 
-		<RefStat
+		<!-- <RefStat
 			v-if="isBP"
 			ref="referals"
 			:class="{ _active: anim.referals }"
 			@init="intro['referals'] = true"
-		/>
+		/> -->
 
 		<Popup
 			v-if="popBalance"
@@ -153,25 +153,25 @@ import Courses from '@/pages/Profile/Courses.vue'
 import Profit from '@/pages/Profile/Profit.vue'
 import TraineeEstimation from '@/pages/Profile/TraineeEstimation.vue'
 import CompareIndicators from '@/pages/Profile/CompareIndicators.vue'
-import RefStat from '@/pages/Profile/RefStat.vue'
+// import RefStat from '@/pages/Profile/RefStat.vue'
 import Popup from '@/pages/Layouts/Popup.vue'
 import Balance from '@/pages/Profile/Popups/Balance.vue'
 import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 
 import { mapGetters } from 'vuex'
-import { mapState, mapActions } from 'pinia'
+import { mapState, /* mapActions */ } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
-import { useReferralStore } from '@/stores/Referral'
+// import { useReferralStore } from '@/stores/Referral'
 import { usePortalStore } from '@/stores/Portal'
 
 export default {
@@ -185,14 +185,14 @@ export default {
 		Profit,
 		TraineeEstimation,
 		CompareIndicators,
-		RefStat,
+		// RefStat,
 		Popup,
 		Balance,
 		Kpi,
 		Bonuses,
 		PopupQuartal,
 		Nominations,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -210,7 +210,7 @@ export default {
 				profit: false,
 				estimation: false,
 				indicators: false,
-				referals: false,
+				// referals: false,
 			},
 			anim: {
 				intro: false,
@@ -219,7 +219,7 @@ export default {
 				profit: false,
 				estimation: false,
 				indicators: false,
-				referals: false,
+				// referals: false,
 			},
 			intersectionObserver: null,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
@@ -238,7 +238,7 @@ export default {
 		...mapState(useProfileCoursesStore, ['courses']),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
-		...mapState(useReferralStore, {refReady: 'isReady'}),
+		// ...mapState(useReferralStore, {refReady: 'isReady'}),
 		...mapState(usePortalStore, ['isOwner']),
 		isTrainee(){
 			if(!this.person) return true
@@ -267,7 +267,7 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
-				&& (this.refReady || !this.isBP)
+				// && (this.refReady || !this.isBP)
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
@@ -291,7 +291,7 @@ export default {
 	},
 	mounted(){
 		if(this.isReady) this.init()
-		if(this.isBP) this.fetchUserStats()
+		// if(this.isBP) this.fetchUserStats()
 		this.fetchDocs()
 		this.fetchPerson()
 	},
@@ -300,7 +300,7 @@ export default {
 		this.intersectionObserver = null
 	},
 	methods: {
-		...mapActions(useReferralStore, ['fetchUserStats']),
+		// ...mapActions(useReferralStore, ['fetchUserStats']),
 		init(){
 			setTimeout(() => {
 				this.initAnimOnScroll()
@@ -345,7 +345,7 @@ export default {
 					this.$refs.profit.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.$refs.estimation.$el instanceof Element && this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.$refs.indicators.$el instanceof Element && this.intersectionObserver.observe(this.$refs.indicators.$el)
-					this.$refs.referals?.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals?.$el)
+					// this.$refs.referals?.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals?.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {

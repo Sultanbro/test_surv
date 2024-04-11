@@ -60,8 +60,8 @@
 				</div>
 			</template>
 			<template #tab(1)>
-				<div class="kaspi__content custom-scroll-y">
-					<b-tabs>
+				<div class="kaspi__content custom-scroll-y pt-4">
+					<b-tabs class="pt-4">
 						<b-tab
 							v-for=" (bonus, i) in bonuses"
 							:key="i"
