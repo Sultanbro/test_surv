@@ -185,9 +185,10 @@ class Timetracking extends Model
         $auth = auth()->id();
         $record = Timetracking::query()
             ->where('user_id', $employee_id)
-            ->whereDate('enter', $date);
+            ->whereDate('enter', $date)
+            ->first();
 
-        if ($record->exists()) {
+        if ($record) {
             $record->update([
                 'total_hours' => $total_hours,
                 'updated' => 2,
