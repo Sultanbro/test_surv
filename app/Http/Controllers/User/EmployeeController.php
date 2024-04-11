@@ -139,7 +139,7 @@ class EmployeeController extends Controller
             $usersIdsWhoHasNotDownloadedFiles = array_diff($users_1, array_unique($downloads));
 
             $usersIdsWhoHasNotSignedFiles = DB::table('users')
-                ->select('users.id')
+                ->select(DB::raw('users.id as id'))
                 ->join('group_user', 'users.id', '=', 'group_user.user_id')
                 ->join('groups', 'group_user.group_id', '=', 'groups.id')
                 ->leftJoin('files', 'groups.id', '=', 'files.group_id')
@@ -150,7 +150,7 @@ class EmployeeController extends Controller
                 ->where('group_user.status', '=', 'active')
                 ->whereNull('user_signed_file.id')
                 ->where('users.required_signed_docs', '=', 1)
-                ->pluck('user_id')
+                ->pluck('id')
                 ->toArray();
 
 
