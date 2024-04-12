@@ -7,6 +7,8 @@ import ContractOffer from '../views/ContractOffer'
 import SiteUseAgreement from '../views/SiteUseAgreement'
 import PersonalData from '../views/PersonalData'
 import PrivacyPolicy from '../views/PrivacyPolicy'
+import LoginView from '../views/LoginView'
+import RegisterView from '../views/RegisterView'
 
 const router = new VueRouter({
 	mode: 'history',
@@ -63,6 +65,22 @@ const router = new VueRouter({
 			path: '/payments',
 			name: 'PaymentsView',
 			component: PaymentsView,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/login',
+			name: 'LoginView',
+			component: LoginView,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/register',
+			name: 'RegisterView',
+			component: RegisterView,
 			meta: {
 				title: 'Jobtron',
 			},
