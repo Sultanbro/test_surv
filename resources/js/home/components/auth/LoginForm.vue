@@ -84,6 +84,7 @@ import AuthMethod from './AuthMethod.vue';
 import AuthInput from './AuthInput.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
+import AuthSubmit from './AuthSubmit.vue';
 
 export default {
 	name: 'LoginForm',
@@ -92,6 +93,7 @@ export default {
 		AuthInput,
 		AuthTitle,
 		AuthSubTitle,
+		AuthSubmit,
 	},
 	props: {
 		action: {
