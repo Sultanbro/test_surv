@@ -1,37 +1,47 @@
 <template>
 	<label
-		class="AuthInput"
+		class="AuthSelect"
 		:class="{
-			'AuthInput_error': error,
+			'AuthSelect_error': error,
+			'AuthSelect_selected': selected,
 		}"
 	>
-		<span class="AuthInput-label">
+		<span class="AuthSelect-label">
 			{{ label }}
 		</span>
-		<span class="AuthInput-wrapper">
+		<span class="AuthSelect-wrapper">
 			<slot name="inner-before" />
-			<span class="AuthInput-inputWrapper">
+			<span class="AuthSelect-inputWrapper">
 				<slot name="input">
-					<input
+					<div class="AuthSelect-selected">
+						{{ selected ? selected.title : placeholder }}
+					</div>
+					<select
 						:value="value"
-						:type="type"
-						:placeholder="placeholder"
-						class="AuthInput-input"
+						class="AuthSelect-input"
 						@input="$emit('input', $event.target.value)"
 					>
+						<option
+							v-for="opt in options"
+							:key="opt.value"
+							:value="opt.value"
+						>
+							{{ opt.title }}
+						</option>
+					</select>
 				</slot>
 			</span>
 			<slot name="inner-after" />
 		</span>
 		<span
 			v-if="error"
-			class="AuthInput-error"
+			class="AuthSelect-error"
 		>
 			{{ error }}
 		</span>
 		<span
 			v-else-if="text"
-			class="AuthInput-text"
+			class="AuthSelect-text"
 		>
 			{{ text }}
 		</span>
@@ -40,12 +50,16 @@
 
 <script>
 export default {
-	name: 'AuthInput',
+	name: 'AuthSelect',
 	components: {},
 	props: {
 		value: {
 			type: String,
 			default: '',
+		},
+		options: {
+			type: Array,
+			default: () => [],
 		},
 		label: {
 			type: String,
@@ -71,7 +85,11 @@ export default {
 	data(){
 		return {}
 	},
-	computed: {},
+	computed: {
+		selected(){
+			return this.options.find(opt => opt.value === this.value)
+		}
+	},
 	watch: {},
 	created(){},
 	mounted(){},
@@ -81,7 +99,7 @@ export default {
 </script>
 
 <style lang="scss">
-.AuthInput{
+.AuthSelect{
 	&-label{
 		display: block;
 		margin-bottom: 4px;
@@ -96,19 +114,22 @@ export default {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		gap: 10px;
 
 		width: 100%;
 		height: 48px;
 		padding: 10px 16px 10px 16px;
-		gap: 10px;
+		border: 1px solid #CDD1DB;
+
+		position: relative;
+
 		border-radius: 8px;
-		border: 1px solid #AFB5C0;
 	}
 	&-inputWrapper{
 		flex: 1;
 		display: block;
 	}
-	&-input{
+	&-selected{
 		display: block;
 		width: 100%;
 		padding: 0;
@@ -124,6 +145,16 @@ export default {
 			outline: none;
 		}
 	}
+	&-input{
+		width: 100%;
+		opacity: 0;
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
 	&-text,
 	&-error{
 		color: #737B8A;
@@ -137,35 +168,35 @@ export default {
 	}
 
 	&:hover{
-		.AuthInput{
+		.AuthSelect{
 			&-wrapper{
 				border-color: #60A5FA;
 			}
 		}
 	}
 	&:has(:focus){
-		.AuthInput{
+		.AuthSelect{
 			&-wrapper{
 				border-color: #0C50FF;
 			}
 		}
 	}
-	&:has(input:empty){
-		.AuthInput{
+	&_selected{
+		.AuthSelect{
 			&-wrapper{
-				border-color: #CDD1DB;
+				border-color: #AFB5C0;
 			}
 		}
 	}
 	&_error{
-		.AuthInput{
+		.AuthSelect{
 			&-wrapper{
 				border-color: #E13C3C;
 			}
 		}
 	}
 	&_success{
-		.AuthInput{
+		.AuthSelect{
 			&-wrapper{
 				border-color: #4FC168;
 			}

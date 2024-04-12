@@ -1,6 +1,8 @@
 <template>
 	<form
 		class="LoginForm"
+		:action="action"
+		method="POST"
 		@submit.prevent="onSubmit"
 	>
 		<AuthTitle>
