@@ -9,8 +9,51 @@
 				class="ml-a Balance-datePicker"
 			/>
 		</div>
-		<ProfileTabs :tabs="['Заработанные бонусы', 'Можно заработать']">
+		<ProfileTabs :tabs="['Можно заработать', 'Заработанные бонусы']">
 			<template #tab(0)>
+				<div class="kaspi__content custom-scroll-y pt-4">
+					<b-tabs class="pt-4">
+						<b-tab
+							v-for=" (bonus, i) in bonuses"
+							:key="i"
+							:title="bonus.name"
+						>
+							<table class="PopupBonuses-table">
+								<thead>
+									<tr>
+										<th class="text-center">
+											Название
+										</th>
+										<th class="text-center">
+											За что
+										</th>
+										<th class="text-center">
+											Сумма
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										v-for="(item, index) in bonus.items"
+										:key="index"
+									>
+										<td class="text-center">
+											{{ item.title }}
+										</td>
+										<td class="text-center">
+											{{ item.text }}
+										</td>
+										<td class="text-center">
+											{{ item.sum }}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</b-tab>
+					</b-tabs>
+				</div>
+			</template>
+			<template #tab(1)>
 				<div
 					class="kaspi__content custom-scroll-y"
 					data-content="1"
@@ -57,49 +100,6 @@
 							</tr>
 						</tbody>
 					</table>
-				</div>
-			</template>
-			<template #tab(1)>
-				<div class="kaspi__content custom-scroll-y pt-4">
-					<b-tabs class="pt-4">
-						<b-tab
-							v-for=" (bonus, i) in bonuses"
-							:key="i"
-							:title="bonus.name"
-						>
-							<table class="PopupBonuses-table">
-								<thead>
-									<tr>
-										<th class="text-center">
-											Название
-										</th>
-										<th class="text-center">
-											За что
-										</th>
-										<th class="text-center">
-											Сумма
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(item, index) in bonus.items"
-										:key="index"
-									>
-										<td class="text-center">
-											{{ item.title }}
-										</td>
-										<td class="text-center">
-											{{ item.text }}
-										</td>
-										<td class="text-center">
-											{{ item.sum }}
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</b-tab>
-					</b-tabs>
 				</div>
 			</template>
 		</ProfileTabs>
