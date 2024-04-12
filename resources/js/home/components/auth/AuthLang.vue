@@ -1,88 +1,90 @@
 <template>
-	<a
+	<div
 		v-click-outside="hidePopup"
-		:class="{ 'jNav-menu-lang-active': active }"
-		class="jNav-menu-lang"
-		href="javascript:void(0)"
+		class="AuthLang"
+		:class="{ 'AuthLang_active': active }"
 		@click="togglePopup"
 		@mouseover="showPopup"
 		@mouseleave="hidePopup"
 	>
-		<img
-			v-if="lang === 'ru'"
-			:src="require('../../assets/img/rus.png').default"
-			alt="ru"
-			class="jNav-menu-lang-img"
-		>
-
-		<img
-			v-else-if="lang === 'kz'"
-			:src="require('../../assets/img/kz.png').default"
-			alt="kz"
-			class="jNav-menu-lang-img"
-		>
-
-		<img
-			v-else
-			:src="require('../../assets/img/eng.png').default"
-			alt="en"
-			class="jNav-menu-lang-img"
-		>
-		<span style="margin: 0 10px">
-			{{ lang.charAt(0).toUpperCase() + lang.slice(1) }}
-		</span>
-
-		<div class="jNav-menu-lang-popup">
-			<div
-				class="jNav-menu-lang-wrapper"
-				@click="$emit('change', 'ru')"
+		<div class="AuthLang-selected">
+			<AuthLangItem
+				:item="selected"
 			>
-				<div class="jNav-menu-lang-button">Русский</div>
-				<img
-					:src="require('../../assets/img/rus.png').default"
-					alt="ru"
-					class="jNav-menu-lang-img"
+				<template #icon>
+					<IconCaret />
+				</template>
+			</AuthLangItem>
+		</div>
+		<div class="AuthLang-popup">
+			<div class="AuthLang-popupContent">
+				<AuthLangItem
+					v-for="opt, index in options"
+					:key="index"
+					:item="opt"
+					@click.native="$emit('input', opt.value)"
 				>
-			</div>
-			<div
-				class="jNav-menu-lang-wrapper"
-				@click="$emit('change', 'kz')"
-			>
-				<div class="jNav-menu-lang-button">Казак</div>
-				<img
-					:src="require('../../assets/img/kz.png').default"
-					alt="kz"
-					class="jNav-menu-lang-img"
-				>
-			</div>
-			<div
-				class="jNav-menu-lang-wrapper"
-				@click="$emit('change', 'en')"
-			>
-				<div class="jNav-menu-lang-button">English</div>
-				<img
-					:src="require('../../assets/img/eng.png').default"
-					alt="en"
-					class="jNav-menu-lang-img"
-				>
+					<template
+						v-if="opt.value === value"
+						#icon
+					>
+						<IconCheck />
+					</template>
+				</AuthLangItem>
 			</div>
 		</div>
-	</a>
+	</div>
 </template>
 
 <script>
+import AuthLangItem from './AuthLangItem.vue'
+import IconCaret from './IconCaret.vue'
+import IconCheck from './IconCheck.vue'
+
+import flagEn from '../../assets/img/eng.png'
+import flagKz from '../../assets/img/kz.png'
+import flagRu from '../../assets/img/rus.png'
+
 export default {
+	name: 'AuthLang',
+	components: {
+		AuthLangItem,
+		IconCaret,
+		IconCheck,
+	},
 	props: {
-		lang: {
+		value: {
 			type: String,
-			default: '',
+			default: 'ru',
 		},
 	},
 	data() {
 		return {
 			active: false,
 			timeout: null,
+			options: [
+				{
+					flag: flagRu,
+					label: 'Ru',
+					value: 'ru',
+				},
+				{
+					flag: flagKz,
+					label: 'Kz',
+					value: 'kz',
+				},
+				{
+					flag: flagEn,
+					label: 'En',
+					value: 'en',
+				},
+			]
 		};
+	},
+	computed: {
+		selected(){
+			return this.options.find(opt => opt.value === this.value)
+		},
 	},
 	methods: {
 		hidePopup() {
@@ -105,86 +107,59 @@ export default {
 <style lang="scss">
 @import "../../assets/scss/app.variables.scss";
 
-.jNav-menu-lang {
-	display: flex;
-	align-items: center;
-	padding: 5px 10px;
+.AuthLang{
 	position: relative;
-	text-decoration: none;
-	background: #ffffff;
-	border-radius: 10px;
-	font-size: 16px;
-	color: #333333;
-	height: 40px;
-	margin: 0;
-	margin-right: 10px;
 
-	&:after {
-		content: "";
-		display: inline-block;
-		width: 0.5rem;
-		height: 0.3125rem;
-		vertical-align: middle;
-		background-image: url("../../assets/img/select-arrow.svg");
-		background-repeat: no-repeat;
+	&-selected{
+		padding: 4px 0;
+		position: relative;
+		z-index: 2;
+
+		border-radius: 8px;
+		background-color: #fff;
 	}
-}
+	&-popup{
+		padding-top: 4px;
 
-.jNav-menu-lang-popup {
-	display: none;
-	width: auto;
-	padding: 0.5rem;
-	position: absolute;
-	top: 115%;
-	left: -75px;
-	background: #fff;
-	box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
-	border-radius: 10px;
-}
+		position: absolute;
+		z-index: 1;
+		top: 100%;
+		left: 0;
 
-.jNav-menu-lang-active {
-	.jNav-menu-lang-popup {
-		display: block;
+		transition: 0.3s;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-20px);
 	}
-}
-
-.jNav-menu-lang-wrapper {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-}
-
-.jNav-menu-lang-button {
-	width: 54px;
-	margin-right: 1rem;
-}
-
-@media screen and (min-width: $large) {
-	.jNav-menu-lang-button {
-		width: 108px;
+	&-popupContent{
+		padding: 8px 0;
+		border-radius: 8px;
+		background-color: #fff;
 	}
-
-	.jNav-menu-lang-popup {
-		right: -80px;
-	}
-}
-
-.jNav-menu-lang-img {
-	width: 24px;
-	height: 24px;
-}
-
-@media screen and (min-width: $large) {
-	.jNav-menu-lang {
-		&:after {
-			transform: scale(2);
-			width: 0.25rem;
-			height: 0.2125rem;
+	&_active{
+		.AuthLang{
+			&-selected{
+				.AuthLangItem-icon{
+					transform: rotate(180deg);
+				}
+			}
+			&-popup{
+				opacity: 1;
+				visibility: visible;
+				transform: none;
+			}
 		}
 	}
-	.jNav-menu-lang-img {
-		width: 48px;
-		height: 48px;
+
+	&:hover{
+		.AuthLang{
+			&-selected{
+				color: #0C50FF;
+				.AuthIcon-fill{
+					fill: #0C50FF;
+				}
+			}
+		}
 	}
 }
 </style>

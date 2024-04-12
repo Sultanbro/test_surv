@@ -1,5 +1,8 @@
 <template functional>
-	<p class="AuthSubTitle">
+	<p
+		v-bind="data.attrs"
+		:class="['AuthSubTitle', data.staticClass]"
+	>
 		<slot />
 	</p>
 </template>
@@ -17,6 +20,5 @@ export default {
 	font-size: 16px;
 	font-weight: 400;
 	line-height: 24px;
-	text-align: left;
 }
 </style>

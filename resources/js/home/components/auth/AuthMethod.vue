@@ -71,7 +71,7 @@ export default {
 		font-size: 16px;
 		font-weight: 400;
 		line-height: 24px;
-		text-align: left;
+		text-align: center;
 		color: #333;
 
 		border-radius: 12px;

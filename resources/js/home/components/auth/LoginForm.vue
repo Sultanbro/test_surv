@@ -65,6 +65,7 @@
 		</div>
 		<AuthSubTitle
 			class="text-right"
+			data-qqq="qweq"
 		>
 			<a
 				href="javascript:void(0)"
@@ -160,6 +161,7 @@ export default {
 		display: flex;
 		flex-flow: column nowrap;
 		gap: 20px;
+		margin-top: 20px;
 	}
 	&-showPassword{
 		&:hover{

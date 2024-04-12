@@ -36,13 +36,15 @@
 		<AuthSubTitle>
 			Укажите email, который вы указывали при регистрации
 		</AuthSubTitle>
-		<AuthInput
-			v-model="email"
-			label="Email"
-			type="email"
-			placeholder="example@gmail.com"
-			:error="errors.email"
-		/>
+		<div class="ForgotForm-inputs">
+			<AuthInput
+				v-model="email"
+				label="Email"
+				type="email"
+				placeholder="example@gmail.com"
+				:error="errors.email"
+			/>
+		</div>
 		<AuthSubmit>
 			Продолжить
 		</AuthSubmit>
@@ -113,5 +115,9 @@ export default {
 </script>
 
 <style lang="scss">
-//.ForgotForm{}
+.ForgotForm{
+	&-inputs{
+		margin-top: 20px;
+	}
+}
 </style>

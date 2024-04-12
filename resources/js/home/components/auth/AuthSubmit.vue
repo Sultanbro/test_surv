@@ -1,6 +1,7 @@
-<template>
+<template functional>
 	<button
-		class="AuthSubmit"
+		v-bind="data.attrs"
+		:class="['AuthSubmit', data.staticClass]"
 		type="submit"
 	>
 		<slot />

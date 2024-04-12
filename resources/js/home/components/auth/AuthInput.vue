@@ -103,6 +103,7 @@ export default {
 		gap: 10px;
 		border-radius: 8px;
 		border: 1px solid #AFB5C0;
+		background-color: #fff;
 	}
 	&-inputWrapper{
 		flex: 1;

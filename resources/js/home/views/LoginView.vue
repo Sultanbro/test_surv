@@ -9,13 +9,47 @@
 				@forgot="mode = 'forgot'"
 			/>
 			<template v-else-if="mode === 'links'">
-				<!-- select tenant -->
+				<SelectTenant
+					:links="links"
+				/>
 			</template>
 			<template v-else-if="'forgot'">
 				<ForgotForm
 					@login="mode = 'login'"
 				/>
 			</template>
+		</template>
+
+		<template
+			v-if="isMobile"
+			#form-header
+		>
+			<AuthHeader back />
+		</template>
+		<template
+			v-if="isMobile"
+			#form-footer
+		>
+			<AuthFooter />
+		</template>
+
+		<template
+			v-if="!isMobile"
+			#info
+		>
+			<AuthInfo />
+		</template>
+		<template
+			v-if="!isMobile"
+			#info-header
+		>
+			<AuthHeader back />
+		</template>
+		<template
+			v-if="!isMobile"
+			#info-footer
+		>
+			<AuthFooter />
 		</template>
 	</AuthLayout>
 </template>
@@ -24,8 +58,10 @@
 import AuthLayout from '../components/auth/AuthLayout.vue';
 import LoginForm from '../components/auth/LoginForm.vue';
 import ForgotForm from '../components/auth/ForgotForm.vue';
-
-import axios from 'axios'
+import AuthHeader from '../components/auth/AuthHeader.vue';
+import AuthFooter from '../components/auth/AuthFooter.vue';
+import AuthInfo from '../components/auth/AuthInfo.vue';
+import SelectTenant from '../components/auth/SelectTenant.vue';
 
 function emptyErrors(){
 	return {
@@ -52,6 +88,10 @@ export default {
 		AuthLayout,
 		LoginForm,
 		ForgotForm,
+		AuthHeader,
+		AuthFooter,
+		AuthInfo,
+		SelectTenant,
 	},
 	props: {},
 	data(){
@@ -62,14 +102,19 @@ export default {
 			links: [],
 		}
 	},
-	computed: {},
+	computed: {
+		isMobile(){
+			return this.$viewportSize.width < 768
+		}
+	},
 	watch: {},
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
 		onSuccessLogin(data){
-			if(data.link) return window.location.replace(data.link)
+			console
+			if(Object.keys(data).includes('link')) return window.location.replace(data.link)
 			if(data.links) return this.showLinks(data.links)
 			// toast?
 		},
@@ -80,12 +125,26 @@ export default {
 		async onSubmit({method, email, phone, password}){
 			this.isLoading = true
 			try {
-				const {data} = await axios.post('/login', {
-					method,
-					username: email,
-					phone,
-					password,
+				const response = await fetch('/login', {
+					method: 'POST',
+					cache: 'no-cache',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					redirect: 'manual',
+					body: JSON.stringify({
+						method,
+						username: email,
+						phone,
+						password,
+					})
 				})
+				if(response.type === 'opaqueredirect') return location.assign('/')
+				if(!response.ok) {
+					// toast?
+					return
+				}
+				const data = await response.json()
 				this.onSuccessLogin(data)
 			}
 			catch (error) {
@@ -102,6 +161,9 @@ export default {
 						...emptyErrors(),
 						password: 'Введенный email или пароль не совпадает'
 					}
+					break;
+				case 302:
+					alert('302')
 					break;
 				default:
 					// toast?

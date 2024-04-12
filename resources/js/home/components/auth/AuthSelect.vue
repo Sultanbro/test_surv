@@ -120,6 +120,7 @@ export default {
 		height: 48px;
 		padding: 10px 16px 10px 16px;
 		border: 1px solid #CDD1DB;
+		background-color: #fff;
 
 		position: relative;
 
