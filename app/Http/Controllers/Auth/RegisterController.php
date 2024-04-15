@@ -40,7 +40,6 @@ class RegisterController extends Controller
 
     /**
      * @throws Exception
-     * @throws Throwable
      */
     public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
@@ -55,16 +54,11 @@ class RegisterController extends Controller
 
         $this->cabinetService->add($tenant->id, $user, true);
 
-        ProcessSendPasswordMail::dispatch($user, $this->getNotHashedPassword());
-
         $this->createRegistrationLead($user, $centralUser);
 
         return response()->json([
-            'message' => "Check the mailbox"
+            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
-//        return response()->json([
-//            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
-//        ]);
     }
 
     private function createRegistrationLead(User $user, CentralUser $centralUser): void
