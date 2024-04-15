@@ -1132,7 +1132,7 @@ class Salary extends Model
                 if ($user->edited_kpi->count()) {
                     $kpi = $user->edited_kpi->sum('amount');
                 } else if ($user->saved_kpi->count()) {
-                    $kpi = $user->saved_kpi->sum('total');
+                    $kpi = Kpi::userKpi($user->id, $month_start->copy()->format('Y-m-d'));
                 }
 
                 $user_total = 0;
@@ -1157,8 +1157,7 @@ class Salary extends Model
                     $total_salary += (float)$earnings[$i];
                 }
 
-                $total_bonuses += (float)$user->testBonuses->sum('amount');
-
+//                $total_bonuses += (float)$user->testBonuses->sum('amount'); // ignore test bonuses
                 $user_total += $total_salary;
 
                 if ($user->edited_bonuses->count()) {
@@ -1198,14 +1197,6 @@ class Salary extends Model
         return User::withTrashed()
             ->whereIn('users.id', array_unique($user_ids))
             ->with([
-                'groups' => function ($q) {
-                    $q->with('workChart');
-//                        ->where([
-//                            ['status', 'active'],
-//                            ['is_head', false]
-//                        ])
-//                        ->whereNull('to');
-                },
                 'profile_histories_latest' => function ($q) use ($endOfMonth) {
                     $q->whereDate('created_at', '<=', $endOfMonth);
                 },
