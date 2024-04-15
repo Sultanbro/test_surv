@@ -1197,9 +1197,9 @@ class Salary extends Model
                     }
 
                 }
-if ($user->id == 10147) {
-    dd($earnings, $hours, $hourly_pays);
-}
+//if ($user->id == 10147) {
+//    dd($earnings, $hours, $hourly_pays);
+//}
                 $bonuses = [];
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
