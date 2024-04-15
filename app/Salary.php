@@ -986,6 +986,28 @@ class Salary extends Model
         $all_total = [];
 
         foreach ($groups as $group) {
+            $groupTimeAddress = false;
+            if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
+
+            $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
+
+            $statValues = [];
+            $columnValue = [];
+            if ($analyticStat) {
+                $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
+
+                if ($checkValue->count() > 0) {
+                    $columnValue = AnalyticColumn::getValuesBetweenDates($analyticStat->group_id, $date->startOfMonth()->format('Y-m-d'), $date->endOfMonth()->format('Y-m-d'));
+                }
+
+                foreach ($checkValue as $value) {
+                    foreach ($columnValue as $column) {
+                        if ($column['id'] == $value->column_id) $nameColumn = $column['name'];
+                    }
+                    $statValues[$nameColumn] = $value->value;
+                }
+            }
+
             $internshipPayRate = $group->paid_internship == 1 ? 0.5 : 0;
             $all_total[$group->id] = 0;
 
@@ -1028,9 +1050,10 @@ class Salary extends Model
                 }
 
                 $tts = $user->timetracking->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-                $trainee_days = $user->daytypes->whereIn('type', [5, 6, 7]);
-
                 $tts_before_apply = $user->timetracking->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
+                $trainee_days = $user->daytypes->whereIn('type', [5, 7]);
+                $retraining_days = $user->daytypes->whereIn('type', [6]);
+                $absent_days = $user->daytypes->whereIn('type', [2]);
 
                 $earnings = [];
                 $hourly_pays = [];
@@ -1069,11 +1092,28 @@ class Salary extends Model
 
                 dump($user->id . " " . $workdays . " " . $working_hours . " " . $user->name . " " . $user->last_name);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
+                    $statTotalHour = null;
+                    $earnings[$i] = null;
+                    $hours[$i] = null;
+                    $trainings[$i] = null;
+
+                    if ($groupTimeAddress) {
+                        $dayInMonth = Carbon::create($month_start->year, $month_start->month, $i);
+                        $userStat = UserStat::getTimeTrackingActivity($user, $dayInMonth, $group->time_address);
+                        if ($userStat) {
+                            if (array_key_exists($i, $statValues)) {
+                                $statTotalHour = floatval($userStat->value) + floatval($statValues[$i]) / 60;
+                            } else {
+                                $statTotalHour = floatval($userStat->value);
+                            }
+                        }
+                    }
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
 
                     //count hourly pay
                     $s = $user->salaries->where('day', $d)->first();
+
                     $zarplata = $s ? $s->amount : 70000;
 
                     $hourly_pay = $workdays ? $zarplata / $workdays / $working_hours : 0;
@@ -1082,31 +1122,72 @@ class Salary extends Model
 
                     $x = $tts->where('day', $i);
                     $y = $tts_before_apply->where('day', $i);
-                    $a = $trainee_days->where('day', $i);
+                    $t = $trainee_days->where('day', $i)->first();
+                    $r = $retraining_days->where('day', $i)->first();
+                    $a = $absent_days->where('day', $i)->first();
 
-                    $earnings[$i] = null;
-                    $hours[$i] = null;
-                    $trainings[$i] = null;
 
-                    if ($a->count() > 0) { // день отмечен как стажировка
-                        $trainings[$i] = true;
-                        $earning = $hourly_pay * $internshipPayRate * $worktime;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($worktime / 2, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    } else if ($x->count() > 0 && isset($s)) { // отработанное врея есть
-                        $total_hours = $x->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
-                    } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
-                        $total_hours = $y->sum('total_hours');
-                        $earning = $total_hours / 60 * $hourly_pay;
-                        $earnings[$i] = round($earning);
-                        $hours[$i] = round($total_hours / 60, 1);
-                        $hourly_pays[$i] = round($hourly_pay, 2);
+
+                    if (empty($statTotalHour)) {
+                        if ($a) {
+                            $earnings[$i] = 0;
+                            $hours[$i] = 0;
+                        } else if ($x->count() > 0) { // отработанное время есть
+                            $total_hours = $x->sum('total_hours');
+
+                            $earning = ($total_hours / 60) * $hourly_pay;
+                            $earnings[$i] = round($earning);
+
+                            $hours[$i] = round(($total_hours / 60), 1);
+
+                        } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                            $total_hours = $y->sum('total_hours');
+                            $earning = $total_hours / 60 * $hourly_pay;
+                            $earnings[$i] = round($earning);
+                            $hours[$i] = round(($total_hours / 60), 1);
+                        } else if ($r) { // переобучение
+                            $trainings[$i] = true;
+                            $total_hours = 0;
+
+                            if ($x->count() > 0) {
+                                $total_hours = $x->sum('total_hours');
+                            }
+
+                            $earning = ($total_hours / 60) * $hourly_pay * 0.5;
+                            $earnings[$i] = round($earning); // стажировочные на пол суммы
+
+                            $hours[$i] = round($total_hours / 60, 1);
+
+                        } else if ($t) { // день отмечен как стажировка
+                            $trainings[$i] = true;
+
+                            $earning = $hourly_pay * $working_hours * $internshipPayRate;
+                            $earnings[$i] = round($earning); // стажировочные на пол суммы
+
+                            $hours[$i] = round($working_hours / 2, 1);
+                        }
+                    } else {
+                        if ($a->count() > 0) { // день отмечен как стажировка
+                            $trainings[$i] = true;
+                            $earning = $hourly_pay * $internshipPayRate * $worktime;
+                            $earnings[$i] = round($earning);
+                            $hours[$i] = round($worktime / 2, 1);
+                            $hourly_pays[$i] = round($hourly_pay, 2);
+                        } else if ($x->count() > 0 && isset($s)) { // отработанное врея есть
+                            $total_hours = $x->sum('total_hours');
+                            $earning = $total_hours / 60 * $hourly_pay;
+                            $earnings[$i] = round($earning);
+                            $hours[$i] = round($total_hours / 60, 1);
+                            $hourly_pays[$i] = round($hourly_pay, 2);
+                        } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
+                            $total_hours = $y->sum('total_hours');
+                            $earning = $total_hours / 60 * $hourly_pay;
+                            $earnings[$i] = round($earning);
+                            $hours[$i] = round($total_hours / 60, 1);
+                            $hourly_pays[$i] = round($hourly_pay, 2);
+                        }
                     }
+
                 }
 if ($user->id == 10147) {
     dd($earnings, $hours, $hourly_pays);
