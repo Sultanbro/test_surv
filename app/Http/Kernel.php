@@ -63,7 +63,6 @@ class Kernel extends HttpKernel
         'tenant' => [
             \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
-            \App\Http\Middleware\TariffMiddleware::class,
         ]
     ];
 
