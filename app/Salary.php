@@ -1108,7 +1108,9 @@ class Salary extends Model
                         $hourly_pays[$i] = round($hourly_pay, 2);
                     }
                 }
-
+if ($user->id == 10147) {
+    dd($earnings);
+}
                 $bonuses = [];
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
