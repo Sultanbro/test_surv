@@ -26,8 +26,7 @@ class TariffMiddleware
         $tenant = tenant();
         /** @var User $user */
         $user = auth()->user();
-        dd($user);
-        if ($user->isOwner() || $tenant->hasActiveTariff()) return $next($request);
+        if ($user && ($user->isOwner() || $tenant->hasActiveTariff())) return $next($request);
 
         throw new TariffExpiredException("Тарифный план истек! Обратитесь к руководителю.", 403);
     }
