@@ -38,7 +38,10 @@ return [
             'driver' => 'database',
             'table' => 'jobs',
             'connection' => 'mysql',
-            'queue' => 'default',
+            'queue' => [
+                'default',
+                'mail'
+            ],
             'retry_after' => 90,
         ],
 

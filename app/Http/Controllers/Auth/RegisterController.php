@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\Traits\CreateTenant;
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\RegisterRequest;
+use App\Jobs\Registration\ProcessSendPasswordMail;
 use App\Models\CentralUser;
 use App\Providers\RouteServiceProvider;
 use App\Service\Tenancy\CabinetService;
@@ -18,6 +19,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Throwable;
 
 class RegisterController extends Controller
 {
@@ -38,6 +40,7 @@ class RegisterController extends Controller
 
     /**
      * @throws Exception
+     * @throws Throwable
      */
     public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
@@ -52,11 +55,16 @@ class RegisterController extends Controller
 
         $this->cabinetService->add($tenant->id, $user, true);
 
+        ProcessSendPasswordMail::dispatch($user, $this->getNotHashedPassword());
+
         $this->createRegistrationLead($user, $centralUser);
 
         return response()->json([
-            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+            'message' => "Check the mailbox"
         ]);
+//        return response()->json([
+//            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+//        ]);
     }
 
     private function createRegistrationLead(User $user, CentralUser $centralUser): void
