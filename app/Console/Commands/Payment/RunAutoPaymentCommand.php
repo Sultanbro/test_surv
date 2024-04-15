@@ -47,7 +47,7 @@ class RunAutoPaymentCommand extends Command
             ->where([
             ['auto_payment', '=', true],
             ['expire_date', '<=', now()->format('Y-m-d')]
-        ])->get()->unique('owner_id');
+        ])->get()->unique('tenant_id');
 
         foreach ($payments as $payment)
         {

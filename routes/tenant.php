@@ -809,7 +809,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
  * API routes
  * instead of api.php
  */
-Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
+Route::middleware(['api', 'tariff', 'tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'api'], function () {
 

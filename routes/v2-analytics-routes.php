@@ -10,8 +10,8 @@ use App\Http\Controllers\V2\Analytics\V2AnalyticGroupController;
 use App\Http\Controllers\V2\Analytics\V2AnalyticUserInfoController;
 
 Route::group([
-    'middleware'    => ['analytics_permission'],
-    'as'            => 'v2.analytics'
+    'middleware' => ['analytics_permission', 'tariff'],
+    'as' => 'v2.analytics'
 ], function () {
     /**
      * Info about group and Fired users.

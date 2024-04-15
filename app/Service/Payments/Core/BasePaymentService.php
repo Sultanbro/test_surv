@@ -46,7 +46,7 @@ abstract class BasePaymentService
 
         $tariff = Tariff::getTariffById($data->tariffId);
         $payment = TariffPayment::createPaymentOrFail(
-            $authUser->id,
+            tenant('id'),
             $data->tariffId,
             $data->extraUsersLimit,
             $tariff->calculateExpireDate(),

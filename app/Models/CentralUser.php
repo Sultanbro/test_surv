@@ -124,14 +124,6 @@ class CentralUser extends Model
             ->withPivot(['owner as owner', 'user_id as user_id', 'tenant_id as tenant_id']);
     }
 
-    /**
-     * @return HasOne
-     */
-    public function subscription(): HasOne
-    {
-        return $this->hasOne(TariffPayment::class, 'owner_id', 'id');
-    }
-
     public function managerHasOwner()
     {
         return $this->hasOne(ManagerHasOwner::class, 'owner_id');

@@ -1872,4 +1872,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             ->withWhereHas('images')
             ->latest();
     }
+
+    public function isOwner(): bool
+    {
+        return (bool)$this->is_admin;
+    }
 }
