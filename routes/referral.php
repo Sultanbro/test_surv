@@ -11,7 +11,6 @@ Route::group([
         , 'middleware' => [
             'only_bp',
             'auth.basic',
-            'tariff'
         ]
     ]
     , function () {

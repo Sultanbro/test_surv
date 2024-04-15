@@ -53,7 +53,6 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\Admin::class,
             \App\Http\Middleware\CheckPermissions::class,
             \App\Http\Middleware\ActiveUser::class,
-            \App\Http\Middleware\TariffMiddleware::class,
         ],
 
         'api' => [
@@ -64,6 +63,7 @@ class Kernel extends HttpKernel
         'tenant' => [
             \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+            \App\Http\Middleware\TariffMiddleware::class,
         ]
     ];
 
