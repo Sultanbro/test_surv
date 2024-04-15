@@ -1067,7 +1067,7 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-                dump($user->id . " " . $workdays . " " . $working_hours);
+                dump($user->id . " " . $workdays . " " . $working_hours . " " . $user->name . " " . $user->last_name);
                 for ($i = 1; $i <= $month->daysInMonth; $i++) {
                     $d = '' . $i;
                     if (strlen($i) == 1) $d = '0' . $i;
