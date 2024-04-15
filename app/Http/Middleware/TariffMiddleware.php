@@ -25,7 +25,7 @@ class TariffMiddleware
         /** @var Tenant $tenant */
         $tenant = tenant();
         /** @var User $user */
-        $user = $request->user();
+        $user = auth()->user();
 
         if ($user->isOwner() || $tenant->hasActiveTariff()) return $next($request);
 
