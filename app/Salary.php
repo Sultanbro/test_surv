@@ -989,7 +989,7 @@ class Salary extends Model
             $groupTimeAddress = false;
             if (isset($group->time_address) && $group->time_address != 0 && $group->time_address != 151) $groupTimeAddress = true;
 
-            $analyticStat = AnalyticStat::inHouseShowValue($group->id, $date);
+            $analyticStat = AnalyticStat::inHouseShowValue($group->id, $month_start);
 
             $statValues = [];
             $columnValue = [];
@@ -997,7 +997,7 @@ class Salary extends Model
                 $checkValue = AnalyticStat::getValuesWithRow($analyticStat);
 
                 if ($checkValue->count() > 0) {
-                    $columnValue = AnalyticColumn::getValuesBetweenDates($analyticStat->group_id, $date->startOfMonth()->format('Y-m-d'), $date->endOfMonth()->format('Y-m-d'));
+                    $columnValue = AnalyticColumn::getValuesBetweenDates($analyticStat->group_id, $month_start->copy()->startOfMonth()->format('Y-m-d'), $month_start->copy()->endOfMonth()->format('Y-m-d'));
                 }
 
                 foreach ($checkValue as $value) {
