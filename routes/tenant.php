@@ -166,6 +166,10 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
+	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
     Route::get('/admin/courses/get', [Course\CourseController::class, 'get']);
