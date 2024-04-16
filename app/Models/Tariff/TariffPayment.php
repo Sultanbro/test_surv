@@ -4,6 +4,7 @@ namespace App\Models\Tariff;
 
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\CentralUser;
+use App\Models\Tenant;
 use App\User;
 use DB;
 use Exception;
@@ -14,7 +15,7 @@ use Carbon\Carbon;
 
 /**
  * @property int $id
- * @property int $owner_id
+ * @property string $tenant_id
  * @property int $tariff_id
  * @property int $extra_user_limit
  * @property string $expire_date
@@ -39,7 +40,7 @@ class TariffPayment extends Model
     ];
 
     protected $fillable = [
-        'owner_id',
+        'tenant_id',
         'tariff_id',
         'extra_user_limit',
         'expire_date',
@@ -68,9 +69,9 @@ class TariffPayment extends Model
     /**
      * @return BelongsTo
      */
-    public function owner(): BelongsTo
+    public function tenant(): BelongsTo
     {
-        return $this->belongsTo(CentralUser::class, 'owner_id', 'id');
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'id');
     }
 
     /**
@@ -86,7 +87,7 @@ class TariffPayment extends Model
         return self::query()
             ->select(
                 'tariff_payment.id',
-                'tariff_payment.owner_id',
+                'tariff_payment.tenant_id',
                 'tariff_payment.tariff_id',
                 'tariff_payment.extra_user_limit',
                 'tariff_payment.expire_date',
@@ -109,16 +110,16 @@ class TariffPayment extends Model
     /**
      * Returns bool active payment exists.
      *
-     * @param CentralUser $owner
+     * @param Tenant $tenant
      * @return ?TariffPayment
      */
-    public static function getActivePaymentIfExist(CentralUser $owner): ?TariffPayment
+    public static function getActivePaymentIfExist(Tenant $tenant): ?TariffPayment
     {
         $today = Carbon::today();
 
         /** @var TariffPayment */
-        return $owner
-            ->subscription()
+        return $tenant
+            ->tariffPayment()
             ->where('expire_date', '>', $today)
             ->where(function ($query) {
                 $query->where('status', PaymentStatusEnum::STATUS_SUCCESS);
@@ -129,13 +130,13 @@ class TariffPayment extends Model
     /**
      * Return the last tariff payment with status pending
      *
-     * @param int $ownerId
+     * @param string $tenantId
      * @return TariffPayment
      */
-    public static function getLastPendingTariffPayment(int $ownerId): TariffPayment
+    public static function getLastPendingTariffPayment(string $tenantId): TariffPayment
     {
         /** @var TariffPayment */
-        return self::getBasePendingTariffsQuery($ownerId)
+        return self::getBasePendingTariffsQuery($tenantId)
             ->latest()
             ->first();
     }
@@ -143,18 +144,18 @@ class TariffPayment extends Model
     /**
      * Return the base qb for tariff payments with status pending
      *
-     * @param int|null $ownerId
+     * @param string|null $tenantId
      * @return QueryBuilder
      */
-    public static function getBasePendingTariffsQuery(?int $ownerId): QueryBuilder
+    public static function getBasePendingTariffsQuery(?string $tenantId): QueryBuilder
     {
         return self::query()
-            ->when($ownerId, fn($query) => $query->where('owner_id', $ownerId))
+            ->when($tenantId, fn($query) => $query->where('tenant_id', $tenantId))
             ->where('status', PaymentStatusEnum::STATUS_PENDING);
     }
 
     /**
-     * @param int $ownerId
+     * @param string $tenantId
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
@@ -165,7 +166,7 @@ class TariffPayment extends Model
      * @throws Exception
      */
     public static function createPaymentOrFail(
-        int    $ownerId,
+        string $tenantId,
         int    $tariffId,
         int    $extraUsersLimit,
         string $expireDate,
@@ -176,17 +177,17 @@ class TariffPayment extends Model
     {
 
 //        try {
-            /** @var TariffPayment */
-            return self::query()->create([
-                'owner_id' => $ownerId,
-                'tariff_id' => $tariffId,
-                'extra_user_limit' => $extraUsersLimit,
-                'expire_date' => $expireDate,
-                'auto_payment' => $autoPayment,
-                'payment_id' => $paymentId,
-                'status' => PaymentStatusEnum::STATUS_PENDING,
-                'service_for_payment' => $serviceForPayment
-            ]);
+        /** @var TariffPayment */
+        return self::query()->create([
+            'tenant_id' => $tenantId,
+            'tariff_id' => $tariffId,
+            'extra_user_limit' => $extraUsersLimit,
+            'expire_date' => $expireDate,
+            'auto_payment' => $autoPayment,
+            'payment_id' => $paymentId,
+            'status' => PaymentStatusEnum::STATUS_PENDING,
+            'service_for_payment' => $serviceForPayment
+        ]);
 //        } catch (Exception) {
 //            throw new Exception('При сохранений данных произошла ошибка');
 //        }

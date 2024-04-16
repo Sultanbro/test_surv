@@ -44,7 +44,7 @@ class CheckPaymentsStatusCommand extends Command
     public function handle(): void
     {
         $payments = TariffPayment::query()
-            ->with('owner')
+            ->with('tenant')
             ->where('status', '=', PaymentStatusEnum::STATUS_PENDING)
             ->get();
 

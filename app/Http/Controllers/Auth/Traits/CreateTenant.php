@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth\Traits;
 
-use App\Exceptions\Registration\TenantUserRegisterException;
 use App\Models\CentralUser;
 use App\Models\Portal\Portal;
 use App\Models\Tenant;
@@ -15,17 +14,14 @@ use Throwable;
 
 trait CreateTenant
 {
-    protected string $password = '';
-
-    public function getNotHashedPassword(): string
-    {
-        return $this->password;
-    }
-
     public function createTenant(CentralUser $centralUser): Tenant
     {
+        return $this->createTenantWithDomain($centralUser);
+    }
 
-        $domain = $this->generateRandomDomain();
+    protected function createTenantWithDomain(CentralUser $centralUser): Tenant
+    {
+        $domain = $this->generateRandomName();
 
         /** @var Tenant $tenant */
         $tenant = Tenant::query()
@@ -42,15 +38,20 @@ trait CreateTenant
                 'currency' => $centralUser->currency ?? 'kzt'
             ]);
 
+//        $mail = new PortalCreatedMail([
+//            'name' => $centralUser->name,
+//        ]);
+//
+//        if (!app()->environment('local')) {
+//            try {
+//                Mail::to($centralUser->email)->send($mail);
+//            } catch (\Exception) {}
+//        }
+
         return $tenant;
     }
 
-
-    /**
-     * @throws Throwable
-     * @throws TenantUserRegisterException
-     */
-    protected function createTenantUser(Tenant $tenant, array $data): User
+    protected function createTenantUser(Tenant $tenant, array $data, $passwordHashed = false): User
     {
         try {
             DB::beginTransaction();
@@ -58,11 +59,11 @@ trait CreateTenant
             /** @var User $user */
             $user = User::query()->create([
                 'name' => $data['name'],
-                'last_name' => $data['last_name'] ?? null,
+                'last_name' => $data['last_name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => Hash::make($this->password),
+                'password' => $passwordHashed ? $data['password'] : Hash::make($data['password']),
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
@@ -74,29 +75,24 @@ trait CreateTenant
             return $user;
         } catch (TenantCouldNotBeIdentifiedById|Throwable $e) {
             DB::rollBack();
-            throw new TenantUserRegisterException(
-                "The tenant user could not be created: " . $e->getMessage(),
-                $e->getCode(),
-                $e
-            );
+            die($e->getMessage());
         }
     }
 
     protected function createCentralUser(array $data): CentralUser
     {
-        $this->password = Str::random(8);
         /** @var CentralUser */
         return CentralUser::query()->create([
             'name' => $data['name'],
-            'last_name' => $data['last_name'] ?? null,
+            'last_name' => $data['last_name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'currency' => $data['currency'],
-            'password' => Hash::make($this->password),
+            'password' => Hash::make($data['password']),
         ]);
     }
 
-    protected function generateRandomDomain(): string
+    protected function generateRandomName(): string
     {
         $domain = Str::random(10);
 
@@ -108,7 +104,7 @@ trait CreateTenant
 
         if (!$exists) return $domain; // this is what actually we need
 
-        return $this->generateRandomDomain();
+        return $this->generateRandomName();
     }
 
 }

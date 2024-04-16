@@ -6,6 +6,7 @@ use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
 use App\Http\Middleware\OnlyBusinessPartnerMiddleware;
 use App\Http\Middleware\Portal\IsOwner;
+use App\Http\Middleware\TariffMiddleware;
 use App\Http\Middleware\UpdateLastSeenTime;
 use App\Http\Middleware\V2\Analytics\AnalyticsCached;
 use App\Http\Middleware\V2\Analytics\CacheAnalyticsData;
@@ -41,7 +42,6 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -96,6 +96,7 @@ class Kernel extends HttpKernel
         'decomposition_cached' => DecompositionCached::class,
         'analytics_cached' => AnalyticsCached::class,
         'groups_activities_cached' => GroupsAndActivitiesCached::class,
-        'only_bp' => OnlyBusinessPartnerMiddleware::class
+        'only_bp' => OnlyBusinessPartnerMiddleware::class,
+        'tariff' => TariffMiddleware::class
     ];
 }

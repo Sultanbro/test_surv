@@ -17,13 +17,13 @@ final class PaymentUpdateStatusService
     }
 
     /**
-     * @param CentralUser $owner
+     * @param string $ownerId
      * @return bool
      * @throws Exception
      */
-    public function handle(CentralUser $owner): bool
+    public function handle(string $ownerId): bool
     {
-        $lastPayment = TariffPayment::getLastPendingTariffPayment($owner->id);
+        $lastPayment = TariffPayment::getLastPendingTariffPayment($ownerId);
 
         $paymentProvider = $this->factory->getPaymentProviderByPayment($lastPayment);
 

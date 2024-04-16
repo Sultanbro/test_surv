@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\Tariff\TariffKindEnum;
 use App\Models\Portal\Portal;
+use App\Models\Tariff\Tariff;
+use App\Models\Tariff\TariffPayment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
@@ -47,5 +51,22 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'tenant_id',
             'user_id'
         );
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function tariffPayment(): HasOne
+    {
+        return $this->hasOne(TariffPayment::class, 'tenant_id', 'id');
+    }
+
+    public function hasActiveTariff(): bool
+    {
+        return $this->tariffPayment()
+            ->join('tariffs', 'tariff_payment.tariff_id', '=', 'tariffs.id')
+            ->where('tariffs.kind', '!=', TariffKindEnum::Free)
+            ->whereDate('subscriptions.expire_date', '>=', now())
+            ->exists();
     }
 }
