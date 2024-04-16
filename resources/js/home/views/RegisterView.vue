@@ -8,15 +8,15 @@
 				@submit.prevent="onSubmit"
 			>
 				<AuthTitle>
-					Регистрация в Jobtron.org
+					{{ lang.title }}
 				</AuthTitle>
 				<AuthSubTitle>
-					У вас уже есть аккаунт?
+					{{ lang.exists }}
 					<router-link
 						to="/login"
 						class="fw500"
 					>
-						Войти
+						{{ lang.login }}
 					</router-link>
 				</AuthSubTitle>
 				<div class="RegisterView-inputs">
@@ -49,25 +49,26 @@
 						v-model="currency"
 						:options="currencyOptions"
 						label="Валюта"
-						text="При необходимости можно будет изменять в настройках"
+						:text="lang.canchange"
 					/>
 				</div>
 				<AuthSubmit>
-					Зарегистрироваться
+					{{ lang.register }}
 				</AuthSubmit>
 				<AuthNote>
-					Создавая учетную запись, я подтверждаю, что принимаю
+					{{ lang.agree1 }}
 					<router-link to="/aggreement">
-						Пользовательское соглашение
-					</router-link>,
-					ознакомлен с
-					<router-link to="/offer">
-						договором оферты
+						{{ lang.aggreement }}
 					</router-link>
-					и
+					{{ lang.agree2 }}
+					<router-link to="/offer">
+						{{ lang.offer }}
+					</router-link>
+					{{ lang.agree3 }}
 					<router-link to="/terms">
-						Политикой конфеденциальности
-					</router-link>.
+						{{ lang.terms }}
+					</router-link>
+					{{ lang.agree4 }}
 				</AuthNote>
 			</form>
 		</template>
@@ -119,6 +120,7 @@ import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
 
 import axios from 'axios';
+import * as LANG from './RegisterView.lang.js'
 
 export default {
 	name: 'RegisterView',
@@ -151,19 +153,22 @@ export default {
 		isMobile(){
 			return this.$viewportSize.width < 768
 		},
+		lang(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
 		currencyOptions(){
 			return [
 				{
 					value: 'rub',
-					title: 'rub',
+					title: this.lang['rub'],
 				},
 				{
 					value: 'kzt',
-					title: 'kzt',
+					title: this.lang['kzt'],
 				},
 				{
 					value: 'usd',
-					title: 'usd',
+					title: this.lang['usd'],
 				},
 			]
 		},

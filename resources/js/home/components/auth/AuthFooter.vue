@@ -1,14 +1,36 @@
 <template>
 	<div class="section__footer">
 		<div class="section__footer__text">
-			Jobtron.org - Корпоративный портал: полезный для бизнеса, удобный для
-			сотрудников
+			{{ lang.text }}
 		</div>
 		<div class="section__footer__text">
-			©2024 Jobtron.org
+			{{ lang.copy }}
 		</div>
 	</div>
 </template>
+
+<script>
+import * as LANG from './AuthFooter.lang.js'
+
+export default {
+	name: 'AuthFooter',
+	components: {},
+	props: {},
+	data(){
+		return {}
+	},
+	computed: {
+		lang(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
+	},
+	watch: {},
+	created(){},
+	mounted(){},
+	beforeDestroy(){},
+	methods: {},
+}
+</script>
 
 <style lang="scss" scoped>
 $md2: 991.98px;

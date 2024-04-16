@@ -7,7 +7,9 @@
 				class="main__link"
 			>
 				<IconBack />
-				<span>На главную</span>
+				<span>
+					{{ LANG.index }}
+				</span>
 			</a>
 		</div>
 		<div class="AuthHeader-right">
@@ -20,7 +22,9 @@
 				class="main__link"
 			>
 				<IconChat />
-				<span>Поддержка</span>
+				<span>
+					{{ LANG.support }}
+				</span>
 			</router-link>
 		</div>
 	</div>
@@ -30,6 +34,8 @@
 import AuthLang from './AuthLang.vue';
 import IconBack from './IconBack.vue'
 import IconChat from './IconChat.vue'
+
+import * as LANG from './AuthHeader.lang.js'
 
 export default {
 	components: {
@@ -46,6 +52,9 @@ export default {
 		}
 	},
 	computed: {
+		LANG(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
 		lang() {
 			return this.$root.$data.lang;
 		},

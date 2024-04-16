@@ -6,16 +6,16 @@
 		@submit.prevent="onSubmit"
 	>
 		<AuthTitle>
-			Войти в Jobtron.org
+			{{ lang.title }}
 		</AuthTitle>
 
 		<AuthSubTitle>
-			У вас нет аккаунта?
+			{{ lang.notexists }}
 			<router-link
 				to="/register"
 				class="fw500"
 			>
-				Зарегистрироваться
+				{{ lang.register }}
 			</router-link>
 		</AuthSubTitle>
 
@@ -29,7 +29,7 @@
 				v-if="method === 'email'"
 				key="email"
 				v-model="email"
-				label="Email"
+				:label="lang.email"
 				type="email"
 				placeholder="example@gmail.com"
 				:error="errors.email"
@@ -38,7 +38,7 @@
 				v-else
 				key="phone"
 				v-model="phone"
-				label="Телефон"
+				:label="lang.phone"
 				type="phone"
 				placeholder="000 000 00 00 "
 				:error="errors.phone"
@@ -49,9 +49,9 @@
 			</AuthInput>
 			<AuthInput
 				v-model="password"
-				label="Пароль"
+				:label="lang.password"
 				:type="showPassword ? 'text' : 'password'"
-				placeholder="Введите пароль"
+				:placeholder="lang.passwordPlaceholder"
 				:error="errors.password"
 			>
 				<template #inner-after>
@@ -72,12 +72,12 @@
 				class="fw500"
 				@click="$emit('forgot')"
 			>
-				Забыли пароль?
+				{{ lang.forgot }}
 			</a>
 		</AuthSubTitle>
 
 		<AuthSubmit>
-			Войти
+			{{ lang.login }}
 		</AuthSubmit>
 	</form>
 </template>
@@ -88,6 +88,8 @@ import AuthInput from './AuthInput.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
 import AuthSubmit from './AuthSubmit.vue';
+
+import * as LANG from './LoginForm.lang.js'
 
 export default {
 	name: 'LoginForm',
@@ -123,15 +125,18 @@ export default {
 		}
 	},
 	computed: {
+		lang(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
 		authMethods(){
 			return [
 				{
 					value: 'email',
-					title: 'Почта',
+					title: this.lang.switchemail,
 				},
 				{
 					value: 'phone',
-					title: 'Номер телефона',
+					title: this.lang.switchphone,
 					// disabled: true,
 				},
 			]

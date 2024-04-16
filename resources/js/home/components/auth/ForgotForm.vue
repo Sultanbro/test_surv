@@ -5,49 +5,55 @@
 	>
 		<template v-if="isSended">
 			<AuthTitle>
-				Отправили письмо с инструкциями
+				{{ lang.sendedtitle }}
 			</AuthTitle>
 			<AuthSubTitle>
-				Мы выслали письмо на почту {{ email }}, перейдите по ссылке в письме, чтобы сбросить пароль. Если письмо не пришло, проверьте папку спам.
+				{{ lang.sendedsubtitle1 }}
+				{{ email }}
+				{{ lang.sendedsubtitle2 }}
 			</AuthSubTitle>
 			<AuthSubmit
 				:disabled="resendTimer"
 			>
-				Повторить отправку
+				{{ lang.sendedsubmit }}
 			</AuthSubmit>
 			<AuthSubTitle
 				v-if="resendTimer"
 			>
-				Повторно отправить письмо можно через: {{ resendTimer }} сек
+				{{ lang.sendedtimer }}
+				{{ resendTimer }}
+				{{ lang.sendedsec }}
 			</AuthSubTitle>
 		</template>
-		<AuthSubTitle>
-			<a
-				href="javascript:void(0)"
-				class="fw500"
-				@click="$emit('login')"
-			>
-				Вернуться ко входу
-			</a>
-		</AuthSubTitle>
-		<AuthTitle>
-			Восстановление пароля
-		</AuthTitle>
-		<AuthSubTitle>
-			Укажите email, который вы указывали при регистрации
-		</AuthSubTitle>
-		<div class="ForgotForm-inputs">
-			<AuthInput
-				v-model="email"
-				label="Email"
-				type="email"
-				placeholder="example@gmail.com"
-				:error="errors.email"
-			/>
-		</div>
-		<AuthSubmit>
-			Продолжить
-		</AuthSubmit>
+		<template v-else>
+			<AuthSubTitle>
+				<a
+					href="javascript:void(0)"
+					class="fw500"
+					@click="$emit('login')"
+				>
+					{{ lang.back }}
+				</a>
+			</AuthSubTitle>
+			<AuthTitle>
+				{{ lang.title }}
+			</AuthTitle>
+			<AuthSubTitle>
+				{{ lang.subtitle }}
+			</AuthSubTitle>
+			<div class="ForgotForm-inputs">
+				<AuthInput
+					v-model="email"
+					label="Email"
+					type="email"
+					placeholder="example@gmail.com"
+					:error="errors.email"
+				/>
+			</div>
+			<AuthSubmit>
+				{{ lang.submit }}
+			</AuthSubmit>
+		</template>
 	</form>
 </template>
 
@@ -56,7 +62,10 @@ import AuthInput from './AuthInput.vue';
 import AuthSubmit from './AuthSubmit.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
+
 import axios from 'axios';
+import * as LANG from './ForgotForm.lang.js'
+
 export default {
 	name: 'ForgotForm',
 	components: {
@@ -78,7 +87,11 @@ export default {
 			resendIterval: null,
 		}
 	},
-	computed: {},
+	computed: {
+		lang(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
+	},
 	watch: {},
 	created(){},
 	mounted(){

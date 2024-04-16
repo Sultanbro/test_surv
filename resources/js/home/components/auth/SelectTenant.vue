@@ -5,14 +5,14 @@
 				href="/logut"
 				class="fw500"
 			>
-				Выйти из аккаунта
+				{{ lang.logout }}
 			</a>
 		</AuthSubTitle>
 		<AuthTitle>
-			Вы вошли в систему
+			{{ lang.title }}
 		</AuthTitle>
 		<AuthSubTitle>
-			Выберите рабочее пространство
+			{{ lang.subtitle }}
 		</AuthSubTitle>
 
 		<div class="SelectTenant-links">
@@ -33,10 +33,10 @@
 				</div>
 				<div class="SelectTenant-content">
 					<div class="SelectTenant-title">
-						{{ item.id }}
+						{{ lang.workspace }} {{ item.id }}
 					</div>
 					<div class="SelectTenant-info">
-						Неизвестный тариф
+						Неизвестный {{ lang.tariff }} &bull; 0/0 {{ lang.users }}
 					</div>
 				</div>
 			</a>
@@ -48,6 +48,8 @@
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
 import IconCabinet from './IconCabinet.vue';
+
+import * as LANG from './SelectTenant.lang.js'
 
 export default {
 	name: 'SelectTenant',
@@ -65,7 +67,11 @@ export default {
 	data(){
 		return {}
 	},
-	computed: {},
+	computed: {
+		lang(){
+			return LANG[this.$root.$data.lang || 'ru']
+		},
+	},
 	watch: {},
 	created(){},
 	mounted(){},
