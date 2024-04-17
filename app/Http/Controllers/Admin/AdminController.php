@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\EditAdminRequest;
-use App\Models\Admin\ManagerHasOwner;
-use App\Service\Admin\AddAdminService;
+use App\Http\Requests\Admin\CreateOrUpdateAdminRequest;
+use Illuminate\Contracts\Foundation\Application;
+use App\Repositories\Admin\OwnerRepository;
 use App\Service\Admin\UpdateAdminService;
+use App\Service\Admin\AddAdminService;
+use Illuminate\Contracts\View\Factory;
+use App\Models\Admin\ManagerHasOwner;
+use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CreateOrUpdateAdminRequest;
 use App\Models\CentralUser;
-use App\Repositories\Admin\OwnerRepository;
 use App\User;
+use Throwable;
+use Exception;
 
 class AdminController extends Controller
-{   
-    public function __construct()
-    {
-//        $this->middleware('auth');
-    }
-
+{
     /**
      * Admin.jobtron.org
-     * 
-     * @param Request $request
+     *
+     * @return Application|Factory|View
      */
-    public function index(Request $request)
+    public function index()
     {
         return view('admin');
     }
@@ -40,25 +39,19 @@ class AdminController extends Controller
      */
     public function owners(Request $request, OwnerRepository $ownerRepository): JsonResponse
     {
-        $owners = $ownerRepository->getOwnersPaginate(10, $request);
-        $ownerIds = $owners->pluck('id')->toArray();
-
-        // TODO разделить на отдельные endpoint
-
         return response()->json([
-            'items' => $ownerRepository->getOwnersPaginate(10, $request),
-            'manager' => ManagerHasOwner::getOwnersManagers($ownerIds)
+            'items' => $ownerRepository->getOwnersPaginate($request)
         ]);
     }
 
     /**
      * Admins list
-     * Who can login to admin.jobtron.org
-     * 
-     * @param Request $request
-     * @return JsonResponse 
+     * Who can log in to admin.jobtron.org
+     *
+     * @param OwnerRepository $ownerRepository
+     * @return JsonResponse
      */
-    public function admins(Request $request, OwnerRepository $ownerRepository)
+    public function admins(OwnerRepository $ownerRepository)
     {
         return response()->json([
             'items' => $ownerRepository->getAdmins()
@@ -71,7 +64,7 @@ class AdminController extends Controller
      * @param CreateOrUpdateAdminRequest $request
      * @param AddAdminService $service
      * @return JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function addAdmin(CreateOrUpdateAdminRequest $request, AddAdminService $service): JsonResponse
     {
@@ -82,22 +75,25 @@ class AdminController extends Controller
     }
 
     /**
-     * Delete admin 
-     * Who can login to admin.jobtron.org
-     * 
-     * @param Request $request
-     * @return JsonResponse 
+     * Delete admin
+     * Who can log in to admin.jobtron.org
+     *
+     * @param int $id
+     * @return JsonResponse
+     * @throws Exception
      */
-    public function deleteAdmin(int $id)
-    {       
+    public function deleteAdmin(int $id): JsonResponse
+    {
+        /** @var User $user */
         $user = User::withTrashed()->where('id', $id)->first();
-        
+
         if( !$user ) {
             return response()->json([
                 'message' => 'User Not found'
             ], 404);
         }
 
+        /** @var CentralUser $owner */
         $owner = CentralUser::with('tenants')->where('email', $user->email)->first();
 
         if($owner && $owner->tenants->where('id', 'admin')->first()) {
@@ -108,7 +104,7 @@ class AdminController extends Controller
 
         try {
             return response()->success($user->forceDelete());
-        }catch (Exception $exception) {
+        } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }

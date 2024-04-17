@@ -26,6 +26,7 @@ use App\TimetrackingHistory;
 use App\User;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -138,7 +139,7 @@ class AnalyticsController extends Controller
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
             'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
             'table' => AnalyticStat::form($group_id, $date->format('Y-m-d')),
-            'columns' => AnalyticStat::columns($group_id, $date->format('Y-m-d')),
+            'columns' => AnalyticStat::getColumns($group_id, $date->format('Y-m-d')),
             'utility' => $util,
             'totals' => [],
             'groups' => $groups,
@@ -495,10 +496,11 @@ class AnalyticsController extends Controller
     public function updateUserStat(UpdateUserStatRequest $request)
     {
         $dto = $request->toDto();
-        $group = ProfileGroup::find($dto->groupId);
+        $group = ProfileGroup::query()->find($dto->groupId);
         $date = Carbon::createFromDate($dto->year, $dto->month, $dto->day)->format('Y-m-d');
 
-        $us = UserStat::where('date', $date)
+        $us = UserStat::query()
+            ->where('date', $date)
             ->where('user_id', $dto->employeeId)
             ->where('activity_id', $dto->activityId)
             ->first();
@@ -506,15 +508,18 @@ class AnalyticsController extends Controller
         if ($us) {
             $us->value = $dto->value;
             $us->save();
-        } else {
-            UserStat::create([
+        }
+        else {
+            UserStat::query()->create([
                 'date' => $date,
                 'user_id' => $dto->employeeId,
                 'activity_id' => $dto->activityId,
                 'value' => $dto->value,
             ]);
         }
+
         UserStatUpdatedEvent::dispatch($dto);
+//        // ne nado poka izmenit chasi
 
         if ($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
             Timetracking::updateTimes($dto->employeeId, $date, $dto->value * 60);
@@ -526,10 +531,6 @@ class AnalyticsController extends Controller
 
         if ($dto->groupId == 31 && $dto->activityId == 20) { // DM and 20 колво действий
             DM::updateTimesNew($dto->employeeId, $date);
-        }
-
-        if ($dto->groupId == 31 && $dto->activityId == 21) {
-            DM::updateTimesByWorkHours($dto->employeeId, $date, $dto->day, (float)$dto->value);
         }
 
         ProcessUpdateSalary::dispatch($date, $group->getKey())
@@ -656,41 +657,33 @@ class AnalyticsController extends Controller
      */
     public function addSalary(Request $request)
     {
-        $date = $request->date;
+        $date = Carbon::parse($request->get('date'));
         $type = 'salary_day'; // no comment please. Just salary is not free
 
-        $formula_row = AnalyticRow::find($request->row_id);
+        /** @var AnalyticRow $formula_row */
+        $formula_row = AnalyticRow::query()->find($request->get('row_id'));
 
-        $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+        /** @var Collection<AnalyticRow> $columns */
         $columns = AnalyticColumn::query()
             ->where('group_id', $formula_row->group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)
+            ->where('date', $date->format("Y-m-d"))
+            ->whereIn('name', $this->DaysInMonth($date))
             ->get();
 
         foreach ($columns as $column) {
-            $stat = AnalyticStat::query()
-                ->where('row_id', $formula_row->id)
-                ->where('column_id', $column->id)
-                ->first();
 
-            $fields = [
+            AnalyticStat::query()->updateOrCreate([
                 'group_id' => $formula_row->group_id,
-                'date' => $date,
+                'date' => $date->format("Y-m-d"),
                 'row_id' => $formula_row->id,
                 'column_id' => $column->id,
+            ], [
                 'value' => 0,
                 'show_value' => 0,
                 'type' => $type,
                 'class' => 'text-center',
                 'editable' => 1,
-            ];
-
-            if ($stat) {
-                $stat->update($fields);
-            } else {
-                AnalyticStat::create($fields);
-            }
+            ]);
         }
     }
 
@@ -783,7 +776,7 @@ class AnalyticsController extends Controller
         $userIds = (new UserService)->getEmployeeIds($group->id, $date->format('Y-m-d'));
 
         $this->users = User::withTrashed()->whereIn('id', $userIds)
-            ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
+            ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);
 
         /****************************** */
         /******==================================== */
@@ -895,6 +888,16 @@ class AnalyticsController extends Controller
     {
         $removedUsers = AnalyticsActivitiesSetting::where('group_id', $id)->first();
         return response()->success($removedUsers);
+    }
+
+    private function DaysInMonth(Carbon $date): array
+    {
+        $days = [];
+        $count = $date->daysInMonth;
+        for ($i = 1; $i <= $count; $i++) {
+            $days[] = $i;
+        }
+        return $days;
     }
 }
 

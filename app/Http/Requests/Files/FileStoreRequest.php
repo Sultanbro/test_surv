@@ -4,13 +4,16 @@ namespace App\Http\Requests\Files;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class FileStoreRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file',],
+            'file' => [Rule::requiredIf(Str::lower($this->method()) !== 'put'), 'file'],
+            'original_name' => ['nullable', 'string']
         ];
     }
 

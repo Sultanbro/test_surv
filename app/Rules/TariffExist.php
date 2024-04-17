@@ -2,7 +2,6 @@
 
 namespace App\Rules;
 
-use App\Models\Tariff\TariffPayment;
 use App\Repositories\Tariffs\TariffPaymentRepository;
 use Illuminate\Contracts\Validation\Rule;
 

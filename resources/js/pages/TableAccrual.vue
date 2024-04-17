@@ -65,7 +65,15 @@
 						<i class="fa fa-redo-alt" />
 					</a>
 				</div>
-				<div class="col-2" />
+				<div class="col-3 d-flex aic justify-end">
+					<a
+						href="javascript:vpid(0)"
+						class="TableAccrual-video"
+						target="_blank"
+					>
+						Смотреть видео
+					</a>
+				</div>
 			</div>
 
 			<!-- filters -->
@@ -217,7 +225,7 @@
 							<TransfersInfo
 								v-else
 								:transfers="nameData.item.groupUsers"
-								:group-id="selectedGroup"
+								:group-id="selectedGroup ? selectedGroup.id : 0"
 								:groups="groups"
 							/>
 						</div>
@@ -435,7 +443,7 @@
 
 
 				<div class="mt-3">
-					<p class="mt-3">
+					<!-- <p class="mt-3">
 						<b>Бонусы локальные</b>
 					</p>
 					<div
@@ -450,7 +458,7 @@
 							{{ editedField.item.bonuses[item] }}
 						</p>
 					</div>
-					<hr>
+					<hr> -->
 
 					<p class="mt-3">
 						<b>Бонусы за активности</b>
@@ -467,56 +475,87 @@
 						</p>
 					</div>
 
-					<p class="mt-3">
+					<!-- <p class="mt-3">
 						<b>Бонусы за обучение</b>
 					</p>
 					<div
-						v-for="(item,index) in Object.keys(editedField.item.test_bonus)"
+						v-for="(item,index) in editedField.item.test_bonuses.slice().sort((a, b) => Number(a.day) - Number(b.day))"
 						:key="index"
+						class="AvansHistoryItem"
 					>
-						<p
-							v-if=" editedField.item.test_bonus[item] != null"
-							class="fz12"
-						>
-							<b class="text-black">{{ item }}:</b> {{ editedField.item.test_bonus[item] }}
-						</p>
-					</div>
-					<hr>
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(item.date).format('DD.MM.YYYY') }}</b>
+							</div>
+							<div
+								v-if="item.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="restoreHistory(item)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="removeHistory(item)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</div>
+						eslint-disable vue/no-v-html
+						<div
+							class="AvansHistoryItem-text"
+							v-html="`Добавлен бонус на сумму ${item.amount}<br>Комментарии: ${item.comment}`"
+						/>
+						<hr>
+					</div> -->
 
 					<p class="mt-3">
-						<b>Авансы </b>
-					</p>
-					<div
-						v-for="(item,index) in Object.keys(editedField.item.avanses)"
-						:key="index"
-					>
-						<p
-							v-if=" editedField.item.avanses[item] != null"
-							class="fz12"
-						>
-							<b class="text-black">{{ item }}:</b> {{ editedField.item.avanses[item] }}
-						</p>
-					</div>
-					<hr>
-
-					<p class="mt-3">
-						<b>История {{ bonus_history.length }}</b>
+						<b>История</b>
 					</p>
 					<div
 						v-for="(item,index) in bonus_history"
 						:key="index"
-						class="mb-3"
+						class="AvansHistoryItem mb-3"
+						:class="{
+							'AvansHistoryItem_deleted': item.deleted_at
+						}"
 					>
-						<p class="fz12">
-							<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
-						</p>
-						<p class="fz12">
-							<b class="text-black">Автор:</b> {{ item.author }} <br>
-						</p>
+						<div class="AvansHistoryItem-header">
+							<div class="">
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+							</div>
+							<template v-if="canEdit">
+								<div
+									v-if="item.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onRemoveRestore('restore', 'bonus', item)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onRemoveRestore('remove', 'bonus', item)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
+						</div>
+
 						<!-- eslint-disable -->
 						<p
 							class="fz14 mb-0"
-							v-html="item.description"
+							v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
 						/>
 						<!-- eslint-enable -->
 						<br>
@@ -616,6 +655,7 @@
 					</div>
 				</div>
 
+				<!-- avans form -->
 				<div
 					v-if="avans.visible"
 					class="mb-4 bg-bluish p-3"
@@ -646,6 +686,7 @@
 					</b-button>
 				</div>
 
+				<!-- bonus form -->
 				<div
 					v-if="bonus.visible"
 					class="mb-4 bg-bluish p-3"
@@ -714,7 +755,7 @@
 								<!-- eslint-disable -->
 								<p
 									class="fz14 mb-0"
-									v-html="item.description"
+									v-html="item.description + (item.payload ? item.payload.deleted_by || '' : '') + (item.payload ? item.payload.restored_by || '' : '')"
 								/><br>
 								<!-- eslint-enable -->
 								<hr>
@@ -741,14 +782,37 @@
 					v-for="avansItem in avans_history"
 					:key="avansItem.id"
 					class="AvansHistoryItem"
+					:class="{
+						'AvansHistoryItem_deleted': avansItem.deleted_at
+					}"
 				>
-					<div class="AvansHistoryItem-date">
-						<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+					<div class="AvansHistoryItem-header">
+						<div class="AvansHistoryItem-date">
+							<b>{{ $moment(avansItem.date).format('DD.MM.YYYY') }}</b> {{ avansItem.author }}
+						</div>
+						<template v-if="canEdit">
+							<div
+								v-if="avansItem.deleted_at"
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Восстановить"
+								@click="onRemoveRestore('restore', 'avans', avansItem)"
+							>
+								<i class="fas fa-undo" />
+							</div>
+							<div
+								v-else
+								class="AvansHistoryItem-delete pointer mr-2"
+								title="Удалить"
+								@click="onRemoveRestore('remove', 'avans', avansItem)"
+							>
+								<i class="fas fa-times" />
+							</div>
+						</template>
 					</div>
 					<!-- eslint-disable vue/no-v-html -->
 					<div
 						class="AvansHistoryItem-text"
-						v-html="avansItem.description"
+						v-html="avansItem.description + (avansItem.payload ? avansItem.payload.deleted_by || '' : '') + (avansItem.payload ? avansItem.payload.restored_by || '' : '')"
 					/>
 					<hr>
 					<!-- eslint-enable vue/no-v-html -->
@@ -770,9 +834,32 @@
 						v-if="fineItem.pivot.status === 1"
 						:key="fineIndex"
 						class="AvansHistoryItem"
+						:class="{
+							'AvansHistoryItem_deleted': fineItem.pivot.deleted_at
+						}"
 					>
-						<div class="AvansHistoryItem-date">
-							<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+						<div class="AvansHistoryItem-header">
+							<div class="AvansHistoryItem-date">
+								<b>{{ $moment(fineItem.pivot.day).format('DD.MM.YYYY') }}</b> {{ fineItem.penalty_amount }}
+							</div>
+							<template v-if="canEdit">
+								<div
+									v-if="fineItem.pivot.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onFineRR('restore', fineItem)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onFineRR('remove', fineItem)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
 						</div>
 						<!-- eslint-disable vue/no-v-html -->
 						<div
@@ -795,21 +882,87 @@
 			@close="isTaxesSidebar = false"
 		>
 			<div class="px-2">
+				<div class="d-flex jcsb">
+					<span class="bold fz-18">
+						{{ editedField.item.taxGroup }}
+					</span>
+					<template v-if="canEdit">
+						<div class="d-flex">
+							<div
+								class="AvansHistoryItem-restore pointer mr-2"
+								title="Изменить"
+								@click="onTaxEdit(editedField.item)"
+							>
+								<i class="fas fa-edit" />
+							</div>
+							<template v-if="editedField.item.taxinfo.group">
+								<div
+									v-if="editedField.item.deleted_at"
+									class="AvansHistoryItem-restore pointer mr-2"
+									title="Восстановить"
+									@click="onTaxRR('restore', editedField.item)"
+								>
+									<i class="fas fa-undo" />
+								</div>
+								<div
+									v-else
+									class="AvansHistoryItem-delete pointer mr-2"
+									title="Удалить"
+									@click="onTaxRR('remove', editedField.item)"
+								>
+									<i class="fas fa-times" />
+								</div>
+							</template>
+						</div>
+					</template>
+				</div>
 				<div
-					v-for="taxItem, taxIndex in texes_history"
+					v-for="taxItem, taxIndex in editedField.item.taxinfo.calc"
 					:key="taxIndex"
 					class="AvansHistoryItem"
 				>
-					<div class="AvansHistoryItem-date">
-						<b>{{ $moment(taxItem.pivot.created_at).format('DD.MM.YYYY') }}</b> {{ taxItem.pivot.value }}{{ taxItem.is_percent ? '%' : '' }}
-					</div>
-					<!-- eslint-disable vue/no-v-html -->
-					<div
-						class="AvansHistoryItem-text"
-						v-html="taxItem.name"
-					/>
+					<div>Налог: {{ taxItem.name }}</div>
+					<div>Объем: {{ taxItem.value }}</div>
+					<div>Сумма: {{ taxItem.amount }}</div>
+					<div>{{ taxItem.before }} > {{ taxItem.after }}</div>
 					<hr>
 					<!-- eslint-enable vue/no-v-html -->
+				</div>
+				<div class="bold">
+					Всего налогов: {{ editedField.item.totalTax }}
+				</div>
+
+				<!-- History -->
+				<div class="my-4 bold fz-18">
+					История
+				</div>
+				<div
+					v-for="hist in taxHistory"
+					:key="hist.id"
+					class="AvansHistoryItem"
+				>
+					<div class="">
+						c <span>{{ $moment(hist.from).format('DD.MM.YYYY') }}</span>
+						по <span>{{ hist.to ? $moment(hist.to).format('DD.MM.YYYY') : 'настоящее время' }}</span>
+					</div>
+					<div class="bold">
+						{{ hist.tax_group.name }}
+					</div>
+					<div
+						v-if="hist.payload"
+						class=""
+					>
+						<div class="">
+							{{ taxHistActions[hist.payload.action] }} {{ $moment(hist.payload.date).format('DD.MM.YYYY') }}
+						</div>
+						<div class="">
+							сотрудником {{ hist.payload.editor_name }}
+						</div>
+						<div class="">
+							комментарий: {{ hist.payload.comment }}
+						</div>
+					</div>
+					<hr>
 				</div>
 			</div>
 		</Sidebar>
@@ -859,6 +1012,130 @@
 			@ok="approveSalary"
 		>
 			<p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
+		</b-modal>
+
+		<!-- salary update/remove -->
+		<b-modal
+			v-model="removeRestoreForm.isOpen"
+			:ok-text="removeRestoreForm.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${removeRestoreForm.action === 'remove' ? 'Удаление' : 'Восстановление'} ${{bonus: 'бонуса', avans: 'аванса', fine: 'штрафа'}[removeRestoreForm.type]}`"
+			size="md"
+			@ok="confirmRemoveUpdate"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="salaryRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="salaryRRReason"
+						v-model="removeRestoreForm.reason"
+						:placeholder="`Укажите причину ${removeRestoreForm.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- fine update/remove -->
+		<b-modal
+			v-model="formFineRR.isOpen"
+			:ok-text="formFineRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formFineRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmFineRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="fineRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="fineRRReason"
+						v-model="formFineRR.reason"
+						:placeholder="`Укажите причину ${formFineRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax update/remove -->
+		<b-modal
+			v-model="formTaxRR.isOpen"
+			:ok-text="formTaxRR.action === 'remove' ? 'Удалить' : 'Восстановить'"
+			cancel-text="Отмена"
+			:title="`${formTaxRR.action === 'remove' ? 'Удаление' : 'Восстановление'} штрафа`"
+			size="md"
+			@ok="confirmTaxRR"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxRRReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxRRReason"
+						v-model="formTaxRR.reason"
+						:placeholder="`Укажите причину ${formTaxRR.action === 'remove' ? 'Удаления' : 'Восстановления'}`"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+		</b-modal>
+
+		<!-- tax edit -->
+		<b-modal
+			v-model="formTaxEdit.isOpen"
+			ok-text="Изменить"
+			cancel-text="Отмена"
+			title="Изменение налога"
+			size="md"
+			@ok="confirmTaxEdit"
+		>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditTax">Заменить на:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-select
+						id="taxEditTax"
+						v-model="formTaxEdit.newTax"
+						:options="taxOptions"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
+			<b-row class="my-1">
+				<b-col
+					sm="3"
+					class="pt-3"
+				>
+					<label for="taxEditReason">Причина:</label>
+				</b-col>
+				<b-col sm="9">
+					<b-form-input
+						id="taxEditReason"
+						v-model="formTaxEdit.reason"
+						placeholder="Укажите причину изменения"
+						class="mb-2"
+					/>
+				</b-col>
+			</b-row>
 		</b-modal>
 	</div>
 </template>
@@ -910,10 +1187,10 @@ export default {
 			accruals: [],
 			bonus_history: [],
 			selectedGroup: null,
-			user_types: 0,
+			user_types: +(this.$route.query?.type || 0),
 			users_count: 0,
 			openSidebar: false,
-			show_user: 1,
+			show_user: +('only_salary' in this.$route.query ? this.$route.query.only_salary : 1),
 			sidebarTitle: '',
 			sidebarContent: {},
 			sidebarHistory: [],
@@ -947,8 +1224,8 @@ export default {
 			total: 0,
 			allTotal: 0,
 			dateInfo: {
-				currentMonth: null,
-				currentYear: now.getFullYear(),
+				currentMonth: this.$route.query?.month || null,
+				currentYear: this.$route.query?.year || now.getFullYear(),
 				month: 0,
 				year: 0,
 				monthEnd: 0,
@@ -988,6 +1265,43 @@ export default {
 
 			isTaxesSidebar: false,
 			taxes_history: [],
+
+			removeRestoreForm: {
+				isOpen: false,
+				action: '',
+				type: '',
+				reason: '',
+				item: null,
+			},
+
+			formFineRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			formTaxRR: {
+				isOpen: false,
+				action: '',
+				item: '',
+				reason: '',
+			},
+
+			taxHistory: [],
+			allTaxes: [],
+			formTaxEdit: {
+				isOpen: false,
+				newTax: '',
+				item: '',
+				reason: '',
+			},
+			taxHistActions: {
+				delete: 'Удален',
+				edit: 'Изменен',
+				add: 'Добавлен',
+				restore: 'Восстановлен',
+			},
 		};
 	},
 	computed: {
@@ -1034,6 +1348,21 @@ export default {
 			}
 			return totals
 		},
+		canEdit(){
+			return this.$can('salaries_edit')
+		},
+		taxOptions(){
+			return this.allTaxes.map(tax => ({
+				value: tax.id,
+				text: tax.name,
+			}))
+		},
+		allTaxesMap(){
+			return this.allTaxes.reduce((result, tax) => {
+				result[tax.id] = tax
+				return result
+			}, {})
+		},
 	},
 	watch: {
 		scrollLeft(value) {
@@ -1054,9 +1383,7 @@ export default {
 		}
 	},
 	created() {
-		if(this.groupss){
-			this.init()
-		}
+		if(this.groupss) this.init()
 	},
 	methods: {
 		init(){
@@ -1072,7 +1399,13 @@ export default {
 			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
 
 			this.groups = this.groupss;
-			this.selectedGroup = this.groups[0];
+			if(this.$route.query?.group){
+				const group = this.groups.find(group => group.id === +this.$route.query?.group)
+				if(group) this.selectedGroup = group
+			}
+			else{
+				this.selectedGroup = this.groups[0];
+			}
 		},
 		//Установка выбранного года
 		setYear() {
@@ -1191,7 +1524,19 @@ export default {
 
 		//Загрузка данных для таблицы
 		fetchData() {
-			if(this.selectedGroup == null) return '';
+			if(this.selectedGroup == null) return ''
+
+			this.$router.push({
+				path: '/timetracking/salaries',
+				query: {
+					group: this.selectedGroup?.id || 0,
+					year: this.dateInfo.currentYear,
+					month: this.dateInfo.currentMonth,
+					type: this.user_types,
+					only_salary: this.show_user,
+					ts: Date.now(),
+				}
+			})
 
 			let loader = this.$loading.show();
 			this.dateInfo.month = this.$moment(
@@ -1209,7 +1554,7 @@ export default {
 				.then(response => {
 					const users = response.data?.users?.map(user => {
 						if(typeof user.profile_histories_latest?.payload === 'string'){
-							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload)
+							user.profile_histories_latest.payload = JSON.parse(user.profile_histories_latest.payload || '{}')
 							if(user.profile_histories_latest.payload.position_id){
 								user.position_id = user.profile_histories_latest.payload.position_id
 							}
@@ -1311,14 +1656,13 @@ export default {
 				var personalAvanses = 0;
 				var personalFines = 0;
 				var personalBonuses = 0;
-				var personalTaxes = 0;
 
 				item.dayType = []
 				item.salaries.forEach(tt => {
 					let salary = 0;
 					let total = 0;
 
-					if(item.earnings[tt.day] !== null) {
+					if(item.earnings[tt.day]) {
 						salary = Number(item.earnings[tt.day]);
 						total = salary;
 					}
@@ -1326,26 +1670,26 @@ export default {
 					// salary earned to total
 					if(Number(salary) != 0) personalTotal += parseInt(salary);
 
-					if(tt.paid !== null) {
+					if(tt.paid) {
 						personalAvanses += parseInt(tt.paid, 0);
 					}
 
-					if(item.bonuses[tt.day] !== null) {
+					if(item.bonuses[tt.day]) {
 						personalBonuses += Number(item.bonuses[tt.day]);
 						total += Number(item.bonuses[tt.day]);
 					}
 
-					if(item.awards[tt.day] !== null) {
+					if(item.awards[tt.day]) {
 						personalBonuses += Number(item.awards[tt.day]);
 						total += Number(item.awards[tt.day]);
 					}
 
-					if(item.test_bonus[tt.day] !== null) {
-						personalBonuses += Number(item.test_bonus[tt.day]);
-						total += Number(item.test_bonus[tt.day]);
-					}
+					// if(item.test_bonus[tt.day]) {
+					// 	personalBonuses += Number(item.test_bonus[tt.day]);
+					// 	total += Number(item.test_bonus[tt.day]);
+					// }
 
-					if(item.fine[tt.day] !== null) {
+					if(item.fine[tt.day]) {
 						let fine_for_day = 0;
 						item.fine[tt.day].forEach(el => {
 							Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
@@ -1381,28 +1725,20 @@ export default {
 				personalFines = Number(item.fines_total);
 
 				const total = personalKpi + personalTotal + personalBonuses - personalFines
-				let totalAfterTaxes = personalKpi + personalTotal + personalBonuses - personalFines
-				item.taxes.forEach(tax => {
-					if(tax.end_subtraction) return
-					totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-					personalTaxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-				})
-				item.taxes.forEach(tax => {
-					if(!tax.end_subtraction) return
-					personalTaxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
-				})
 
-				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
+				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi
 
 				if(item.edited_salary) {
 					personalFinal = item.edited_salary.amount
 				}
 
+				personalFinal -= item.totalTaxes
+
 				daySalaries.bonus = Number(personalBonuses).toFixed(0);
 				daySalaries.avans = Number(personalAvanses).toFixed(0);
 				daySalaries.fines = Number(personalFines).toFixed(0);
 				daySalaries.total = Number(personalTotal).toFixed(0);
-				daySalaries.taxes = Number(personalTaxes).toFixed(0);
+				daySalaries.taxes = item.totalTaxes
 				daySalaries.final = Number(personalFinal).toFixed(0);
 
 				daySalaries.forEach((amount, day) => {
@@ -1421,6 +1757,47 @@ export default {
 					}
 				});
 
+				const final = item.edited_salary ? item.edited_salary.amount : total
+				const taxItems = item.user_tax?.tax_group?.items || []
+				const taxes = taxItems.map(tax => {
+					if(!tax.histories_latest) return tax
+					const hist = typeof tax.histories_latest === 'string' ? JSON.parse(tax.histories_latest) : tax.histories_latest
+					return {
+						...tax,
+						...hist,
+					}
+				}).sort((a,b) => a.order - b.order)
+				const taxinfo = {
+					group: item.user_tax?.tax_group,
+					calc: []
+				}
+				let afterTaxes = final
+				let taxesSum = final
+				let totalTax = 0
+
+				taxes.forEach(tax => {
+					if(!tax.value) return
+					let amount
+					if(!tax.is_percent) {
+						amount = tax.value
+					}
+					else{
+						amount = tax.end_subtraction ? Math.round(taxesSum * tax.value / 100) : Math.round(final * tax.value / 100)
+					}
+					taxinfo.calc.push({
+						name: tax.name,
+						value: tax.value + (tax.is_percent ? '%' : ''),
+						amount,
+						before: afterTaxes,
+						after: tax.is_deduction ? afterTaxes : afterTaxes - amount,
+					})
+
+					taxesSum -= amount
+					if(taxesSum < 0) taxesSum = 0
+					if(!tax.is_deduction) afterTaxes -= amount
+					if(!tax.is_deduction) totalTax += amount
+				})
+
 				let obj = {
 					kpi: item.kpi,
 					fine: item.fine,
@@ -1433,7 +1810,10 @@ export default {
 					bonuses: item.bonuses,
 					user_type: item.user_type,
 					trainings: item.trainings,
-					history: item.track_history,
+					history: item.track_history?.map(hist => ({
+						...hist,
+						payload: hist.payload ? JSON.parse(hist.payload || '{}') : {},
+					})),
 					edited_kpi: item.edited_kpi,
 					test_bonus: item.test_bonus,
 					hourly_pays: item.hourly_pays,
@@ -1442,6 +1822,9 @@ export default {
 					dayType: item.dayType,
 					salaries: daySalariesOnly,
 					groupUsers: item.group_users,
+					taxGroup: item.user_tax?.tax_group?.name,
+					taxinfo,
+					totalTax,
 					...daySalaries,
 				};
 
@@ -1497,93 +1880,26 @@ export default {
 
 		// окно редактирования kpi бонус  к выдаче на месяц
 		showEditPremiumWindow(type, data) {
-			if(data.index == 0) return false;
-			data.type = type;
-			this.editedField = data;
+			if(!this.$can('salaries_edit')) return
+			if(data.index == 0) return false
+			data.type = type
+			this.editedField = data
 
 			this.editedField.name = data.item.name
 
-			this.editPremiunWindow = true;
+			this.editPremiunWindow = true
 		},
 
 		// сайдбар kpi бонус  к выдаче на месяц
 		showEditPremiumSidebar(type, data) {
-			if(data.index == 0) {
-				return false;
-			}
-			data.type = type;
+			if(data.index == 0) return false
+			data.type = type
 
-			this.fetchBonusHistory(data.item.user_id);
+			this.fetchBonusHistory(data.item.user_id)
 
-			this.editedField = data;
-			this.editPremiumSidebar = true;
-			this.sidebarTitle = data.item.name + ' : ' + type;
-
-		},
-
-		// история бонусов для showEditPremiumSidebar
-		fetchBonusHistory(user_id) {
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			this.axios.post('/timetracking/salaries/bonuses',{
-				user_id: user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			}).then((response) => {
-				this.bonus_history = response.data;
-			});
-		},
-
-		async showAvansSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.avans_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/advances',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.avans_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Авансы'
-			this.isAvansSidebar = true
-			loader.hide()
-		},
-
-		async showFineSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.fine_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/fines',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.fine_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
-			this.isFineSidebar = true
-			loader.hide()
-		},
-
-		async showTaxesSidebar(cellData){
-			if(cellData.index === 0) return false
-
-			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-
-			this.texes_history = []
-			const loader = this.$loading.show()
-			const {data} = await this.axios.post('/timetracking/salaries/taxes',{
-				user_id: cellData.item.user_id,
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-			})
-			this.texes_history = data
-			this.editedField = cellData
-			this.sidebarTitle = cellData.item.name + ' : Налоги'
-			this.isTaxesSidebar = true
-			loader.hide()
+			this.editedField = data
+			this.editPremiumSidebar = true
+			this.sidebarTitle = data.item.name + ' : ' + type
 		},
 
 		editPremium() {
@@ -1617,6 +1933,7 @@ export default {
 					this.$toast.success('Сохранено');
 					this.editedField = {name:'', type:'kpi'}
 					this.editPremiunWindow = false
+					this.editPremiumSidebar = false
 
 				}).catch(error => {
 					this.$toast.error('Не сохранилось');
@@ -1642,11 +1959,10 @@ export default {
 				});
 		},
 
-		updateSalary(type) {
+		async updateSalary(type) {
 			if(this.selectedCell.index == 0) return '';
 
-			let comment,
-				amount;
+			let comment, amount, response;
 
 			if(type == 'avans') {
 				if(this.avans.comment.length < 3) {
@@ -1678,8 +1994,8 @@ export default {
 				amount = this.bonus.sum;
 			}
 
-			this.axios
-				.post('/timetracking/salaries/update', {
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/update', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					year: this.dateInfo.currentYear,
 					day: this.selectedCell.field.key,
@@ -1688,35 +2004,36 @@ export default {
 					comment: comment,
 					type: type
 				})
-				.then((response) => {
+				response = data
+			}
+			catch (error) {
+				this.$onError({error, msg: 'Не сохранилось'})
+			}
+			if(response){
+				switch(type){
+				case 'avans':
+					this.$toast.success('Аванс успешно сохранен');
+					this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+					break;
+				case 'bonus':
+					this.$toast.success('Бонус успешно сохранен');
+					this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
+					break;
+				}
+				this.avans.sum = 0;
+				this.avans.comment = '';
+				this.avans.require = '';
+				this.avans.visible = false;
 
-					if(type == 'avans') {
-						this.$toast.success('Аванс успешно сохранен');
-						this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+				this.bonus.sum = 0;
+				this.bonus.comment = '';
+				this.bonus.require = '';
+				this.bonus.visible = false;
 
-						this.avans.sum = 0;
-						this.avans.comment = '';
-						this.avans.require = '';
-						this.avans.visible = false;
-					}
-
-					if(type == 'bonus')  {
-						this.$toast.success('Бонус успешно сохранен');
-						this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
-
-						this.bonus.sum = 0;
-						this.bonus.comment = '';
-						this.bonus.require = '';
-						this.bonus.visible = false;
-					}
-
-					this.sidebarHistory.unshift(response.data);
-					this.items[this.selectedCell.index].history.unshift(response.data)
-
-				}).catch(error => {
-					this.$toast.error('Не сохранилось');
-					console.error(error)
-				});
+				this.sidebarHistory?.unshift(response);
+				this.items[this.selectedCell.index]?.history?.unshift(response)
+				this.openSidebar = false
+			}
 		},
 
 		// excel
@@ -1740,33 +2057,26 @@ export default {
 
 		defineClickNumber(type, data) {
 			//var self = this
-			this.clicks++;
+			++this.clicks
+			if(type === 'kpi'){
+				return this.fetchKPIStatistics(data.item.user_id)
+			}
+
+			const onSingle = () => {
+				this.showEditPremiumSidebar(type, data)
+			}
+
 			if (this.clicks === 1) {
 				this.timer = setTimeout(() => {
-					if(type === 'kpi'){
-						this.fetchKPIStatistics(data.item.user_id)
-					}
-					else{
-						this.showEditPremiumSidebar(type, data)
-					}
+					onSingle()
 					this.clicks = 0
-				}, 350);
+				}, 350)
+				return
 			}
-			else {
-				clearTimeout(this.timer);
-				if(this.can_edit) {
-					this.showEditPremiumWindow(type, data);
-				}
-				else {
-					if(type === 'kpi'){
-						this.fetchKPIStatistics(data.item.user_id)
-					}
-					else{
-						this.showEditPremiumSidebar(type, data)
-					}
-				}
-				this.clicks = 0;
-			}
+			clearTimeout(this.timer)
+			this.clicks = 0
+			if(this.can_edit) return this.showEditPremiumWindow(type, data)
+			onSingle()
 		},
 
 		openDay(data) {
@@ -1782,7 +2092,7 @@ export default {
 			}
 
 			this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
-			this.sidebarHistory = data.item.history?.filter(x => parseInt(x.day) === parseInt(data.field.key))
+			this.sidebarHistory = data.item.history?.filter(hist => parseInt(hist.day) === parseInt(data.field.key))
 		},
 
 		// Дичайший костыль, переделать при первой возможности
@@ -1830,6 +2140,303 @@ export default {
 			this.kpiSidebar = true
 			loader.hide()
 		},
+
+		// Avans/Bonus history
+		async fetchBonusHistory(user_id) {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			try {
+				const {data} = await this.axios.post('/timetracking/salaries/bonuses', {
+					user_id: user_id,
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+				})
+				this.bonus_history = data.map(bonus => ({
+					...bonus,
+					payload: bonus.payload ? JSON.parse(bonus.payload || '{}') : {}
+				}))
+			}
+			catch (error) {
+				this.$onError({error, silent: 1})
+			}
+		},
+
+		async showAvansSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.avans_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/advances',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.avans_history = data.map(avans => ({
+				...avans,
+				payload: avans.payload ? JSON.parse(avans.payload || '{}') : {}
+			}))
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Авансы'
+			this.isAvansSidebar = true
+			loader.hide()
+		},
+
+		onRemoveRestore(action, type, item){
+			if(type === 'fine') return this.$toast.info('В разработке')
+			this.removeRestoreForm = {
+				isOpen: true,
+				action,
+				type,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmRemoveUpdate(){
+			if(this.removeRestoreForm.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.removeRestoreForm.action === 'remove') return this.removeHistory()
+			this.restoreHistory()
+		},
+
+		async removeHistory(){
+			const {item} = this.removeRestoreForm
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			try {
+				const {data} = await this.axios.delete(`/timetracking/salaries/histories/${item.id}`, {params: {method: 'delete', reason: this.removeRestoreForm.reason}})
+				item.deleted_at = new Date().toISOString()
+				item.payload = JSON.parse(data.payload || '{}')
+				this.removeRestoreForm.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreHistory(){
+			const {item} = this.removeRestoreForm
+			/* eslint-disable require-atomic-updates */
+			try {
+				const {data} = await this.axios.post(`/timetracking/salaries/histories/${item.id}`, {
+					method: 'post',
+					reason: this.removeRestoreForm.reason,
+				})
+				item.deleted_at = null
+				item.payload = JSON.parse(data.payload || '{}')
+				this.removeRestoreForm.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Avans/Bonus history
+
+		// Fine history
+		async showFineSidebar(cellData){
+			if(cellData.index === 0) return false
+
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			this.fine_history = []
+			const loader = this.$loading.show()
+			const {data} = await this.axios.post('/timetracking/salaries/fines',{
+				user_id: cellData.item.user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			})
+			this.fine_history = data
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : "Депремирования"'
+			this.isFineSidebar = true
+			loader.hide()
+		},
+
+		onFineRR(action, item){
+			this.formFineRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+
+		confirmFineRR(){
+			if(this.formFineRR.reason.length < 5) {
+				alert('Укажите причину')
+				return false
+			}
+			if(this.formFineRR.action === 'remove') return this.removeFine()
+			this.restoreFine()
+		},
+
+		async removeFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.delete(`/timetracking/salaries/fines/histories/${user}/${fine}`, {params: {method: 'delete', reason}})
+				item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+
+		async restoreFine(){
+			const {item, reason} = this.formFineRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id: user, fine_id: fine} = item.pivot
+			try {
+				await this.axios.post(`/timetracking/salaries/fines/histories/${user}/${fine}`, {
+					method: 'post',
+					reason,
+				})
+				item.pivot.deleted_at = null
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formFineRR.isOpen = false
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		// Fine history
+
+		// tax history
+		async fetchTaxHistory(userId){
+			try {
+				const {data} = await this.axios.get(`/taxes/${userId}/history`)
+				this.taxHistory = data.data.map(hist => ({
+					...hist,
+					payload: JSON.parse(hist.payload || 'null'),
+				}))
+			}
+			catch (error) {
+				this.$onError(error)
+			}
+		},
+		async fetchTaxes(){
+			try {
+				const {data} = await this.axios.get('/taxes')
+				this.allTaxes = data.data
+			}
+			catch (error) {
+				this.$onError({error, silent: true})
+			}
+		},
+		async showTaxesSidebar(cellData){
+			if(this.dateInfo.currentYear < 2024) return
+			if(this.dateInfo.currentYear === 2024 && +this.dateInfo.month < 2) return
+			if(cellData.index === 0) return false
+
+			const loader = this.$loading.show()
+			await this.fetchTaxes()
+			await this.fetchTaxHistory(cellData.item.user_id)
+
+			this.editedField = cellData
+			this.sidebarTitle = cellData.item.name + ' : Налоги'
+			this.isTaxesSidebar = true
+			loader.hide()
+		},
+		onTaxRR(action, item){
+			this.formTaxRR = {
+				isOpen: true,
+				action,
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxRR(){
+			if(this.formTaxRR.reason.length < 5) return alert('Укажите причину')
+			if(this.formTaxRR.action === 'remove') return this.removeTax()
+			this.restoreTax()
+		},
+		clearFromTaxRR(){
+			this.formTaxRR = {isOpen: false}
+		},
+		async removeTax(msg){
+			const {item, reason} = this.formTaxRR
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				await this.axios.post('/taxes/delete/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					// tax_group_id: taxinfo.group.id,
+				})
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				this.formTaxRR.isOpen = false
+				this.$toast.success(msg || 'Налог удален')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		async restoreTax(){
+			// same api
+			return this.removeTax('Налог восстановлен')
+		},
+		onTaxEdit(item){
+			this.formTaxEdit = {
+				isOpen: true,
+				newTax: '',
+				item,
+				reason: '',
+			}
+		},
+		confirmTaxEdit(){
+			if(this.formTaxEdit.reason.length < 5) return alert('Укажите причину')
+			this.editTax()
+		},
+		clearFromTaxEdit(){
+			this.formTaxEdit = {isOpen: false}
+		},
+		async editTax(){
+			const {item, reason, newTax} = this.formTaxEdit
+			/* eslint-disable require-atomic-updates */
+			if(!confirm('Вы уверены?')) return ''
+			const {user_id} = item
+			try {
+				const {data} = await this.axios.post('/taxes/edit/user-tax', {
+					year: this.dateInfo.currentYear,
+					month: +this.dateInfo.month,
+					user_id,
+					reason,
+					tax_group_id: newTax,
+				})
+				this.updateUserTax(user_id, data.data)
+				// item.pivot.deleted_at = new Date().toISOString()
+				// item.payload = JSON.parse(data.payload || '{}')
+				// this.formTaxEdit.isOpen = false
+				this.formTaxEdit.isOpen = false
+				this.isTaxesSidebar = false
+				this.$toast.success('Налог изменен')
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+			/* eslint-enable require-atomic-updates */
+		},
+		updateUserTax(userId, tax){
+			const user = this.data.users?.find(user => user.id === userId) || null
+			if(!user) return
+			user.user_tax = tax
+			this.loadItems()
+		}
+		// tax history
 	},
 };
 </script>
@@ -2217,8 +2824,24 @@ hr {
 .AvansHistoryItem{
 	padding: 4px 0;
 	line-height: 1.3;
+	&_deleted{
+		background-color: #fdd;
+	}
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 10px;
+	}
+	&-date{
+		flex: 1;
+	}
 	&-text{
 		font-size: 0.95em;
+	}
+	&-delete{
+		color: red;
 	}
 }
 
@@ -2235,6 +2858,13 @@ hr {
 	.SalaryCell-2,
 	.SalaryCell-weekend-2{
 		color: #62788b;
+	}
+	&-video{
+		color: red;
+		&:hover{
+			color: red;
+			text-decoration: underline;
+		}
 	}
 }
 </style>

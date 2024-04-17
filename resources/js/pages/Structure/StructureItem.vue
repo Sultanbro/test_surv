@@ -38,7 +38,7 @@
 				</p>
 
 				<i
-					v-if="isEditMode"
+					v-if="isEditMode && !card.locked"
 					class="fa fa-cog structure-edit"
 					@click="editCard(card)"
 				/>
@@ -51,7 +51,7 @@
 			>
 				<template v-if="isVacant">
 					<JobtronAvatar
-						image="/user.png"
+						image="/static/img/user.png"
 						title="Вакантная позиция"
 						:size="130"
 						class="StructureItem-userAvatar"
@@ -275,7 +275,7 @@ export default {
 					return result
 				}, [])
 			}
-			return this.cards.reduce((result, child) => {
+			return this.fixedCards.reduce((result, child) => {
 				if(child.parent_id === this.card.id){
 					result.push(child)
 				}
@@ -308,7 +308,7 @@ export default {
 				name: 'Вакантная',
 				/* eslint-disable-next-line camelcase */
 				last_name: 'позиция',
-				avatar: '/user.png',
+				avatar: '/static/img/user.png',
 			}
 			return null
 		},
@@ -350,6 +350,12 @@ export default {
 			if(!this.manager) return ''
 			return this.manager.referrer_status
 		},
+		fixedCards(){
+			return this.cards.filter(card => {
+				const invalidGroup = card.group_id && !this.dictionaries.profile_groups.find(group => group.id === card.group_id)
+				return !invalidGroup
+			})
+		},
 	},
 	watch: {
 		card(){
@@ -388,53 +394,53 @@ export default {
 </script>
 
 <style lang="scss">
-.StructureItem{
-	&-contrast{
-		mix-blend-mode: difference;
-		color: #ddd !important;
-	}
-	&-userAvatar{
-		&:hover{
+	.StructureItem{
+		&-contrast{
+			mix-blend-mode: difference;
+			color: #ddd !important;
+		}
+		&-userAvatar{
+			&:hover{
+				+ .StructureInfo{
+					right: -290px !important;
+					opacity: 1 !important;
+					visibility: visible !important;
+				}
+			}
 			+ .StructureInfo{
-				right: -290px !important;
-				opacity: 1 !important;
-				visibility: visible !important;
+				right: -270px;
+				opacity: 0;
+				visibility: hidden;
 			}
 		}
-		+ .StructureInfo{
-			right: -270px;
-			opacity: 0;
-			visibility: hidden;
+		&-refIcon{
+			position: absolute;
+			right: 50%;
+			bottom: 0px;
+			transform: translateX(32px);
 		}
-	}
-	&-refIcon{
-		position: absolute;
-		right: 50%;
-		bottom: 0px;
-		transform: translateX(32px);
-	}
-	.PulseCard{
-		border-radius: 12px;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		pointer-events: none;
-	}
+		.PulseCard{
+			border-radius: 12px;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			pointer-events: none;
+		}
 
-	.users-group{
-		.StructureItem{
-			&-userAvatar{
-				margin-left: -20px;
-				border: 2px solid #fff;
+		.users-group{
+			.StructureItem{
+				&-userAvatar{
+					margin-left: -20px;
+					border: 2px solid #fff;
+				}
 			}
 		}
 	}
-}
-#StructureGroup{
-	&-1{
-		margin-left: -16px;
+	#StructureGroup{
+		&-1{
+			margin-left: -16px;
+		}
 	}
-}
 </style>

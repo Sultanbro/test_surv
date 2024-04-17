@@ -9,6 +9,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', data: UserDataRequest): void
+  (e: 'submit'): void
 }>()
 
 const balanceFrom = ref<string | number>('')
@@ -17,12 +18,7 @@ const loginFrom = ref('')
 const loginTo = ref('')
 const birthdayFrom = ref('')
 const birthdayTo = ref('')
-const name = ref('')
-const last_name = ref('')
-const email = ref('')
-const lead = ref('')
-const city = ref('')
-const country = ref('')
+const query = ref('')
 
 watchEffect(() => {
   emit('update:modelValue', {
@@ -32,12 +28,7 @@ watchEffect(() => {
     '<login_at': loginTo.value,
     '>birthday': birthdayFrom.value,
     '<birthday': birthdayTo.value,
-    'name': name.value,
-    'last_name': last_name.value,
-    'email': email.value,
-    'lead': lead.value,
-    'city': city.value,
-    'country': country.value,
+    'query': query.value,
   })
 })
 </script>
@@ -48,99 +39,104 @@ watchEffect(() => {
       <VRow>
         <VCol
           cols="12"
-          md="6"
-          lg="4"
+          class="py-0"
         >
           <VTextField
-            v-model="name"
-            label="Имя"
+            v-model="query"
+            label="Поиск"
             class="mb-2"
-          />
-          <VTextField
-            v-model="last_name"
-            label="Фамилия"
-            class="mb-2"
+            density="compact"
           />
         </VCol>
+
         <VCol
           cols="12"
           md="6"
-          lg="4"
-        >
-          <VTextField
-            v-model="email"
-            label="email"
-            class="mb-2"
-          />
-          <VTextField
-            v-model="lead"
-            label="Лид"
-            class="mb-2"
-          />
-        </VCol>
-        <VCol
-          cols="12"
-          md="6"
-          lg="4"
-        >
-          <VTextField
-            v-model="country"
-            label="Страна"
-            class="mb-2"
-          />
-          <VTextField
-            v-model="city"
-            label="Город"
-            class="mb-2"
-          />
-        </VCol>
-        <VCol
-          cols="12"
-          md="6"
-          lg="4"
+          lg="6"
+          class="py-0"
         >
           <VTextField
             v-model="balanceFrom"
             label="Баланс от"
             class="mb-2"
-          />
-          <VTextField
-            v-model="balanceTo"
-            label="Баланс до"
-            class="mb-2"
+            density="compact"
           />
         </VCol>
         <VCol
           cols="12"
           md="6"
-          lg="4"
+          lg="6"
+          class="py-0"
+        >
+          <VTextField
+            v-model="balanceTo"
+            label="Баланс до"
+            class="mb-2"
+            density="compact"
+          />
+        </VCol>
+
+        <VCol
+          cols="12"
+          md="6"
+          lg="6"
+          class="py-0"
         >
           <VDateTime
             v-model="loginFrom"
             label="Врямя входа от"
             class="mb-2"
-          />
-          <VDateTime
-            v-model="loginTo"
-            label="Врямя входа до"
-            class="mb-2"
+            density="compact"
           />
         </VCol>
         <VCol
           cols="12"
           md="6"
-          lg="4"
+          lg="6"
+          class="py-0"
+        >
+          <VDateTime
+            v-model="loginTo"
+            label="Врямя входа до"
+            class="mb-2"
+            density="compact"
+          />
+        </VCol>
+
+        <VCol
+          cols="12"
+          md="6"
+          lg="6"
+          class="py-0"
         >
           <VDateTime
             v-model="birthdayFrom"
             label="День рождения от"
             class="mb-2"
+            density="compact"
           />
+        </VCol>
+        <VCol
+          cols="12"
+          md="6"
+          lg="6"
+          class="py-0"
+        >
           <VDateTime
-            v-model="birthdayTo"
-            label="День рождения до"
+            v-model="birthdayFrom"
+            label="День рождения от"
             class="mb-2"
+            density="compact"
           />
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VBtn
+            @click="emit('submit')"
+          >
+            Применить
+          </VBtn>
         </VCol>
       </VRow>
     </VContainer>

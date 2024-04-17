@@ -41,6 +41,18 @@ let methods = {
 	6: 'среднее не менее',
 }
 
+let sumMethods = {
+	1: 'сумма',
+	3: 'сумма не более',
+	5: 'сумма не менее',
+}
+
+let avgMethods = {
+	2: 'сред значение',
+	4: 'среднее не более',
+	6: 'среднее не менее',
+}
+
 // views of activities
 let views = {
 	0: 'по умолчанию',
@@ -54,9 +66,11 @@ let views = {
 
 // eslint-disable-next-line no-undef
 module.exports = {
-	findModel: findModel,
-	groupBy: groupBy,
-	sources: sources,
-	methods: methods,
-	views: views,
+	findModel,
+	groupBy,
+	sources,
+	methods,
+	sumMethods,
+	avgMethods,
+	views,
 };

@@ -59,6 +59,7 @@ export default {
 
 	border-radius: 6px;
 	background-color: #F7FAFC;
+	overflow: hidden;
 
 	&-item{
 		user-select: none;

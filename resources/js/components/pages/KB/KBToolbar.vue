@@ -93,7 +93,7 @@
 			</template>
 			<template v-else>
 				<div
-					v-if="canEdit"
+					v-if="isAdmin"
 					class="KBToolbar-action"
 				>
 					<i
@@ -120,10 +120,6 @@ export default {
 			default: 'read',
 		},
 		activeBook: {
-			type: Object,
-			default: null
-		},
-		parentBook: {
 			type: Object,
 			default: null
 		},

@@ -176,7 +176,7 @@ class RecruiterStats extends Command
      */
     private function saveTotalStats()
     {    
-        $date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
+        $date = Carbon::parse($this->date);
         $start_hour = $date->startOfDay()->toIso8601String();
         $end_hour = $date->endOfDay()->toIso8601String();
 

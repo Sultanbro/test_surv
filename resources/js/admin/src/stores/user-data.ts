@@ -2,88 +2,70 @@ import { fetchUserData } from './api'
 import type { UserData, UserDataRequest, UserDataResponse } from './api'
 
 export type UserDataKeys = keyof UserData
+export type FetchUsersOptions = {
+  clear?: boolean
+}
+export type ShowCols = {[key: string]: boolean}
 
-function compareNumbers(a: number, b: number) {
-  return parseFloat('' + a) - parseFloat('' + b)
-}
-function compareStrings(a: string, b: string) {
-  if(!a) return -1
-  if(!b) return 1
-  return a.localeCompare(b)
-}
-function compareDate(a: string, b: string) {
-  if(!a) return -1
-  if(!b) return 1
-  // пока как строки, позже прикручу moment
-  return a.localeCompare(b)
-}
-function unformateBalance(balance: string) {
-  return balance ? parseFloat(balance.split(' ').join('')) : 0
-}
-function formatedNumberCompare(a: string, b: string) {
-  return unformateBalance(a) - unformateBalance(b)
-}
-type SortFunctions<T> = {
-  [Property in keyof T]: Function
-}
-const sortFunctions: SortFunctions<UserData> = {
-  id: compareNumbers,
-  full_name: compareStrings,
-  email: compareStrings,
-  created_at: compareDate,
-  login_at: compareDate,
-  subdimains: compareNumbers,
-  lead: compareStrings,
-  balance: formatedNumberCompare,
-  birthday: compareDate,
-  country: compareStrings,
-  city: compareStrings,
+const defaultCols = {
+  id: true,
+  fio: true,
+  email: true,
+  phone: true,
+  created_at: true,
+  login_at: true,
+  tenants: true,
+  currency: true,
+  lead: true,
+  balance: true,
+  birthday: true,
+  country: true,
+  city: true,
+  manager: true,
 }
 
 export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
   const userManagers = ref<{[key: number]: number}>({})
-  const total = ref(2)
+  const total = ref(0)
   const onPage = ref(10)
-  const lastPage = ref(99999)
+  const lastPage = ref(1)
   const page = ref(1)
-  const sort = ref<[UserDataKeys | '', string]>(['', ''])
-  const sortedData = computed(() => {
-    if (!sort.value[0])
-      return userData.value
+  const sortField = ref('id')
+  const sortOrder = ref('desc')
+  const isLoading = ref(false)
 
-    const field: UserDataKeys = sort.value[0]
-    if (!(field in sortFunctions))
-      return userData.value
 
-    return userData.value.sort((a: UserData, b: UserData) => {
-      if (sort.value[1] === 'desc')
-        return sortFunctions[field](b[field], a[field])
 
-      return sortFunctions[field](a[field], b[field])
-    })
-  })
-  function setSort(field: UserDataKeys | '', type: string) {
-    sort.value = [field, type]
-  }
-  function fetchUsers(filters: UserDataRequest): void {
+  function setSort(field: string, type: string) {
+    sortField.value = field
+    sortOrder.value = type
     page.value = 1
-    const options = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
+  }
+  function fetchUsers(filters: UserDataRequest, options: FetchUsersOptions = {}): void {
+    if(options.clear) userData.value = []
+    const request = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
       if (value !== '') opt[key] = value
       return opt
     }, {
       page: page.value,
       per_page: onPage.value,
+      order_by: sortField.value,
+      order_direction: sortOrder.value,
     })
-    fetchUserData(options).then(data => {
+
+    isLoading.value = true
+    fetchUserData(request).then(data => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
         userData.value = data.items.data
+        total.value = data.items.total || 0
         // userData.value = [...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data]
         data.manager.forEach(pivot => {
           userManagers.value[pivot.owner_id] = pivot.manager_id
         });
       }
+      isLoading.value = false
     })
   }
   function nextPage(filters: UserDataRequest): void {
@@ -93,6 +75,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     }, {
       page: ++page.value,
       per_page: onPage.value,
+      order_by: sortField.value,
+      order_direction: sortOrder.value,
     })
     fetchUserData(options).then(data => {
       if (data !== undefined && 'items' in data){
@@ -102,19 +86,32 @@ export const useUserDataStore = defineStore('user-data', () => {
     })
   }
 
+  // showcols
+  const showCols = ref({
+    ...defaultCols,
+    ...JSON.parse(localStorage.getItem('UserData-showCols') || '{}')
+  })
+  function saveShowCols(){
+    localStorage.setItem('UserData-showCols', JSON.stringify(showCols.value))
+  }
+  // showcols
+
   return {
     userData,
-    sortedData,
     userManagers,
 
     total,
     onPage,
     page,
     lastPage,
+    sortField,
+    sortOrder,
+    isLoading,
+    showCols,
 
     fetchUsers,
     nextPage,
-    sort,
     setSort,
+    saveShowCols,
   }
 })

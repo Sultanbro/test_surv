@@ -8,24 +8,32 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property  string $kind
+ * @property  string $validity
+ * @property  int $users_limit
+ * @property  string $price
+ */
 class Tariff extends Model
 {
+    protected $connection = 'mysql';
+
     protected $table = 'tariff';
 
-    public static $defaultUserLimit = 5;
+    public static int $defaultUserLimit = 5;
 
     public $timestamps = true;
 
     protected $casts = [
-        'created_at'  => 'date:d.m.Y H:i',
-        'updated_at'  => 'date:d.m.Y H:i',
+        'created_at' => 'date:d.m.Y H:i',
+        'updated_at' => 'date:d.m.Y H:i',
     ];
 
     protected $fillable = [
         'kind',
         'validity',
         'users_limit',
-        'price',
+        'price'
     ];
 
     /**
@@ -39,11 +47,12 @@ class Tariff extends Model
     /**
      * Return specific tariff record from DB.
      *
-     * @param int $tarriffId
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @param int $tariffId
+     * @return Builder[]|Collection
      */
-    public function getTarriff(int $tarriffId){
-        return $this->where('id', $tarriffId)->get();
+    public function getTariff(int $tariffId): Collection|array
+    {
+        return $this->where('id', $tariffId)->get();
     }
 
     /**
@@ -54,6 +63,7 @@ class Tariff extends Model
         int $tariffId
     ): ?Tariff
     {
+        /** @var Tariff */
         return self::query()->find($tariffId);
     }
 
@@ -64,8 +74,7 @@ class Tariff extends Model
     {
         $date = now()->addMonth();
 
-        if ($this->validity == TariffValidityEnum::Annual)
-        {
+        if ($this->validity == TariffValidityEnum::Annual) {
             $date = now()->addYear();
         }
 

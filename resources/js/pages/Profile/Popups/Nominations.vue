@@ -489,8 +489,9 @@ export default {
 	},
 	watch: {
 		tabIndex(val) {
-			const buttons = this.$refs.tabis.$refs.buttons
-			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'})
+			const buttons = this.$refs.tabis?.$refs?.buttons
+			if(!buttons) return
+			buttons[val]?.$refs.link?.$el?.scrollIntoView({inline: 'end', behavior: 'smooth'})
 		}
 	},
 	async mounted() {

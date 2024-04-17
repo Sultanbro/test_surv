@@ -3,23 +3,39 @@
 namespace App\Models\Tariff;
 
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Models\CentralUser;
 use App\User;
+use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
+/**
+ * @property int $id
+ * @property int $owner_id
+ * @property int $tariff_id
+ * @property int $extra_user_limit
+ * @property string $expire_date
+ * @property bool $auto_payment
+ * @property string $payment_id
+ * @property string $service_for_payment
+ * @property string $status,
+ * @property string $lead_id
+ */
 class TariffPayment extends Model
 {
+    protected $connection = 'mysql';
+
     protected $table = 'tariff_payment';
 
     public $timestamps = true;
 
     protected $casts = [
-        'created_at'  => 'date:d.m.Y H:i',
-        'updated_at'  => 'date:d.m.Y H:i',
-        'expire_date'  => 'date:d.m.Y',
+        'created_at' => 'date:d.m.Y H:i',
+        'updated_at' => 'date:d.m.Y H:i',
+        'expire_date' => 'date:d.m.Y',
     ];
 
     protected $fillable = [
@@ -30,60 +46,57 @@ class TariffPayment extends Model
         'auto_payment',
         'payment_id',
         'service_for_payment',
-        'status'
+        'status',
+        'lead_id'
     ];
 
-    /**
-     * @return HasOne
-     */
-    public function tariff(): HasOne
+    public static function getStatus($paymentId): string
     {
-        return $this->hasOne(Tariff::class, 'id', 'tariff_id');
+        /**  @var TariffPayment $payment */
+        $payment = self::query()->where('payment_id', $paymentId)->first();
+        return $payment->status;
     }
 
     /**
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function owner(): HasOne
+    public function tariff(): BelongsTo
     {
-        return $this->hasOne(User::class, 'id', 'owner_id');
+        return $this->belongsTo(Tariff::class, 'tariff_id', 'id');
     }
 
     /**
-     * Return the tariff payment info with tariff for particular owner.
+     * @return BelongsTo
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(CentralUser::class, 'owner_id', 'id');
+    }
+
+    /**
+     * Returns valid tariff for current subdomain.
      *
-     * @param int $ownerId
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return TariffPayment|null
      */
-    public function getTarriffPaymentsByOwnerId(int $ownerId)
-    {
-        return $this->with('owner')
-            ->with('tariff')
-            ->where('owner_id', $ownerId)
-            ->get();
-    }
-
-    /**
-     * Returns valid tarif for current subdomain.
-     *
-     * @return object
-     */
-    public static function getValidTariffPayments()
+    public static function getValidTariffPayments(): ?TariffPayment
     {
         $today = Carbon::today();
 
-        return self::select(
-            'tariff_payment.id',
-            'tariff_payment.owner_id',
-            'tariff_payment.tariff_id',
-            'tariff_payment.extra_user_limit',
-            'tariff_payment.expire_date',
-            'tariff_payment.created_at',
-            'tariff.kind',
-            'tariff.validity',
-            'tariff.users_limit',
-            \DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
-        )
+        /** @var TariffPayment */
+        return self::query()
+            ->select(
+                'tariff_payment.id',
+                'tariff_payment.owner_id',
+                'tariff_payment.tariff_id',
+                'tariff_payment.extra_user_limit',
+                'tariff_payment.expire_date',
+                'tariff_payment.created_at',
+//                'tariff_payment.payment_id',
+                'tariff.kind',
+                'tariff.validity',
+                'tariff.users_limit',
+                DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
+            )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
             ->where('tariff_payment.expire_date', '>', $today->format('Y-m-d'))
             ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
@@ -96,32 +109,21 @@ class TariffPayment extends Model
     /**
      * Returns bool active payment exists.
      *
+     * @param CentralUser $owner
      * @return ?TariffPayment
      */
-    public static function getActivePaymentIfExist(): ?TariffPayment
+    public static function getActivePaymentIfExist(CentralUser $owner): ?TariffPayment
     {
         $today = Carbon::today();
 
-        return self::query()
+        /** @var TariffPayment */
+        return $owner
+            ->subscription()
             ->where('expire_date', '>', $today)
             ->where(function ($query) {
-                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
-                      ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS);
             })
             ->first();
-    }
-
-    /**
-     * Return the tariff payments with status pending
-     *
-     * @param int|null $ownerId
-     * @return array<TariffPayment>
-     */
-    public static function getPendingTariffPayments(?int $ownerId): array
-    {
-        return self::getBasePendingTariffsQuery($ownerId)
-            ->get()
-            ->toArray();
     }
 
     /**
@@ -132,8 +134,9 @@ class TariffPayment extends Model
      */
     public static function getLastPendingTariffPayment(int $ownerId): TariffPayment
     {
+        /** @var TariffPayment */
         return self::getBasePendingTariffsQuery($ownerId)
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->first();
     }
 
@@ -145,14 +148,8 @@ class TariffPayment extends Model
      */
     public static function getBasePendingTariffsQuery(?int $ownerId): QueryBuilder
     {
-        $query = self::query();
-
-        if (isset($ownerId))
-        {
-            $query = $query->where('owner_id', $ownerId);
-        }
-
-        return $query
+        return self::query()
+            ->when($ownerId, fn($query) => $query->where('owner_id', $ownerId))
             ->where('status', PaymentStatusEnum::STATUS_PENDING);
     }
 
@@ -168,28 +165,37 @@ class TariffPayment extends Model
      * @throws Exception
      */
     public static function createPaymentOrFail(
-        int $ownerId,
-        int $tariffId,
-        int $extraUsersLimit,
+        int    $ownerId,
+        int    $tariffId,
+        int    $extraUsersLimit,
         string $expireDate,
         string $paymentId,
         string $serviceForPayment,
-        bool $autoPayment = false
+        bool   $autoPayment = false
     ): TariffPayment
     {
-        try {
+
+//        try {
+            /** @var TariffPayment */
             return self::query()->create([
-                'owner_id'          => $ownerId,
-                'tariff_id'         => $tariffId,
-                'extra_user_limit'  => $extraUsersLimit,
-                'expire_date'       => $expireDate,
-                'auto_payment'      => $autoPayment,
-                'payment_id'        => $paymentId,
-                'status'            => PaymentStatusEnum::STATUS_PENDING,
+                'owner_id' => $ownerId,
+                'tariff_id' => $tariffId,
+                'extra_user_limit' => $extraUsersLimit,
+                'expire_date' => $expireDate,
+                'auto_payment' => $autoPayment,
+                'payment_id' => $paymentId,
+                'status' => PaymentStatusEnum::STATUS_PENDING,
                 'service_for_payment' => $serviceForPayment
             ]);
-        } catch (Exception $exception) {
-            throw new Exception('При сохранений данных произошла ошибка');
-        }
+//        } catch (Exception) {
+//            throw new Exception('При сохранений данных произошла ошибка');
+//        }
+    }
+
+    public function updateStatusToSuccess(): void
+    {
+        $this->update([
+            'status' => PaymentStatusEnum::STATUS_SUCCESS
+        ]);
     }
 }

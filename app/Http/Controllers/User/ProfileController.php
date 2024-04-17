@@ -13,9 +13,7 @@ use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Analytics\UserStat;
 use App\Models\GroupUser;
-use App\Models\Kpi\Bonus;
 use App\Photo;
-use App\User;
 use App\Position;
 use App\PositionDescription;
 use App\ProfileGroup;
@@ -23,6 +21,7 @@ use App\QualityRecordWeeklyStat;
 use App\Service\Admin\UserService as AdminUserService;
 use App\Service\Courses\CourseResultService;
 use App\Service\Department\UserService;
+use App\User;
 use App\UserExperience;
 use App\Zarplata;
 use Carbon\Carbon;
@@ -42,13 +41,13 @@ class ProfileController extends Controller
     {
         $this->middleware('auth');
         $this->userService = $userService;
-        $this->user        = auth()->user();
+        $this->user = auth()->user();
     }
 
     public function newprofile()
     {
         // admin.jobtron.org
-        if(request()->getHost() === 'admin.' .config('app.domain')) {
+        if (request()->getHost() === 'admin.' . config('app.domain')) {
             return view('admin');
         }
 
@@ -57,18 +56,15 @@ class ProfileController extends Controller
 
     public function profile(UserProfileUpdateRequest $request): bool
     {
-        if (isset($request->email))
-        {
+        if (isset($request->email)) {
             $this->userService->updateEmail($request);
         }
 
-        if (isset($request->currency))
-        {
+        if (isset($request->currency)) {
             $this->userService->updateCurrency($request);
         }
 
-        if (isset($request->password))
-        {
+        if (isset($request->password)) {
             $this->userService->changePassword($request);
         }
 
@@ -76,9 +72,10 @@ class ProfileController extends Controller
     }
 
     /**
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getBonuses(Request $request) : JsonResponse
+    public function getBonuses(Request $request): JsonResponse
     {
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
@@ -125,19 +122,8 @@ class ProfileController extends Controller
      * @return JsonResponse
      */
     public function personalInfo(Request $request): JsonResponse
-    {;
-        $response = $this->userService->getPersonalData();
-
-        return response()->json($response);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function activities(Request $request): JsonResponse
     {
-        $response = $this->userService->getActivitiesToProfile($request);
+        $response = $this->userService->getPersonalData();
 
         return response()->json($response);
     }
@@ -174,7 +160,7 @@ class ProfileController extends Controller
         $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
         $positions = Position::all();
-        $photo     = Photo::where('user_id', $user->id)->first();
+        $photo = Photo::where('user_id', $user->id)->first();
         $downloads = Downloads::where('user_id', $user->id)->first();
         $user_position = Position::find($user->position_id);
 
@@ -182,7 +168,7 @@ class ProfileController extends Controller
         $groups = '';
         $gs = $user->inGroups();
 
-        foreach($gs as $group) {
+        foreach ($gs as $group) {
             $groups .= '<div>' . $group['name'] . '</div>';
         }
 
@@ -193,16 +179,15 @@ class ProfileController extends Controller
 
 
         $rg_users = [];
-        if(tenant('id') == 'bp') {
+        if (tenant('id') == 'bp') {
             $rec_group = ProfileGroup::find(48);
 
-            if($rec_group) {
-                $working  = (new UserService)->getEmployees(48, date('Y-m-d'));
+            if ($rec_group) {
+                $working = (new UserService)->getEmployees(48, date('Y-m-d'));
                 $rg_users = collect($working)->pluck('id')->toArray();
             }
 
         }
-
 
 
         $recruiter_stats = json_encode([]);
@@ -210,22 +195,22 @@ class ProfileController extends Controller
 
         // workdays recruiter
 
-        $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+        $ignore = $user->working_day_id == 1 ? [6, 0] : [0];
         $workdays = workdays(date('Y'), date('m'), $ignore);
         $wd = $user->workdays_from_applied(date('Y-m-d'), $user->working_day_id == 1 ? 5 : 6);
-        if($wd != 0) $workdays = $wd;
+        if ($wd != 0) $workdays = $wd;
 
         // another code
 
-        if(in_array($user->id, $rg_users)) {
+        if (in_array($user->id, $rg_users)) {
             $is_recruiter = true;
             $recruiter_stats = json_encode(RecruiterStat::tables(date('Y-m-d')));
 
-            $asi  = null;
+            $asi = null;
 
-            if($asi) {
+            if ($asi) {
                 $recruiter_records = json_decode($asi->data);
-            }  else {
+            } else {
                 $rm = new RM();
                 $recruiter_records = $rm->defaultUserTable($user->id)['records'];
             }
@@ -256,7 +241,7 @@ class ProfileController extends Controller
          * fetch TraineeReport::getBlocks
          * оценки руководителей
          */
-        if($corpUni) {
+        if ($corpUni) {
             $head_in_groups = [1];
             $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
 
@@ -298,7 +283,7 @@ class ProfileController extends Controller
         $zarplata = Zarplata::where('user_id', $user->id)->first();
 
         $oklad = 0;
-        if($zarplata) $oklad = $zarplata->zarplata;
+        if ($zarplata) $oklad = $zarplata->zarplata;
         $oklad = round($oklad * $currency_rate, 0);
         $oklad = number_format($oklad, 0, '.', ' ');
 
@@ -306,11 +291,11 @@ class ProfileController extends Controller
         $activities = '[]';
         $quality = [];
 
-        if(count($gs) > 0) {
+        if (count($gs) > 0) {
             $request->group_id = $gs[0]->id;
             $_activities = Activity::where('group_id', $gs[0]->id)->first();
 
-            $activities = UserStat::activities($gs[0]->id , date('Y-m-d'));
+            $activities = UserStat::activities($gs[0]->id, date('Y-m-d'));
             $activities = json_encode($activities);
 
             $users_ids = (new UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
@@ -321,7 +306,7 @@ class ProfileController extends Controller
 
         $show_payment_terms = false;
         foreach ($gs as $key => $gr) {
-            if($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
+            if ($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
                 $show_payment_terms = true;
             }
         }
@@ -329,8 +314,8 @@ class ProfileController extends Controller
         $blocks_number = 1;
 
         $position_desc = PositionDescription::where('position_id', $user->position_id)->first();
-        if($position_desc && $position_desc->show == 1) $blocks_number++;
-        if($show_payment_terms) $blocks_number++;
+        if ($position_desc && $position_desc->show == 1) $blocks_number++;
+        if ($show_payment_terms) $blocks_number++;
 
 
         /////////////////////////////////////
@@ -373,9 +358,9 @@ class ProfileController extends Controller
      *
      * @return String|false
      */
-    private function recruiting_temp() : String|false
+    private function recruiting_temp(): string|false
     {
-        if(tenant('id') != 'bp') return json_encode([]);
+        if (tenant('id') != 'bp') return json_encode([]);
 
         $group = ProfileGroup::find(48);
 
@@ -394,9 +379,9 @@ class ProfileController extends Controller
         $orderGroups = ProfileGroup::where('active', 1)->get();
         foreach ($orderGroups as $group) {
             $orders[] = [
-                'group'    => $group->name,
+                'group' => $group->name,
                 'required' => $group->required,
-                'fact'     => $group->provided . ' ',
+                'fact' => $group->provided . ' ',
             ];
         }
 
@@ -407,7 +392,7 @@ class ProfileController extends Controller
         $end = Carbon::now()->setDate(date('Y'), date('m'), 1)->endOfMonth();
 
 
-        if($end->timestamp - $start->timestamp >= 0 && $end->month >= date('m')) {
+        if ($end->timestamp - $start->timestamp >= 0 && $end->month >= date('m')) {
             $remain_days = $start->diffInDaysFiltered(function (Carbon $date) use ($holidays) {
                 return !$date->isDayOfWeek(Carbon::SUNDAY); //&& !in_array($date, $holidays);
             }, $end);
@@ -420,6 +405,16 @@ class ProfileController extends Controller
         return json_encode($indicators);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function activities(Request $request): JsonResponse
+    {
+        $response = $this->userService->getActivitiesToProfile($request);
+
+        return response()->json($response);
+    }
 
     /**
      * Условия оплаты из отделов и должности

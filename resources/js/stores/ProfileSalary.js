@@ -2,7 +2,8 @@
 /* eslint-disable camelcase */
 
 import { defineStore } from 'pinia'
-import moment from 'moment'
+// import moment from 'moment'
+import axios from 'axios'
 import {
 	fetchProfileSalary,
 	fetchProfileBalance,
@@ -18,6 +19,7 @@ import {
 	fetchAvailableBonuses,
 } from '@/stores/api'
 import { calcCompleted, calcSum, parseKPI } from '@/pages/kpi/kpis.js'
+import { calcTaxes } from '@/lib/salary.js'
 
 const STORAGE_READED_KEY = 'profileSalaryReadedV2'
 const LOCAL_CACHE_KEY = 'profileSalaryV2'
@@ -91,9 +93,11 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			// kpi
 			let kpis = []
+			let currencyRate = 1
 			try {
-				const { items, read } = await fetchProfileKpi(year, month)
+				const { items, read, currency_rate: rate } = await fetchProfileKpi(year, month)
 				kpis = items
+				currencyRate = rate
 				this.readed.kpis = read
 			}
 			catch (error) {
@@ -108,15 +112,15 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			kpis.sort((a, b) => targetables[a.targetable_type] - targetables[b.targetable_type])
 
-			const sumKpi = kpis.map(res => parseKPI(res)).reduce((result, kpi) => {
+			const sumKpi = parseInt(kpis.map(res => parseKPI(res)).reduce((result, kpi) => {
 				kpi.users.forEach(user => {
 					user.items.forEach(userItem => {
 						result += calcSum(userItem, kpi, calcCompleted(userItem) / 100)
 					})
 				});
 				return result
-			}, 0)
-			const maxKpi = kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0)
+			}, 0) * currencyRate)
+			const maxKpi = parseInt(kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0) * currencyRate)
 
 			// bonus
 			let bonuses = {
@@ -144,7 +148,8 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			}
 			const sumQuartalPremiums = premiums.reduce((result, premium) => {
 				premium.forEach(el => {
-					if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
+					result += el.items.sum
+					// if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
 				})
 				return result
 			}, 0)
@@ -172,17 +177,28 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			// taxes
 			const total = sumSalary + sumKpi + sumBonuses
-			let totalAfterTaxes = sumSalary + sumKpi + sumBonuses
-			let taxes = 0
-			salary.taxes.forEach(tax => {
-				if(tax.end_subtraction) return
-				totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-				taxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
-			})
-			salary.taxes.forEach(tax => {
-				if(!tax.end_subtraction) return
-				taxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
-			})
+			let taxes = []
+			let taxGroup = ''
+			try {
+				const { data } = await axios.get(`/taxes/${Laravel.userId}/user`)
+				taxGroup = data.data?.name || ''
+				taxes = data.data?.items || []
+			}
+			catch (error) {
+				console.error(error)
+			}
+			const taxValue = total - calcTaxes(total, taxes, currencyRate)
+			// let totalAfterTaxes = sumSalary + sumKpi + sumBonuses
+			// let taxes = 0
+			// salary.taxes.forEach(tax => {
+			// 	if(tax.end_subtraction) return
+			// 	totalAfterTaxes -= tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
+			// 	taxes += tax.pivot.is_percent ? Math.round(total * tax.value / 100) : tax.value
+			// })
+			// salary.taxes.forEach(tax => {
+			// 	if(!tax.end_subtraction) return
+			// 	taxes += tax.pivot.is_percent ? Math.round(totalAfterTaxes * tax.value / 100) : tax.value
+			// })
 
 			// set current values
 			const earnings = {
@@ -193,6 +209,8 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				sumNominations: sumAwards,
 				kpiMax: maxKpi,
 				taxes,
+				taxGroup,
+				taxValue,
 			}
 			this.user_earnings = earnings
 

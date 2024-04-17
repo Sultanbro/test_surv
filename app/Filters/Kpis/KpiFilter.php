@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Builder;
 class KpiFilter
 {
     protected Kpi $kpi;
+    private ?Builder $query;
 
-    public function __construct()
+    public function __construct(?Builder $query = null)
     {
         $this->kpi = new Kpi;
+        $this->query = $query;
     }
 
     /**
@@ -23,23 +25,23 @@ class KpiFilter
         string $searchWord
     ): Builder
     {
-        return $this->kpi::targetJoins()
-            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
-            ->orWhere(function ($query) use ($searchWord) {
-                $query->where('u.name', 'LIKE', "%$searchWord%")
-                    ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
-            })
-            ->orWhere(function ($query) use ($searchWord) {
-                $query->where('updater.name', 'LIKE', "%$searchWord%")
-                    ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
-            })
-            ->orWhere(function ($query) use ($searchWord) {
-                $query->where('creator.name', 'LIKE', "%$searchWord%")
-                    ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
-            })
-            ->orWhere('pg.name', 'LIKE', "%$searchWord%")
-            ->orWhere('p.position', 'LIKE', "%$searchWord%")
-            ->orWhere('ki.name', 'LIKE', "%$searchWord%")
-            ->distinct();
+        return $this->kpi::targetJoins($this->query)
+            ->where(function ($query) use ($searchWord) {
+                $query->where(function ($query) use ($searchWord) {
+                    $query->where('u.name', 'LIKE', "%$searchWord%")
+                        ->orWhere('u.last_name', 'LIKE', "%$searchWord%");
+                });
+                $query->orWhere('pg.name', 'LIKE', "%$searchWord%");
+                $query->orWhere('p.position', 'LIKE', "%$searchWord%");
+//                $query->orWhere('ki.name', 'LIKE', "%$searchWord%");
+//                $query->orWhere(function ($query) use ($searchWord) {
+//                    $query->where('updater.name', 'LIKE', "%$searchWord%")
+//                        ->orWhere('updater.last_name', 'LIKE', "%$searchWord%");
+//                });
+//                $query->orWhere(function ($query) use ($searchWord) {
+//                    $query->where('creator.name', 'LIKE', "%$searchWord%")
+//                        ->orWhere('creator.last_name', 'LIKE', "%$searchWord%");
+//                });
+            });
     }
-}
+}   

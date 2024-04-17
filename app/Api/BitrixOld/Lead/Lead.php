@@ -11,7 +11,7 @@ class Lead
     private ?bool $isNeedCallback;
 
     public function __construct(
-        protected Fields $fields = new Fields(),
+        protected Fields   $fields = new Fields(),
         private ?BitrixOld $bitrix,
     )
     {
@@ -39,5 +39,5 @@ class Lead
         }
 
         return $result;
-    } 
+    }
 }

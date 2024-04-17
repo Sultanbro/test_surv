@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Portal\Portal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
@@ -36,5 +37,15 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function portal(): HasOne //TODO Portal refactor: replace HasOne with HasMany
     {
         return $this->hasOne(Portal::class, 'tenant_id', 'id');
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CentralUser::class,
+            'tenant_user',
+            'tenant_id',
+            'user_id'
+        );
     }
 }

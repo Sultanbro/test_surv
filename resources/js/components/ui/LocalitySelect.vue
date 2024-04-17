@@ -78,6 +78,9 @@ export default {
 			localValue: this.value ? this.value.split(':').reverse()[0].trim() : '',
 			outValue: this.value || '',
 			options: [],
+			fixes: {
+				'москва': 'масква'
+			},
 
 			lastValue: '',
 			timeout: null,
@@ -94,6 +97,11 @@ export default {
 		}
 	},
 	methods: {
+		getFixed(value){
+			const lower = value.toLowerCase()
+			if(this.fixes[lower])  return this.fixes[lower]
+			return value
+		},
 		search(value){
 			if(!value) return (this.isSelect = false)
 			if(this.lastValue === value) return (this.isSelect = true)
@@ -102,7 +110,7 @@ export default {
 			this.isSelect = true
 			this.isloading = true
 			const options = []
-			ymaps.geocode(value, {}).then(({geoObjects}) => {
+			ymaps.geocode(this.getFixed(value), {}).then(({geoObjects}) => {
 				geoObjects.each(geoObj => {
 					const meta = geoObj.properties.get('metaDataProperty.GeocoderMetaData')
 					if(meta.kind !== 'locality') return

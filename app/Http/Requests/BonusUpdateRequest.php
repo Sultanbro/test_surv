@@ -35,7 +35,7 @@ class BonusUpdateRequest extends FormRequest
                 ]),
             ],
             'title'      => 'string|required',
-            'sum'     => 'integer|required',
+            'sum'     => 'numeric|required',
             'group_id'       => 'integer|required',
             'activity_id'       => 'required',
             //'unit'            => 'string',

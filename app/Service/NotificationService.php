@@ -2,34 +2,27 @@
 
 namespace App\Service;
 
-use App\DTO\BaseDTO;
-use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\ProfileGroup;
-use App\User;
 use App\UserNotification;
-use Illuminate\Database\Eloquent\Collection;
+use App\User;
 
 class NotificationService
 {
     /**
      * Получить непрочитанные уведолмения
-     * @param Request $request
      * @return Collection
      */
-    public function getUnreadNotifications(Request $request): Collection
-    {   
+    public function getUnreadNotifications(): Collection
+    {
         $user_id = auth()->id();
 
-        $unread_notifications = UserNotification::where('user_id', $user_id)
+        return UserNotification::query()->where('user_id', $user_id)
             ->whereNull('read_at')
             ->orderBy('created_at', 'desc')
             ->take(150)
             ->get();
-
-        return $unread_notifications;
     }
 
     /**
@@ -37,7 +30,7 @@ class NotificationService
      * @return int
      */
     public function countUnreadNotifications(): int
-    {   
+    {
         $user_id = auth()->id();
 
         $tec = UserNotification::select(\DB::raw('count(*) as total'))
@@ -52,20 +45,17 @@ class NotificationService
 
     /**
      * Получить прочитанные уведолмения
-     * @param Request $request
      * @return Collection
      */
-    public function getReadNotifications(Request $request): Collection
-    {   
+    public function getReadNotifications(): Collection
+    {
         $user_id = auth()->id();
 
-        $read_notifications = UserNotification::where('user_id', $user_id)
+        return UserNotification::query()->where('user_id', $user_id)
                     ->where('read_at', '!=' , NULL)
                     ->orderBy('read_at', 'desc')
                     ->take(50)
                     ->get();
-
-        return $read_notifications;
     }
 
     /**
@@ -73,7 +63,7 @@ class NotificationService
      * @return array
      */
     public function getHeadUsers(): array
-    {   
+    {
         return User::withTrashed()
             ->select(
                 \DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"),
@@ -88,7 +78,7 @@ class NotificationService
      * @return void
      */
     public function setAllRead(): void
-    {   
+    {
 
     }
 

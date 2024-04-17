@@ -3,6 +3,19 @@
 		v-if="isVisible"
 		id="page-profile"
 	>
+		<router-link
+			v-if="!isOwner && isWarnReady && (profileUnfilled || unsignedDocs.length)"
+			to="/cabinet"
+			class="ProfilePage-fillProfile"
+		>
+			<i class="fas fa-arrow-left ProfilePage-fillProfileArrow" />
+			<template v-if="profileUnfilled">
+				Поздравляем вы приняты на работу, заполните свой профиль
+			</template>
+			<template v-else-if="unsignedDocs.length">
+				Подпишите внесенные изменения в профиле
+			</template>
+		</router-link>
 		<div class="intro">
 			<IntroTop
 				:courses="intro['courses']"
@@ -42,9 +55,9 @@
 			:class="{ _active: anim.courses }"
 			@init="intro['courses'] = true"
 		/>
-		<RefWidget
+		<!-- <RefWidget
 			v-if="isBP && isMobileVisible"
-		/>
+		/> -->
 		<Profit
 			ref="profit"
 			:class="{ _active: anim.profit }"
@@ -61,11 +74,12 @@
 			@init="intro['indicators'] = true"
 		/>
 
-		<RefStat
+		<!-- <RefStat
+			v-if="isBP"
 			ref="referals"
 			:class="{ _active: anim.referals }"
 			@init="intro['referals'] = true"
-		/>
+		/> -->
 
 		<Popup
 			v-if="popBalance"
@@ -103,12 +117,15 @@
 		<Popup
 			v-if="popQuartalPremiums"
 			title="Квартальные премии"
-			desc=""
+			:desc="popQPSubTitle"
 			:open="popQuartalPremiums"
 			:width="popupWidth"
 			@close="popQuartalPremiums=false"
 		>
-			<PopupQuartal />
+			<PopupQuartal
+				class="ProfilePage-qp"
+				@title="popQPSubTitle = $event"
+			/>
 		</Popup>
 
 		<Popup
@@ -136,25 +153,26 @@ import Courses from '@/pages/Profile/Courses.vue'
 import Profit from '@/pages/Profile/Profit.vue'
 import TraineeEstimation from '@/pages/Profile/TraineeEstimation.vue'
 import CompareIndicators from '@/pages/Profile/CompareIndicators.vue'
-import RefStat from '@/pages/Profile/RefStat.vue'
+// import RefStat from '@/pages/Profile/RefStat.vue'
 import Popup from '@/pages/Layouts/Popup.vue'
 import Balance from '@/pages/Profile/Popups/Balance.vue'
 import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 
 import { mapGetters } from 'vuex'
-import { mapState, mapActions } from 'pinia'
+import { mapState, /* mapActions */ } from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
-import { useReferralStore } from '@/stores/Referral'
+// import { useReferralStore } from '@/stores/Referral'
+import { usePortalStore } from '@/stores/Portal'
 
 export default {
 	name: 'ProfilePage',
@@ -167,14 +185,14 @@ export default {
 		Profit,
 		TraineeEstimation,
 		CompareIndicators,
-		RefStat,
+		// RefStat,
 		Popup,
 		Balance,
 		Kpi,
 		Bonuses,
 		PopupQuartal,
 		Nominations,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -186,12 +204,13 @@ export default {
 			popBonuses: false,
 			popQuartalPremiums: false,
 			popNominations: false,
+			popQPSubTitle: '',
 			intro: {
 				courses: false,
 				profit: false,
 				estimation: false,
 				indicators: false,
-				referals: false,
+				// referals: false,
 			},
 			anim: {
 				intro: false,
@@ -200,10 +219,14 @@ export default {
 				profit: false,
 				estimation: false,
 				indicators: false,
-				referals: false,
+				// referals: false,
 			},
 			intersectionObserver: null,
-			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0])
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
+
+			documents: [],
+			person: null,
+			isWarnReady: false,
 		};
 	},
 	computed: {
@@ -215,10 +238,11 @@ export default {
 		...mapState(useProfileCoursesStore, ['courses']),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
-		...mapState(useReferralStore, {refReady: 'isReady'}),
+		// ...mapState(useReferralStore, {refReady: 'isReady'}),
+		...mapState(usePortalStore, ['isOwner']),
 		isTrainee(){
-			if(!this.user) return false
-			return !this.user.applied_at
+			if(!this.person) return true
+			return !!this.person?.user_description?.is_trainee
 		},
 		coursesFinished(){
 			const completed = this.courses.filter(course => course.all_stages && (course.all_stages === course.completed_stages))
@@ -243,27 +267,60 @@ export default {
 				&& this.coursesReady
 				&& this.infoReady
 				&& this.termsReady
-				&& this.refReady
+				// && (this.refReady || !this.isBP)
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width <= 900
+		},
+		profileUnfilled(){
+			return !this.user.phone
+				|| !this.user.name
+				|| !this.user.last_name
+				|| !this.user.email
+				|| !this.user.birthday
+				|| !this.user.working_country
+		},
+		unsignedDocs(){
+			return this.documents.filter(doc => !doc.signed)
 		}
 	},
 	watch: {
 		isReady(value){
-			if(value) this.initAnimOnScroll()
+			if(value) this.init()
 		}
 	},
 	mounted(){
-		if(this.isReady) this.initAnimOnScroll()
-		this.fetchUserStats()
+		if(this.isReady) this.init()
+		// if(this.isBP) this.fetchUserStats()
+		this.fetchDocs()
+		this.fetchPerson()
 	},
 	beforeDestroy(){
 		this.intersectionObserver.disconnect()
 		this.intersectionObserver = null
 	},
 	methods: {
-		...mapActions(useReferralStore, ['fetchUserStats']),
+		// ...mapActions(useReferralStore, ['fetchUserStats']),
+		init(){
+			setTimeout(() => {
+				this.initAnimOnScroll()
+				this.isWarnReady = true
+			}, 100)
+		},
+		async fetchDocs(){
+			const { data } = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
+			const docs = data.data || []
+			this.documents = docs.map(doc => ({
+				id: doc.id,
+				name: doc.original_name || 'Без названия',
+				file: this.isDebug ? '/static/td.pdf' : doc.url,
+				signed: doc.signed_at,
+			}))
+		},
+		async fetchPerson(){
+			const { data } = await this.axios.get('/timetracking/get-person', {params: {id: this.$laravel.userId}})
+			this.person = data.user
+		},
 		pop(window) {
 			if(window == 'balance') this.popBalance = true;
 			if(window == 'kpi') this.popKpi = true;
@@ -288,7 +345,7 @@ export default {
 					this.$refs.profit.$el instanceof Element && this.intersectionObserver.observe(this.$refs.profit.$el)
 					this.$refs.estimation.$el instanceof Element && this.intersectionObserver.observe(this.$refs.estimation.$el)
 					this.$refs.indicators.$el instanceof Element && this.intersectionObserver.observe(this.$refs.indicators.$el)
-					this.$refs.referals.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals.$el)
+					// this.$refs.referals?.$el instanceof Element && this.intersectionObserver.observe(this.$refs.referals?.$el)
 					return
 				}
 				Object.keys(this.anim).forEach(key => {
@@ -300,7 +357,7 @@ export default {
 			entries.forEach(entry => {
 				if(entry.isIntersecting){
 					Object.keys(this.anim).forEach(key => {
-						if(this.$refs[key].$el === entry.target){
+						if(this.$refs[key]?.$el === entry.target){
 							this.anim[key] = true
 						}
 					})
@@ -324,6 +381,45 @@ export default {
 @media(max-width:1910px){
 	#page-profile{
 		padding-right: 0;
+	}
+}
+
+.ProfilePage{
+	&-qp{
+		.popup__header-content{
+			display: flex;
+			align-items: flex-end;
+			gap: 10px;
+		}
+		.popup__subtitle{
+			font-size: 18px;
+		}
+	}
+	&-fillProfile{
+		display: block;
+		margin-top: 20px;
+		padding: 20px 40px;
+
+		position: relative;
+
+		font-size: 20px;
+		color: #fff;
+		text-decoration: none;
+		text-align: center;
+
+		background-color: #e84f71;
+		border-radius: 16px;
+		transition: 0.3s;
+		&:hover{
+			color: #fff;
+			transform: translateY(-2px);
+		}
+	}
+	&-fillProfileArrow{
+		position: absolute;
+		top: 50%;
+		left: 10px;
+		transform: translateY(-50%);
 	}
 }
 </style>

@@ -11,22 +11,21 @@ class PortalCreatedMail extends Mailable
     use Queueable, SerializesModels;
 
     public $mailData;
+    public string $password;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mailData)
+    public function __construct($mailData, string $password)
     {
-        $tenantId = tenant('id');
+        $mailData['host'] = config('app.domain');
 
-        $mailData['host'] = $host = $tenantId
-            ? $tenantId .'.' . config('app.domain')
-            : config('app.domain');
-
-        $mailData['hostname'] = 'https://' . $host;
+        $mailData['hostname'] = 'https://' . config('app.domain');
 
         $this->mailData = $mailData;
+        $this->password = $password;
     }
 
     /**
@@ -34,7 +33,7 @@ class PortalCreatedMail extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): static
     {
         return $this->view('mail.portal-created')
             ->subject('Портал создан');

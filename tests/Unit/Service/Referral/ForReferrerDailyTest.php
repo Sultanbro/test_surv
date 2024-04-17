@@ -4,7 +4,7 @@ namespace Tests\Unit\Service\Referral;
 
 use App\Models\Referral\ReferralSalary;
 use App\Service\Referral\Core\PaidType;
-use App\Service\Referral\ForReferrerDaily;
+use App\Service\Referral\ReferrerSalaryService;
 use App\User;
 use Exception;
 use Illuminate\Support\Collection;
@@ -22,9 +22,9 @@ class ForReferrerDailyTest extends TenantTestCase
     {
         DB::beginTransaction();
         $this->seedData();
-        /** @var ForReferrerDaily $service */
-        $service = app(ForReferrerDaily::class);
-        $service->handle();
+        /** @var ReferrerSalaryService $service */
+        $service = app(ReferrerSalaryService::class);
+        $service->updateSalaries();
         $this->assertDatabaseHas('referral_salaries', [
             'amount' => 10000
         ]);

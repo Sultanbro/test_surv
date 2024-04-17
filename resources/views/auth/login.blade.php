@@ -124,7 +124,7 @@
                     <div id="sub-footer">
                         <div class="sub-footer">
                             <div class="col-lg-12 col-xs-12">
-                                <p class="copy">© 2023 jobtron.org</p>
+                                <p class="copy">© 2024 jobtron.org</p>
                             </div>
 
                         </div>
@@ -146,7 +146,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname === '/login' && window.location.protocol === 'https:') {
         const hostArr = window.location.hostname.split('.');
-        if(hostArr.length > 2 && !~['bp', 'admin'].indexOf(hostArr[0])){
+        if(hostArr.length > 2 && !~['bp', 'admin', 'dev'].indexOf(hostArr[0])){
             window.location.href = `https://${hostArr[1]}.${hostArr[2]}/login`;
         }
     }

@@ -61,7 +61,10 @@ class StartDayForItDepartmentCommand extends Command
             throw new Exception("Выходной же брат");
         }
 
-        $timeTrack = DB::table('timetracking')->whereIn('user_id', $userIds)->whereDate('enter', $enterTime->format('Y-m-d'))->get();
+        $timeTrack = DB::table('timetracking')
+            ->whereIn('user_id', $userIds)
+            ->whereDate('enter', $enterTime->format('Y-m-d'))
+            ->get();
 
         foreach ($userIds as $userId)
         {

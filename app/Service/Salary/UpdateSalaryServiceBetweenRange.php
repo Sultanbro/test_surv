@@ -23,7 +23,8 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
 
         // Get all users within the date range using whereBetween
         /** @var Collection<User> $users */
-        $users = $this->userRepository->betweenDate($startDate, $endDate)
+        $users = $this->userRepository
+            ->betweenDate($startDate, $endDate)
             ->when($groupId, function (Builder $query) use ($groupId) {
                 $query->whereHas('groups', function (Builder $query) use ($groupId) {
                     $query->where('id', $groupId);

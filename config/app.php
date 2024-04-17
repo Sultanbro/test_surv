@@ -231,6 +231,9 @@ return [
         App\Providers\ReferralServicesProvider::class,
         App\Providers\SalaryServicesProvider::class,
         App\Providers\AnalyticServicesProvider::class,
+        App\Providers\SmsServiceProvider::class,
+        App\Providers\FileServiceProvider::class,
+        App\Providers\PaymentServiceProvider::class
     ],
 
     /*

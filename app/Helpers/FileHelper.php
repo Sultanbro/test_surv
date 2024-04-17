@@ -16,7 +16,6 @@ class FileHelper
         if (!$file->isValid()) {
             return null;
         }
-
         $path = self::checkDirectory($path, $disk);
         $result = $storage->put($path, $file);
 

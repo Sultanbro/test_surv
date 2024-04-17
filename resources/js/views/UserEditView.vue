@@ -25,6 +25,7 @@ import {
 	fire_employee_causes,
 } from '@/composables/fire_causes'
 import parsePhoneNumber from 'libphonenumber-js'
+import { arrayIntersects } from '@/lib/array.js'
 
 import axios from 'axios'
 import { mapState } from 'pinia'
@@ -33,6 +34,7 @@ import { usePortalStore } from '@/stores/Portal'
 const DATE_YMD = 'YYYY-MM-DD';
 const DATE_DMY = 'DD.MM.YYYY';
 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
 	name: 'UserEditView',
@@ -113,10 +115,6 @@ export default {
 				zarplata: true,
 				uin: true,
 			},
-			counter: 0,
-			profile_errors: 0,
-			phone_errors: 0,
-			zarplata_errors: 0,
 			isBeforeSubmit: false,
 			trainee: false,
 			increment_provided: false,
@@ -134,6 +132,9 @@ export default {
 			cityLon: 0,
 			file8: null,
 			loading: false,
+
+			taxGroups: [],
+			taxGroup: 0,
 		}
 	},
 	computed: {
@@ -185,8 +186,13 @@ export default {
 			if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
 			return ''
 		},
+		descriptionCreated(){
+			if(this.user?.user_description?.created_at) return this.$moment(this.user.user_description.created_at).format(DATE_DMY)
+			return ''
+		},
 		userAppliedDays(){
-			if(!this.userApplied) return 0
+			if(!this.userApplied && !this.descriptionCreated) return 0
+			if(!this.userApplied) return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.created_at), 'days')
 			return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
 		},
 		userDeleted(){
@@ -216,7 +222,7 @@ export default {
 			})
 			hist.sort((a, b) => this.$moment(a, 'DD.MM.YYYY').diff(this.$moment(b, 'DD.MM.YYYY')))
 			return hist
-		}
+		},
 	},
 	watch: {
 		activeUserId(){
@@ -235,6 +241,7 @@ export default {
 	},
 	created(){
 		loadMapsApi()
+		this.fetchTaxes()
 	},
 	mounted(){
 		this.updatePageData();
@@ -287,6 +294,7 @@ export default {
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
+			this.workChartId = data.user?.work_chart_id
 			this.updateTaxes();
 			if(data?.user?.inviter_id){
 				try {
@@ -299,7 +307,32 @@ export default {
 					console.error(error)
 				}
 			}
+			if(data?.user){
+				try {
+					const { data: taxData } = await this.axios.get(`/taxes/${data.user.id}/user`)
+					this.taxGroup = taxData.data?.id || 0
+					this.currentTaxGroup = taxData.data?.id || 0
+				}
+				catch (error) {
+					this.$onError({error, silent: 1})
+				}
+
+			}
 			this.user = this.user ? {...this.user} : null
+		},
+		async fetchTaxes(){
+			try {
+				const { data } = await this.axios.get('/taxes')
+				this.taxGroups = data.data
+			}
+			catch (error) {
+				this.$onError({error})
+			}
+		},
+		onTaxChange($event){
+			const taxId = +$event.target.value
+			if(taxId === -1) return window.open('/timetracking/settings?tab=2#nav-home', '_blank')
+			this.taxGroup = taxId
 		},
 		async updateTaxes(){
 			try {
@@ -414,6 +447,39 @@ export default {
 		selectWorkChart(val) {
 			this.workChartId = val;
 		},
+		validateForm(formData){
+			const errors = {}
+
+			if(formData.get('name').length < 2){
+				errors.name = 'Введите имя'
+			}
+			if(formData.get('last_name').length < 2){
+				errors.last_name = 'Введите фамилию'
+			}
+			if(!emailReg.test(formData.get('email'))){
+				errors.email = 'Введите корректный email'
+			}
+			if(!formData.get('position')){
+				errors.position = 'Выберите должность'
+			}
+			if(!formData.get('zarplata')){
+				errors.zarplata = 'Укажите оклад'
+			}
+			if(formData.get('phone').replace(/[^\d]+/g, '') < 10){
+				errors.phone = 'Ввведите корректный номер телефона'
+			}
+			if(formData.get('new_pwd') && formData.get('new_pwd').length < 8){
+				errors.new_pwd = 'Длинна пароля должна бытб не менее 8 символов'
+			}
+			if(formData.get('new_pwd') && !/[a-z]/.test(formData.get('new_pwd')) && !/[A-Z]/.test(formData.get('new_pwd'))){
+				errors.new_pwd = 'Пароль должен содержать минимум одну строчную и одну заглавную буквы'
+			}
+			if(!this.workChartId){
+				errors.work_chart = 'Укажите график работы'
+			}
+
+			return errors
+		},
 		async submit(isTrainee, increment_provided, isNew){
 			const loader = this.$loading.show();
 			this.frontValid.formSubmitted = true;
@@ -424,51 +490,15 @@ export default {
 			await this.$nextTick()
 			const formData = new FormData(this.$refs.form)
 
-			this.counter = 0;
-			this.profile_errors = 0;
-			this.phone_errors = 0;
-			this.zarplata_errors = 0;
-
-			const name = formData.get('name');
-			const email = formData.get('email');
-			const lastName = formData.get('last_name');
-			const position = formData.get('position');
-			const group = formData.get('group');
 			const zarplata = formData.get('zarplata');
 
 			const phone = formData.get('phone').replace(/[^\d]+/g, '')
 			formData.set('phone', phone)
 
-
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
 			if(formData.get('file7').size === 0) formData.delete('file7');
-
-			if (name.length < 3) {
-				this.frontValid.name = false;
-				this.showBlock(1);
-			}
-
-			if (lastName.length < 3) {
-				this.frontValid.lastName = false;
-				this.showBlock(1);
-			}
-
-			if (!this.validateEmail(email)) {
-				this.frontValid.email = false;
-				this.showBlock(1);
-			}
-
-			if(!position){
-				this.frontValid.position = false;
-				this.showBlock(1);
-			}
-
-			if(!group && isNew){
-				this.frontValid.group = false;
-				this.showBlock(1);
-			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
 
@@ -478,90 +508,62 @@ export default {
 				formData.set('coordinates[geo_lon]', this.cityLon)
 			}
 
-			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group && this.frontValid.workchart){
-				this.sendForm(formData, isNew);
+			const errors = this.validateForm(formData)
+			const errorKeys = Object.keys(errors)
+			this.fieldErrors = errors
+			if(errorKeys.length){
+				this.$toast.error('Заполните обязательные поля')
+				if(arrayIntersects(errorKeys || [], ['name', 'last_name', 'email', 'position', 'new_pwd', 'work_chart']).length){
+					this.showBlock(1)
+				}
+				else if(arrayIntersects(errorKeys || [], ['zarplata']).length){
+					this.showBlock(5)
+				}
+				else if(arrayIntersects(errorKeys || [], ['phone']).length){
+					this.showBlock(4)
+				}
+				else{
+					this.showBlock(7)
+				}
+				return loader.hide()
 			}
-			else {
-				this.$toast.error('Заполните обязательные поля');
-			}
-			loader.hide();
+			this.sendForm(formData, isNew)
+			loader.hide()
 		},
 
 		async sendForm(formData, isNew){
 			this.fieldErrors = {}
-			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
-			const loader = this.$loading.show();
+			const loader = this.$loading.show()
 
 			try{
-				const response = await this.axios.post(this.formAction, formData, {
+				const { data } = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
 				});
-				const userId = this.user ? this.user.id : response.data.data.id;
-				if (this.taxesFillData) {
-					// новый налог
-					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
-						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
-							const formDataNewTaxes = new FormData();
-							const formDataNewTaxesAssignee = new FormData();
-							formDataNewTaxes.append('user_id', userId);
-							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
-							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
-							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
-							formDataNewTaxes.append('end_subtraction', this.taxesFillData.newTaxes[i].endSubtraction ? 1 : 0);
-							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
-							formDataNewTaxesAssignee.append('user_id', userId);
-							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
-							formDataNewTaxesAssignee.append('is_assigned', 1);
-							await this.axios.post('/tax/set-assignee', formDataNewTaxesAssignee);
-						}
-					}
+				const userId = this.user ? this.user.id : data.data.id;
 
-					// добавление сущесвующих
-					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
-						const formDataAssignTaxes = new FormData();
-						formDataAssignTaxes.append('user_id', userId);
-						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i].id);
-						formDataAssignTaxes.append('is_assigned', 1);
-						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
-					}
-
-					// редактирование сущуствующих
-					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
-						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
-							const formDataEditTaxes = new FormData();
-							formDataEditTaxes.append('_method', 'put');
-							formDataEditTaxes.append('user_id', userId);
-							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].tax_id);
-							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
-							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
-							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
-							formDataEditTaxes.append('end_subtraction', this.taxesFillData.editTaxes[i].endSubtraction ? 1 : 0);
-							await this.axios.post('/tax', formDataEditTaxes);
-						}
-					}
+				if(this.currentTaxGroup !== this.taxGroup && this.currentTaxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.currentTaxGroup,
+						assigned: 0,
+					})
 				}
 
-				if (this.workChartId) {
-					const userId = this.user ? this.user.id : response.data.data.id;
-					const formDataWorkChart = new FormData();
-					formDataWorkChart.append('user_id', userId);
-					formDataWorkChart.append('work_chart_id', this.workChartId);
-					await axios.post('/work-chart/user/add', formDataWorkChart);
+				if(this.taxGroup){
+					await this.axios.post('/taxes/set-assigned', {
+						user_id: userId,
+						tax_group_id: this.taxGroup,
+						assigned: (this.taxGroup && 1) || 0,
+					})
 				}
 
 				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
 				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
 
-				if(isApplyTrainee || isNewEmployee){
-					triggerApplyEmployee(userId)
-				}
+				if(isApplyTrainee || isNewEmployee) triggerApplyEmployee(userId)
 
-				if (isNew) {
-					this.$toast.success('Информация о сотруднике сохранена');
-				}
-				else {
-					this.$toast.success('Информация о сотруднике обновлена');
-				}
+				this.$toast.success(isNew ? 'Информация о сотруднике сохранена' : 'Информация о сотруднике обновлена')
+				if(isNew) location.assign('/timetracking/settings')
 			}
 			catch (error){
 				console.error(error);
@@ -667,7 +669,7 @@ export default {
 <template>
 	<DefaultLayout
 		:has-bg="true"
-		class="profile-edit"
+		class="profile-edit UserEditView"
 	>
 		<div class="old__content">
 			<div class="user-page py-4">
@@ -915,14 +917,14 @@ export default {
 							:class="{'active': showBlocks.phones}"
 							@click="showBlock(4)"
 						>
-							<span>Контакты</span>
+							<span>Контакты <span class="red">*</span></span>
 						</li>
 						<li
 							id="bg-this-5"
 							:class="{'active': showBlocks.salary}"
 							@click="showBlock(5)"
 						>
-							<span>Оплата</span>
+							<span>Оплата <span class="red">*</span></span>
 						</li>
 						<li
 							v-if="user && isMain"
@@ -930,7 +932,7 @@ export default {
 							:class="{'active': showBlocks.adaptation}"
 							@click="showBlock(7)"
 						>
-							<span>Адаптационные данные</span>
+							<span>Адаптационные данные <span class="red">*</span></span>
 						</li>
 					</ul>
 
@@ -976,16 +978,16 @@ export default {
 								>
 									<div class="col-6">
 										<div class="mb-4">
-											Новые документы <b-badge>demo</b-badge>
+											Подписанные через смс
 										</div>
 										<UserEditDocumentsV2
-											:user="user"
+											:user-id="user ? user.id : 0"
 										/>
 									</div>
 									<div class="col-6 add_info">
 										<!-- documents tab -->
 										<div class="mb-4">
-											Старые документы
+											Загруженные вручную
 										</div>
 										<UserEditDocuments
 											:user="user"
@@ -1037,6 +1039,9 @@ export default {
 								:taxes="taxes"
 								:all-taxes="allTaxes"
 								:errors="fieldErrors"
+								:tax-groups="taxGroups"
+								:tax-group="taxGroup"
+								@tax="onTaxChange"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
 							/>
@@ -2527,10 +2532,18 @@ input[type="radio"] {
 	}
 }
 
+
+.UserEdit-new-position {
+	color: green;
+}
 .UserEditView{
 	&-scrollCard{
 		height: 200px;
 		max-height: 200px;
+	}
+	.iban-info{
+		position: relative;
+		left: -30px;
 	}
 }
 </style>

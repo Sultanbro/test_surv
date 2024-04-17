@@ -1,26 +1,39 @@
 <template>
 	<div
-		class="ui-sidebar"
-		:class="[{'is-open':open}]"
+		v-scroll-lock="open"
+		class="UISidebar"
+		:class="[{'UISidebar_open': open}]"
 		@click.self="$emit('close');"
 	>
 		<div
-			class="ui-sidebar__body"
-			:style="`width:${width}`"
+			class="UISidebar-body"
+			:style="`width: ${width}`"
 		>
-			<div class="ui-sidebar__header d-flexy">
+			<div
+				v-if="$slots.header || title"
+				class="UISidebar-header"
+			>
 				<slot name="header">
-					<span class="ui-sidebar__header-text">{{ title }}</span>
+					<div class="UISidebar-title">
+						{{ title }}
+					</div>
 					<!-- eslint-disable -->
-					<span
-						class="ui-sidebar__header-link"
+					<!-- wtf???? -->
+					<div
+						class="UISidebar-link"
 						v-html="link"
 					/>
 					<!-- eslint-enable -->
 				</slot>
 			</div>
-			<div class="ui-sidebar__content">
+			<div class="UISidebar-content">
 				<slot />
+			</div>
+			<div
+				v-if="$slots.footer"
+				class="UISidebar-footer"
+			>
+				<slot name="footer" />
 			</div>
 		</div>
 	</div>
@@ -52,82 +65,69 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.ui-sidebar__header {
-    padding: 13px 27px  !important;
-		&-text{
-			color:aliceblue;
-			background: transparent;
-			font-size: 14px;
-		}
-		&-link{
-			color:aliceblue;
-		}
-}
-.ui-sidebar__content {
-    .custom-checkbox {
-        margin-bottom: .7rem;
-    }
-}
-.ui-sidebar {
-  background: rgba(0, 0, 0, 0.45);
-  width: 100%;
-  height: 100vh;
-  left: 150%;
-  top: 0;
-  position: fixed;
-  z-index: 11;
+<style lang="scss">
+.UISidebar{
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 11;
+	top: 0;
+	left: 100vw;
 
-  &__body {
-    position: absolute;
-    right: -100%;
-    top: 0;
-    height: 100vh;
-    background: #fff;
-    z-index: 9999;
-    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.64);
+	background: rgba(0, 0, 0, 0.45);
+
+	&-body{
+		display: flex;
+		flex-flow: column;
+		height: 100vh;
+
+		position: absolute;
+		z-index: 10;
+		top: 0;
+		right: -100%;
+
+		background: #fff;
+		box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.64);
     transition: 0.3s ease-in-out all;
-    overflow: auto;
-  }
+		border-radius: 16px 0 0 16px;
+	}
+	&-header{
+		display: flex;
+		// flex-flow: column;
+		padding: 12px 20px;
+		border-radius: 16px 0 0 0;
+		border-bottom: 1px solid #ddd;
+		background-color: #8fc9ff;
+	}
+	&-title{
+		font-weight: 700;
+		font-size: 14px;
+		color: #333;
+	}
+	// &-link{}
+	&-content{
+		flex: 1;
+		padding: 20px;
 
-  &.is-open {
-    left:0;
+		font-weight: 400;
+		font-size: 14px;
 
-    .ui-sidebar__body {
-      right: 50px;
-    }
+		border-radius: 16px 0 0 16px;
+		overflow: auto;
+	}
+	&-footer{
+		padding: 12px 20px;
+		border-top: 1px solid #ddd;
+		border-radius: 0 0 0 16px;
+	}
 
-  }
-
-  &__header {
-    padding: 15px;
-    color: #fff;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    position: relative;
-    background-color: #045e92;
-    background: linear-gradient(322deg, #1076b0 0%, #045e92 100%);
-    //background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
-
-    a {
-      margin-left: -10px;
-      margin-right: 10px;
-      padding: 5px;
-    }
-  }
-
-  &__content {
-    padding: 10px;
-    background: #fff;
-  }
-
-}
-
-.sidebar_warp {
-  transition: 1s ease all;
-}
-.d-flexy {
-  display: flex;
-  justify-content: space-between;
+	&_open{
+		left: 0;
+		.UISidebar{
+			&-body{
+				right: 60px;
+			}
+		}
+	}
 }
 </style>

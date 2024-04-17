@@ -1,5 +1,6 @@
 <template>
 	<li
+		v-if="!sectionsMode || item.is_category"
 		class="KBNavItem"
 		:class="[
 			'KBNavItem_' + type,

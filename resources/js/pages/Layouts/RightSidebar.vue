@@ -1,9 +1,8 @@
 <template>
 	<div class="header__right">
 		<div class="header__right-nav">
-			<a
-				v-if="isBp && user.is_admin === 1"
-				href="javascript:void(0)"
+			<div
+				v-b-popover.hover.left.html="'Вопросы и ответы'"
 				class="header__right-icon"
 				@click="$emit('pop', 'faq')"
 			>
@@ -12,19 +11,7 @@
 					alt="nav icon"
 					class="header__icon-img"
 				>
-			</a>
-			<a
-				v-if="isBp && user.is_admin !== 1"
-				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
-				href="javascript:void(0)"
-				class="header__right-icon"
-			>
-				<img
-					src="/images/dist/header-right-1.svg"
-					alt="nav icon"
-					class="header__icon-img"
-				>
-			</a>
+			</div>
 			<a
 				href="javascript:void(0)"
 				class="header__right-icon bell red"
@@ -54,6 +41,8 @@
 			</a>
 
 			<a
+				v-if="$laravel.is_admin"
+				v-b-popover.hover.left.html="'спросите нас о чем угодно'"
 				href="javascript:void(0)"
 				class="header__right-icon"
 			>
@@ -61,7 +50,7 @@
 					src="/images/dist/header-right-5.svg"
 					alt="nav icon"
 					class="header__icon-img"
-					@click.once="openChat"
+					@click="toggleChat"
 				>
 			</a>
 
@@ -153,15 +142,23 @@ export default {
 	methods: {
 		...mapActions(useNotificationsStore, ['fetchUnreadCount']),
 		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
-		openChat(){
-			if(!this.isBp){
-				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
-				const s = document.createElement('script');
-				s.async = true;
-				s.src = url + '?' + (Date.now() / 60000 | 0);
-				const h = document.getElementsByTagName('script')[0];
-				h.parentNode.insertBefore(s,h);
+		toggleChat(){
+			if(this.isBp) return
+
+			const elem = document.querySelector('.b24-widget-button-shadow')
+			if(elem){
+				const parent = elem.parentNode
+				parent?.remove()
+				document.querySelector('.bx-livechat-wrapper')?.remove()
+				return
 			}
+
+			const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
+			const s = document.createElement('script');
+			s.async = true;
+			s.src = url + '?' + (Date.now() / 60000 | 0);
+			const h = document.getElementsByTagName('script')[0];
+			h.parentNode.insertBefore(s,h);
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
@@ -184,7 +181,7 @@ export default {
 				user.work_end.substring(0, 5),
 			]
 			return null
-		}
+		},
 	}
 };
 </script>

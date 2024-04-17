@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\VarDumper\VarDumper;
 
 if (!function_exists('translit')) {
@@ -86,5 +88,36 @@ if (!function_exists('timer')) {
     function timer(): void
     {
         dump(now()->format("i:s"));
+    }
+}
+
+if (!function_exists('point')) {
+    function point(mixed $dataToDump = null): void
+    {
+        if (!Cache::has('point-start')) {
+            Cache::put('point-start', now()->toDateTimeString());
+        } else {
+            $start = Carbon::createFromTimeString(Cache::pull('point-start'));
+
+            dd([
+                'execution_seconds' => $start->diffInRealSeconds(now()),
+                'data' => $dataToDump
+            ]);
+        }
+    }
+}
+
+if (!function_exists('phone_or_email')) {
+    /**
+     * @param array $toCheck
+     * @return string|null
+     */
+    function phone_or_email(array $toCheck): ?string
+    {
+        return match (true) {
+            isset($toCheck['email']) => 'email',
+            isset($toCheck['phone']) => 'phone',
+            default => null,
+        };
     }
 }

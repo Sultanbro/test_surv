@@ -149,6 +149,11 @@ Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2
 Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
 
 /**
+ * Set all unread messages as read
+ */
+Route::post('/v2/messages/all-read', 'MessagesController@setUnreadMessagesAsRead')->name('api.v2.setUnreadMessagesAsRead');
+
+/**
  * Set user as chat admin
  */
 Route::post('/v2/chat/{chat_id}/setAdmin/{user_id}', 'ChatsController@setAdmin')->name('api.v2.setAdmin');

@@ -4,6 +4,9 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int amount
+ */
 class EditedSalary extends Model
 {
     public $timestamps = false;
@@ -15,8 +18,4 @@ class EditedSalary extends Model
         'amount',
         'comment'
     ];
-
-
-
-    
 }

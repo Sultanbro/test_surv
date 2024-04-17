@@ -113,6 +113,18 @@
 					/>
 				</template>
 			</template>
+			<div
+				v-if="chat && chat.unread_messages_count"
+				title="Пометить все сообщения прочитанными"
+				class="relative"
+			>
+				<div
+					class="ConversationFeed-readAll"
+					@click="onReadAll"
+				>
+					<i class="fas fa-check-double" />
+				</div>
+			</div>
 		</div>
 
 		<!-- Loader -->
@@ -190,6 +202,7 @@ export default {
 			'scrollingPosition',
 			'messagesLoading',
 			'isLoading',
+			'chat',
 		]),
 		messagesMap(){
 			const uniqueDates = [];
@@ -267,6 +280,7 @@ export default {
 			'loadMoreNewMessages',
 			'loadMoreOldMessages',
 			'requestScroll',
+			'markAllMessagesAsRead',
 		]),
 		scroll() {
 			this.$nextTick(function () {
@@ -328,6 +342,11 @@ export default {
 			/* eslint-disable-next-line camelcase */
 			this.reactMessage({message: this.contextMenuMessage, emoji_id: emoji});
 		},
+		onReadAll(){
+			this.markAllMessagesAsRead({
+				chat: this.chat,
+			})
+		},
 	},
 }
 </script>
@@ -370,9 +389,7 @@ export default {
 .messenger__container-scroll::-webkit-scrollbar-button {
 	display: none;
 }
-</style>
 
-<style lang="scss" scoped>
 .ConversationFeed{
 	&-startUnread{
 		display: flex;
@@ -407,6 +424,25 @@ export default {
 			color: #6F82A3;
 		}
 	}
+	&-readAll{
+		aspect-ratio: 1;
+		padding: 10px;
+
+		position: absolute;
+		z-index: 1;
+		right: 10px;
+		bottom: 10px;
+
+		color: #fff;
+
+		background-color: #3361FF;
+		border-radius: 999em;
+		opacity: 0.75;
+		cursor: pointer;
+		&:hover{
+			opacity: 1;
+		}
+	}
 
 	.ConversationFeedReaders{
 		display: none;
@@ -415,6 +451,9 @@ export default {
 		}
 	}
 }
+</style>
+
+<style lang="scss" scoped>
 #messenger_container{
 	align-self: stretch;
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;

@@ -14,7 +14,7 @@
 				class="GlossaryComponent-add mb-3"
 			>
 				<JobtronButton
-					@click="$emit('addTerm')"
+					@click="onAdd"
 				>
 					Добавить термин
 				</JobtronButton>
@@ -22,7 +22,7 @@
 			<!-- words -->
 			<div class="GlossaryComponent-items">
 				<div
-					v-for="(term, i) in filteredTerms"
+					v-for="(term, i) in sortedTerms"
 					:key="i"
 					class="GlossaryComponent-item mb-3"
 					:class="{
@@ -125,6 +125,13 @@ export default {
 				|| (term.definition.toLowerCase().indexOf(lowerSearch) > -1)
 			)
 		},
+		sortedTerms(){
+			return this.filteredTerms.slice().sort((a, b) => {
+				const ats = new Date(a.created_at).valueOf()
+				const bts = new Date(b.created_at).valueOf()
+				return ats - bts
+			})
+		},
 		currentUserGroups(){
 			return this.profileGroups.slice().filter(group => ~group.users?.findIndex(user => user.id === this.user.id))
 		},
@@ -146,7 +153,17 @@ export default {
 
 	created(){},
 
-	methods: {}
+	methods: {
+		onAdd(){
+			this.$emit('addTerm')
+			this.$nextTick(() => {
+				if(!this.$el) return
+				const lastItem = this.$el.querySelector('.GlossaryComponent-item:last-child')
+				if(!lastItem) return
+				lastItem.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+			})
+		}
+	}
 }
 </script>
 

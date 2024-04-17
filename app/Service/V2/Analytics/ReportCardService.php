@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class ReportCardService
 {
     /**
@@ -42,18 +42,17 @@ class ReportCardService
                     ->where('column_id', $column->id)
                     ->first();
 
-                if ($stat)
-                {
+                if ($stat) {
                     $dayTotal = Timetracking::totalHours($date, $dto->groupId, $dto->positions);
-                    $dayTotal = floor($dayTotal / 9 * 10) / $dto->divide;
+                    $dayTotal = floor($dayTotal / 9 * 10 / $dto->divide);
 
-                    $stat->value        = $dayTotal;
-                    $stat->show_value   = $dayTotal;
-                    $stat->type         = AnalyticStat::TIME;
+                    $stat->value = $dayTotal;
+                    $stat->show_value = $dayTotal;
+                    $stat->type = AnalyticStat::TIME;
 
                     $stat->save();
                 }
-        });
+            });
         DB::commit();
         return true;
     }
@@ -67,13 +66,12 @@ class ReportCardService
     {
         $reportCards = [];
 
-        foreach ($dto->positions as $position)
-        {
+        foreach ($dto->positions as $position) {
             $reportCards[] = [
-                'position_id'   => $position,
-                'group_id'      => $dto->groupId,
-                'date'          => $date,
-                'divide_to'     => $dto->divide
+                'position_id' => $position,
+                'group_id' => $dto->groupId,
+                'date' => $date,
+                'divide_to' => $dto->divide
             ];
         }
         ReportCard::query()->where('group_id', $dto->groupId)->delete();

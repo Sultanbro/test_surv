@@ -3,6 +3,7 @@
 namespace Eddir\Messenger\Http\Controllers;
 
 use Eddir\Messenger\Facades\MessengerFacade;
+use Eddir\Messenger\Models\MessengerChat;
 use Eddir\Messenger\Models\MessengerMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -100,19 +101,20 @@ class MessagesController {
         if ( $request->message == "" ) {
             return response()->json( [ 'message' => 'Message is empty: ' ], 400 );
         }
+        $response = [];
         // check if message is too long
         if ( strlen( $request->message ) > 1000 ) {
             // split message to parts
             $parts = str_split( $request->message, 1000 );
             // send each part
             foreach ( $parts as $part ) {
-                $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part, [], $request->get( 'cite_message_id' ) );
+                $response[] = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part, [], $request->get( 'cite_message_id' ) );
             }
         } else {
-            $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), [], $request->get( 'cite_message_id' ) );
+            $response[] = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), [], $request->get( 'cite_message_id' ) );
         }
 
-        return response()->json( $message );
+        return response()->json( $response );
     }
 
     /**
@@ -227,6 +229,53 @@ class MessagesController {
 
         return response()->json( [ 'ok' => false ] );
     }
+
+    public function setUnreadMessagesAsRead(): JsonResponse {
+        $chatId = request()->get( 'chatId' );
+
+        if ($chatId == 0) {
+            $chat = MessengerFacade::getGeneralChat();
+        } else {
+            $chat = MessengerChat::query()->find($chatId);
+        }
+
+        if (!$chat) {
+            return response()->json( [ 'ok' => false ] );
+        }
+
+        $messageIds = $chat->getUnreadMessagesIds(Auth::user());
+
+        // select messages by ids where user is a member of chat of each message
+        $messages = MessengerMessage::whereIn( 'id', $messageIds );
+        if($chatId != 0){
+            $messages = $messages->whereHas( 'chat', function ( $query ) {
+                $query->whereHas( 'members', function ( $query ) {
+                    $query->where( 'user_id', Auth::user()->id );
+                } );
+            } );
+        }
+        $messages = $messages->get();
+
+        if ( $messages->count() > 0 ) {
+            // set messages as read
+            MessengerFacade::setMessagesAsRead( $messages, Auth::user() );
+
+            if($chatId == 0){
+                $chat = MessengerFacade::getGeneralChat();
+            }
+            else{
+                $chat = $messages->first()->chat;
+            }
+
+            // return get chats last messages
+            return response()->json( [
+                'left' => $chat->getUnreadMessagesCount( Auth::user() ),
+            ] );
+        }
+
+        return response()->json( [ 'ok' => false ] );
+    }
+
 
     /**
      * Pin message to top of chat

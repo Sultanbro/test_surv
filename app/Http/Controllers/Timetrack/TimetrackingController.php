@@ -16,6 +16,7 @@ use App\Http\Requests\TimeTrack\OvertimeRequest;
 use App\Http\Requests\TimeTrack\RejectOvertimeRequest;
 use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
 use App\Jobs\Salary\ProcessUpdateSalary;
+use App\KnowBase;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\ObtainedBonus;
@@ -23,11 +24,13 @@ use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
 use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
+use App\Models\CallibroDialer;
 use App\Models\GroupUser;
+use App\Models\KnowBaseModel;
 use App\Models\Kpi\Bonus;
-use App\Models\TestBonus;
 use App\Models\Timetrack\UserPresence;
 use App\Models\User\NotificationTemplate;
+use App\Models\WorkChart\Workday;
 use App\Position;
 use App\PositionDescription;
 use App\ProfileGroup;
@@ -53,7 +56,9 @@ use App\UserDescription;
 use App\UserFine;
 use App\UserNotification;
 use Carbon\Carbon;
+use DateTimeZone;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -101,12 +106,18 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];
 
             if ($active_tab == 1 && !auth()->user()->can('users_view')) return redirect('/');
-            if ($active_tab == 2 && !auth()->user()->can('positions_view')) return redirect('/');
+            if ($active_tab == 2
+                && !auth()->user()->can('positions_view')
+                && !auth()->user()->can('taxes_view')
+                && !auth()->user()->can('shifts_view')
+                && !auth()->user()->can('groups_view')
+            ) return redirect('/');
             if ($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
             if ($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
             if ($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
             if ($active_tab == 6 && !auth()->user()->can('permissions_view')) return redirect('/');
             if ($active_tab == 7 && !auth()->user()->can('checklists_view')) return redirect('/');
+
         } else {
             if (!(auth()->user()->can('settings_view') ||
                 auth()->user()->can('users_view') ||
@@ -140,7 +151,7 @@ class TimetrackingController extends Controller
 
         $corpbooks = [];
         if ($active_tab == 3) {
-            $corpbooks = \App\KnowBase::where('parent_id', null)->get();
+            $corpbooks = KnowBase::where('parent_id', null)->get();
         }
 
         $tab5 = [
@@ -294,6 +305,27 @@ class TimetrackingController extends Controller
     }
 
     /**
+     * Наверное для того чтобы узнать начинал рабочий день или нет
+     * Еще вычисляет баланс к выдаче
+     *
+     * @TODO Decompose this method
+     *
+     * @return JsonResponse
+     */
+    public function trackerstatus(Request $request)
+    {
+        $user = auth()->user();
+
+        return response()->json([
+            'status' => $user->timetracking()->running()->first() ? 'started' : 'stopped',
+            'balance' => [
+                'currency' => strtoupper($user->currency),
+            ],
+            'corp_book' => $user->getCorpbook()
+        ]);
+    }
+
+    /**
      * Handle startDay btn clicks
      * @throws Exception
      */
@@ -327,45 +359,21 @@ class TimetrackingController extends Controller
 
     }
 
-    private function endDay(): string
-    {
-        $user = auth()->user();
-        $schedule = $user->schedule();
-        $now = Carbon::now($user->timezone());
-
-        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
-
-        if (!$workday) {
-            throw new \Exception('Вы еще не начинали рабочий день!');
-        }
-
-        if ($workday && $workday->isEnded()) {
-            throw new \Exception('Вы уже завершили рабочий день!');
-        }
-
-        $exit = $schedule['end']->isPast() ? $schedule['end'] : $now;
-
-        $workday->setExit($exit)
-            ->setStatus(Timetracking::DAY_ENDED)
-            ->addTime($exit, $user->timezone())
-            ->save();
-
-        Referring::touchReferrerSalaryWeekly($user, $exit);
-
-        return 'stopped';
-    }
-
     /**
      * @throws Exception
      */
     private function startDay($userId = null): string
     {
-        $user = $userId ? User::find($userId) : auth()->user();
+        /** @var User $user */
+        $user = User::query()->find($userId ?? auth()->id());
+
         $schedule = $user->schedule();
+        $now = now('UTC');
 
-        $now = Carbon::now($user->timezone());
-
-        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+        /** @var Timetracking $workday */
+        $workday = $user->timetracking()
+            ->whereDate('enter', $now->format('Y-m-d'))
+            ->first();
 
         //Нажал "Начать день"
         if ($workday && $workday->isStarted()) {
@@ -380,50 +388,53 @@ class TimetrackingController extends Controller
             throw new Exception('Вы не можете работать после ' . $schedule['end']->format('H:i'));
         }
 
-        WorkdayEvent::dispatch($user);
-
-        if ($workday) {
-            $workday->setEnter($now)
-                ->setStatus(Timetracking::DAY_STARTED)
-                ->addTime($now, $user->timezone())
-                ->save();
-        }
-
         if (!$workday) {
-            Timetracking::updateOrCreate(
+            $workday = Timetracking::query()->create(
                 [
                     'user_id' => $user->id,
-                    'enter' => $now->setTimezone('UTC')
-                ],
-                [
-                    'times' => [$now->setTimezone('UTC')->format('H:i')],
+                    'enter' => $now,
+                    'times' => [$now->format('H:i')],
                     'status' => Timetracking::DAY_STARTED
                 ]
             );
         }
 
+        WorkdayEvent::dispatch($user);
+
+        $workday->setEnter($now)
+            ->setStatus(Timetracking::DAY_STARTED)
+            ->addTime($now, $user->timezone())
+            ->save();
+
         return 'started';
     }
 
-    /**
-     * Наверное для того чтобы узнать начинал рабочий день или нет
-     * Еще вычисляет баланс к выдаче
-     *
-     * @TODO Decompose this method
-     *
-     * @return JsonResponse
-     */
-    public function trackerstatus(Request $request)
+    private function endDay(): string
     {
         $user = auth()->user();
+        $schedule = $user->schedule();
+        $now = Carbon::now($user->timezone());
 
-        return response()->json([
-            'status' => $user->timetracking()->running()->first() ? 'started' : 'stopped',
-            'balance' => [
-                'currency' => strtoupper($user->currency),
-            ],
-            'corp_book' => $user->getCorpbook()
-        ]);
+        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+
+        if (!$workday) {
+            throw new Exception('Вы еще не начинали рабочий день!');
+        }
+
+        if ($workday && $workday->isEnded()) {
+            throw new Exception('Вы уже завершили рабочий день!');
+        }
+
+        $exit = $schedule['end']->isPast() ? $schedule['end'] : $now;
+
+        $workday->setExit($exit)
+            ->setStatus(Timetracking::DAY_ENDED)
+            ->addTime($exit, $user->timezone())
+            ->save();
+
+        Referring::salaryForWeek($user, $exit);
+
+        return 'stopped';
     }
 
     public function savegroup(Request $request)
@@ -476,7 +487,7 @@ class TimetrackingController extends Controller
                 });
 
 
-            $kbm = \App\Models\KnowBaseModel::
+            $kbm = KnowBaseModel::
             where('model_type', 'App\\ProfileGroup')
                 ->where('model_id', $group->id)
                 ->where('access', 1)
@@ -484,7 +495,7 @@ class TimetrackingController extends Controller
                 ->pluck('book_id')
                 ->toArray();
 
-            $corp_books = \App\KnowBase::whereIn('id', array_unique($kbm))->get();
+            $corp_books = KnowBase::whereIn('id', array_unique($kbm))->get();
 
             $bonus = Bonus::where('group_id', $group->id)->first();
 
@@ -547,7 +558,7 @@ class TimetrackingController extends Controller
             $users_id[] = $user['id'];
         }
 
-        $kbm = \App\Models\KnowBaseModel::
+        $kbm = KnowBaseModel::
         where('model_type', 'App\\ProfileGroup')
             ->where('model_id', $group->id)
             ->where('access', 1)
@@ -555,7 +566,7 @@ class TimetrackingController extends Controller
 
         $corp_books = [];
         foreach ($request['corp_books'] as $corp_book) {
-            \App\Models\KnowBaseModel::create([
+            KnowBaseModel::create([
                 'book_id' => $corp_book['id'],
                 'model_id' => $group->id,
                 'model_type' => 'App\\ProfileGroup',
@@ -595,7 +606,7 @@ class TimetrackingController extends Controller
                 $group->dialer->talk_minutes = $request['talk_minutes'] ?? 0;
                 $group->dialer->save();
             } else {
-                \App\Models\CallibroDialer::create([
+                CallibroDialer::create([
                     'group_id' => $group->id,
                     'dialer_id' => $request['dialer_id'],
                     'script_id' => $request['script_id'] ?? 0,
@@ -628,6 +639,31 @@ class TimetrackingController extends Controller
             'groups' => ProfileGroup::where('active', 1)->pluck('name', 'id')->toArray(),
             'group' => $group->id
         ];
+    }
+
+    private function insertDataToGroupUser($group, $usersId)
+    {
+        $data = [];
+
+
+        foreach ($usersId as $userId) {
+            $exist = DB::table('group_user')
+                ->where('user_id', $userId)
+                ->where('group_id', $group->id)
+                ->exists();
+
+            if (!$exist) {
+                $data[] = [
+                    'user_id' => $userId,
+                    'group_id' => $group->id,
+                    'from' => Carbon::now()->toDateString(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+        }
+
+        DB::table('group_user')->insert($data);
     }
 
     public function applyPerson(Request $request): JsonResponse
@@ -730,9 +766,9 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        Referring::touchReferrerStatus($user);
-        Referring::touchReferrerSalaryForCertificate($user);
-        Referring::deleteReferrerDailySalary($user->getKey(), $date);
+        Referring::syncReferrerStatus($user);
+        Referring::salaryForCertificate($user);
+        Referring::deleteTrainingSalary($user->getKey(), $date);
 
 
         return response()->json([
@@ -762,7 +798,7 @@ class TimetrackingController extends Controller
         }
 
         $fines = Fine::selectRaw('id as value, CONCAT(name," - ", penalty_amount) as text')->get();
-        $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
+        $years = ['2020', '2021', '2022', '2023', '2024']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
         return view('admin.reports', compact('groups', 'fines', 'years'));
     }
 
@@ -856,7 +892,7 @@ class TimetrackingController extends Controller
             $user->dayTypes = $daytypes;
             $user->weekdays = $weekdays;
 
-            $user_applied_at = UserDescription::where('user_id', $user->id)->first();
+            $user_applied_at = UserDescription::query()->where('user_id', $user->id)->first();
             if ($user_applied_at && $user_applied_at->applied) {
                 $user_applied_at = $user_applied_at->applied;
             } else {
@@ -896,6 +932,20 @@ class TimetrackingController extends Controller
         $data['editable_time'] = $group->editable_time;
 
         return $data;
+    }
+
+    // Проверка не начинал ли сотрудник работу ранее рабочего времени
+
+    /**
+     * @param $user
+     * @return void
+     */
+    private function addHours($user): void
+    {
+        foreach ($user->trackHistory as $history) {
+            $history->created_at = $history->created_at->addHours(6)->format('Y-m-d H:i:s');
+            $history->updated_at = $history->updated_at->addHours(6)->format('Y-m-d H:i:s');
+        }
     }
 
     public function updateTimetrackingDay(Request $request)
@@ -1000,11 +1050,11 @@ class TimetrackingController extends Controller
         }
 
         /** @var UserStat $userStat */
-        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
-        if ($userStat) {
-            $userStat->value = intval($request->minutes) / 60;
-            $userStat->save();
-        }
+//        $userStat = UserStat::getTimeTrackingActivity($user, $date, $user->activeGroup()->time_address);
+//        if ($userStat) {
+//            $userStat->value = intval($request->minutes) / 60;
+//            $userStat->save();
+//        }
         ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
             ->afterCommit();
 
@@ -1016,7 +1066,6 @@ class TimetrackingController extends Controller
         return response()->json($result);
     }
 
-    // Проверка не начинал ли сотрудник работу ранее рабочего времени
     public static function checkStartOfDay($request, $day)
     {
 
@@ -1246,6 +1295,9 @@ class TimetrackingController extends Controller
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function enterreport(Request $request)
     {
         if (!auth()->user()->can('entertime_view')) {
@@ -1290,7 +1342,8 @@ class TimetrackingController extends Controller
             }
 
             if (isset($request['filter']) && $request->filter == "deactivated") {
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->whereNotNull('deleted_at')
                     ->with([
                         'timetracking' => function ($q) use ($request) {
@@ -1323,7 +1376,9 @@ class TimetrackingController extends Controller
                     ->get();
             } else {
 
-                $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
+                /**@var Collection<User> $users */
+                $users = User::withTrashed()
+                    ->selectRaw("*,CONCAT(name,' ',last_name) as full_name")
                     ->with([
                         'timetracking' => function ($q) use ($request) {
                             $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
@@ -1348,6 +1403,8 @@ class TimetrackingController extends Controller
                     ->whereIn('fine_id', [1, 2])
                     ->get();
 
+                $userTimezone = new DateTimeZone(Setting::TIMEZONES[5]);
+
                 foreach ($userfines as $fine) {
                     $fine->day = substr($fine->day, 8, 2);
                 }
@@ -1356,10 +1413,17 @@ class TimetrackingController extends Controller
 
 
                 foreach ($days as $day) {
+//                    dd_if($userData->id == 3957 && $day == 8,
+//                        $userData->timetracking
+//                            ->where('date', $day)
+//                            ->min('enter')
+//                            ->setTimezone($userTimezone)
+//                            ->format('H:i')
+//                    );
                     $data[$userData->id][$day] = $userData->timetracking
                         ->where('date', $day)
                         ->min('enter')
-                        ->setTimezone(Setting::TIMEZONES[6])
+                        ->setTimezone($userTimezone)
                         ->format('H:i');
                 }
 
@@ -1400,7 +1464,7 @@ class TimetrackingController extends Controller
 
         try {
             $currency_rate = (float)Currency::rates()[$user->currency];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currency_rate = 0.00001;
         }
 
@@ -1640,7 +1704,6 @@ class TimetrackingController extends Controller
         ];
     }
 
-
     public function zarplatatableNew(Request $request)
     {
         $user = auth()->user() ?? User::find(5);
@@ -1714,7 +1777,7 @@ class TimetrackingController extends Controller
                 'description' => $desc,
             ]);
 
-        if ($request->get("type") == DayType::DAY_TYPES['HOLIDAY']) { // Выходной
+        if ($request->get("type") == DayType::DAY_TYPES['HOLIDAY'] || DayType::DAY_TYPES['BLANK']) { // Выходной или без обисниение
             $fines = UserFine::query()
                 ->where('day', $date)
                 ->where('user_id', '=', $targetUser->id)
@@ -1733,7 +1796,6 @@ class TimetrackingController extends Controller
                 $salary->save();
             }
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['ABCENSE']) { // Отсутствует
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
@@ -1743,7 +1805,7 @@ class TimetrackingController extends Controller
 
             if ($trainee) {
 
-                Referring::deleteReferrerDailySalary($targetUser->id, $date);
+                Referring::deleteTrainingSalary($targetUser->id, $date);
 
                 $targetUser->salaries()->where('date', $date->format("Y-m-d"))->first()?->delete();
 
@@ -1905,7 +1967,6 @@ class TimetrackingController extends Controller
                 ->first();
             $up?->delete();
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['TRAINEE']) {
             $trainee = UserDescription::query()
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
@@ -1915,7 +1976,7 @@ class TimetrackingController extends Controller
                     'date' => $date,
                     'user_id' => $request->get("user_id")
                 ]);
-            Referring::touchReferrerSalaryForTrain($targetUser, $date);
+            Referring::salaryForTraining($targetUser, $date);
 
             if ($trainee) {
                 $bitrix = new Bitrix();
@@ -1956,14 +2017,13 @@ class TimetrackingController extends Controller
                 $salary->save();
             }
         }
-
         if ($request->get("type") == DayType::DAY_TYPES['FIRED']) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
             /** @var UserDescription $trainee */
             $trainee = UserDescription::query()
                 ->where('is_trainee', 1)->where('user_id', $request->get("user_id"))->first();
 
             if ($trainee) {
-                Referring::deleteReferrerDailySalary($targetUser->getKey(), $date);
+                Referring::deleteTrainingSalary($targetUser->getKey(), $date);
 
                 // Поиск ID лида или сделки
                 if ($trainee->lead_id != 0) {
@@ -2012,9 +2072,9 @@ class TimetrackingController extends Controller
                 ////////////
                 User::deleteUser($request);
             } else {
-                UserDescription::query()->make([
-                    'user_id' => $request->get("user_id"),
+                UserDescription::query()->where('user_id', $request->get('user_id'))->update([
                     'fired' => now(),
+                    'fire_date' => $date->format('Y-m-d'),
                     'fire_cause' => $request->get("comment")
                 ]);
 
@@ -2089,7 +2149,7 @@ class TimetrackingController extends Controller
                 }
 
             }
-            Referring::touchReferrerStatus($targetUser);
+            Referring::syncReferrerStatus($targetUser);
         }
 
         return ['success' => 1, 'history' => $history, 'type' => $daytype ? $daytype->type : 0];
@@ -2195,7 +2255,7 @@ class TimetrackingController extends Controller
                     $template->save();
                 }
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 continue;
             }
         }
@@ -2312,31 +2372,6 @@ class TimetrackingController extends Controller
         if ($bonus) $bonus->delete();
     }
 
-    private function insertDataToGroupUser($group, $usersId)
-    {
-        $data = [];
-
-
-        foreach ($usersId as $userId) {
-            $exist = DB::table('group_user')
-                ->where('user_id', $userId)
-                ->where('group_id', $group->id)
-                ->exists();
-
-            if (!$exist) {
-                $data[] = [
-                    'user_id' => $userId,
-                    'group_id' => $group->id,
-                    'from' => Carbon::now()->toDateString(),
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
-            }
-        }
-
-        DB::table('group_user')->insert($data);
-    }
-
     /**
      * Получем массив user-ов и добавляем в таблицу group_user
      */
@@ -2358,18 +2393,6 @@ class TimetrackingController extends Controller
         $response = $groupUserService->drop($request->users, $request->group_id);
 
         return response()->json($response);
-    }
-
-    /**
-     * @param $user
-     * @return void
-     */
-    private function addHours($user): void
-    {
-        foreach ($user->trackHistory as $history) {
-            $history->created_at = $history->created_at->addHours(6)->format('Y-m-d H:i:s');
-            $history->updated_at = $history->updated_at->addHours(6)->format('Y-m-d H:i:s');
-        }
     }
 
     /**

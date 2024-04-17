@@ -275,10 +275,10 @@
 												<td>{{ item.updated_by }}</td>
 												<td class="ho-hover">
 													<div class="d-flex px-2">
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveNewBonus(i)"
-														/>
+														/> -->
 														<i
 															class="fa fa-trash btn btn-danger btn-icon"
 															@click="deleteNewBonus(i)"
@@ -551,10 +551,10 @@
 														>
 															&nbsp;
 														</b-form-checkbox>
-														<i
+														<!-- <i
 															class="fa fa-save btn btn-success btn-icon"
 															@click="saveItemFromTable(p, i)"
-														/>
+														/> -->
 														<!--													<i-->
 														<!--															class="fa fa-pen btn btn-primary btn-icon"-->
 														<!--															@click="openSidebar(p, i)"-->
@@ -981,7 +981,7 @@ export default {
 			return false;
 		},
 		addBonus() {
-			this.newBonusesArray.unshift(newBonus());
+			this.newBonusesArray.push(newBonus());
 			this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
 		},
 		addItemRow() {
@@ -1196,7 +1196,7 @@ export default {
 		saveItemFromTable(p, i) {
 			this.save(this.page_items[p].items[i])
 		},
-		saveAll(p){
+		saveAll(index){
 			/**
 			 * validate item
 			 */
@@ -1206,7 +1206,8 @@ export default {
 			const tosave = []
 			const toupdate = []
 			let not_validated_msg = ''
-			this.page_items[p].items.every(item => {
+
+			this.page_items[index].items.every(item => {
 				not_validated_msg = this.validateMsg(item)
 				if (not_validated_msg) return false
 				if(item.id){
@@ -1234,18 +1235,23 @@ export default {
 			const loader = this.$loading.show()
 			const requests = []
 			const errors = []
-			requests.push(this.axios.post(this.uri + '/save', {
-				bonuses: tosave
-			}).catch(error => {
-				const msg = error.message == 'Request failed with status code 409' ? 'Выберите другую цель "Кому"' : error
-				errors.push(msg)
-			}))
+
+			if(tosave.length){
+				requests.push(this.axios.post(this.uri + '/save', {
+					bonuses: tosave
+				}).catch(error => {
+					const msg = error.message == 'Request failed with status code 409' ? 'Выберите другую цель "Кому"' : error
+					errors.push(msg)
+				}))
+			}
+
 			toupdate.forEach(item => {
 				requests.push(this.axios.put(this.uri + '/update', item).catch(error => {
 					const msg = error.message == 'Request failed with status code 409' ? 'Выберите другую цель "Кому"' : error
 					errors.push(msg)
 				}))
 			})
+
 			Promise.allSettled(requests).then(() => {
 				const msg = errors.length
 					?	errors.length === requests.length

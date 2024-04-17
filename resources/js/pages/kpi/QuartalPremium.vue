@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="$can('kpi_edit')"
-		class="quartal-premiums px-3 py-1"
+		class="QuartalPremiums quartal-premiums px-3 py-1"
 	>
 		<!-- top line -->
 		<div class="d-flex my-4 jcsb aifs">
@@ -111,14 +111,14 @@
 						<tr class="collapsable active">
 							<td :colspan="fields.length + 2">
 								<div class="table__wrapper">
-									<table class="table table-responsive table-inner">
+									<table class="table table-inner">
 										<thead>
 											<tr>
 												<th />
 												<th
 													v-for="(field, f) in fields"
 													:key="f"
-													class="text-left"
+													class="text-left align-middle"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -249,6 +249,18 @@
 														<textarea v-model="item[field.key]" />
 													</template>
 
+													<template v-else-if="field.key == 'method'">
+														<select v-model="item.method">
+															<option
+																v-for="name, key in methods"
+																:key="key"
+																:value="key"
+															>
+																{{ name }}
+															</option>
+														</select>
+													</template>
+
 													<template v-else>
 														<input
 															v-model="item[field.key]"
@@ -354,14 +366,14 @@
 						>
 							<td :colspan="fields.length + 2">
 								<div class="table__wrapper w-100">
-									<table class="table table-responsive table-inner">
+									<table class="table table-inner">
 										<thead>
 											<tr>
 												<th />
 												<th
 													v-for="(field, f) in fields"
 													:key="f"
-													class="text-left"
+													class="text-left align-middle"
 													:class="[
 														field.class,
 														{'b-table-sticky-column l-2 hidden' : field.key == 'target'
@@ -459,7 +471,7 @@
 																</option>
 															</select>
 															<input
-																v-if="Number(item.source) === 1 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
+																v-if="Number(item.source) === 1 && item.activity_id > 0 && activities.find(act => act.id === item.activity_id).name === 'Ячейка из сводной'"
 																v-model="item.cell"
 																type="text"
 															>
@@ -494,6 +506,17 @@
 																:value="key"
 															>
 																{{ dayparts[key] }}
+															</option>
+														</select>
+													</template>
+													<template v-else-if="field.key == 'method'">
+														<select v-model="item.method">
+															<option
+																v-for="name, key in methods"
+																:key="key"
+																:value="key"
+															>
+																{{ name }}
 															</option>
 														</select>
 													</template>
@@ -771,7 +794,7 @@ import SuperSelect from '@/components/SuperSelect'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 
 import {fields, newQuartalPremium} from './quartal_premiums.js';
-import { findModel, sources } from './helpers.js';
+import { findModel, sources, sumMethods as methods } from './helpers.js';
 
 export default {
 	name: 'QuartalPremiums',
@@ -815,6 +838,7 @@ export default {
 			statusRequest: false,
 			timeout: null,
 			filters: null,
+			methods,
 		}
 	},
 	watch: {
@@ -878,7 +902,6 @@ export default {
 				}))
 			})
 			Promise.allSettled(this.statusRequest).then(() => {
-				this.$toast.success('Статус изменен')
 				this.statusRequest = false
 			})
 		},
@@ -893,8 +916,8 @@ export default {
 			this.newPremiumArray.push(newQuartalPremium());
 		},
 		saveNewQuartal(i){
-			this.newPremiumArray[i].target = this.new_target;
-			this.save(this.newPremiumArray[i],i);
+			this.newPremiumArray[i].target = this.new_target
+			this.save(this.newPremiumArray[i], i)
 		},
 		deleteNewQuartal(i){
 			this.newPremiumArray.splice(i,1);
@@ -926,14 +949,18 @@ export default {
 			}).then(response => {
 				const items = response.data.items.map(item => ({
 					...item,
+					items: item.items.map(innerItem => ({
+						...innerItem,
+						method: innerItem.method || 1,
+					})),
 					is_active: item.items.reduce((result, itm) => result && itm.is_active, true)
 				}))
 				this.all_items = items
 				this.items = items
-				this.activities = response.data.activities;
+				this.activities = response.data.activities || [];
 				this.groups = response.data.groups;
 
-				this.defineSourcesAndGroups('t');
+				this.defineSourcesAndGroups()
 
 				this.items.forEach(el => el.expanded = false);
 				this.page_items = this.items.slice(0, this.pageSize);
@@ -956,17 +983,14 @@ export default {
 		},
 
 		setDefaultShowFields() {
-
-			let obj = {}; // Какие поля показывать
-			fields.forEach(field => obj[field.key] = true);
-
-			if(localStorage.quartal_premiums_show_fields) {
-				this.show_fields = JSON.parse(localStorage.getItem('quartal_premiums_show_fields'));
-				if(this.show_fields == null) this.show_fields = obj
-			} else {
-				this.show_fields = obj
+			const fieldsKey =  'quartal_premiums_show_fields'
+			const showFields = {}
+			fields.forEach(field => showFields[field.key] = true)
+			const savedFields = localStorage[fieldsKey] ? JSON.parse(localStorage.getItem(fieldsKey) || '{}') : {}
+			this.show_fields = {
+				...showFields,
+				...savedFields,
 			}
-
 		},
 
 		adjustFields() {
@@ -1025,8 +1049,7 @@ export default {
 			return msg;
 		},
 
-		save(item, index) {
-
+		save(item, index, silent) {
 			/**
 			 * validate item
 			 */
@@ -1077,10 +1100,10 @@ export default {
 							type: item.target.type,
 							name: item.target.name,
 							items: [item],
-							expanded: false
+							expanded: false,
+							is_active: 1,
 						});
 					}
-
 
 					this.showSidebar = false
 				}
@@ -1088,8 +1111,8 @@ export default {
 					item.updated_at = this.$moment(Date.now()).format('DD.MM.YYYY HH:mm')
 				}
 
-				this.$toast.info('Сохранено');
-				this.newPremiumArray.splice(index,1);
+				!silent && this.$toast.info('Сохранено')
+				if(~index) this.newPremiumArray.splice(index,1)
 				loader.hide()
 			}).catch(error => {
 				let m = error;
@@ -1128,21 +1151,25 @@ export default {
 		},
 
 		saveItem() {
-			this.save(this.activeItem)
+			this.save(this.activeItem, -1)
 		},
 
 		saveItemFromTable(p, i) {
 			const item = this.page_items[p].items[i]
-			this.save(item).then(() => {
-				if(item.id === 0){
-					this.page_items[p].splice(i, 1)
-				}
+			return this.save(item, -1, 1).then(() => {
+				if(!item.id) this.page_items[p].splice(i, 1)
 			})
 		},
 
 		saveAll(p){
+			const requests = []
 			this.page_items[p].items.forEach((item, i) => {
-				this.saveItemFromTable(p, i)
+				requests.push(this.saveItemFromTable(p, i))
+			})
+			Promise.allSettled(requests).then(() => {
+				this.$toast.info('Сохранено')
+			}).catch(error => {
+				this.$onError(error)
 			})
 		},
 
@@ -1235,3 +1262,11 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.QuartalPremiums{
+	.table__wrapper{
+		overflow: auto !important;
+	}
+}
+</style>

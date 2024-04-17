@@ -2,19 +2,21 @@
 
 namespace App\Console;
 
-use App\Console\Commands\Api\CheckPaymentsStatusCommand;
-use App\Console\Commands\Api\RunAutoPaymentCommand;
+use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
+use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
+use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
+use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
-use App\Console\Commands\CheckForReferrerDaily;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
-use App\Console\Commands\ForTestingCommand;
 use App\Console\Commands\ListenQueue;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
+use App\Console\Commands\Referral\UpdateReferralSalary;
 use App\Console\Commands\RestartQueue;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
+use App\Console\Commands\TestingCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -43,8 +45,10 @@ class Kernel extends ConsoleKernel
         NotificationTemplatePusher::class,
         SetExitTimetracking::class,
         TenantMigrateFreshCommand::class,
-        ForTestingCommand::class,
-        CheckForReferrerDaily::class
+        TestingCommand::class,
+        UpdateReferralSalary::class,
+        CacheTopRentabilityPerDay::class,
+        DeleteTimeTrackingDuplicates::class,
     ];
 
     /**
@@ -54,7 +58,18 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
+    {       /*
+        |--------------------------------------------------------------------------
+        | Команды кабинета bp.jobtron.org
+        |--------------------------------------------------------------------------
+        |
+        | Только запускаются в централной
+
+             |
+        */
+        $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
+        $schedule->command('check-payments-status:run')->everyFiveMinutes();
+//        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         /*
         |--------------------------------------------------------------------------
         | Команды кабинета bp.jobtron.org
@@ -75,8 +90,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run whatsapp:estimate_first_day --tenants=bp')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('tenants:run recruiting:trainee_report --tenants=bp')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
         $schedule->command('tenants:run callibro:fetch --tenants=bp')->hourly(); // Отработанное время сотрудников Евраз 1 Хоум
-        $schedule->command('tenants:run currency:refresh --tenants=bp')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
-        $schedule->command('tenants:run usernotification:estimate_trainer --tenants=bp')->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
         $schedule->command('tenants:run intellect:send --tenants=bp')->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
@@ -97,7 +110,7 @@ class Kernel extends ConsoleKernel
         */
         $schedule->command('tenants:run timetracking:check')->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
-        $schedule->command('tenants:run salary:group')->everyTenMinutes(); // Сохранить заработанное группой без вычета шт и ав
+        $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
         $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
         $schedule->command('tenants:run count:hours')->hourly(); // обновление минут
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
@@ -113,9 +126,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run fine:check')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
         $schedule->command('tenants:run analytics:pivots')->withoutOverlapping()->monthly(); // создать сводные таблицы отделов в аналитике
         $schedule->command('tenants:run analytics:parts')->withoutOverlapping()->monthly(); // создать декомпозицию и спидометры в аналитике
-        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
-        $schedule->command('check-payments-status:run')->everyFiveMinutes();
         $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
+
+        // for caching
+        $schedule->command('tenants:run --tenants=bp cache:rentability')->everySixHours();
+
+        // for duplicates in db
+        $schedule->command('tenants:run --tenants=bp delete:track-duplicates')->everySixHours();
     }
 
     /**
@@ -132,7 +149,7 @@ class Kernel extends ConsoleKernel
                 if ($tenant) {
                     $this->load(__DIR__ . '/Commands');
                     tenancy()->initialize($tenant);
-                };
+                }
             }
         }
         require base_path('routes/console.php');

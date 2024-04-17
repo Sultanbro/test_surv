@@ -2,57 +2,50 @@
 
 namespace App\Repositories\Admin;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use App\Repositories\CoreRepository;
-use App\User;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\CentralUser;
+use Carbon\Carbon;
+use App\User;
 
 class OwnerRepository extends CoreRepository
 {
     /**
      * @return string
      */
-    protected function getModelClass()
+    protected function getModelClass(): string
     {
-        return \App\Models\CentralUser::class;
+        return CentralUser::class;
     }
 
     /**
      * List of owners
      *
-     * @return \Illuminate\Support\Collection
      */
-    public function getOwners()
+    public function getOwnerIds(Request $request): array
     {
-        $owners = $this->model()->with('tenants')->select([
-            'id',
-            'last_name',
-            'name',
-            'email',
-        ])->get();
-
-        foreach ($owners as $owner) {
-            $owner->subdomains = $owner->tenants->pluck('id')->toArray();
-            $owner->balance = $owner->balance . ' KZT';
-            unset($owner->tenants);
-        }
-
-        return  $owners;
+        return $this->filter($request)->pluck('id')->toArray();
     }
 
-     /**
+    /**
      * List of owners
      *
-     * @param int $perPage
-     * @return \Illuminate\Support\Collection
+     * @param Request $request
+     * @return LengthAwarePaginator
      */
-    public function getOwnersPaginate(int $perPage = 20, Request $request)
+    public function getOwnersPaginate(Request $request): LengthAwarePaginator
     {
-        $owners = $this->filter($request)->select([
+        $owners = $this->filter($request)
+            ->with('managerHasOwner.manager')
+            ->select([
                 'id',
                 'last_name',
                 'name',
                 'email',
+                'phone',
                 'created_at',
                 'login_at',
                 'birthday',
@@ -60,83 +53,81 @@ class OwnerRepository extends CoreRepository
                 'city',
                 'lead',
                 'balance',
-            ])->paginate($perPage);
+            ])
+            ->orderBy($request->get('order_by') ?? 'id', $request->get('order_direction') ?? 'ASC')
+            ->paginate($request->get('per_page') ?? 20);
 
         foreach ($owners as $owner) {
-            $owner->subdomains = $owner->tenants->pluck('id')->toArray();
-            $owner->balance = $owner->balance . ' KZT';
-            unset($owner->tenants);
+            $subDomains = [];
+            foreach ($owner->portals as $portal) {
+                $subDomains[] = [
+                    'id' => $portal->tenant_id,
+                    'currency' => $portal->currency
+                ];
+            }
+
+            $owner->subdomains = $subDomains;
+            $owner->manager = $owner->managerHasOwner?->manager;
+            $owner->balance = ($owner->balance ?? 0) . ' ' . strtoupper($owner->currency);
+            unset($owner->portals);
+            unset($owner->managerHasOwner);
         }
 
-        return  $owners;
+        return $owners;
     }
 
     /**
      * Filter returns query
      *
      * @param Request $request
+     * @return Builder
      */
-    private function filter(Request $request)
+    private function filter(Request $request): Builder
     {
-        $owners = $this->model()->has('tenants');
+        $owners = $this->model()->query()->withWhereHas('portals');
 
-        if($request->has('id')) {
-            $owners->where('id', $request->id);
+        $search = $request->get('query');
+        if ($search) {
+            $owners->where(function ($q) use ($search){
+                $q->where('id', $search)
+                    ->orWhere('email', 'like', '%' . trim($search) . '%')
+                    ->orWhere('phone', 'like', '%' . trim($search) . '%')
+                    ->orWhere('country', 'like', '%' . trim($search) . '%')
+                    ->orWhere('lead', 'like', '%' . trim($search) . '%')
+                    ->orWhere(DB::raw("CONCAT(users.last_name,' ',users.name)"), 'like', '%' . trim($search) . '%')
+                    ->orWhere(DB::raw("CONCAT(users.name,' ',users.last_name)"), 'like', '%' . trim($search) . '%');
+            });
         }
 
-        if($request->has('name')) {
-            $owners->where('name', 'like', '%' . trim($request->name) . '%');
+        if ($request->has('>login_at')) {
+            $owners->whereDate('login_at', '>=', Carbon::parse($request['>login_at']));
         }
 
-        if($request->has('last_name')) {
-            $owners->where('last_name',  'like', '%' . trim($request->last_name) . '%');
+        if ($request->has('<login_at')) {
+            $owners->whereDate('login_at', '<=', Carbon::parse($request['<login_at']));
         }
 
-        if($request->has('email')) {
-            $owners->where('email', 'like',  '%' . trim($request->email) . '%');
+        if ($request->has('>birthday')) {
+            $owners->whereDate('birthday', '>=', Carbon::parse($request['>birthday']));
         }
 
-        if($request->has('>login_at')) {
-            $owners->whereDate('login_at', '>=',  Carbon::parse($request['>login_at']));
+        if ($request->has('<birthday')) {
+            $owners->whereDate('birthday', '<=', Carbon::parse($request['<birthday']));
         }
 
-        if($request->has('<login_at')) {
-            $owners->whereDate('login_at', '<=',  Carbon::parse($request['<login_at']));
+        if ($request->has('>balance')) {
+            $owners->where('balance', '>=', $request['>balance']);
         }
 
-        if($request->has('>birthday')) {
-            $owners->whereDate('birthday', '>=',  Carbon::parse($request['>birthday']));
-        }
-
-        if($request->has('<birthday')) {
-            $owners->whereDate('birthday', '<=',  Carbon::parse($request['<birthday']));
-        }
-
-        if($request->has('>balance')) {
-            $owners->where('balance', '>=',  $request['>balance']);
-        }
-
-        if($request->has('<balance')) {
+        if ($request->has('<balance')) {
             $owners->where('balance', '<=', $request['<balance']);
         }
 
-        if($request->has('country')) {
-            $owners->where('country', 'like', '%' . $request->country . '%');
-        }
-
-        if($request->has('city')) {
-            $owners->where('city', 'like', '%' . trim($request->city) . '%');
-        }
-
-        if($request->has('lead')) {
-            $owners->where('lead', 'like', '%' . trim($request->lead) . '%');
-        }
-
-        if($request->has('subdomains')) {
-            if(is_array($request->subdomains)) {
-                $owners->whereIn('tenants.id', $request->subdomains);
+        if ($request->has('subdomains')) {
+            if (is_array($request->get('subdomains'))) {
+                $owners->whereIn('tenants.id', $request->get('subdomains'));
             } else {
-                $owners->where('tenants.id', $request->subdomains);
+                $owners->where('tenants.id', $request->get('subdomains'));
             }
         }
 
@@ -145,25 +136,21 @@ class OwnerRepository extends CoreRepository
 
     /**
      * List of admins
-     * who can login to admin.jobtron.org
+     * who can log in to admin.jobtron.org
      *
-     * @return \Illuminate\Support\Collection <\App\User>
      */
     public function getAdmins()
     {
-        $admins = User::select([
-            'id',
-            'last_name',
-            'name',
-            'email',
-            'is_admin',
-            'phone',
-            'role_id',
-            'img_url',
-        ])->get();
-
-        return $admins;
+        return User::query()
+            ->select([
+                'id',
+                'last_name',
+                'name',
+                'email',
+                'is_admin',
+                'phone',
+                'role_id',
+                'img_url',
+            ])->get();
     }
-
-
 }

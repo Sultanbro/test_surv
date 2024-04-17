@@ -7,8 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
-* Класс для работы с Repository.
-*/
+ * Класс для работы с Repository.
+ */
 class TimeTrackingRepository extends CoreRepository
 {
     /**
@@ -34,7 +34,8 @@ class TimeTrackingRepository extends CoreRepository
         int $day
     )
     {
-        return $this->model()->where('user_id', $userId)
+        return $this->model()
+            ->where('user_id', $userId)
             ->whereYear('enter', $year)
             ->whereMonth('enter', $month)
             ->whereDay('enter', $day)
@@ -42,18 +43,16 @@ class TimeTrackingRepository extends CoreRepository
     }
 
     public function updateOrCreate(
-        int $userId,
-        int $year,
-        int $month,
-        int $day,
-        string $time,
-        string $enter,
+        int     $userId,
+        int     $year,
+        int     $month,
+        int     $day,
+        string  $time,
+        string  $enter,
         ?string $comment
-    )
+    ): string
     {
         $timeTrack = $this->getTrackingTimeForUser($userId, $year, $month, $day);
-        $description = '';
-
         if ($timeTrack) {
             $description = "Изменено: $time $comment";
             $timeTrack->update([
@@ -66,7 +65,7 @@ class TimeTrackingRepository extends CoreRepository
             $this->model()->create([
                 'enter' => $enter,
                 'user_id' => $userId,
-                'updated' => 1
+                'updated' => 0
             ]);
         }
 
@@ -75,20 +74,18 @@ class TimeTrackingRepository extends CoreRepository
 
     /**
      * @param ?int $userId
-     * @param string $date
      * @return Builder
      */
-    public function getNonUpdatedTimeTrackWithUserByDate(
-        ?int $userId,
-        string $date,
+    public function getNonUpdatedTimeTrackWithUser(
+        ?int $userId = null,
     ): Builder
     {
-        return $this->model()->with('user')
+        return $this->model()
+            ->with('user')
             ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
             ->when($userId, fn($query) => $query->where('user_id', $userId))
             ->where('updated', 0)
             ->where('total_hours', 0)
-            ->whereDate('enter',  $date)
             ->whereNotNull('exit');
     }
 }

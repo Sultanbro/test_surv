@@ -4,6 +4,7 @@
 		<PricingCurrent />
 		<PricingRates
 			:currency="currency"
+			:selected-rate="selectedRate"
 			@update="updateRate"
 		/>
 
@@ -39,7 +40,7 @@
 				<div class="PricingPage-users-form">
 					<JobtronButton
 						class="PricingPage-users-less"
-						:disabled="users <= (selectedRate ? selectedRate.users_limit : 0)"
+						:disabled="users <= 0"
 						@click="decreseUsers"
 					>
 						-
@@ -57,13 +58,13 @@
 					</JobtronButton>
 				</div>
 				<img
-					v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
+					v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
 					src="/images/dist/profit-info.svg"
 					alt=""
 				>
 			</div>
 			<div
-				v-if="selectedRate"
+				v-if="false && selectedRate"
 				class="PricingPage-auto mt-4"
 			>
 				<b-form-checkbox
@@ -82,7 +83,10 @@
 				</JobtronButton>
 			</div>
 			<hr class="my-4">
-			<div class="PricingPage-promo mt-4">
+			<div
+				v-if="isBP"
+				class="PricingPage-promo mt-4"
+			>
 				<div
 					v-if="promoData.code"
 					class="PricingPage-promo-active"
@@ -91,7 +95,7 @@
 				</div>
 				<template v-else>
 					<div class="PricingPage-promo-title">
-						Есть бонусный код? <span class="price-beta">beta</span>
+						Есть бонусный код?
 					</div>
 					<div class="PricingPage-promo-text">
 						Активируйте его, чтобы получить бонус на первую оплату
@@ -143,22 +147,19 @@ export default {
 			currencyTranslate: {
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'dollar',
+				'$': 'usd',
 			},
 			promo: '',
 			promoData: {},
 			isPromoLoading: false,
+			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 		}
 	},
 	computed: {
 		...mapState(usePricingStore, ['priceForUser', 'items']),
-		additionalUsers(){
-			if(!this.selectedRate) return 0
-			return this.users - this.selectedRate.users_limit
-		},
 		additionalPrice(){
 			if(!this.priceForUser) return 0
-			return this.additionalUsers * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
+			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
 		},
 		total(){
 			if(!this.selectedRate) return 0
@@ -190,10 +191,9 @@ export default {
 		updateRate(value){
 			this.selectedRate = value.rate
 			this.period = value.rate.validity
-			this.users = value.rate.users_limit
 		},
 		decreseUsers(){
-			if(this.users > (this.selectedRate ? this.selectedRate.users_limit : 0)) --this.users
+			if(this.users > 0) --this.users
 		},
 		increseUsers(){
 			if(!this.selectedRate) return
@@ -201,16 +201,43 @@ export default {
 		},
 		async submitPayment(){
 			if(!this.selectedRate) return
+			if(this.currency !== '₽') return this.submitWalletOne()
 			try{
 				/* eslint-disable camelcase */
-				const url = await this.postPaymentData({
+				const { url } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
-					extra_users_limit: this.additionalUsers || 0,
+					extra_users_limit: this.users > 0 ? this.users : 0,
 					auto_payment: this.autoPayment
 				})
 				/* eslint-enable camelcase */
 				window.location.assign(url)
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
+		},
+		async submitWalletOne(){
+			try{
+				/* eslint-disable camelcase */
+				const { url, params } = await this.postPaymentData({
+					currency: this.currencyCode,
+					tariff_id: this.selectedRate.id,
+					extra_users_limit: this.users > 0 ? this.users : 0,
+					auto_payment: this.autoPayment
+				})
+				const form = document.createElement('form')
+				form.method = 'post'
+				form.action = url
+				Object.keys(params).forEach(key => {
+					const inp = document.createElement('input')
+					inp.name = key
+					inp.value = params[key]
+					form.appendChild(inp)
+				})
+				document.body.appendChild(form)
+				form.submit()
 			}
 			catch(error){
 				console.error('submitPayment', error)

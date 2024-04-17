@@ -16,7 +16,10 @@
 				v-if="isDesktop"
 				class="jSec3-blocks"
 			>
-				<S3Block class="jSec3-block-1">
+				<S3Block
+					class="jSec3-block-1"
+					image="/svg/integration.svg"
+				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b1-title') }}
 					</h3>
@@ -27,6 +30,7 @@
 				<S3Block
 					:right="true"
 					class="jSec3-block-2"
+					image="/svg/support.svg"
 				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b2-title') }}
@@ -35,7 +39,10 @@
 						{{ $lang(lang, 's3-b2-text') }}
 					</p>
 				</S3Block>
-				<S3Block class="jSec3-block-3">
+				<S3Block
+					class="jSec3-block-3"
+					image="/svg/flex.svg"
+				>
 					<h3 class="jSec3-block-title">
 						{{ $lang(lang, 's3-b3-title') }}
 					</h3>
@@ -50,7 +57,10 @@
 			>
 				<Hooper :settings="hooperSettings">
 					<Slide>
-						<S3Block class="jSec3-block-1">
+						<S3Block
+							class="jSec3-block-1"
+							image="/svg/integration.svg"
+						>
 							<h3 class="jSec3-block-title">
 								{{ $lang(lang, 's3-b1-title') }}
 							</h3>
@@ -63,6 +73,7 @@
 						<S3Block
 							:right="true"
 							class="jSec3-block-2"
+							image="/svg/support.svg"
 						>
 							<h3 class="jSec3-block-title">
 								{{ $lang(lang, 's3-b2-title') }}
@@ -73,7 +84,10 @@
 						</S3Block>
 					</Slide>
 					<Slide>
-						<S3Block class="jSec3-block-3">
+						<S3Block
+							class="jSec3-block-3"
+							image="/svg/flex.svg"
+						>
 							<h3 class="jSec3-block-title">
 								{{ $lang(lang, 's3-b3-title') }}
 							</h3>

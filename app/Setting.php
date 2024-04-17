@@ -4,6 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int value
+ */
 class Setting extends Model
 {
     const TIMEZONES = [
@@ -44,7 +47,7 @@ class Setting extends Model
                 $code = $codes->sortByDesc('prefix')->first();
                 if($name == 'autocall_bill_duration' || $name == 'autocall_transfer_bill_duration')
                     return $code->$name;
-                else 
+                else
                     return floatval($currency=='kzt'?$code->$name[0]:$code->$name[1]);
             }
         }

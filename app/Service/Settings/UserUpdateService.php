@@ -12,6 +12,7 @@ use App\Events\UserUpdatedEvent;
 use App\Facade\Referring;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
+use App\Models\CentralUser;
 use App\Models\Coordinate;
 use App\Models\UserCoordinate;
 use App\Repositories\UserRepository;
@@ -19,6 +20,8 @@ use App\Service\TaxService;
 use App\User;
 use Carbon\Carbon;
 use Exception;
+use Hash;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
 final class UserUpdateService
@@ -95,58 +98,162 @@ final class UserUpdateService
 
     /**
      * @param User $user
-     * @param $isTrainee
+     * @param string $email
      * @return void
      */
-    private function changeTraineeToEmployee(
-        User $user,
-             $isTrainee
+    private function emailCheck(
+        User   $user,
+        string $email,
+
     ): void
     {
-        if ($isTrainee == "false") {
-            $user->description()->update([
-                'is_trainee' => 0
-            ]);
+        $existEmail = $this->userRepository->getUserByEmail($email);
+        if ($existEmail && $email != $user->email) {
+            if ($existEmail->deleted_at != null) {
+                $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
+                $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
+                $text .= '<tr><td><b>Имя:</b></td><td>' . $existEmail->name . '</td></tr>';
+                $text .= '<tr><td><b>Фамилия:</b></td><td>' . $existEmail->last_name . '</td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id=' . $existEmail->id . '" target="_blank"> ' . $existEmail->email . '</a></td></tr>';
+                $text .= '<tr><td><b>Дата увольнения:</b></td><td>' . Carbon::parse($existEmail->deleted_at)->setTimezone('Asia/Dacca') . '</td></tr>';
+                $text .= '</table>';
+                redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
+                return;
+            }
 
-            $user->daytypes()
-                ->where('date', now()->format('Y-m-d'))
-                ->update([
-                    'type' => DayType::DAY_TYPES['APPLIED']
-                ]);
-
-            Referring::touchReferrerStatus($user);
-            Referring::touchReferrerSalaryForCertificate($user);
+            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $email . '<br><a href="/timetracking/edit-person?id=' . $existEmail->id . '"   target="_blank">' . $existEmail->last_name . ' ' . $existEmail->name . '</a>';
+            redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
         }
     }
 
     /**
      * @param User $user
-     * @param int|null $bitrixId
-     * @return void
+     * @param UpdateUserDTO $userDTO
+     * @return User
+     * @throws TenantCouldNotBeIdentifiedById
      */
-    private function setBitrix(
-        User $user,
-        ?int $bitrixId
-    ): void
+    private function updateUserData(
+        User          $user,
+        UpdateUserDTO $userDTO
+    ): User
     {
-        if (isset($bitrixId)) {
-            $user->user_description()->update([
-                'bitrix_id' => $bitrixId
-            ]);
+        $keyEmail = $user->email;
+        $currentTenant = tenant('id');
+        $generalParams = $this->getGeneralParams($userDTO);
+
+        // 1-step. Update central user
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::with('cabinets')->where('email', $keyEmail)->first();
+        $centralUser->update($generalParams);
+
+        // 2-step. Update current tenant user data with all params
+        $this->updateCurrentTenantUserData($user->id, $userDTO);
+
+        // 3-step. Update other tenants
+        self::updateTenantUserData($centralUser, $currentTenant, $generalParams, $keyEmail);
+
+        // 4-step. Back all connections to current tenant
+        tenancy()->initialize($currentTenant);
+
+        return $user;
+    }
+
+    public function getGeneralParams(UpdateUserDTO $userDTO)
+    {
+        $params = [];
+
+        if ($userDTO->newPassword) {
+            $params['password'] = Hash::make($userDTO->newPassword);
+        }
+        $params['email'] = $userDTO->email;
+        $params['name'] = $userDTO->name;
+        $params['last_name'] = $userDTO->lastName;
+        $params['phone'] = $userDTO->phone;
+        $params['birthday'] = $userDTO->birthday;
+        $params['currency'] = $userDTO->currency ?? 'kzt';
+        $params['country'] = $userDTO->workingCountry;
+
+        return $params;
+    }
+
+    public function updateCurrentTenantUserData(int $userId, UpdateUserDTO $userDTO): void
+    {
+        $params = [
+            'email' => $userDTO->email,
+            'name' => $userDTO->name,
+            'last_name' => $userDTO->lastName,
+            'phone' => $userDTO->phone,
+            'phone_1' => $userDTO->phoneHome,
+            'phone_2' => $userDTO->phoneHusband,
+            'phone_3' => $userDTO->phoneRelatives,
+            'phone_4' => $userDTO->phoneChildren,
+            'birthday' => $userDTO->birthday,
+            'full_time' => $userDTO->fullTime,
+            'description' => $userDTO->description,
+            'currency' => $userDTO->currency ?? 'kzt',
+            'position_id' => $userDTO->positionId ?? 0,
+            'user_type' => $userDTO->userType,
+            'timezone' => $userDTO->timezone,
+            'program_id' => $userDTO->programType,
+            'working_day_id' => $userDTO->workingDays,
+            'working_time_id' => $userDTO->workTimes,
+            'work_chart_id' => $userDTO->workChartId,
+            'weekdays' => $userDTO->weekdays,
+            'first_work_day' => $userDTO->firstWorkDay,
+            'working_country' => $userDTO->workingCountry,
+            'working_city' => $userDTO->workingCity,
+            'uin' => $userDTO->uin,
+        ];
+
+        if (!empty($userDTO->newPassword)) {
+            $params['password'] = Hash::make($userDTO->newPassword);
+        }
+
+        if (!empty($userDTO->coordinates)) {
+            $params['coordinate_id'] = $this->setCoordinate($userDTO->coordinates);
+        }
+
+        User::query()->where('id', $userId)->update($params);
+        event(new UserUpdatedEvent($userId));
+    }
+
+    public static function updateTenantUserData($centralUser, $currentTenant, $generalParams, $keyEmail): void
+    {
+        $portals = $centralUser->cabinets->pluck('id')->toArray();
+
+        // remove current tenant from list
+        if (($key = array_search($currentTenant, $portals)) !== false) {
+            unset($portals[$key]);
+        }
+
+        // change key
+        $generalParams['working_country'] = $generalParams['country'];
+        unset($generalParams['country']);
+
+        // update general params
+        foreach ($portals as $portal) {
+            try {
+                tenancy()->initialize($portal);
+                User::query()->where('email', $keyEmail)->update($generalParams);
+            } catch (Exception) {}
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    private function setTaxes(
-        array $data
-    ): void
+    private function setCoordinate(array $coordinatesArray)
     {
-        try {
-            (new TaxService)->userTax($data);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+        $coordinate = UserCoordinate::query()
+            ->where('geo_lat', $coordinatesArray['geo_lat'])
+            ->where('geo_lon', $coordinatesArray['geo_lon'])
+            ->first();
+
+        if ($coordinate) {
+            return $coordinate->id;
+        } else {
+            $coordinate = UserCoordinate::query()->create([
+                'geo_lat' => $coordinatesArray['geo_lat'],
+                'geo_lon' => $coordinatesArray['geo_lon']
+            ]);
+            return $coordinate->id;
         }
     }
 
@@ -185,48 +292,59 @@ final class UserUpdateService
 
     /**
      * @param User $user
-     * @param UpdateUserDTO $userDTO
-     * @return User
+     * @param $isTrainee
+     * @return void
      */
-    private function updateUserData(
-        User          $user,
-        UpdateUserDTO $userDTO
-    ): User
+    private function changeTraineeToEmployee(
+        User $user,
+             $isTrainee
+    ): void
     {
-        if ($userDTO->newPassword) {
-            $user->password = \Hash::make($userDTO->newPassword);
+        if ($isTrainee == "false") {
+            $user->description()->update([
+                'is_trainee' => 0
+            ]);
+
+            $user->daytypes()
+                ->where('date', now()->format('Y-m-d'))
+                ->update([
+                    'type' => DayType::DAY_TYPES['APPLIED']
+                ]);
+
+            Referring::syncReferrerStatus($user);
+            Referring::salaryForCertificate($user);
         }
+    }
 
-        $user->new_email = $userDTO->email;
-        $user->name = $userDTO->name;
-        $user->last_name = $userDTO->lastName;
-        $user->phone = $userDTO->phone;
-        $user->phone_1 = $userDTO->phoneHome;
-        $user->phone_2 = $userDTO->phoneHusband;
-        $user->phone_3 = $userDTO->phoneRelatives;
-        $user->phone_4 = $userDTO->phoneChildren;
-        $user->birthday = $userDTO->birthday;
-        $user->full_time = $userDTO->fullTime;
-        $user->description = $userDTO->description;
-        $user->currency = $userDTO->currency ?? 'kzt';
-        $user->position_id = $userDTO->positionId ?? 0;
-        $user->user_type = $userDTO->userType;
-        $user->timezone = $userDTO->timezone;
-        $user->program_id = $userDTO->programType;
-        $user->working_day_id = $userDTO->workingDays;
-        $user->working_time_id = $userDTO->workTimes;
-        $user->weekdays = $userDTO->weekdays;
-        $user->first_work_day = $userDTO->firstWorkDay;
-        $user->working_country = $userDTO->workingCountry;
-        $user->working_city = $userDTO->workingCity;
-        $user->uin = $userDTO->uin;
-        if ($userDTO->coordinates) $user->coordinate_id = $this->setCoordinate($userDTO->coordinates);
-//         $this->setCountryAndCity($user, $userDTO->workingCountry);
+    /**
+     * @param User $user
+     * @param int|null $bitrixId
+     * @return void
+     */
+    private function setBitrix(
+        User $user,
+        ?int $bitrixId
+    ): void
+    {
+        if (isset($bitrixId)) {
+            $user->user_description()->update([
+                'bitrix_id' => $bitrixId
+            ]);
+        }
+    }
 
-        $user->save();
-
-        event(new UserUpdatedEvent($user->id));
-        return $user;
+    /**
+     * @throws Exception
+     */
+    private function setTaxes(
+        array $data
+    ): void
+    {
+        try {
+            (new TaxService)->userTax($data);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
@@ -243,54 +361,5 @@ final class UserUpdateService
         $user->working_city = Coordinate::query()->where('country', 'LIKE', "%$country%")->first()->id ?? null;
 
         return $user;
-    }
-
-    /**
-     * @param User $user
-     * @param string $email
-     * @return void
-     */
-    private function emailCheck(
-        User   $user,
-        string $email,
-
-    ): void
-    {
-        $existEmail = $this->userRepository->getUserByEmail($email);
-        $existEmail = $this->userRepository->getUserByEmail($email);
-        if ($existEmail && $email != $user->email) {
-            if ($existEmail->deleted_at != null) {
-                $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
-                $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
-                $text .= '<tr><td><b>Имя:</b></td><td>' . $existEmail->name . '</td></tr>';
-                $text .= '<tr><td><b>Фамилия:</b></td><td>' . $existEmail->last_name . '</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id=' . $existEmail->id . '" target="_blank"> ' . $existEmail->email . '</a></td></tr>';
-                $text .= '<tr><td><b>Дата увольнения:</b></td><td>' . Carbon::parse($existEmail->deleted_at)->setTimezone('Asia/Dacca') . '</td></tr>';
-                $text .= '</table>';
-                redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
-                return;
-            }
-
-            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $email . '<br><a href="/timetracking/edit-person?id=' . $existEmail->id . '"   target="_blank">' . $existEmail->last_name . ' ' . $existEmail->name . '</a>';
-            redirect()->to('/timetracking/edit-person?id=' . $user->id)->withInput()->withErrors($text);
-        }
-    }
-
-    private function setCoordinate(array $coordinatesArray)
-    {
-        $coordinate = UserCoordinate::query()
-            ->where('geo_lat', $coordinatesArray['geo_lat'])
-            ->where('geo_lon', $coordinatesArray['geo_lon'])
-            ->first();
-
-        if ($coordinate) {
-            return $coordinate->id;
-        } else {
-            $coordinate = UserCoordinate::query()->create([
-                'geo_lat' => $coordinatesArray['geo_lat'],
-                'geo_lon' => $coordinatesArray['geo_lon']
-            ]);
-            return $coordinate->id;
-        }
     }
 }

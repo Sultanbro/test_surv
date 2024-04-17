@@ -402,8 +402,6 @@ export default {
 	created() {
 		this.fillSelectOptions()
 
-		this.defineSourcesAndGroups('with_sources_and_group_id');
-
 		this.recalc();
 		this.getSum();
 		if(!this.editable) {
@@ -412,7 +410,7 @@ export default {
 
 	},
 	mounted(){
-
+		// this.defineSourcesAndGroups()
 	},
 
 	methods: {

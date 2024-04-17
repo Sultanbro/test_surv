@@ -4,6 +4,9 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int amount
+ */
 class EditedBonus extends Model
 {
     protected $table = 'edited_bonuses';

@@ -9,6 +9,7 @@ use App\Models\Analytics\TopValue;
 use App\Models\AnalyticsActivitiesSetting;
 use App\Models\Books\BookGroup;
 use App\Models\KnowBaseModel;
+use App\Models\MorphRelations\HasFiles;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
 use Carbon\Carbon;
@@ -57,12 +58,13 @@ use Spatie\Permission\Traits\HasRoles;
  * @property $switch_proceeds
  * @property $switch_rentability
  * @property $id
- * @method static hasAnalytics()
- * @method static isActive()
+ * @method static Builder hasAnalytics()
+ * @method static Builder isActive()
  */
 class ProfileGroup extends Model
 {
     use HasRoles, HasFactory;
+    use HasFiles;
 
     protected $table = 'profile_groups';
 
@@ -450,7 +452,7 @@ class ProfileGroup extends Model
         Carbon|string $date = null,
         ?int          $deleteType = 0,
         ?array        $positionIds = [],
-    )
+    ): array
     {
         if ($date) {
             $date = Carbon::parse($date)->subMonth();

@@ -87,7 +87,7 @@ class GroupsController extends Controller
             ]);
         }
 
-        $this->setZeroToUsersStartedTheDay($edited_users, $date, $group_id);
+//        $this->setZeroToUsersStartedTheDay($edited_users, $date, $group_id);
     }
 
     public function setZeroToUsersStartedTheDay($user_ids, $date, $group_id)

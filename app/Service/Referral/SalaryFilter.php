@@ -11,7 +11,7 @@ class SalaryFilter
     /** @var Collection<ReferralSalary> $salaries */
     private Collection $salaries;
 
-    public function forThisCollection(Collection $collection): void
+    public function for(Collection $collection): void
     {
         $this->salaries = $collection;
     }

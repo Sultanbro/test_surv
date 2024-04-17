@@ -20,7 +20,6 @@ class ImageUploadTest extends TestCase
         /** @var UploadService $service */
         $service = app(UploadService::class);
         $result = $service->store($fakeFile);
-        dd($result);
         $this->assertIsString($result);
     }
 }

@@ -2,24 +2,40 @@
 
 namespace App\Providers;
 
-use App\Events\UserStatUpdatedEvent;
-use App\Events\EmailNotificationEvent;
-use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
-use App\Events\TrackCourseItemFinishedEvent;
-use App\Events\TrackGroupChangingEvent;
-use App\Events\TrackUserFiredEvent;
-use App\Events\TransferUserInGroupEvent;
-use App\Events\UserUpdatedEvent;
-use App\Events\WorkdayEvent;
-use App\Listeners\UserStatUpdatedListener;
-use App\Listeners\EmailNotificationListener;
-use App\Listeners\TimeTrack\CreateTimeTrackHistoryListener;
-use App\Listeners\TrackCourseItemFinishedListener;
-use App\Listeners\TrackGroupChangingListener;
-use App\Listeners\TrackUserFiredListener;
-use App\Listeners\TransferUserInGroupListener;
-use App\Listeners\UserUpdatedListener;
-use App\Listeners\WorkdayListener;
+use App\Events\{ActivityUpdated,
+    BonusUpdated,
+    KpiChangedEvent,
+    TrackKpiItemEvent,
+    TrackKpiUpdatesEvent,
+    TrackQuartalPremiumEvent,
+    TrackTaxGroupItemEvent,
+    UserStatUpdatedEvent,
+    EmailNotificationEvent,
+    TrackUserFiredEvent,
+    TimeTrack\CreateTimeTrackHistoryEvent,
+    TrackCourseItemFinishedEvent,
+    TrackGroupChangingEvent,
+    TransferUserInGroupEvent,
+    UserUpdatedEvent,
+    WorkdayEvent};
+use App\Listeners\{ActivityUpdatedListener,
+    BonusUpdatedListener,
+    EventListener,
+    KpiChangedListener,
+    TrackKpiItemListener,
+    TrackKpiUpdatesListener,
+    TrackQuartalPremiumListener,
+    TrackTaxGroupItemListener,
+    UserStatUpdatedListener,
+    EmailNotificationListener,
+    TimeTrack\CreateTimeTrackHistoryListener,
+    TrackCourseItemFinishedListener,
+    TrackGroupChangingListener,
+    TrackUserFiredListener,
+    TransferUserInGroupListener,
+    UserUpdatedListener,
+    WorkdayListener};
+
 use App\Models\WorkChart\WorkChartModel;
 use App\Observers\Timetracking\TimetrackingObserver;
 use App\Observers\UserObserver;
@@ -38,22 +54,25 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         \App\Events\Event::class => [
-            \App\Listeners\EventListener::class,
+            EventListener::class,
         ],
-        \App\Events\TrackKpiUpdatesEvent::class => [
-            \App\Listeners\TrackKpiUpdatesListener::class
+        TrackKpiUpdatesEvent::class => [
+            TrackKpiUpdatesListener::class
         ],
-        \App\Events\TrackQuartalPremiumEvent::class => [
-            \App\Listeners\TrackQuartalPremiumListener::class
+        TrackQuartalPremiumEvent::class => [
+            TrackQuartalPremiumListener::class
         ],
-        \App\Events\BonusUpdated::class => [
-            \App\Listeners\BonusUpdatedListener::class
+        BonusUpdated::class => [
+            BonusUpdatedListener::class
         ],
-        \App\Events\TrackKpiItemEvent::class => [
-            \App\Listeners\TrackKpiItemListener::class
+        TrackKpiItemEvent::class => [
+            TrackKpiItemListener::class
         ],
-        \App\Events\ActivityUpdated::class => [
-            \App\Listeners\ActivityUpdatedListener::class
+        ActivityUpdated::class => [
+            ActivityUpdatedListener::class
+        ],
+        TrackTaxGroupItemEvent::class => [
+            TrackTaxGroupItemListener::class
         ],
         TrackUserFiredEvent::class => [
             TrackUserFiredListener::class
@@ -76,8 +95,8 @@ class EventServiceProvider extends ServiceProvider
         WorkdayEvent::class => [
             WorkdayListener::class
         ],
-        \App\Events\KpiChangedEvent::class => [
-            \App\Listeners\KpiChangedListener::class
+        KpiChangedEvent::class => [
+            KpiChangedListener::class
         ],
         UserStatUpdatedEvent::class => [
             UserStatUpdatedListener::class

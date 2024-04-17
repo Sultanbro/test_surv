@@ -279,7 +279,8 @@ export default {
 					this.filters.group_id = this.group_id
 				}
 			}
-			this.data_from.s_type = field;
+			// this.data_from.s_type = field;
+			this.data_from.s_type = this.s_type;
 		},
 
 		changeDate(field/* , prop */) {

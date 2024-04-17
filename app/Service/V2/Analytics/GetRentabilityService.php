@@ -7,12 +7,13 @@ use App\DTO\Analytics\V2\GetRentabilityDto;
 use App\Helpers\DateHelper;
 use App\Models\Analytics\TopValue;
 use App\ProfileGroup;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class GetRentabilityService
 {
     /**
@@ -22,20 +23,14 @@ class GetRentabilityService
      */
     public function handle(GetRentabilityDto $dto): array
     {
-        $gauges = TopValue::query()->whereHas('groups', function (Builder $group) use ($dto){
-            $group->whereIn('has_analytics', [ProfileGroup::HAS_ANALYTICS, ProfileGroup::ARCHIVED])
-                ->whereNotIn('id', [ProfileGroup::BUSINESS_CENTER_ID, ProfileGroup::IT_DEPARTMENT_ID])
-                ->where('active', ProfileGroup::IS_ACTIVE)
-                ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($query) => $query->whereYear('archived_date', '>=', $dto->year)
-                    ->whereMonth('archived_date', '>=', $dto->month)
-                ));
-        })->where('type', TopValue::RENTABILITY)->get();
-
+        $gauges = ProfileGroup::withRentability($dto->year, $dto->month)
+            ->map(fn($group) => TopValue::query()->where('group_id', $group->id)->where('type', 2)->get())
+            ->filter(fn($group) => $group->count() > 0)->toArray();
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
 
         return [
-            'table'         => TopValue::getPivotRentability($dto->year, $dto->month),
-            'speedometers'  => $gauges,
+            'table' => TopValue::getPivotRentability($dto->year, $dto->month),
+            'speedometers' => $gauges,
             'static_rentability' => TopValue::getRentabilityGauges($date)
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Kpi;
 
+use App\Filters\Articles\BonusFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\Kpi\Statistics\UserGroupsRequest;
@@ -98,7 +99,7 @@ class KpiStatController extends Controller
      */
     public function fetchKpiGroupsAndUsers(Request $request): JsonResponse
     {
-        $response = $this->service->fetchKpiGroupsAndUsers($request);
+        $response = $this->service->fetchKpiGroupsAndUsers($request->filters);
 
         return response()->json($response);
     }
@@ -108,7 +109,7 @@ class KpiStatController extends Controller
      */
     public function showKpiGroupAndUsers(Request $request, $targetableId): JsonResponse
     {
-        $response = $this->service->fetchKpiGroupOrUser($request, $targetableId);
+        $response = $this->service->fetchKpiGroupOrUser($request->all(), $targetableId);
 
         return response()->json($response);
     }
@@ -142,9 +143,9 @@ class KpiStatController extends Controller
      * @param BonusesFilterRequest $request
      * @return JsonResponse
      */
-    public function fetchBonuses(BonusesFilterRequest $request): JsonResponse
+    public function fetchBonuses(BonusesFilterRequest $request, BonusFilter $filter): JsonResponse
     {
-        $response = $this->service->fetchBonuses($request);
+        $response = $this->service->fetchBonuses($request, $filter);
 
         return response()->json($response);
     }
@@ -197,9 +198,9 @@ class KpiStatController extends Controller
 
     /**
      * @param UpdatedUserStatUpdateRequest $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function updateStat(UpdatedUserStatUpdateRequest $request)
+    public function updateStat(UpdatedUserStatUpdateRequest $request): JsonResponse
     {
         $response = (new UpdatedUserStatService)->updateOrCreate(
             $request->user_id ?? null,
@@ -210,11 +211,11 @@ class KpiStatController extends Controller
         );
 
         Artisan::call('user:save_kpi', [
-            'date' => $request->date,
-            'user_id' => $request->user_id
+            'date' => $request->get('date'),
+            'user_id' => $request->get('user_id')
         ]);
 
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**

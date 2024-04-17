@@ -4,9 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
+use App\Models\CentralUser;
+use App\Models\Tenant;
+use App\User;
+use Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
@@ -45,10 +52,10 @@ class LoginController extends Controller
     /**
      * Get the failed login response instance.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @return Response
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     protected function sendFailedLoginResponse(Request $request)
     {
@@ -62,7 +69,7 @@ class LoginController extends Controller
      *
      * @return string
      */
-    public function username()
+    public function username(): string
     {
         $login = request()->input('username');
 
@@ -84,25 +91,42 @@ class LoginController extends Controller
      *
      * @param Request $request
      *
-     * @return array
+     * @return array|JsonResponse
+     * @throws TenantCouldNotBeIdentifiedById
      */
-    public function login(Request $request)
+    public function login(Request $request): array|JsonResponse
     {
         // create credentials
         $field = $this->username();
 
-        $request[$field] = $request->username;
+        $request[$field] = $request->get('username');
 
         $credentials = [
             $field => $request[$field],
-            'password' => $request->password,
+            'password' => $request->get('password'),
         ];
         // failed to login
-        if (!\Auth::attempt($credentials)) {
+
+        if (request()->getHost() == config('app.domain')) {
+            /** @var CentralUser $centralUser */
+            $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
+
+            $tenants = $centralUser->cabinets()->first();
+
+            tenancy()->initialize($tenants);
+        }
+
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email или пароль не совпадает'
             ], 401);
         }
+
+        // record login time
+        $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        $user?->update([
+            'login_at' => now()
+        ]);
 
         // login was success
         $request->session()->regenerate();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Referral;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Referral\PaidRequest;
+use App\Models\Referral\ReferralSalary;
 use App\User;
 use Illuminate\Http\JsonResponse;
 
@@ -11,12 +12,8 @@ class MarkAsPaidController extends Controller
 {
     public function pay(PaidRequest $request, int $user): JsonResponse
     {
-        /** @var User $referral */
-        $referral = User::withTrashed()->where('id', $user)->first();
         $data = $request->validated();
-        $referrer = $referral->referrer;
-        $salary = $referrer->referralSalaries()
-            ->find($data['id']);
+        $salary = ReferralSalary::query()->find($data['id']);
 
         if (!$salary) {
             return response()->json(['message' => 'transaction not found']);

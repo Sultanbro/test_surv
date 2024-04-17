@@ -26,12 +26,14 @@ class Kpi extends Model
 {
     use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait, TargetJoin;
 
-    protected $table = 'kpis';
-
+    public const MORHPS = [
+        User::class => 'users',
+        ProfileGroup::class => 'profile_groups',
+        Position::class => 'positions',
+    ];
     public $timestamps = true;
-
+    protected $table = 'kpis';
     protected $appends = ['target', 'expanded'];
-
     protected $fillable = [
         'targetable_id',
         'targetable_type',
@@ -47,12 +49,10 @@ class Kpi extends Model
         'read_by',
         'off_limit',
     ];
-
     protected $dates = [
         'created_at',
         'updated_at',
     ];
-
     protected $casts = [
         'created_at' => 'date:d.m.Y H:i',
         'updated_at' => 'date:d.m.Y H:i',
@@ -69,14 +69,13 @@ class Kpi extends Model
         );
     }
 
-    /**---------------------------------------------**/
-    public function groups(): MorphToMany
+    public function kpiables(): Collection
     {
-        return $this->morphedByMany(
-            ProfileGroup::class,
-            'kpiable',
-            'kpiables'
-        );
+        $users = $this->users()->get();
+        $positions = $this->positions()->get();
+        $groups = $this->groups()->get();
+        return $groups->merge($positions)
+            ->merge($users);
     }
 
     public function users(): MorphToMany
@@ -97,13 +96,14 @@ class Kpi extends Model
         );
     }
 
-    public function kpiables(): Collection
+    /**---------------------------------------------**/
+    public function groups(): MorphToMany
     {
-        $users = $this->users()->get();
-        $positions = $this->positions()->get();
-        $groups = $this->groups()->get();
-        return $groups->merge($positions)
-            ->merge($users);
+        return $this->morphedByMany(
+            ProfileGroup::class,
+            'kpiable',
+            'kpiables'
+        );
     }
     /**---------------------------------------------**/
 

@@ -44,6 +44,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
             'to' => 'nullable|date',
             'sum' => 'nullable',
             'cell' => 'nullable|string',
+            'method' => 'nullable|string',
+            'fact' => 'nullable|string',
         ];
     }
 
@@ -64,6 +66,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
         $to = Arr::get($validated, 'to');
         $sum = Arr::get($validated, 'sum');
         $cell = Arr::get($validated, 'cell');
+        $method = Arr::get($validated, 'method');
+        $fact = Arr::get($validated, 'fact');
 
         return new QuarterPremiumUpdateDTO(
             $id,
@@ -76,6 +80,8 @@ class QuartalPremiumUpdateRequest extends FormRequest
             $to,
             $sum,
             $cell,
+            $method,
+            $fact,
         );
     }
 }

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Auth\Traits;
 
-use App\Mail\PortalCreatedMail;
 use App\Models\CentralUser;
 use App\Models\Portal\Portal;
 use App\Models\Tenant;
 use App\User;
 use Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
@@ -37,15 +35,18 @@ trait CreateTenant
             ->create([
                 'tenant_id' => $tenant->id,
                 'owner_id' => $centralUser->getKey(),
+                'currency' => $centralUser->currency ?? 'kzt'
             ]);
 
-        $mail = new PortalCreatedMail([
-            'name' => $centralUser->name,
-        ]);
-
-        if (!app()->environment('testing')) {
-            Mail::to($centralUser->email)->send($mail);
-        }
+//        $mail = new PortalCreatedMail([
+//            'name' => $centralUser->name,
+//        ]);
+//
+//        if (!app()->environment('local')) {
+//            try {
+//                Mail::to($centralUser->email)->send($mail);
+//            } catch (\Exception) {}
+//        }
 
         return $tenant;
     }

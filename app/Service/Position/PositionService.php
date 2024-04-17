@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Position;
 
+use App\DTO\Position\StorePositionWithDescriptionDTO;
 use App\Position;
 use App\Repositories\PositionRepository;
 use Exception;
@@ -93,26 +94,25 @@ final class PositionService
     }
 
     /**
-     * @param int $id
-     * @param string|null $newName
-     * @param int|null $indexation
-     * @param int|null $sum
-     * @param array|null $description
+     * @param StorePositionWithDescriptionDTO $dto
      * @return bool|void
      * @throws Exception
      */
-    public function savePositionWithDescription(
-        int $id,
-        ?string $newName,
-        ?int $indexation,
-        ?int $sum,
-        ?array $description,
-        ?bool $is_head,
-        ?bool $is_spec,
-    )
+    public function savePositionWithDescription(StorePositionWithDescriptionDTO $dto)
     {
         try {
-             return $this->positionRepository->updatePositionWithDescription($id, $newName, $indexation, $sum, $description, $is_head, $is_spec);
+             return $this->positionRepository->updatePositionWithDescription(
+                 $dto->id,
+                 $dto->newName,
+                 $dto->indexation,
+                 $dto->sum,
+                 $dto->description,
+                 $dto->is_head,
+                 $dto->is_spec,
+                 $dto->ckp_status,
+                 $dto->ckp,
+                 $dto->ckp_link
+             );
         } catch (Throwable $exception)
         {
             throw new Exception($exception->getMessage());

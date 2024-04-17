@@ -31,8 +31,11 @@ class StorePositionWithDescriptionRequest extends FormRequest
             'indexation'    => ['numeric'],
             'sum'           => ['numeric'],
             'desc'          => ['array'],
-            'is_head'      => ['boolean'],
-            'is_spec'      => ['boolean'],
+            'is_head'       => ['boolean'],
+            'is_spec'       => ['boolean'],
+            'ckp_status'    => ['boolean'],
+            'ckp'           => ['string'],
+            'ckp_link'      => ['string'],
             'desc.require'  => ['nullable', 'min:3'],
             'desc.actions'  => ['nullable', 'min:3'],
             'desc.time'     => ['nullable', 'min:3'],
@@ -57,6 +60,9 @@ class StorePositionWithDescriptionRequest extends FormRequest
         $description = Arr::get($validated, 'desc');
         $is_head = Arr::get($validated, 'is_head');
         $is_spec = Arr::get($validated, 'is_spec');
+        $ckp_status = Arr::get($validated, 'ckp_status');
+        $ckp = Arr::get($validated, 'ckp');
+        $ckp_link = Arr::get($validated, 'ckp_link');
 
         return new StorePositionWithDescriptionDTO(
             $id,
@@ -66,6 +72,9 @@ class StorePositionWithDescriptionRequest extends FormRequest
             $description,
             $is_head,
             $is_spec,
+            $ckp_status,
+            $ckp,
+            $ckp_link
         );
     }
 }

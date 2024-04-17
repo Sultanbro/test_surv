@@ -1,7 +1,7 @@
 <template>
 	<div class="UserEditDocumentsV2">
 		<div
-			v-if="documents.length"
+			v-if="userId"
 			class="UserEditDocumentsV2-docs"
 		>
 			<div
@@ -10,18 +10,33 @@
 				class="UserEditDocumentsV2-doc p-2"
 			>
 				<div class="UserEditDocumentsV2-docIcon">
-					<i class="fa fa-file-pdf" />
+					<img
+						src="/icon/doc-pdf.png"
+						alt="pdf"
+						width="24"
+					>
 				</div>
-				<div class="UserEditDocumentsV2-docName">
+				<a
+					:href="`/signature/view?user=${userId}&doc=${doc.id}`"
+					target="_blank"
+					class="UserEditDocumentsV2-docName"
+				>
 					{{ doc.name }}
-				</div>
+				</a>
 				<div class="UserEditDocumentsV2-docControls">
 					<template v-if="doc.signed">
-						<i class="fas fa-check" />
+						{{ $moment(doc.signed).format('DD.MM.YYYY') }}
+						<i class="fas fa-check ml-2" />
 						Подписан
 					</template>
 				</div>
 			</div>
+		</div>
+		<div
+			v-else
+			class="UserEditDocumentsV2-nouser"
+		>
+			Список документов появится после создания пользователя
 		</div>
 	</div>
 </template>
@@ -30,31 +45,46 @@
 export default {
 	name: 'UserEditDocumentsV2',
 	components: {},
-	props: {},
+	props: {
+		userId: {
+			type: Number,
+			default: 0,
+		}
+	},
 	data(){
 		return {
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				},
-				{
-					id: 0,
-					name: 'TD',
-					file: '',
-					signed: true
-				},
-			],
+			documents: [],
 		}
 	},
 	computed: {},
-	watch: {},
+	watch: {
+		userId(){
+			this.fetchDocs()
+		},
+	},
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
-		async fetchDocs(){},
+		clearDocs(){
+			this.documents = []
+		},
+		async fetchDocs(){
+			if(!this.userId) return this.clearDocs()
+			try {
+				const {data} = await this.axios.get(`/signature/users/${this.userId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.original_name || 'Без названия',
+					file: doc.url,
+					signed: doc.signed_at,
+				}))
+			}
+			catch (error) {
+				console.error(error)
+			}
+		},
 	},
 }
 </script>

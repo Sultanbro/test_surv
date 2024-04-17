@@ -6,6 +6,7 @@ use App\Facade\Analytics\Analytics;
 use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
+use App\ProfileGroup;
 use App\Timetracking;
 use Carbon\Carbon;
 use DivisionByZeroError;
@@ -67,6 +68,24 @@ class AnalyticStat extends Model
     const REMOTE = 'remote'; // additional remote minutes
     const INHOUSE = 'inhouse'; // additional inhouse minutes
     const SHOW_VALUE_INHOUSE = "Отсутствие связи: in house";
+
+    public function column(): BelongsTo
+    {
+        return $this->belongsTo(
+            AnalyticColumn::class,
+            'column_id',
+            'id'
+        );
+    }
+
+    public function row(): BelongsTo
+    {
+        return $this->belongsTo(
+            AnalyticRow::class,
+            'row_id',
+            'id'
+        );
+    }
 
     /**
      * Form pivot table to vue
@@ -313,7 +332,7 @@ class AnalyticStat extends Model
     /**
      * Columns array for pivot table
      */
-    public static function columns($group_id, $date): array
+    public static function getColumns($group_id, $date): array
     {
         $columns = [];
 
@@ -546,6 +565,7 @@ class AnalyticStat extends Model
 
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
+        $recursionCount = 0;
         $text = $stat->value;
 
         $matches = [];
@@ -568,6 +588,8 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
+//                    dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $sameStat);
+
                     //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
@@ -581,6 +603,7 @@ class AnalyticStat extends Model
                 }
             }
         }
+
 
         try {
             $text = str_replace(",", ".", $text);
@@ -597,23 +620,27 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}", "", $math_string);
             }
             $math_string = str_replace("%", "", $math_string);
+
             $res = eval($math_string);
         } catch (DivisionByZeroError|Throwable) {
 
             $res = 0;
         }
+
         return round($res, $round);
     }
 
-    public static function getRentability($group_id, $date): float|int
+    public static function getRentability(ProfileGroup $group, $date): float|int
     {
-        $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-        $column = Column::where('group_id', $group_id)
+        $date = Carbon::parse($date)
+            ->day(1)
+            ->format('Y-m-d');
+        $column = Column::where('group_id', $group->id)
             ->where('date', $date)
             ->where('name', 'plan')
             ->first();
 
-        $row = Row::where('group_id', $group_id)
+        $row = Row::where('group_id', $group->id)
             ->where('date', $date)
             ->where('name', 'Impl')
             ->first();
@@ -665,7 +692,7 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceeds($group_id, $date, $only_days = []): array
+    public static function getProceeds($group_id, $date, $only_days = [])
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
@@ -718,7 +745,7 @@ class AnalyticStat extends Model
     {
         $values = self::getProceeds($group_id, $date);
         $sum = 0;
-        foreach ($values as $key => $value) {
+        foreach ($values as $value) {
             $sum += $value;
         }
         return $sum;
@@ -878,6 +905,41 @@ class AnalyticStat extends Model
             ->where('value', '!=', '')
             ->whereNotNull('value')
             ->get();
+    }
+
+    public static function getProceedsSumForListOfGroups(array $groups, Carbon $date, array $only_days = []): array
+    {
+        $values = [];
+
+        if (count($only_days) > 0) {
+            $days = $only_days;
+        } else {
+            $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+        }
+
+        $stats = self::query()
+            ->withWhereHas('column', fn($query) => $query->whereIn('name', $days))
+            ->withWhereHas('row', fn($query) => $query->where('name', 'second'))
+            ->whereDate('date', $date)
+            ->whereIn('group_id', $groups)
+            ->get()
+            ->keyBy('group_id');
+
+        foreach ($stats as $groupId => $stat) {
+            $sum = 0;
+            if ($stat->type == 'formula') {
+                $sum += self::calcFormula($stat, $date);
+            } else {
+                $sum += (int)$stat->show_value;
+            }
+            $values[$groupId] = $sum;
+        }
+
+        foreach ($groups as $group) {
+            if (!array_key_exists($group, $values)) $values[$group] = 0;
+        }
+
+        return $values;
     }
 
     public function activity(): BelongsTo

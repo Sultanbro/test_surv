@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Api\HeadHunter;
 use App\Http\Controllers as Root;
 use App\Http\Controllers\Admin as Admin;
 use App\Http\Controllers\Analytics as Analytics;
@@ -16,10 +17,12 @@ use App\Http\Controllers\Learning as Learning;
 use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
+use App\Http\Controllers\TaxGroupController;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Features\UserImpersonation;
 
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
@@ -32,7 +35,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
 });
 
 // Portal Api
@@ -60,7 +63,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
     Route::get('/impersonate/{token}', function ($token) {
-        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+        return UserImpersonation::makeResponse($token);
     });
 
     Route::middleware('auth')->get('/me', [User\UserController::class, 'me']);
@@ -102,7 +105,6 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'newGetPersons']);
     Route::get('/timetracking/get-person', [User\EmployeeController::class, 'getPerson']);
-    Route::any('/timetracking/get-persons-testing', [User\EmployeeController::class, 'newGetPersons']);
 //    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
@@ -136,6 +138,37 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/regress', [Course\RegressCourseController::class, 'regress']);
         Route::get('/progress', [Course\CourseProgressController::class, 'progress']);
     });
+
+    // docs
+    Route::group([
+        'prefix' => 'signature',
+        'as' => 'signature.'
+    ], function () {
+        Route::post('/groups/{group}/files', [Root\Signature\SignatureController::class, 'upload']);
+        Route::put('/files/{file}', [Root\Signature\SignatureController::class, 'update']);
+        Route::delete('/files/{file}', [Root\Signature\SignatureController::class, 'delete']);
+        Route::get('/groups/{group}/files', [Root\Signature\SignatureController::class, 'list']);
+        Route::get('/users/{user}/files', [Root\Signature\SignatureController::class, 'signedFiles']);
+        Route::post('/users/{user}/sms', [Root\Signature\SignatureController::class, 'sendSms']);
+        Route::post('/users/{user}/require/docs', [Root\Signature\SignatureController::class, 'requireDocs']);
+        Route::post('/users/{user}/histories', [Root\Signature\SignatureController::class, 'histories']);
+        Route::post('/users/{user}/files/{file}/verification', [Root\Signature\SignatureController::class, 'verify']);
+        Route::get('/verification', [User\ProfileController::class, 'newprofile']);
+        Route::get('/view', [User\ProfileController::class, 'newprofile']);
+        Route::post('/integrations', [Root\Signature\IntegrationController::class, 'setIntegration']);
+        Route::get('/integrations', [Root\Signature\IntegrationController::class, 'getIntegration']);
+    });
+
+    // FAQ
+    Route::group(['prefix' => 'profile/faq'], function () {
+        Route::get('/', [Root\FaqController::class, 'getAll'])->name('faq.profile');
+        Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
+        Route::get('search', [Root\FaqController::class, 'search']);
+    });
+
+	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
@@ -222,13 +255,15 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/admin/upbooks/segments/save', [Learning\UpbookController::class, 'saveSegment']);
     Route::post('/admin/upbooks/segments/delete', [Learning\UpbookController::class, 'deleteSegment']);
 
-    // База знаний
+    #start База знаний
     Route::get('/kb', [Learning\KnowBaseController::class, 'index']);
     Route::get('/kb/get', [Learning\KnowBaseController::class, 'get']);
     Route::post('/kb/get', [Learning\KnowBaseController::class, 'getPage']);
     Route::post('/kb/search', [Learning\KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [Learning\KnowBaseController::class, 'getArchived']);
     Route::post('/kb/tree', [Learning\KnowBaseController::class, 'getTree']);
+    Route::post('/kb/all-tree', [Learning\KnowBaseController::class, 'getAllTree']);
+    Route::post('/kb/user-tree', [Learning\KnowBaseController::class, 'getUserTree']);
     Route::get('/kb/get-favourites', [Learning\KnowBaseController::class, 'getFavourites']);
     Route::post('/kb/page/update', [Learning\KnowBaseController::class, 'updatePage']);
     Route::post('/kb/page/delete-section', [Learning\KnowBaseController::class, 'deleteSection']);
@@ -408,6 +443,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::delete('/timetracking/settings/delete-new', [Settings\SettingController::class, 'delete']);
 
     #==================================
+    // adventures history manage
+    Route::post('/timetracking/salaries/fines/histories/{user}/{fine}', [Salary\FineHistoryController::class, 'restore']);
+    Route::delete('/timetracking/salaries/fines/histories/{user}/{fine}', [Salary\FineHistoryController::class, 'delete']);
+    Route::post('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'restore']);
+    Route::delete('/timetracking/salaries/histories/{history}', [Salary\HistoryController::class, 'delete']);
 
     // salaries
     Route::get('/timetracking/salaries', [Salary\SalaryController::class, 'index']);
@@ -499,7 +539,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
-    Route::post('/get/deals',[Analytics\HrController::class,'createDeal'])->name('create.deal');
+    Route::post('/get/deals', [Analytics\HrController::class, 'createDeal'])->name('create.deal');
 
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
@@ -692,8 +732,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Api\PaymentController::class, 'payment']);
-        Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
+        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
+        Route::withoutMiddleware(['auth', 'tenant'])
+            ->name('callback')
+            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
     });
 
     Route::group([
@@ -706,6 +749,26 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
         Route::put('/', [Root\Tax\TaxController::class, 'update']);
         Route::delete('/{id}', [Root\Tax\TaxController::class, 'delete']);
+    });
+
+    Route::group([
+        'prefix' => 'taxes',
+        'as' => 'taxes.'
+    ], function () {
+        Route::get('/', [TaxGroupController::class, 'getAll']);
+        Route::get('/{id}', [TaxGroupController::class, 'getOne']);
+        Route::get('/{id}/user', [TaxGroupController::class, 'getUserTax']);
+        Route::post('/', [TaxGroupController::class, 'create']);
+        Route::put('/{id}', [TaxGroupController::class, 'update']);
+        Route::delete('/{id}', [TaxGroupController::class, 'delete']);
+
+        // Assign tax to user
+        Route::post('/set-assigned', [TaxGroupController::class, 'setAssigned']);
+
+        // User taxes in salaries page
+        Route::get('{id}/history', [TaxGroupController::class, 'getUserTaxes']);
+        Route::post('edit/user-tax', [TaxGroupController::class, 'editUserTax']);
+        Route::post('delete/user-tax', [TaxGroupController::class, 'deleteUserTax']);
     });
 
     Route::middleware(['check_tariff'])->group(function () {
@@ -774,8 +837,8 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/intellect/save_quiz_after_fire', [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
         Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
-        Route::any('/headhunter/create_lead', [\App\Api\HeadHunter::class, 'createLead'])->name('create-lead');
-        Route::any('/headhunter/check_lead', [\App\Api\HeadHunter::class, 'checkLead'])->name('check-lead');
+        Route::any('/headhunter/create_lead', [HeadHunter::class, 'createLead'])->name('create-lead');
+        Route::any('/headhunter/check_lead', [HeadHunter::class, 'checkLead'])->name('check-lead');
         // Bitrix -> Admin
         Route::any('/bitrix/new-lead', [Services\IntellectController::class, 'newLead']);
         Route::any('/bitrix/edit-lead', [Services\IntellectController::class, 'editLead']);
@@ -784,7 +847,7 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::any('/bitrix/create-link', [Services\IntellectController::class, 'bitrixCreateLead']);
         Route::any('/bitrix/change-resp', [Services\IntellectController::class, 'changeResp']);
         Route::any('/bitrix/inhouse', [Services\IntellectController::class, 'inhouse']);
-        Route::any('/bitrix/change-lead',[Services\IntellectController::class,'changeLead']);
+        Route::any('/bitrix/change-lead', [Services\IntellectController::class, 'changeLead']);
 
 
         Route::group(['prefix' => 'statistics'], function () {
@@ -803,10 +866,10 @@ Route::middleware(['api', 'tenant', 'not_admin_subdomain'])->group(function () {
         //Api Structure
 
         Route::group(['prefix' => 'structure', 'as' => 'structure.'], function () {
-            Route::post('/store', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'store'])->name('store');
-            Route::get('/', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'all'])->name('get-all');
-            Route::put('/{structureCard}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'update']);
-            Route::delete('/{id}', [App\Http\Controllers\Api\Structure\StructureCardController::class, 'destroy'])->name('destroy');
+            Route::post('/store', [Root\Structure\StructureCardController::class, 'store'])->name('store');
+            Route::get('/', [Root\Structure\StructureCardController::class, 'all'])->name('get-all');
+            Route::put('/{structureCard}', [Root\Structure\StructureCardController::class, 'update']);
+            Route::delete('/{id}', [Root\Structure\StructureCardController::class, 'destroy'])->name('destroy');
         });
 
         Route::get('coordinates', [App\Http\Controllers\Coordinate\getCoordinateController::class, 'get'])->name('get-coordinate');
@@ -844,7 +907,19 @@ Route::middleware(['web', 'tenant', 'admin_subdomain'])->group(function () {
         Route::post('/edit/{user}', [Admin\AdminController::class, 'edit']);
         Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
+
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
+
+    Route::group(['prefix' => 'faq', 'as' => 'faq.'], function () {
+        Route::get('/', [Root\FaqController::class, 'getAll']);
+        Route::post('/', [Root\FaqController::class, 'store']);
+        Route::post('/set-order', [Root\FaqController::class, 'setOrder']);
+        Route::get('/get/{id}', [Root\FaqController::class, 'getOne']);
+        Route::put('/update/{id}', [Root\FaqController::class, 'update']);
+        Route::delete('/delete/{id}', [Root\FaqController::class, 'delete']);
+    });
+
+    Route::any('/admin/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
 });
 
 Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {

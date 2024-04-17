@@ -150,6 +150,54 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
+			<b-row>
+				<b-col cols="12">
+					<b-form-checkbox
+						v-model="ckp_status"
+						:value="1"
+						:unchecked-value="0"
+						switch
+					>
+						ЦКП должности
+						<img
+							v-b-popover.hover.right="'Опишите результат работы должности который будет показан в профиле'"
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+						>
+					</b-form-checkbox>
+				</b-col>
+				<b-col
+					v-if="ckp_status"
+					cols="12"
+					md="4"
+				>
+					<b-form-input
+						v-model="ckp"
+						type="text"
+						placeholder="Опишите результат работы должности"
+						class="form-control group-select"
+					/>
+				</b-col>
+				<b-col
+					v-if="ckp_status"
+					cols="12"
+					md="4"
+				>
+					<div class="d-flex gap-3 aic">
+						<b-form-input
+							v-model="ckp_link"
+							type="text"
+							placeholder="Ссылка на страницу базы знаний"
+							class="form-control group-select"
+						/>
+						<img
+							v-b-popover.hover.right="'Рядом с текстом будет ссылка с переходом'"
+							src="/images/dist/profit-info.svg"
+							class="img-info flex-0"
+						>
+					</div>
+				</b-col>
+			</b-row>
 			<div class="card position-card mt-4">
 				<div class="card-header">
 					<b-form-checkbox
@@ -260,6 +308,9 @@ export default {
 			activebtn: null,
 			isHead: false,
 			isSpec: false,
+			ckp_status: 0,
+			ckp: '',
+			ckp_link: '',
 			desc: {
 				require: '',
 				actions: '',
@@ -293,6 +344,9 @@ export default {
 			this.isHead = 0;
 			this.isSpec = 0;
 			this.activebtn = null;
+			this.ckp_status = 0
+			this.ckp = ''
+			this.ckp_link = ''
 			this.desc = {
 				require: '',
 				actions: '',
@@ -324,6 +378,9 @@ export default {
 				this.isHead = data[0].is_head;
 				this.isSpec = data[0].is_spec;
 				this.sum = data[0].sum;
+				this.ckp_status = data[0].ckp_status
+				this.ckp = data[0].ckp
+				this.ckp_link = data[0].ckp_link
 				this.desc = {
 					require: data[0].require,
 					actions: data[0].actions,
@@ -352,6 +409,9 @@ export default {
 			};
 			this.position_id = data.id;
 			this.new_position = data.position;
+			this.ckp_status = 0
+			this.ckp = ''
+			this.ckp_link = ''
 
 			this.activebtn = dataPush;
 			this.data.push(dataPush);
@@ -372,6 +432,9 @@ export default {
 					desc: this.desc,
 					is_head: this.isHead,
 					is_spec: this.isSpec,
+					ckp_status: this.ckp_status,
+					ckp: this.ckp,
+					ckp_link: this.ckp_link,
 				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
 				this.$toast.success(this.addNew ? 'Новая должность создана' : 'Изменения сохранены');

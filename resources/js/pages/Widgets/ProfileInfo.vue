@@ -29,6 +29,22 @@
 					</span>
 				</router-link>
 			</div>
+			<div
+				v-if="data.position && data.position.ckp_status"
+				class="ProfileInfo-border"
+			>
+				{{ data.position.ckp }}
+				<a
+					v-if="data.position.ckp_link"
+					:href="data.position.ckp_link"
+					target="_blank"
+				>
+					<img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+					>
+				</a>
+			</div>
 			<div class="ProfileInfo-group ProfileInfo-border py-2">
 				<!-- eslint-disable vue/no-v-html -->
 				<span><b>Отделы: </b> {{ data.groups.map(group => group.name).join(', ') }}</span>
@@ -174,6 +190,9 @@ export default {
 		margin-bottom: 1rem;
 		border: 1px solid #E7EAEA;
 		border-radius:1rem;
+		&_start{
+			align-items: flex-start;
+		}
 		i{
 			font-size: 12px;
 			transition: 0.15s all ease;

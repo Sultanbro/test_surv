@@ -29,13 +29,12 @@ export default {
 <style lang="scss">
 .jNav-menu-link {
   display: inline-block;
-  padding: 0.25rem 0;
-  margin: 0.5rem 0;
+  padding: 0.5rem 0;
   position: relative;
   font-size: 1.125rem;
   color: #000;
   text-decoration: none;
-  text-align: center;
+  text-align: left;
   &:hover {
     border-bottom: 0;
     &:after {

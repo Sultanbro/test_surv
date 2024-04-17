@@ -29,11 +29,11 @@ class FileManager implements FileManagerInterface
      * @return FileManagerInterface
      */
     public function apply(
-        UploadedFile $file
-        ,            $directory
-        , bool       $usOriginalName = false
-        , string     $prefix = ''
-        , string     $access = 'public'
+        UploadedFile $file,
+                     $directory,
+        bool         $usOriginalName = false,
+        string       $prefix = '',
+        string       $access = 'public'
     ): static
     {
         $this->setFile($file);
@@ -104,7 +104,7 @@ class FileManager implements FileManagerInterface
     public function url(array $parameters = [], bool $secure = false): string
     {
         $secure = app()->isProduction();
-        return url('tenant' . tenant('id') . '/' . $this->path, $parameters, $secure);
+        return url('tenant' . tenant('id') . '/' . $this->path, $parameters, true);
     }
 
     /**

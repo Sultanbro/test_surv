@@ -51,7 +51,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->where('group_id', $group_id)
             ->get();
 
-        $lastColumnId = 0;
+        $lastPrevColId = 0;
 
         foreach ($prevMonthStats as $statistic) {
 
@@ -61,7 +61,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
             $value = $this->getValue($statistic, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($statistic, $newRows, $newCols, $colsWithValue);
-            $lastColumnId = $newCols[$statistic->column_id];
+            $lastPrevColId = $newCols[$statistic->column_id];
 
             $newStat = $statistic->replicate();
             $newStat->row_id = $newRows[$statistic->row_id];
@@ -72,8 +72,9 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newStat->save();
         }
 
+        /** @var Collection<AnalyticStat> $lastColumnStats */
         $lastColumnStats = AnalyticStat::query()
-            ->where('column_id', $lastColumnId)
+            ->where('column_id', $lastPrevColId)
             ->where('group_id', $group_id)
             ->where('date', $currentDate)
             ->get();
@@ -82,17 +83,26 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
         foreach ($this->monthDifference() as $diffDay) {
-            foreach ($lastColumnStats as $key => $columnStat) {
+            $difColumn = AnalyticColumn::query()
+                ->where([
+                    'group_id' => $group_id,
+                    'name' => (string)$diffDay,
+                    'date' => $currentDate
+                ])
+                ->first();
+            /** @var Collection<AnalyticStat> $lastColumnStats */
+            foreach ($lastColumnStats as $columnStat) {
                 AnalyticStat::query()->updateOrCreate(
                     [
+                        'column_id' => $difColumn?->id ?? ++$columnStat->column_id,
+                        'row_id' => $columnStat->row_id,
                         'group_id' => $columnStat->group_id,
                         'date' => $currentDate,
-                        'show_value' => $key == 0 ? $diffDay : ''],
+                    ],
                     [
-                        'row_id' => $columnStat->row_id,
-                        'column_id' => ++$columnStat->column_id,
                         'value' => '',
-                        'activity_id' => null,
+                        'activity_id' => $columnStat->activity_id,
+                        'show_value' => '',
                         'editable' => $columnStat->editable,
                         'class' => $columnStat->class,
                         'type' => $columnStat->type,
@@ -132,14 +142,14 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         /**
          * depend rows
          */
-        $rows = AnalyticRow::query()
-            ->where('date', $currentDate)
+        $rowsWithDependRows = AnalyticRow::query()
+            ->whereDate('date', $currentDate)
             ->where('group_id', $group_id)
             ->whereNotNull('depend_id')
             ->orderBy('order', 'desc')
             ->get();
 
-        foreach ($rows as $row) {
+        foreach ($rowsWithDependRows as $row) {
             $row->depend_id = in_array($row->id, $newRows)
             && array_key_exists($row->depend_id, $newRows)
                 ? $newRows[$row->depend_id]
@@ -156,35 +166,34 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $currentDate = $this->currentMonth();
 
         DB::table('analytic_columns')
-            ->where('date', $currentDate)
+            ->whereDate('date', $currentDate)
             ->where('group_id', $group_id)
             ->delete();
 
         /**
+         * @var Collection<AnalyticColumn> $prevMonthCols
          * Получаем данные за прошлый месяц.
          */
         $prevMonthCols = AnalyticColumn::query()
-            ->where([
-                'date' => $prevDate,
-                'group_id' => $group_id
-            ])
+            ->whereDate('date', $prevDate)
+            ->whereDate('group_id', $group_id)
             ->whereIn('name', $this->getMonthlyTemplate($currentDate))
             ->orderBy('order')
             ->get();
 
         $newColumns = [];
         $lastOrder = 0;
-        foreach ($prevMonthCols as $col) {
-            $newColumn = $col->replicate();
+        foreach ($prevMonthCols as $prevColumns) {
+            $newColumn = $prevColumns->replicate();
             $newColumn->date = $currentDate;
             $newColumn->save();
 
-            $lastOrder = $col->order;
+            $lastOrder = $prevColumns->order;
 
             /**
              * Сохраняем ID новой колонки в массиве.
              */
-            $newColumns[$col->id] = $newColumn->getKey();
+            $newColumns[$prevColumns->id] = $newColumn->getKey();
         }
 
         foreach ($this->monthDifference() as $diffDay) {
@@ -220,7 +229,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
                 'sum',
                 'avg',
             ])
-            ->get('id')
             ->pluck('id')
             ->toArray();
     }
@@ -325,11 +333,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
          */
         $nameColumn = ['name', 'plan', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
-
+        $daysColumns = [];
         for ($column = 1; $column <= $daysInMonth; $column++) {
-            $nameColumn[] = $column;
+            $daysColumns[] = $column;
         }
 
-        return $nameColumn;
+        return array_merge($nameColumn, $daysColumns);
     }
 }

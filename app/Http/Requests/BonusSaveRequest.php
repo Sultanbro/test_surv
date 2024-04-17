@@ -25,8 +25,8 @@ class BonusSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            'targetable_id'      => 'integer|required',
-            'targetable_type'    => [
+            'targetable_id' => 'integer|required',
+            'targetable_type' => [
                 'required',
                 Rule::in([
                     'App\User',
@@ -34,21 +34,21 @@ class BonusSaveRequest extends FormRequest
                     'App\Position'
                 ]),
             ],
-            'title'         => 'array|required',
-            'title.*'       => 'string|required',
-            'sum'           => 'array|required',
-            'sum.*'         => 'integer|required',
-            'group_id'      => 'integer|required',
-            'activity_id'   => 'array|required',
+            'title' => 'array|required',
+            'title.*' => 'string|required',
+            'sum' => 'array|required',
+            'sum.*' => 'numeric|required',
+            'group_id' => 'integer|required',
+            'activity_id' => 'array|required',
             'activity_id.*' => 'integer|required',
-            'unit'          => 'array|required',
-            'unit.*'        => 'string|required',
-            'quantity'      => 'array',
-            'quantity.*'    => 'integer|required',
-            'daypart'       => 'array|required',
-            'daypart.*'     => 'integer|required',
-            'text'          => 'array|required',
-            'text.*'        => 'string|required',
+            'unit' => 'array|required',
+            'unit.*' => 'string|required',
+            'quantity' => 'array',
+            'quantity.*' => 'integer|required',
+            'daypart' => 'array|required',
+            'daypart.*' => 'integer|required',
+            'text' => 'array|required',
+            'text.*' => 'string|required',
         ];
     }
 }

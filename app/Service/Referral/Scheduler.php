@@ -20,14 +20,6 @@ class Scheduler
     {
     }
 
-    protected function dateStart(): Carbon
-    {
-        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
-        return Carbon::parse($this->filter['date'])
-            ->startOfMonth()
-            ->copy();
-    }
-
     public function setFilter(array $filter = []): void
     {
         $this->filter = $filter;
@@ -44,7 +36,7 @@ class Scheduler
 
             $referral->is_trainee = $referral->user_description?->is_trainee;
             $salaries = $referrer->referralSalaries->where('referral_id', $referral->getKey());
-            $this->salaryFilter->forThisCollection($salaries);
+            $this->salaryFilter->for($salaries);
 
             $attestation = $this->salaryFilter->filter(PaidType::ATTESTATION)->first();
             $training = $this->salaryFilter->filter(PaidType::TRAINEE);
@@ -64,6 +56,14 @@ class Scheduler
         });
     }
 
+    protected function dateStart(): Carbon
+    {
+        $this->filter['date'] = $this->filter['date'] ?? now()->format("Y-m-d");
+        return Carbon::parse($this->filter['date'])
+            ->startOfMonth()
+            ->copy();
+    }
+
     private function traineesDaily($days, $training): array
     {
         $types = [];
@@ -73,6 +73,35 @@ class Scheduler
             if ($day) $types[$i] = $this->countTrainingDays($training, $day);
         }
         return $types;
+    }
+
+    private function getDay($days, string $day): ?DayType
+    {
+        /** @var DayType $day */
+        return $days
+            ->where('date', $day)
+            ->first();
+    }
+
+    private function countTrainingDays($training, DayType $day): ?array
+    {
+        $salary = [];
+        foreach ($training as $item) {
+            if ($this->isSameDate(Carbon::parse($item['date']), $day->date)) {
+                $salary = $item->toArray();
+            }
+        }
+
+        if (!count($salary)) {
+            return null;
+        }
+
+        return $salary;
+    }
+
+    private function isSameDate(Carbon $first, Carbon $second): bool
+    {
+        return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
     }
 
     private function attestation($attestation): array
@@ -119,6 +148,16 @@ class Scheduler
         return $weekTemplate;
     }
 
+    private function createWeekTemplate(array $weeks): array
+    {
+        $types = [];
+
+        foreach ($weeks as $week) {
+            $types[$week . '_week'] = null;
+        }
+        return $types;
+    }
+
     private function getReferralTimeTracking(User $referral, Carbon $date): Collection
     {
         return Timetracking::query()
@@ -128,44 +167,5 @@ class Scheduler
             ->whereYear('enter', $date->year)
             ->orderBy('id', 'ASC')
             ->get();
-    }
-
-    private function getDay($days, string $day): ?DayType
-    {
-        /** @var DayType $day */
-        return $days
-            ->where('date', $day)
-            ->first();
-    }
-
-    private function countTrainingDays($training, DayType $day): ?array
-    {
-        $salary = [];
-        foreach ($training as $item) {
-            if ($this->isSameDate(Carbon::parse($item['date']), $day->date)) {
-                $salary = $item->toArray();
-            }
-        }
-
-        if (!count($salary)) {
-            return null;
-        }
-
-        return $salary;
-    }
-
-    private function isSameDate(Carbon $first, Carbon $second): bool
-    {
-        return Carbon::parse($first)->format("Y-m-d") == $second->format("Y-m-d");
-    }
-
-    private function createWeekTemplate(array $weeks): array
-    {
-        $types = [];
-
-        foreach ($weeks as $week) {
-            $types[$week . '_week'] = null;
-        }
-        return $types;
     }
 }

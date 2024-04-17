@@ -27,6 +27,7 @@ const password = ref('')
 const role_id = ref(0)
 const image = ref('')
 const phone = ref('')
+const isDefault = ref(false)
 const form = ref(true)
 
 watchEffect(() => {
@@ -38,6 +39,7 @@ watchEffect(() => {
 	password.value = ''
 	role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
+  isDefault.value = props.user?.is_default || ''
 })
 
 const roleOptions = computed(() => {
@@ -65,6 +67,7 @@ function onSubmit(){
     password_confirmation: password.value,
     role_id: role_id.value,
     phone: phone.value,
+    is_default: isDefault.value,
     image: newImage.value ? newImage.value : null,
   })
 }
@@ -123,7 +126,9 @@ function onSelectImage(files: FileList){
 </script>
 
 <template>
-  <VCard class="UserPermissionsEdit">
+  <VCard
+    class="UserPermissionsEdit"
+  >
     <VCardTitle>
       <span class="text-h5">Добавить доступ</span>
     </VCardTitle>
@@ -150,6 +155,12 @@ function onSelectImage(files: FileList){
             <template v-else>{{ (name[0] || '') + (last_name[0] || '') }}</template>
             <!-- Тут можно сделать вычисление цвета фона из первых букв имени или email [(item.name.charCodeAt(0) % 16).toString(16)] и поставить в css автоконтраст текста -->
           </VAvatar>
+          <div
+            v-if="!image"
+            class="whsnw"
+          >
+            Добавить аватарку
+          </div>
         </FilePicker>
         <VTextField
           label="Имя"
@@ -188,6 +199,11 @@ function onSelectImage(files: FileList){
           :items="roleOptions"
           class="mb-4"
           :error-messages="errors.role || []"
+        />
+        <VCheckbox
+          v-model="isDefault"
+          label="Закрепить менеджера по умолчанию"
+          class="mb-4"
         />
         <VBtn
           block
@@ -260,6 +276,10 @@ function onSelectImage(files: FileList){
         border-radius: 2rem;
       }
     }
+  }
+  .FilePicker{
+    width: fit-content;
+    margin: 0 auto;
   }
 }
 

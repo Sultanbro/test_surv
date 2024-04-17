@@ -90,7 +90,7 @@
 
 		<StatsTableBonus
 			v-if="s_type_main == 2"
-			:key="bonus_groups"
+			:key="key"
 			:groups="bonus_groups"
 			:group_names="groups"
 			:month="month"
@@ -101,6 +101,7 @@
 			:key="quartal_users"
 			:users="quartal_users"
 			:groups="quartal_groups"
+			:positions="quartal_pos"
 			:search-text="searchText"
 		/>
 
@@ -217,6 +218,7 @@ export default {
 			bonus_groups: [],
 			quartal_users: [],
 			quartal_groups: [],
+			quartal_pos: [],
 
 			currentPage: 1,
 			totalRows: 1,
@@ -227,6 +229,7 @@ export default {
 
 			isSettingsOpen: false,
 			timeout: null,
+			key: 1,
 		}
 	},
 	computed: {
@@ -291,6 +294,7 @@ export default {
 		fetchData(filters, page = 1, limit = 10) {
 			let loader = this.$loading.show();
 			this.s_type_main = filters.data_from ? Number(filters.data_from.s_type) : 1;
+			// this.s_type_main = filters.data_from ? Number(filters.data_from.s_type) : 1;
 			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
 			this.filters = filters
 
@@ -329,12 +333,18 @@ export default {
 				});
 			}
 			else if(this.s_type_main == 2){
-				this.axios.get('/statistics/bonuses').then(response => {
-					this.bonus_groups = response.data;
+				this.axios.post('/statistics/bonuses', {
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
+				}).then(response => {
+					this.bonus_groups = response.data.filter(target => target.bonuses.length).map(this.parseBonus);
+					++this.key
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
-					alert(error);
+					this.$onError({error})
 				});
 			}
 			else if(this.s_type_main == 3){
@@ -346,6 +356,7 @@ export default {
 				}).then(response => {
 					this.quartal_users = response.data.data[0].map(res=> ({...res, expanded: false}))
 					this.quartal_groups = response.data.data[1].map(res=> ({...res, expanded: false}))
+					this.quartal_pos = response.data.data[2].map(res=> ({...res, expanded: false}))
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
@@ -355,6 +366,68 @@ export default {
 			else{
 				loader.hide();
 				alert('error!');
+			}
+		},
+
+		parseBonus(target){
+			if(target.targetable_type === 'App\\User') return this.parseBonusUser(target)
+			return this.parseBonusGroup(target)
+		},
+
+		parseBonusGroup(group){
+			const bonusIds = group.bonuses.map(bonus => bonus.id)
+			const date = `${this.filters.data_from.year}-${('' + this.filters.data_from.month).padStart(2, '0')}`
+			const users = group.users.map(user => {
+				const bonuses = user.obtained_bonuses.map(bonus => {
+					const quantity = parseInt(bonus.comment.split(':')[1])
+					return {
+						...bonus,
+						quantity,
+					}
+				}).filter(bonus => bonusIds.includes(bonus.bonus_id) && bonus.amount > 0 && bonus.date.substring(0, 7) === date && bonus.quantity)
+				return {
+					...user,
+					expanded: false,
+					obtained_bonuses: bonuses,
+					total: bonuses.reduce((result, bonus) => result + (bonus.amount * bonus.quantity), 0),
+					totals: group.bonuses.reduce((result, kpiBonus) => {
+						result[kpiBonus.id] = bonuses.filter(bonus => bonus.bonus_id === kpiBonus.id).reduce((result, bonus) => result + (bonus.amount * bonus.quantity), 0)
+						return result
+					}, {}),
+				}
+			})
+			return {
+				...group,
+				expanded: false,
+				users,
+				total: users.reduce((result, user) => result + user.total, 0),
+				bonuses: group.bonuses.map(kpiBonus => ({
+					...kpiBonus,
+					total: users.reduce((result, user) => result + user.totals[kpiBonus.id], 0)
+				})),
+			}
+		},
+		parseBonusUser(user){
+			const date = `${this.filters.data_from.year}-${('' + this.filters.data_from.month).padStart(2, '0')}`
+			const bonuses = user.bonuses.map(kpiBonus => {
+				const obtained_bonuses = kpiBonus.obtained_bonuses.map(bonus => {
+					const quantity = parseInt(bonus.comment.split(':')[1])
+					return {
+						...bonus,
+						quantity,
+					}
+				}).filter(bonus => bonus.amount > 0 && bonus.date.substring(0, 7) === date && bonus.quantity)
+				return {
+					...kpiBonus,
+					obtained_bonuses,
+					total: obtained_bonuses.reduce((result, bonus) => result + (bonus.amount * bonus.quantity), 0)
+				}
+			})
+			return {
+				...user,
+				expanded: false,
+				bonuses,
+				total: bonuses.reduce((result, bonus) => result + bonus.total, 0)
 			}
 		},
 

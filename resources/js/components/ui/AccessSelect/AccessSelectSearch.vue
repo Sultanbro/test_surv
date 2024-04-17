@@ -33,7 +33,10 @@ export default {
 			type: String,
 			default: '',
 		}
-	}
+	},
+	mounted(){
+		this.$el?.querySelector('input')?.focus()
+	},
 }
 </script>
 

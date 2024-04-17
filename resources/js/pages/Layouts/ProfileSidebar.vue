@@ -57,14 +57,12 @@
 						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 					<div
-						v-if="user_earnings.taxes"
+						v-if="user_earnings.taxValue"
 						class="ProfileSidebar-taxes mb-3 text-center"
 					>
-						Сумма вычета налогов: {{ user_earnings.taxes }} {{ balance.currency }}
+						Сумма вычета налогов: {{ user_earnings.taxValue }} {{ balance.currency }}
 						<img
-							v-b-popover.click.blur.html="`Обязательные Пенсионные Взносы (ОПВ) - 10% от получаемого дохода (ст.248 Социального кодекса).<br><br>
-Индивидуальный Подоходный Налог (ИПН) - 10%  у источника выплаты согласно( п.1 ст. 317 Налогового Кодекса РК ) <br><br>
-Взносы на ОСМС (ВОСМС) - 2 % (п. 1, п. 5 ст. 28 Закона «Об обязательном социальном медицинском страховании»`"
+							v-b-popover.click.blur.html="`${taxInfo}<br><br>За подробностями обратитесь к своему руководителю`"
 							src="/images/dist/profit-info.svg"
 							class="img-info ml-2"
 							alt="info icon"
@@ -134,7 +132,7 @@
 				<i class="fa fa-play" />
 			</div>
 
-			<RefWidget v-if="isBP" />
+			<!-- <RefWidget v-if="isBP" /> -->
 
 			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
 			<div
@@ -316,7 +314,7 @@ import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions, useMonthOptions } from '@/composables/yearOptions'
 import DateSelect from '../Profile/DateSelect'
-import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+// import RefWidget from '@/components/pages/Profile/RefWidget.vue'
 
 export default {
 	name: 'ProfileSidebar',
@@ -326,7 +324,7 @@ export default {
 		Questions,
 		Cropper,
 		DateSelect,
-		RefWidget,
+		// RefWidget,
 	},
 	props: {},
 	data: function () {
@@ -384,8 +382,11 @@ export default {
 			return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
 		},
 		showButton(){
-			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-			return this.status === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+			if(this.isBP){
+				if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+				return this.status === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+			}
+			return true
 		},
 		isReady(){
 			return this.settingsReady
@@ -441,6 +442,12 @@ export default {
 		isDeveloper(){
 			if(!this.position) return false
 			return this.isBP && ([31, 105].includes(this.position.id) || [28546].includes(this.user.id))
+		},
+		taxInfo(){
+			if(!this.user_earnings.taxGroup) return ''
+			const result = [`<b>${this.user_earnings.taxGroup}</b>`]
+			this.user_earnings.taxes.forEach(tax => result.push(`${tax.name} - ${tax.value}${tax.is_percent ? '%' : ''}`))
+			return result.join('<br>')
 		}
 	},
 	watch: {

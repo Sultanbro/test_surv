@@ -8,16 +8,12 @@ use Illuminate\Database\Query\JoinClause;
 
 trait TargetJoin
 {
-    abstract static public function query();
-
-    public static function targetJoins(): Builder
+    public static function targetJoins(?Builder $query = null): Builder
     {
-        $query = self::query();
+        $query = $query ?? self::query();
         $table = $query->getModel()->getTable();
 
-        return $query->select(
-            $table . '.*'
-        )
+        return $query->select($table . '.*')
             ->leftJoin('kpiables as morph', function (JoinClause $join) use ($table) {
                 $join->on('morph.kpi_id', '=', "$table.id");
             })
@@ -39,7 +35,10 @@ trait TargetJoin
                 $join->orOn('p.id', '=', "morph.kpiable_id")
                     ->where("morph.kpiable_type", '=', 'App\Position');
             })
+//            ->leftJoin('kpi_items as ki', 'ki.kpi_id', '=', 'kpis.id')
             ->leftJoin('users as updater', 'updater.id', '=', "$table.updated_by")
             ->leftJoin('users as creator', 'creator.id', '=', "$table.created_by");
     }
+
+    abstract static public function query();
 }

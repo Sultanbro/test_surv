@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerMacros(): void
     {
-        Response::macro('success', function ($data, $statusCode = HttpFoundation::HTTP_OK, $message = 'success',) {
+        Response::macro('success', function (mixed $data, int $statusCode = HttpFoundation::HTTP_OK, string $message = 'success') {
             return response()->json([
                 'status' => $statusCode,
                 'message' => $message,

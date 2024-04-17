@@ -3,14 +3,22 @@
 namespace App\Models;
 
 use App\Enums\ErrorCode;
+use App\Models\Admin\ManagerHasOwner;
+use App\Models\Portal\Portal;
+use App\Models\Tariff\TariffPayment;
 use App\Support\Core\CustomException;
+use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
+ * @property int id
  * @property string name
  * @property string last_name
  * @property string email
@@ -23,17 +31,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string country
  * @property string city
  * @property string balance
+ * @property string currency
  * relations
  * @property Collection $cabinets
  * @property Collection $tenants
-*/
+ */
 class CentralUser extends Model
 {
     use HasFactory;
 
     protected $connection = 'mysql';
     protected $table = 'users';
-    
+
     protected $appends = ['full_name'];
 
     protected $fillable = [
@@ -49,6 +58,7 @@ class CentralUser extends Model
         'country',
         'city',
         'balance',
+        'currency'
     ];
 
     protected $hidden = [
@@ -63,8 +73,7 @@ class CentralUser extends Model
     {
         $domains = self::query()->find($userId)->tenants->pluck('id')->toArray();
 
-        if (count($domains) == 0)
-        {
+        if (count($domains) == 0) {
             new CustomException('Пользователей не создавал свой домен', ErrorCode::BAD_REQUEST, []);
         }
     }
@@ -103,6 +112,11 @@ class CentralUser extends Model
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
 
+    public function portals(): HasMany
+    {
+        return $this->hasMany(Portal::class, 'owner_id');
+    }
+
 
     public function cabinets(): BelongsToMany
     {
@@ -110,8 +124,27 @@ class CentralUser extends Model
             ->withPivot(['owner as owner', 'user_id as user_id', 'tenant_id as tenant_id']);
     }
 
+    /**
+     * @return HasOne
+     */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(TariffPayment::class, 'owner_id', 'id');
+    }
+
+    public function managerHasOwner()
+    {
+        return $this->hasOne(ManagerHasOwner::class, 'owner_id');
+    }
+
     public function getFullNameAttribute()
     {
-		return $this->last_name . ' ' . $this->name;
-	}
+        return $this->last_name . ' ' . $this->name;
+    }
+
+    public static function userByEmail($user_email)
+    {
+        return self::query()->whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
+    }
+
 }

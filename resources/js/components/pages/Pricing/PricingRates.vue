@@ -1,5 +1,11 @@
 <template>
-	<div class="PricingRates mt-4">
+	<div
+		class="PricingRates mt-4"
+		:class="[
+			(selectedRate ? 'PricingRates_' + selectedRate.kind : ''),
+			(selectedRate ? 'PricingRates_' + selectedRate.validity : ''),
+		]"
+	>
 		<template v-if="items && items.length">
 			<h3 class="PricingRates-title">
 				Сменить тариф:
@@ -13,6 +19,14 @@
 						class="PricingRates-header text-center"
 					>
 						{{ item.name }}
+						<b-form-checkbox
+							v-if="item.name === 'PRO' && !proUsed"
+							v-model="proUsed"
+							name="check-button"
+							switch
+							title="Пробный месяц"
+							class="PricingRates-usePro"
+						/>
 					</th>
 				</tr>
 				<tr class="PricingRates-row">
@@ -77,6 +91,9 @@
 						v-for="item in tarifs"
 						:key="'monthly' + item.name"
 						class="PricingRates-col PricingRates-action text-center"
+						:class="{
+							'PricingRates-selected': item.monthly.id === (selectedRate ? selectedRate.id : 0),
+						}"
 						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 					>
 						{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
@@ -90,6 +107,9 @@
 						v-for="item in tarifs"
 						:key="'annual' + item.name"
 						class="PricingRates-col PricingRates-action text-center"
+						:class="{
+							'PricingRates-selected': item.annual.id === (selectedRate ? selectedRate.id : 0),
+						}"
 						@click="$emit('update', {rate: item.annual, period: 'annual'})"
 					>
 						{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
@@ -126,6 +146,11 @@ import {
 	ChatIconMassReaded,
 } from '@icons'
 
+// import {
+// 	fetchSettings,
+// 	updateSettings,
+// } from '@/stores/api.js'
+
 export default {
 	name: 'PricingRates',
 	components: {
@@ -135,7 +160,11 @@ export default {
 		currency: {
 			type: String,
 			default: '₽'
-		}
+		},
+		selectedRate: {
+			type: Object,
+			default: null,
+		},
 	},
 	data(){
 		return {
@@ -170,7 +199,8 @@ export default {
 				base: '0%',
 				standard: '20%',
 				pro: '20%',
-			}
+			},
+			proUsed: false,
 		}
 	},
 	computed: {
@@ -194,15 +224,32 @@ export default {
 			return ({
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'dollar'
+				'$': 'usd'
 			})[this.currency]
+		},
+	},
+	watch: {
+		proUsed(){
+			if(this.proUsed) this.useProDemo()
 		}
 	},
 	created(){
 		this.fetchPricing()
+		this.fetchDemo()
 	},
 	methods: {
-		...mapActions(usePricingStore, ['fetchPricing'])
+		...mapActions(usePricingStore, ['fetchPricing']),
+		useProDemo(){
+			this.$emit('use-pro')
+			// updateSettings({
+			// 	type: 'pricing_pro_used',
+			// 	custom_pricing_pro_used: 1
+			// })
+		},
+		async fetchDemo(){
+			// const {settings} = await fetchSettings('pricing_pro_used')
+			// this.proUsed = settings.custom_pricing_pro_used === '1'
+		},
 	}
 }
 </script>
@@ -215,6 +262,7 @@ export default {
 		border: 1px solid #fff;
 	}
 	&-header{
+		position: relative;
 		color: #fff;
 		background-color: #3361FF;
 		&_empty{
@@ -252,5 +300,74 @@ export default {
 			color: lighten(#3361FF, 10);
 		}
 	}
+	&-usePro{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(30px, -50%);
+
+		&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label{
+			padding: 10px 0 0 50px;
+			margin: 0;
+		}
+	}
+	&-selected{
+		background-color: darken(#3361FF, 5%) !important;
+		font-weight: 700;
+	}
+	&_free{
+		.PricingRates{
+			&-header:nth-child(2),
+			&-col:nth-child(2){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_base{
+		.PricingRates{
+			&-header:nth-child(3),
+			&-col:nth-child(3){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_standard{
+		.PricingRates{
+			&-header:nth-child(4),
+			&-col:nth-child(4){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_pro{
+		.PricingRates{
+			&-header:nth-child(5),
+			&-col:nth-child(5){
+				border-bottom: 1px solid #3361FF;
+				background-color: #3361FF;
+				color: #fff;
+				.ChatIcon-shape{
+					fill: #fff;
+				}
+			}
+		}
+	}
+	&_monthly{}
+	&_annual{}
 }
 </style>

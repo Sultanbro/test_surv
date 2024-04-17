@@ -3,14 +3,12 @@
 namespace App\Console\Commands\Employee;
 
 use App\Fine;
-use App\User;
-use App\UserFine;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\ProfileGroup;
+use App\User;
+use App\UserFine;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class CheckLate extends Command
 {
@@ -47,12 +45,11 @@ class CheckLate extends Command
     {
         $this->date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
 
-        $users = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+        $users = User::query()->withWhereHas('user_description', fn($query) => $query->where('is_trainee', 0))
             ->orderBy('last_name', 'asc')
             ->get();
 
-        foreach($users as $user)
-        {
+        foreach ($users as $user) {
             $userFine = new UserFine;
 
             /**
@@ -71,10 +68,9 @@ class CheckLate extends Command
              */
             $fines = UserFine::query()->whereDate('day', $this->date)->where('user_id', $user->id)->get();
 
-            if ($startDay->exists())
-            {
+            if ($startDay->exists()) {
                 $startDayInTimestamp = strtotime($startDay->min('enter'));
-                $workStartTimeStamp  = strtotime($workStart);
+                $workStartTimeStamp = strtotime($workStart);
 
                 /**
                  * Разница в минутах.
@@ -84,30 +80,27 @@ class CheckLate extends Command
                 /**
                  * Если минута 0 или меньше 0, то сотрудник пришел вовремя.
                  */
-                if ($diffInMinutes <= 0)
-                {
+                if ($diffInMinutes <= 0) {
                     continue;
                 }
 
                 /**
                  * Штраф до 5 минут.
                  */
-                if ($diffInMinutes <= 5)
-                {
-                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
-                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
+                if ($diffInMinutes <= 5) {
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status', UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status', UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    if (!$existActive && !$existInActive)
-                    {
+                    if (!$existActive && !$existInActive) {
                         /**
                          * Создаем штраф менее 5 минут.
                          */
                         $userFine->addUserFine([
-                            'user_id'   => (int) $user->id,
-                            'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                            'day'       => $this->date,
-                            'status'    => UserFine::STATUS_ACTIVE,
-                            'note'      => null
+                            'user_id' => (int)$user->id,
+                            'fine_id' => Fine::TYPE_LATE_LESS_5,
+                            'day' => $this->date,
+                            'status' => UserFine::STATUS_ACTIVE,
+                            'note' => 'check this'
                         ]);
 
                         /**
@@ -120,24 +113,22 @@ class CheckLate extends Command
                 /**
                  * Штраф после 5 минут.
                  */
-                if ($diffInMinutes > 5)
-                {
+                if ($diffInMinutes > 5) {
 
-                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
-                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status', UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status', UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    if (!$existActive && !$existInActive)
-                    {
+                    if (!$existActive && !$existInActive) {
 
                         /**
                          * Создаем штраф более 5 минут.
                          */
                         $userFine->addUserFine([
-                            'user_id'   => (int) $user->id,
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'day'       => $this->date,
-                            'status'    => UserFine::STATUS_ACTIVE,
-                            'note'      => null
+                            'user_id' => (int)$user->id,
+                            'fine_id' => Fine::TYPE_LATE_MORE_5,
+                            'day' => $this->date,
+                            'status' => UserFine::STATUS_ACTIVE,
+                            'note' => 'check this'
                         ]);
 
                         /**
@@ -151,14 +142,15 @@ class CheckLate extends Command
         }
     }
 
-    public function history(int $userId, $message){
+    public function history(int $userId, $message)
+    {
 
         $th = TimetrackingHistory::query()->whereDate('date', $this->date)
-            ->where('user_id',  $userId)
+            ->where('user_id', $userId)
             ->where('description', 'like', $message)
             ->first();
 
-        if(!$th) {
+        if (!$th) {
             TimetrackingHistory::query()->create([
                 'user_id' => $userId,
                 'author_id' => 5,

@@ -33,7 +33,7 @@ class CheckManager implements Rule
             fn($user) => $user->where('id', $value))
         ->where('name', 'Manager для работы с клиентами JobTron')->first();
 
-        return (bool)$role;
+        return $role || $value == 0;
     }
 
     /**

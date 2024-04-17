@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool fixed
  * @property string value_type
  * @property bool reversed
- *@method static utility(int $groupId)
+ * @method static utility(int $groupId)
  * @method static rentability(int $groupId)
  */
 class TopValue extends Model
@@ -157,7 +157,7 @@ class TopValue extends Model
             $group = ProfileGroup::query()->find($group_id);
 
             // Retrieve top values for the current group and date.
-            /** @var Collection<TopValue> $top_values   */
+            /** @var Collection<TopValue> $top_values */
             $top_values = TopValue::query()
                 ->where('type', TopValue::UTILITY)
                 ->where([
@@ -449,20 +449,20 @@ class TopValue extends Model
 
     }
 
-    public static function  getRentabilityGauges($date, $common_name = ''): array
+    public static function getRentabilityGauges($date, $common_name = ''): array
     {
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
         //$groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
-        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month)->pluck('id')->toArray();
+        $groups = ProfileGroup::withRentability($carbon->year, $carbon->month);
 
         if (!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
 
-        foreach ($groups as $group_id) {
-            $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
+        foreach ($groups as $group) {
+            $gauges[] = self::getRentabilityGauge($date, $group, $common_name);
         }
 
         $values_asc = array_column($gauges, 'value');
@@ -471,7 +471,7 @@ class TopValue extends Model
         return $gauges;
     }
 
-    public static function getRentabilityGaugesOfGroup($date, $group_id, $common_name = ''): array
+    public static function getRentabilityGaugesOfGroup($date, $group, $common_name = ''): array
     {
         $gauges = [];
 
@@ -479,15 +479,13 @@ class TopValue extends Model
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
 
-        $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
+        $gauges[] = self::getRentabilityGauge($date, $group, $common_name);
 
         return $gauges;
     }
 
-    private static function getRentabilityGauge($date, $group_id, $common_name): array
+    private static function getRentabilityGauge($date, ProfileGroup $group, $common_name): array
     {
-        $group = ProfileGroup::find($group_id);
-
         $tv = new TopValue();
         $tv->options = '[]';
 
@@ -511,8 +509,8 @@ class TopValue extends Model
         $gauge = [
             'id' => 9991155,
             'name' => $common_name != '' ? $common_name : $group->name,
-            'value' => (float)AnalyticStat::getRentability($group_id, $date),
-            'group_id' => $group_id,
+            'value' => (float)AnalyticStat::getRentability($group, $date),
+            'group_id' => $group->id,
             'place' => 1,
             'unit' => '%',
             'editable' => false,
@@ -528,7 +526,7 @@ class TopValue extends Model
             'value_type' => 'sum',
             'sections' => $options['staticLabels']['labels'],
             'options' => $options,
-            'diff' => AnalyticStat::getRentabilityDiff($group_id, $tdate)
+            'diff' => AnalyticStat::getRentabilityDiff($group->id, $tdate)
         ];
 
         return $gauge;
@@ -580,7 +578,6 @@ class TopValue extends Model
                 ->diffInDays();
             $row['date_formatted'] = $group->created_at
                 ->format('d.m.Y');
-            $row['archived_date'] = $group->archived_date;
 
             for ($i = 1; $i <= 12; $i++) {
 
@@ -678,6 +675,8 @@ class TopValue extends Model
         $table = [];
 
         $date = Carbon::createFromDate($year, $month, 1);
+        $xdate = $date->format('Y-m-d');
+
         $groups = ProfileGroup::query()
             ->whereNotIn('id', [34, 58, 26])
             ->where('active', 1)
@@ -695,9 +694,6 @@ class TopValue extends Model
 
             $row['date'] = $group->created_at->diffInDays();
             $row['date_formatted'] = $group->created_at->format('d.m.Y');
-
-
-            $xdate = $date->format('Y-m-d');
 
             /**
              * get salary
@@ -800,5 +796,12 @@ class TopValue extends Model
     public function groups(): BelongsTo
     {
         return $this->belongsTo(ProfileGroup::class, 'group_id', 'id');
+    }
+
+    public static function rentabilityCacheKey(Carbon $date): string
+    {
+        $cacheKey = $date->isCurrentMonth() ? now()->format("Y-m-d") : $date->format('Y-m');
+        $cacheKey .= 'getRentability';
+        return $cacheKey;
     }
 }

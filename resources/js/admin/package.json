@@ -16,6 +16,7 @@
     "@floating-ui/dom": "1.0.0",
     "@mdi/font": "^7.0.96",
     "@tinymce/tinymce-vue": "^5.1.0",
+    "@types/tinymce": "^4.6.9",
     "@vueuse/core": "^8.9.4",
     "apexcharts-clevision": "^3.28.5",
     "axios": "^0.27.2",

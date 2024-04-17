@@ -71,7 +71,7 @@ class Mailing
      */
     public function fetchNotifications(): ?Collection
     {
-        return MailingNotification::with('recipients')->get();
+        return MailingNotification::with('recipients', 'creator:id,name,last_name')->get();
     }
 
     /**

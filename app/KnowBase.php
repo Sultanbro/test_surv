@@ -8,6 +8,21 @@ use App\Contracts\CourseInterface;
 use App\Models\KnowBaseModel;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property $id
+ * @property $parent_id
+ * @property $user_id
+ * @property $editor_id
+ * @property $is_category
+ * @property $title
+ * @property $text
+ * @property $order
+ * @property $read_pairs
+ * @property $edit_pairs
+ * @property $access
+ * @property $created_at
+ * @property $updated_at
+ */
 class KnowBase extends Model implements CourseInterface
 {
     use SoftDeletes;
@@ -50,6 +65,11 @@ class KnowBase extends Model implements CourseInterface
         return $this->hasMany(self::class, 'parent_id')
             ->orderBy('order')
             ->with('children', 'questions');
+    }
+
+    public function onlyChildren()
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('order');
     }
 
     public function item_model()
@@ -148,7 +168,7 @@ class KnowBase extends Model implements CourseInterface
             if ($item->model_type == 'App\\ProfileGroup') {
                 $group = \App\ProfileGroup::find($item->model_id);
                 if (!$group) continue;
-                $arr = array_merge($arr, json_decode($group->users));
+                $arr = array_merge($arr, $group->usersWithTrashed()->pluck('id')->toArray() ?? []);
             }
 
             if ($item->model_type == 'App\\Position') {

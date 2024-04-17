@@ -15,6 +15,8 @@ class QuarterPremiumUpdateDTO
      * @param string|null $to
      * @param int|null $sum
      * @param string|null $cell
+     * @param string|null $method
+     * @param string|null $fact
      */
     public function __construct(
         public int     $id,
@@ -27,6 +29,8 @@ class QuarterPremiumUpdateDTO
         public ?string $to,
         public ?int    $sum,
         public ?string $cell,
+        public ?string $method,
+        public ?string $fact,
     )
     {
     }
@@ -46,6 +50,8 @@ class QuarterPremiumUpdateDTO
             'to' => $this->to,
             'sum' => $this->sum,
             'cell' => $this->cell,
+            'method' => $this->method,
+            'fact' => $this->fact,
         ];
     }
 }

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\Payment;
 
-use App\DTO\Api\DoPaymentDTO;
-use App\Rules\CheckTariffLimit;
+use App\DTO\Api\PaymentDTO;
+use App\Enums\Payments\CurrencyEnum;
 use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -29,30 +29,29 @@ class DoPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency'          => 'required|in:kzt,rub,dollar',
-            'tariff_id'         => ['required', 'integer', 'exists:tariff,id', new TariffExist],
+            'currency' => 'required|in:kzt,rub,usd',
+            'tariff_id' => ['required', 'integer', new TariffExist],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
-            'auto_payment'      => 'bool'
         ];
     }
 
     /**
-     * @return DoPaymentDTO
+     * @return PaymentDTO
      */
-    public function toDto(): DoPaymentDTO
+    public function toDto(): PaymentDTO
     {
         $validated = $this->validated();
 
         $currency = Arr::get($validated, 'currency');
         $tariffId = Arr::get($validated, 'tariff_id');
-        $extraUsersLimit = Arr::get($validated, 'extra_users_limit');
-        $autoPayment = Arr::get($validated, 'auto_payment');
+        $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
+        $provider = CurrencyEnum::provider($currency);
 
-        return new DoPaymentDTO(
+        return new PaymentDTO(
             $currency,
             $tariffId,
             $extraUsersLimit,
-            $autoPayment
+            $provider
         );
     }
 }

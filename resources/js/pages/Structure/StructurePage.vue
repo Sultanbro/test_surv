@@ -62,16 +62,22 @@
 				ref="departmentsArea"
 				class="departments-area"
 			>
-				<template v-if="rootCard">
-					<StructureItem
-						ref="rootCard"
-						:card="rootCard"
-						:level="0"
-						:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
-						@scrollToBlock="scrollToBlock"
-						@updateLines="drawLines"
-					/>
-				</template>
+				<StructureItem
+					v-if="rootCard"
+					ref="rootCard"
+					:card="rootCard"
+					:level="0"
+					:dictionaries="isDemo ? demo.dictionaries : actualDictionaries"
+					@scrollToBlock="scrollToBlock"
+					@updateLines="drawLines"
+				/>
+				<div
+					v-else-if="isReady && isEditMode"
+					class="structure-add-root"
+					@click="addCard(null)"
+				>
+					Добавить карточку
+				</div>
 			</div>
 		</div>
 
@@ -103,6 +109,21 @@
 					size="lg"
 				>
 					Обновлять автоматически информацию о&nbsp;руководителях отделов
+				</b-form-checkbox>
+				<b-form-checkbox
+					v-model="settings.rootBlock"
+					switch
+					size="lg"
+				>
+					Показывать собственника
+					<img
+						v-b-popover.hover.html="`Тот кто создал корпоративный портал`"
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						tabindex="-1"
+						width="20"
+					>
 				</b-form-checkbox>
 			</template>
 			<template #footer>
@@ -153,7 +174,8 @@ export default {
 			leftMarginMainCard: 0,
 			isSettings: false,
 			settings: {
-				autoManager: false
+				autoManager: false,
+				rootBlock: false,
 			}
 		}
 	},
@@ -169,11 +191,12 @@ export default {
 			'isDemo',
 			'demo',
 			'moreUsers',
+			'isReady',
 		]),
 		actualDictionaries(){
 			return {
 				users: this.dictionaries.users.filter(user => {
-					return !user.deleted_at && user.last_seen
+					return !user.deleted_at && (user.last_seen || (user.created_at && +this.$moment(user.created_at).format('YYYY') > 2023))
 				}),
 				/* eslint-disable-next-line camelcase */
 				profile_groups: this.dictionaries.profile_groups.filter(group => {
@@ -189,37 +212,45 @@ export default {
 			return this.dictionaries.users.find(user => user.email === this.centralOwner.email)
 		},
 		cardsOrFirst(){
-			if(this.cards && this.cards.lengtkh){
-				return this.cards
-			}
-			/* eslint-disable camelcase */
-			const ownerCard = {
-				...this.getEmptyCard(),
-				id: null,
-				parent_id: null,
-				name: 'Генеральный директор',
-				is_vacant: false,
-			}
-			/* eslint-enable camelcase */
-
-			if(this.owner){
+			if(this.settings.rootBlock) {
 				/* eslint-disable camelcase */
-				ownerCard.manager = {
-					user_id: this.owner.id,
-					position_id: this.owner.position_id
+				const ownerCard = {
+					...this.getEmptyCard(),
+					id: null,
+					parent_id: null,
+					name: 'Генеральный директор',
+					is_vacant: false,
+					locked: true,
 				}
 				/* eslint-enable camelcase */
-				ownerCard.users = [
-					{
-						id: this.owner.id
+
+				if(this.owner){
+					/* eslint-disable camelcase */
+					ownerCard.manager = {
+						user_id: this.owner.id,
+						position_id: this.owner.position_id
 					}
-				]
+					/* eslint-enable camelcase */
+					ownerCard.users = [
+						{
+							id: this.owner.id
+						}
+					]
+				}
+				return [ownerCard]
 			}
-			return [ownerCard]
+
+			return this.fixedCards || []
 		},
 		rootCard(){
 			if(this.isDemo) return this.demo.structure.find(card => !card.parentId)
 			return this.cardsOrFirst.find(card => !card.parentId)
+		},
+		fixedCards(){
+			return this.cards.filter(card => {
+				const invalidGroup = card.group_id && !this.actualDictionaries.profile_groups.find(group => group.id === card.group_id)
+				return !invalidGroup
+			})
 		},
 	},
 	watch: {
@@ -258,6 +289,7 @@ export default {
 			'getEmptyCard',
 			'closeEditCard',
 			'setDemo',
+			'addCard',
 			'updateCard',
 			'deleteCard',
 		]),
@@ -351,12 +383,19 @@ export default {
 		async fetchSettings(){
 			const {settings} = await fetchSettings('structure_auto_manager')
 			this.settings.autoManager = !!parseInt(settings.custom_structure_auto_manager)
+			const {settings: settings2} = await fetchSettings('structure_root_block')
+			this.settings.rootBlock = !!parseInt(settings2.custom_structure_root_block)
 		},
 		async updateSettings(){
 			await updateSettings({
 				type: 'structure_auto_manager',
 				// eslint-disable-next-line camelcase
 				custom_structure_auto_manager: this.settings.autoManager
+			})
+			await updateSettings({
+				type: 'structure_root_block',
+				// eslint-disable-next-line camelcase
+				custom_structure_root_block: this.settings.rootBlock
 			})
 			this.$toast.success('Настройки сохранены')
 		},
@@ -402,16 +441,16 @@ export default {
 
 		async autoDeleteCards(){
 			if(!this.dictionaries?.profile_groups?.length) return
-			for(const card of this.cards){
+			for(const card of this.fixedCards){
 				if(!card.group_id) continue
 				const cardGroup = this.dictionaries.profile_groups.find(group => group.id === card.group_id)
 				if(!cardGroup || !cardGroup.active) await this.deleteCard(card.id)
 			}
 		},
 
-		async updateManagers(parent = null, parentManagers = [this.owner.id]){
+		async updateManagers(parent = null, parentManagers = []){
 			if(!this.dictionaries.users) return
-			for(const card of this.cards){
+			for(const card of this.fixedCards){
 				if(card.parent_id !== parent) continue
 				if(!card.group_id) {
 					// if(card.manager.user_id) parentManagers.push(card.manager.user_id)
@@ -463,3 +502,31 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.structure-container{
+
+	.custom-switch{
+		.custom-control-label{
+			&:before,
+			&:after{
+				top: 50% !important;
+				transform: translateY(-50%) !important;
+			}
+		}
+	}
+}
+.structure-add-root{
+	align-self: start;
+	padding: 20px;
+	border: 1px dashed #777;
+	font-size: 24px;
+	line-height: 1.2;
+	border-radius: 16px;
+	cursor: pointer;
+	&:hover{
+		color: #608EE9;
+		border-color: #608EE9;
+	}
+}
+</style>

@@ -405,8 +405,6 @@ export default {
 	},
 
 	created() {
-		this.defineSourcesAndGroups('with_sources_and_group_id');
-
 		this.recalc();
 		this.getSum();
 		if(!this.editable) {
@@ -477,21 +475,6 @@ export default {
 				(rv[x[key]] = rv[x[key]] || []).push(x);
 				return rv;
 			}, {});
-		},
-
-		defineSourcesAndGroups() {
-			this.items.forEach(el => {
-				el.source = 0;
-				el.group_id = 0;
-
-				if(el.activity_id != 0) {
-					let i = this.activities.findIndex(a => a.id == el.activity_id);
-					if(i != -1) {
-						el.source = this.activities[i].source
-						if(el.source == 1) el.group_id = this.activities[i].group_id
-					}
-				}
-			});
 		},
 
 		grouped_activities(source, group_id) {

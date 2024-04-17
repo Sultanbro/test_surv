@@ -119,7 +119,7 @@ export default {
 						for="phone"
 						class="col-sm-4 col-form-label font-weight-bold"
 					>
-						Мобильный
+						Мобильный <span class="red">*</span>
 						<img
 							v-b-popover.hover="'Только на этот номер могут отправляться сообщения васап'"
 							src="/images/dist/profit-info.svg"

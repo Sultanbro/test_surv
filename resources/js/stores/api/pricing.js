@@ -36,7 +36,7 @@ export async function fetchPricingPromo(code){
 	// const { data } = await axios.get('/pricing/promo', {params: {code}})
 	const data = {
 		code: 'secret' + code,
-		value: 100,
+		value: 0,
 	}
 	return data
 }

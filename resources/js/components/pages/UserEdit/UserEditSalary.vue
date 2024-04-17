@@ -57,6 +57,14 @@ export default {
 			type: Object,
 			default: () => ({})
 		},
+		taxGroups: {
+			type: Array,
+			default: () => [],
+		},
+		taxGroup: {
+			type: Number,
+			default: 0
+		},
 	},
 	data() {
 		return {
@@ -72,6 +80,7 @@ export default {
 			deleteTaxObj: null,
 			deleteTaxIdx: null,
 			uin: this.user ? this.user.uin : '',
+			isNalog: !!this.taxGroup,
 			isBP: ['test', 'bp'].includes(location.hostname.split('.')[0])
 		}
 	},
@@ -93,6 +102,16 @@ export default {
 		user(obj) {
 			if (obj.cards) {
 				this.cards = obj.cards
+				if(!this.cards.length){
+					this.cards.push({
+						bank: '',
+						country: '',
+						cardholder: '',
+						phone: '',
+						number: '',
+						iban: '',
+					})
+				}
 			}
 			const zp = this.user && this.user.zarplata
 				? this.user.zarplata.zarplata
@@ -107,7 +126,13 @@ export default {
 		},
 		taxes() {
 			this.myTaxes = this.taxes.slice().filter(item => item.isAssigned);
-		}
+		},
+		isNalog(){
+			if(!this.isNalog) this.$emit('tax', {target: {value: 0}})
+		},
+		taxGroup(){
+			this.isNalog = !!this.taxGroup
+		},
 	},
 	methods: {
 		addCard() {
@@ -117,19 +142,20 @@ export default {
 				cardholder: '',
 				phone: '',
 				number: '',
+				iban: '',
 			};
 			this.cards.push(card);
 		},
 		async deleteCard(key, card) {
 			this.cards.splice(key, 1);
-			if (card.hasOwnProperty('id')) {
+			if (card.id) {
 				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
 				if (!response.data) {
 					this.$toast.error('Ошибка при удалении карты');
 					return;
 				}
-				this.$toast.success('Карта удалена');
 			}
+			this.$toast.success('Карта удалена');
 		},
 		changeHeadphonesState() {
 			this.headphonesState = !this.headphonesState
@@ -137,34 +163,18 @@ export default {
 				this.user.headphones_sum = 0
 			}
 		},
-		addTax() {
-			const obj = {
-				id: Date.now(),
-				name: '',
-				value: '',
-				isPercent: false,
-				isNew: true
-			};
-			this.newTaxes.push(obj);
-			this.myTaxes.push(obj);
-			this.$emit('taxes_fill', {
-				newTaxes: this.newTaxes,
-				assignTaxes: this.assignTaxes,
-				editTaxes: this.editTaxes,
-			})
-		},
 		async unassignTax(tax, idx) {
 			if (!tax.isNew && this.user) {
 				const loader = this.$loading.show()
-				const formDataAssignTaxes = new FormData();
-				formDataAssignTaxes.append('user_id', this.user.id);
-				formDataAssignTaxes.append('tax_id', tax.id || tax.tax_id);
-				formDataAssignTaxes.append('is_assigned', 0);
-				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+				await this.axios.post('/tax/is_assigned', {
+					user_id: this.user.id,
+					tax_id: tax.id || tax.tax_id,
+					is_assigned: 0,
+				})
 				loader.hide()
 			}
 			this.myTaxes.splice(idx, 1);
-			this.$toast.success('Налог отменен');
+			this.$toast.success('Налог отменен')
 			this.$emit('taxes_update')
 		},
 		selectTaxNotAssigned(val) {
@@ -174,12 +184,16 @@ export default {
 				id,
 				tax_id: id,
 				value: 0,
+				endSubtraction: !!val.end_subtraction,
+				isPercent: !!val.is_percent,
 			});
 			this.myTaxes.push({
 				...val,
 				id,
 				tax_id: id,
 				value: 0,
+				endSubtraction: !!val.end_subtraction,
+				isPercent: !!val.is_percent,
 			});
 			const index = this.taxes.findIndex(t => t.id === id);
 			if(~index){
@@ -250,10 +264,10 @@ export default {
 		<div class="form-group row">
 			<label
 				for="zarplata"
-				class="col-sm-3 col-form-label font-weight-bold"
-			>Оклад</label>
+				class="col-sm-2 col-form-label font-weight-bold"
+			>Оклад<span class="red">*</span></label>
 
-			<div class="col-sm-3">
+			<div class="col-sm-4">
 				<input
 					id="zarplata"
 					v-model.number="zarplata"
@@ -264,10 +278,14 @@ export default {
 					placeholder="Оклад"
 					@input="checkNumber"
 				>
+				<UserEditError
+					:errors="errors"
+					name="zarplata"
+				/>
 			</div>
 
 
-			<div class="col-sm-3">
+			<div class="col-sm-5">
 				<select
 					id="currency"
 					v-model="currency"
@@ -318,9 +336,13 @@ export default {
 						BYN Белорусский рубль
 					</option> -->
 				</select>
+				<UserEditError
+					:errors="errors"
+					name="currency"
+				/>
 			</div>
 
-			<div class="col-sm-3 pl-0">
+			<div class="col-sm-1">
 				<img
 					id="user-currency"
 					src="/images/dist/profit-info.svg"
@@ -338,7 +360,59 @@ export default {
 				</b-popover>
 			</div>
 		</div>
-		<template v-if="user">
+
+		<div class="row">
+			<div class="col-sm-2 font-weight-bold d-flex aic">
+				<label class="d-inline-flex aic gap-3">
+					Налог с сотрудника
+					<b-form-checkbox
+						v-model="isNalog"
+						switch
+						@change="onEditTax(tax)"
+					/>
+				</label>
+				<img
+					v-b-popover.click.blur.html="'Включение функции удержания % или суммы налога от его оклада'"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					width="20"
+					alt="info icon"
+					tabindex="-1"
+				>
+			</div>
+			<div class="col-sm-4">
+				<select
+					v-if="isNalog"
+					:value="taxGroup"
+					class="form-control form-control-sm"
+					@change="$emit('tax', $event)"
+				>
+					<option
+						value="0"
+						selected
+						disabled
+					>
+						Выберите группу налогов
+					</option>
+					<option
+						v-for="tax in taxGroups"
+						:key="tax.id"
+						:value="tax.id"
+					>
+						{{ tax.name }}
+					</option>
+					<option
+						value="-1"
+						class="UserEdit-new-position"
+					>
+						Добавить группу налогов
+					</option>
+				</select>
+			</div>
+		</div>
+
+
+		<template v-if="false && user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
 				<div class="form-group row">
 					<label
@@ -424,48 +498,9 @@ export default {
 				</div>
 			</template>
 		</template>
-		<div
-			v-if="user"
-			class="form-group row"
-		>
-			<div class="col-sm-3">
-				<div class="custom-control custom-checkbox">
-					<input
-						id="headphones_amount_checkbox"
-						type="checkbox"
-						:checked="headphonesState"
-						class="custom-control-input"
-						@change="changeHeadphonesState"
-					>
-					<label
-						for="headphones_amount_checkbox"
-						class="custom-control-label"
-					>
-						Выдано оборудование в счет зарплаты <br>
-						{{ user.headphones_date }}
-					</label>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<label
-					for="headphones_amount"
-					class="font-weight-bold"
-				>На сумму</label>
-			</div>
-			<div class="col-sm-3">
-				<input
-					id="headphones_amount"
-					name="headphones_amount"
-					class="form-control"
-					type="number"
-					:value="user.headphones_sum"
-					:disabled="!headphonesState"
-				>
-			</div>
-			<div class="col-sm-3" />
-		</div>
 
 		<hr>
+
 		<div
 			v-if="user"
 			class="cards"
@@ -476,69 +511,94 @@ export default {
 			>
 				Нет ни одной карты
 			</div>
-			<div
-				v-for="(card, key) in cards"
-				:key="card.id"
-				class="d-flex form-group m0 row"
-			>
-				<div class="col-sm-2">
-					<input
-						v-model="card.bank"
-						:name="`cards[${key}][bank]`"
-						type="text"
-						class="form-control"
-						placeholder="Банк/Кошелек/..."
-					>
-				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.country"
-						:name="`cards[${key}][country]`"
-						type="text"
-						class="form-control"
-						placeholder="Страна"
-					>
-				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.cardholder"
-						:name="`cards[${key}][cardholder]`"
-						type="text"
-						class="form-control"
-						placeholder="Имя на карте"
-					>
-				</div>
-				<div class="col-sm-2">
-					<input
-						v-model="card.phone"
-						:name="`cards[${key}][phone]`"
-						type="text"
-						class="form-control"
-						placeholder="Телефон"
-					>
-				</div>
-				<div class="col-sm-3">
-					<input
-						v-model="card.number"
-						v-mask="`#### #### #### ####`"
-						:name="`cards[${key}][number]`"
-						type="text"
-						class="form-control card-number"
-						placeholder="Номер карты/счета"
-					>
-				</div>
-				<div class="col-sm-1">
-					<button
-						type="button"
-						class="btn btn-danger card-delete rounded"
-						@click="deleteCard(key, card)"
-					>
-						<i class="fa fa-trash" />
-					</button>
-				</div>
+			<div class="bold mb-2">
+				Банковская карта
+				<img
+					v-b-popover.click.blur.html="'Укажите данные карты на которую будет начисляться зарплата'"
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					width="20"
+					alt="info icon"
+					tabindex="-1"
+				>
 			</div>
+			<template v-for="(card, key) in cards">
+				<div
+					v-if="key < 1"
+					:key="card.id"
+					class="d-flex form-group m0 row"
+				>
+					<div class="col-sm-2">
+						<input
+							v-model="card.bank"
+							:name="`cards[${key}][bank]`"
+							type="text"
+							class="form-control"
+							placeholder="Банк/Кошелек/..."
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.country"
+							:name="`cards[${key}][country]`"
+							type="text"
+							class="form-control"
+							placeholder="Страна"
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.cardholder"
+							:name="`cards[${key}][cardholder]`"
+							type="text"
+							class="form-control"
+							placeholder="Имя на карте"
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.phone"
+							:name="`cards[${key}][phone]`"
+							type="text"
+							class="form-control"
+							placeholder="Телефон"
+						>
+					</div>
+					<div class="col-sm-2">
+						<input
+							v-model="card.number"
+							v-mask="`#### #### #### ####`"
+							:name="`cards[${key}][number]`"
+							type="text"
+							class="form-control card-number"
+							placeholder="Номер карты/счета"
+						>
+					</div>
+					<div class="col-sm-1">
+						<input
+							v-model="card.iban"
+							:name="`cards[${key}][iban]`"
+							type="text"
+							class="form-control"
+							placeholder="счет IBAN"
+						>
+					</div>
+					<div class="col-sm-1">
+						<!-- <button
+							type="button"
+							class="btn btn-danger card-delete rounded"
+							@click="deleteCard(key, card)"
+						>
+							<i class="fa fa-trash" />
+						</button> -->
+					</div>
+				</div>
+			</template>
 		</div>
-		<div class="row">
+		<div
+			v-if="false"
+			class="row"
+		>
 			<div class="col-sm-2">
 				<button
 					type="button"
@@ -549,9 +609,11 @@ export default {
 				</button>
 			</div>
 		</div>
+
 		<hr>
 
 		<div
+			v-if="false"
 			class="taxes"
 		>
 			<div
@@ -575,7 +637,7 @@ export default {
 					</b-form-checkbox>
 				</b-form-group>
 				<b-form-group
-					v-if="isBP && [5, 18, 20641, 27402].includes($laravel.userId)"
+					v-if="isBP && [20641, 27402, 5].includes($laravel.userId)"
 					class="custom-switch custom-switch-sm ml-2"
 				>
 					<b-form-checkbox
@@ -699,16 +761,13 @@ export default {
 			</template>
 		</b-modal>
 
-		<div class="row my-2">
+		<div
+			v-if="false"
+			class="row my-2"
+		>
 			<template v-if="zarplata > 0">
 				<div class="col-sm-2 d-flex aic">
-					<button
-						type="button"
-						class="btn btn-success btn-rounded btn-block"
-						@click="addTax"
-					>
-						<i class="fa fa-plus mr-2" /> Добавить налог
-					</button>
+					<!--  -->
 				</div>
 				<div class="col-sm-10">
 					<multiselect
@@ -716,7 +775,7 @@ export default {
 						track-by="name"
 						label="name"
 						class="pt-2"
-						placeholder="Выберите существующий"
+						placeholder="Добавить налог сотруднику"
 						@select="selectTaxNotAssigned"
 					/>
 				</div>
@@ -734,8 +793,8 @@ export default {
 					<label
 						for="uin"
 						class="col-sm-2 d-flex aic col-form-label font-weight-bold"
-					>ИИН</label>
-					<div class="col-sm-10">
+					>ИНН</label>
+					<div class="col-sm-9">
 						<input
 							id="uin"
 							v-model="uin"
@@ -743,7 +802,7 @@ export default {
 							type="text"
 							required
 							class="form-control"
-							placeholder="введите ИИН"
+							placeholder="введите ИНН"
 						>
 					</div>
 					<UserEditError
@@ -776,4 +835,13 @@ export default {
 		font-weight: 700;
 		line-height: 1;
 	}
+
+</style>
+
+<style lang="scss">
+.custom-switch{
+	.custom-control-label{
+		height: 15px;
+	}
+}
 </style>

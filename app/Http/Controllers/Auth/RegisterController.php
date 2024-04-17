@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\Traits\CreateTenant;
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\RegisterRequest;
+use App\Jobs\Registration\ProcessSendPasswordMail;
+use App\Models\CentralUser;
 use App\Providers\RouteServiceProvider;
 use App\Service\Tenancy\CabinetService;
 use App\User;
@@ -17,6 +19,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Throwable;
 
 class RegisterController extends Controller
 {
@@ -43,6 +46,7 @@ class RegisterController extends Controller
         $data = $request->validated();
 
         $centralUser = $this->createCentralUser($data);
+        $centralUser->update(['login_at' => now()]);
 
         $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
 
@@ -50,19 +54,25 @@ class RegisterController extends Controller
 
         $this->cabinetService->add($tenant->id, $user, true);
 
-        $this->createRegistrationLead($user);
+        $this->createRegistrationLead($user, $centralUser);
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
         ]);
     }
 
-    private function createRegistrationLead(User $user): void
+    private function createRegistrationLead(User $user, CentralUser $centralUser): void
     {
         try {
-            (new RegistrationLead($user, null))
+            $response = (new RegistrationLead($user, null))
                 ->setNeedCallback(false)
                 ->publish();
+
+            if (array_key_exists('result', $response)) {
+                $centralUser->update([
+                    'lead' => "https://infinitys.bitrix24.kz/crm/lead/details/" . $response['result']
+                ]);
+            }
         } catch (Exception) {
             return;
         }

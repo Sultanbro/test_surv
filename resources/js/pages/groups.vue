@@ -191,68 +191,22 @@
 				</div>
 
 				<div class="mt-4">
-					<div class="CompanyGroups-label">
-						Документы <b-badge>demo</b-badge>
-					</div>
-					<div
-						v-if="documents.length"
-						class="CompanyGroups-docs"
+					<b-form-checkbox
+						v-model="show_payment_terms"
+						:value="1"
+						:unchecked-value="0"
+						switch
 					>
-						<div
-							v-for="doc, index in documents"
-							:key="index"
-							class="CompanyGroups-doc"
-						>
-							<div class="CompanyGroups-docIcon">
-								<i class="fa fa-file-pdf" />
-							</div>
-							<div class="CompanyGroups-docName">
-								{{ doc.name }}
-							</div>
-							<div class="CompanyGroups-docControls">
-								<JobtronButton
-									small
-									@click="onEditDoc(doc)"
-								>
-									<i class="far fa-edit" />
-								</JobtronButton>
-								<JobtronButton
-									small
-									error
-									@click="onDeleteDoc(doc)"
-								>
-									<i class="fas fa-trash" />
-								</JobtronButton>
-							</div>
-						</div>
-					</div>
-					<div
-						v-else
-						class="CompanyGroups-docsEmpty"
-					>
-						Нет документов
-					</div>
-					<div class="CompanyGroups-add">
-						<JobtronButton
-							small
-							@click="onAddDoc()"
-						>
-							<i class="fas fa-plus" /> Добавить документ
-						</JobtronButton>
-					</div>
+						Показывать в профиле
+					</b-form-checkbox>
 				</div>
 
-				<div class="card groups-card mt-4">
+				<div
+					v-if="show_payment_terms"
+					class="card groups-card mt-4"
+				>
 					<div class="card-header">
-						<b-form-checkbox
-							v-model="show_payment_terms"
-							class="mt-3"
-							:value="1"
-							:unchecked-value="0"
-							switch
-						>
-							Показывать в профиле
-						</b-form-checkbox>
+						Информация в профиле
 					</div>
 					<div class="card-body">
 						<b-form-group label="Условия оплаты труда">
@@ -261,6 +215,71 @@
 								style="min-height: 150px;"
 							/>
 						</b-form-group>
+					</div>
+				</div>
+
+				<div
+					v-if="!addNewGroup"
+					class="card groups-card mt-4"
+				>
+					<div class="CompanyGroups-label card-header">
+						Документы
+					</div>
+					<div class="card-body">
+						<div
+							v-if="documents.length"
+							class="CompanyGroups-docs"
+						>
+							<div
+								v-for="doc, index in documents"
+								:key="index"
+								class="CompanyGroups-doc mb-2"
+							>
+								<div class="CompanyGroups-docIcon">
+									<img
+										src="/icon/doc-pdf.png"
+										alt="pdf"
+										width="24"
+									>
+								</div>
+								<a
+									:href="`/signature/view?group=${group_id}&doc=${doc.id}`"
+									target="_blank"
+									class="CompanyGroups-docName"
+								>
+									{{ doc.name }}
+								</a>
+								<div class="CompanyGroups-docControls">
+									<JobtronButton
+										small
+										@click="onEditDoc(doc)"
+									>
+										<i class="far fa-edit" />
+									</JobtronButton>
+									<JobtronButton
+										small
+										error
+										@click="onDeleteDoc(doc)"
+									>
+										<i class="fas fa-trash" />
+									</JobtronButton>
+								</div>
+							</div>
+						</div>
+						<div
+							v-else
+							class="CompanyGroups-docsEmpty"
+						>
+							Нет документов
+						</div>
+						<div class="CompanyGroups-add mt-4">
+							<JobtronButton
+								small
+								@click="onAddDoc()"
+							>
+								<i class="fas fa-plus" /> Добавить документ
+							</JobtronButton>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -314,7 +333,7 @@
 					class="btn btn-danger mr-2 rounded"
 					@click.stop="deleted"
 				>
-					<i class="fa fa-trash" /> Удалить группу
+					<i class="fa fa-trash" /> Удалить отдел
 				</button>
 			</div>
 		</div>
@@ -478,10 +497,15 @@
 			size="md"
 			:title="documentForm.id > 0 ? 'Редактирование документа' : 'Создание  документа'"
 			body-class="CompanyGroups-modal"
-			@ok="onSaveDoc"
+			:no-close-on-backdrop="uploadProgress > 0"
+			:no-close-on-esc="uploadProgress > 0"
+			:hide-header="uploadProgress > 0"
 		>
 			<b-row class="mb-4">
-				<b-col cols="3">
+				<b-col
+					cols="3"
+					class="pt-3"
+				>
 					Название
 				</b-col>
 				<b-col cols="9">
@@ -491,9 +515,15 @@
 				</b-col>
 			</b-row>
 
-			<b-row class="mb-4">
-				<b-col cols="3">
-					Файл
+			<b-row
+				v-if="documentForm.id <= 0"
+				class="mb-4"
+			>
+				<b-col
+					cols="3"
+					class="pt-3"
+				>
+					Файл pdf
 				</b-col>
 				<b-col cols="9">
 					<InputFile
@@ -501,11 +531,30 @@
 						@change="uploadDoc"
 					>
 						<div class="form-control">
-							{{ documentForm.file || 'Нет документа' }}
+							<div class="mt-2">
+								{{ documentForm.upload ? documentForm.upload.name : 'Нет документа' }}
+							</div>
 						</div>
 					</InputFile>
 				</b-col>
 			</b-row>
+
+			<b-progress
+				v-if="uploadProgress"
+				:value="uploadProgress"
+				:max="100"
+				show-progress
+				animated
+			/>
+			<template #modal-footer>
+				<b-btn
+					variant="primary"
+					:disabled="uploadProgress > 0"
+					@click="onSaveDoc"
+				>
+					OK
+				</b-btn>
+			</template>
 		</b-modal>
 	</div>
 </template>
@@ -617,20 +666,16 @@ export default {
 					value: 4,
 				},
 			],
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				}
-			],
+			documents: [],
 			documentForm: {
 				id: 0,
 				name: '',
 				file: '',
+				upload: null,
 			},
 			docId: 0,
 			docEditDialog: false,
+			uploadProgress: 0,
 		};
 	},
 	computed: {
@@ -725,6 +770,7 @@ export default {
 		async selectGroup(value) {
 			let loader = this.$loading.show();
 			try {
+				this.documents = []
 				const response = await this.axios.post('/timetracking/users-new', {
 					id: value.id,
 				})
@@ -760,6 +806,7 @@ export default {
 
 
 				// loadDocuments
+				this.fetchDocs(value.id)
 
 				loader.hide()
 			}
@@ -779,37 +826,42 @@ export default {
 			if (!this.new_status.length) return this.$toast.error('Введите название группы');
 			if (!this.workChartId) return this.$toast.error('Выберите график работы');
 			// save group data
-			let loader = this.$loading.show();
+			let loader = this.$loading.show()
+
 			if (this.addNewGroup) {
-				await this.axios.post('/timetracking/group/save-new', {
-					name: this.new_status,
-				})
-					.then((response) => {
-						if (response.data.status == 200) {
-							const dataPush = {
-								id: response.data.data.id,
-								group: response.data.data.name
-							};
-							this.statuses.push(dataPush);
-							this.activebtn = dataPush;
-						} else {
-							this.$toast.error(
-								'Название "' +
-									this.new_status +
-									'" не свободно, выберите другое имя для группы'
-							);
-							loader.hide();
-						}
-					});
+				try {
+					const {data} = await this.axios.post('/timetracking/group/save-new', {
+						name: this.new_status,
+					})
+					if (data.status == 200) {
+						const dataPush = {
+							id: data.data.id,
+							group: data.data.name
+						};
+						this.statuses.push(dataPush);
+						this.activebtn = dataPush;
+					}
+					else {
+						this.$toast.error(`Название "${this.new_status}" не свободно, выберите другое имя для группы`);
+					}
+				}
+				catch (error) {
+					this.$onError({error})
+				}
 			}
 
-			await this.axios.post('/work-chart/group/add', {
-				group_id: this.activebtn.id,
-				work_chart_id: this.workChartId
-			})
+			try {
+				await this.axios.post('/work-chart/group/add', {
+					group_id: this.activebtn.id,
+					work_chart_id: this.workChartId
+				})
+			}
+			catch (error) {
+				this.$onError({error})
+			}
 
-			await this.axios
-				.post('/timetracking/users/group/save-new', {
+			try {
+				await this.axios.post('/timetracking/users/group/save-new', {
 					group_id: this.activebtn.id,
 					users: this.value,
 					group_info: {
@@ -830,19 +882,14 @@ export default {
 					talk_hours: this.talk_hours,
 					talk_minutes: this.talk_minutes,
 				})
-				.then(() => {
-					// this.statuses = response.data.groups;
-					// this.activebtn = response.data.group;
-					this.$toast.info('Успешно сохранено');
-					this.messageoff();
+				this.$toast.info('Успешно сохранено');
+				this.messageoff()
+			}
+			catch (error) {
+				this.$onError({error})
+			}
 
-					loader.hide();
-				})
-				.catch((error) => {
-					console.error(error.response);
-					this.$toast.info(error.response);
-					loader.hide();
-				});
+			loader.hide()
 		},
 
 		deleted() {
@@ -927,33 +974,37 @@ export default {
 		},
 		getShiftDays,
 
-		async uploadDoc(files){
+		async fetchDocs(groupId){
+			try {
+				const {data} = await this.axios.get(`/signature/groups/${groupId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.original_name || 'Без названия',
+					file: doc.url,
+				}))
+			}
+			catch (error) {
+				window.onerror && window.onerror(error)
+				alert(error)
+			}
+		},
+		uploadDoc(files){
 			const file = files ? files[0] : null
 			if(!file) return
 
-			const loader = this.$loading.show()
-
-			const formData = new FormData()
-			formData.append('document', files[0])
-
-			try {
-				const {data} = await this.axios.post('/docs/upload', formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				})
-				this.documentForm.file = data.file
-			}
-			catch (error) {
-				console.error(error)
-			}
-			loader.hide()
+			this.documentForm.upload = file
 		},
 		onEditDoc(doc){
-			this.documentForm = JSON.parse(JSON.stringify(doc))
+			this.documentForm = {
+				...JSON.parse(JSON.stringify(doc)),
+				upload: null,
+			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		onSaveDoc(doc){
+			this.docEditDialog = true
 			if(doc.id > 0){
 				this.updateDoc()
 			}
@@ -966,28 +1017,38 @@ export default {
 				id: --this.docId,
 				name: '',
 				file: '',
+				upload: null,
 			}
+			this.uploadProgress = 0
 			this.docEditDialog = true
 		},
 		async createDoc(){
 			try {
-				// const {data} = await this.axios.push('/docs', this.documentForm)
-				// this.documents.push({
-				// 	...this.documentForm,
-				// 	id: data.id
-				// })
+				const onUploadProgress = event => {
+					this.uploadProgress = Math.round((event.loaded * 100) / event.total);
+				}
+				const formData = new FormData()
+				formData.append('file', this.documentForm.upload)
+				formData.append('original_name', this.documentForm.name)
+				await this.axios.post(`/signature/groups/${this.activebtn.id}/files`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					},
+					onUploadProgress,
+				})
+				this.fetchDocs(this.activebtn.id)
 				this.docEditDialog = false
 			}
 			catch (error) {
-				this.$toast.error(error)
 				console.error(error)
 			}
 		},
 		async updateDoc(){
 			try {
-				// await this.axios.push(`/docs/${this.documentForm.id}`, this.documentForm)
-				const index = this.documents.findIndex(d => d.id === this.documentForm.id)
-				if(~index) this.documents.splice(index, 1, JSON.parse(JSON.stringify(this.documentForm)))
+				await this.axios.put(`/signature/files/${this.documentForm.id}`, {
+					original_name: this.documentForm.name
+				})
+				this.fetchDocs()
 				this.docEditDialog = false
 			}
 			catch (error) {
@@ -996,11 +1057,13 @@ export default {
 			}
 		},
 		async onDeleteDoc(doc){
+			if(!confirm('Вы действительно хотите удалить документ?')) return
+
 			const index = this.documents.findIndex(d => d.id === doc.id)
 			if(~index) this.documents.splice(index, 1)
 			if(doc.id <= 0) return
 			try {
-				// await this.axios.delete(`/docs/${doc.id}`)
+				await this.axios.delete(`/signature/files/${doc.id}`)
 			}
 			catch (error) {
 				console.error(error)
@@ -1198,6 +1261,9 @@ export default {
 		display: flex;
 		align-items: center;
 		gap: 10px;
+		&:hover{
+			background-color: #eef;
+		}
 	}
 	&-docIcon{
 		flex: 0 0 32px;
@@ -1219,10 +1285,21 @@ export default {
 			border: 1px solid #e8e8e8;
 
 			font-size: 14px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
 
 			background-color: #F7FAFC !important;
 			border-radius: 6px !important;
 		}
+	}
+
+	.progress-bar-striped{
+		background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+		background-size: 1rem 1rem;
+	}
+	.progress-bar-animated{
+		animation: progress-bar-stripes 1s linear infinite;
 	}
 }
 </style>

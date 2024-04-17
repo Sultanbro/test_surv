@@ -36,8 +36,7 @@ final class AnalyticCacheStorage
         string $key
     ): Collection
     {
-        return Cache::tags(self::$tag)
-            ->get($key);
+        return Cache::tags(self::$tag)->get($key);
     }
 
     /**

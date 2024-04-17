@@ -27,22 +27,6 @@ class CreateGroupAnalyticsParts extends Command
      */
     protected $description = 'Create TopValues and Decomposition';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     * @throws Throwable
-     */
     public function handle(): void
     {
         $this->cleanDuplicates();

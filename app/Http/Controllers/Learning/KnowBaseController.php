@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers\Learning;
 
-use App\KnowBase;
-use App\Models\KnowBaseModel;
-use App\Models\TestQuestion;
-use App\User;
-use App\ProfileGroup;
-use App\Position;
-use App\Models\CourseItemModel;
-use Auth;
-use App\Setting;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Resources\KB\KnowBaseTreeResource;
+use App\Service\NotificationService;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
+use App\Service\KB\KnowBaseService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use App\Models\CourseItemModel;
+use Illuminate\Http\Request;
+use App\Models\KnowBaseModel;
+use App\Models\TestQuestion;
+use App\UserNotification;
+use App\ProfileGroup;
+use Carbon\Carbon;
+use App\KnowBase;
+use App\Position;
+use App\Setting;
+use App\User;
+use Auth;
 
 class KnowBaseController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -33,15 +37,14 @@ class KnowBaseController extends Controller
         return view('admin.books');
     }
 
-    public function get() : array
+    public function get(): array
     {
         $books = KnowBase::query()
             ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
             ->orderBy('order');
 
-        if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
+        if (!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
 
-        // dd($books->toSql());
 
         return [
             'books' => $books->get()->toArray()
@@ -51,12 +54,12 @@ class KnowBaseController extends Controller
     /**
      * Get knowbase ids that user can see
      */
-    private function getBooks($access = 0) : array
+    private function getBooks($access = 0): array
     {
         /** @var User $auth_user */
         $auth_user = auth()->user();
         $books = [];
-        if($auth_user->is_admin == 1)  {
+        if ($auth_user->is_admin == 1) {
             $books = KnowBase::query()
                 ->whereNull('parent_id')
                 ->orWhere('is_category', 1)
@@ -69,24 +72,24 @@ class KnowBaseController extends Controller
             $supervisor_groups = $auth_user->inGroups(true)->pluck('id')->toArray();
             $group_ids = array_unique(array_merge($employee_groups, $supervisor_groups));
 
-            $position_id =  $auth_user->position_id;
-            $user_id =  auth()->id();
+            $position_id = $auth_user->position_id;
+            $user_id = auth()->id();
 
             $up = KnowBaseModel::query()
-                ->where(function($query) use ($group_ids, $access) {
+                ->where(function ($query) use ($group_ids, $access) {
                     $query->where('model_type', 'App\\ProfileGroup')
                         ->whereIn('model_id', $group_ids);
-                    if($access == 2) $query->where('access', 2);
+                    if ($access == 2) $query->where('access', 2);
                 })
-                ->orWhere(function($query) use ($position_id, $access) {
+                ->orWhere(function ($query) use ($position_id, $access) {
                     $query->where('model_type', 'App\\Position')
                         ->where('model_id', $position_id);
-                    if($access == 2) $query->where('access', 2);
+                    if ($access == 2) $query->where('access', 2);
                 })
-                ->orWhere(function($query) use ($user_id, $access) {
+                ->orWhere(function ($query) use ($user_id, $access) {
                     $query->where('model_type', 'App\\User')
                         ->where('model_id', $user_id);
-                    if($access == 2) $query->where('access', 2);
+                    if ($access == 2) $query->where('access', 2);
                 });
 
             $up = $up->get('book_id')
@@ -99,9 +102,9 @@ class KnowBaseController extends Controller
             foreach ($group_ids as $group_id) {
                 $readOrEditPairs[] = ['position_id' => $auth_user->position_id, 'group_id' => $group_id];
             }
-            $books_with_read_access =  KnowBase::withTrashed()
+            $books_with_read_access = KnowBase::withTrashed()
                 ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
-                ->whereIn('access', $access == 2 ? [2] : [1,2])
+                ->whereIn('access', $access == 2 ? [2] : [1, 2])
                 ->orWhere(function ($query) use ($readOrEditPairs) {
                     if (count($readOrEditPairs) > 0) {
                         $query->whereJsonContains('read_pairs', $readOrEditPairs[0]);
@@ -130,7 +133,7 @@ class KnowBaseController extends Controller
     /**
      * Search knowbases that contains $phrase
      */
-    public function search(Request $request) : array
+    public function search(Request $request): array
     {
         $kbs = $this->getBooks();
         $allIds = [];
@@ -144,7 +147,6 @@ class KnowBaseController extends Controller
                 $q->where('title', 'like', $phrase)
                     ->orWhere('text', 'like', $phrase);
             })
-
             ->whereIn('id', $allIds)
             ->searchChildrenIdsByKbId($request->id)
             ->orderBy('order')
@@ -152,8 +154,7 @@ class KnowBaseController extends Controller
             ->get();
 
 
-
-        foreach ($items as $key => $item) {
+        foreach ($items as $item) {
             $item->text = $this->cutFragment($item->text, $request->text);
             $item->book = $this->getTopParent($item->id);
         }
@@ -166,7 +167,7 @@ class KnowBaseController extends Controller
     /**
      * Cut long text to search results
      */
-    private function cutFragment($text, $fragment) : String
+    private function cutFragment($text, $fragment): string
     {
         $plainText = strip_tags($text);
 
@@ -182,14 +183,14 @@ class KnowBaseController extends Controller
     /**
      * Get archived knowbases
      */
-    public function getArchived(Request $request) : array
+    public function getArchived(): array
     {
-        if(auth()->user()->can('kb_edit')) {
+        if (auth()->user()->can('kb_edit')) {
             $books = KnowBase::onlyTrashed()
-            ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
-            ->orderBy('order')
-            ->get()
-            ->toArray();
+                ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
+                ->orderBy('order')
+                ->get()
+                ->toArray();
         } else {
             $books = [];
         }
@@ -200,56 +201,55 @@ class KnowBaseController extends Controller
     }
 
     /**
-     * Get children of knowbase
+     * Get children of know base
      */
-    public function getTree(Request $request) : array
+    public function getTree(Request $request): array
     {
-        $course_item_id = $request->course_item_id;
+        $course_item_id = $request->get('course_item_id');
 
         $trees = [];
         $book = null;
 
         $can_read = false;
-        if(auth()->user()->can('kb_edit')) {
+        if (auth()->user()->can('kb_edit')) {
             $can_read = true;
-        } else if(in_array($request->id, $this->getBooks())) {
+        } else if (in_array($request->get('id'), $this->getBooks())) {
             $can_read = true;
         }
 
+        $favouriteIds = [];
 
-
-        if($can_read || ($request->has('can_read') && $request->can_read)) {
-            $trees = KnowBase::where('parent_id', $request->id)
+        if ($can_read || ($request->has('can_read') && $request->get('can_read'))) {
+            $trees = KnowBase::where('parent_id', $request->get('id'))
                 ->with('children')
                 ->with('questions')
                 ->orderBy('order')
                 ->get();
 
             $children_ids = KnowBase::query()->searchChildrenIdsByKbId($request->id)->pluck('id')->toArray();
-            $children_ids[] = $request->id;
+            $children_ids[] = $request->get('id');
             $favouriteIds = \DB::table('user_starred_kbs')->where('user_id', Auth::id())->whereIn('kb_id', $children_ids)->pluck('kb_id')->toArray();
 
-            foreach ($trees as $tree) {
-                $tree->parent_id = null;
-            }
 
             $trees->toArray();
 
-            $book = KnowBase::where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
+            /** @var KnowBase $book */
+            $book = KnowBase::query()
+                ->where(fn($query) => $query->whereNull('parent_id')->orWhere('is_category', 1))
                 ->orderBy('order')
-                ->where('id', $request->id)
+                ->where('id', $request->get('id'))
                 ->first();
 
 
-           if($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
+            if ($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
 
         }
 
         $item_models = [];
-        if($book){
+        if ($book) {
             $kb_ids = $book->getOrder();
 
-            $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
+            $item_models = CourseItemModel::query()->whereIn('item_id', $kb_ids)
                 ->where('type', 3)
                 ->where('user_id', auth()->id())
                 ->where('course_item_id', $course_item_id)
@@ -265,21 +265,40 @@ class KnowBaseController extends Controller
         ];
     }
 
+    public function getAllTree(KnowBaseService $service): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildAllTree())
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getUserTree(KnowBaseService $service): JsonResponse
+    {
+        return $this->response(
+            message: "Success",
+            data: KnowBaseTreeResource::collection($service->buildUserTree())
+        );
+    }
+
     /**
      * get page of knowbase
      */
-    public function getPage(Request $request) : array
+    public function getPage(Request $request): array
     {
-        $course_item_id = $request->course_item_id;
+        $course_item_id = $request->get('course_item_id');
         $user_id = auth()->id();
 
         /** @var KnowBase $page */
         $page = KnowBase::withTrashed()
             //->with('questions')
-			->with('questions.result', function ($query) use ($course_item_id, $user_id) {
-				$query->where('course_item_model_id', $course_item_id)
-					->where('user_id', $user_id);
-			})
+            ->with('questions.result', function ($query) use ($course_item_id, $user_id) {
+                $query->where('course_item_model_id', $course_item_id)
+                    ->where('user_id', $user_id);
+            })
             ->find($request->id);
 
         $page->item_model = CourseItemModel::where('user_id', $user_id)
@@ -288,7 +307,9 @@ class KnowBaseController extends Controller
             ->where('course_item_id', 0)
             ->first();
 
+        /** @var User $author */
         $author = User::withTrashed()->find($page->user_id);
+        /** @var User $editor */
         $editor = User::withTrashed()->find($page->editor_id);
 
         $page->author = $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
@@ -296,7 +317,7 @@ class KnowBaseController extends Controller
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->questions = TestQuestion::where('testable_type', 'App\Knowbase')->where('testable_id', $request->id)->get();
-        $page->editor_avatar = $editor ? 'users_img/'.$editor->img_url : 'images/avatar.png';
+        $page->editor_avatar = $editor ? 'users_img/' . $editor->img_url : 'images/avatar.png';
 
 
         $breadcrumbs = $this->getBreadcrumbs($page);
@@ -304,10 +325,10 @@ class KnowBaseController extends Controller
 
         $trees = [];
 
-        if ($request->refresh) {
+        if ($request->get('refresh')) {
             if ($top_parent) {
-                $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')
-                ->orderBy('order')->get();
+                $trees = KnowBase::query()->where('parent_id', $top_parent->id)->with('children')
+                    ->orderBy('order')->get();
 
                 foreach ($trees as $tree) {
                     $tree->parent_id = null;
@@ -318,15 +339,15 @@ class KnowBaseController extends Controller
 
 
         $can_read = false;
-        if($top_parent != null && auth()->user()->can('kb_edit')) {
+        if ($top_parent != null && auth()->user()->can('kb_edit')) {
             $can_read = true;
-        } else if($top_parent != null && in_array($top_parent->id, $this->getBooks())) {
+        } else if ($top_parent != null && in_array($top_parent->id, $this->getBooks())) {
             $can_read = true;
-        } else if($course_item_id != 0) {
+        } else if ($course_item_id != 0) {
             $can_read = true;
         }
 
-        if($can_read) {
+        if ($can_read) {
             $data = [
                 'book' => $page,
                 'breadcrumbs' => $breadcrumbs,
@@ -347,9 +368,10 @@ class KnowBaseController extends Controller
 
     /**
      * find top parent of knowbase // Or find parent where is_category = 1
+     * @param $id
      * @return Knowbase | null
      */
-    private function getTopParent($id)
+    private function getTopParent($id): ?KnowBase
     {
         /** @var KnowBase $kb */
         $kb = KnowBase::withTrashed()->find($id);
@@ -362,13 +384,14 @@ class KnowBaseController extends Controller
     /**
      * Breadcrumbs of page
      */
-    private function getBreadcrumbs($page) : array
+    private function getBreadcrumbs($page): array
     {
         $breadcrumbs = [];
         $breadcrumbs[] = $page;
         $parent_id = $page->parent_id;
 
         while ($parent_id != null) {
+            /** @var KnowBase $xpage */
             $xpage = KnowBase::withTrashed()->find($parent_id);
             if ($xpage) {
                 $breadcrumbs[] = $xpage;
@@ -385,9 +408,10 @@ class KnowBaseController extends Controller
      * Update access to knowbase
      * update knowbase
      */
-    public function updateSection(Request $request) : void
+    public function updateSection(Request $request): void
     {
-        $page = KnowBase::find($request->id);
+        /** @var KnowBase $page */
+        $page = KnowBase::query()->find($request->get('id'));
         if ($page) {
             $page->title = $request->title;
             $page->editor_id = Auth::user()->id;
@@ -396,10 +420,10 @@ class KnowBaseController extends Controller
             $page->save();
 
 
-            KnowBaseModel::where('book_id', $request->id)->delete();
+            KnowBaseModel::query()->where('book_id', $request->get('id'))->delete();
 
             $access = 0;
-            if(
+            if (
                 count($request['who_can_read']) == 1
                 && $request['who_can_read'][0]['id'] == 0
                 && $request['who_can_read'][0]['type'] == 0
@@ -407,10 +431,10 @@ class KnowBaseController extends Controller
                 $access = 1;
 
             } else {
-                $this->saveBookAccesses($request->id, $request['who_can_read'], 1);
+                $this->saveBookAccesses($request->get('id'), $request['who_can_read']);
             }
 
-            if(
+            if (
                 count($request['who_can_edit']) == 1
                 && $request['who_can_edit'][0]['id'] == 0
                 && $request['who_can_edit'][0]['type'] == 0
@@ -433,7 +457,7 @@ class KnowBaseController extends Controller
      * Get favourite knowbases
      *
      */
-    public function getFavourites()
+    public function getFavourites(): array
     {
         $favourites = DB::table('user_starred_kbs')->where('user_id', Auth::id())->pluck('kb_id')->toArray();
 
@@ -454,11 +478,11 @@ class KnowBaseController extends Controller
      * Update access to knowbase
      * update knowbase
      */
-    public function toggleFavourite(Request $request, KnowBase $kb)
+    public function toggleFavourite(Request $request, KnowBase $kb): void
     {
-        $favourite = DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->first();
+        $favourite = DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $kb->id)->first();
         if ($favourite && $request->toggle != 1) {
-            DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id',$kb->id)->delete();
+            DB::table('user_starred_kbs')->where('user_id', Auth::id())->where('kb_id', $kb->id)->delete();
         } elseif (!$favourite && $request->toggle == 1) {
             \DB::table('user_starred_kbs')->insert([
                 'user_id' => Auth::id(),
@@ -470,12 +494,12 @@ class KnowBaseController extends Controller
     /**
      * save knowbase accesses
      */
-    private function saveBookAccesses($book_id, $items, $level = 1) : void
+    private function saveBookAccesses($book_id, $items, $level = 1): void
     {
         foreach ($items as $key => $item) {
-            if($item['type'] == 1) $model = 'App\\User';
-            if($item['type'] == 2) $model = 'App\\ProfileGroup';
-            if($item['type'] == 3) $model = 'App\\Position';
+            if ($item['type'] == 1) $model = 'App\\User';
+            if ($item['type'] == 2) $model = 'App\\ProfileGroup';
+            if ($item['type'] == 3) $model = 'App\\Position';
 
             KnowBaseModel::create([
                 'model_type' => $model,
@@ -491,7 +515,8 @@ class KnowBaseController extends Controller
      */
     public function updatePage(Request $request, $id = null): void
     {
-        $page = KnowBase::find($request->id);
+        /** @var KnowBase $page */
+        $page = KnowBase::query()->find($request->id);
         if ($page) {
             $page->text = $request->text ?? '';
 
@@ -507,9 +532,9 @@ class KnowBaseController extends Controller
     /**
      * check settings
      */
-    private function canSaveWithoutTest() : bool
+    private function canSaveWithoutTest(): bool
     {
-        $setting = Setting::where('name', 'allow_save_kb_without_test')->first();
+        $setting = Setting::query()->where('name', 'allow_save_kb_without_test')->first();
         return $setting && $setting->value == 1;
     }
 
@@ -545,14 +570,38 @@ class KnowBaseController extends Controller
             $message = 'База знаний: <b>' . $TOP_parent->title . '</b><br><b>' . $text . ':</b> ';
             $message .= '<a href="/kb?s=' . $TOP_parent->id . '&b=' . $page->id . '" target="_blank">' . $page->title . '</a>';
 
+            $today = now()->toDateString();
+
             foreach ($users as $key => $user_id) {
-                \App\UserNotification::query()->create([
-                    'user_id' => $user_id,
-                    'about_id' => 0,
-                    'title' => 'Изменения в базе знаний',
-                    'group' => now(),
-                    'message' => $message
-                ]);
+                $existingNotification = UserNotification::query()
+                    ->where('user_id', $user_id)
+                    ->where('title', 'Изменения в базе знаний')
+                    ->whereDate('created_at', $today)
+                    ->first();
+
+                if ($existingNotification) {
+                    $found = false;
+                    $splits = explode("<br><br>", $existingNotification->message);
+                    foreach ($splits as $split) {
+                        if (strpos($split, $TOP_parent->title) && strpos($split, $page->title)) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $existingNotification->update([
+                            'message' => $existingNotification->message . "<br><br>" . $message, // Append the new message
+                        ]);
+                    }
+                } else {
+                    UserNotification::query()->create([
+                        'user_id' => $user_id,
+                        'about_id' => 0,
+                        'title' => 'Изменения в базе знаний',
+                        'group' => now(),
+                        'message' => $message,
+                    ]);
+                }
             }
         }
     }
@@ -560,28 +609,28 @@ class KnowBaseController extends Controller
     /**
      * order of knowbases
      */
-    public function saveOrder(Request $request, $id = null) : void
+    public function saveOrder(Request $request, $id = null): void
     {
 
-        $page = KnowBase::find($request->id);
+        $page = KnowBase::query()->find($request->id);
         if ($page) {
             $page->parent_id = $request->parent_id;
             $page->order = $request->order;
             $page->save();
         }
 
-        $pages = KnowBase::where('parent_id', $request->parent_id)
+        $pages = KnowBase::query()->where('parent_id', $request->parent_id)
             ->where('id', '!=', $request->id)
             ->orderBy('order', 'asc')
             ->get();
 
         $order = 0;
         foreach ($pages as $page) {
-            if($order == $request->order) {
+            if ($order == $request->order) {
                 $order++;
             }
             $page->order = $order;
-                $page->save();
+            $page->save();
             $order++;
         }
     }
@@ -589,9 +638,9 @@ class KnowBaseController extends Controller
     /**
      * new knowbase page
      */
-    public function createPage(Request $request) : KnowBase
+    public function createPage(Request $request): KnowBase
     {
-        $kb = KnowBase::where('parent_id', $request->id)->orderBy('order', 'desc')->first();
+        $kb = KnowBase::query()->where('parent_id', $request->id)->orderBy('order', 'desc')->first();
         $order = $kb ? $kb->order + 1 : 0;
 
         $kb = KnowBase::create([
@@ -617,7 +666,7 @@ class KnowBaseController extends Controller
     /**
      * create parent knowbase (book)
      */
-    public function addSection(Request $request) : KnowBase
+    public function addSection(Request $request): KnowBase
     {
         $request->validate([
             'parent_id' => 'nullable|int'
@@ -642,19 +691,21 @@ class KnowBaseController extends Controller
     /**
      * delete parent knowbase (book)
      */
-    public function deleteSection(Request $request) : void
+    public function deleteSection(Request $request): void
     {
         $kb = KnowBase::find($request->id);
-        if($kb) $kb->delete();
+        if ($kb) $kb->delete();
     }
 
     /**
      * delete child knowbase
      */
-    public function deletePage(Request $request) : void
+    public function deletePage(Request $request): void
     {
         $kb = KnowBase::find($request->id);
         if ($kb) {
+            $children = KnowBase::getAllChildrenIdsByKbId($kb->id);
+            KnowBase::query()->whereIn('id', $children)->delete();
             $kb->delete();
         }
 
@@ -663,10 +714,10 @@ class KnowBaseController extends Controller
     /**
      * restore parent knowbase
      */
-    public function restoreSection(Request $request) : void
+    public function restoreSection(Request $request): void
     {
         $kb = KnowBase::onlyTrashed()->find($request->id);
-        if($kb) {
+        if ($kb) {
             $kb->restore();
             $kb->is_category = 1;
             $kb->save();
@@ -677,7 +728,7 @@ class KnowBaseController extends Controller
      * save test questions for knowbase page
      * @return array of ids
      */
-    public function saveTest(Request $request) : array
+    public function saveTest(Request $request): array
     {
         $ids = [];
         foreach ($request->questions as $key => $q) {
@@ -707,7 +758,7 @@ class KnowBaseController extends Controller
 
         // count pass grade
         $pass_grade = $request->pass_grade;
-        if($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
+        if ($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
 
         $book = KnowBase::withTrashed()->find($request->id);
         $book->pass_grade = $pass_grade;
@@ -719,7 +770,7 @@ class KnowBaseController extends Controller
     /**
      * access editor for knowbase
      */
-    public function getAccess(Request $request) : array
+    public function getAccess(Request $request): array
     {
         $selected_all_badge = [ // All badge in superselect.vue
             'id' => 0,
@@ -728,7 +779,7 @@ class KnowBaseController extends Controller
         ];
 
         if (is_array($request['id'])) {
-            $books = KnowBase::withTrashed()->whereIn('id',$request['id'])->get();
+            $books = KnowBase::withTrashed()->whereIn('id', $request['id'])->get();
 
             $permissions = [];
             foreach ($books as $book) {
@@ -756,7 +807,7 @@ class KnowBaseController extends Controller
     /**
      * users who has access to knowbase
      */
-    private function getWhoCanReadOrEdit($book_id, $access = 'read') : array
+    private function getWhoCanReadOrEdit($book_id, $access = 'read'): array
     {
         $can = [];
 
@@ -770,24 +821,24 @@ class KnowBaseController extends Controller
             $arr = [];
             $arr['id'] = $item['model_id'];
 
-            if($item->model_type == 'App\\User') {
+            if ($item->model_type == 'App\\User') {
                 $arr['type'] = 1;
                 $user = User::withTrashed()->find($item->model_id);
-                if(!$user) continue;
+                if (!$user) continue;
                 $arr['name'] = $user->last_name . ' ' . $user->name;
             }
 
-            if($item->model_type == 'App\\ProfileGroup') {
+            if ($item->model_type == 'App\\ProfileGroup') {
                 $arr['type'] = 2;
                 $group = ProfileGroup::find($item->model_id);
-                if(!$group) continue;
+                if (!$group) continue;
                 $arr['name'] = $group->name;
             }
 
-            if($item->model_type == 'App\\Position') {
+            if ($item->model_type == 'App\\Position') {
                 $arr['type'] = 3;
                 $pos = Position::find($item->model_id);
-                if(!$pos) continue;
+                if (!$pos) continue;
                 $arr['name'] = $pos->position;
             }
 
@@ -798,21 +849,23 @@ class KnowBaseController extends Controller
 
     }
 
-    public function uploadimages(Request $request) {
+    public function uploadimages(Request $request)
+    {
         $image = $request->file('attachment');
         $image_name = time() . '.' . $image->getClientOriginalExtension();
         $image->move("bpartners", $image_name);
 
-        return json_encode(array('location' => "/bpartners/".$image_name));
+        return json_encode(array('location' => "/bpartners/" . $image_name));
     }
 
-    public function uploadaudio(Request $request) {
+    public function uploadaudio(Request $request)
+    {
 
         $audio = $request->file('attachment');
         $audio_name = time() . '.' . $audio->getClientOriginalExtension();
         $audio->move("bpartners/audio/", $audio_name);
 
-        return json_encode(array('location' => "/bpartners/audio/".$audio_name));
+        return json_encode(array('location' => "/bpartners/audio/" . $audio_name));
     }
 
 }

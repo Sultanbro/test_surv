@@ -12,16 +12,8 @@ use App\Support\Core\CustomException;
 */
 class PutManagerToOwnerService
 {
-    public function handle(
-        PutManagerToOwnerDTO $dto
-    ): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder
+    public function handle(PutManagerToOwnerDTO $dto): bool
     {
-        $success = ManagerHasOwner::createRecord($dto->ownerId, $dto->managerId);
-        if (!$success)
-        {
-            new CustomException('Ошибка при добавлений данных в manager_has_owner', ErrorCode::BAD_REQUEST, []);
-        }
-
-        return $success;
+        return ManagerHasOwner::createRecord($dto->ownerId, $dto->managerId);
     }
 }

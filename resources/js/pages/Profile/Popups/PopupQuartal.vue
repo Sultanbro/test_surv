@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="popup__content mt-3"
+		class="popup__content mt-3 kpi__activities"
 		:class="{'v-loading': loading}"
 	>
 		<div class="popup__filter pb-4">
@@ -12,6 +12,7 @@
 		<div class="popup__award">
 			<b-tabs
 				v-if="itemsUser.length || itemsGroup.length || itemsPosition.length"
+				v-model="tabIndex"
 				class="overflow-hidden"
 			>
 				<b-tab
@@ -19,40 +20,11 @@
 					title="Индивидуальные"
 				>
 					<template v-for="(item, idxUser) in itemsUser">
-						<div
-							:key="'title-' + idxUser"
-							class="award__title popup__content-title"
-						>
-							За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
-						</div>
-						<table
-							:key="'table-' + idxUser"
-							class="award__table"
-						>
-							<tr>
-								<td class="blue">
-									Сумма премии
-								</td>
-								<td>{{ item.items.sum }}</td>
-							</tr>
-							<tr v-if="item.items.activity">
-								<td class="blue">
-									План
-								</td>
-								<td>
-									<div>
-										<b>Активность: {{ item.items.activity.name }}</b>
-									</div>
-									<div>{{ item.items.plan }}</div>
-								</td>
-							</tr>
-							<tr>
-								<td class="blue">
-									Условия
-								</td>
-								<td>{{ item.items.text }}</td>
-							</tr>
-						</table>
+						<PopupQuartalItem
+							:key="idxUser"
+							:item="item.items"
+							:index="idxUser"
+						/>
 					</template>
 				</b-tab>
 				<b-tab
@@ -60,40 +32,11 @@
 					title="По отделу"
 				>
 					<template v-for="(item, idxGroup) in itemsGroup">
-						<div
-							:key="'title-' + idxGroup"
-							class="award__title popup__content-title"
-						>
-							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
-						</div>
-						<table
-							:key="'table-' + idxGroup"
-							class="award__table"
-						>
-							<tr>
-								<td class="blue">
-									Сумма премии
-								</td>
-								<td>{{ item.sum }}</td>
-							</tr>
-							<tr v-if="item.activity">
-								<td class="blue">
-									План
-								</td>
-								<td>
-									<div>
-										<b>Активность: {{ item.activity.name }}</b>
-									</div>
-									<div>{{ item.plan }}</div>
-								</td>
-							</tr>
-							<tr>
-								<td class="blue">
-									Условия
-								</td>
-								<td>{{ item.text }}</td>
-							</tr>
-						</table>
+						<PopupQuartalItem
+							:key="idxGroup"
+							:item="item.items"
+							:index="idxGroup"
+						/>
 					</template>
 				</b-tab>
 				<b-tab
@@ -101,40 +44,11 @@
 					title="По должности"
 				>
 					<template v-for="(item, idxPosition) in itemsPosition">
-						<div
-							:key="'title-' + idxPosition"
-							class="award__title popup__content-title"
-						>
-							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
-						</div>
-						<table
-							:key="'table-' + idxPosition"
-							class="award__table"
-						>
-							<tr>
-								<td class="blue">
-									Сумма премии
-								</td>
-								<td>{{ item.sum }}</td>
-							</tr>
-							<tr v-if="item.activity">
-								<td class="blue">
-									План
-								</td>
-								<td>
-									<div>
-										<b>Активность: {{ item.activity.name }}</b>
-									</div>
-									<div>{{ item.plan }}</div>
-								</td>
-							</tr>
-							<tr>
-								<td class="blue">
-									Условия
-								</td>
-								<td>{{ item.text }}</td>
-							</tr>
-						</table>
+						<PopupQuartalItem
+							:key="idxPosition"
+							:item="item.items"
+							:index="idxPosition"
+						/>
 					</template>
 				</b-tab>
 			</b-tabs>
@@ -153,12 +67,15 @@ import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useYearOptions } from '@/composables/yearOptions'
+
 import DateSelect from '../DateSelect'
+import PopupQuartalItem from './PopupQuartalItem'
 
 export default {
 	name: 'PopupQuartal',
 	components: {
 		DateSelect,
+		PopupQuartalItem,
 	},
 	props: {},
 	data: function () {
@@ -177,6 +94,7 @@ export default {
 			},
 			loading: false,
 			selectedDate: this.$moment().format('DD.MM.YYYY'),
+			tabIndex: 0,
 		};
 	},
 	computed: {
@@ -191,12 +109,22 @@ export default {
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
+		showedTabs(){
+			return [
+				this.itemsUser,
+				this.itemsGroup,
+				this.itemsPosition,
+			].filter(tab => tab.length)
+		}
 	},
 	watch: {
 		selectedDate(){
 			this.$nextTick(() => {
 				this.fetchBefore()
 			})
+		},
+		tabIndex(){
+			this.setSubtitle()
 		}
 	},
 	created(){
@@ -205,9 +133,7 @@ export default {
 	},
 	methods: {
 		...mapActions(useProfileSalaryStore, ['setReadedPremiums']),
-		/**
-         * set month
-         */
+
 		setMonth() {
 			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
@@ -216,7 +142,7 @@ export default {
 
 			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
-			//Расчет выходных дней
+			// Расчет выходных дней
 			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
 			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
 			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
@@ -235,46 +161,37 @@ export default {
 			/* eslint-enable camelcase */
 		},
 
-		fetchData(filters = null) {
+		async fetchData(filters = null) {
 			this.loading = true
 
-			this.axios.post('/statistics/quartal-premiums', {
-				filters: filters
-			}).then(({ data }) => {
-				if(data.data){
+			try {
+				const { data } = await this.axios.post('/statistics/quartal-premiums', {
+					filters: filters
+				})
+
+				if(data?.data){
 					this.itemsUser = data.data[0];
 					this.itemsGroup = data.data[1];
 					this.itemsPosition = data.data[2];
 				}
-				// this.defineSourcesAndGroups('t');
-
-				// this.items.forEach(el => el.expanded = true);
 
 				this.setReadedPremiums()
-				this.loading = false
-			}).catch(error => {
-				this.loading = false
+				this.setSubtitle()
+			}
+			catch (error) {
+				window.onerror && window.onerror(error)
 				alert(error)
-			});
+			}
+
+			this.loading = false
 		},
 
-		defineSourcesAndGroups() {
-			/* eslint-disable camelcase */
-			this.items.forEach(p => {
-				p.items.forEach(el => {
-					el.source = 0;
-					el.group_id = 0;
-
-					if(el.activity_id != 0) {
-						let i = this.activities.findIndex(a => a.id == el.activity_id);
-						if(i != -1) {
-							el.source = this.activities[i].source
-							if(el.source == 1) el.group_id = this.activities[i].group_id
-						}
-					}
-				});
-			})
-			/* eslint-enable camelcase */
+		setSubtitle(){
+			const group = this.showedTabs[this.tabIndex]
+			if(group) {
+				const item = group[0]
+				this.$emit('title', `За период с ${ new Date(item.items?.from).toLocaleDateString('RU') } до ${ new Date(item.items?.to).toLocaleDateString('RU') }`)
+			}
 		},
 	}
 };

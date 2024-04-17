@@ -29,6 +29,7 @@ function booksTree(books){
 	books.forEach(book => {
 		// eslint-disable-next-line camelcase
 		book.parent_id = book.parent_id || null
+		book.canEdit = !!book.can_edit
 	})
 	const map = books.reduce((map, book) => {
 		map[book.id] = structuredClone(book)
@@ -50,9 +51,40 @@ function booksOpen(books){
 	return books
 }
 
+function canRead(tree){
+	tree.forEach(book => {
+		book.canRead = true
+		book.canEdit = book.can_edit
+		if(book.children) canRead(book.children)
+	})
+}
+
+function tree2flat(tree, books = []){
+	tree.forEach(book => {
+		books.push(book)
+		if(book.children) tree2flat(book.children, books)
+	})
+	return books
+}
+
 export async function fetchKBBooks(){
 	const {data} = await axios.get('/kb/get')
 	return booksTree(booksOpen(data.books || []))
+}
+
+export async function fetchKBBooksV2(){
+	const {data} = await axios.post('/kb/user-tree')
+	const tree = data.data || []
+	canRead(tree)
+	const flat = tree2flat(tree, [])
+	return {
+		tree,
+		flat,
+		map: flat.reduce((result, book) => {
+			result[book.id] = book
+			return result
+		}, {})
+	}
 }
 
 export async function fetchKBArchived(){

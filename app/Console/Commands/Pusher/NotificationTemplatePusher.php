@@ -41,12 +41,10 @@ class NotificationTemplatePusher extends Command
             ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
-        foreach ($notifications as $notification)
-        {
+        foreach ($notifications as $notification) {
             $methodName = $notification->frequency . '_pusher';
 
-            if (!method_exists($this, $methodName))
-            {
+            if (!method_exists($this, $methodName)) {
                 throw new InvalidArgumentException("Method $methodName does not exist");
             }
 
@@ -65,19 +63,17 @@ class NotificationTemplatePusher extends Command
     {
         $date = Carbon::now()->subDay()->format('Y-m-d');
 
-        $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at',$date)->get();
+        $users = User::withTrashed()->whereNotNull('deleted_at')->whereDate('deleted_at', $date)->get();
         $mailings = $notification?->mailings();
 
-        foreach ($mailings as $mailing)
-        {
-            $this->line("type of mailing:".$mailing);
-            foreach ($users as $user)
-            {
-                $link       = "https://bp.jobtron.org/quiz_after_fire?phone=".Phone::normalize($user->phone);
-                $this->line("Id of user:".$user->id);
-                $message    = $notification?->title ."\n";
-                $message   .= $link;
-                $fired_user = User::withTrashed()->where('id',$user->id)->whereDate('deleted_at',$date)->get();
+        foreach ($mailings as $mailing) {
+            $this->line("type of mailing:" . $mailing);
+            foreach ($users as $user) {
+                $link = "https://bp.jobtron.org/quiz_after_fire?phone=" . Phone::normalize($user->phone);
+                $this->line("Id of user:" . $user->id);
+                $message = $notification?->title . "\n";
+                $message .= $link;
+                $fired_user = User::withTrashed()->where('id', $user->id)->whereDate('deleted_at', $date)->get();
 
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $fired_user);
             }
@@ -93,27 +89,26 @@ class NotificationTemplatePusher extends Command
         MailingNotification $notification
     ): void
     {
-        $currentDay     = Carbon::now()->day;
-        $lastDayOfMonth = Carbon::now()->daysInMonth;
-        $daysRemaining  = $lastDayOfMonth - $currentDay;
-        $mailings       = $notification->mailings();
-        $recipients     = User::query()
-            ->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
-            ->withWhereHas('group_users',fn($query) => $query->where('status','active')->where('is_head',0))
+        $currentDay = Carbon::now()->day;
+        $lastDayOfMonth = Carbon::now()->lastOfMonth()->day;
+        $daysRemaining = $lastDayOfMonth - $currentDay;
+
+        $mailings = $notification->mailings();
+        $recipients = User::query()
+            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', 0))
+            ->withWhereHas('group_users', fn($query) => $query->where('status', 'active')->where('is_head', 0))
             ->withWhereHas('position', fn($query) => $query->where('is_spec', 0)->where('is_head', 0))
             ->orderBy('last_name')
             ->get();
 
-        $message    = $notification->title;
-        if(tenant('id') == 'bp'){
+        $message = $notification->title;
+        if (tenant('id') == 'bp') {
             $link = '<br> <a href="/estimate_your_trainer" class="btn btn-primary btn-sm rounded mt-1" target="_blank">Оценить</a>';
             $message .= $link;
         }
 
-        if ($daysRemaining == 2 || $this->argument('force') == 'true')
-        {
-            foreach ($mailings as $mailing)
-            {
+        if ($daysRemaining == 2 || $this->argument('force') == 'true') {
+            foreach ($mailings as $mailing) {
                 NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }

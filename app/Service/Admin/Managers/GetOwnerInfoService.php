@@ -9,8 +9,8 @@ use App\Repositories\Tariffs\TariffPaymentRepository;
 use App\Support\Core\CustomException;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class GetOwnerInfoService
 {
 
@@ -28,10 +28,9 @@ class GetOwnerInfoService
         int $ownerId
     ): array
     {
-        $owner = CentralUser::getById($ownerId)->first();
+        $owner = CentralUser::query()->find($ownerId);
 
-        if ($owner == null)
-        {
+        if ($owner == null) {
             new CustomException("User with $ownerId is not exist", ErrorCode::BAD_REQUEST, []);
         }
 

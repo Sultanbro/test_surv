@@ -79,9 +79,9 @@
 						<div class="form-group mb-0 text-center">
 							<div class="profile-img-wrap hidden-file-wrapper">
 								<img
-									v-if="!crop_image.hide"
+									v-if="user && user.img_url"
 									alt="Profile image"
-									:src="crop_image.image"
+									:src="`/users_img/${user.img_url}`"
 									class="profile-img"
 								>
 								<div
@@ -99,15 +99,6 @@
 									accept="image/*"
 									@change="handleFileUpload()"
 								>
-								<label
-									class="hidden-file-label"
-									for="CabinetProfileImage"
-								/>
-							</div>
-							<div class="hidden-file-wrapper">
-								<button class="btn btn-success w-100 mt-2">
-									Выбрать фото
-								</button>
 								<label
 									class="hidden-file-label"
 									for="CabinetProfileImage"
@@ -131,7 +122,7 @@
 								:class="{'PageCabinet-tab_active': activeTab === 'documents'}"
 								@click="selectTab('documents')"
 							>
-								<span>Документы</span> <b-badge>demo</b-badge>
+								<span>Документы <span class="red">*</span></span>
 							</li>
 							<li
 								id="bg-this-4"
@@ -229,15 +220,38 @@
 								<label
 									class="col-sm-4 col-form-label font-weight-bold label-surv"
 								>День рождения <span class="red">*</span></label>
-								<div class="col-sm-8">
-									<input
-										id="birthday"
+								<div
+									v-click-outside="onClickOutsideBirthday"
+									class="col-sm-8 relative"
+								>
+									<InputText
+										:value="birthday[0]"
+										readonly
+										small
+										clear
+										placeholder="День рождения"
+										class="PageCabinet-birthday"
+										@clear="onClearBirthday"
+										@focus="onFocusBirthday"
+										@blur="onBlurBirthday"
+										@click="onClickBirthday"
+									/>
+									<CalendarInput
+										v-show="isOpenBirthday"
 										v-model="birthday"
-										class="form-control input-surv"
-										type="date"
-										name="birthday"
-										required
+										:tabs="[]"
+										:open="isOpenBirthday"
+										popup
 									>
+										<template #footerAfter>
+											<JobtronButton
+												class="ml-a"
+												@click="onClickOutsideBirthday"
+											>
+												ок
+											</JobtronButton>
+										</template>
+									</CalendarInput>
 								</div>
 							</div>
 
@@ -254,43 +268,70 @@
 							</div>
 
 							<div class="row mt-2">
-								<div class="col-12 mt-3">
-									<!-- Cards -->
-									<template v-if="payments_view">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Карта для выплат<span class="red">*</span>
+									<img
+										v-b-popover.click.blur.html="'Добавьте назаблокированную карту на которую Вам будет перечисляться зарплата'"
+										src="/images/dist/profit-info.svg"
+										class="img-info"
+										width="20"
+										alt="info icon"
+										tabindex="-1"
+									>
+								</label>
+								<div class="col-sm-8">
+									<template v-for="(payment, index) in payments">
 										<div
-											v-for="(payment, index) in payments"
+											v-if="index < 1"
 											:key="index"
-											class="row payment-profile"
+											class="row"
 										>
-											<div class="col-2">
+											<div class="col-4 mb-2">
 												<input
 													v-model="payment.bank"
 													class="form-control input-surv"
 													placeholder="Банк"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.country"
 													class="form-control input-surv"
 													placeholder="Страна"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.cardholder"
 													class="form-control input-surv"
 													placeholder="Имя на карте"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4">
 												<input
 													v-model="payment.phone"
 													class="form-control input-surv"
 													placeholder="Телефон"
 												>
 											</div>
-											<div class="col-2">
+											<div class="col-4 relative">
+												<input
+													v-model="payment.iban"
+													class="form-control card-number input-surv"
+													placeholder="счет IBAN"
+												>
+												<img
+													v-b-popover.click.blur.html="'(internationalk bank account number) - международный номер барноквского счета. Позвоните в свой банк и Вам скажут какой у Вас.<br> IBAN может выглядеть так: KZ75 125K ZT10 0130 0335'"
+													src="/images/dist/profit-info.svg"
+													class="img-info iban-info"
+													width="20"
+													alt="info icon"
+													tabindex="-1"
+												>
+											</div>
+											<div class="col-4 position-relative">
 												<input
 													v-model="payment.number"
 													v-mask="`#### #### #### ####`"
@@ -298,53 +339,8 @@
 													placeholder="Номер карты"
 												>
 											</div>
-											<div class="col-2 position-relative">
-												<button
-													v-if="payment.id"
-													class="btn btn-danger card-delete rounded mt-1"
-													@click="removePaymentCart(index, payment.id)"
-												>
-													<span class="fa fa-trash" />
-												</button>
-												<button
-													v-else
-													class="btn btn-danger card-delete rounded mt-1"
-													@click="removePaymentCart(index, 'dev')"
-												>
-													<span class="fa fa-trash" />
-												</button>
-											</div>
 										</div>
 									</template>
-
-									<div
-										v-if="cardValidatre.error"
-										class="mt-2 p-0"
-									>
-										<div class="alert alert-danger">
-											<span>Заполните все поля</span>
-										</div>
-									</div>
-
-									<div class="p-0 row mt-5">
-										<div class="col-3">
-											<button
-												style="color: white"
-												class="btn btn-phone btn-primary"
-												@click="addPayment()"
-											>
-												Добавить карту
-												<img
-													v-b-popover.hover.html="'Добавьте не заблокированную карту на которую вам будет перечисляться зарплата'"
-													src="/images/dist/profit-info.svg"
-													width="20"
-													class="img-info ml-2 img-info-bg"
-													alt="info icon"
-													tabindex="-1"
-												>
-											</button>
-										</div>
-									</div>
 								</div>
 							</div>
 						</div>
@@ -361,15 +357,35 @@
 									:key="index"
 									class="PageCabinet-doc p-2"
 								>
+									<span
+										v-if="!doc.signed"
+										class="red"
+									>*</span>
 									<div class="PageCabinet-docIcon">
-										<i class="fa fa-file-pdf" />
+										<img
+											src="/icon/doc-pdf.png"
+											alt="pdf"
+											width="24"
+										>
 									</div>
-									<div class="PageCabinet-docName">
+									<a
+										v-if="doc.signed"
+										:href="`/signature/view?doc=${doc.id}`"
+										target="_blank"
+										class="PageCabinet-docName"
+									>
+										{{ doc.name }}
+									</a>
+									<div
+										v-else
+										class="PageCabinet-docName"
+									>
 										{{ doc.name }}
 									</div>
 									<div class="PageCabinet-docControls">
 										<template v-if="doc.signed">
-											<i class="fas fa-check" />
+											{{ $moment(doc.signed).format('DD.MM.YYYY') }}
+											<i class="fas fa-check ml-2" />
 											Подписан
 										</template>
 										<JobtronButton
@@ -412,6 +428,24 @@
 									>
 								</div>
 							</div>
+
+							<div class="form-group row">
+								<label
+									class="col-sm-4 col-form-label font-weight-bold label-surv"
+								>
+									Дополнительный
+								</label>
+								<div class="col-sm-8">
+									<input
+										v-model="phone1"
+										class="form-control input-surv PageCabinet-phone"
+										type="text"
+										name="phone"
+										required
+										placeholder="телефон"
+									>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -445,15 +479,19 @@
 /* eslint-disable camelcase */
 
 const CabinetAdmin = () => import(/* webpackChunkName: "CabinetAdmin" */ '@/components/pages/Cabinet/CabinetAdmin.vue')
+import InputText from '@ui/InputText.vue'
+import CalendarInput from '@ui/CalendarInput/CalendarInput.vue'
+import JobtronButton from '../components/ui/Button.vue'
+import LocalitySelect from '@ui/LocalitySelect.vue'
 
 import { mapGetters, mapActions } from 'vuex'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 import {mask} from 'vue-the-mask'
 import API from '@/components/Chat/Store/API.vue'
+import { mapState, mapActions as mapPiniaActions } from 'pinia'
+import { useUserStore } from '@/stores/User'
 
-import JobtronButton from '../components/ui/Button.vue'
-import LocalitySelect from '@ui/LocalitySelect.vue'
 
 
 export default {
@@ -463,6 +501,8 @@ export default {
 		CabinetAdmin,
 		LocalitySelect,
 		JobtronButton,
+		InputText,
+		CalendarInput,
 	},
 	props: {
 		authRole: {
@@ -483,9 +523,9 @@ export default {
 			test: 'dsa',
 			items: [],
 			myCroppa: {},
-			user: [],
 			user_card: [],
 			phone: '',
+			phone1: '',
 
 			activeCourse: null,
 			page: 'profile',
@@ -493,7 +533,9 @@ export default {
 			success: '',
 			password: '',
 			working_city: '',
-			birthday: '',
+			birthday: [''],
+			// touchpadfix: null,
+			isOpenBirthday: false,
 			cardValidatre: {
 				error: false,
 				type: false,
@@ -515,21 +557,9 @@ export default {
 			geo_lat: 0,
 			geo_lon: 0,
 
-			activeTab: 'main',
+			activeTab: this.$route.query?.tab || 'main',
 
-			documents: [
-				{
-					id: 0,
-					name: 'NDA',
-					file: ''
-				},
-				{
-					id: 0,
-					name: 'TD',
-					file: '',
-					signed: true
-				},
-			],
+			documents: [],
 		};
 	},
 	computed: {
@@ -539,6 +569,7 @@ export default {
 			'profileGroups',
 			'accessDictionaries',
 		]),
+		...mapState(useUserStore, ['user']),
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
@@ -558,6 +589,7 @@ export default {
 		this.applyMask()
 	},
 	created() {
+		this.fetchUser()
 		this.initMask()
 		if(!this.users.length) this.loadCompany()
 		if (this.authRole) {
@@ -566,10 +598,10 @@ export default {
 	},
 	methods: {
 		...mapActions(['loadCompany']),
+		...mapPiniaActions(useUserStore, ['fetchUser']),
 		init() {
 			this.fetchData()
 			this.fetchDocs()
-			this.user = this.authRole;
 			this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
@@ -590,20 +622,21 @@ export default {
 		change({canvas}) {
 			this.crop_image.canvas = canvas;
 		},
-		save_picture(){
-			this.croppie.result({
+		async save_picture(){
+			const blob = await this.croppie.result({
 				type: 'blob',
 				format: 'jpeg',
 				quality: 0.8
-			}).then(blob => {
-				const formData = new FormData();
-				formData.append('file', blob);
-				this.axios.post('/profile/upload/image/profile/', formData).then((response) => {
-					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
-				});
 			})
 
-			this.saveCropped();
+			const formData = new FormData();
+			formData.append('file', blob);
+
+			const {data} = await this.axios.post('/profile/upload/image/profile/', formData)
+			bus.$emit('user-avatar-update', '/users_img/' + data.filename)
+			this.fetchUser(true)
+
+			this.saveCropped()
 		},
 		chooseProfileImage(){
 			this.showChooseProfileModal = true;
@@ -679,7 +712,7 @@ export default {
 
 		format_date(value) {
 			if (value) {
-				return (this.birthday = this.$moment(String(value)).format('YYYY-MM-DD'));
+				return (this.birthday[0] = this.$moment(String(value)).format('DD.MM.YYYY'));
 			}
 		},
 
@@ -692,6 +725,7 @@ export default {
 				country: '',
 				number: '',
 				phone: '',
+				iban: '',
 			});
 		},
 
@@ -710,7 +744,7 @@ export default {
 			}
 		},
 
-		editProfileUser() {
+		async editProfileUser() {
 			this.cardValidatre.type = false;
 			this.cardValidatre.error = false;
 
@@ -742,14 +776,17 @@ export default {
 			}
 
 			if (this.cardValidatre.type) {
+				const phone = this.phone || ''
+				const phone1 = this.phone1 || ''
 				const request = {
 					cards: this.payments,
 					query: {
 						...this.user,
-						phone: this.phone.replace(/[^\d]+/g, ''),
+						phone: phone.replace(/[^\d]+/g, ''),
+						phone_1: phone1.replace(/[^\d]+/g, ''),
 					},
 					password: this.password,
-					birthday: this.birthday,
+					birthday: this.$moment(this.birthday[0], 'DD.MM.YYYY').format('YYYY-MM-DD'),
 					working_city: this.working_city,
 					working_country: this.keywords,
 				}
@@ -761,13 +798,15 @@ export default {
 					}
 				}
 
-				this.axios
-					.post('/profile/edit/user/cart/', request)
-					.then(({data}) => {
-						if (data.success) {
-							this.$toast.success('Успешно Сохранено');
-						}
-					});
+				try {
+					const {data} = await this.axios.post('/profile/edit/user/cart/', request)
+					if (data.success) {
+						this.$toast.success('Успешно Сохранено');
+					}
+				}
+				catch (error) {
+					this.$onError({error})
+				}
 			}
 			else {
 				this.cardValidatre.error = true;
@@ -783,53 +822,60 @@ export default {
 		},
 
 		fetchData() {
-			this.axios
-				.get('/cabinet/get')
-				.then(({data}) => {
-					this.user = JSON.parse(JSON.stringify(data.user))
-					this.phone = data.user.phone
-					this.keywords = data.user.working_country;
-					this.working_city = data.user.working_city;
+			this.axios.get('/cabinet/get').then(({data}) => {
+				this.phone = data.user.phone
+				this.phone1 = data.user.phone_1
+				this.keywords = data.user.working_country;
+				this.working_city = data.user.working_city;
 
-					if(data.user.coordinate){
-						this.geo_lat = data.user.coordinate.geo_lat
-						this.geo_lon = data.user.coordinate.geo_lon
-					}
+				if(data.user.coordinate){
+					this.geo_lat = data.user.coordinate.geo_lat
+					this.geo_lon = data.user.coordinate.geo_lon
+				}
 
-					if (data.user_payment) {
-						if (data.user_payment.length > 0) {
-							this.payments = data.user_payment;
-							this.payments_view = true
-						}
-						else {
-							this.payments = [];
-							this.payments_view = false
-						}
-					}
+				if (data.user_payment?.length > 0) {
+					this.payments = data.user_payment;
+					this.payments_view = true
+				}
+				else {
+					this.payments = [{
+						bank: '',
+						cardholder: '',
+						country: '',
+						number: '',
+						phone: '',
+						iban: '',
+					}]
+				}
 
-					if (this.user.img_url) {
-						this.img = '/users_img/' + data.user.img_url;
-					}
-					else {
-						this.img = '/users_img/noavatar.png';
-					}
-					this.drawProfile();
-				})
-				.catch((error) => {
-					alert(error);
-				});
+				if (this.user.img_url) {
+					this.img = '/users_img/' + data.user.img_url;
+				}
+				else {
+					this.img = '/users_img/noavatar.png';
+				}
+				this.drawProfile();
+			}).catch((error) => {
+				alert(error);
+			});
 		},
 		async fetchDocs(){
 			try {
-				// const {data} = await this.axios.get(`/docs/${this.$laravel.userId}`)
-				// this.documents = data.documents || []
+				const {data} = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
+				const docs = data.data || []
+				this.documents = docs.map(doc => ({
+					id: doc.id,
+					name: doc.original_name || 'Без названия',
+					file: doc.url,
+					signed: doc.signed_at,
+				}))
 			}
 			catch (error) {
 				console.error(error)
 			}
 		},
 		onSign(doc){
-			window.open(`/documents/sign/${doc.id}`, '_blank')
+			window.open(`/signature/verification?doc=${doc.id}`, '_blank')
 		},
 		fetchGeneralChat(){
 			API.getChatInfo(0, ({users}) => {
@@ -871,6 +917,7 @@ export default {
 		},
 		applyMask(){
 			if(!window.intlTelInput) return setTimeout(this.applyMask, 100)
+			if(!this.$el) return setTimeout(this.applyMask, 100)
 			const phones = this.$el.querySelectorAll('.PageCabinet-phone')
 			phones.forEach(input => {
 				window.intlTelInput(input, {
@@ -887,7 +934,20 @@ export default {
 		},
 		selectTab(tab){
 			this.activeTab = tab
-		}
+		},
+
+		onClearBirthday(){
+			this.birthday = ['']
+		},
+		onFocusBirthday(){},
+		onBlurBirthday(){},
+		onClickBirthday(){
+			this.isOpenBirthday = !this.isOpenBirthday
+		},
+		onClickOutsideBirthday(){
+			this.isOpenBirthday = false
+			// if(this.touchpadfix) clearTimeout(this.touchpadfix)
+		},
 	},
 };
 </script>
@@ -1126,6 +1186,8 @@ a.lp-link {
 	padding: 4px 10px 10px 10px;
 }
 
+
+
 .PageCabinet{
 	&-accessSelect{
 		width: 420px;
@@ -1224,9 +1286,19 @@ a.lp-link {
 		align-items: center;
 		gap: 10px;
 	}
+	&-birthday{
+		border: 1px solid #ddd;
+	}
 
 	.content{
 		padding: 15px !important;
+		overflow: visible;
+	}
+	.iban-info{
+		position: absolute;
+		top: 50%;
+		right: 20px;
+		transform: translateY(-50%);
 	}
 }
 </style>
