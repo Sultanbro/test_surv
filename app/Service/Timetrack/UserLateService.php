@@ -103,8 +103,7 @@ class UserLateService
             ->min('enter');
         if (!$time) return null;
         return Carbon::createFromTimeString(
-            Carbon::parse($time)
-                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]))->toTimeString());
+            Carbon::parse($time)->toTimeString());
     }
 
     private function isUserHasFines(): void
@@ -120,6 +119,6 @@ class UserLateService
 
     private function getWorkDayShouldStartTime(): Carbon
     {
-        return Carbon::createFromTimeString($this->user->workStartTime()->toTimeString());
+        return Carbon::createFromTimeString($this->user->workStartTime()->subHours($this->user->timezone)->toTimeString());
     }
 }
