@@ -119,7 +119,6 @@ class UserLateService
 
     private function getWorkDayShouldStartTime(): Carbon
     {
-        return $this->user->workStartTime()
-            ->subHours($this->user->timezone);
+        return $this->user->workStartTime();
     }
 }
