@@ -111,7 +111,6 @@ class LoginController extends Controller
             'password' => $request->get('password'),
         ];
         // failed to login
-        dd($credentials[$field]);
         if (request()->getHost() == config('app.domain')) {
             /** @var CentralUser $centralUser */
             $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
