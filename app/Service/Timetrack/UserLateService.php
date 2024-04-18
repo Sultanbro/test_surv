@@ -47,7 +47,7 @@ class UserLateService
                 ->where('user_id', $this->user->id)
                 ->whereDate('enter', $this->date)
                 ->min('enter'))
-                ->subMinutes($this->user->timezone)
+                ->subHours($this->user->timezone)
                 ->toTimeString()
         );
 
