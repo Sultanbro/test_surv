@@ -5,7 +5,6 @@ namespace App\Console\Commands\Employee;
 use App\Service\Timetrack\UserLateService;
 use App\User;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Console\Command;
 
 class CheckLate extends Command
@@ -33,7 +32,7 @@ class CheckLate extends Command
      * Execute the console command.
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function handle(): void
     {
