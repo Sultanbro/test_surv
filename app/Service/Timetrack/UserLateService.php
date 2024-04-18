@@ -3,12 +3,12 @@
 namespace App\Service\Timetrack;
 
 use App\Fine;
-use App\Setting;
 use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;
 use App\UserFine;
 use Carbon\Carbon;
+use Exception;
 
 class UserLateService
 {
@@ -24,9 +24,9 @@ class UserLateService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function addUserFineIfLate(User $user): void
+    public function userLateFee(User $user): void
     {
         $this->user = $user;
         // Был ли штраф на ту дату, которую передаем.
@@ -40,10 +40,10 @@ class UserLateService
         $actualTime = $this->getWorkDayActualStartedTime();
 
         if (!$actualTime) return;
+
         //Разница в минутах.
         $diffInMinutes = $shouldStartTime->diffInMinutes($actualTime,false);
 
-        dd($diffInMinutes);
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
         if ($diffInMinutes <= 0) return;
 

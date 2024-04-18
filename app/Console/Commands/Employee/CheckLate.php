@@ -5,6 +5,7 @@ namespace App\Console\Commands\Employee;
 use App\Service\Timetrack\UserLateService;
 use App\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 
 class CheckLate extends Command
@@ -24,15 +25,10 @@ class CheckLate extends Command
     protected $description = 'Штрафы за опоздание';
 
     /**
-     * Сотрудник может начать день до 20 минут от своего рабочего времени.
-     */
-    protected int $ignoreMinutes = 20;
-
-    /**
      * Execute the console command.
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): void
     {
@@ -45,7 +41,7 @@ class CheckLate extends Command
             ->orderBy('last_name')
             ->get();
         foreach ($users as $user) {
-            $service->addUserFineIfLate($user);
+            $service->userLateFee($user);
         }
     }
 }
