@@ -33,7 +33,6 @@ class SendNotificationJob implements ShouldQueue
      */
     public function handle():void
     {
-        dd($this->userIds);
         $users = User::query()->where('phone','!=','')->whereIn('id',$this->userIds)->get();
         foreach($users as $key=>$user) {
             $message = 'Уважаемый(ая) ' . $user->name . ' ' . $user->last_name . '
