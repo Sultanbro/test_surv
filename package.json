@@ -57,6 +57,7 @@
     },
     "dependencies": {
         "@ckeditor/ckeditor5-vue2": "^3.0.1",
+        "@finpo/vue2-recaptcha-invisible": "^1.2.0",
         "@tinymce/tinymce-vue": "^3.0.1",
         "@vue/composition-api": "^1.7.1",
         "blueimp-gallery": "^3.4.0",
@@ -113,6 +114,8 @@
         "vue-observe-visibility": "^1.0.0",
         "vue-pdf": "^4.3.0",
         "vue-pdf-embed": "^1.1.5",
+        "vue-phone-number-input": "^1.12.13",
+        "vue-recaptcha": "^2.0.3",
         "vue-router": "^3.6.5",
         "vue-select": "^3.11.2",
         "vue-simple-context-menu": "^3.4.2",
