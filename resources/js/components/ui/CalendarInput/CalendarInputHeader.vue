@@ -131,25 +131,12 @@ export default {
 		'getSeparateMonthYear',
 	],
 	data() {
-		const now = new Date()
-		const currentYear = now.getFullYear()
-		const currentMonth = now.getMonth()
-
 		const monthOptions = useMonthOptions()
-		const monthOptionsReversed = useMonthOptions().reverse()
 
 		return {
 			isPopupMonth: false,
 			isPopupYear: false,
 			isPopup: false,
-			monthYearOptions: useYearOptions().reverse().reduce((options, year) => {
-				options.push(...monthOptionsReversed.reduce((result, month) => {
-					if(year === currentYear && month > currentMonth) return result
-					result.push({year, month})
-					return result
-				}, []))
-				return options
-			}, []),
 			monthNames: monthOptions.map(month => this.$moment([0, month]).format('MMMM')),
 		}
 	},
@@ -164,10 +151,25 @@ export default {
 			return this.$moment([this.year, this.month]).format('MMMM')
 		},
 		yearOptions(){
-			return useYearOptions(this.getStartYear())
+			return useYearOptions(this.getStartYear()).reverse()
 		},
 		monthOptions(){
 			return useMonthOptions()
+		},
+		monthYearOptions(){
+			const now = new Date()
+			const currentYear = now.getFullYear()
+			const currentMonth = now.getMonth()
+			const monthOptionsReversed = useMonthOptions().reverse()
+
+			return useYearOptions(this.getStartYear()).reverse().reduce((options, year) => {
+				options.push(...monthOptionsReversed.reduce((result, month) => {
+					if(year === currentYear && month > currentMonth) return result
+					result.push({year, month})
+					return result
+				}, []))
+				return options
+			}, [])
 		},
 		separateMonthYear(){
 			return this.getSeparateMonthYear()
