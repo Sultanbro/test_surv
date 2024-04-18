@@ -114,7 +114,7 @@ class LoginController extends Controller
 
         if (request()->getHost() == config('app.domain')) {
             /** @var CentralUser $centralUser */
-            $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
+                $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
 
             $tenants = $centralUser->cabinets()->first();
 
