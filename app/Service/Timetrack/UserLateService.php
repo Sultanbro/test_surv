@@ -39,16 +39,11 @@ class UserLateService
         // Получаем запись из timetracking таблицы.
         $actualTime = $this->getWorkDayActualStartedTime();
 
-        dd(
-            $shouldStartTime->toDateTimeString(),
-            $actualTime->toDateTimeString(),
-        );
-
         if (!$actualTime) return;
-
         //Разница в минутах.
         $diffInMinutes = $actualTime->diffInMinutes($shouldStartTime);
 
+        dd($diffInMinutes);
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
         if ($diffInMinutes <= 0) return;
 
@@ -120,6 +115,6 @@ class UserLateService
 
     private function getWorkDayShouldStartTime(): Carbon
     {
-        return Carbon::createFromTimeString($this->user->workStartTime()->subHours($this->user->timezone-1)->toTimeString());
+        return Carbon::createFromTimeString($this->user->workStartTime()->subHours($this->user->timezone - 1)->toTimeString());
     }
 }
