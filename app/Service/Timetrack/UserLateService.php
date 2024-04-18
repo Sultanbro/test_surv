@@ -39,6 +39,10 @@ class UserLateService
         // Получаем запись из timetracking таблицы.
         $actualTime = $this->getWorkDayActualStartedTime();
 
+        dd(
+            $shouldStartTime->toTimeString(),
+            $actualTime->toTimeString(),
+        );
         if (!$actualTime) return;
 
         //Разница в минутах.
