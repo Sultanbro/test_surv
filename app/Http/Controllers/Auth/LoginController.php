@@ -101,7 +101,7 @@ class LoginController extends Controller
             'phone' => 'phone'
         ];
 
-        $loginMethod = $request->get("auth_method");
+        $loginMethod = $request->get("method");
 
         // create credentials
         $field = $loginMethods[$loginMethod];
