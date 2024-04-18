@@ -39,6 +39,8 @@ class UserLateService
         // Получаем запись из timetracking таблицы.
         $actualTime = $this->getWorkDayActualStartedTime();
 
+        if (!$actualTime) return;
+
         //Разница в минутах.
         $diffInMinutes = $actualTime->diffInMinutes($shouldStartTime);
         dd($diffInMinutes);
@@ -88,12 +90,15 @@ class UserLateService
         }
     }
 
-    private function getWorkDayActualStartedTime(): Carbon
+    private function getWorkDayActualStartedTime(): ?Carbon
     {
-        return Timetracking::query()
+        $time = Timetracking::query()
             ->where('user_id', $this->user->id)
             ->whereDate('enter', $this->date)
-            ->min('enter')
+            ->min('enter');
+        if (!$time) return null;
+
+        return Carbon::parse($time)
             ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]));
     }
 
