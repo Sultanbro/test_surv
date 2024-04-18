@@ -96,21 +96,17 @@ class LoginController extends Controller
      */
     public function login(Request $request): array|JsonResponse
     {
-        $loginMethods = [
-            'email' => 'username',
-            'phone' => 'phone'
-        ];
-
-        $field = $request->get("method");
-
         // create credentials
-        $method = $loginMethods[$field];
+        $field = $this->username();
+
+        $request[$field] = $request->get('username');
 
         $credentials = [
-            $field => $request->get($method),
+            $field => $request[$field],
             'password' => $request->get('password'),
         ];
         // failed to login
+
         if (request()->getHost() == config('app.domain')) {
             /** @var CentralUser $centralUser */
             $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
@@ -122,7 +118,7 @@ class LoginController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Введенный email, номер телефона или пароль не совпадает'
+                'message' => 'Введенный email или пароль не совпадает'
             ], 401);
         }
 
