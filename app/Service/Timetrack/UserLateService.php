@@ -40,9 +40,10 @@ class UserLateService
         $actualTime = $this->getWorkDayActualStartedTime();
 
         dd(
-            $shouldStartTime->toTimeString(),
-            $actualTime->toTimeString(),
+            $shouldStartTime->toDateTimeString(),
+            $actualTime->toDateTimeString(),
         );
+
         if (!$actualTime) return;
 
         //Разница в минутах.
@@ -101,9 +102,9 @@ class UserLateService
             ->whereDate('enter', $this->date)
             ->min('enter');
         if (!$time) return null;
-
-        return Carbon::parse($time)
-            ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]));
+        return Carbon::createFromTimeString(
+            Carbon::parse($time)
+                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5])));
     }
 
     private function isUserHasFines(): void
@@ -119,6 +120,6 @@ class UserLateService
 
     private function getWorkDayShouldStartTime(): Carbon
     {
-        return $this->user->workStartTime();
+        return Carbon::createFromTimeString($this->user->workStartTime()->toTimeString());
     }
 }
