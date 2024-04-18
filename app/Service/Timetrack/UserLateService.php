@@ -48,7 +48,7 @@ class UserLateService
 
         //Разница в минутах.
         $diffInMinutes = $actualTime->diffInMinutes($shouldStartTime);
-        dd($diffInMinutes);
+
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
         if ($diffInMinutes <= 0) return;
 
@@ -102,6 +102,7 @@ class UserLateService
             ->whereDate('enter', $this->date)
             ->min('enter');
         if (!$time) return null;
+
         return Carbon::createFromTimeString(
             Carbon::parse($time)->toTimeString());
     }
@@ -119,6 +120,6 @@ class UserLateService
 
     private function getWorkDayShouldStartTime(): Carbon
     {
-        return Carbon::createFromTimeString($this->user->workStartTime()->subHours($this->user->timezone)->toTimeString());
+        return Carbon::createFromTimeString($this->user->workStartTime()->subHours($this->user->timezone-1)->toTimeString());
     }
 }
