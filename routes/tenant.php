@@ -21,13 +21,15 @@ use App\Http\Controllers\TaxGroupController;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Features\UserImpersonation;
 
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
-    Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
+    // Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
+    Route::get('login', [PageController::class, 'home'])->name('login');
     Route::post('login', [Auth\LoginController::class, 'login']);
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
     Route::get('password/reset', [Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

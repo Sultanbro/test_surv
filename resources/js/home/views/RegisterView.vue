@@ -29,7 +29,7 @@
 					/>
 					<AuthInput
 						v-model="phone"
-						label="Телефон"
+						:label="lang.phone"
 						type="phone"
 						placeholder="000 000 00 00 "
 						:error="errors.phone"
@@ -40,21 +40,28 @@
 					</AuthInput>
 					<AuthInput
 						v-model="name"
-						label="Имя"
+						:label="lang.name"
 						type="text"
-						placeholder="Станислав"
+						:placeholder="lang.namePlaceholder"
 						:error="errors.name"
 					/>
 					<AuthSelect
 						v-model="currency"
 						:options="currencyOptions"
-						label="Валюта"
+						:label="lang.currency"
 						:text="lang.canchange"
 					/>
+					<GRecaptcha
+						:key="capchaKey"
+						data-sitekey="6LcHIU0jAAAAAEiNAmAf7XSekNcoynD1WOwKJJmH"
+						:data-validate="onValidate"
+						:data-callback="onCallback"
+						class="AuthSubmit"
+					>
+						{{ lang.register }}
+					</GRecaptcha>
 				</div>
-				<AuthSubmit>
-					{{ lang.register }}
-				</AuthSubmit>
+
 				<AuthNote>
 					{{ lang.agree1 }}
 					<router-link to="/aggreement">
@@ -113,14 +120,35 @@ import AuthInput from '../components/auth/AuthInput.vue';
 import AuthTitle from '../components/auth/AuthTitle.vue';
 import AuthSubTitle from '../components/auth/AuthSubTitle.vue';
 import AuthNote from '../components/auth/AuthNote.vue';
-import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import AuthSelect from '../components/auth/AuthSelect.vue';
 import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
 
+import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
+
 import axios from 'axios';
 import * as LANG from './RegisterView.lang.js'
+
+function emptyErrors(){
+	return {
+		email: '',
+		phone: '',
+		name: '',
+		currency: '',
+	}
+}
+
+function parseErrors(errors){
+	const fields = {
+		username: 'email',
+	}
+	const result = {}
+	for(var field in errors){
+		result[fields[field] || field] = errors[field]
+	}
+	return result
+}
 
 export default {
 	name: 'RegisterView',
@@ -130,11 +158,11 @@ export default {
 		AuthTitle,
 		AuthSubTitle,
 		AuthNote,
-		AuthSubmit,
 		AuthSelect,
 		AuthHeader,
 		AuthFooter,
 		AuthInfo,
+		GRecaptcha,
 	},
 	props: {},
 	data(){
@@ -147,6 +175,7 @@ export default {
 			isLoading: false,
 			isSended: true,
 			errors: {},
+			capchaKey: 1,
 		}
 	},
 	computed: {
@@ -174,7 +203,9 @@ export default {
 		},
 	},
 	watch: {},
-	created(){},
+	created(){
+		if(window.Laravel?.userId) location.assign('/')
+	},
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
@@ -192,18 +223,26 @@ export default {
 				this.isSended = true
 			}
 			catch (error) {
-				const {status, /* data */} = error.response
+				const {status, data} = error.response
 				if(status === 422){
-					// showErrors
-
+					this.errors = {
+						...emptyErrors(),
+						...parseErrors(data.errors),
+					}
 				}
 				else{
-					// Не удалось создать кабинет, попробуйте позже
+					alert('Не удалось создать кабинет, попробуйте позже')
 				}
-				// reset capcha
+				++this.capchaKey
 			}
 
 			this.isLoading = false
+		},
+		onValidate(a, b, c){
+			console.error('onValidate', a, b, c)
+		},
+		onCallback(a, b, c){
+			console.error('onCallback', a, b, c)
 		},
 	},
 }
@@ -215,6 +254,26 @@ export default {
 		display: flex;
 		flex-flow: column nowrap;
 		gap: 20px;
+	}
+	.AuthSubmit{
+		position: relative;
+		button{
+			width: 100%;
+
+			position: absolute;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+
+			text-align: center;
+
+			appearance: none;
+			background-color: transparent;
+			border: none;
+			color: #fff;
+		}
 	}
 }
 </style>

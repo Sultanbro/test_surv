@@ -34,19 +34,14 @@
 				placeholder="example@gmail.com"
 				:error="errors.email"
 			/>
-			<AuthInput
-				v-else
-				key="phone"
-				v-model="phone"
-				:label="lang.phone"
-				type="phone"
-				placeholder="000 000 00 00 "
-				:error="errors.phone"
-			>
-				<template #inner-before>
-					+7
-				</template>
-			</AuthInput>
+			<template v-else>
+				<AuthPhone
+					key="phone"
+					v-model="phone"
+					:label="lang.phone"
+					:error="errors.phone"
+				/>
+			</template>
 			<AuthInput
 				v-model="password"
 				:label="lang.password"
@@ -83,6 +78,7 @@
 </template>
 
 <script>
+import AuthPhone from './AuthPhone.vue';
 import AuthMethod from './AuthMethod.vue';
 import AuthInput from './AuthInput.vue';
 import AuthTitle from './AuthTitle.vue';
@@ -99,6 +95,7 @@ export default {
 		AuthTitle,
 		AuthSubTitle,
 		AuthSubmit,
+		AuthPhone,
 	},
 	props: {
 		action: {
@@ -118,7 +115,7 @@ export default {
 		return {
 			method: 'email',
 			email: '',
-			phoneCode: '',
+			phoneCode: '+7',
 			phone: '',
 			password: '',
 			showPassword: '',

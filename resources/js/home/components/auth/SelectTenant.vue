@@ -2,8 +2,9 @@
 	<div class="SelectTenant">
 		<AuthSubTitle>
 			<a
-				href="/logut"
+				href="/logout"
 				class="fw500"
+				@click.prevent="logout"
 			>
 				{{ lang.logout }}
 			</a>
@@ -49,6 +50,7 @@ import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
 import IconCabinet from './IconCabinet.vue';
 
+import axios from 'axios'
 import * as LANG from './SelectTenant.lang.js'
 
 export default {
@@ -62,7 +64,11 @@ export default {
 		links: {
 			type: Array,
 			default: () => [],
-		}
+		},
+		csrfToken: {
+			type: String,
+			default: ''
+		},
 	},
 	data(){
 		return {}
@@ -76,7 +82,15 @@ export default {
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
-	methods: {},
+	methods: {
+		logout(){
+			axios.post('/logout', {
+				_token: this.csrfToken
+			}).then(() => {
+				location.assign('/')
+			})
+		}
+	},
 }
 </script>
 

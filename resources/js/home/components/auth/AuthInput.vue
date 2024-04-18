@@ -144,17 +144,17 @@ export default {
 			}
 		}
 	}
-	&:has(:focus){
-		.AuthInput{
-			&-wrapper{
-				border-color: #0C50FF;
-			}
-		}
-	}
 	&:has(input:empty){
 		.AuthInput{
 			&-wrapper{
 				border-color: #CDD1DB;
+			}
+		}
+	}
+	&:has(input:focus){
+		.AuthInput{
+			&-wrapper{
+				border-color: #0C50FF;
 			}
 		}
 	}

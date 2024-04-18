@@ -108,15 +108,16 @@ export default {
 		}
 	},
 	watch: {},
-	created(){},
+	created(){
+		if(window.Laravel?.userId) location.assign('/')
+	},
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
 		onSuccessLogin(data){
-			console
 			if(Object.keys(data).includes('link')) return window.location.replace(data.link)
 			if(data.links) return this.showLinks(data.links)
-			// toast?
+			location.assign('/')
 		},
 		showLinks(links){
 			this.links = links
@@ -141,8 +142,8 @@ export default {
 				})
 				if(response.type === 'opaqueredirect') return location.assign('/')
 				if(!response.ok) {
-					// toast?
-					return
+					this.isLoading = false
+					return alert('Не удалось войти в систему, попробуйте позже')
 				}
 				const data = await response.json()
 				this.onSuccessLogin(data)
@@ -163,10 +164,10 @@ export default {
 					}
 					break;
 				case 302:
-					alert('302')
+					location.assign('/')
 					break;
 				default:
-					// toast?
+					alert('Не удалось войти в систему, попробуйте позже')
 				}
 			}
 			this.isLoading = false

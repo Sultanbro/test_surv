@@ -7,8 +7,6 @@ import ContractOffer from '../views/ContractOffer'
 import SiteUseAgreement from '../views/SiteUseAgreement'
 import PersonalData from '../views/PersonalData'
 import PrivacyPolicy from '../views/PrivacyPolicy'
-import LoginView from '../views/LoginView'
-import RegisterView from '../views/RegisterView'
 
 const router = new VueRouter({
 	mode: 'history',
@@ -72,7 +70,7 @@ const router = new VueRouter({
 		{
 			path: '/login',
 			name: 'LoginView',
-			component: LoginView,
+			component: () => import(/* webpackChunkName: "LoginView" */ '../views/LoginView'),
 			meta: {
 				title: 'Jobtron',
 			},
@@ -80,7 +78,7 @@ const router = new VueRouter({
 		{
 			path: '/register',
 			name: 'RegisterView',
-			component: RegisterView,
+			component: () => import(/* webpackChunkName: "RegisterView" */ '../views/RegisterView'),
 			meta: {
 				title: 'Jobtron',
 			},
