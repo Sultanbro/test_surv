@@ -1877,4 +1877,14 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     {
         return (bool)$this->is_admin;
     }
+
+    public function workStartTime(): Carbon
+    {
+        return $this->scheduleFast()['start'];
+    }
+
+    public function workEndTime(): Carbon
+    {
+        return $this->scheduleFast()['end'];
+    }
 }
