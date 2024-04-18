@@ -3,6 +3,7 @@
 namespace App\Service\Timetrack;
 
 use App\Fine;
+use App\Setting;
 use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;
@@ -22,6 +23,9 @@ class UserLateService
 
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addUserFineIfLate(User $user): void
     {
         $this->user = $user;
@@ -41,12 +45,16 @@ class UserLateService
 
         //Разница в минутах.
         $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
+
         dd(
-            $this->user->workStartTime()->toTimeString(),
+            $this->user->workStartTime()
+                ->toTimeString(),
             Carbon::parse(Timetracking::query()
                 ->where('user_id', $this->user->id)
                 ->whereDate('enter', $this->date)
-                ->min('enter'))->toTimeString()
+                ->min('enter'))
+                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]))
+                ->toTimeString()
         );
 
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
