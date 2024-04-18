@@ -17,7 +17,7 @@
 				:value="lang"
 				@input="$root.$data.setLang($event)"
 			/>
-			<router-link
+			<!-- <router-link
 				to="/"
 				class="main__link"
 			>
@@ -25,7 +25,7 @@
 				<span>
 					{{ LANG.support }}
 				</span>
-			</router-link>
+			</router-link> -->
 		</div>
 	</div>
 </template>
@@ -33,7 +33,7 @@
 <script>
 import AuthLang from './AuthLang.vue';
 import IconBack from './IconBack.vue'
-import IconChat from './IconChat.vue'
+// import IconChat from './IconChat.vue'
 
 import * as LANG from './AuthHeader.lang.js'
 
@@ -41,7 +41,7 @@ export default {
 	components: {
 		AuthLang,
 		IconBack,
-		IconChat,
+		// IconChat,
 	},
 	props: {
 		back: Boolean,

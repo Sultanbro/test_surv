@@ -1,10 +1,10 @@
 <template>
-	<router-link
-		:to="href"
+	<a
+		:href="href"
 		class="jNav-menu-button"
 	>
 		{{ $lang(lang, text) }}
-	</router-link>
+	</a>
 </template>
 
 <script>
