@@ -105,7 +105,7 @@ class LoginController extends Controller
 
         // create credentials
         $method = $loginMethods[$field];
-        dd($request->get($method));
+        dd($field);
         $credentials = [
             $field => $request->get($method),
             'password' => $request->get('password'),
