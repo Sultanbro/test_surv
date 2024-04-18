@@ -67,6 +67,22 @@ const router = new VueRouter({
 				title: 'Jobtron',
 			},
 		},
+		{
+			path: '/login',
+			name: 'LoginView',
+			component: () => import(/* webpackChunkName: "LoginView" */ '../views/LoginView'),
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/register',
+			name: 'RegisterView',
+			component: () => import(/* webpackChunkName: "RegisterView" */ '../views/RegisterView'),
+			meta: {
+				title: 'Jobtron',
+			},
+		},
 	]
 });
 
