@@ -41,7 +41,7 @@ class UserLateService
 
         if (!$actualTime) return;
         //Разница в минутах.
-        $diffInMinutes = $shouldStartTime->diffInMinutes($actualTime);
+        $diffInMinutes = $actualTime->diffInMinutes($shouldStartTime);
 
         dd($diffInMinutes);
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
