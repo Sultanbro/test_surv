@@ -34,29 +34,14 @@ class UserLateService
 
         // Отнимаем $user->timezone часов так как время сервера GTM +0.
         // Время начала смены для сотрудника.
-        $workStartTimeStamp = $this->user->workStartTime()
-            ->subHours($this->user->timezone)
-            ->timestamp;
+        $shouldStartTime = $this->getWorkDayShouldStartTime();
 
         // Получаем запись из timetracking таблицы.
-        $startDayInTimestamp = $this->getTimetracking();
-
-        if (!$startDayInTimestamp) return;
+        $actualTime = $this->getWorkDayActualStartedTime();
 
         //Разница в минутах.
-        $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
-
-        dd(
-            $this->user->workStartTime()
-                ->toTimeString(),
-            Carbon::parse(Timetracking::query()
-                ->where('user_id', $this->user->id)
-                ->whereDate('enter', $this->date)
-                ->min('enter'))
-                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]))
-                ->toTimeString()
-        );
-
+        $diffInMinutes = $actualTime->diffInMinutes($shouldStartTime);
+        dd($diffInMinutes);
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
         if ($diffInMinutes <= 0) return;
 
@@ -103,16 +88,13 @@ class UserLateService
         }
     }
 
-    private function getTimetracking(): bool|int
+    private function getWorkDayActualStartedTime(): Carbon
     {
-        $enterDate = Timetracking::query()
+        return Timetracking::query()
             ->where('user_id', $this->user->id)
             ->whereDate('enter', $this->date)
-            ->min('enter');
-
-        if (!$enterDate) return false;
-
-        return strtotime($enterDate);
+            ->min('enter')
+            ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]));
     }
 
     private function isUserHasFines(): void
@@ -124,5 +106,11 @@ class UserLateService
 
         $this->hasFineLessThanFiveMinutes = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->count();
         $this->hasFineMoreThanFiveMinutes = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->count();
+    }
+
+    private function getWorkDayShouldStartTime(): Carbon
+    {
+        return $this->user->workStartTime()
+            ->subHours($this->user->timezone);
     }
 }
