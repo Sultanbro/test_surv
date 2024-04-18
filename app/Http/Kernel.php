@@ -14,6 +14,7 @@ use App\Http\Middleware\V2\Analytics\CheckAnalyticPermission;
 use App\Http\Middleware\V2\Analytics\DecompositionCached;
 use App\Http\Middleware\V2\Analytics\GroupsAndActivitiesCached;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Stancl\Tenancy\Middleware\CheckTenantForMaintenanceMode;
 
 class Kernel extends HttpKernel
 {
@@ -63,6 +64,7 @@ class Kernel extends HttpKernel
         'tenant' => [
             \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+            CheckTenantForMaintenanceMode::class
         ]
     ];
 
