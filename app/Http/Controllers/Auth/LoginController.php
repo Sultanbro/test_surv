@@ -96,13 +96,18 @@ class LoginController extends Controller
      */
     public function login(Request $request): array|JsonResponse
     {
-        // create credentials
-        $field = $this->username();
+        $loginMethods = [
+            'username' => 'email',
+            'phone' => 'phone'
+        ];
 
-        $request[$field] = $request->get('username');
+        $loginMethod = $request->get("auth_method");
+
+        // create credentials
+        $field = $loginMethods[$loginMethod];
 
         $credentials = [
-            $field => $request[$field],
+            $field => $request[$loginMethod],
             'password' => $request->get('password'),
         ];
         // failed to login
@@ -118,7 +123,7 @@ class LoginController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Введенный email или пароль не совпадает'
+                'message' => 'Введенный email, номер телефона или пароль не совпадает'
             ], 401);
         }
 
