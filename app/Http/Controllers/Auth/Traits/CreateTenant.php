@@ -14,6 +14,8 @@ use Throwable;
 
 trait CreateTenant
 {
+    private ?string $password = null;
+
     public function createTenant(CentralUser $centralUser): Tenant
     {
         return $this->createTenantWithDomain($centralUser);
@@ -38,20 +40,10 @@ trait CreateTenant
                 'currency' => $centralUser->currency ?? 'kzt'
             ]);
 
-//        $mail = new PortalCreatedMail([
-//            'name' => $centralUser->name,
-//        ]);
-//
-//        if (!app()->environment('local')) {
-//            try {
-//                Mail::to($centralUser->email)->send($mail);
-//            } catch (\Exception) {}
-//        }
-
         return $tenant;
     }
 
-    protected function createTenantUser(Tenant $tenant, array $data, $passwordHashed = false): User
+    protected function createTenantUser(Tenant $tenant, array $data): User
     {
         try {
             DB::beginTransaction();
@@ -63,7 +55,7 @@ trait CreateTenant
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => $passwordHashed ? $data['password'] : Hash::make($data['password']),
+                'password' => Hash::make($this->generatePassword()),
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
@@ -88,7 +80,7 @@ trait CreateTenant
             'email' => $data['email'],
             'phone' => $data['phone'],
             'currency' => $data['currency'],
-            'password' => Hash::make($data['password']),
+            'password' => Hash::make($this->generatePassword()),
         ]);
     }
 
@@ -105,6 +97,17 @@ trait CreateTenant
         if (!$exists) return $domain; // this is what actually we need
 
         return $this->generateRandomName();
+    }
+
+    private function generatePassword(): string
+    {
+        if ($this->password) return $this->password;
+        return $this->password = Str::random(10);
+    }
+
+    public function getGeneratedPassword(): string
+    {
+        return $this->password;
     }
 
 }

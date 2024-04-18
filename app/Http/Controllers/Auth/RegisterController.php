@@ -46,7 +46,6 @@ class RegisterController extends Controller
         $data = $request->validated();
 
         $centralUser = $this->createCentralUser($data);
-        $centralUser->update(['login_at' => now()]);
 
         $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
 
@@ -55,6 +54,8 @@ class RegisterController extends Controller
         $this->cabinetService->add($tenant->id, $user, true);
 
         $this->createRegistrationLead($user, $centralUser);
+
+        ProcessSendPasswordMail::dispatch($user, $this->getGeneratedPassword());
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
