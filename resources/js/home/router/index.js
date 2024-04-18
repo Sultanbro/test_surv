@@ -67,22 +67,22 @@ const router = new VueRouter({
 				title: 'Jobtron',
 			},
 		},
-		{
-			path: '/login',
-			name: 'LoginView',
-			component: () => import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
-			meta: {
-				title: 'Jobtron',
-			},
-		},
-		{
-			path: '/register',
-			name: 'RegisterView',
-			component: () => import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
-			meta: {
-				title: 'Jobtron',
-			},
-		},
+		// {
+		// 	path: '/login',
+		// 	name: 'LoginView',
+		// 	component: () => import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
+		// 	meta: {
+		// 		title: 'Jobtron',
+		// 	},
+		// },
+		// {
+		// 	path: '/register',
+		// 	name: 'RegisterView',
+		// 	component: () => import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
+		// 	meta: {
+		// 		title: 'Jobtron',
+		// 	},
+		// },
 	]
 });
 
