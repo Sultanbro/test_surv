@@ -46,7 +46,7 @@ class UserLateService
             Carbon::parse(Timetracking::query()
                 ->where('user_id', $this->user->id)
                 ->whereDate('enter', $this->date)
-                ->min('enter'))->toTimeString()
+                ->min('enter'), $this->user->timezone)->toTimeString()
         );
 
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
