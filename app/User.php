@@ -1880,11 +1880,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
     public function workStartTime(): Carbon
     {
-        return $this->scheduleFast()['start'];
+        return $this->scheduleFast(true)['start'];
     }
 
     public function workEndTime(): Carbon
     {
-        return $this->scheduleFast()['end'];
+        return $this->scheduleFast(true)['end'];
     }
 }
