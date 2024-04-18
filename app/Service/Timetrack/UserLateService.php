@@ -41,14 +41,12 @@ class UserLateService
 
         //Разница в минутах.
         $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
-        dd($this->user->workStartTime()
-            ->subHours($this->user->timezone)->toTimeString(),
+        dd(
+            $this->user->workStartTime()->toTimeString(),
             Carbon::parse(Timetracking::query()
                 ->where('user_id', $this->user->id)
                 ->whereDate('enter', $this->date)
-                ->min('enter'))
-                ->subHours($this->user->timezone)
-                ->toTimeString()
+                ->min('enter'))->toTimeString()
         );
 
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
