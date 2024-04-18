@@ -97,17 +97,17 @@ class LoginController extends Controller
     public function login(Request $request): array|JsonResponse
     {
         $loginMethods = [
-            'username' => 'email',
+            'email' => 'username',
             'phone' => 'phone'
         ];
 
-        $loginMethod = $request->get("method");
+        $field = $request->get("method");
 
         // create credentials
-        $field = $loginMethods[$loginMethod];
+        $method = $loginMethods[$field];
 
         $credentials = [
-            $field => $request[$loginMethod],
+            $field => $request[$method],
             'password' => $request->get('password'),
         ];
         // failed to login
