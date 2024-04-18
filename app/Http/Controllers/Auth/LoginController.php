@@ -105,13 +105,13 @@ class LoginController extends Controller
 
         // create credentials
         $method = $loginMethods[$field];
-        dd($field);
+
         $credentials = [
             $field => $request->get($method),
             'password' => $request->get('password'),
         ];
         // failed to login
-
+        dd($credentials[$field]);
         if (request()->getHost() == config('app.domain')) {
             /** @var CentralUser $centralUser */
             $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
