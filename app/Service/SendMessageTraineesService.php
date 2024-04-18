@@ -16,7 +16,6 @@ class SendMessageTraineesService
      */
     public function handle(array $userIds): void
     {
-        dd(1);
         //message must be send after two days for that used addDays()
         SendNotificationJob::dispatch($userIds)->delay(now()->addDays(2));
     }
