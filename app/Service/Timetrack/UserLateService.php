@@ -36,11 +36,12 @@ class UserLateService
 
         // Получаем запись из timetracking таблицы.
         $startDayInTimestamp = $this->getTimetracking();
-        dd($startDayInTimestamp);
+
         if (!$startDayInTimestamp) return;
 
         //Разница в минутах.
         $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
+        dd($diffInMinutes);
 
         // Если минута 0 или меньше 0, то сотрудник пришел вовремя.
         if ($diffInMinutes <= 0) return;
