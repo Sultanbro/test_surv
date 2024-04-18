@@ -70,7 +70,7 @@ const router = new VueRouter({
 		{
 			path: '/login',
 			name: 'LoginView',
-			component: () => import(/* webpackChunkName: "LoginView" */ '../views/LoginView'),
+			component: () => import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
 			meta: {
 				title: 'Jobtron',
 			},
@@ -78,7 +78,7 @@ const router = new VueRouter({
 		{
 			path: '/register',
 			name: 'RegisterView',
-			component: () => import(/* webpackChunkName: "RegisterView" */ '../views/RegisterView'),
+			component: () => import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
 			meta: {
 				title: 'Jobtron',
 			},

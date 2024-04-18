@@ -134,7 +134,8 @@ export default {
 					},
 					redirect: 'manual',
 					body: JSON.stringify({
-						method,
+						// eslint-disable-next-line camelcase
+						auth_method: method,
 						username: email,
 						phone,
 						password,
@@ -150,6 +151,7 @@ export default {
 			}
 			catch (error) {
 				const { status, data } = error.response
+				console.error(status, data)
 				switch(status){
 				case 422:
 					this.loginErrors = {

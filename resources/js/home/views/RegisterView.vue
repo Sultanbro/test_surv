@@ -52,14 +52,18 @@
 						:text="lang.canchange"
 					/>
 					<GRecaptcha
+						v-if="useCapcha"
 						:key="capchaKey"
 						data-sitekey="6LcHIU0jAAAAAEiNAmAf7XSekNcoynD1WOwKJJmH"
 						:data-validate="onValidate"
-						:data-callback="onCallback"
+						:data-callback="onSubmit"
 						class="AuthSubmit"
 					>
 						{{ lang.register }}
 					</GRecaptcha>
+					<AuthSubmit v-else>
+						{{ lang.register }}
+					</AuthSubmit>
 				</div>
 
 				<AuthNote>
@@ -124,6 +128,7 @@ import AuthSelect from '../components/auth/AuthSelect.vue';
 import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
+import AuthSubmit from '../components/auth/AuthSubmit.vue';
 
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
@@ -163,6 +168,7 @@ export default {
 		AuthFooter,
 		AuthInfo,
 		GRecaptcha,
+		AuthSubmit,
 	},
 	props: {},
 	data(){
@@ -176,6 +182,7 @@ export default {
 			isSended: true,
 			errors: {},
 			capchaKey: 1,
+			useCapcha: true,
 		}
 	},
 	computed: {
@@ -209,7 +216,7 @@ export default {
 	mounted(){},
 	beforeDestroy(){},
 	methods: {
-		async onSubmit(){
+		async onSubmit(token){
 			if(this.isLoading) return
 			this.isLoading = true
 
@@ -219,6 +226,7 @@ export default {
 					email: this.email,
 					phone: this.phone,
 					currency: this.currency,
+					'g-recaptcha-response': token,
 				})
 				this.isSended = true
 			}
