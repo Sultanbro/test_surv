@@ -110,6 +110,8 @@ export default {
 	watch: {},
 	created(){
 		if(window.Laravel?.userId) location.assign('/')
+		const bitrix = document.querySelector('.b24-widget-button-shadow')
+		if(bitrix?.parentNode) bitrix?.parentNode.remove()
 	},
 	mounted(){},
 	beforeDestroy(){},

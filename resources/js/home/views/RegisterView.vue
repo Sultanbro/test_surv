@@ -54,7 +54,7 @@
 					<GRecaptcha
 						v-if="useCapcha"
 						:key="capchaKey"
-						data-sitekey="6LcHIU0jAAAAAEiNAmAf7XSekNcoynD1WOwKJJmH"
+						data-sitekey="6LeuEr8pAAAAAAvhivvwP88W3NW2ZCzYuJ65Mzam"
 						:data-validate="onValidate"
 						:data-callback="onSubmit"
 						class="AuthSubmit"
@@ -212,6 +212,8 @@ export default {
 	watch: {},
 	created(){
 		if(window.Laravel?.userId) location.assign('/')
+		const bitrix = document.querySelector('.b24-widget-button-shadow')
+		if(bitrix?.parentNode) bitrix?.parentNode.remove()
 	},
 	mounted(){},
 	beforeDestroy(){},

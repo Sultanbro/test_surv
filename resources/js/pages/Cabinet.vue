@@ -241,6 +241,8 @@
 										v-model="birthday"
 										:tabs="[]"
 										:open="isOpenBirthday"
+										:start-year="1950"
+										separate-month-year
 										popup
 									>
 										<template #footerAfter>
