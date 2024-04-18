@@ -64,7 +64,7 @@ class Kernel extends HttpKernel
         'tenant' => [
             \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
-            CheckTenantForMaintenanceMode::class
+//            CheckTenantForMaintenanceMode::class
         ]
     ];
 
