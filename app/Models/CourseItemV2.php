@@ -21,4 +21,9 @@ class CourseItemV2 extends Model
     public const iSPRING_TYPE = 4;
 
     public const ITEM_TYPES = [self::BOOK_TYPE, self::VIDEO_TYPE, self::KB_TYPE, self::iSPRING_TYPE];
+
+    public function model()
+    {
+        return $this->morphTo(null, 'item_type', 'item_id');
+    }
 }

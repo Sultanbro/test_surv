@@ -2,17 +2,16 @@
 
 namespace App\Models\Books;
 
+use App\Contracts\CourseV2Interface;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Books\BookGroup;
 use App\Contracts\CourseInterface;
-use App\Models\TestQuestion;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Book extends Model implements CourseInterface
+class Book extends Model implements CourseInterface, CourseV2Interface
 {
     use SoftDeletes;
-    
+
     protected $table = 'books';
 
     public $timestamps = true;
@@ -28,15 +27,15 @@ class Book extends Model implements CourseInterface
     ];
 
     /**
-     * @return 
+     * @return
      */
     public function questions()
     {
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
-    
+
     /**
-     * @return 
+     * @return
      */
     public function segments()
     {
@@ -47,43 +46,48 @@ class Book extends Model implements CourseInterface
     {
         return $this->hasOne('App\Models\CourseItemModel', 'item_id');
     }
-    
+
+    public function countAllStages()
+    {
+        return $this->segments()->count();
+    }
+
     /**
      * @param int $group_id
-     * 
-     * @return Illuminate\Database\Eloquent\Collection;
+     *
+     * @return \Illuminate\Database\Eloquent\Collection;
      */
     public static function withGroups(int $group_id = 0) {
         $books = Book::all();
- 
+
         foreach($books as $book) {
 
             $_groups = [];
 
             if($group_id != 0) {
                 $bookgroup = BookGroup::find($group_id);
-                
+
                 if($bookgroup) {
                     $bg_books = BookGroup::getBooksArray($bookgroup->id);
                     if(in_array($book->id, $bg_books)) {
-                        array_push($_groups, $bookgroup->id);  
+                        array_push($_groups, $bookgroup->id);
                     }
                 }
 
             } else {
 
                 $bookgroups = BookGroup::all();
-            
+
                 foreach($bookgroups as $bg) {
                     $bg_books = BookGroup::getBooksArray($bg->id);
-                    
+
                     if(in_array($book->id, $bg_books)) {
-                        array_push($_groups, $bg->id);  
+                        array_push($_groups, $bg->id);
                     }
                 }
 
             }
-            
+
             $book->groups = $_groups;
             $book->order = null;
             $book->actions = $book->id;
@@ -95,7 +99,7 @@ class Book extends Model implements CourseInterface
      * @param mixed $title
      * @param mixed $author
      * @param mixed $link
-     * 
+     *
      * @return int
      */
     public static function createBook($title, $author, $link)
@@ -113,11 +117,11 @@ class Book extends Model implements CourseInterface
      * @param mixed $title
      * @param mixed $author
      * @param mixed $link
-     * 
+     *
      * @return array
      */
     public static function editBook($id, $title, $author, $link)
-    {   
+    {
         $status = [];
         $book = self::find($id);
         if($book) {
@@ -125,7 +129,7 @@ class Book extends Model implements CourseInterface
                 'title' => $title,
                 'author' => $author,
                 'link' => $link,
-            ]); 
+            ]);
             $status['code'] = 1;
             $status['message'] = 'Изменения успешно сохранены!';
         } else {
@@ -137,7 +141,7 @@ class Book extends Model implements CourseInterface
 
     /**
      * @param mixed $book_id
-     * 
+     *
      * @return String
      */
     public static function getBookTitle($book_id) {
@@ -152,7 +156,7 @@ class Book extends Model implements CourseInterface
 
     /**
      * @param mixed $book_id
-     * 
+     *
      * @return String
      */
     public static function getLink($book_id) {
@@ -180,7 +184,7 @@ class Book extends Model implements CourseInterface
     /**
      * CourseInterface
      * @param mixed $id
-     * 
+     *
      * @return [type]
      */
     public function nextElement($id)
@@ -189,5 +193,5 @@ class Book extends Model implements CourseInterface
         $key = array_search($id, $arr);
         return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
     }
-    
+
 }

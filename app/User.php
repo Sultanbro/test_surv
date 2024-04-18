@@ -938,29 +938,14 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $zarplata / $workdays / $working_hours;
     }
 
-    public function inGroups($is_head = false): Collection
-    {
-        return $this->groups()
     /**
      * В каких группах находится user
      * @param bool $is_head
      * @return Collection
      */
-    public function inGroups($is_head = false): Collection
+    public function inGroups(bool $is_head = false): Collection
     {
-        $groups = GroupUser::query()
-            ->where('user_id', $this->id)
-            ->where([
-                ['status', 'active'],
-                ['is_head', $is_head]
-            ])
-            ->whereNull('to')
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
-        return ProfileGroup::query()
-            ->whereIn('id', array_values($groups))
-//            ->where('active', 1)
+        return $this->groups()
             ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
             ->where('group_user.is_head', $is_head)
             ->where('group_user.status', 'active')
