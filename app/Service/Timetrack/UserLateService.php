@@ -104,7 +104,7 @@ class UserLateService
         if (!$time) return null;
         return Carbon::createFromTimeString(
             Carbon::parse($time)
-                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5])));
+                ->setTimezone(new \DateTimeZone(Setting::TIMEZONES[5]))->toTimeString());
     }
 
     private function isUserHasFines(): void
