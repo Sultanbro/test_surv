@@ -159,8 +159,7 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-//                        $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
-                        $val=0;
+                        $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
