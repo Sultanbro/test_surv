@@ -130,11 +130,8 @@ final class Analytics
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
-//        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
-        $fot = [];
-
+        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
         $keys = $this->getKeys($rows, $columns);
-
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
