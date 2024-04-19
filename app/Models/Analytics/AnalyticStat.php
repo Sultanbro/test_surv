@@ -530,12 +530,20 @@ class AnalyticStat extends Model
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
-        $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
+        $columns = AnalyticColumn::query()
+            ->where('group_id', $group_id)
+            ->where('date', $date)
+            ->whereIn('name', $days)
+            ->get();
 
         $total = 0;
 
-        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
-        foreach ($columns as $key => $column) {
+        $all_stats = self::query()
+            ->where('row_id', $row_id)
+            ->where('date', $date)
+            ->get();
+
+        foreach ($columns as $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
             if ($stat and is_numeric($stat->show_value)) {
@@ -565,11 +573,11 @@ class AnalyticStat extends Model
 
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
     {
-        $recursionCount = 0;
         $text = $stat->value;
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -588,9 +596,6 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days);
-//                    dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $sameStat);
-
-                    //  dump('formula ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
@@ -623,7 +628,6 @@ class AnalyticStat extends Model
 
             $res = eval($math_string);
         } catch (DivisionByZeroError|Throwable) {
-
             $res = 0;
         }
 
