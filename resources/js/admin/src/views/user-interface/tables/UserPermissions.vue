@@ -19,7 +19,9 @@ async function onSubmit(user: AddUserPermissionsRequest){
     data = await userPermissionsStore.editPermissions(user.id, user)
   }
   else{
-    data = await userPermissionsStore.addPermissions(user)
+
+      data = await userPermissionsStore.addPermissions(user)
+
   }
   loadingAdd.value = false
   if(data.errors){

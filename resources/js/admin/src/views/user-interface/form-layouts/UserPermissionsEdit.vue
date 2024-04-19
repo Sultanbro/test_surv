@@ -4,6 +4,7 @@ import { useUserRolesStore } from '@/stores/user-roles'
 import { VueCropper }  from 'vue-cropperjs'
 import Cropper from 'cropperjs'
 import FilePicker from '@core/components/FilePicker.vue'
+import {useToast} from "vue-toastification";
 
 type Props = {
 	errors: {
@@ -11,6 +12,7 @@ type Props = {
   }
   user?: Manager
 }
+
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'submit', data: AddUserPermissionsRequest): void
@@ -18,7 +20,7 @@ const emit = defineEmits<{
 
 const userRolesStore = useUserRolesStore()
 userRolesStore.fetchRoles()
-
+const toast = useToast()
 const id = ref(0)
 const name = ref('')
 const last_name = ref('')
@@ -27,7 +29,7 @@ const password = ref('')
 const role_id = ref(0)
 const image = ref('')
 const phone = ref('')
-const isDefault = ref(false)
+const isDefault = ref(true)
 const form = ref(true)
 
 watchEffect(() => {
@@ -41,7 +43,7 @@ watchEffect(() => {
   image.value = props.user?.img_url || ''
   isDefault.value = props.user?.is_default || ''
 })
-
+console.log(props.user?.is_default)
 const roleOptions = computed(() => {
   return [
     {
@@ -58,18 +60,20 @@ const roleOptions = computed(() => {
 })
 
 function onSubmit(){
-  emit('submit', {
-    id: id.value,
-    name: name.value,
-    last_name: last_name.value,
-    email: email.value,
-    password: password.value,
-    password_confirmation: password.value,
-    role_id: role_id.value,
-    phone: phone.value,
-    is_default: isDefault.value,
-    image: newImage.value ? newImage.value : null,
-  })
+
+     emit('submit', {
+       id: id.value,
+       name: name.value,
+       last_name: last_name.value,
+       email: email.value,
+       password: password.value,
+       password_confirmation: password.value,
+       role_id: role_id.value,
+       phone: phone.value,
+       is_default: isDefault.value,
+       image: newImage.value ? newImage.value : null,
+     })
+
 }
 
 let cropper = null
@@ -160,6 +164,12 @@ function onSelectImage(files: FileList){
             class="whsnw"
           >
             Добавить аватарку
+          </div>
+          <div
+            v-if="image"
+            class="whsnw"
+          >
+            Аватарка успешно добавлена
           </div>
         </FilePicker>
         <VTextField
