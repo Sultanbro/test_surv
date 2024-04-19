@@ -130,8 +130,11 @@ final class Analytics
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
-        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
+//        $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
+        $fot = [];
+
         $keys = $this->getKeys($rows, $columns);
+
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
@@ -160,9 +163,7 @@ final class Analytics
                     }
                     if ($statistic->type == 'formula') {
                         $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
-//                        dd_if($statistic->column_id = 23378 && $statistic->row_id = 13211, $val);
                         $statistic->show_value = $val;
-//                        $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
@@ -270,8 +271,10 @@ final class Analytics
             }
             $table[] = $item;
         }
+
         return $table;
     }
+
     public function getKeys(Collection|array $rows, Collection|array $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
