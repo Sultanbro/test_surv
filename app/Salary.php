@@ -1215,9 +1215,9 @@ class Salary extends Model
                 }
 
                 $awards = 0;
-//                if ($user->kpi_obtained_bonuses->count()) {
-//                    $awards = $user->kpi_obtained_bonuses->sum('amount');
-//                }
+                if ($user->kpi_obtained_bonuses->count()) {
+                    $awards = $user->kpi_obtained_bonuses->sum('amount');
+                }
 
 
                 $kpi = 0;

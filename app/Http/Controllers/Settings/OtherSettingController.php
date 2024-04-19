@@ -27,8 +27,6 @@ class OtherSettingController extends Controller
      */
     public function reset(Request $request): JsonResponse
     {
-        $currentTenant = tenant('id');
-
         /** @var CentralUser $centralUser */
         $centralUser = CentralUser::userByEmail($request->get('email'));
 
@@ -53,11 +51,9 @@ class OtherSettingController extends Controller
                 ]);
             } catch (Exception) {}
         }
-        tenancy()->initialize($currentTenant);
 
         $mailData = [
-            'password' => $pass,
-            'subdomain' => tenant('id')
+            'password' => $pass
         ];
 
         $mail = new PasswordReset($mailData);
