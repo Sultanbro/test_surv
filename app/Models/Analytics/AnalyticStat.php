@@ -571,7 +571,7 @@ class AnalyticStat extends Model
         return $arr;
     }
 
-    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
+    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
         $text = $stat->value;
 
@@ -585,7 +585,7 @@ class AnalyticStat extends Model
             $row_id = $exp[1];
 
             /** @var AnalyticStat $cell */
-            $cell = AnalyticStat::query()
+            $cell = ($stats ?? AnalyticStat::query())
                 ->where('column_id', $column_id)
                 ->where('row_id', $row_id)
                 ->where('date', $date)
@@ -595,7 +595,7 @@ class AnalyticStat extends Model
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
-                    $value = self::calcFormula($cell, $date, 10, $only_days);
+                    $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
