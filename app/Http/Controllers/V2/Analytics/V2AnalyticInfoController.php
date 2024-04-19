@@ -63,12 +63,12 @@ class V2AnalyticInfoController extends Controller
      */
     public function getAnalytics(GetAnalyticsRequest $request, GetAnalyticsService $service): JsonResponse
     {
-        DB::enableQueryLog();
+//        DB::enableQueryLog();
         $data = $service->handle($request->toDto());
-        $queries = DB::getQueryLog();
-        $queryCount = count($queries);
+//        $queries = DB::getQueryLog();
+//        $queryCount = count($queries);
 
-        dd_if(auth()->id() == 5, $queryCount);
+//        dd_if(auth()->id() == 5, $queryCount);
 
         return $this->response(
             message: self::SUCCESS_MESSAGE,
