@@ -595,7 +595,7 @@ class AnalyticStat extends Model
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
-                    $value = self::calcFormula($cell, $date, 10, $only_days);
+                    $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
