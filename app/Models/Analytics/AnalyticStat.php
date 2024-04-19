@@ -7,6 +7,7 @@ use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\ProfileGroup;
+use App\Repositories\Analytics\AnalyticStatRepository;
 use App\Timetracking;
 use Carbon\Carbon;
 use DivisionByZeroError;
@@ -92,6 +93,9 @@ class AnalyticStat extends Model
      */
     public static function form($group_id, $date): array
     {
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($groupId, $date);
+
         $table = [];
 
         $rows = Row::query()
@@ -159,8 +163,12 @@ class AnalyticStat extends Model
                     }
                     if ($stat->type == 'formula') {
                         $arr['value'] = self::convert_formula($stat->value, $row_keys, $col_keys);
-                        $val = self::calcFormula($stat, $date, $stat->decimals);
-
+                        $val = self::calcFormula(
+                            stat: $stat,
+                            date: $date,
+                            round: $stat->decimals,
+                            stats: $stats
+                        );
 
                         $arr['show_value'] = $val;
                         $stat->show_value = $val;

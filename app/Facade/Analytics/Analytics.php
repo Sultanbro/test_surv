@@ -559,12 +559,19 @@ final class Analytics
 
     private function getRentabilityValue($group_id, $date): float|int
     {
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group_id, $date);
         $val = 0;
 
         /** @var AnalyticStat $stat */
         $stat = $this->implStat($group_id, $date);
         if ($stat) {
-            $val = AnalyticStat::calcFormula($stat, $date, 2);
+            $val = AnalyticStat::calcFormula(
+                stat: $stat,
+                date: $date,
+                round: 2,
+                stats: $stats
+            );
         }
 
         return $val;
@@ -578,6 +585,7 @@ final class Analytics
         $currentMonthImpl = $this->rentabilityByDay($groupId, $date);
         $prevMonthImpl = $this->rentabilityByDay($groupId, $date);
 
+
         return round($currentMonthImpl - $prevMonthImpl, 2);
     }
 
@@ -590,7 +598,16 @@ final class Analytics
         $days = $this->getDaysPerMonth($date);
         $stat = $this->implStat($groupId, $date) ?? null;
 
-        return $stat ? AnalyticStat::calcFormula($stat, $date, 2, $days) : $impl;
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($groupId, $date);
+
+        return $stat ? AnalyticStat::calcFormula(
+            stat: $stat,
+            date: $date,
+            round: 2,
+            only_days: $days,
+            stats: $stats
+        ) : $impl;
     }
 
     private function getDaysPerMonth(
