@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 final class Analytics
@@ -165,7 +166,6 @@ final class Analytics
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'stat') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
                         $val = '';
@@ -179,7 +179,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'sum') {
                         $val = $this->daysSum($columns, $stats, $row->id);
                         $val = round($val, 1);
@@ -189,7 +188,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'avg') {
                         $val = $this->daysAvg($columns, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
@@ -197,7 +195,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'salary') {
                         $groupSalary = GroupSalary::query()
                             ->where('group_id', $dto->groupId)
@@ -210,7 +207,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
@@ -218,7 +214,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'time') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
                         $group = ProfileGroup::query()->find($dto->groupId);
@@ -236,7 +231,6 @@ final class Analytics
                     }
                 } else {
                     $type = 'initial';
-
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
                     }
@@ -278,7 +272,6 @@ final class Analytics
         }
         return $table;
     }
-
     public function getKeys(Collection|array $rows, Collection|array $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
