@@ -6,6 +6,7 @@ namespace App\Repositories\Analytics;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\AnalyticStat as Model;
 use App\Repositories\CoreRepository;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -16,8 +17,10 @@ class AnalyticStatRepository extends CoreRepository
     /**
      * @return Collection<AnalyticStat>
      */
-    public function getByGroupId(int $groupId, string $date): Collection
+    public function getByGroupId(int $groupId, string|Carbon $date): Collection
     {
+        $date = Carbon::parse($date);
+
         return AnalyticStat::with('activity')
             ->where('date', $date)
             ->where('group_id', $groupId)
