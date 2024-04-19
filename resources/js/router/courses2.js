@@ -1,5 +1,5 @@
 export default {
-	path: '/courses2',
+	path: '/courses-v2',
 	name: 'CoursesViewV2',
 	component: () => import(/* webpackChunkName: "CoursesViewV2" */ '@/views/CoursesViewV2'),
 	meta: {
