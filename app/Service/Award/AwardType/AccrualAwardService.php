@@ -130,7 +130,8 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
+                    'top' => []
+//                        $this->getTopSalaryEmployees($user_ids, $date),
                 ];
             }
 
@@ -144,7 +145,8 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
+                    'top' => [] // TODO: fix this
+//                        $this->getTopSalaryEmployees($user_ids, $date),
 
                 ];
 
