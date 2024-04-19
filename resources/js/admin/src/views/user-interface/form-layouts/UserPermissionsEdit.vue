@@ -41,9 +41,10 @@ watchEffect(() => {
 	password.value = ''
 	role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
-  isDefault.value = props.user?.is_default || ''
+  isDefault.value = props.user?.is_default || true
+
 })
-console.log(props.user?.is_default)
+
 const roleOptions = computed(() => {
   return [
     {
@@ -261,7 +262,7 @@ function onSelectImage(files: FileList){
   </VCard>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .UserPermissionsEdit {
   &-cropper{
     .cropper-crop-box {
@@ -292,5 +293,9 @@ function onSelectImage(files: FileList){
     margin: 0 auto;
   }
 }
+.v-field__field{
+  height: 50px !important;
+}
+
 
 </style>
