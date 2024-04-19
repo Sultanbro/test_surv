@@ -94,7 +94,7 @@ class AnalyticStat extends Model
     public static function form($group_id, $date): array
     {
         $statRepository = app(AnalyticStatRepository::class);
-        $stats = $statRepository->getByGroupId($groupId, $date);
+        $stats = $statRepository->getByGroupId($group_id, $date);
 
         $table = [];
 
@@ -718,7 +718,7 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceeds($group_id, $date, $only_days = [], Collection $stats = null): float|int
+    public static function getProceeds($group_id, $date, $only_days = [], Collection $stats = null)
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
