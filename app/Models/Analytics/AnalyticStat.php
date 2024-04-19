@@ -683,11 +683,9 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceedsPlan($group_id, $date): float|int
+    public static function getProceedsPlan($group_id, $date,Collection $stats = null): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-        $statRepository = app(AnalyticStatRepository::class);
-        $stats = $statRepository->getByGroupId($group_id, $date);
 
         $column = Column::where('group_id', $group_id)
             ->where('date', $date)
@@ -717,15 +715,12 @@ class AnalyticStat extends Model
             }
         }
 
-
         return $val;
     }
 
-    public static function getProceeds($group_id, $date, $only_days = [])
+    public static function getProceeds($group_id, $date, $only_days = [], Collection $stats = null): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
-        $statRepository = app(AnalyticStatRepository::class);
-        $stats = $statRepository->getByGroupId($group_id, $date);
 
         if (count($only_days) > 0) {
             $days = $only_days;
