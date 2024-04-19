@@ -4,7 +4,6 @@ namespace App\Repositories\Analytics;
 
 
 use App\Models\Analytics\AnalyticStat;
-use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\AnalyticStat as Model;
 use App\Repositories\CoreRepository;
 use Carbon\Carbon;
