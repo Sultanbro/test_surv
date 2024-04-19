@@ -838,9 +838,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             //awards
             $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
             $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
-
-
         }
+
         //test bonuses
         $bonusesSum += 0;
 
