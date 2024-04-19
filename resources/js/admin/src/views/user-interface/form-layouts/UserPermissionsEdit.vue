@@ -41,7 +41,7 @@ watchEffect(() => {
 	password.value = ''
 	role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
-  isDefault.value = props.user?.is_default || true
+  isDefault.value =  true
 
 })
 
