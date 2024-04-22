@@ -97,6 +97,7 @@ export default {
 			notificationsInterval: null,
 			prevNotificationsCheck: +(localStorage.getItem(NotificationsLastCheck) || Date.now()),
 			showCount: 0,
+			chatWidget: null,
 		};
 	},
 	computed: {
@@ -135,39 +136,65 @@ export default {
 		if(localStorage.getItem(NotificationsLastCheck) === null){
 			localStorage.setItem(NotificationsLastCheck, Date.now())
 		}
+
+		this.initSupportChat()
 	},
 	beforeDestroy(){
 		clearInterval(this.notificationsInterval)
+		this.destroySupportChat()
 	},
 	methods: {
 		...mapActions(useNotificationsStore, ['fetchUnreadCount']),
 		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
+		initSupportChat(){
+			if(window.jChatWidget) {
+				this.chatWidget = window.jChatWidget
+			}
+			else {
+				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget)
+				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + (Date.now() / 60000 | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s,h);
+			}
+		},
+		destroySupportChat(){
+			window.removeEventListener('onBitrixLiveChat', this.onInitChatWidget)
+		},
+		onInitChatWidget(event){
+			window.jChatWidget = event.detail.widget
+			this.chatWidget = window.jChatWidget
+			this.$nextTick(() => {
+				const elem = document.querySelector('.b24-widget-button-shadow')
+				if(!elem) return
+				const parent = elem.parentNode
+				parent.className = 'hidden'
+			})
+		},
 		toggleChat(){
 			if(this.isBp) return
+			if(!this.chatWidget) return
 
-			const elem = document.querySelector('.b24-widget-button-shadow')
-			if(elem){
-				const parent = elem.parentNode
-				parent?.remove()
-				document.querySelector('.bx-livechat-wrapper')?.remove()
-				window.BX = null
-				return
-			}
+			// const elem = document.querySelector('.b24-widget-button-shadow')
+			// if(elem){
+			// 	const parent = elem.parentNode
+			// 	parent?.remove()
+			// 	document.querySelector('.bx-livechat-wrapper')?.remove()
+			// 	window.BX = null
+			// 	return
+			// }
 
-			const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
-			const s = document.createElement('script');
-			s.async = true;
-			s.src = url + '?' + (Date.now() / 60000 | 0);
-			const h = document.getElementsByTagName('script')[0];
-			h.parentNode.insertBefore(s,h);
 
-			function openChat(){
-				setTimeout(() => {
-					if(!window?.BX?.LiveChat) return openChat()
-					window.BX.LiveChat.openLiveChat()
-				}, 100)
-			}
-			openChat()
+
+			// function openChat(){
+			// 	setTimeout(() => {
+			// 		if(!window?.BX?.LiveChat) return openChat()
+			// 		window.BX.LiveChat.openLiveChat()
+			// 	}, 100)
+			// }
+			// openChat()
 
 			// setTimeout(() => {
 			// 	// первая кнопка которая появляется на экране
