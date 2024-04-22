@@ -1,5 +1,10 @@
 <template>
-	<div class="AuthLayout">
+	<div
+		class="AuthLayout"
+		:style="[
+			'--viewport-width: ' + $viewportSize.width
+		].join(';')"
+	>
 		<div class="AuthLayout-form">
 			<div class="AuthLayout-container">
 				<div class="AuthLayout-header">
@@ -100,6 +105,13 @@ export default {
 				}
 			}
 		}
+
+		.AuthFooter{
+			flex-direction: column;
+			&-text{
+				margin-bottom: 10px;
+			}
+		}
 	}
 	&-info{
 		container: auth-info / inline-size;
@@ -135,9 +147,15 @@ export default {
 
 @media (max-width: 1599px){
 	.AuthLayout{
+		&-form{
+			padding: 48px;
+		}
 		&-info{
-			padding: 32px;
-			padding-left: 48px;
+			padding: 16px;
+			padding-left: 24px;
+		}
+		.AuthSubmit{
+			margin-top: 10px;
 		}
 	}
 }

@@ -18,6 +18,7 @@ export const ru = {
 	rub: 'Российский рубль (RUB)',
 	kzt: 'Казахстанский тенге (KZT)',
 	usd: 'Американский доллар (USD)',
+	creating: 'Ваш кабинет создается',
 }
 
 export const kz = {
@@ -40,6 +41,7 @@ export const kz = {
 	rub: 'Ресей рублі (RUB)',
 	kzt: 'Қазақстан теңгесі (KZT)',
 	usd: 'Америка доллары (USD)',
+	creating: 'Тіркелгіңіз жасалуда',
 }
 
 export const en = {
@@ -62,4 +64,5 @@ export const en = {
 	rub: 'Russian ruble (RUB)',
 	kzt: 'Kazakhstani tenge (KZT)',
 	usd: 'American dollar (USD)',
+	creating: 'Your account is being created',
 }
