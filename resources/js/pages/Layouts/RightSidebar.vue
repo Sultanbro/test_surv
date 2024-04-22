@@ -159,17 +159,14 @@ export default {
 			s.src = url + '?' + (Date.now() / 60000 | 0);
 			const h = document.getElementsByTagName('script')[0];
 			h.parentNode.insertBefore(s,h);
-			setTimeout(() => {
-				// первая кнопка которая появляется на экране
-				const btn = document.querySelector('.b24-widget-button-block')
-				if(btn) btn.click()
 
-				// внутренняя кнопка
-				const btn2 = document.querySelector('.b24-widget-button-openline_livechat')
-				if(btn2) btn2.click()
-
-				console.error('toggleChat', btn, btn2)
-			}, 500)
+			function openChat(){
+				setTimeout(() => {
+					if(!window?.BX?.LiveChat) return openChat()
+					window.BX.LiveChat.openLiveChat()
+				}, 100)
+			}
+			openChat()
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
