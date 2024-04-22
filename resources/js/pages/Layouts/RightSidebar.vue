@@ -150,6 +150,7 @@ export default {
 				const parent = elem.parentNode
 				parent?.remove()
 				document.querySelector('.bx-livechat-wrapper')?.remove()
+				window.BX = null
 				return
 			}
 
@@ -167,6 +168,18 @@ export default {
 				}, 100)
 			}
 			openChat()
+
+			// setTimeout(() => {
+			// 	// первая кнопка которая появляется на экране
+			// 	const btn = document.querySelector('.b24-widget-button-block')
+			// 	if(btn) btn.click()
+
+			// 	// внутренняя кнопка
+			// 	const btn2 = document.querySelector('.b24-widget-button-openline_livechat')
+			// 	if(btn2) btn2.click()
+
+			// 	console.error('toggleChat', btn, btn2)
+			// }, 500)
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
