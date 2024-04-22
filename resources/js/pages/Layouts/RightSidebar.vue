@@ -41,16 +41,16 @@
 			</a>
 
 			<a
-				v-if="$laravel.is_admin"
+				v-if="!isBP && $laravel.is_admin"
 				v-b-popover.hover.left.html="'спросите нас о чем угодно'"
 				href="javascript:void(0)"
 				class="header__right-icon"
+				@click="toggleChat"
 			>
 				<img
 					src="/images/dist/header-right-5.svg"
 					alt="nav icon"
 					class="header__icon-img"
-					@click="toggleChat"
 				>
 			</a>
 
@@ -150,6 +150,7 @@ export default {
 				const parent = elem.parentNode
 				parent?.remove()
 				document.querySelector('.bx-livechat-wrapper')?.remove()
+				console.error('', '')
 				return
 			}
 
@@ -159,6 +160,10 @@ export default {
 			s.src = url + '?' + (Date.now() / 60000 | 0);
 			const h = document.getElementsByTagName('script')[0];
 			h.parentNode.insertBefore(s,h);
+			setTimeout(() => {
+				const btn = document.querySelector('.b24-widget-button-openline_livechat')
+				if(btn) btn.click()
+			}, 500)
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
