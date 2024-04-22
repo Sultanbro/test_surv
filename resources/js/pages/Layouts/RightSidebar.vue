@@ -97,7 +97,6 @@ export default {
 			notificationsInterval: null,
 			prevNotificationsCheck: +(localStorage.getItem(NotificationsLastCheck) || Date.now()),
 			showCount: 0,
-			chatWidget: null,
 		};
 	},
 	computed: {
@@ -147,10 +146,7 @@ export default {
 		...mapActions(useNotificationsStore, ['fetchUnreadCount']),
 		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
 		initSupportChat(){
-			if(window.jChatWidget) {
-				this.chatWidget = window.jChatWidget
-			}
-			else {
+			if(!window.jChatWidget) {
 				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget)
 				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
 				const s = document.createElement('script');
@@ -165,7 +161,6 @@ export default {
 		},
 		onInitChatWidget(event){
 			window.jChatWidget = event.detail.widget
-			this.chatWidget = window.jChatWidget
 			this.$nextTick(() => {
 				const elem = document.querySelector('.b24-widget-button-shadow')
 				if(!elem) return
@@ -175,7 +170,10 @@ export default {
 		},
 		toggleChat(){
 			if(this.isBp) return
-			if(!this.chatWidget) return
+			if(!window.jChatWidget) return
+
+			window.jChatWidget.close()
+			window.jChatWidget.open()
 
 			// const elem = document.querySelector('.b24-widget-button-shadow')
 			// if(elem){
