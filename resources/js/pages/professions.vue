@@ -444,7 +444,10 @@ export default {
 				localStorage.removeItem('event.updatePositions')
 			}
 			catch(error){
-				console.error(error.message);
+				const errorResponse = JSON.parse(error?.request?.response);
+				const errorMessage = errorResponse.message;
+				this.$toast.error(errorMessage)
+				console.error(error);
 			}
 		},
 		async deletePosition() {
