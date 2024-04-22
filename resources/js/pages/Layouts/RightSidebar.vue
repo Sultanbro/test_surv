@@ -174,37 +174,6 @@ export default {
 
 			window.jChatWidget.close()
 			window.jChatWidget.open()
-
-			// const elem = document.querySelector('.b24-widget-button-shadow')
-			// if(elem){
-			// 	const parent = elem.parentNode
-			// 	parent?.remove()
-			// 	document.querySelector('.bx-livechat-wrapper')?.remove()
-			// 	window.BX = null
-			// 	return
-			// }
-
-
-
-			// function openChat(){
-			// 	setTimeout(() => {
-			// 		if(!window?.BX?.LiveChat) return openChat()
-			// 		window.BX.LiveChat.openLiveChat()
-			// 	}, 100)
-			// }
-			// openChat()
-
-			// setTimeout(() => {
-			// 	// первая кнопка которая появляется на экране
-			// 	const btn = document.querySelector('.b24-widget-button-block')
-			// 	if(btn) btn.click()
-
-			// 	// внутренняя кнопка
-			// 	const btn2 = document.querySelector('.b24-widget-button-openline_livechat')
-			// 	if(btn2) btn2.click()
-
-			// 	console.error('toggleChat', btn, btn2)
-			// }, 500)
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
