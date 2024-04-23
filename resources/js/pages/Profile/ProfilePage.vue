@@ -296,8 +296,10 @@ export default {
 		this.fetchPerson()
 	},
 	beforeDestroy(){
-		this.intersectionObserver.disconnect()
-		this.intersectionObserver = null
+		if (this.intersectionObserver) {
+			this.intersectionObserver.disconnect();
+			this.intersectionObserver = null;
+		}
 	},
 	methods: {
 		// ...mapActions(useReferralStore, ['fetchUserStats']),
