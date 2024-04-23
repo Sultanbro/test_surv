@@ -166,14 +166,16 @@ export default {
 				if(!elem) return
 				const parent = elem.parentNode
 				parent.className = 'hidden'
+				window.jChatWidgetBtn = parent
 			})
 		},
 		toggleChat(){
 			if(this.isBp) return
 			if(!window.jChatWidget) return
 
-			window.jChatWidget.close()
-			window.jChatWidget.open()
+			// window.jChatWidget.close()
+			// window.jChatWidget.open()
+			window.jChatWidgetBtn.classList.toggle('hidden')
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
