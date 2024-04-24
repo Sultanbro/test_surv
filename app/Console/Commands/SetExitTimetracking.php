@@ -21,8 +21,7 @@ class SetExitTimetracking extends Command
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::query()
             ->when($this->argument('user_id'), fn(Builder $query) => $query->where('user_id', $this->argument('user_id')))
-            ->whereDate('enter', '>=', $dayBeforeCurrentDate)
-            ->whereDate('enter', '<=', $currentDate)
+            ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
             ->where('status', Model::DAY_STARTED)
 //            ->whereNull('exit') TODO:check in feature
             ->get();
