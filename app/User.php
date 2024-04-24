@@ -445,7 +445,9 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
             $workEndTime->addDay();
         }
-        dd(!$workEndTime->isBefore($date->addDay()));
+
+        dd($workEndTime);
+
         if (!$workEndTime->isBefore($date->addDay())) return;
 
 
