@@ -27,6 +27,6 @@ class RunTestServerScriptCommand extends Command
         $scriptPath = base_path('test_branch.sh');
 
         // Execute the script
-        $this->info(shell_exec("bash $scriptPath " . $this->argument('branch') . "2>&1"));
+        $this->info(shell_exec("bash $scriptPath " . $this->argument('branch')));
     }
 }
