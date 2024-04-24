@@ -8,7 +8,7 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
             $table->string('tenant_id');
             $table->foreign('tenant_id')
                 ->references('id')
@@ -20,7 +20,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
             $table->dropColumn("tenant_id");
         });
     }
