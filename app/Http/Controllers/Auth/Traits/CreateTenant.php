@@ -45,13 +45,15 @@ trait CreateTenant
 
     protected function createTenantUser(Tenant $tenant, array $data): User
     {
+        $fullName =  explode(' ',$data['name']);
+
         try {
             DB::beginTransaction();
             tenancy()->initialize($tenant);
             /** @var User $user */
             $user = User::query()->create([
-                'name' => $data['name'],
-                'last_name' => $data['last_name'],
+                'name' => $fullName[0],
+                'last_name' => $fullName[1] ?? '',
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
@@ -73,10 +75,12 @@ trait CreateTenant
 
     protected function createCentralUser(array $data): CentralUser
     {
+        $fullName =  explode(' ',$data['name']);
+
         /** @var CentralUser */
         return CentralUser::query()->create([
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
+            'name' => $fullName[0],
+            'last_name' => $fullName[1] ?? '',
             'email' => $data['email'],
             'phone' => $data['phone'],
             'currency' => $data['currency'],
