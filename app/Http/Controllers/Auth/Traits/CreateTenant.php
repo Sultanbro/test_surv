@@ -15,6 +15,7 @@ use Throwable;
 trait CreateTenant
 {
     private ?string $password = null;
+    private ?string $hashedPassword = null;
 
     public function createTenant(CentralUser $centralUser): Tenant
     {
@@ -57,7 +58,7 @@ trait CreateTenant
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'currency' => $data['currency'],
-                'password' => Hash::make($this->generatePassword()),
+                'password' => $this->hashedPassword,
                 'position_id' => 1,
                 'program_id' => 1,
                 'is_admin' => 1
@@ -85,7 +86,7 @@ trait CreateTenant
             'email' => $data['email'],
             'phone' => $data['phone'],
             'currency' => $data['currency'],
-            'password' => Hash::make($this->generatePassword()),
+            'password' => $this->hashedPassword,
         ]);
     }
 
@@ -104,10 +105,10 @@ trait CreateTenant
         return $this->generateRandomName();
     }
 
-    private function generatePassword(): string
+    private function generatePassword(): void
     {
-        if ($this->password) return $this->password;
-        return $this->password = Str::random(10);
+        $this->password = Str::random(10);
+        $this->hashedPassword = Hash::make($this->password);
     }
 
     public function getGeneratedPassword(): string

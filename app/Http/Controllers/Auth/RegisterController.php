@@ -44,6 +44,7 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
+        $this->generatePassword();
 
         $centralUser = $this->createCentralUser($data);
 
@@ -55,7 +56,7 @@ class RegisterController extends Controller
 
         $this->createRegistrationLead($user, $centralUser);
 
-        ProcessSendPasswordMail::dispatch($user, $this->getGeneratedPassword());
+        ProcessSendPasswordMail::dispatch($user, $this->password);
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
