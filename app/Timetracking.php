@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * @property User $user
  * @mixin Builder
  */
 class Timetracking extends Model
