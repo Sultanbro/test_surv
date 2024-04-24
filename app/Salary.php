@@ -1027,6 +1027,7 @@ class Salary extends Model
                 $fired = (new UserService)->getFiredEmployeesAll($group->id, $date);
                 $user_ids = collect($fired)->pluck('id')->toArray();
             }
+
             $users = self::getUsersDataV2($month_start, $user_ids);
 
             /** @var User $user */
@@ -1329,38 +1330,32 @@ class Salary extends Model
                 'kpi_obtained_bonuses' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
                         ->whereYear('date', $startOfMonth->year)
-                        ->whereMonth('date', $startOfMonth->month)
-                        ->get();
+                        ->whereMonth('date', $startOfMonth->month);
                 },
                 'edited_salaries' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
                         ->whereYear('date', $startOfMonth->year)
-                        ->whereMonth('date', $startOfMonth->month)
-                        ->get();
+                        ->whereMonth('date', $startOfMonth->month);
                 },
                 'edited_kpi' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
                         ->whereYear('date', $startOfMonth->year)
-                        ->whereMonth('date', $startOfMonth->month)
-                        ->get();
+                        ->whereMonth('date', $startOfMonth->month);
                 },
                 'saved_kpi' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'total'])
                         ->whereYear('date', $startOfMonth->year)
-                        ->whereMonth('date', $startOfMonth->month)
-                        ->get();
+                        ->whereMonth('date', $startOfMonth->month);
                 },
                 'edited_bonuses' => function ($q) use ($startOfMonth) {
                     $q->select(['user_id', 'amount'])
                         ->whereYear('date', $startOfMonth->year)
-                        ->whereMonth('date', $startOfMonth->month)
-                        ->get();
+                        ->whereMonth('date', $startOfMonth->month);
                 },
                 'fines' => function ($q) use ($startOfMonth) {
                     $q->whereYear('day', $startOfMonth->year)
                         ->whereMonth('day', $startOfMonth->month)
-                        ->where('status', 1)
-                        ->get();
+                        ->where('status', 1);
                 },
             ])
             ->get();

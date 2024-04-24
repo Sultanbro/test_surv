@@ -15,13 +15,14 @@ use App\Service\V2\Analytics\GetFiredInfoService;
 use App\Service\V2\Analytics\GetGroupsService;
 use App\Service\V2\Analytics\GetPerformanceService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class V2AnalyticInfoController extends Controller
 {
     const SUCCESS_MESSAGE = 'Success loaded';
 
-    const WARNING_MESSAGE= 'Something went wrong';
+    const WARNING_MESSAGE = 'Something went wrong';
 
     /**
      * @param GetAnalyticsRequest $request
@@ -62,9 +63,16 @@ class V2AnalyticInfoController extends Controller
      */
     public function getAnalytics(GetAnalyticsRequest $request, GetAnalyticsService $service): JsonResponse
     {
+//        DB::enableQueryLog();
+        $data = $service->handle($request->toDto());
+//        $queries = DB::getQueryLog();
+//        $queryCount = count($queries);
+
+//        dd_if(auth()->id() == 5, $queryCount);
+
         return $this->response(
             message: self::SUCCESS_MESSAGE,
-            data: $service->handle($request->toDto()),
+            data: $data,
             status: Response::HTTP_OK
         );
     }

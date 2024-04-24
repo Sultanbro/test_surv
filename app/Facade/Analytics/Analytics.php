@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 final class Analytics
@@ -158,14 +159,16 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        $val = AnalyticStat::calcFormula($statistic, $date, $statistic->decimals);
-//                        dd_if($statistic->column_id = 23378 && $statistic->row_id = 13211, $val);
+                        $val = AnalyticStat::calcFormula(
+                            stat: $statistic,
+                            date: $date,
+                            round: $statistic->decimals,
+                            stats: $stats
+                        );
                         $statistic->show_value = $val;
-//                        $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'stat') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
                         $val = '';
@@ -179,7 +182,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'sum') {
                         $val = $this->daysSum($columns, $stats, $row->id);
                         $val = round($val, 1);
@@ -189,7 +191,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'avg') {
                         $val = $this->daysAvg($columns, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
@@ -197,7 +198,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'salary') {
                         $groupSalary = GroupSalary::query()
                             ->where('group_id', $dto->groupId)
@@ -210,7 +210,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
@@ -218,7 +217,6 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-
                     if ($statistic->type == 'time') {
                         $day = Carbon::parse($date)->day($column->name)->format('Y-m-d');
                         $group = ProfileGroup::query()->find($dto->groupId);
@@ -236,7 +234,6 @@ final class Analytics
                     }
                 } else {
                     $type = 'initial';
-
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
                     }
@@ -276,6 +273,7 @@ final class Analytics
             }
             $table[] = $item;
         }
+
         return $table;
     }
 
@@ -561,12 +559,19 @@ final class Analytics
 
     private function getRentabilityValue($group_id, $date): float|int
     {
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group_id, $date);
         $val = 0;
 
         /** @var AnalyticStat $stat */
         $stat = $this->implStat($group_id, $date);
         if ($stat) {
-            $val = AnalyticStat::calcFormula($stat, $date, 2);
+            $val = AnalyticStat::calcFormula(
+                stat: $stat,
+                date: $date,
+                round: 2,
+                stats: $stats
+            );
         }
 
         return $val;
@@ -580,6 +585,7 @@ final class Analytics
         $currentMonthImpl = $this->rentabilityByDay($groupId, $date);
         $prevMonthImpl = $this->rentabilityByDay($groupId, $date);
 
+
         return round($currentMonthImpl - $prevMonthImpl, 2);
     }
 
@@ -592,7 +598,16 @@ final class Analytics
         $days = $this->getDaysPerMonth($date);
         $stat = $this->implStat($groupId, $date) ?? null;
 
-        return $stat ? AnalyticStat::calcFormula($stat, $date, 2, $days) : $impl;
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($groupId, $date);
+
+        return $stat ? AnalyticStat::calcFormula(
+            stat: $stat,
+            date: $date,
+            round: 2,
+            only_days: $days,
+            stats: $stats
+        ) : $impl;
     }
 
     private function getDaysPerMonth(

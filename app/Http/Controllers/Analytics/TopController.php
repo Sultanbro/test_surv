@@ -11,6 +11,7 @@ use App\Models\Analytics\TopEditedValue;
 use App\Models\Analytics\TopValue;
 use App\Models\Analytics\UserStat;
 use App\ProfileGroup;
+use App\Repositories\Analytics\AnalyticStatRepository;
 use App\User;
 use Carbon\Carbon;
 use Exception;
@@ -98,8 +99,10 @@ class TopController extends Controller
         }
 
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
-
+        $statRepository = app(AnalyticStatRepository::class);
+        $allStats = $statRepository->getByGroupIds($this->groups, $date);
         foreach ($this->groups as $group_id) {
+            $stats = $allStats->where('group_id', $group_id);
             $group = ProfileGroup::find($group_id);
             $row = [];
 
@@ -117,8 +120,8 @@ class TopController extends Controller
                 $sum = 0;
                 $filled_days = 0;
 
-                $prs = AnalyticStat::getProceeds($group_id, $date);
-                $plan = AnalyticStat::getProceedsPlan($group_id, $date);
+                $prs = AnalyticStat::getProceeds($group_id, $date, [], $stats);
+                $plan = AnalyticStat::getProceedsPlan($group_id, $date, $stats);
 
                 $row['%'] = 2;
                 $row['План'] = $plan;
@@ -289,7 +292,7 @@ class TopController extends Controller
     public function getRentability(Request $request): array
     {
         return TopValue::getPivotRentability(
-              $request->get("year")
+            $request->get("year")
             , $request->get("month")
         );
     }

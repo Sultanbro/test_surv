@@ -8,15 +8,17 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
-            $table->string('lead_id')
-                ->nullable();
-        });
+        if (!column_exists('tariff_payment', 'lead_id', 'mysql')) {
+            Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
+                $table->string('lead_id')
+                    ->nullable();
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('tariff_payment', function (Blueprint $table) {
+        Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
             $table->dropColumn('lead_id');
         });
     }

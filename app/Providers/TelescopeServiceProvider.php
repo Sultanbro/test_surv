@@ -69,7 +69,8 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             return in_array($user->email, [
                 // Your users
                 'ali.akpanov@yandex.ru',
-                'azizbek090000@gmail.com'
+                'azizbek090000@gmail.com',
+                'vahagn99ghukasyan@gmail.com',
             ]);
         });
     }

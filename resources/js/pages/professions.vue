@@ -379,8 +379,8 @@ export default {
 				this.isSpec = data[0].is_spec;
 				this.sum = data[0].sum;
 				this.ckp_status = data[0].ckp_status
-				this.ckp = data[0].ckp
-				this.ckp_link = data[0].ckp_link
+				this.ckp = data[0].ckp || ''
+				this.ckp_link = data[0].ckp_link || ''
 				this.desc = {
 					require: data[0].require,
 					actions: data[0].actions,
@@ -433,8 +433,8 @@ export default {
 					is_head: this.isHead,
 					is_spec: this.isSpec,
 					ckp_status: this.ckp_status,
-					ckp: this.ckp,
-					ckp_link: this.ckp_link,
+					ckp: this.ckp || '_',
+					ckp_link: this.ckp_link || '_',
 				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
 				this.$toast.success(this.addNew ? 'Новая должность создана' : 'Изменения сохранены');
@@ -444,7 +444,10 @@ export default {
 				localStorage.removeItem('event.updatePositions')
 			}
 			catch(error){
-				console.error(error.message);
+				const errorResponse = JSON.parse(error?.request?.response);
+				const errorMessage = errorResponse.message;
+				this.$toast.error(errorMessage)
+				console.error(error);
 			}
 		},
 		async deletePosition() {

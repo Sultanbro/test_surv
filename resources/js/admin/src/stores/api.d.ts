@@ -95,8 +95,9 @@ declare interface AddUserPermissionsRequest {
   password: string
   password_confirmation: string
   role_id?: number
-  image: string | null
+  image: string | Blob
   phone: string
+  is_default: boolean
 }
 
 declare interface UserPermissionsResponse {
@@ -160,6 +161,7 @@ declare interface Manager {
   active_status: number
   avatar?: string
   cropped_img_url?: string
+  is_default?: boolean
   pivot?: {
     role_id: number
     model_id: number

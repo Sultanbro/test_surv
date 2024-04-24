@@ -1,10 +1,8 @@
-import VueRouter from 'vue-router'
-import {
-	checkVersion
-} from '@/stores/api.js'
-import kpi from './kpi.js'
-import top from './top.js'
-import courses2 from './courses2.js'
+import VueRouter from 'vue-router';
+import { checkVersion } from '@/stores/api.js';
+import kpi from './kpi.js';
+import top from './top.js';
+import courses2 from './courses2.js';
 
 import ProfileView from '@/views/ProfileView';
 import CabinetView from '@/views/CabinetView';
@@ -225,6 +223,7 @@ const router = new VueRouter({
 			},
 		},
 		kpi,
+		// courses,
 		// admin/info.blade.php
 		{
 			path: '/timetracking/info',

@@ -4,6 +4,7 @@ import { useUserRolesStore } from '@/stores/user-roles'
 import { VueCropper }  from 'vue-cropperjs'
 import Cropper from 'cropperjs'
 import FilePicker from '@core/components/FilePicker.vue'
+import {useToast} from "vue-toastification";
 
 type Props = {
 	errors: {
@@ -11,6 +12,7 @@ type Props = {
   }
   user?: Manager
 }
+
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'submit', data: AddUserPermissionsRequest): void
@@ -18,7 +20,7 @@ const emit = defineEmits<{
 
 const userRolesStore = useUserRolesStore()
 userRolesStore.fetchRoles()
-
+const toast = useToast()
 const id = ref(0)
 const name = ref('')
 const last_name = ref('')
@@ -39,7 +41,8 @@ watchEffect(() => {
 	password.value = ''
 	role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
-  isDefault.value = props.user?.is_default || ''
+  isDefault.value = props.user?.is_default || false
+
 })
 
 const roleOptions = computed(() => {
@@ -58,18 +61,20 @@ const roleOptions = computed(() => {
 })
 
 function onSubmit(){
-  emit('submit', {
-    id: id.value,
-    name: name.value,
-    last_name: last_name.value,
-    email: email.value,
-    password: password.value,
-    password_confirmation: password.value,
-    role_id: role_id.value,
-    phone: phone.value,
-    is_default: isDefault.value,
-    image: newImage.value ? newImage.value : null,
-  })
+
+     emit('submit', {
+       id: id.value,
+       name: name.value,
+       last_name: last_name.value,
+       email: email.value,
+       password: password.value,
+       password_confirmation: password.value,
+       role_id: role_id.value,
+       phone: phone.value,
+       is_default: isDefault.value,
+       image: newImage.value ? newImage.value : '',
+     })
+
 }
 
 let cropper = null
@@ -161,6 +166,12 @@ function onSelectImage(files: FileList){
           >
             Добавить аватарку
           </div>
+          <div
+            v-if="image"
+            class="whsnw"
+          >
+            Аватарка успешно добавлена
+          </div>
         </FilePicker>
         <VTextField
           label="Имя"
@@ -251,7 +262,7 @@ function onSelectImage(files: FileList){
   </VCard>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .UserPermissionsEdit {
   &-cropper{
     .cropper-crop-box {
@@ -282,5 +293,9 @@ function onSelectImage(files: FileList){
     margin: 0 auto;
   }
 }
+.v-field__field{
+  height: 50px !important;
+}
+
 
 </style>

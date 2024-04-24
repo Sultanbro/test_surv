@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { onError } from './api/error'
+import {useToast} from "vue-toastification";
 
 export * from './api/reflinker'
 export type * from './api.d.ts'
@@ -34,9 +35,11 @@ export const fetchUserPermissions = async (req: UserPermissionsRequest) => {
   }
 }
 
-export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
+export const
+  addUserPermissions = async (req: AddUserPermissionsRequest) => {
   const formData = new FormData()
   Object.entries(req).forEach(([key, value]) => formData.append(key, value))
+  formData.set('is_default', `${req.is_default ? 1 : 0}`)
   try {
     const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', formData, {
       headers: {
@@ -46,6 +49,10 @@ export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
     return data
   }
   catch (error) {
+    const toast = useToast()
+    const errorResponse = JSON.parse(error?.request?.response);
+    const errorMessage = errorResponse.message;
+    toast.error(errorMessage)
     return onError(error)
   }
 }
@@ -53,6 +60,7 @@ export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
 export const updateUserPermissions = async (id: number, req: AddUserPermissionsRequest) => {
   const formData = new FormData()
   Object.entries(req).forEach(([key, value]) => formData.append(key, value))
+  formData.set('is_default', `${req.is_default ? 1 : 0}`)
   try {
     const { data, status } = await axios.post<AddUserPermissionsResponse>(`/admins/edit/${id}`, formData, {
       headers: {

@@ -7,6 +7,7 @@ use App\GroupSalary;
 use App\Models\Analytics\AnalyticColumn as Column;
 use App\Models\Analytics\AnalyticRow as Row;
 use App\ProfileGroup;
+use App\Repositories\Analytics\AnalyticStatRepository;
 use App\Timetracking;
 use Carbon\Carbon;
 use DivisionByZeroError;
@@ -92,6 +93,9 @@ class AnalyticStat extends Model
      */
     public static function form($group_id, $date): array
     {
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group_id, $date);
+
         $table = [];
 
         $rows = Row::query()
@@ -159,8 +163,12 @@ class AnalyticStat extends Model
                     }
                     if ($stat->type == 'formula') {
                         $arr['value'] = self::convert_formula($stat->value, $row_keys, $col_keys);
-                        $val = self::calcFormula($stat, $date, $stat->decimals);
-
+                        $val = self::calcFormula(
+                            stat: $stat,
+                            date: $date,
+                            round: $stat->decimals,
+                            stats: $stats
+                        );
 
                         $arr['show_value'] = $val;
                         $stat->show_value = $val;
@@ -530,12 +538,20 @@ class AnalyticStat extends Model
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         }
 
-        $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
+        $columns = AnalyticColumn::query()
+            ->where('group_id', $group_id)
+            ->where('date', $date)
+            ->whereIn('name', $days)
+            ->get();
 
         $total = 0;
 
-        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
-        foreach ($columns as $key => $column) {
+        $all_stats = self::query()
+            ->where('row_id', $row_id)
+            ->where('date', $date)
+            ->get();
+
+        foreach ($columns as $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
             if ($stat and is_numeric($stat->show_value)) {
@@ -563,13 +579,13 @@ class AnalyticStat extends Model
         return $arr;
     }
 
-    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = []): float|int
+    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
-        $recursionCount = 0;
         $text = $stat->value;
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -577,7 +593,7 @@ class AnalyticStat extends Model
             $row_id = $exp[1];
 
             /** @var AnalyticStat $cell */
-            $cell = AnalyticStat::query()
+            $cell = ($stats ?? AnalyticStat::query())
                 ->where('column_id', $column_id)
                 ->where('row_id', $row_id)
                 ->where('date', $date)
@@ -587,10 +603,7 @@ class AnalyticStat extends Model
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
-                    $value = self::calcFormula($cell, $date, 10, $only_days);
-//                    dd_if($stat->column_id = 23378 && $stat->row_id = 13211, $sameStat);
-
-                    //  dump('formula ' .$value);
+                    $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
@@ -623,7 +636,6 @@ class AnalyticStat extends Model
 
             $res = eval($math_string);
         } catch (DivisionByZeroError|Throwable) {
-
             $res = 0;
         }
 
@@ -635,6 +647,10 @@ class AnalyticStat extends Model
         $date = Carbon::parse($date)
             ->day(1)
             ->format('Y-m-d');
+
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group->id, $date);
+
         $column = Column::where('group_id', $group->id)
             ->where('date', $date)
             ->where('name', 'plan')
@@ -652,7 +668,12 @@ class AnalyticStat extends Model
                 ->where('date', $date)
                 ->first();
             if ($stat) {
-                $val = self::calcFormula($stat, $date, 2);
+                $val = self::calcFormula(
+                    stat: $stat,
+                    date: $date,
+                    round: 2,
+                    stats: $stats
+                );
                 $stat->show_value = $val;
                 $stat->save();
             }
@@ -662,9 +683,10 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceedsPlan($group_id, $date): float|int
+    public static function getProceedsPlan($group_id, $date,Collection $stats = null): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
+
         $column = Column::where('group_id', $group_id)
             ->where('date', $date)
             ->where('name', 'sum')
@@ -684,15 +706,19 @@ class AnalyticStat extends Model
                 ->first();
 
             if ($stat && $stat->type == 'formula') {
-                $val = self::calcFormula($stat, $date, 2);
+                $val = self::calcFormula(
+                    stat: $stat,
+                    date: $date,
+                    round: 2,
+                    stats: $stats
+                );
             }
         }
-
 
         return $val;
     }
 
-    public static function getProceeds($group_id, $date, $only_days = [])
+    public static function getProceeds($group_id, $date, $only_days = [], Collection $stats = null)
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
@@ -727,7 +753,11 @@ class AnalyticStat extends Model
                 if ($stat) {
 
                     if ($stat->type == 'formula') {
-                        $values[(int)$column->name] = self::calcFormula($stat, $date);
+                        $values[(int)$column->name] = self::calcFormula(
+                            stat: $stat,
+                            date: $date,
+                            stats: $stats
+                        );
                     } else {
                         $values[(int)$column->name] = (int)$stat->show_value;
                     }
@@ -757,6 +787,9 @@ class AnalyticStat extends Model
      */
     public static function getCellValue($group_id, $cell, $date, $round = 0): float|int
     {
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group_id, $date);
+
         // get indexes
         $r_index = 0;
         $c_index = 0;
@@ -820,7 +853,12 @@ class AnalyticStat extends Model
 
             if ($stat) {
                 if ($stat->type == 'formula') {
-                    $value = self::calcFormula($stat, $date, $round);
+                    $value = self::calcFormula(
+                        stat: $stat,
+                        date: $date,
+                        round: $round,
+                        stats: $stats
+                    );
                 } else {
                     $value = round((float)$stat->show_value, $round);
                 }
@@ -847,8 +885,16 @@ class AnalyticStat extends Model
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
         $stat = self::getImplStat($group_id, $date);
 
+        $statRepository = app(AnalyticStatRepository::class);
+        $stats = $statRepository->getByGroupId($group_id, $date);
         if ($stat) {
-            $impl = self::calcFormula($stat, $date, 2, $only_days);
+            $impl = self::calcFormula(
+                stat: $stat,
+                date: $date,
+                round: 2,
+                only_days: $only_days,
+                stats: $stats
+            );
         }
 
         return $impl;
@@ -922,13 +968,18 @@ class AnalyticStat extends Model
             ->withWhereHas('row', fn($query) => $query->where('name', 'second'))
             ->whereDate('date', $date)
             ->whereIn('group_id', $groups)
-            ->get()
-            ->keyBy('group_id');
+            ->get();
 
-        foreach ($stats as $groupId => $stat) {
+        $keyByGroupId = $stats->keyBy('group_id');
+
+        foreach ($keyByGroupId as $groupId => $stat) {
             $sum = 0;
             if ($stat->type == 'formula') {
-                $sum += self::calcFormula($stat, $date);
+                $sum += self::calcFormula(
+                    stat: $stat,
+                    date: $date,
+                    stats: $stats
+                );
             } else {
                 $sum += (int)$stat->show_value;
             }

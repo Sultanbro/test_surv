@@ -139,20 +139,20 @@ export default {
 
 <style lang="scss">
 body{
-	.bx-livechat-wrapper,
-	.b24-widget-button-shadow,
-	.b24-widget-button-wrapper{
-		display: none;
-	}
-	&.profile-page{
-		.bx-livechat-wrapper,
-		.b24-widget-button-shadow{
-			display: block;
-		}
-		.b24-widget-button-wrapper{
-			display: flex;
-		}
-	}
+	// .bx-livechat-wrapper,
+	// .b24-widget-button-shadow,
+	// .b24-widget-button-wrapper{
+	// 	display: none;
+	// }
+	// &.profile-page{
+	// 	.bx-livechat-wrapper,
+	// 	.b24-widget-button-shadow{
+	// 		display: block;
+	// 	}
+	// 	.b24-widget-button-wrapper{
+	// 		display: flex;
+	// 	}
+	// }
 	.Vue-Toastification__container{
 		z-index: 2000000;
 	}

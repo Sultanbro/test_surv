@@ -15,6 +15,7 @@ final class AddOrUpdateAdminDTO
      * @param int|null $roleId
      * @param UploadedFile|null $image
      * @param string $phone
+     * @param bool $isDefault
      */
     public function __construct(
         public string $name,
@@ -23,7 +24,8 @@ final class AddOrUpdateAdminDTO
         public string $password,
         public ?int $roleId,
         public ?UploadedFile $image,
-        public string $phone
+        public string $phone,
+        public bool $isDefault
     )
     {}
 
@@ -39,7 +41,8 @@ final class AddOrUpdateAdminDTO
             'password'  => $this->password,
             'role_id'   => $this->roleId,
             'image'     => $this->image,
-            'phone'     => $this->phone
+            'phone'     => $this->phone,
+            'is_default'=> $this->isDefault,
         ];
     }
 }

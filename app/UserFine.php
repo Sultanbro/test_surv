@@ -218,17 +218,16 @@ class UserFine extends Model
      */
     public function addUserFine(array $data): UserFine
     {
-        $userFine = new UserFine;
-        $userFine->user_id = $data['user_id'];
-        $userFine->fine_id = $data['fine_id'];
-        $userFine->day = $data['day'];
-        $userFine->note = $data['note'];
-        $userFine->save();
+        $this->user_id = $data['user_id'];
+        $this->fine_id = $data['fine_id'];
+        $this->day = $data['day'];
+        $this->note = $data['note'];
+        $this->save();
 
         $title = 'Добавлен штраф на ' . Carbon::parse($data['day'])->format('d.m.Y');
         self::setNotificationAboutFine($data['user_id'], $data['fine_id'], $title);
 
-        return $userFine;
+        return $this;
     }
 
     public function fine()
