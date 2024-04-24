@@ -1,37 +1,37 @@
-import VueRouter from 'vue-router'
-import {
-	checkVersion
-} from '@/stores/api.js'
-import kpi from './kpi.js'
-import top from './top.js'
+import VueRouter from 'vue-router';
+import { checkVersion } from '@/stores/api.js';
+import kpi from './kpi.js';
+import top from './top.js';
+import courses2 from './courses2.js';
 
-import ProfileView from '@/views/ProfileView'
-import CabinetView from '@/views/CabinetView'
-import NewsView from '@/views/NewsView'
-import KnowledgeBaseView from '@/views/KnowledgeBaseView'
-import UpbooksView from '@/views/UpbooksView'
-import PlaylistsView from '@/views/PlaylistsView'
-import CoursesView from '@/views/CoursesView'
-import TimetrackingView from '@/views/TimetrackingView'
+import ProfileView from '@/views/ProfileView';
+import CabinetView from '@/views/CabinetView';
+import NewsView from '@/views/NewsView';
+import KnowledgeBaseView from '@/views/KnowledgeBaseView';
+import UpbooksView from '@/views/UpbooksView';
+import PlaylistsView from '@/views/PlaylistsView';
+import CoursesView from '@/views/CoursesView';
+import TimetrackingView from '@/views/TimetrackingView';
 
-import MyCoursesView from '@/views/MyCoursesView'
+import MyCoursesView from '@/views/MyCoursesView';
 // import StructureView from '@/views/StructureView'
-import EntertimeView from '@/views/EntertimeView'
-import HRView from '@/views/HRView'
+import EntertimeView from '@/views/EntertimeView';
+import HRView from '@/views/HRView';
 // import TopView from '@/views/TopView'
-import AnalyticsView from '@/views/AnalyticsView'
-import SalaryView from '@/views/SalaryView'
-import QualityControlView from '@/views/QualityControlView'
-import MapView from '@/views/MapView'
-import PromotionalMaterialView from '@/views/PromotionalMaterialView'
-import ReferralPrsentationView from '@/views/ReferralPrsentationView'
+import AnalyticsView from '@/views/AnalyticsView';
+import SalaryView from '@/views/SalaryView';
+import QualityControlView from '@/views/QualityControlView';
+import MapView from '@/views/MapView';
+import PromotionalMaterialView from '@/views/PromotionalMaterialView';
+import ReferralPrsentationView from '@/views/ReferralPrsentationView';
 
 // Cтраницу настроек наверное тоже разделим если нужно
-import SettingsView from '@/views/SettingsView'
+import SettingsView from '@/views/SettingsView';
 // import StructureView from '@/views/StructureView'
 
-const VIEWPORT_DEFAULT = 'width=1360, initial-scale=1'
-const VIEWPORT_ADAPTIVE = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'
+const VIEWPORT_DEFAULT = 'width=1360, initial-scale=1';
+const VIEWPORT_ADAPTIVE =
+	'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no';
 
 const router = new VueRouter({
 	mode: 'history',
@@ -130,6 +130,7 @@ const router = new VueRouter({
 				menuItem: 'courses',
 			},
 		},
+		courses2,
 		// admin/mycourse.blade.php
 		{
 			path: '/my-courses',
@@ -222,11 +223,13 @@ const router = new VueRouter({
 			},
 		},
 		kpi,
+		// courses,
 		// admin/info.blade.php
 		{
 			path: '/timetracking/info',
 			name: 'FAQView',
-			component: () => import(/* webpackChunkName: "FAQView" */ '@/views/FAQView'),
+			component: () =>
+				import(/* webpackChunkName: "FAQView" */ '@/views/FAQView'),
 			meta: {
 				title: 'ЧАВО - FAQ',
 				menuItem: 'faq',
@@ -236,7 +239,8 @@ const router = new VueRouter({
 		{
 			path: '/timetracking/fines',
 			name: 'FinesView',
-			component: () => import(/* webpackChunkName: "FinesView" */ '@/views/FinesView'),
+			component: () =>
+				import(/* webpackChunkName: "FinesView" */ '@/views/FinesView'),
 			meta: {
 				title: 'Депремирование',
 				menuItem: 'fines',
@@ -256,7 +260,8 @@ const router = new VueRouter({
 		{
 			path: '/timetracking/edit-person',
 			name: 'UserEditView',
-			component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
+			component: () =>
+				import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
 			meta: {
 				title: 'Редактирование профиля сотрудника',
 				menuItem: 'settings',
@@ -266,7 +271,8 @@ const router = new VueRouter({
 		{
 			path: '/timetracking/create-person',
 			name: 'UserCreateView',
-			component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
+			component: () =>
+				import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
 			meta: {
 				title: 'Создание профиля сотрудника',
 				menuItem: 'settings',
@@ -275,7 +281,8 @@ const router = new VueRouter({
 		{
 			path: '/pricing',
 			name: 'PricingView',
-			component: () => import(/* webpackChunkName: "PricingView" */ '@/views/PricingView'),
+			component: () =>
+				import(/* webpackChunkName: "PricingView" */ '@/views/PricingView'),
 			meta: {
 				title: 'PricingView',
 			},
@@ -283,7 +290,8 @@ const router = new VueRouter({
 		{
 			path: '/structure',
 			name: 'StructureView',
-			component: () => import(/* webpackChunkName: "StructureView" */ '@/views/StructureView'),
+			component: () =>
+				import(/* webpackChunkName: "StructureView" */ '@/views/StructureView'),
 			meta: {
 				title: 'StructureView',
 				menuItem: 'structure',
@@ -292,7 +300,10 @@ const router = new VueRouter({
 		{
 			path: '/signature/verification',
 			name: 'SignatureVerification',
-			component: () => import(/* webpackChunkName: "SignatureVerification" */ '@/views/SignatureVerification'),
+			component: () =>
+				import(
+					/* webpackChunkName: "SignatureVerification" */ '@/views/SignatureVerification'
+				),
 			meta: {
 				title: 'SignatureVerification',
 			},
@@ -300,7 +311,8 @@ const router = new VueRouter({
 		{
 			path: '/signature/view',
 			name: 'SignatureView',
-			component: () => import(/* webpackChunkName: "SignatureView" */ '@/views/SignatureView'),
+			component: () =>
+				import(/* webpackChunkName: "SignatureView" */ '@/views/SignatureView'),
 			meta: {
 				title: 'SignatureView',
 			},
@@ -308,21 +320,21 @@ const router = new VueRouter({
 		{
 			path: '/awards/fix-preview',
 			name: 'FixAwardView',
-			component: () => import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),
+			component: () =>
+				import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),
 			meta: {
 				title: 'FixAwardView',
 			},
 		},
 	],
-})
-
+});
 
 const viewport = document.querySelector('meta[name="viewport"]');
 router.beforeEach((to, from, next) => {
-	checkVersion().then(newVersion => {
-		if(newVersion) location.assign(to.fullPath || to.path)
-	})
-	viewport.content = to.meta.viewport || VIEWPORT_DEFAULT
+	checkVersion().then((newVersion) => {
+		if (newVersion) location.assign(to.fullPath || to.path);
+	});
+	viewport.content = to.meta.viewport || VIEWPORT_DEFAULT;
 	next();
 });
-export default router
+export default router;

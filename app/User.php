@@ -937,7 +937,12 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $zarplata / $workdays / $working_hours;
     }
 
-    public function inGroups($is_head = false): Collection
+    /**
+     * В каких группах находится user
+     * @param bool $is_head
+     * @return Collection
+     */
+    public function inGroups(bool $is_head = false): Collection
     {
         return $this->groups()
             ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
