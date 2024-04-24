@@ -29,7 +29,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
-    Route::get('login2', [PageController::class, 'home'])->name('login');
+    Route::get('login2', [PageController::class, 'home'])->name('login2');
     Route::post('login', [Auth\LoginController::class, 'login']);
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
     Route::get('password/reset', [Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
