@@ -11,7 +11,7 @@ class RunTestServerScriptCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'fetch:dev {branch}';
+    protected $signature = 'sync:git {branch}';
 
     /**
      * The console command description.
