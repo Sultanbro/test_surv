@@ -108,11 +108,13 @@ class Kernel extends ConsoleKernel
         | Запускаются во всех субдоменах.
         |
         */
-        $schedule->command('tenants:run timetracking:check')->everyThirtyMinutes(); // автоматически завершить рабочий день если забыли нажать на кнопку
+        $schedule->command('tenants:run timetracking:check')->then(function () {
+            $this->call('tenants:run count:hours'); // обновление минут
+        })->everyThirtyMinutes(); // автоматически завершить рабочий день если забыли нажать на кнопку
+
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
         $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
-        $schedule->command('tenants:run count:hours')->hourly(); // обновление минут
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
