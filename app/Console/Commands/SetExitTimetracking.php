@@ -7,10 +7,11 @@ use App\Timetracking as Model;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 
 class SetExitTimetracking extends Command
 {
-    protected $signature = 'timetracking:check {date?}';
+    protected $signature = 'timetracking:check {date?} {user_id?}';
 
     protected $description = 'Автоматическое завершение рабочего дня';
 
@@ -19,11 +20,13 @@ class SetExitTimetracking extends Command
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::query()
-            ->withWhereHas('user')
+            ->when($this->argument('user_id'), fn(Builder $query) => $query->where('user_id', $this->argument('user_id')))
             ->whereBetween('enter', [$dayBeforeCurrentDate, $currentDate])
             ->where('status', Model::DAY_STARTED)
 //            ->whereNull('exit') TODO:check in feature
             ->get();
+
+        dd($records);
 
         /** @var Timetracking $record */
         foreach ($records as $record) {
