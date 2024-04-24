@@ -22,7 +22,7 @@ class CountHours extends Command
         $userId = (int)$this->argument('user_id') ?? null;
         $currentDate = now()->format('Y-m-d');
         $givenDate = Carbon::parse($this->argument('date') ?? $currentDate);
-
+        dd($givenDate);
         $timeTrackRecords = (new TimeTrackingRepository)
             ->getNonUpdatedTimeTrackWithUser($userId)
             ->whereDate('enter', $givenDate)
