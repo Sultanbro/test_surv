@@ -39,6 +39,7 @@ export const
   addUserPermissions = async (req: AddUserPermissionsRequest) => {
   const formData = new FormData()
   Object.entries(req).forEach(([key, value]) => formData.append(key, value))
+  formData.set('is_default', `${req.is_default ? 1 : 0}`)
   try {
     const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', formData, {
       headers: {
@@ -59,6 +60,7 @@ export const
 export const updateUserPermissions = async (id: number, req: AddUserPermissionsRequest) => {
   const formData = new FormData()
   Object.entries(req).forEach(([key, value]) => formData.append(key, value))
+  formData.set('is_default', `${req.is_default ? 1 : 0}`)
   try {
     const { data, status } = await axios.post<AddUserPermissionsResponse>(`/admins/edit/${id}`, formData, {
       headers: {

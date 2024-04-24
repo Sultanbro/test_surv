@@ -24,6 +24,9 @@ class Setting extends Model
         +11 => 'Asia/Magadan',
         +12 => 'Asia/Kamchatka'
     ];
+
+    const DEFAULT_MANAGER = "default_manager";
+
     protected $fillable = ['name', 'description', 'value'];
 
     public static function get($name, $currency, $number = null) {

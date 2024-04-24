@@ -1,5 +1,14 @@
 #!/bin/bash
 
+hostname=$(hostname)
+testhost="jobtron"
+
+# только для прода
+if [ $hostname != $testhost ]; then
+  echo "not production server"
+  exit
+fi
+
 # переход в каталог сервиса
 cd /var/www/job
 
@@ -8,17 +17,14 @@ set -a
 source ./.env
 set +a
 
-# получение дампов
-MYSQL_PWD=$DB_PASSWORD mysqldump -u jobtron --no-tablespace jobtron > jobtron.sql
-MYSQL_PWD=$DB_PASSWORD mysqldump -u jobtron --no-tablespace tenantbp > tenantbp.sql
-MYSQL_PWD=$DB_PASSWORD mysqldump -u jobtron --no-tablespace tenantadmin > tenantadmin.sql
+# очистка истории телескопа, чтобы не тащить лишних 5гб на тетовую базу
+php artisan telescope:clear
 
-# отправка дампов на тестовый
-sshpass -p $TEST_PASSWORD rsync -ae "ssh -p $TEST_PORT -o StrictHostKeyChecking=no" ./jobtron.sql $TEST_USER@$TEST_HOST:$TEST_PATH
-sshpass -p $TEST_PASSWORD rsync -ae "ssh -p $TEST_PORT -o StrictHostKeyChecking=no" ./tenantbp.sql $TEST_USER@$TEST_HOST:$TEST_PATH
-sshpass -p $TEST_PASSWORD rsync -ae "ssh -p $TEST_PORT -o StrictHostKeyChecking=no" ./tenantadmin.sql $TEST_USER@$TEST_HOST:$TEST_PATH
+# копирование бд на тестовую
+MYSQL_PWD=$DB_PASSWORD mysqldump -u $DB_USERNAME -B jobtron tenantbp tenantadmin > mysql -h '188.94.155.150' -P 3308 -u root -p'u96VqBrA'
 
-# удаление дампов
-rm ./jobtron.sql
-rm ./tenantbp.sql
-rm ./tenantadmin.sql
+# composer и миграции
+sshpass -p $TEST_PASSWORD ssh $TEST_USER@$TEST_HOST 'cd /var/www/job && composer install && composer dump-autoload && php artisan migrate && php artisan tenants:migrate --tenants=bp && php artisan tenants:migrate --tenants=admin && php artisan optimize:clear && php artisan config:cache'
+
+# front
+sshpass -p $TEST_PASSWORD ssh $TEST_USER@$TEST_HOST 'cd /var/www/job && npm i && npm run development && cd /var/www/job/resources/js/admin && npm i && npx vite build --mode development'

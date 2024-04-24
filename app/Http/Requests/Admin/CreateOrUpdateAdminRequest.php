@@ -30,10 +30,11 @@ class CreateOrUpdateAdminRequest extends FormRequest
             'name'      => ['required', 'string', 'max:190'],
             'last_name' => ['required', 'string', 'max:190'],
             'email'     => ['required', 'string', 'email', 'max:255'],
-            'password'  => ['required', 'string', 'min:8', 'confirmed'],
-            'role_id'   => ['required', 'integer', 'exists:roles,id'],
-            'image'     => ['file', 'mimes:jpg,png', 'max:7168'],
-            'phone'     => ['required', 'string']
+            'password'  => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role_id'   => ['required', 'integer'],
+            'image'     => ['file', 'mimes:jpg,png', 'max:7168', 'nullable'],
+            'phone'     => ['required', 'string'],
+            'is_default'=> ['required', 'integer']
         ];
     }
 
@@ -51,6 +52,7 @@ class CreateOrUpdateAdminRequest extends FormRequest
         $roleId     = Arr::get($validated, 'role_id');
         $image      = Arr::get($validated, 'image');
         $phone      = Arr::get($validated, 'phone');
+        $isDefault  = Arr::get($validated, 'is_default');
 
         return new AddOrUpdateAdminDTO(
             $name,
@@ -59,7 +61,8 @@ class CreateOrUpdateAdminRequest extends FormRequest
             bcrypt($password),
             $roleId,
             $image,
-            $phone
+            $phone,
+            $isDefault ?? false
         );
 
     }
