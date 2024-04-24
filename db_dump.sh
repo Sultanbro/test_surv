@@ -1,5 +1,14 @@
 #!/bin/bash
 
+hostname=$(hostname)
+testhost="jobtron"
+
+# только для прода
+if [ $hostname != $testhost ]; then
+  echo "not production server"
+  exit
+fi
+
 # переход в каталог сервиса
 cd /var/www/job
 
