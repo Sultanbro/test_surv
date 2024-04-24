@@ -39,7 +39,7 @@ git pull
 
 # забрать в dev изменения из фичи
   echo "забрать в dev изменения из фичи"
-git checkout -
+git checkout dev
 git merge $1
 
 # бэк
