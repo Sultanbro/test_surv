@@ -68,7 +68,7 @@ const router = new VueRouter({
 			},
 		},
 		{
-			path: '/login2',
+			path: '/login',
 			name: 'LoginView',
 			component: () => import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
 			meta: {
@@ -76,7 +76,7 @@ const router = new VueRouter({
 			},
 		},
 		{
-			path: '/register2',
+			path: '/register',
 			name: 'RegisterView',
 			component: () => import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
 			meta: {
