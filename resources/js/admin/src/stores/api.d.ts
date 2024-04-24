@@ -161,6 +161,7 @@ declare interface Manager {
   active_status: number
   avatar?: string
   cropped_img_url?: string
+  is_default?: boolean
   pivot?: {
     role_id: number
     model_id: number
