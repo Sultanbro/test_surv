@@ -45,7 +45,7 @@ trait CreateTenant
 
     protected function createTenantUser(Tenant $tenant, array $data): User
     {
-        $fullName =  explode(' ',$data['name']);
+        $fullName = explode(' ', $data['name']);
 
         try {
             DB::beginTransaction();
@@ -69,13 +69,14 @@ trait CreateTenant
             return $user;
         } catch (TenantCouldNotBeIdentifiedById|Throwable $e) {
             DB::rollBack();
+            tenant()->delete();
             die($e->getMessage());
         }
     }
 
     protected function createCentralUser(array $data): CentralUser
     {
-        $fullName =  explode(' ',$data['name']);
+        $fullName = explode(' ', $data['name']);
 
         /** @var CentralUser */
         return CentralUser::query()->create([
