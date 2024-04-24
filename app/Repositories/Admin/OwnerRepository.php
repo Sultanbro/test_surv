@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Admin;
 
+use App\Setting;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use App\Repositories\CoreRepository;
@@ -141,7 +142,7 @@ class OwnerRepository extends CoreRepository
      */
     public function getAdmins()
     {
-        return User::query()
+        $users = User::query()
             ->select([
                 'id',
                 'last_name',
@@ -152,5 +153,13 @@ class OwnerRepository extends CoreRepository
                 'role_id',
                 'img_url',
             ])->get();
+
+        $defaultManagerId = Setting::query()->where('name', Setting::DEFAULT_MANAGER)->first()?->value;
+
+        foreach ($users as $user) {
+            $user->is_default = $user->id == $defaultManagerId ? 1 : 0;
+        }
+
+        return $users;
     }
 }

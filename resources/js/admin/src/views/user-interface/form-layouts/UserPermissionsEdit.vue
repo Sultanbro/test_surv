@@ -72,7 +72,7 @@ function onSubmit(){
        role_id: role_id.value,
        phone: phone.value,
        is_default: isDefault.value,
-       image: newImage.value ? newImage.value : null,
+       image: newImage.value ? newImage.value : '',
      })
 
 }
