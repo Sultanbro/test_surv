@@ -95,8 +95,9 @@ declare interface AddUserPermissionsRequest {
   password: string
   password_confirmation: string
   role_id?: number
-  image: string | null
+  image: string | Blob
   phone: string
+  is_default: boolean
 }
 
 declare interface UserPermissionsResponse {
