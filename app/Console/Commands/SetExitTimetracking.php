@@ -18,7 +18,6 @@ class SetExitTimetracking extends Command
     public function handle(): void
     {
         $currentDate = Carbon::parse($this->argument('date') ?? now()->toDateString());
-        dd($currentDate);
         $dayBeforeCurrentDate = Carbon::parse($this->argument('date') ?? now()->toDateString())->subDay();
         $records = Model::query()
             ->when($this->argument('user_id'), fn(Builder $query) => $query->where('user_id', $this->argument('user_id')))
@@ -27,7 +26,7 @@ class SetExitTimetracking extends Command
             ->where('status', Model::DAY_STARTED)
 //            ->whereNull('exit') TODO:check in feature
             ->get();
-
+        dd($records);
         /** @var Timetracking $record */
         foreach ($records as $record) {
             User::setExit($record, $currentDate);
