@@ -22,7 +22,7 @@ class SetExitTimetracking extends Command
         $records = Model::query()
             ->when($this->argument('user_id'), fn(Builder $query) => $query->where('user_id', $this->argument('user_id')))
             ->whereDate('enter', '>=', $dayBeforeCurrentDate)
-            ->whereDate('exit', '<=', $currentDate)
+            ->whereDate('enter', '<=', $currentDate)
             ->where('status', Model::DAY_STARTED)
 //            ->whereNull('exit') TODO:check in feature
             ->get();
