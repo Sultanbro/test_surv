@@ -65,5 +65,5 @@ cd /var/www/job
   echo "удаление лишнего"
 git reset --hard
 git clean -df
-
+git push
 echo "успешная сборка ... тестите на здаровие"
