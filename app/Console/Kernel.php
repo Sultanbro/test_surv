@@ -14,6 +14,7 @@ use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\Referral\UpdateReferralSalary;
 use App\Console\Commands\RestartQueue;
+use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\TestingCommand;
@@ -49,6 +50,7 @@ class Kernel extends ConsoleKernel
         UpdateReferralSalary::class,
         CacheTopRentabilityPerDay::class,
         DeleteTimeTrackingDuplicates::class,
+        RunTestServerScriptCommand::class
     ];
 
     /**
