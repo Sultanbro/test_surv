@@ -56,7 +56,7 @@ class RegisterController extends Controller
 
         $this->createRegistrationLead($user, $centralUser);
 
-        ProcessSendPasswordMail::dispatch($user, $this->password);
+        ProcessSendPasswordMail::dispatch($user, $this->password)->onConnection('sync');
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
