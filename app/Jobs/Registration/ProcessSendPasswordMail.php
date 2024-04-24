@@ -36,8 +36,9 @@ class ProcessSendPasswordMail implements ShouldQueue
 
         $mail = new PortalCreatedMail([
             'name' => $this->user->name,
-            'password' => $this->password,
-        ]);
+        ],
+            $this->password,
+        );
 
         try {
             Mail::to($this->user->email)->send($mail);

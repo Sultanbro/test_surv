@@ -20,6 +20,7 @@
 		</AuthSubTitle>
 
 		<AuthMethod
+			v-if="false"
 			v-model="method"
 			:items="authMethods"
 		/>

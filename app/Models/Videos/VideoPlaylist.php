@@ -2,13 +2,14 @@
 
 namespace App\Models\Videos;
 
+use App\Contracts\CourseV2Interface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Videos\Video;
 use App\Contracts\CourseInterface;
+use Illuminate\Support\Facades\DB;
 
-class VideoPlaylist extends Model implements CourseInterface
-{   
+class VideoPlaylist extends Model implements CourseInterface, CourseV2Interface
+{
     use SoftDeletes;
 
     protected $table = 'video_playlists';
@@ -35,16 +36,21 @@ class VideoPlaylist extends Model implements CourseInterface
             ->orderBy('order', 'asc');
     }
 
+    public function countAllStages()
+    {
+        return Video::query()->where('playlist_id', $this->id)->count();
+    }
+
     public function groups()
     {
-        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->where('parent_id', 0)->with('videos', 'children'); 
+        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->where('parent_id', 0)->with('videos', 'children');
     }
 
     public function groups_alt()
     {
-        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->with('children_alt'); 
+        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->with('children_alt');
     }
-    
+
     public function category()
     {
         return $this->belongsTo('App\Models\Videos\VideoCategory', 'category_id', 'id');
@@ -59,7 +65,7 @@ class VideoPlaylist extends Model implements CourseInterface
     /**
      * CourseInterface
      * @param mixed $items
-     * 
+     *
      * @return [type]
      */
     public function pluckVideos($items) {
@@ -67,7 +73,7 @@ class VideoPlaylist extends Model implements CourseInterface
 
         foreach ($items as $key => $item) {
             if($item->videos) $arr = array_merge($arr, $item->videos->pluck('id')->toArray());
-           
+
             if($item->children) $arr = array_merge($arr, $this->pluckVideos($item->children));
         }
 
@@ -87,14 +93,14 @@ class VideoPlaylist extends Model implements CourseInterface
             ->get()
             ->pluck('id')
             ->toArray();
-        
+
         return array_merge($arr, $this->pluckVideos($pl->groups));
     }
 
     /**
      * CourseInterface
      * @param mixed $id
-     * 
+     *
      * @return [type]
      */
     public function nextElement($id)
@@ -103,5 +109,22 @@ class VideoPlaylist extends Model implements CourseInterface
         $key = array_search($id, $arr);
         return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
     }
-    
+
+//    public function getAllGroupIdsById()
+//    {
+//        $groupIds = DB::select("
+//            WITH RECURSIVE group_tree AS (
+//                SELECT id, parent_id
+//                FROM video_groups
+//                WHERE category_id = :playlist_id
+//
+//                UNION ALL
+//
+//                SELECT g.id, g.parent_id
+//                FROM video_groups AS g
+//                JOIN group_tree AS gt ON g.parent_id = gt.id
+//            )
+//            SELECT DISTINCT id FROM group_tree", ['playlist_id' => $this->id]);
+//        $groupIdsArray = array_column($groupIds, 'id');
+//    }
 }

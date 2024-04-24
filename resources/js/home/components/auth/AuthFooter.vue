@@ -1,9 +1,9 @@
 <template>
-	<div class="section__footer">
-		<div class="section__footer__text">
+	<div class="AuthFooter">
+		<div class="AuthFooter-text">
 			{{ lang.text }}
 		</div>
-		<div class="section__footer__text">
+		<div class="AuthFooter-text">
 			{{ lang.copy }}
 		</div>
 	</div>
@@ -32,24 +32,29 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 $md2: 991.98px;
 $md3: 767.98px;
 $md4: 479.98px;
-.section__footer {
+.AuthFooter {
 	margin-top: 30px;
 	display: flex;
 	justify-content: space-between;
-	@media (max-width: $md2) {
-		flex-direction: column;
-		text-align: center;
-	}
-	&__text {
+	// @media (max-width: $md2) {
+	// 	flex-direction: column;
+	// 	text-align: center;
+	// }
+	&-text {
 		font-size: 14px;
 		color: #737b8a;
-		@media (max-width: $md2) {
-			margin-bottom: 10px;
-		}
+		// @media (max-width: $md2) {
+		// 	margin-bottom: 10px;
+		// }
+	}
+}
+@container auth-info (max-width: 991.98px){
+	.AuthFooter{
+		margin-top: 15px;
 	}
 }
 </style>

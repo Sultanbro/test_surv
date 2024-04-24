@@ -77,6 +77,14 @@ export default {
 		gap: 10px;
 	}
 }
+@container auth-info (max-width: 991.98px){
+	.AuthHeader{
+		margin-bottom: 10px;
+	}
+}
+
+
+
 @container auth-header (max-width: 415px){
 	.AuthHeader{
 		.AuthLangItem-label{

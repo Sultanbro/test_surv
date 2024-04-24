@@ -17,7 +17,9 @@
 			v-else
 			name="placeholder"
 		>
-			{{ placeholder }}
+			<span class="AccessSelectFormControl-placeholder">
+				{{ placeholder }}
+			</span>
 		</slot>
 	</div>
 </template>
@@ -74,6 +76,9 @@ export default {
 	}
 	&-item3{
 		background-color: #80d593;
+	}
+	&-placeholder{
+		color: #8DA0C1;
 	}
 }
 </style>

@@ -11,7 +11,7 @@ class RunTestServerScriptCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'fetch:dev {branch}';
+    protected $signature = 'sync:git {branch}';
 
     /**
      * The console command description.
@@ -27,6 +27,6 @@ class RunTestServerScriptCommand extends Command
         $scriptPath = base_path('test_branch.sh');
 
         // Execute the script
-        $this->info(shell_exec("bash $scriptPath " . $this->argument('branch') . "2>&1"));
+        $this->info(shell_exec("bash $scriptPath " . $this->argument('branch')));
     }
 }

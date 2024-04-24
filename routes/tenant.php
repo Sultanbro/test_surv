@@ -29,7 +29,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
-    // Route::get('login', [PageController::class, 'home'])->name('login');
+    Route::get('login2', [PageController::class, 'home'])->name('login');
     Route::post('login', [Auth\LoginController::class, 'login']);
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
     Route::get('password/reset', [Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -168,6 +168,10 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
+	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
     Route::get('/admin/courses/get', [Course\CourseController::class, 'get']);
@@ -176,6 +180,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/admin/courses/create', [Course\CourseController::class, 'create']);
     Route::post('/admin/courses/get-item', [Course\CourseController::class, 'getItem']);
     Route::post('/admin/courses/upload-image', [Course\CourseController::class, 'uploadImage']);
+    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/my-courses', [Course\MyCourseController::class, 'index']);
     Route::get('/my-courses/get', [Course\MyCourseController::class, 'getCourses']);
@@ -186,6 +193,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/course-results/nullify', [Course\CourseResultController::class, 'nullify']);
 
     Route::get('course/item-result', [Course\CourseResultController::class, 'getCourseItemAndResult']);
+
+    // Courses V2
+
+    Route::prefix('v2/courses')->group(base_path('routes/v2-courses.php'))->middleware(['tenant']);
+
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);
     Route::post('/glossary/save', [Learning\GlossaryController::class, 'save']);

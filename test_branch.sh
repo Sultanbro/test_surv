@@ -44,8 +44,8 @@ git merge $1
 
 # бэк
   echo "бэк запуск artisan команд"
-composer install
-composer dump-autoload
+composer install --no-interaction
+composer dump-autoload --no-interaction
 php artisan migrate
 php artisan tenants:migrate --tenants=bp
 php artisan tenants:migrate --tenants=admin
@@ -65,5 +65,5 @@ cd /var/www/job
   echo "удаление лишнего"
 git reset --hard
 git clean -df
-
+git push
 echo "успешная сборка ... тестите на здаровие"

@@ -330,4 +330,22 @@ class KnowBase extends Model implements CourseInterface
             LIMIT 1", ['child_id' => $id]
         )[0]->id;
     }
+
+    public function countAllStages()
+    {
+        $descendantIds = DB::select("
+            WITH RECURSIVE descendant_cte AS (
+                SELECT id, parent_id
+                FROM kb
+                WHERE parent_id = :parent_id
+                UNION ALL
+                SELECT kb.id, kb.parent_id
+                FROM kb
+                INNER JOIN descendant_cte ON kb.parent_id = descendant_cte.id
+                WHERE kb.is_category = 0
+            )
+            SELECT COUNT(*) as stages FROM descendant_cte;", ['parent_id' => $this->id]
+        );
+        return $descendantIds[0]->stages;
+    }
 }
