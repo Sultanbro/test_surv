@@ -439,14 +439,14 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $date = is_string($date) ? Carbon::parse($date) : $date;
 
         /** @var Carbon $workEndTime */
-        $workEndTime = $record->user->schedule()['end'];
+        $workEndTime = $record->user->schedule(
+            givenDate: $date
+        )['end'];
 
 
         if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
             $workEndTime->addDay();
         }
-
-        dd($workEndTime);
 
         if (!$workEndTime->isBefore($date->addDay())) return;
 
@@ -1592,9 +1592,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     /**
      * @param bool $withOutHalf
      * @param null $workChartId
+     * @param Carbon|null $givenDate
      * @return array
      */
-    public function schedule(bool $withOutHalf = false, $workChartId = null): array
+    public function schedule(bool $withOutHalf = false, $workChartId = null, Carbon $givenDate = null): array
     {
         $timezone = $this->timezone();
 
@@ -1603,7 +1604,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
 
-        $date = Carbon::now($timezone)->format('Y-m-d');
+        $date = Carbon::parse($givenDate ?? now(), $timezone)->format('Y-m-d');
 
         $end = Carbon::parse("$date $workEndTime", $timezone);
 

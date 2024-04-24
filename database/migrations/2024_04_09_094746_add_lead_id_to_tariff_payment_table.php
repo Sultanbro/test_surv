@@ -12,6 +12,12 @@ return new class extends Migration {
             $table->string('lead_id')
                 ->nullable();
         });
+        if (!column_exists('tariff_payment', 'lead_id', 'mysql')) {
+            Schema::connection('mysql')->table('tariff_payment', function (Blueprint $table) {
+                $table->string('lead_id')
+                    ->nullable();
+            });
+        }
     }
 
     public function down(): void
