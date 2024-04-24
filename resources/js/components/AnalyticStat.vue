@@ -96,7 +96,12 @@
 								v-if="field.key != 'plan'"
 								:key="f_index"
 								class="t-cell font-bold"
-								:class="item[field.key].class"
+								:class="[
+									item[field.key].class,
+									{
+										poen: !['name'].includes(field.key) && !i_index
+									}
+								]"
 								@click="focus(i_index, f_index)"
 							>
 								<div
@@ -312,19 +317,11 @@
 									</div>
 
 									<input
-										v-if="focused_item === i_index && focused_field === f_index"
 										v-model="item[field.key].value"
 										type="text"
 										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
 										class="in-cell name-input"
 										@change="change_stat(i_index, field.key)"
-									>
-									<input
-										v-else
-										type="text"
-										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-										:value="item[field.key].show_value ? item[field.key].show_value : ''"
-										class="in-cell"
 									>
 
 									<div
@@ -388,7 +385,12 @@
 								:key="f_index"
 								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
-								:class="fixClassName(field.key, item[field.key].class || '', item)"
+								:class="[
+									fixClassName(field.key, item[field.key].class || '', item),
+									{
+										poen: !i_index,
+									},
+								]"
 								@click="focus(i_index, f_index)"
 							>
 								<div

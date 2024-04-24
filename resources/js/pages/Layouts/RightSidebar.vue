@@ -41,16 +41,16 @@
 			</a>
 
 			<a
-				v-if="$laravel.is_admin"
+				v-if="!isBP && $laravel.is_admin"
 				v-b-popover.hover.left.html="'спросите нас о чем угодно'"
 				href="javascript:void(0)"
 				class="header__right-icon"
+				@click="toggleChat"
 			>
 				<img
 					src="/images/dist/header-right-5.svg"
 					alt="nav icon"
 					class="header__icon-img"
-					@click="toggleChat"
 				>
 			</a>
 
@@ -135,30 +135,47 @@ export default {
 		if(localStorage.getItem(NotificationsLastCheck) === null){
 			localStorage.setItem(NotificationsLastCheck, Date.now())
 		}
+
+		this.initSupportChat()
 	},
 	beforeDestroy(){
 		clearInterval(this.notificationsInterval)
+		this.destroySupportChat()
 	},
 	methods: {
 		...mapActions(useNotificationsStore, ['fetchUnreadCount']),
 		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
+		initSupportChat(){
+			if(!window.jChatWidget) {
+				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget)
+				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + (Date.now() / 60000 | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s,h);
+			}
+		},
+		destroySupportChat(){
+			window.removeEventListener('onBitrixLiveChat', this.onInitChatWidget)
+		},
+		onInitChatWidget(event){
+			window.jChatWidget = event.detail.widget
+			this.$nextTick(() => {
+				const elem = document.querySelector('.b24-widget-button-shadow')
+				if(!elem) return
+				const parent = elem.parentNode
+				parent.className = 'hidden'
+				window.jChatWidgetBtn = parent
+			})
+		},
 		toggleChat(){
 			if(this.isBp) return
+			if(!window.jChatWidget) return
 
-			const elem = document.querySelector('.b24-widget-button-shadow')
-			if(elem){
-				const parent = elem.parentNode
-				parent?.remove()
-				document.querySelector('.bx-livechat-wrapper')?.remove()
-				return
-			}
-
-			const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
-			const s = document.createElement('script');
-			s.async = true;
-			s.src = url + '?' + (Date.now() / 60000 | 0);
-			const h = document.getElementsByTagName('script')[0];
-			h.parentNode.insertBefore(s,h);
+			// window.jChatWidget.close()
+			// window.jChatWidget.open()
+			window.jChatWidgetBtn.classList.toggle('hidden')
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return

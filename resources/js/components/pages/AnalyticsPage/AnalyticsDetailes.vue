@@ -11,6 +11,7 @@
 					class="ChatIcon-parent"
 					fade
 					small
+					style="transform: translateY(-8px);"
 					@click="add_activity()"
 				>
 					<i

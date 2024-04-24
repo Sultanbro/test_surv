@@ -857,7 +857,11 @@ export default {
 				})
 			}
 			catch (error) {
-				this.$onError({error})
+
+				const errorResponse = JSON.parse(error?.request?.response);
+				const errorMessage = errorResponse.message;
+				this.$toast.error(errorMessage)
+				// this.$onError({error})
 			}
 
 			try {
