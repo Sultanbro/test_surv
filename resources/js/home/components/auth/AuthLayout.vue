@@ -198,4 +198,7 @@ export default {
 		}
 	}
 }
+.b24-widget-button-wrapper{
+	display: none !important;
+}
 </style>

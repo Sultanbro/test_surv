@@ -149,6 +149,14 @@ export default {
 					return alert('Не удалось войти в систему, попробуйте позже')
 				}
 				const data = await response.json()
+				if(data.message) {
+					this.isLoading = false
+					this.loginErrors = {
+						...emptyErrors(),
+						password: `Введенный ${method === 'email' ? 'email' : 'номер телефона'} или пароль не совпадает`
+					}
+					return
+				}
 				this.onSuccessLogin(data)
 			}
 			catch (error) {
@@ -164,7 +172,7 @@ export default {
 				case 401:
 					this.loginErrors = {
 						...emptyErrors(),
-						password: 'Введенный email или пароль не совпадает'
+						password: `Введенный ${method === 'email' ? 'email' : 'номер телефона'} или пароль не совпадает`
 					}
 					break;
 				case 302:

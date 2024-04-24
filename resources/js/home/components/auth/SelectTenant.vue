@@ -37,7 +37,7 @@
 						{{ lang.workspace }} {{ item.id }}
 					</div>
 					<div class="SelectTenant-info">
-						Неизвестный {{ lang.tariff }} &bull; 0/0 {{ lang.users }}
+						<!-- Неизвестный {{ lang.tariff }} &bull; 0/0 {{ lang.users }} -->
 					</div>
 				</div>
 			</a>

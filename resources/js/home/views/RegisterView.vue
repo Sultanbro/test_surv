@@ -27,17 +27,12 @@
 						placeholder="example@gmail.com"
 						:error="errors.email"
 					/>
-					<AuthInput
+					<AuthPhone
+						key="phone"
 						v-model="phone"
 						:label="lang.phone"
-						type="phone"
-						placeholder="000 000 00 00 "
 						:error="errors.phone"
-					>
-						<template #inner-before>
-							+7
-						</template>
-					</AuthInput>
+					/>
 					<AuthInput
 						v-model="name"
 						:label="lang.name"
@@ -136,6 +131,7 @@ import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
 import AuthSubmit from '../components/auth/AuthSubmit.vue';
+import AuthPhone from '../components/auth/AuthPhone.vue';
 
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
@@ -176,6 +172,7 @@ export default {
 		AuthInfo,
 		GRecaptcha,
 		AuthSubmit,
+		AuthPhone,
 	},
 	props: {},
 	data(){

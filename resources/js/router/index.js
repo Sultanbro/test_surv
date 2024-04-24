@@ -225,7 +225,6 @@ const router = new VueRouter({
 			},
 		},
 		kpi,
-		courses,
 		// admin/info.blade.php
 		{
 			path: '/timetracking/info',

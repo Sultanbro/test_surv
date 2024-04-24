@@ -10,7 +10,7 @@ export default {
 		{
 			path: '',
 			name: 'CoursesPage',
-			component: () => import(/* webpackChunkName: "CoursesPage" */ '@/pages/Courses/CoursesPage.vue'),
+			component: () => import(/* webpackChunkName: "CoursesPage" */ '@/pages/courses/CoursesPage.vue'),
 			meta: {
 				title: 'Курсы',
 				menuItem: 'courses',
@@ -19,7 +19,7 @@ export default {
 		{
 			path: '/assigned',
 			name: 'CoursesAssigned',
-			component: () => import(/* webpackChunkName: "CoursesAssigned" */ '@/pages/Courses/CoursesAssigned.vue'),
+			component: () => import(/* webpackChunkName: "CoursesAssigned" */ '@/pages/courses/CoursesAssigned.vue'),
 			meta: {
 				title: 'Курсы',
 				menuItem: 'courses',
@@ -28,7 +28,7 @@ export default {
 		{
 			path: '/catalog',
 			name: 'CoursesCatalog',
-			component: () => import(/* webpackChunkName: "CoursesCatalog" */ '@/pages/Courses/CoursesCatalog.vue'),
+			component: () => import(/* webpackChunkName: "CoursesCatalog" */ '@/pages/courses/CoursesCatalog.vue'),
 			meta: {
 				title: 'Курсы',
 				menuItem: 'courses',

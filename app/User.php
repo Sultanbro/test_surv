@@ -200,570 +200,6 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         return $user;
     }
 
-
-    public function permissions(): BelongsToMany
-    {
-        return $this->belongsToMany(Permission::class, 'permission_user')
-            ->withPivot('is_access')
-            ->withTimestamps();
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function cards(): HasMany
-    {
-        return $this->hasMany(Card::class, 'user_id');
-    }
-
-    public function cabinets(): Collection
-    {
-        $centralUser = CentralUser::with('cabinets')->where('email', $this->email)->first();
-
-        return $centralUser
-            ? $centralUser->cabinets->map(function ($user) {
-                return $user->only(['user_id', 'tenant_id', 'owner']);
-            })
-            : collect([]);
-    }
-
-    public function favouriteArticles(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Article::class,
-            'article_favourites_users',
-            'user_id',
-            'article_id',
-        );
-    }
-
-    public function pinnedArticles(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Article::class,
-            'article_pins_users',
-            'user_id',
-            'article_id',
-        );
-    }
-
-    public function views(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Article::class,
-            'article_views_users',
-            'user_id',
-            'article_id'
-        );
-    }
-
-    public function votes(): HasMany
-    {
-        return $this->hasMany(PollVote::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function taxes(): BelongsToMany
-    {
-        return $this->belongsToMany(Tax::class, 'user_tax')
-            ->withPivot(['created_at', 'value', 'is_percent'])
-            ->withTimestamps();
-    }
-
-    public function awards(): BelongsToMany
-    {
-        return $this->belongsToMany(Award::class)
-            ->withTimestamps();
-    }
-
-    public function groupKpis()
-    {
-        return $this->hasManyThrough(ProfileGroup::class, Kpi::class);
-    }
-
-    public function bonuses(): MorphMany
-    {
-        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
-    }
-
-    public function qpremium(): MorphMany
-    {
-        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
-    }
-
-    /**
-     * Получить всех стажеров которые ответственен.
-     * @return HasMany
-     */
-    public function trainees(): HasMany
-    {
-        return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
-    }
-
-    public function kpi_obtained_bonuses(): HasMany
-    {
-        return $this->hasMany('App\Models\Admin\ObtainedBonus', 'user_id', 'id');
-    }
-
-    public function edited_salaries(): HasMany
-    {
-        return $this->hasMany('App\Models\Admin\EditedSalary', 'user_id', 'id');
-    }
-
-    public function edited_kpi(): HasMany
-    {
-        return $this->hasMany('App\Models\Admin\EditedKpi', 'user_id', 'id');
-    }
-
-    public function edited_bonuses(): HasMany
-    {
-        return $this->hasMany('App\Models\Admin\EditedBonus', 'user_id', 'id');
-    }
-
-    public function saved_kpi(): HasMany
-    {
-        return $this->hasMany('App\SavedKpi', 'user_id', 'id');
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function groups(): BelongsToMany
-    {
-        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
-            ->withPivot([
-                'created_at',
-                'updated_at',
-                'deleted_at',
-                'from',
-                'to',
-                'status',
-                'is_head'
-            ])->withTimestamps();
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function group_users(): HasMany
-    {
-        return $this->hasMany(GroupUser::class);
-    }
-
-    /**
-     * Mutator's
-     */
-
-    // /**
-    //  * @param $value
-    //  * @return void
-    //  */
-    // public function setPasswordAttribute($value): void
-    // {
-    //     $this->attributes['password'] = bcrypt($value);
-    // }
-
-    /**
-     * @param $value
-     * @return void
-     */
-    public function setNewEmailAttribute($value): void
-    {
-        $this->attributes['email'] = strtolower($value);
-    }
-
-    /* End Mutator's */
-
-
-    public function scopeGetDeletedFromGroupUser($query, $date)
-    {
-        $this->groups()->get();
-    }
-
-    /**
-     * @return MorphMany
-     */
-    public function histories(): MorphMany
-    {
-        return $this->morphMany('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id')->where('type', History::DEFAULT);
-    }
-
-    /**
-     * @return Model|MorphOne|null
-     */
-    public function profile_histories_latest(): Model|MorphOne|null
-    {
-        return $this->morphOne(
-            'App\Models\History',
-            'reference',
-            'reference_table',
-            'reference_id',
-            'id'
-        )
-            ->where('type', History::USER_PROFILE_CHANGED)
-            ->orderBy('created_at', 'desc')
-            ->latest();
-    }
-
-    /**
-     * @return MorphMany
-     */
-    public function kpis(): MorphMany
-    {
-        return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
-    }
-
-    public function kpisMany(): MorphToMany
-    {
-        return $this->morphToMany(
-            'App\Models\Kpi\Kpi',
-            'kpiable',
-            'kpiables',
-            'kpiable_id',
-            'kpi_id',
-            'id',
-            'id'
-        );
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function statistics(): HasMany
-    {
-        return $this->hasMany('App\Models\Analytics\UserStat', 'user_id');
-    }
-
-    public function getCheckList()
-    {
-        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
-    }
-
-//    public function getCheckList()
-//    {
-//        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
-//    }
-
-    public function position()
-    {
-        return $this->belongsTo('App\Position', 'position_id');
-    }
-
-    /**
-     * Проверка пользователя на стажера.
-     *
-     * @param $query
-     * @param $userId
-     * @return bool
-     */
-    public function scopeIsTrainee($query, $userId): bool
-    {
-        return $query->find($userId)->description()->first()->is_trainee == 1;
-    }
-
-    /**
-     * Дни до индексации зарплаты по должности
-     */
-    public function days_before_indexation()
-    {
-        $days = $this->worked_days();
-
-        if ($days == 0) {
-            $remain = 999;
-        } else {
-            $x = floor($days / 90);
-            $remain = 90 - ($days - (90 * $x));
-        }
-
-        return $remain;
-    }
-
-    /**
-     * Работает у нас уже дней
-     */
-    public function worked_days()
-    {
-        $ud = UserDescription::where('user_id', $this->id)->first();
-        if (!$ud) return 0;
-        if ($ud && $ud->is_trainee == 1) return 0;
-
-        $date = Carbon::parse($this->applied_at())->timestamp;
-        $now = time();
-
-        $diff = ($now - $date) / 86400;
-        return (int)$diff;
-
-    }
-
-    /**
-     *  Посчитать фот на одного пользователя
-     * */
-    public function calculateFot($internship_pay_rate, $date)
-    {
-        $earningSum = 0;
-        $bonusesSum = 0;
-        $month = $date->startOfMonth();
-
-        $user_applied_at = $this->applied_at();
-        $trainee_days = $this->daytypes->whereIn('type', [5, 6, 7]);
-        $work_shift = $this->working_time_id == 1 ? 8 : 9;
-
-        $tts_before_apply = $this->timetracking
-            ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
-        $tts = $this->timetracking
-            ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
-
-        for ($i = 1; $i <= $month->daysInMonth; $i++) {
-            $d = (strlen($i) == 1) ? '0' . $i : '' . $i;
-            $daySalary = $this->salaries->where('day', $d)->first();
-
-            // accrual
-            $salary = $daySalary->amount ?? 70000;
-            $working_hours = $this->workingTime->time ?? 9;
-            $ignore = $this->working_day_id == 1 ? [6, 0] : [0];
-            $workdays = workdays($month->year, $month->month, $ignore);
-
-            $hourly_pay = $salary / $workdays / $working_hours;
-
-            $time_day = $tts->where('day', $i);
-            $time_day_before_apply = $tts_before_apply->where('day', $i);
-            $time_day_trainee = $trainee_days->where('day', $i);
-
-
-            if ($time_day_trainee->count() > 0) { // день отмечен как стажировка
-                $earningSum += round($hourly_pay * $internship_pay_rate * $work_shift);
-
-            }
-            if ($time_day->count() > 0) { // отработанное врея есть
-                $total_hours = $time_day->sum('total_hours');
-                $earningSum += round($total_hours / 60 * $hourly_pay);
-
-            }
-            if ($time_day_before_apply->count() > 0) {// отработанное врея есть до принятия на работу
-                $total_hours = $time_day_before_apply->sum('total_hours');
-                $earningSum += round($total_hours / 60 * $hourly_pay);
-            }
-
-
-            //bonuses
-            $bonusesSum += $daySalary?->bonus;
-
-            //awards
-            $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
-            $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
-
-
-        }
-        //test bonuses
-        $bonusesSum += $this->testBonuses
-            ->where('date', '>=', now()->format('Y-m-d'))
-            ->sum('amount');
-
-        $kpi = SavedKpi::where('user_id', $this->id)
-            ->where('date', $date->format('Y-m-d'))
-            ->first();
-
-        $kpiTotal = $kpi->total ?? 0;
-
-        return [
-            'earnings' => $earningSum,
-            'bonuses' => $bonusesSum,
-            'kpi' => $kpiTotal
-        ];
-    }
-
-    /**
-     * Работал у нас дней
-     */
-    public function wasPartOfTeam()
-    {
-        if (!$this->user_description) {
-            return 0;
-        }
-
-        $date = Carbon::parse($this->user_description->applied)->timestamp;
-        $fired = Carbon::parse($this->deleted_at)->timestamp;
-
-        return (int)($fired - $date) / 86400;
-    }
-
-    /**
-     * Рабочие дни со дня принятия
-     */
-    public function workdays_from_applied($date, $workdays = 6)
-    {
-        $date = Carbon::parse($date);
-        $applied_from = 0;
-        if ($this->user_description && $this->user_description->applied) {
-            $applied = Carbon::parse($this->user_description->applied);
-
-            $year = $applied->year;
-            $month = $applied->month;
-
-            if ($year == $date->year && $month == $date->month) {
-                $exclude = $workdays == 5 ? 2 : 1;
-                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude) + 1;
-                //$applied_from = $applied_from - 1;
-                $applied_from = $applied_from < 0 ? 0 : $applied_from;
-            }
-        }
-
-        return $applied_from;
-    }
-
-    /**
-     * @return HasOne
-     */
-    public function description(): HasOne
-    {
-        return $this->hasOne('App\UserDescription', 'user_id', 'id');
-    }
-
-    public function user_description(): HasOne
-    {
-        return $this->hasOne('App\UserDescription', 'user_id', 'id');
-    }
-
-    public function lead(): HasOne
-    {
-        return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
-    }
-
-    public function leadByPhone(): HasOne
-    {
-        return $this->hasOne('App\Models\Bitrix\Lead', 'phone', 'phone');
-    }
-
-    public function referralLeads(): HasMany
-    {
-        return $this->hasMany(Lead::class, 'referrer_id', 'id');
-    }
-
-    public function integration_token(string $server)
-    {
-        return Oauth::get_token($this->id, $server);
-    }
-
-    /**
-     * Oklad na chas
-     */
-    public function hourly_pay($date)
-    {
-        $zarplata = $this->zarplata ? $this->zarplata->zarplata : 70000;
-        $working_hours = $this->workingTime ? $this->workingTime->time : 9;
-
-        // Какие дни не учитывать в месяце
-        $ignore = $this->working_day_id == 1 ? [6, 0] : [0];
-
-        $date = Carbon::parse($date);
-        $workdays = workdays($date->year, $date->month, $ignore);
-
-        return $zarplata / $workdays / $working_hours;
-    }
-
-    /**
-     * В каких группах находится user
-     * @param bool $is_head
-     * @return Collection
-     */
-    public function inGroups($is_head = false): Collection
-    {
-        $groups = GroupUser::query()
-            ->where('user_id', $this->id)
-            ->where([
-                ['status', 'active'],
-                ['is_head', $is_head]
-            ])
-            ->whereNull('to')
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
-        return ProfileGroup::query()
-            ->whereIn('id', array_values($groups))
-//            ->where('active', 1)
-            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
-            ->get()
-            ->map(function ($item) use ($is_head) {
-                $item['is_head'] = $is_head;
-                return $item;
-            });
-    }
-
-    /**
-     * Уволенные группы пользователя.
-     *
-     * @return array
-     */
-    public function firedGroups(): array
-    {
-        return GroupUser::where('status', 'fired')
-            ->where('user_id', $this->id)
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
-    }
-
-    /**
-     * Бывшие (в которых раньше состоял) группы пользователя.
-     *
-     * @param Carbon|null $filter
-     * @return array
-     */
-    public function droppedGroups(Carbon $date = null): array
-    {
-        $groupUser = GroupUser::where('status', 'drop')
-            ->where('user_id', $this->id);
-
-        if ($date) $groupUser->whereYear('updated_at', $date->year)
-            ->whereMonth('updated_at', $date->month);
-
-        return $groupUser->get()
-            ->pluck('group_id')
-            ->toArray();
-    }
-
-    /**
-     * В каких группах находится user c условиями оплаты
-     * @return array
-     */
-    public function inGroupsWithTerms()
-    {
-        $groups = GroupUser::where('user_id', $this->id)
-            ->where('status', 'active')
-            ->whereNull('to')
-            ->get()
-            ->pluck('group_id')
-            ->toArray();
-
-        return ProfileGroup::whereIn('id', array_values($groups))
-            //->where('active', 1)
-            ->select(['id', 'name', 'payment_terms', 'show_payment_terms'])
-            ->get();
-    }
-
-    /**
-     * В каких группах руководит user
-     * @return array
-     */
-    public function headInGroups()
-    {
-        $_groups = [];
-
-        $groups = ProfileGroup::where('active', 1)->get();
-
-        foreach ($groups as $group) {
-            $group_users = json_decode($group->head_id);
-
-            if (in_array($this->id, $group_users)) {
-                array_push($_groups, $group);
-            }
-        }
-
-        return $_groups;
-    }
-
     /**
      * Уволить сотрудника
      */
@@ -1003,11 +439,13 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $date = is_string($date) ? Carbon::parse($date) : $date;
 
         /** @var Carbon $workEndTime */
-        $workEndTime = $record->user->schedule()['end'];
+        $workEndTime = $record->user->schedule(
+            givenDate: $date
+        )['end'];
 
 
         if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
-            $workEndTime->addDays();
+            $workEndTime->addDay();
         }
 
         if (!$workEndTime->isBefore($date->addDay())) return;
@@ -1402,9 +840,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             //awards
             $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
             $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
-
-
         }
+
         //test bonuses
         $bonusesSum += 0;
 
@@ -2155,9 +1592,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     /**
      * @param bool $withOutHalf
      * @param null $workChartId
+     * @param Carbon|null $givenDate
      * @return array
      */
-    public function schedule(bool $withOutHalf = false, $workChartId = null): array
+    public function schedule(bool $withOutHalf = false, $workChartId = null, Carbon $givenDate = null): array
     {
         $timezone = $this->timezone();
 
@@ -2166,7 +1604,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
 
-        $date = Carbon::now($timezone)->format('Y-m-d');
+        $date = Carbon::parse($givenDate ?? now(), $timezone)->format('Y-m-d');
 
         $end = Carbon::parse("$date $workEndTime", $timezone);
 
@@ -2440,5 +1878,15 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
     public function isOwner(): bool
     {
         return (bool)$this->is_admin;
+    }
+
+    public function workStartTime(): Carbon
+    {
+        return $this->scheduleFast(true)['start'];
+    }
+
+    public function workEndTime(): Carbon
+    {
+        return $this->scheduleFast(true)['end'];
     }
 }
