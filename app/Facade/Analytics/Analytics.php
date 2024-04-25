@@ -169,6 +169,9 @@ final class Analytics
                             round: $statistic->decimals,
                             stats: $stats
                         );
+
+                        dd_if(auth()->id() == 5 && $date = '2024-04-26', $val);
+
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
