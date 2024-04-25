@@ -283,11 +283,10 @@ final class Analytics
             return [$row->id => $index + 1];
         })->toArray();
 
-        $columnKeys = $columns
-            ->whereNotIn('name', ['plan'])
-            ->mapWithKeys(function ($column, $index) {
-                return [$column->id => $index];
-            })->toArray();
+        $columnKeys = [];
+        foreach ($columns as $key => $column) {
+            $columnKeys[$column->id] = $key;
+        }
 
         dd_if(auth()->id() === 5,
             $columnKeys
