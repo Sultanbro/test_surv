@@ -584,7 +584,6 @@ class AnalyticStat extends Model
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
         $text = $stat->value;
-        dd_if(auth()->id() == 5 && $date = '2024-04-26', $text);
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
@@ -607,6 +606,8 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
+                    dd_if(auth()->id() == 5 && $date = '2024-04-26', $value);
+
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
