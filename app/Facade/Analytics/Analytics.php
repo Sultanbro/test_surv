@@ -152,6 +152,7 @@ final class Analytics
 
                 if ($statistic) {
                     $arr = self::getArr($statistic, $row, $column, $cellLetter, $cellNumber, $addClass, $rowIndex);
+                    dd_if(auth()->id()===5 && $row->group_id==136,$arr);
                     if ($statistic->activity_id != null) {
                         $act = $activities->where('id', $statistic->activity_id)->first();
                         if ($act && $act->unit) {
