@@ -289,8 +289,8 @@ final class Analytics
             ->pluck('id')
             ->toArray();
 
-        foreach ($filtered as $key => $column) {
-            $columnKeys[$column->id] = $key;
+        foreach ($filtered as $key => $id) {
+            $columnKeys[$id] = $key;
         }
 
         dd_if(auth()->id() === 5,
