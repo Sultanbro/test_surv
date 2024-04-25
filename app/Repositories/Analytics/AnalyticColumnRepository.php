@@ -20,6 +20,7 @@ class AnalyticColumnRepository extends CoreRepository
         return AnalyticColumn::query()
             ->where('date', $date)
             ->where('group_id', $groupId)
+            ->whereNot('name', 'plan')
             ->orderBy('order')
             ->get();
     }
