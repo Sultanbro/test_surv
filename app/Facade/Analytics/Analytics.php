@@ -284,7 +284,9 @@ final class Analytics
         })->toArray();
 
         $columnKeys = [];
-        foreach ($columns as $key => $column) {
+        $filtered = $columns->filter(fn($item) => $item->name != 'plan');
+
+        foreach ($filtered as $key => $column) {
             $columnKeys[$column->id] = $key;
         }
 
