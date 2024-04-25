@@ -443,12 +443,11 @@ class AnalyticStat extends Model
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]] - 1) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
         }
-        dd_if(auth()->id() === 5, $text);
 
         return $text;
     }
@@ -479,7 +478,6 @@ class AnalyticStat extends Model
     public static function getLetter($number): string
     {
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
 
         $sl_pos = -1;
 
