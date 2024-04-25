@@ -165,8 +165,8 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
+                        dd($currentDay->isCurrentMonth());
                         $afterToday = is_numeric($column->name) && $currentDay->isCurrentMonth() && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
-
                         if ($afterToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
