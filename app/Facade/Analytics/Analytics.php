@@ -404,27 +404,15 @@ final class Analytics
     {
         $days = empty($days) ? range(1, 31) : $days;
 
-        $columns = $columns->whereIn('name', $days)->pluck('id')->toArray();
+        $columns = $columns
+            ->whereIn('name', $days)
+            ->pluck('id')
+            ->toArray();
 
-        $total = 0;
-        $count = 0;
+        $stats = $stats->where('row_id', $rowId)
+            ->whereIn('column_id', $columns);
 
-        $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
-
-        foreach ($stats as $stat) {
-            $total += (float)$stat->show_value;
-            if ((float)$stat->show_value != 0) {
-                $count++;
-            }
-        }
-
-        if ($count > 0) {
-            $total = round($total / $count, 3);
-        } else {
-            $total = 0;
-        }
-
-        return $total;
+        return $stats->avg('show_value');
     }
 
     public function userStatisticFormTable(
