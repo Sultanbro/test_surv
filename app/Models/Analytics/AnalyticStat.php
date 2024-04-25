@@ -591,6 +591,8 @@ class AnalyticStat extends Model
 
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
+        if (Carbon::parse($date)->isCurrentDay()) return 0;
+
         $text = $stat->value;
 
         $matches = [];
