@@ -46,20 +46,20 @@ class PermissionController extends Controller
 
         $items = PermissionItem::get();
 
-        foreach ($items as $key => $item) {
+        foreach ($items as $item) {
 
             $targets = [];
-            foreach ($item->targets as $key => $_target) {
+            foreach ($item->targets as $_target) {
                 if($_target['type'] == 1) {
                     $target = User::withTrashed()->find($_target['id']);
                     $name = $target ? $target->last_name . ' ' . $target->name . ' #' . $target->id : 'Noname';
                 }
                 if($_target['type'] == 2) {
-                    $target = ProfileGroup::find($_target['id']);
+                    $target = ProfileGroup::query()->find($_target['id']);
                     $name = $target ? $target->name : 'Noname';
                 }
                 if($_target['type'] == 3) {
-                    $target = Position::find($_target['id']);
+                    $target = Position::query()->find($_target['id']);
                     $name = $target ? $target->position : 'Noname';
                 }
                 $targets[] = [
@@ -72,9 +72,9 @@ class PermissionController extends Controller
             $item->targets = $targets;
             $item->groups_all = $item->groups_all == 1;
 
-            $_groups = ProfileGroup::whereIn('id', $item->groups)->get();
+            $_groups = ProfileGroup::query()->whereIn('id', $item->groups)->get();
             $groups = [];
-            foreach ($_groups as $key => $group) {
+            foreach ($_groups as $group) {
                 $groups[] = [
                     'id' => $group->id,
                     'name' => $group->name,
@@ -82,9 +82,9 @@ class PermissionController extends Controller
             }
             $item->groups = $groups;
 
-            $_roles = Role::whereIn('id', $item->roles)->get();
+            $_roles = Role::query()->whereIn('id', $item->roles)->get();
             $roles = [];
-            foreach ($_roles as $key => $role) {
+            foreach ($_roles as $role) {
                 $roles[] = [
                     'id' => $role->id,
                     'name' => $role->name,
@@ -99,7 +99,7 @@ class PermissionController extends Controller
 
         $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->orderBy('id', 'asc')->get();
 
-        $users = User::where(function($query) {
+        $users = User::query()->where(function($query) {
                     $query->whereNotNull('name')
                         ->orWhere('name', '!=', '')
                         ->orWhere('last_name', '!=', '')

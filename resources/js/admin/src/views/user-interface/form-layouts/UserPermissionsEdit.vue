@@ -29,7 +29,7 @@ const password = ref('')
 const role_id = ref(0)
 const image = ref('')
 const phone = ref('')
-const isDefault = ref(true)
+const isDefault = ref(false)
 const form = ref(true)
 
 watchEffect(() => {
@@ -41,7 +41,7 @@ watchEffect(() => {
 	password.value = ''
 	role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
-  isDefault.value =  true
+  isDefault.value = props.user?.is_default || false
 
 })
 

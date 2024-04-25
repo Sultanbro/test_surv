@@ -48,5 +48,14 @@ export default {
 		outline: none;
 		background-color: #4A7CFD;
 	}
+	&_disabled{
+		background-color: #777;
+		&:hover{
+			background-color: #777;
+		}
+		button{
+			cursor: wait;
+		}
+	}
 }
 </style>

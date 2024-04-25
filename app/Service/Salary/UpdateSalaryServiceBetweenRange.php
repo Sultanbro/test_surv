@@ -72,7 +72,7 @@ class UpdateSalaryServiceBetweenRange implements UpdateSalaryInterface
             if (!$salary) {
                 $user->salaries()->create([
                     'date' => $date,
-                    'note' => 'test',
+                    'note' => 'this from cronjob',
                     'paid' => 0,
                     'bonus' => 0,
                     'comment_paid' => '',

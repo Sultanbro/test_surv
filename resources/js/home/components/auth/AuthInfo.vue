@@ -103,21 +103,31 @@ $md4: 479.98px;
 @container auth-info (max-width: 991.98px) {
 	.auth__info{
 		&__title{
-			font-size: 34px;
-			line-height: 40px;
+			margin-top: 0;
+			font-size: 30px;
+			line-height: 1.1;
 		}
 		&__subtitle{
 			font-size: 20px;
-			line-height: 30px;
+			line-height: 1.1;
+			margin: 0.5em 0 0.5em;
+		}
+		&__row{
+			gap: 12px;
 		}
 		&__item{
+			padding: 15px;
+			&__icon{
+				margin-right: 15px;
+			}
 			&__content{
 				&__title{
-					font-size: 16px;
-					line-height: 22px;
+					font-size: 14px;
+					line-height: 1.1;
 				}
 				&__desc{
-					font-size: 14px;
+					font-size: 12px;
+					line-height: 1.1;
 				}
 			}
 		}
@@ -127,12 +137,10 @@ $md4: 479.98px;
 	.auth__info{
 		&__title{
 			font-size: 24px;
-			line-height: 30px;
 			text-align: center;
 		}
 		&__subtitle{
 			font-size: 16px;
-			line-height: 20px;
 			text-align: center;
 		}
 		&__row{
@@ -142,7 +150,6 @@ $md4: 479.98px;
 			&__content{
 				&__title{
 					font-size: 14px;
-					line-height: 20px;
 				}
 				&__desc{
 					font-size: 12px;
@@ -155,7 +162,6 @@ $md4: 479.98px;
 	.auth__info{
 		&__title{
 			font-size: 18px;
-			line-height: 20px;
 		}
 	}
 }

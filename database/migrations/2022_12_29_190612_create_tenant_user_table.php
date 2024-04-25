@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -12,7 +13,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        if (!table_exists('tenant_user', 'mysql')) {
+        if (!table_exists('tenant_user', $this->getConnection())) {
             Schema::connection('mysql')->create('tenant_user', function (Blueprint $table) {
                 $table->id();
                 $table->string('tenant_id', 255)

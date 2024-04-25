@@ -5,7 +5,7 @@
 				action="/register"
 				method="POST"
 				class="RegisterView-form"
-				@submit.prevent="onSubmit"
+				@submit.prevent
 			>
 				<AuthTitle>
 					{{ lang.title }}
@@ -27,17 +27,12 @@
 						placeholder="example@gmail.com"
 						:error="errors.email"
 					/>
-					<AuthInput
+					<AuthPhone
+						key="phone"
 						v-model="phone"
 						:label="lang.phone"
-						type="phone"
-						placeholder="000 000 00 00 "
 						:error="errors.phone"
-					>
-						<template #inner-before>
-							+7
-						</template>
-					</AuthInput>
+					/>
 					<AuthInput
 						v-model="name"
 						:label="lang.name"
@@ -58,11 +53,18 @@
 						:data-validate="onValidate"
 						:data-callback="onSubmit"
 						class="AuthSubmit"
+						:class="{
+							'AuthSubmit_disabled': isLoading
+						}"
 					>
-						{{ lang.register }}
+						{{ isLoading ? lang.creating : lang.register }}
 					</GRecaptcha>
-					<AuthSubmit v-else>
-						{{ lang.register }}
+					<AuthSubmit
+						v-else
+						:disabled="isLoading"
+						@click="onSubmit"
+					>
+						{{ isLoading ? lang.creating : lang.register }}
 					</AuthSubmit>
 				</div>
 
@@ -129,6 +131,7 @@ import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
 import AuthSubmit from '../components/auth/AuthSubmit.vue';
+import AuthPhone from '../components/auth/AuthPhone.vue';
 
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
@@ -169,6 +172,7 @@ export default {
 		AuthInfo,
 		GRecaptcha,
 		AuthSubmit,
+		AuthPhone,
 	},
 	props: {},
 	data(){
@@ -179,7 +183,7 @@ export default {
 			currency: 'rub',
 
 			isLoading: false,
-			isSended: true,
+			isSended: false,
 			errors: {},
 			capchaKey: 1,
 			useCapcha: true,
@@ -248,17 +252,18 @@ export default {
 
 			this.isLoading = false
 		},
-		onValidate(a, b, c){
-			console.error('onValidate', a, b, c)
-		},
-		onCallback(a, b, c){
-			console.error('onCallback', a, b, c)
+		onValidate(){
+			return true
 		},
 	},
 }
 </script>
 
 <style lang="scss">
+.outside-badge{
+	visibility: hidden !important;
+	opacity: 0 !important;
+}
 .RegisterView{
 	&-inputs{
 		display: flex;
@@ -283,6 +288,13 @@ export default {
 			background-color: transparent;
 			border: none;
 			color: #fff;
+		}
+	}
+}
+@media (max-width: 1599px){
+	.RegisterView{
+		&-inputs{
+			gap: 10px;
 		}
 	}
 }

@@ -44,9 +44,9 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
+        $this->generatePassword();
 
         $centralUser = $this->createCentralUser($data);
-        $centralUser->update(['login_at' => now()]);
 
         $tenant = $centralUser->tenants()->first() ?? $this->createTenant($centralUser);
 
@@ -55,6 +55,8 @@ class RegisterController extends Controller
         $this->cabinetService->add($tenant->id, $user, true);
 
         $this->createRegistrationLead($user, $centralUser);
+
+        ProcessSendPasswordMail::dispatch($user, $this->password)->onConnection('sync');
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)

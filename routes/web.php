@@ -10,8 +10,7 @@ use App\Http\Controllers\User\ProjectController;
 use App\Http\Middleware\OnlyCentralDomain;
 
 //--------------------/login routs/--------------------------//
-// Route::get('login', [PageController::class, 'home'])->name('_login');
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('_login');
+Route::get('login', [PageController::class, 'home'])->name('_login2');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('_logout');
 Route::get('login/{subdomain}', [ProjectController::class, 'login']);
@@ -22,8 +21,7 @@ Route::get('login/{subdomain}', [ProjectController::class, 'login']);
 //--------------------/registration routs/--------------------------//
 Route::middleware(OnlyCentralDomain::class)
     ->group(function () {
-        // Route::get('register', [PageController::class, 'home'])->name('register');
-        Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+        Route::get('register', [PageController::class, 'home'])->name('register2');
         Route::post('register', [RegisterController::class, 'register']);
     });
 //--------------------/registration routs/--------------------------//

@@ -9,7 +9,7 @@
 			{{ lang.title }}
 		</AuthTitle>
 
-		<AuthSubTitle>
+		<AuthSubTitle v-if="contralDomain">
 			{{ lang.notexists }}
 			<router-link
 				to="/register"
@@ -20,6 +20,7 @@
 		</AuthSubTitle>
 
 		<AuthMethod
+			v-if="false"
 			v-model="method"
 			:items="authMethods"
 		/>
@@ -119,6 +120,7 @@ export default {
 			phone: '',
 			password: '',
 			showPassword: '',
+			contralDomain: ['jobtron'].includes(window.location.hostname.split('.')[0])
 		}
 	},
 	computed: {
