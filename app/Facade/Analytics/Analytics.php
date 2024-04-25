@@ -399,15 +399,31 @@ final class Analytics
     }
 
     public function daysAvg(
-        array $columns,
+        array      $columns,
         Collection $stats,
         int        $rowId,
     ): float|int
     {
-        $stats = $stats->where('row_id', $rowId)
-            ->whereIn('column_id', $columns);
 
-        return $stats->avg('show_value');
+        $total = 0;
+        $count = 0;
+
+        $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
+
+        foreach ($stats as $stat) {
+            $total += (float)$stat->show_value;
+            if ((float)$stat->show_value != 0) {
+                $count++;
+            }
+        }
+
+        if ($count > 0) {
+            $total = round($total / $count, 3);
+        } else {
+            $total = 0;
+        }
+
+        return $total;
     }
 
     public function userStatisticFormTable(
