@@ -282,9 +282,8 @@ final class Analytics
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
             return [$row->id => $index + 1];
         })->toArray();
-        dd_if(auth()->id() === 5, $columns->pluck('name')->toArray());
 
-        $columnKeys = $columns->mapWithKeys(function ($column, $index) {
+        $columnKeys = $columns->where('name', '!=', 'plan')->mapWithKeys(function ($column, $index) {
             return [$column->id => $index - 1];
         })->toArray();
 
