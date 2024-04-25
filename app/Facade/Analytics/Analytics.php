@@ -165,10 +165,9 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        dd($currentDay->setDay($column->name)->format("Y-m-d"));
-                        $beforeToday = is_numeric($column->name) && $currentDay->setDay($column->name)->isAfter(now());
+                        $beforeToday = is_numeric($column->name) && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
 
-                        if ($beforeToday) $val = 0;
+                        if (!$beforeToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
                                 stat: $statistic,
