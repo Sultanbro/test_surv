@@ -283,9 +283,10 @@ final class Analytics
             return [$row->id => $index + 1];
         })->toArray();
 
-        $columnKeys = $columns->where('name', '!=', 'plan')->mapWithKeys(function ($column, $index) {
-            return [$column->id => $index - 1];
-        })->toArray();
+        $columnKeys = $columns->whereNotIn('name', ['plan'])
+            ->mapWithKeys(function ($column, $index) {
+                return [$column->id => $index - 1];
+            })->toArray();
 
         return [
             'rows' => $rowKeys,
