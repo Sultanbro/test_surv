@@ -481,7 +481,7 @@ class AnalyticStat extends Model
 
         $sl_pos = -1;
 
-        $fl_pos = ($number + 1) % 26;
+        $fl_pos = ($number) % 26;
         if ($fl_pos == 0) $sl_pos++;
 
         if ($number >= 26 && $fl_pos != 0) {
