@@ -289,7 +289,10 @@ final class Analytics
                 return [$column->id => $index - 1];
             })->toArray();
 
-        dd_if(auth()->id() === 5, $columnKeys);
+        dd_if(auth()->id() === 5,
+            $columns
+                ->whereNotIn('name', ['plan'])->pluck('name')->toArray()
+        );
 
         return [
             'rows' => $rowKeys,
