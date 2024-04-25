@@ -260,6 +260,10 @@ export default {
 </script>
 
 <style lang="scss">
+.outside-badge{
+	visibility: hidden !important;
+	opacity: 0 !important;
+}
 .RegisterView{
 	&-inputs{
 		display: flex;
