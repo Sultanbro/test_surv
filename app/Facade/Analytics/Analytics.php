@@ -142,6 +142,8 @@ final class Analytics
         $days = range(1, 31);
         $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
         $currentDay = Carbon::now();
+        $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -165,8 +167,7 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        dd($currentDay->isCurrentMonth());
-                        $afterToday = is_numeric($column->name) && $currentDay->isCurrentMonth() && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
+                        $afterToday = is_numeric($column->name) && $isCurrentMonth && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
                         if ($afterToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
