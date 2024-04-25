@@ -143,7 +143,7 @@ final class Analytics
             foreach ($columns as $columnIndex => $column) {
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 2) : 'A';
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -277,15 +277,25 @@ final class Analytics
         return $table;
     }
 
-    public function getKeys(Collection|array $rows, Collection|array $columns): array
+    public function getKeys(Collection $rows, Collection $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
             return [$row->id => $index + 1];
         })->toArray();
 
-        $columnKeys = $columns->mapWithKeys(function ($column, $index) {
-            return [$column->id => $index - 1];
-        })->toArray();
+        $columnKeys = [];
+        $filtered = $columns
+            ->filter(fn($item) => $item->name != 'plan')
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($filtered as $key => $id) {
+            $columnKeys[$id] = $key-1;
+        }
+
+//        dd_if(auth()->id() === 5,
+//            $columnKeys
+//        );
 
         return [
             'rows' => $rowKeys,
@@ -346,10 +356,12 @@ final class Analytics
     {
         $method = ($activity->plan_unit === 'minutes' || $activity->plan_unit === 'less_sum') ? 'sum' : 'avg';
 
-        $total = UserStat::query()->where('activity_id', $activity->id)
+        $total = UserStat::query()
+            ->where('activity_id', $activity->id)
             ->where('date', $date)
             ->where('value', '>', 0)
             ->{$method}('value');
+
         if ($method === 'avg') {
             $total = round($total, 1);
         }

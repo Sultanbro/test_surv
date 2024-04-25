@@ -178,27 +178,19 @@ class KpiService
         foreach ($items as $item) {
             $item['kpi_id'] = $id;
 
-
             unset($item['group_id']);
             unset($item['sum']);
             unset($item['percent']);
 
-            // if a source is no_source
-            // then activity also zeroes
+            // if a source is no_source then activity also zeroes
             if ($item['source'] == 0) $item['activity_id'] = 0;
-
             unset($item['source']);
 
-
             if ($item['id'] == 0) {
-
-                /**
-                 * Создаем новый kpi item, потому что id == 0
-                 */
+                // Создаем новый kpi item, потому что id == 0
                 $item_ids[] = KpiItem::query()->create($item)->getKey();
-
-            } else {
-
+            }
+            else {
                 $item_ids[] = $item['id'];
 
                 if (isset($item['deleted'])) {
@@ -206,7 +198,6 @@ class KpiService
                 } else {
                     unset($item['daily_plan']);
                     unset($item['histories']);
-//                    $kpi->items()->where('id', $item['id'])->update($item); move this to histories
                 }
 
                 event(new TrackKpiItemEvent($item));

@@ -287,6 +287,14 @@ export async function fetchAnalyticsV2(request){
 	/* eslint-disable camelcase */
 	return {
 		...data.data,
+		table: data.data.table.map(row => Object.keys(row).reduce((result, key) => {
+			const cell = row[key]
+			result[key] = {
+				...cell,
+				value: cell.value || cell.show_value
+			}
+			return result
+		}, {})),
 		report_cards: {
 			report_cards: arrayUniqueKey(data.data.report_cards?.report_cards || [])
 		}
