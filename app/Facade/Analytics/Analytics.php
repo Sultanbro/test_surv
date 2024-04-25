@@ -165,7 +165,7 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        if (is_numeric($column->name) && $currentDay->setDay($column->name)->isNextDay()) $val = 0;
+                        if (is_numeric($column->name) && $currentDay->setDay($column->name)->isAfter(now())) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
                                 stat: $statistic,
