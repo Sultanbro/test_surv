@@ -448,6 +448,8 @@ class AnalyticStat extends Model
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
         }
+        dd_if(auth()->id() === 5, $text);
+
         return $text;
     }
 
