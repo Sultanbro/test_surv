@@ -126,6 +126,8 @@ final class Analytics
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
+        dd_if(auth()->id() == 5 ,$rows->pluck('date')->toArray());
+
         $columns = $this->columnRepository
             ->getByGroupId($dto->groupId, $date);
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
