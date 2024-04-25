@@ -591,7 +591,7 @@ class AnalyticStat extends Model
 
     public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
-        dd_if(Carbon::parse($date)->isCurrentDay(), $date);
+        dd_if(auth()->id() == 5, $date);
         if (Carbon::parse($date)->isCurrentDay()) return 0;
 
         $text = $stat->value;
