@@ -290,7 +290,7 @@ final class Analytics
             ->toArray();
 
         foreach ($filtered as $key => $id) {
-            $columnKeys[$id] = $key;
+            $columnKeys[$id] = $key-1;
         }
 
 //        dd_if(auth()->id() === 5,
