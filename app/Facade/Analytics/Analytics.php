@@ -277,7 +277,7 @@ final class Analytics
         return $table;
     }
 
-    public function getKeys(Collection|array $rows, Collection|array $columns): array
+    public function getKeys(Collection $rows, Collection $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
             return [$row->id => $index + 1];
@@ -286,7 +286,7 @@ final class Analytics
         $columnKeys = $columns
 //            ->whereNotIn('name', ['plan'])
             ->mapWithKeys(function ($column, $index) {
-                return [$column->id => $index - 2];
+                return [$column->id => $index];
             })->toArray();
 
         return [
