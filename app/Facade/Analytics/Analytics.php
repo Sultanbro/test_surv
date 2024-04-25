@@ -126,10 +126,10 @@ final class Analytics
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
-        dd_if(auth()->id() == 5 ,$rows->pluck('date')->toArray());
 
         $columns = $this->columnRepository
             ->getByGroupId($dto->groupId, $date);
+
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
@@ -141,7 +141,7 @@ final class Analytics
 
         $days = range(1, 31);
         $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
-
+        $currentDay = Carbon::now();
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -165,12 +165,15 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        $val = AnalyticStat::calcFormula(
-                            stat: $statistic,
-                            date: $date,
-                            round: $statistic->decimals,
-                            stats: $stats
-                        );
+                        if (is_numeric($column->name) && $currentDay->setDay($column->name)->isNextDay()) $val = 0;
+                        else {
+                            $val = AnalyticStat::calcFormula(
+                                stat: $statistic,
+                                date: $date,
+                                round: $statistic->decimals,
+                                stats: $stats
+                            );
+                        }
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
