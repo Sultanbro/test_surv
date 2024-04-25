@@ -1078,7 +1078,7 @@ export default {
 			this.cell_comment = item.comment
 			this.cell_type = this.cell_types[item.type]
 			this.cell_show_value = item.show_value
-			this.coords = this.nextCellCoord(item.cell)
+			this.coords = item.cell
 		},
 
 		focusName(i,f, s) {
@@ -1097,7 +1097,7 @@ export default {
 
 			this.cell_type = this.cell_types[this.items[i][field].type]
 
-			this.coords = this.nextCellCoord(this.items[i][field].cell)
+			this.coords = this.items[i][field].cell
 		},
 
 		nextCellCoord(coord){
