@@ -137,6 +137,9 @@ final class Analytics
 
         $table = [];
 
+        $days = range(1, 31);
+        $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -193,7 +196,7 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'avg') {
-                        $val = $this->daysAvg($columns, $stats, $row->id);
+                        $val = $this->daysAvg($columnIds, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
 //                        $statistic->save();
                         $arr['value'] = $val;
@@ -396,19 +399,11 @@ final class Analytics
     }
 
     public function daysAvg(
-        Collection $columns,
+        array $columns,
         Collection $stats,
         int        $rowId,
-        array      $days = []
     ): float|int
     {
-        $days = empty($days) ? range(1, 31) : $days;
-
-        $columns = $columns
-            ->whereIn('name', $days)
-            ->pluck('id')
-            ->toArray();
-
         $stats = $stats->where('row_id', $rowId)
             ->whereIn('column_id', $columns);
 
