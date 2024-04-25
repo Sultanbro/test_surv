@@ -187,7 +187,12 @@ class AnalyticStat extends Model
                     }
 
                     if ($stat->type == 'sum') {
-                        $val = self::daysSum($date, $row->id, $group_id);
+                        $val = self::daysSum(
+                            date: $date,
+                            row_id: $row->id,
+                            group_id: $group_id,
+                            stats: $stats
+                        );
                         $val = round($val, 1);
                         $stat->show_value = $val;
                         $stat->save();
@@ -533,8 +538,16 @@ class AnalyticStat extends Model
         return $total;
     }
 
-    public static function daysSum($date, $row_id, $group_id, $days = []): float|int
+    public static function daysSum($date, $row_id, $group_id, $days = [], Collection $stats = null): float|int
     {
+        if ($stats) {
+            $all_stats = $stats->where('row_id', $row_id);
+        } else {
+            $all_stats = self::query()
+                ->where('row_id', $row_id)
+                ->where('date', $date)
+                ->get();
+        }
 
         if (count($days) == 0) {
             $days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
@@ -547,11 +560,6 @@ class AnalyticStat extends Model
             ->get();
 
         $total = 0;
-
-        $all_stats = self::query()
-            ->where('row_id', $row_id)
-            ->where('date', $date)
-            ->get();
 
         foreach ($columns as $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
@@ -606,12 +614,16 @@ class AnalyticStat extends Model
                     $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
-                    dd_if(auth()->id() == 5 && $date = '2024-04-26', $value);
 
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
-                    $value = self::daysSum($date, $cell->row_id, $cell->group_id, $only_days);
+                    $value = self::daysSum(
+                        date: $date,
+                        row_id: $cell->row_id,
+                        group_id: $cell->group_id,
+                        stats: $stats
+                    );
                     //dump('sum ' .$value);
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else {
@@ -687,7 +699,7 @@ class AnalyticStat extends Model
         return $val;
     }
 
-    public static function getProceedsPlan($group_id, $date,Collection $stats = null): float|int
+    public static function getProceedsPlan($group_id, $date, Collection $stats = null): float|int
     {
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 

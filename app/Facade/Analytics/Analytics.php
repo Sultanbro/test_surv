@@ -169,7 +169,6 @@ final class Analytics
                             round: $statistic->decimals,
                             stats: $stats
                         );
-
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
@@ -188,7 +187,11 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'sum') {
-                        $val = $this->daysSum($columns, $stats, $row->id);
+                        $val = $this->daysSum(
+                            $columns,
+                            $stats,
+                            $row->id
+                        );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
 //                        $statistic->save();
