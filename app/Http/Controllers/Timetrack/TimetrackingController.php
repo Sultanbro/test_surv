@@ -2207,16 +2207,16 @@ class TimetrackingController extends Controller
                         $group = ProfileGroup::find($group_id);
 
                         if ($group) {
-                            array_push($_groups, [
+                            $_groups[] = [
                                 'id' => $group->id,
                                 'name' => $group->name
-                            ]);
+                            ];
                         }
                     }
                     $noti[1] = $_groups;
                     $noti[2] = $template->need_group;
 
-                    array_push($notifications, $noti);
+                    $notifications[] = $noti;
                 }
             }
         }
