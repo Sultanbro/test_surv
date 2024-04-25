@@ -443,7 +443,7 @@ class AnalyticStat extends Model
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]] ) . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
@@ -481,7 +481,7 @@ class AnalyticStat extends Model
 
         $sl_pos = -1;
 
-        $fl_pos = ($number) % 26;
+        $fl_pos = ($number + 1) % 26;
         if ($fl_pos == 0) $sl_pos++;
 
         if ($number >= 26 && $fl_pos != 0) {
