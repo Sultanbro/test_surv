@@ -285,16 +285,17 @@ final class Analytics
 
         $columnKeys = [];
         $filtered = $columns
+            ->filter(fn($item) => $item->name != 'plan')
             ->pluck('id')
             ->toArray();
 
         foreach ($filtered as $key => $id) {
-            $columnKeys[$id] = $key;
+            $columnKeys[$id] = $key - 1;
         }
 
-//        dd_if(auth()->id() === 5,
-//            $columnKeys
-//        );
+//        dd_if(auth()y->id() === 5,
+//            $columnKyeys
+//        );y
 
         return [
             'rows' => $rowKeys,
