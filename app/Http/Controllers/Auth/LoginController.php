@@ -110,6 +110,7 @@ class LoginController extends Controller
             $field => $request->get($method),
             'password' => $request->get('password'),
         ];
+
         // failed to login
         if (request()->getHost() == config('app.domain')) {
             /** @var CentralUser $centralUser */
