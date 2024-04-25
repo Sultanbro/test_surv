@@ -285,7 +285,6 @@ final class Analytics
 
         $columnKeys = [];
         $filtered = $columns
-            ->filter(fn($item) => $item->name != 'plan')
             ->pluck('id')
             ->toArray();
 
