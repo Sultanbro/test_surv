@@ -293,9 +293,9 @@ final class Analytics
             $columnKeys[$id] = $key;
         }
 
-        dd_if(auth()->id() === 5,
-            $columnKeys
-        );
+//        dd_if(auth()->id() === 5,
+//            $columnKeys
+//        );
 
         return [
             'rows' => $rowKeys,
