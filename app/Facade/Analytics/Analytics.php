@@ -286,7 +286,7 @@ final class Analytics
         $columnKeys = $columns
             ->whereNotIn('name', ['plan'])
             ->mapWithKeys(function ($column, $index) {
-                return [$column->id => $index - 2];
+                return [$column->id => $index];
             })->toArray();
 
         dd_if(auth()->id() === 5,
