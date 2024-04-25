@@ -443,7 +443,7 @@ class AnalyticStat extends Model
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
-                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]] - 1) . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]] ) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
