@@ -289,6 +289,8 @@ final class Analytics
                 return [$column->id => $index - 1];
             })->toArray();
 
+        dd_if(auth()->id() === 5, $columnKeys);
+
         return [
             'rows' => $rowKeys,
             'columns' => $columnKeys
