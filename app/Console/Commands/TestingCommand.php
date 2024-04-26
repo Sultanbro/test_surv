@@ -6,6 +6,7 @@ use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Log;
 use Throwable;
 
 class TestingCommand extends Command
@@ -28,16 +29,11 @@ class TestingCommand extends Command
     /**
      * @throws Throwable
      */
-    public function handle(SmsInterface $sms): void
+    public function handle(): void
     {
-        $receiver = new ReceiverDto(
-            '77073572802',
-            'Вайчеслав'
-        );
-
-        $data = $sms->send($receiver, 'код подтверждение: 12555');
-        dd($data);
-        $this->newLine();
-        $this->alert(Str::replace([',', '{', '}'], PHP_EOL, json_encode($data)));
+        Log::channel('slackNotification')->info('New user created', [
+            'name' => "test",
+            'email' => "test@test.com",
+        ]);
     }
 }

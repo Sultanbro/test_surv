@@ -57,6 +57,14 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'slackNotification' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL'),
+            'username' => 'Oh See Snaps',
+            'emoji' => ':wave:',
+            'level' => 'info'
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
