@@ -24,16 +24,6 @@ class CheckTimetrackers extends Command
     protected $description = 'Команда при запуске завершает день для всех пользователей которые не нажали на ЗАВЕРШИТЬ ДЕНЬ';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @param ReferrerSalaryService $service

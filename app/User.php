@@ -442,7 +442,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         $workEndTime = $record->user->schedule(
             givenDate: $date
         )['end'];
-
+        dd($workEndTime);
 
         if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
             $workEndTime->addDay();
