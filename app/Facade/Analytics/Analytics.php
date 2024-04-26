@@ -190,7 +190,7 @@ final class Analytics
                             $val = $this->totalForDay($statistic->activity, $day);
                         }
                         $statistic->show_value = $val;
-//                        $statistic->save();
+                        $statistic->save();
 
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
@@ -203,7 +203,7 @@ final class Analytics
                         );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
-//                        $statistic->save();
+                        $statistic->save();
 
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
@@ -211,7 +211,7 @@ final class Analytics
                     if ($statistic->type == 'avg') {
                         $val = $this->daysAvg($columnIds, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
-//                        $statistic->save();
+                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -223,14 +223,14 @@ final class Analytics
                             ->sum('total');
                         $val = floor($groupSalary);
                         $statistic->show_value = $val;
-//                        $statistic->save();
+                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
-//                        $statistic->save();
+                        $statistic->save();
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -244,7 +244,7 @@ final class Analytics
                         $val = max($val, 0);
 
                         $statistic->show_value = $val;
-//                        $statistic->save();
+                        $statistic->save();
 
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
