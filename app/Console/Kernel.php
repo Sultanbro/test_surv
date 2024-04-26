@@ -14,6 +14,7 @@ use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\Referral\UpdateReferralSalary;
 use App\Console\Commands\RestartQueue;
+use App\Console\Commands\RunDailyCommandsForTimetrackingSalaryAndTable;
 use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
@@ -50,7 +51,8 @@ class Kernel extends ConsoleKernel
         UpdateReferralSalary::class,
         CacheTopRentabilityPerDay::class,
         DeleteTimeTrackingDuplicates::class,
-        RunTestServerScriptCommand::class
+        RunTestServerScriptCommand::class,
+        RunDailyCommandsForTimetrackingSalaryAndTable::class
     ];
 
     /**
@@ -59,7 +61,7 @@ class Kernel extends ConsoleKernel
      * @param Schedule $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {       /*
         |--------------------------------------------------------------------------
         | Команды кабинета bp.jobtron.org
@@ -110,12 +112,14 @@ class Kernel extends ConsoleKernel
         | Запускаются во всех субдоменах.
         |
         */
-        $schedule->command('tenants:run timetracking:check')->everyThirtyMinutes(); // автоматически завершить рабочий день если забыли нажать на кнопку
-        $schedule->command('tenants:run count:hours')->everyThirtyMinutes(); // автоматически завершить рабочий день если забыли нажать на кнопку
+
+        // обновление зарплаты: за текущий день
+        // автоматически завершить рабочий день если забыли нажать на кнопку
+        // автоматически завершить рабочий день если забыли нажать на кнопку
+        $schedule->command('daily:required-commands')->everyThirtyMinutes();
 
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
-        $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
