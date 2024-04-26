@@ -22,7 +22,10 @@ class BackupMysqlToDevServerCommand extends Command
 
     public function handle(): void
     {
-        $script = app_path("db_dump.sh");
-        shell_exec($script);
+        $script = base_path("db_dump.sh");
+        $output = shell_exec("bash $script 2>&1");
+        // Log the output or do something with it
+        slack($output);
+        $this->line($output);
     }
 }

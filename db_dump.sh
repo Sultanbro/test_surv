@@ -5,7 +5,7 @@ testhost="jobtron"
 
 # только для прода
 if [ $hostname != $testhost ]; then
-  echo "not production server"
+  echo "the script should be executed in the prod server"
   exit
 fi
 
