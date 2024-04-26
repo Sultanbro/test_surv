@@ -59,9 +59,11 @@
 import UpLoadIcon from '../../../assets/icons/UpLoadIcon.vue';
 import UpLoadImage from '../../../assets/icons/UpLoadImage.vue';
 import TooltipCourse from './TooltipCourse.vue';
-import store from '@/stores/createCourse';
 import InputFile from '../../../../../components/ui/InputFile.vue';
 import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
+import {mapActions, mapState} from 'pinia';
+import {useCourseStore} from '@/stores/CreateCourse';
+
 export default {
 	name: 'AppearanceUploadImage',
 	components: {CustomSpinner, InputFile, TooltipCourse, UpLoadImage, UpLoadIcon},
@@ -73,7 +75,11 @@ export default {
 			loadingImage: false,
 		};
 	},
+	computed:{
+		...mapState(useCourseStore, ['courses'])
+	},
 	methods: {
+		...mapActions(useCourseStore, ['addCourse']),
 		showTooltip(type) {
 			if (type === 'icon') {
 				this.isIconHovered = true;
@@ -102,13 +108,12 @@ export default {
 			setTimeout(() => {
 				if (type === 'icon') {
 					this.loadingIcon = false;
+					this.addCourse({iconId: fileId, icon: file})
 				} else if (type === 'image') {
 					this.loadingImage = false;
+					this.addCourse({imageId: fileId, image: file})
 				}
-				store.commit('addCourse', {
-					id: fileId,
-					file: file
-				});
+
 
 			}, 2000);
 		},

@@ -1,18 +1,18 @@
-import Vuex from 'vuex';
+import { defineStore } from 'pinia';
 
-export default new Vuex.Store({
-	state: {
+export const useCourseStore = defineStore('courseStore', {
+	state: () => ({
 		courses: [],
-	},
-	mutations: {
-		addCourse(state, newCourse) {
-			const index = state.courses.findIndex((course) =>
+	}),
+	actions: {
+		addCourse(newCourse) {
+			const index = this.courses.findIndex((course) =>
 				Object.keys(newCourse).some((key) => course[key] !== undefined)
 			);
 			if (index !== -1) {
-				state.courses.splice(index, 1, newCourse);
+				this.courses.splice(index, 1, newCourse);
 			} else {
-				state.courses.push(newCourse);
+				this.courses.push(newCourse);
 			}
 		},
 	},

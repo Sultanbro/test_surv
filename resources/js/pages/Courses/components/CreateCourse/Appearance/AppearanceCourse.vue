@@ -36,7 +36,7 @@
 		<div class="appearance-course-bottom">
 			<button
 				class="appearance-course-button"
-				@click="addCourse"
+				@click="createCourse"
 			>
 				Далее
 			</button>
@@ -45,9 +45,12 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import {useCourseStore} from '@/stores/CreateCourse';
 import InputCourse from './InputCourse.vue';
 import AppearanceMainIcon from '../../../assets/icons/AppearanceMainIcon.vue';
-import store from '@/stores/createCourse';
+
+
 
 export default {
 	name: 'AppearanceCourse',
@@ -63,14 +66,15 @@ export default {
 			detailedDescription: ''
 		};
 	},
+	computed:{
+		...mapState(useCourseStore, ['courses'])
+	},
 	methods: {
-		addCourse() {
-			store.commit('addCourse', {
-				courseName: this.courseName,
+		...mapActions(useCourseStore, ['addCourse']),
+		createCourse() {
+			this.addCourse({courseName: this.courseName,
 				shortDescription: this.shortDescription,
-				detailedDescription: this.detailedDescription
-			});
-
+				detailedDescription: this.detailedDescription})
 			this.courseName = '';
 			this.shortDescription = '';
 			this.detailedDescription = '';
