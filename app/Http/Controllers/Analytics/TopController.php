@@ -101,7 +101,7 @@ class TopController extends Controller
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
         $statRepository = app(AnalyticStatRepository::class);
         $allStats = $statRepository->getByGroupIds($this->groups, $date);
-        dd($this->groups, $allStats->toArray());
+        dd($this->groups, $allStats->toArray(), $date);
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
             dd_if($group_id == 31, $stats, $allStats->toArray());
