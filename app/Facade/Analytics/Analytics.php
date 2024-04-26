@@ -450,11 +450,9 @@ final class Analytics
         $subset = $users->map(function ($user) {
             return collect($user->toArray())
                 ->only(['id', 'name', 'last_name'])
-                ->unique('id')
-                ->values()
                 ->all();
         });
-        dd($subset->toArray());
+        dd($subset->unique('id')->toArray());
         return $users->each(function ($employee) use ($firstOfMoth, $activity) {
             $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
             $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
