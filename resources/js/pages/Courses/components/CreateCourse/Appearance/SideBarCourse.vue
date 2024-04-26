@@ -4,13 +4,13 @@
 			v-for="item in links"
 			:key="item.id"
 			class="sidebar-course-content"
-			:class="{ active: activeLink === item.id }"
+			:class="{ active: isActive(item.id) }"
 			@click="handleClickActiveMain(item.id)"
 		>
 			<component :is="item.icon" />
 			<div
 				class="sidebar-course-title"
-				:class="{ active: activeLink === item.id }"
+				:class="{ active: isActive(item.id) }"
 			>
 				{{ item.title }}
 			</div>
@@ -22,20 +22,25 @@
 </template>
 
 <script>
-import AppearanceIcon from '../../assets/icons/AppearanceIcon.vue';
-import MaterialsIcon from '../../assets/icons/MaterialsIcon.vue';
-import ProfileIcon from '../../assets/icons/ProfileIcon.vue';
-import SettingIcon from '../../assets/icons/SettingIcon.vue';
-import CommentIcon from '../../assets/icons/CommentIcon.vue';
-import JobIcon from '../../assets/icons/JobIcon.vue';
-import HintIcon from '../../assets/icons/HintIcon.vue';
+import AppearanceIcon from '../../../assets/icons/AppearanceIcon.vue';
+import MaterialsIcon from '../../../assets/icons/MaterialsIcon.vue';
+import ProfileIcon from '../../../assets/icons/ProfileIcon.vue';
+import SettingIcon from '../../../assets/icons/SettingIcon.vue';
+import CommentIcon from '../../../assets/icons/CommentIcon.vue';
+import JobIcon from '../../../assets/icons/JobIcon.vue';
+import HintIcon from '../../../assets/icons/HintIcon.vue';
 
 export default {
 	name: 'SideBarCourse',
-	components: {HintIcon},
+	components: { HintIcon },
+	props: {
+		activeLink: {
+			type: Number,
+			default: 1
+		}
+	},
 	data() {
 		return {
-			activeLink: 1,
 			links: [
 				{ id: 1, title: 'Внешний вид', icon: AppearanceIcon, hint: false },
 				{ id: 2, title: 'Материалы курса', icon: MaterialsIcon, hint: true },
@@ -46,16 +51,20 @@ export default {
 			],
 		};
 	},
-	methods:{
-		handleClickActiveMain(index){
-			this.activeLink = index
+	computed: {
+		isActive() {
+			return (index) => this.activeLink === index;
 
 		}
 	},
+	methods: {
+		handleClickActiveMain(index) {
+			this.$emit('update:activeLink', index);
+		},
 
-}
+	},
+};
 </script>
-
 <style scoped>
 .sidebar-course{
 		max-width: 284px;
@@ -79,10 +88,12 @@ export default {
 
 .sidebar-course-content:focus,
 .sidebar-course-content:active {
+
 	outline: none;
 }
 
 .sidebar-course-content{
+	background-color: white;
 	display: flex;
 		gap: 10px;
 		padding: 11px;
