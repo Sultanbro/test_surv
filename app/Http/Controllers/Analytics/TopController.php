@@ -161,7 +161,7 @@ class TopController extends Controller
                 }
 
 
-                array_push($week_proceeds['records'], $row);
+                $week_proceeds['records'][] = $row;
             }
 
         }
@@ -199,7 +199,7 @@ class TopController extends Controller
 
             }
 
-            array_push($week_proceeds['records'], $editable_row);
+            $week_proceeds['records'][] = $editable_row;
 
 
             $total_row['Итого'] += $editable_row['Итого'];
@@ -209,7 +209,7 @@ class TopController extends Controller
             $total_row[$date->format('d.m')] = (int)number_format($total_row[$date->format('d.m')], 0);
         }
 
-        array_push($week_proceeds['records'], $total_row);
+        $week_proceeds['records'][] = $total_row;
 
         return $week_proceeds;
     }
