@@ -445,9 +445,9 @@ final class Analytics
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
             })
-            ->get();
+            ->get()->unique('id')->values();
 
-        return collect($users->unique('id'))->each(function ($employee) use ($firstOfMoth, $activity) {
+        return $users->each(function ($employee) use ($firstOfMoth, $activity) {
             $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
             $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
             $workDays = WorkChartModel::workdaysPerMonth($employee);
