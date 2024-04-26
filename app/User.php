@@ -443,10 +443,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             givenDate: $date
         )['end'];
 
-        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
-            $workEndTime->addDay();
-        }
-
+//        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+//            $workEndTime->addDay();
+//        }
+        dd(!$workEndTime->isBefore($date->addDay()));
         if (!$workEndTime->isBefore($date->addDay())) return;
 
         $record->setExit($workEndTime)
