@@ -65,6 +65,7 @@ class TopController extends Controller
     private function getProceeds($date): array
     {
         $calendar_days = Carbon::parse($date)->daysInMonth; // календарные дни
+        $firstDayMonth = Carbon::parse($date)->firstOfMonth();
 
         $days = $this->daysInMonth($date);
         // get weeks array
@@ -100,7 +101,7 @@ class TopController extends Controller
 
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
         $statRepository = app(AnalyticStatRepository::class);
-        $allStats = $statRepository->getByGroupIds($this->groups, $date);
+        $allStats = $statRepository->getByGroupIds($this->groups, $firstDayMonth);
         dd($this->groups, $allStats->toArray(), $date);
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
