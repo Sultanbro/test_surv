@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Service\Sms\ReceiverDto;
 use App\Service\Sms\SmsInterface;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Log;
@@ -17,6 +18,6 @@ class TestingCommand extends Command
 
     public function handle(): void
     {
-        slack($this->description);
+        slack('the scheduler is working . ' . Carbon::now()->toDateTimeString());
     }
 }
