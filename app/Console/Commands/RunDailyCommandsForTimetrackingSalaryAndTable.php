@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class RunDailyCommandsForTimetrackingSalaryAndTable extends Command
 {
@@ -24,8 +25,8 @@ class RunDailyCommandsForTimetrackingSalaryAndTable extends Command
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
 
-        $this->call('tenants:run salary:update', ['date' => $date]);
-        $this->call('tenants:run timetracking:check', ['date' => $date]);
-        $this->call('tenants:run count:hours', ['date' => $date]);
+        Artisan::call('tenants:run salary:update', ['date' => $date]);
+        Artisan::call('tenants:run timetracking:check', ['date' => $date]);
+        Artisan::call('tenants:run count:hours', ['date' => $date]);
     }
 }
