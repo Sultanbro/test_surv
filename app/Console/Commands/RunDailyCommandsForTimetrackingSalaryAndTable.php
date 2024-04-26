@@ -22,8 +22,10 @@ class RunDailyCommandsForTimetrackingSalaryAndTable extends Command
 
     public function handle(): void
     {
-        $this->call('tenants:run salary:update');
-        $this->call('tenants:run timetracking:check');
-        $this->call('tenants:run count:hours');
+        $date = $this->argument('date') ?? now()->format('Y-m-d');
+
+        $this->call('tenants:run salary:update', ['date' => $date]);
+        $this->call('tenants:run timetracking:check', ['date' => $date]);
+        $this->call('tenants:run count:hours', ['date' => $date]);
     }
 }
