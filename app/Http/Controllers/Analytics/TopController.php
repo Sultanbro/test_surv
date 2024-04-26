@@ -102,10 +102,9 @@ class TopController extends Controller
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
         $statRepository = app(AnalyticStatRepository::class);
         $allStats = $statRepository->getByGroupIds($this->groups, $firstDayMonth);
-        dd($this->groups, $allStats->toArray(), $date);
+
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
-            dd_if($group_id == 31, $stats, $allStats->toArray());
             $group = ProfileGroup::find($group_id);
             $row = [];
 
@@ -123,8 +122,8 @@ class TopController extends Controller
                 $sum = 0;
                 $filled_days = 0;
 
-                $prs = AnalyticStat::getProceeds($group_id, $date, [], $stats);
-                $plan = AnalyticStat::getProceedsPlan($group_id, $date, $stats);
+                $prs = AnalyticStat::getProceeds($group_id, $firstDayMonth, [], $stats);
+                $plan = AnalyticStat::getProceedsPlan($group_id, $firstDayMonth, $stats);
 
                 $row['%'] = 2;
                 $row['План'] = $plan;
