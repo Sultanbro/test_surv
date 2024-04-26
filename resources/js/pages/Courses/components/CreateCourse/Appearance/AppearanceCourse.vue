@@ -46,7 +46,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia'
-import {useCourseStore} from '@/stores/CreateCourse.js';
+import {useCourseStore} from '@/stores/createCourse.js';
 import InputCourse from './InputCourse.vue';
 import AppearanceMainIcon from '../../../assets/icons/AppearanceMainIcon.vue';
 
