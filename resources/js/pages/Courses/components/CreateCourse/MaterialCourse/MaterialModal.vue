@@ -19,7 +19,12 @@
 			class="AccessSelect-tabs"
 		/>
 		<div class="material-modal-select-block">
-			<CustomSpinner v-if="loading" />
+			<div
+				v-if="loading"
+				class="customSpinner"
+			>
+				<CustomSpinner />
+			</div>
 			<div v-else>
 				<div
 					v-for="(option, index) in filteredOptions"
@@ -353,4 +358,13 @@ padding: 15px 10px;
   line-height: 20px;
 	color: white;
 }
+
+.customSpinner{
+	width: 100%;
+	height: 100%;
+  display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 </style>
