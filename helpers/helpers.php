@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\VarDumper\VarDumper;
 
@@ -119,5 +120,16 @@ if (!function_exists('phone_or_email')) {
             isset($toCheck['phone']) => 'phone',
             default => null,
         };
+    }
+}
+
+
+if (!function_exists('slack')) {
+    function slack(string $message = null): LoggerInterface
+    {
+        $logger = Log::channel('slackNotification');
+        if ($message) $logger->info($message);
+
+        return Log::channel('slackNotification');
     }
 }
