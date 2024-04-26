@@ -446,10 +446,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 //        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
 //            $workEndTime->addDay();
 //        }
-        dd(!$workEndTime->isBefore($date->addDay()));
         if (!$workEndTime->isBefore($date->addDay())) return;
 
-        dd($workEndTime);
         $record->setExit($workEndTime)
             ->setStatus(Timetracking::DAY_ENDED)
             ->addTime($workEndTime, $record->user->timezone())
