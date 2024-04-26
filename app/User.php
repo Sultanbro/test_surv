@@ -1617,9 +1617,11 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             //TODO: проверить логику, раньше не было число с *.30
             $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         }
-
-        dd($start);
-
+        dd(
+            $start,
+            $end,
+            $start->greaterThan($end)
+        );
         if ($start->greaterThan($end)) {
             $end->addDay();
         }
