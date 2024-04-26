@@ -65,6 +65,7 @@ class TopController extends Controller
     private function getProceeds($date): array
     {
         $calendar_days = Carbon::parse($date)->daysInMonth; // календарные дни
+        $firstDayMonth = Carbon::parse($date)->firstOfMonth();
 
         $days = $this->daysInMonth($date);
         // get weeks array
@@ -100,7 +101,7 @@ class TopController extends Controller
 
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
         $statRepository = app(AnalyticStatRepository::class);
-        $allStats = $statRepository->getByGroupIds($this->groups, $date);
+        $allStats = $statRepository->getByGroupIds($this->groups, $firstDayMonth);
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
             $group = ProfileGroup::find($group_id);
@@ -120,8 +121,8 @@ class TopController extends Controller
                 $sum = 0;
                 $filled_days = 0;
 
-                $prs = AnalyticStat::getProceeds($group_id, $date, [], $stats);
-                $plan = AnalyticStat::getProceedsPlan($group_id, $date, $stats);
+                $prs = AnalyticStat::getProceeds($group_id, $firstDayMonth, [], $stats);
+                $plan = AnalyticStat::getProceedsPlan($group_id, $firstDayMonth, $stats);
 
                 $row['%'] = 2;
                 $row['План'] = $plan;
@@ -161,7 +162,7 @@ class TopController extends Controller
                 }
 
 
-                array_push($week_proceeds['records'], $row);
+                $week_proceeds['records'][] = $row;
             }
 
         }
@@ -170,7 +171,8 @@ class TopController extends Controller
         $total_row['Итого'] = (int)$total_row['Итого'];
 
 
-        $cps = CustomProceed::whereYear('date', $days[0]->year)
+        $cps = CustomProceed::query()
+            ->whereYear('date', $days[0]->year)
             ->whereMonth('date', $days[0]->month)
             ->get()
             ->groupBy('order');
@@ -199,7 +201,7 @@ class TopController extends Controller
 
             }
 
-            array_push($week_proceeds['records'], $editable_row);
+            $week_proceeds['records'][] = $editable_row;
 
 
             $total_row['Итого'] += $editable_row['Итого'];
@@ -209,7 +211,7 @@ class TopController extends Controller
             $total_row[$date->format('d.m')] = (int)number_format($total_row[$date->format('d.m')], 0);
         }
 
-        array_push($week_proceeds['records'], $total_row);
+        $week_proceeds['records'][] = $total_row;
 
         return $week_proceeds;
     }
