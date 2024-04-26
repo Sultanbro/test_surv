@@ -310,7 +310,7 @@ class Timetracking extends Model
 
     public function isWorkEndTimeSetToNextDay(Carbon $worktimeEnd): bool
     {
-        $this->dd($worktimeEnd->hour);
+        dd($worktimeEnd->hour);
         return $worktimeEnd->hour < 9
             && Carbon::now($worktimeEnd->timezone)
                 ->hour >= 9;
