@@ -1,6 +1,6 @@
 <template>
 	<button
-		v-if="selectedTab === 'База знаний' ? option.type === 1 : ''"
+		v-if="selectedTab === 'База знаний' ? option.type === 3 : ''"
 		class="material-modal-select"
 		@click="setActiveSelect(option.id)"
 	>
@@ -21,7 +21,7 @@
 	</button>
 
 	<button
-		v-else-if="selectedTab === 'Книги' ? option.type === 2 : ''"
+		v-else-if="selectedTab === 'Книги' ? option.type === 1 : ''"
 		class="material-modal-select"
 		@click="setActiveSelect(option.id)"
 	>
@@ -42,7 +42,7 @@
 	</button>
 
 	<button
-		v-else-if="selectedTab === 'Видео' ? option.type === 3 : ''"
+		v-else-if="selectedTab === 'Видео' ? option.type === 2 : ''"
 		class="material-modal-select"
 		@click="setActiveSelect(option.id)"
 	>
