@@ -276,27 +276,30 @@ class Timetracking extends Model
         return $this;
     }
 
-    public function addTime(Carbon $value, $tz = 'UTC')
+    public function addTime(Carbon $value, $tz = 'UTC'): static
     {
         $arr = $this->times;
-
+        $enter = Carbon::parse($this->enter, $tz)->format('H:i');
+        $exit = Carbon::parse($this->exit, $tz)->format('H:i');
         if (!$arr) {
             $arr = [];
-            $arr[] = $this->enter->setTimezone($tz)->format('H:i');
+            $arr[] = $enter;
 
             if ($this->exit) {
-                $arr[] = $this->exit->setTimezone($tz)->format('H:i');
+                $arr[] = $exit;
             }
         }
 
         $arr[] = $value->setTimezone($tz)->format('H:i');
+        $this->setTimes($arr);
 
-        return $this->setTimes($arr);
+        return $this;
     }
 
-    public function setTimes(array $value)
+    public function setTimes(array $value): static
     {
         $this->times = $value;
+        $this->save();
         return $this;
     }
 
