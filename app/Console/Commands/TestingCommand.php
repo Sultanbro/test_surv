@@ -17,6 +17,6 @@ class TestingCommand extends Command
 
     public function handle(): void
     {
-        slack($this->description);
+        slack('message');
     }
 }

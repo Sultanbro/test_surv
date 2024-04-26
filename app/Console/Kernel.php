@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\BackupMysqlToDevServerCommand;
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
 use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
@@ -52,7 +53,8 @@ class Kernel extends ConsoleKernel
         CacheTopRentabilityPerDay::class,
         DeleteTimeTrackingDuplicates::class,
         RunTestServerScriptCommand::class,
-        RunDailyCommandsForTimetrackingSalaryAndTable::class
+        RunDailyCommandsForTimetrackingSalaryAndTable::class,
+        BackupMysqlToDevServerCommand::class
     ];
 
     /**
@@ -68,9 +70,12 @@ class Kernel extends ConsoleKernel
         |--------------------------------------------------------------------------
         |
         | Только запускаются в централной
-
-             |
         */
+
+        $schedule->command('mysql:dump')->dailyAt('19:00'); // dump the mysql database to dev server
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // $2y$10$z.TRZIaD8t2HN/F1V5o1l.XxiQ0x7MxEFwl8kQNS7JhMS9HnRu2MC // если сможешь расшифровать то охуеешь
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
         $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
 //        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
@@ -117,6 +122,8 @@ class Kernel extends ConsoleKernel
         // автоматически завершить рабочий день если забыли нажать на кнопку
         // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('daily:required-commands')->everyThirtyMinutes();
+
+
 
         $schedule->command('test:service')->everyMinute();
 
