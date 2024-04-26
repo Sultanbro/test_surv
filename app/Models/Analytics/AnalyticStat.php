@@ -762,9 +762,6 @@ class AnalyticStat extends Model
         }
 
         if ($row) {
-            if ($group_id == 31) {
-                dd($row, $stats);
-            }
             foreach ($columns as $column) {
                 $stat = self::where('column_id', $column->id)
                     ->where('row_id', $row->id)
