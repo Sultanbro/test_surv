@@ -123,10 +123,6 @@ class Kernel extends ConsoleKernel
         // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('daily:required-commands')->everyThirtyMinutes();
 
-
-
-        $schedule->command('test:service')->everyMinute();
-
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
