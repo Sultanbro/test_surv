@@ -60,9 +60,9 @@ return [
         'slackNotification' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Oh See Snaps',
-            'emoji' => ':wave:',
-            'level' => 'info'
+            'level' => 'info',
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:'
         ],
 
         'single' => [
