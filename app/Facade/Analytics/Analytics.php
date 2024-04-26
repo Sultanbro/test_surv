@@ -445,8 +445,8 @@ final class Analytics
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
             })
-            ->distinct()->get();
-
+            ->get();
+        dd($users);
         return $users->each(function ($employee) use ($firstOfMoth, $activity) {
             $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
             $appliedFrom = $employee->workdays_from_applied($firstOfMoth, $workDay);
