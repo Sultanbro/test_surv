@@ -25,8 +25,17 @@ class RunDailyCommandsForTimetrackingSalaryAndTable extends Command
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
 
-        Artisan::call('tenants:run salary:update', ['date' => $date]);
-        Artisan::call('tenants:run timetracking:check', ['date' => $date]);
-        Artisan::call('tenants:run count:hours', ['date' => $date]);
+        Artisan::call('tenants:run', [
+            'commandname' => 'timetracking:check',
+            '--argument' => ['date=' . $date]
+        ]);
+        Artisan::call('tenants:run', [
+            'commandname' => 'salary:update',
+            '--argument' => ['date=' . $date]
+        ]);
+        Artisan::call('tenants:run', [
+            'commandname' => 'tenants:run count:hours',
+            '--argument' => ['date=' . $date]
+        ]);
     }
 }
