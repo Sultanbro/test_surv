@@ -9,6 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * @property int $user_id
+ * @property string $enter
+ * @property string $exit
+ * @property string $total_hours
+ * @property string $program_id
+ * @property string $updated
+ * @property string $status
+ * @property string $times
  * @property User $user
  * @mixin Builder
  */

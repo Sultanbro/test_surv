@@ -29,6 +29,8 @@ class SetExitTimetracking extends Command
         /** @var Timetracking $record */
         foreach ($records as $record) {
             User::setExit($record, $currentDate);
+            $this->line('user ID: ' . $record->user_id);
+            $this->line('hours: ' . $record->total_hours);
         }
     }
 }
