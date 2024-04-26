@@ -34,7 +34,7 @@ class RunDailyCommandsForTimetrackingSalaryAndTable extends Command
             '--argument' => ['date=' . $date]
         ]);
         Artisan::call('tenants:run', [
-            'commandname' => 'tenants:run count:hours',
+            'commandname' => 'count:hours',
             '--argument' => ['date=' . $date]
         ]);
     }
