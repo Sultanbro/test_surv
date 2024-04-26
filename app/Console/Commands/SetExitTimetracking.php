@@ -28,7 +28,6 @@ class SetExitTimetracking extends Command
             ->whereNull('exit') //TODO:check in feature
             ->get();
         /** @var Timetracking $record */
-        dd($records->toArray());
         foreach ($records as $record) {
             User::setExit($record, $currentDate);
             $this->line('user ID: ' . $record->user_id);
