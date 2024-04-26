@@ -9,6 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * @property int $user_id
+ * @property string $enter
+ * @property string $exit
+ * @property string $total_hours
+ * @property string $program_id
+ * @property string $updated
+ * @property string $status
+ * @property string $times
  * @property User $user
  * @mixin Builder
  */
@@ -268,27 +276,30 @@ class Timetracking extends Model
         return $this;
     }
 
-    public function addTime(Carbon $value, $tz = 'UTC')
+    public function addTime(Carbon $value, $tz = 'UTC'): static
     {
         $arr = $this->times;
-
+        $enter = Carbon::parse($this->enter, $tz)->format('H:i');
+        $exit = Carbon::parse($this->exit, $tz)->format('H:i');
         if (!$arr) {
             $arr = [];
-            $arr[] = $this->enter->setTimezone($tz)->format('H:i');
+            $arr[] = $enter;
 
             if ($this->exit) {
-                $arr[] = $this->exit->setTimezone($tz)->format('H:i');
+                $arr[] = $exit;
             }
         }
 
         $arr[] = $value->setTimezone($tz)->format('H:i');
+        $this->setTimes($arr);
 
-        return $this->setTimes($arr);
+        return $this;
     }
 
-    public function setTimes(array $value)
+    public function setTimes(array $value): static
     {
         $this->times = $value;
+        $this->save();
         return $this;
     }
 

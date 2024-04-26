@@ -126,7 +126,10 @@ final class Analytics
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
-        $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
+
+        $columns = $this->columnRepository
+            ->getByGroupId($dto->groupId, $date);
+
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
@@ -135,6 +138,11 @@ final class Analytics
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
+
+        $days = range(1, 31);
+        $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
+        $currentDay = Carbon::now();
+        $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
 
         foreach ($rows as $rowIndex => $row) {
             $item = [];
@@ -159,12 +167,17 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        $val = AnalyticStat::calcFormula(
-                            stat: $statistic,
-                            date: $date,
-                            round: $statistic->decimals,
-                            stats: $stats
-                        );
+                        $afterToday = is_numeric($column->name) && $isCurrentMonth && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
+                        if ($afterToday) $val = 0;
+                        else {
+                            $val = AnalyticStat::calcFormula(
+                                stat: $statistic,
+                                date: $date,
+                                round: $statistic->decimals,
+                                stats: $stats
+                            );
+                        }
+
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
@@ -183,7 +196,11 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'sum') {
-                        $val = $this->daysSum($columns, $stats, $row->id);
+                        $val = $this->daysSum(
+                            $columns,
+                            $stats,
+                            $row->id
+                        );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
 //                        $statistic->save();
@@ -192,7 +209,7 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'avg') {
-                        $val = $this->daysAvg($columns, $stats, $row->id);
+                        $val = $this->daysAvg($columnIds, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
 //                        $statistic->save();
                         $arr['value'] = $val;
@@ -290,12 +307,12 @@ final class Analytics
             ->toArray();
 
         foreach ($filtered as $key => $id) {
-            $columnKeys[$id] = $key-1;
+            $columnKeys[$id] = $key - 1;
         }
 
-//        dd_if(auth()->id() === 5,
-//            $columnKeys
-//        );
+//        dd_if(auth()y->id() === 5,
+//            $columnKyeys
+//        );y
 
         return [
             'rows' => $rowKeys,
@@ -395,15 +412,11 @@ final class Analytics
     }
 
     public function daysAvg(
-        Collection $columns,
+        array      $columns,
         Collection $stats,
         int        $rowId,
-        array      $days = []
     ): float|int
     {
-        $days = empty($days) ? range(1, 31) : $days;
-
-        $columns = $columns->whereIn('name', $days)->pluck('id')->toArray();
 
         $total = 0;
         $count = 0;

@@ -317,7 +317,7 @@ export default {
 							name: 'Курсы2',
 							icon: 'icon-nd-courses',
 							to: '/courses2',
-							hide: !this.$can('courses_view')
+							hide: !this.$can('courses_view') || this.project !== 'dev'
 						},
 					]
 				},

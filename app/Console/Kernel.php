@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\BackupMysqlToDevServerCommand;
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
 use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
@@ -14,6 +15,7 @@ use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\Referral\UpdateReferralSalary;
 use App\Console\Commands\RestartQueue;
+use App\Console\Commands\RunDailyCommandsForTimetrackingSalaryAndTable;
 use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
@@ -50,7 +52,9 @@ class Kernel extends ConsoleKernel
         UpdateReferralSalary::class,
         CacheTopRentabilityPerDay::class,
         DeleteTimeTrackingDuplicates::class,
-        RunTestServerScriptCommand::class
+        RunTestServerScriptCommand::class,
+        RunDailyCommandsForTimetrackingSalaryAndTable::class,
+        BackupMysqlToDevServerCommand::class
     ];
 
     /**
@@ -59,16 +63,19 @@ class Kernel extends ConsoleKernel
      * @param Schedule $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {       /*
         |--------------------------------------------------------------------------
         | Команды кабинета bp.jobtron.org
         |--------------------------------------------------------------------------
         |
         | Только запускаются в централной
-
-             |
         */
+
+        $schedule->command('mysql:dump')->dailyAt('19:00'); // dump the mysql database to dev server
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // $2y$10$z.TRZIaD8t2HN/F1V5o1l.XxiQ0x7MxEFwl8kQNS7JhMS9HnRu2MC // если сможешь расшифровать то охуеешь
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
         $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
 //        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
@@ -110,13 +117,14 @@ class Kernel extends ConsoleKernel
         | Запускаются во всех субдоменах.
         |
         */
-        $schedule->command('tenants:run timetracking:check')->then(function () {
-            $this->call('tenants:run count:hours'); // обновление минут
-        })->everyThirtyMinutes(); // автоматически завершить рабочий день если забыли нажать на кнопку
+
+        // обновление зарплаты: за текущий день
+        // автоматически завершить рабочий день если забыли нажать на кнопку
+        // автоматически завершить рабочий день если забыли нажать на кнопку
+        $schedule->command('daily:required-commands')->everyThirtyMinutes();
 
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
-        $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
         $schedule->command('tenants:run check:late')->hourly(); // Опоздание
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
