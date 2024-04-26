@@ -1606,7 +1606,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
 
         $workStartTime = $workTime['workStartTime'];
         $workEndTime = $workTime['workEndTime'];
-        dd($workEndTime);
+
         $date = Carbon::parse($givenDate ?? now(), $timezone)->format('Y-m-d');
 
         $end = Carbon::parse("$date $workEndTime", $timezone);
