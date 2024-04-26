@@ -70,7 +70,6 @@
 
 <script>
 
-import store from '@/stores/createCourse';
 import MaterialHeaderIcon from '../../../assets/icons/MaterialHeaderIcon.vue';
 import MaterialsIcon from '../../../assets/icons/MaterialsIcon.vue';
 import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
@@ -95,9 +94,9 @@ export default {
 	},
 	methods: {
 		async uploadFile(type) {
-			const files = event.target.files;
-			const file = files[0];
-			const fileId = Date.now();
+			// const files = event.target.files;
+			// const file = files[0];
+			// const fileId = Date.now();
 
 			if (type === 'icon') {
 				this.loadingIcon = true;
@@ -111,10 +110,10 @@ export default {
 				} else if (type === 'image') {
 					this.loadingImage = false;
 				}
-				store.commit('addCourse', {
-					id: fileId,
-					file: file
-				});
+				// store.commit('addCourse', {
+				// 	id: fileId,
+				// 	file: file
+				// });
 			}, 2000);
 		},
 		addCourse(){

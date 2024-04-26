@@ -62,7 +62,7 @@ import TooltipCourse from './TooltipCourse.vue';
 import InputFile from '../../../../../components/ui/InputFile.vue';
 import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
 import {mapActions, mapState} from 'pinia';
-import {useCourseStore} from '@/stores/CreateCourse';
+import {useCourseStore} from '@/stores/CreateCourse.js';
 
 export default {
 	name: 'AppearanceUploadImage',
