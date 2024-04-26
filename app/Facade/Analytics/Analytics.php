@@ -450,6 +450,8 @@ final class Analytics
         $subset = $users->map(function ($user) {
             return collect($user->toArray())
                 ->only(['id', 'name', 'last_name'])
+                ->unique('id')
+                ->values()
                 ->all();
         });
         dd($subset->toArray());
