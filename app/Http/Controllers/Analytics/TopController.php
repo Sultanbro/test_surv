@@ -103,6 +103,7 @@ class TopController extends Controller
         $allStats = $statRepository->getByGroupIds($this->groups, $date);
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
+            dd_if($group_id == 31, $stats, $allStats->toArray());
             $group = ProfileGroup::find($group_id);
             $row = [];
 
