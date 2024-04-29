@@ -1805,7 +1805,7 @@ class KpiStatisticService
 
         $kpis = $this->kpis($date, $params, $query)->paginate();
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-        dd_if(auth()->id = 5, $kpis->data);
+        dd_if(auth()->id = 18, $kpis->data);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
