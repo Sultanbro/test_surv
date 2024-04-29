@@ -11,12 +11,14 @@
 			<b-col cols="4">
 				<JobtronButton
 					small
+					@click="openModal"
 				>
 					Создать курс
 				</JobtronButton>
 			</b-col>
 			<b-col cols="4" />
 		</b-row>
+		<CreateCourse ref="fullscreenModal" />
 	</div>
 </template>
 
@@ -31,10 +33,12 @@
 
 import CoursesFilter from '@/components/pages/Courses/CoursesFilter.vue'
 import JobtronButton from '../../components/ui/Button.vue'
+import CreateCourse from './components/CreateCourse/CreateCourse.vue';
 
 export default {
 	name: 'CoursesPage',
 	components: {
+		CreateCourse,
 		CoursesFilter,
 		JobtronButton,
 	},
@@ -55,7 +59,11 @@ export default {
 	created(){},
 	mounted(){},
 	beforeDestroy(){},
-	methods: {},
+	methods: {
+		openModal() {
+			this.$refs.fullscreenModal.openModal();
+		},
+	},
 }
 </script>
 

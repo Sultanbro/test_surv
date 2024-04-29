@@ -5,26 +5,32 @@
 	>
 		<DefaultLayout>
 			<div class="create-course-content">
-				<SideBarCourse />
-				<AppearanceCourse />
-				<AppearanceUploadImage />
+				<SideBarCourse
+					:active-link="activeLink"
+					@update:activeLink="activeLink = $event"
+				/>
+				<AppearanceCourse v-if="activeLink===1" />
+				<AppearanceUploadImage v-if="activeLink===1" />
+				<MaterialCourse v-if="activeLink===2" />
 			</div>
 		</DefaultLayout>
 	</div>
 </template>
 
 <script>
-import SideBarCourse from './SideBarCourse.vue';
-import AppearanceCourse from './AppearanceCourse.vue';
-import AppearanceUploadImage from './AppearanceUploadImage.vue';
+import SideBarCourse from './Appearance/SideBarCourse.vue';
+import AppearanceCourse from './Appearance/AppearanceCourse.vue';
+import AppearanceUploadImage from './Appearance/AppearanceUploadImage.vue';
 import DefaultLayout from '../../../../layouts/DefaultLayout.vue';
+import MaterialCourse from './MaterialCourse/MaterialCourse.vue';
 
-export default 	{
+export default {
 	name: 'CreateCourse',
-	components: {DefaultLayout, AppearanceUploadImage, AppearanceCourse, SideBarCourse},
+	components: {MaterialCourse, DefaultLayout, AppearanceUploadImage, AppearanceCourse, SideBarCourse },
 	data() {
 		return {
 			isOpen: false,
+			activeLink: 1,
 		};
 	},
 	methods: {
@@ -34,6 +40,7 @@ export default 	{
 		closeModal() {
 			this.isOpen = false;
 		},
+
 	},
 };
 </script>

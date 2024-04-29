@@ -6,7 +6,9 @@ use App\DTO\Manager\GetOwnerDTO;
 use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\CentralUser;
+use App\Setting;
 use App\Support\Core\CustomException;
+use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +31,9 @@ class GetOwnerManagerService
 
         tenancy()->initialize(tenant: 'admin');
         $model = ManagerHasOwner::query()->withWhereHas('manager')->where('owner_id', $owner->id)->first();
-
-        return $model?->manager;
+        $defaultManagerId = Setting::query()->where('name', Setting::DEFAULT_MANAGER)->first()?->value;
+        $defaultManager = User::query()->find($defaultManagerId);
+        return $model?->manager ?? $defaultManager;
     }
 
     /**

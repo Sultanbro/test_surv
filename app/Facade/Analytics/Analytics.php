@@ -126,7 +126,10 @@ final class Analytics
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
         $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
-        $columns = $this->columnRepository->getByGroupId($dto->groupId, $date);
+
+        $columns = $this->columnRepository
+            ->getByGroupId($dto->groupId, $date);
+
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
@@ -136,6 +139,11 @@ final class Analytics
 
         $table = [];
 
+        $days = range(1, 31);
+        $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
+        $currentDay = Carbon::now();
+        $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
@@ -143,7 +151,7 @@ final class Analytics
             foreach ($columns as $columnIndex => $column) {
 
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 2) : 'A';
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -159,12 +167,17 @@ final class Analytics
                         }
                     }
                     if ($statistic->type == 'formula') {
-                        $val = AnalyticStat::calcFormula(
-                            stat: $statistic,
-                            date: $date,
-                            round: $statistic->decimals,
-                            stats: $stats
-                        );
+                        $afterToday = is_numeric($column->name) && $isCurrentMonth && $currentDay->setDay($column->name)->isAfter(now()->format("Y-m-d"));
+                        if ($afterToday) $val = 0;
+                        else {
+                            $val = AnalyticStat::calcFormula(
+                                stat: $statistic,
+                                date: $date,
+                                round: $statistic->decimals,
+                                stats: $stats
+                            );
+                        }
+
                         $statistic->show_value = $val;
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
@@ -183,7 +196,11 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'sum') {
-                        $val = $this->daysSum($columns, $stats, $row->id);
+                        $val = $this->daysSum(
+                            $columns,
+                            $stats,
+                            $row->id
+                        );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
 //                        $statistic->save();
@@ -192,7 +209,7 @@ final class Analytics
                         $arr['show_value'] = $val;
                     }
                     if ($statistic->type == 'avg') {
-                        $val = $this->daysAvg($columns, $stats, $row->id);
+                        $val = $this->daysAvg($columnIds, $stats, $row->id);
                         $statistic->show_value = round($val, 1);
 //                        $statistic->save();
                         $arr['value'] = $val;
@@ -277,15 +294,25 @@ final class Analytics
         return $table;
     }
 
-    public function getKeys(Collection|array $rows, Collection|array $columns): array
+    public function getKeys(Collection $rows, Collection $columns): array
     {
         $rowKeys = $rows->mapWithKeys(function ($row, $index) {
             return [$row->id => $index + 1];
         })->toArray();
 
-        $columnKeys = $columns->mapWithKeys(function ($column, $index) {
-            return [$column->id => $index - 1];
-        })->toArray();
+        $columnKeys = [];
+        $filtered = $columns
+            ->filter(fn($item) => $item->name != 'plan')
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($filtered as $key => $id) {
+            $columnKeys[$id] = $key - 1;
+        }
+
+//        dd_if(auth()y->id() === 5,
+//            $columnKyeys
+//        );y
 
         return [
             'rows' => $rowKeys,
@@ -346,10 +373,12 @@ final class Analytics
     {
         $method = ($activity->plan_unit === 'minutes' || $activity->plan_unit === 'less_sum') ? 'sum' : 'avg';
 
-        $total = UserStat::query()->where('activity_id', $activity->id)
+        $total = UserStat::query()
+            ->where('activity_id', $activity->id)
             ->where('date', $date)
             ->where('value', '>', 0)
             ->{$method}('value');
+
         if ($method === 'avg') {
             $total = round($total, 1);
         }
@@ -383,15 +412,11 @@ final class Analytics
     }
 
     public function daysAvg(
-        Collection $columns,
+        array      $columns,
         Collection $stats,
         int        $rowId,
-        array      $days = []
     ): float|int
     {
-        $days = empty($days) ? range(1, 31) : $days;
-
-        $columns = $columns->whereIn('name', $days)->pluck('id')->toArray();
 
         $total = 0;
         $count = 0;
@@ -433,7 +458,7 @@ final class Analytics
                     ->where('date', '>=', $firstOfMoth)
                     ->where('date', '<=', $dateFrom);
             })
-            ->get();
+            ->get()->unique('id')->values();
 
         return $users->each(function ($employee) use ($firstOfMoth, $activity) {
             $workDay = isset($user->working_day_id) && $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;

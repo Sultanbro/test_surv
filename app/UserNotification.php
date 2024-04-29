@@ -6,30 +6,34 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserNotification extends Model
-{   
-	protected $table = 'user_notifications';
+{
+    protected $table = 'user_notifications';
 
     protected $fillable = ['user_id', 'title', 'message', 'note', 'read_at', 'group', 'about_id']; // Maybe should add 'type' field in future
 
     public $timestamps = true;
 
-    public function user() {
-        return $this->belongsTo('App\User', 'user_id', 'id');
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function formattedDate() {
+    public function formattedDate()
+    {
         return Carbon::parse($this->created_at)->addHours(6)->format('d.m.Y H:i:s');
     }
 
-    public function formattedReadAt() {
-        if($this->read_at) {
+    public function formattedReadAt()
+    {
+        if ($this->read_at) {
             return Carbon::parse($this->read_at)->addHours(6)->format('d.m.Y H:i:s');
         } else {
             return '';
         }
-        
+
     }
 
     /**
@@ -66,15 +70,15 @@ class UserNotification extends Model
     public static function createNotification(
         string $title,
         string $message,
-        int $userId,
-        int $aboutId = 0
+        int    $userId,
+        int    $aboutId = 0
     ): Model|Builder
     {
         return self::query()->create([
-            'title'     => $title,
-            'message'   => $message,
-            'user_id'   => $userId,
-            'about_id'  => $aboutId
+            'title' => $title,
+            'message' => $message,
+            'user_id' => $userId,
+            'about_id' => $aboutId
         ]);
     }
 
@@ -83,12 +87,13 @@ class UserNotification extends Model
      * Обновляем read_at для всех ране созданных заявок
      * @return true
      */
-    public static function changeStatus($userId){
-        $notifications = self::where('user_id', $userId)
+    public static function changeStatus($userId): bool
+    {
+        $notifications = self::query()->where('user_id', $userId)
             ->where('title', 'Заявка на сверхурочную работу')
             ->where('read_at', null)
             ->get();
-        foreach ($notifications as $notification){
+        foreach ($notifications as $notification) {
             $notification->read_at = now();
             $notification->save();
         }

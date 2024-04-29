@@ -12,25 +12,32 @@
 
 		<div class="appearance-course-input-group">
 			<InputCourse
+				v-model="courseName"
 				class="appearance-description-short-course"
 				placeholder-text="Введите название курса 🛈"
+				:min-chars="2"
 				small
 			/>
 			<InputCourse
+				v-model="shortDescription"
 				class="appearance-description-short-course"
 				placeholder-text="Коротко опишите курс 🛈"
-				:max-chars="20"
+				:min-chars="20"
 				medium
 			/>
 			<InputCourse
+				v-model="detailedDescription"
 				class="appearance-description-short-course"
 				placeholder-text="Опишите курс более подробно 🛈"
-				:max-chars="100"
+				:min-chars="200"
 				big
 			/>
 		</div>
 		<div class="appearance-course-bottom">
-			<button class="appearance-course-button">
+			<button
+				class="appearance-course-button"
+				@click="createCourse"
+			>
 				Далее
 			</button>
 		</div>
@@ -38,26 +45,51 @@
 </template>
 
 <script>
-
+import { mapState, mapActions } from 'pinia'
+import {useCourseStore} from '../../../../../stores/createCourse';
 import InputCourse from './InputCourse.vue';
-import AppearanceMainIcon from '../../assets/icons/AppearanceMainIcon.vue';
+import AppearanceMainIcon from '../../../assets/icons/AppearanceMainIcon.vue';
+
+
 
 export default {
 	name: 'AppearanceCourse',
 	components: {
 		AppearanceMainIcon,
 		InputCourse
+	},
+
+	data() {
+		return {
+			courseName: '',
+			shortDescription: '',
+			detailedDescription: ''
+		};
+	},
+	computed:{
+		...mapState(useCourseStore, ['courses'])
+	},
+	methods: {
+		...mapActions(useCourseStore, ['addCourse']),
+		createCourse() {
+			this.addCourse({courseName: this.courseName,
+				shortDescription: this.shortDescription,
+				detailedDescription: this.detailedDescription})
+			this.courseName = '';
+			this.shortDescription = '';
+			this.detailedDescription = '';
+		}
 	}
-}
+};
 </script>
 
 <style scoped>
 .appearance-course{
 		height: 100vh;
-	display: flex;
+		display: flex;
 		flex-direction:column;
 		max-width: 600px;
-	width: 100%	;
+		width: 100%	;
 }
 
 .appearance-course-header{
