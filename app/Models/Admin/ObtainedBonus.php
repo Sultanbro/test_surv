@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ObtainedBonus extends Model
 {
     public $timestamps = false;
+
     protected $table = 'kpi_obtained_bonuses';
+
     protected $fillable = [
         'user_id',
         'bonus_id',

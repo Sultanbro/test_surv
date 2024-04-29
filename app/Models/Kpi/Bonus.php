@@ -117,7 +117,6 @@ class Bonus extends Model
             // если награда 0 и активность не указана пропускаем
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
-
             // за первый
             if($bonus->unit == self::FOR_FIRST) {
 
