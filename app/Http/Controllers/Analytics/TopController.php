@@ -172,7 +172,8 @@ class TopController extends Controller
         $total_row['Итого'] = (int)$total_row['Итого'];
 
 
-        $cps = CustomProceed::whereYear('date', $days[0]->year)
+        $cps = CustomProceed::query()
+            ->whereYear('date', $days[0]->year)
             ->whereMonth('date', $days[0]->month)
             ->get()
             ->groupBy('order');
