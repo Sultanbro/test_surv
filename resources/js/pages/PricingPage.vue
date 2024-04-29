@@ -1,122 +1,127 @@
 <template>
-	<div class="PricingPage py-4">
-		<PricingManager />
-		<PricingCurrent />
-		<PricingRates
-			:currency="currency"
-			:selected-rate="selectedRate"
-			@update="updateRate"
-		/>
+	<div>
+		<PriceTrialPeriod />
+		<PriceSpace />
+		<div class="PricingPage py-4">
+			<PricingManager />
+			<PricingCurrent />
+			<PricingRates
+				:currency="currency"
+				:selected-rate="selectedRate"
+				@update="updateRate"
+				@updateCurrency="updateCurrency"
+			/>
 
-		<template v-if="items && items.length">
-			<div class="PricingPage-currency mt-4">
-				Валюта:
-				<JobtronButton
-					:fade="currency !== '₽'"
-					@click="currency = '₽'"
-				>
-					₽
-				</JobtronButton>
-				<JobtronButton
-					:fade="currency !== '₸'"
-					@click="currency = '₸'"
-				>
-					₸
-				</JobtronButton>
-				<JobtronButton
-					:fade="currency !== '$'"
-					@click="currency = '$'"
-				>
-					$
-				</JobtronButton>
-			</div>
-			<div
-				v-if="selectedRate"
-				class="PricingPage-users mt-4"
-			>
-				<div class="PricingPage-users-title">
-					Количество пользователей:
-				</div>
-				<div class="PricingPage-users-form">
+			<template v-if="items && items.length">
+				<div class="PricingPage-currency mt-4">
+					Валюта:
 					<JobtronButton
-						class="PricingPage-users-less"
-						:disabled="users <= 0"
-						@click="decreseUsers"
+						:fade="currency !== '₽'"
+						@click="currency = '₽'"
 					>
-						-
+						₽
 					</JobtronButton>
-					<input
-						v-model="users"
-						type="number"
-						class="PricingPage-users-input"
-					>
 					<JobtronButton
-						class="PricingPage-users-more"
-						@click="increseUsers"
+						:fade="currency !== '₸'"
+						@click="currency = '₸'"
 					>
-						+
+						₸
+					</JobtronButton>
+					<JobtronButton
+						:fade="currency !== '$'"
+						@click="currency = '$'"
+					>
+						$
 					</JobtronButton>
 				</div>
-				<img
-					v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
-					src="/images/dist/profit-info.svg"
-					alt=""
-				>
-			</div>
-			<div
-				v-if="false && selectedRate"
-				class="PricingPage-auto mt-4"
-			>
-				<b-form-checkbox
-					v-model="autoPayment"
-					switch
-				>
-					Авто оплата
-				</b-form-checkbox>
-			</div>
-			<div
-				v-if="selectedRate"
-				class="PricingPage-total mt-4"
-			>
-				Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <JobtronButton @click="submitPayment">
-					Оплатить
-				</JobtronButton>
-			</div>
-			<hr class="my-4">
-			<div
-				v-if="isBP"
-				class="PricingPage-promo mt-4"
-			>
 				<div
-					v-if="promoData.code"
-					class="PricingPage-promo-active"
+					v-if="selectedRate"
+					class="PricingPage-users mt-4"
 				>
-					Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
-				</div>
-				<template v-else>
-					<div class="PricingPage-promo-title">
-						Есть бонусный код?
+					<div class="PricingPage-users-title">
+						Количество пользователей:
 					</div>
-					<div class="PricingPage-promo-text">
-						Активируйте его, чтобы получить бонус на первую оплату
-					</div>
-					<div class="PricingPage-promo-form mt-4">
+					<div class="PricingPage-users-form">
+						<JobtronButton
+							class="PricingPage-users-less"
+							:disabled="users <= 0"
+							@click="decreseUsers"
+						>
+							-
+						</JobtronButton>
 						<input
-							v-model="promo"
-							type="text"
-							class="PricingPage-promo-input form-control"
-							placeholder="Код купона"
+							v-model="users"
+							type="number"
+							class="PricingPage-users-input"
 						>
 						<JobtronButton
-							:disabled="!promo || isPromoLoading"
-							@click="activatePromo"
+							class="PricingPage-users-more"
+							@click="increseUsers"
 						>
-							{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
+							+
 						</JobtronButton>
 					</div>
-				</template>
-			</div>
-		</template>
+					<img
+						v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
+						src="/images/dist/profit-info.svg"
+						alt=""
+					>
+				</div>
+				<div
+					v-if="false && selectedRate"
+					class="PricingPage-auto mt-4"
+				>
+					<b-form-checkbox
+						v-model="autoPayment"
+						switch
+					>
+						Авто оплата
+					</b-form-checkbox>
+				</div>
+				<div
+					v-if="selectedRate"
+					class="PricingPage-total mt-4"
+				>
+					Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <JobtronButton @click="submitPayment">
+						Оплатить
+					</JobtronButton>
+				</div>
+				<hr class="my-4">
+				<div
+					v-if="isBP"
+					class="PricingPage-promo mt-4"
+				>
+					<div
+						v-if="promoData.code"
+						class="PricingPage-promo-active"
+					>
+						Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
+					</div>
+					<template v-else>
+						<div class="PricingPage-promo-title">
+							Есть бонусный код?
+						</div>
+						<div class="PricingPage-promo-text">
+							Активируйте его, чтобы получить бонус на первую оплату
+						</div>
+						<div class="PricingPage-promo-form mt-4">
+							<input
+								v-model="promo"
+								type="text"
+								class="PricingPage-promo-input form-control"
+								placeholder="Код купона"
+							>
+							<JobtronButton
+								:disabled="!promo || isPromoLoading"
+								@click="activatePromo"
+							>
+								{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
+							</JobtronButton>
+						</div>
+					</template>
+				</div>
+			</template>
+		</div>
 	</div>
 </template>
 
@@ -127,15 +132,19 @@ import { usePricingStore } from '@/stores/Pricing'
 import PricingManager from '@/components/pages/Pricing/PricingManager'
 import PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
 import PricingRates from '@/components/pages/Pricing/PricingRates'
-import JobtronButton from '@ui/Button'
+import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
+import PriceSpace from '../components/price/PriceSpace.vue';
+import JobtronButton from '../components/ui/Button.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		JobtronButton,
+		PriceSpace,
+		PriceTrialPeriod,
 		PricingManager,
 		PricingCurrent,
 		PricingRates,
-		JobtronButton,
 	},
 	data(){
 		return {
@@ -191,6 +200,10 @@ export default {
 		updateRate(value){
 			this.selectedRate = value.rate
 			this.period = value.rate.validity
+
+		},
+		updateCurrency(newCurrency) {
+			this.currency = newCurrency;
 		},
 		decreseUsers(){
 			if(this.users > 0) --this.users
@@ -270,6 +283,7 @@ export default {
 		text-transform: uppercase;
 	}
 .PricingPage{
+	z-index: 3;
 	line-height: 1.3;
 	&-total,
 	&-users{
