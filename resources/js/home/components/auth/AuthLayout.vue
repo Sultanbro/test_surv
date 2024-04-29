@@ -148,6 +148,7 @@ export default {
 @media (max-width: 1599px){
 	.AuthLayout{
 		&-form{
+			width: 30%;
 			padding: 48px;
 		}
 		&-info{
