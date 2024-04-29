@@ -52,7 +52,10 @@
 						<div class="material-modal-added-footer-text">
 							Добавлено {{ activeSelect.length }} материала
 						</div>
-						<button class="material-modal-added-footer-button">
+						<button
+							class="material-modal-added-footer-button"
+							@click="addMaterial"
+						>
 							Сохранить
 						</button>
 					</div>
@@ -75,6 +78,8 @@ import AccessSelectSearch from '../../../../../components/ui/AccessSelect/Access
 import MaterialSelectTabs from './MaterialSelectTabs.vue';
 import MaterialModalSelect from './MaterialModalSelect.vue';
 import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
+import { mapState, mapActions } from 'pinia'
+import {useCourseStore} from '../../../../../stores/createCourse';
 
 const ALL = [{id: 0, type: 0, name: 'Все'}]
 
@@ -159,6 +164,7 @@ export default {
 	},
 
 	computed: {
+		...mapState(useCourseStore, ['materialBlocks']),
 		searchResults(){
 			const lowerSearch = this.accessSearch.toLowerCase()
 			const result = []
@@ -208,19 +214,29 @@ export default {
 
 		},
 
+
 	},
 
 	mounted() {
 		this.fetch();
 	},
 	methods: {
+		...mapActions(useCourseStore, ['addMaterialsBlock']),
 		//superselect/get-alt
-
+		addMaterial(){
+			if (this.activeSelect){
+				const filterOptions = this.activeSelect.map(id => {
+					return this.filteredOptions.find(option => option.id === id);
+				}).filter(Boolean);
+				this.addMaterialsBlock(filterOptions)
+			}
+		},
 		onSubmit(){
 			if(this.selectedTab === 'Все') return this.$emit('submit', ALL)
 			this.$emit('submit', this.accessList)
 		},
 		filterType() {
+			this.addMaterial();
 			this.filteredOptions = this.options.filter(el => {
 				return el.type == this.type
 			});
@@ -233,6 +249,7 @@ export default {
 		},
 
 		changeType(i) {
+			this.addMaterial();
 			this.type = i;
 			this.searchText = '';
 			this.filterType();

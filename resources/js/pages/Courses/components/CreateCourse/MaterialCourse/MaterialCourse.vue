@@ -79,6 +79,7 @@ import UploadMaterial from '../../../assets/icons/UploadMaterial.vue';
 import JobtronOverlay from '../../../../../components/ui/Overlay.vue';
 import MaterialModal from './MaterialModal.vue';
 
+
 export default {
 	name: 'MaterialCourse',
 	components: {
@@ -92,6 +93,7 @@ export default {
 
 		}
 	},
+
 	methods: {
 		async uploadFile(type) {
 			// const files = event.target.files;
