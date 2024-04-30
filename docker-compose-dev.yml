@@ -1,4 +1,4 @@
-version: '3'
+#version: '3'
 services:
   npm:
     image: node:16-alpine
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "88:80"
+      - "8888:80"
       - "443:443"
       - "6001:6001"
     volumes:
@@ -57,15 +57,17 @@ services:
 
   #MySQL Service
   db:
-    image: mysql:5.7.22
+    image: mysql:8.0
     container_name: db
     restart: unless-stopped
     tty: true
     ports:
-      - "3307:3307"
+      - "3307:3306"
     environment:
-      MYSQL_DATABASE: cc
-      MYSQL_ROOT_PASSWORD: fX_va98v3432
+      MYSQL_DATABASE: jobtron
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
