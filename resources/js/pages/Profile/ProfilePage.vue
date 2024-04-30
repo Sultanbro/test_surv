@@ -141,6 +141,11 @@
 		>
 			<Nominations @get-desc="getDesc" />
 		</Popup>
+
+		<WellcomeNewCabinet
+			v-if="isOwner && isWellcomeMessage"
+			@close="isWellcomeMessage = false"
+		/>
 	</div>
 </template>
 
@@ -161,6 +166,7 @@ import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
 // import RefWidget from '@/components/pages/Profile/RefWidget.vue'
+const WellcomeNewCabinet = () => import(/* webpackChunkName: "WellcomeNewCabinet" */ '@/pages/Profile/WellcomeNewCabinet.vue')
 
 
 import { mapGetters } from 'vuex'
@@ -172,7 +178,7 @@ import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 // import { useReferralStore } from '@/stores/Referral'
-import { usePortalStore } from '@/stores/Portal'
+import { usePortalStore } from '@/stores/Portal.js'
 
 export default {
 	name: 'ProfilePage',
@@ -193,6 +199,7 @@ export default {
 		PopupQuartal,
 		Nominations,
 		// RefWidget,
+		WellcomeNewCabinet,
 	},
 	props: {},
 	data: function () {
@@ -227,6 +234,7 @@ export default {
 			documents: [],
 			person: null,
 			isWarnReady: false,
+			isWellcomeMessage: false,
 		};
 	},
 	computed: {
@@ -239,7 +247,7 @@ export default {
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		// ...mapState(useReferralStore, {refReady: 'isReady'}),
-		...mapState(usePortalStore, ['isOwner']),
+		...mapState(usePortalStore, ['isOwner', 'portal']),
 		isTrainee(){
 			if(!this.person) return true
 			return !!this.person?.user_description?.is_trainee
@@ -308,6 +316,16 @@ export default {
 				this.initAnimOnScroll()
 				this.isWarnReady = true
 			}, 100)
+			this.showWellcome()
+		},
+		showWellcome(){
+			if(!this.portal?.created_at) return setTimeout(this.showWellcome, 100)
+			const today = new Date(this.portal.created_at).toLocaleDateString() === new Date().toLocaleDateString()
+			const sended = localStorage.getItem('ProfilePage-wellcome')
+			if(today && !sended){
+				localStorage.setItem('ProfilePage-wellcome', '1')
+				this.isWellcomeMessage = true
+			}
 		},
 		async fetchDocs(){
 			const { data } = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)
