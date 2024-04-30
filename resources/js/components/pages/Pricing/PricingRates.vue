@@ -8,8 +8,54 @@
 	>
 		<template v-if="items && items.length">
 			<h3 class="PricingRates-title">
-				Сменить тариф:
+				Тарифы
 			</h3>
+			<div class="PricingRates-options">
+				<div class="PricingRates-options-content">
+					<div class="PricingRates-options-title">
+						Период
+					</div>
+					<div class="PricingRates-options-button-group">
+						<button class="PricingRates-options-button">
+							1 месяц
+						</button>
+						<button class="PricingRates-options-button">
+							3 месяца
+						</button>
+						<button class="PricingRates-options-button">
+							Год
+						</button>
+					</div>
+				</div>
+				<div class="PricingRates-options-content">
+					<div class="PricingRates-options-title">
+						Стоимость в
+					</div>
+					<div class="PricingRates-options-button-group">
+						<button
+							class="PricingRates-options-button"
+							:class="{'active': currency === '₽'}"
+							@click="changeCurrency('₽')"
+						>
+							₽
+						</button>
+						<button
+							class="PricingRates-options-button"
+							:class="{'active': currency === '₸'}"
+							@click="changeCurrency('₸')"
+						>
+							₸
+						</button>
+						<button
+							class="PricingRates-options-button"
+							:class="{'active': currency === '$'}"
+							@click="changeCurrency('$')"
+						>
+							$
+						</button>
+					</div>
+				</div>
+			</div>
 			<table class="PricingRates-table">
 				<tr class="PricingRates-headers">
 					<th class="PricingRates-header PricingRates-header_empty" />
@@ -18,20 +64,33 @@
 						:key="item.name"
 						class="PricingRates-header text-center"
 					>
-						{{ item.name }}
-						<b-form-checkbox
-							v-if="item.name === 'PRO' && !proUsed"
-							v-model="proUsed"
-							name="check-button"
-							switch
-							title="Пробный месяц"
-							class="PricingRates-usePro"
-						/>
+						<div class="PricingRates-name-col">
+							<p class="PricingRates-header-name">
+								{{ item.name }}
+							</p>
+							<p class="PricingRates-header-price">
+								{{ item.price }}
+							</p>
+							<p class="PricingRates-header-connection">
+								{{ item.connection }}
+							</p>
+							<button
+								class="PricingRates-header-item"
+								:class="{'connection': connectedPack === item.connectionPack}"
+							>
+								{{ connectedPack === item.connectionPack ? 'Подключен' : 'Подключить' }}
+							</button>
+						</div>
 					</th>
+				</tr>
+				<tr class="PricingRates-title-table">
+					<div class="PricingRates-title-table-text">
+						Сравнение тарифов
+					</div>
 				</tr>
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						Количество пользователей
+						Количество сотрудников
 					</td>
 					<td
 						v-for="item in tarifs"
@@ -43,14 +102,17 @@
 				</tr>
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						Место
+						Подключение сотрудников сверх ограничений тарифа
 					</td>
 					<td
 						v-for="item in tarifs"
 						:key="item.name"
 						class="PricingRates-col text-center"
 					>
-						{{ item.space }}
+						<p>{{ item.addWorker }}</p>
+						<p class="PricingRates-item-description">
+							{{ item.addWorkerDescription }}
+						</p>
 					</td>
 				</tr>
 				<template v-if="showFeatures">
@@ -74,60 +136,51 @@
 						</td>
 					</tr>
 				</template>
-				<tr class="PricingRates-row">
-					<td
-						class="PricingRates-col PricingRates-action"
-						:colspan="items.length + 1"
-						@click="showFeatures = !showFeatures"
-					>
-						Все возможности
-					</td>
-				</tr>
+
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						Оплата в месяц
+						Место в пространстве
 					</td>
 					<td
 						v-for="item in tarifs"
 						:key="'monthly' + item.name"
-						class="PricingRates-col PricingRates-action text-center"
-						:class="{
-							'PricingRates-selected': item.monthly.id === (selectedRate ? selectedRate.id : 0),
-						}"
+						class="PricingRates-col  text-center"
 						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 					>
-						{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+						<p>{{ item.space }}</p>
+						<p class="PricingRates-item-description">
+							{{ item.priceDescription }}
+						</p>
 					</td>
 				</tr>
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						Оплата в год
+						Добавление курсов для сотрудников
 					</td>
 					<td
 						v-for="item in tarifs"
 						:key="'annual' + item.name"
-						class="PricingRates-col PricingRates-action text-center"
-						:class="{
-							'PricingRates-selected': item.annual.id === (selectedRate ? selectedRate.id : 0),
-						}"
-						@click="$emit('update', {rate: item.annual, period: 'annual'})"
+						class="PricingRates-col  text-center"
 					>
-						{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+						{{ item.addCourseWorker }}
 					</td>
 				</tr>
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						Скидка при оплате за год
+						Индивидуальный домен
 					</td>
 					<td
 						v-for="item in tarifs"
 						:key="'discount' + item.name"
 						class="PricingRates-col text-center"
 					>
-						{{ item.discount }}
+						{{ item.domain }}
 					</td>
 				</tr>
 			</table>
+			<div class="PricingRates-footer">
+				Функционалы разделов База знаний, Новости, Обучение, Аналитика, Контроль качества, чат, структура компании, а также поддержка доступны на всех тарифах
+			</div>
 		</template>
 		<template v-else>
 			<b-skeleton-table
@@ -200,6 +253,63 @@ export default {
 				standard: '20%',
 				pro: '20%',
 			},
+			connectedPack: 'free',
+			price: {
+				free:'0 ₽',
+				base:'1 485 ₽',
+				standard:'4 765 ₽',
+				pro:'17 636 ₽'
+			},
+			priceDescription: {
+				free:'',
+				base:'В рамках 20 Гб',
+				standard:'В рамках 50 Гб',
+				pro:'В рамках 1 024 Гб'
+			},
+			connection: {
+				free:'Навсегда',
+				base:'В месяц',
+				standard:'В месяц',
+				pro:'В месяц'
+			},
+			connectionPack: {
+				free:'free',
+				base:'base',
+				standard:'standard',
+				pro:'pro'
+			},
+			addWorker: {
+				free:'-',
+				base:'200 ₽',
+				standard:'200 ₽',
+				pro:'200 ₽'
+			},
+			addWorkerDescription: {
+				free:'',
+				base:'За 1 сотр. / мес',
+				standard:'За 1 сотр. / мес',
+				pro:'За 1 сотр. / мес'
+			},
+			addCourseWorker: {
+				free:'Не более 3 курсов',
+				base:'Безлимит',
+				standard:'Безлимит',
+				pro:'Безлимит'
+			},
+			domain: {
+				free:'-',
+				base:'+',
+				standard:'+',
+				pro:'+'
+			},
+
+
+
+			currencyTranslate: {
+				'₽': 'rub',
+				'₸': 'kzt',
+				'$': 'usd',
+			},
 			proUsed: false,
 		}
 	},
@@ -214,6 +324,14 @@ export default {
 						tarifs[item.kind].name = this.names[item.kind]
 						tarifs[item.kind].space = this.space[item.kind]
 						tarifs[item.kind].discount = this.discount[item.kind]
+						tarifs[item.kind].price = this.price[item.kind]
+						tarifs[item.kind].connection = this.connection[item.kind]
+						tarifs[item.kind].connectionPack = this.connectionPack[item.kind]
+						tarifs[item.kind].addWorker = this.addWorker[item.kind]
+						tarifs[item.kind].addCourseWorker = this.addCourseWorker[item.kind]
+						tarifs[item.kind].domain = this.domain[item.kind]
+						tarifs[item.kind].priceDescription = this.priceDescription[item.kind]
+						tarifs[item.kind].addWorkerDescription = this.addWorkerDescription[item.kind]
 					})
 				}
 				tarifs[item.kind][item.validity] = item
@@ -250,21 +368,29 @@ export default {
 			// const {settings} = await fetchSettings('pricing_pro_used')
 			// this.proUsed = settings.custom_pricing_pro_used === '1'
 		},
+		changeCurrency(newCurrency){
+			this.$emit('updateCurrency', newCurrency);
+		}
 	}
 }
 </script>
 
 <style lang="scss">
 .PricingRates{
+	&-table{
+		margin-top: 56px;
+	}
 	&-header,
 	&-col{
 		padding: 10px;
-		border: 1px solid #fff;
+	border-bottom: 1px solid #CCCCCC;
 	}
+
+
 	&-header{
 		position: relative;
-		color: #fff;
-		background-color: #3361FF;
+	padding: 0 0 24px 0;
+
 		&_empty{
 			background-color: transparent;
 			color: #394863;
@@ -276,21 +402,107 @@ export default {
 			border-radius: 0 8px 0 0;
 		}
 	}
+	&-name-col{
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
 	&-row{
 		&:nth-child(even){
 			.PricingRates-col{
-				background-color: #F7FBFF;
+				border-bottom-color: #CCCCCC;
 			}
 		}
 	}
-	&-col{
-		background-color: #EBEBF9;
-	}
+
 	&-title{
-		font-size: 1.5em;
+		font-size: 44px;
+		font-weight: 600;
+		line-height:54px;
 	}
+	&-options{
+		max-width: 802px;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+	}
+	&-options-content{
+		display: flex;
+		gap: 20px;
+		align-items: center;
+	}
+
+	&-options-title{
+		font-size: 16px;
+		font-weight: 400;
+	}
+
+	&-options-button-group{
+		display: flex;
+	background-color: #F2F2F2;
+		padding: 4px;
+	border-radius: 8px;
+	}
+
+	&-options-button{
+	background-color: #F2F2F2;
+		padding: 10px 31px ;
+		border-radius: 8px;
+	}
+
+  &-options-button:focus{
+	outline: none;
+
+  }
+	&-header-item{
+		background-color: #0C50FF;
+		color: white;
+		padding: 5px 24px;
+		font-size: 16px;
+		font-weight: 500;
+		border-radius: 8px;
+  }
+
+	.PricingRates-header-name{
+		font-size: 16px;
+		font-weight: 400;
+	color: black;
+
+  }
+
+	.PricingRates-header-price{
+		font-size: 44px;
+		font-weight: 600;
+		line-height: 54px;
+	color: black;
+	}
+
+	.PricingRates-header-connection{
+		font-size: 16px;
+		font-weight: 400;
+		color: #737B8A;
+	}
+ &-item-description{
+		color: #737B8A;
+ }
 	&-col{
 		min-width: 25rem;
+	}
+	&-footer{
+		max-width: 661px;
+		width: 100%;
+		padding: 16px 0;
+		font-size: 16px;
+	}
+	&-title-table{
+
+		line-height: 30px;
+		border-bottom: 1px solid;
+	}
+	&-title-table-text{
+		padding: 0 0 12px 0;
+		font-size: 20px;
+		font-weight: 600;
 	}
 	&-action{
 		text-decoration: dotted underline;
@@ -369,5 +581,15 @@ export default {
 	}
 	&_monthly{}
 	&_annual{}
+}
+
+.active{
+  background-color: white;
+  color: #1E40AF;
+}
+
+.connection{
+	background-color: #EDEDED;
+	color: #8991A1;
 }
 </style>
