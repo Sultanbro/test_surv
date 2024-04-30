@@ -6,7 +6,7 @@ namespace App\Service\Payments\Core;
 use App\DTO\Api\PaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
-use App\Jobs\ProcessPaymentInvoiceLead;
+use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
@@ -54,7 +54,8 @@ abstract class BasePaymentService
             $data->provider
         );
 
-        ProcessPaymentInvoiceLead::dispatch($authUser, $payment);
+        ProcessCreatePaymentInvoiceLead::dispatch($authUser, $payment)
+            ->onConnection('sync');
 
         return $response;
     }
