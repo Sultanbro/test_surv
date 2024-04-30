@@ -1,0 +1,114 @@
+<template>
+	<div class="price-trial">
+		<div class="price-trial-content">
+			<h1 class="price-trial-title">
+				Действие вашего тарифа скоро закончится
+			</h1>
+			<div class="price-trial-description">
+				Осталось 5 дней до конца действия тарифа. Оплатите его сейчас, чтобы сохранить все преимущества
+			</div>
+			<div class="price-trial-button-group">
+				<button class="price-trial-button">
+					Продлить или сменить тариф
+				</button>
+			</div>
+		</div>
+		<div class="price-trial-icons-content">
+			<div class="price-trial-eclipse" />
+			<img
+				src="/images/price/fire.png"
+				class="price-trial-fire"
+			>
+			<img
+				src="/images/price/clock.png"
+				class="price-trial-icon-clock"
+			>
+		</div>
+	</div>
+</template>
+<script>
+export default {
+	name: 'PriceTimeLimit'
+}
+</script>
+
+<style scoped>
+.price-trial{
+	background-color: #EDEDED;
+	width: 1195px;
+	border-radius: 24px;
+	display: flex;
+	position: relative;
+	overflow: hidden;
+}
+.price-trial-content{
+	max-width: 610px;
+	width: 100%;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 40px;
+}
+.price-trial-title{
+	font-weight: 600;
+	font-size: 28px;
+	line-height:24px;
+}
+.price-trial-description{
+	font-size: 18px;
+	line-height: 27px;
+}
+
+.price-trial-button-group{
+	display: flex;
+	gap: 24px;
+	align-items: center;
+	margin-top: 12px;
+}
+
+.price-trial-button{
+	background: linear-gradient(92deg, #15368C 0%, #215DF8 100%);
+	border-radius: 8px;
+	padding: 16px 32px;
+	font-size: 16px;
+	color: white;
+}
+
+
+.price-trial-icons-content{
+}
+
+.price-trial-eclipse{
+	background-color: #EDA10C;
+	box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8);
+	width: 401px;
+	height: 401px;
+	border-radius: 50%;
+	position: absolute;
+	top: 60%;
+	left: 85%;
+	transform: translate(-50%, -50%);
+	z-index: 2;
+	filter: blur(40px);
+}
+
+.price-trial-icon-clock{
+	position: absolute;
+	z-index: 7;
+	width: 312px;
+	height: 312px;
+
+	left: 75%;
+}
+
+.price-trial-fire{
+	position: absolute;
+	z-index: 7;
+	width: 238px;
+	height: 238px;
+	top: 10%;
+	left: 60%;
+}
+
+</style>

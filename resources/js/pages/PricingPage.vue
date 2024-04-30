@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<PriceTrialPeriod />
+		<PriceTimeLimit />
 		<PriceSpace />
 		<div class="PricingPage py-4">
 			<PricingManager />
@@ -11,6 +12,7 @@
 				@update="updateRate"
 				@updateCurrency="updateCurrency"
 			/>
+
 
 			<template v-if="items && items.length">
 				<div class="PricingPage-currency mt-4">
@@ -122,6 +124,7 @@
 				</div>
 			</template>
 		</div>
+		<PriceFAQ />
 	</div>
 </template>
 
@@ -130,15 +133,19 @@
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
 import PricingManager from '@/components/pages/Pricing/PricingManager'
-import PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
+import  PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
 import PricingRates from '@/components/pages/Pricing/PricingRates'
 import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
 import JobtronButton from '../components/ui/Button.vue';
+import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
+import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PriceTimeLimit,
+		PriceFAQ,
 		JobtronButton,
 		PriceSpace,
 		PriceTrialPeriod,

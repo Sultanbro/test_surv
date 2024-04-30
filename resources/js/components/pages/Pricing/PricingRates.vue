@@ -83,6 +83,11 @@
 						</div>
 					</th>
 				</tr>
+				<tr class="PricingRates-title-table">
+					<div class="PricingRates-title-table-text">
+						Сравнение тарифов
+					</div>
+				</tr>
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
 						Количество сотрудников
@@ -104,7 +109,10 @@
 						:key="item.name"
 						class="PricingRates-col text-center"
 					>
-						{{ item.addWorker }}
+						<p>{{ item.addWorker }}</p>
+						<p class="PricingRates-item-description">
+							{{ item.addWorkerDescription }}
+						</p>
 					</td>
 				</tr>
 				<template v-if="showFeatures">
@@ -128,15 +136,7 @@
 						</td>
 					</tr>
 				</template>
-				<tr class="PricingRates-row">
-					<td
-						class="PricingRates-col PricingRates-action"
-						:colspan="items.length + 1"
-						@click="showFeatures = !showFeatures"
-					>
-						Все возможности
-					</td>
-				</tr>
+
 				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
 						Место в пространстве
@@ -144,13 +144,13 @@
 					<td
 						v-for="item in tarifs"
 						:key="'monthly' + item.name"
-						class="PricingRates-col PricingRates-action text-center"
-						:class="{
-							'PricingRates-selected': item.monthly.id === (selectedRate ? selectedRate.id : 0),
-						}"
+						class="PricingRates-col  text-center"
 						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 					>
-						{{ item.space }}
+						<p>{{ item.space }}</p>
+						<p class="PricingRates-item-description">
+							{{ item.priceDescription }}
+						</p>
 					</td>
 				</tr>
 				<tr class="PricingRates-row">
@@ -160,10 +160,7 @@
 					<td
 						v-for="item in tarifs"
 						:key="'annual' + item.name"
-						class="PricingRates-col PricingRates-action text-center"
-						:class="{
-							'PricingRates-selected': item.annual.id === (selectedRate ? selectedRate.id : 0),
-						}"
+						class="PricingRates-col  text-center"
 					>
 						{{ item.addCourseWorker }}
 					</td>
@@ -181,6 +178,9 @@
 					</td>
 				</tr>
 			</table>
+			<div class="PricingRates-footer">
+				Функционалы разделов База знаний, Новости, Обучение, Аналитика, Контроль качества, чат, структура компании, а также поддержка доступны на всех тарифах
+			</div>
 		</template>
 		<template v-else>
 			<b-skeleton-table
@@ -260,6 +260,12 @@ export default {
 				standard:'4 765 ₽',
 				pro:'17 636 ₽'
 			},
+			priceDescription: {
+				free:'',
+				base:'В рамках 20 Гб',
+				standard:'В рамках 50 Гб',
+				pro:'В рамках 1 024 Гб'
+			},
 			connection: {
 				free:'Навсегда',
 				base:'В месяц',
@@ -277,6 +283,12 @@ export default {
 				base:'200 ₽',
 				standard:'200 ₽',
 				pro:'200 ₽'
+			},
+			addWorkerDescription: {
+				free:'',
+				base:'За 1 сотр. / мес',
+				standard:'За 1 сотр. / мес',
+				pro:'За 1 сотр. / мес'
 			},
 			addCourseWorker: {
 				free:'Не более 3 курсов',
@@ -318,6 +330,8 @@ export default {
 						tarifs[item.kind].addWorker = this.addWorker[item.kind]
 						tarifs[item.kind].addCourseWorker = this.addCourseWorker[item.kind]
 						tarifs[item.kind].domain = this.domain[item.kind]
+						tarifs[item.kind].priceDescription = this.priceDescription[item.kind]
+						tarifs[item.kind].addWorkerDescription = this.addWorkerDescription[item.kind]
 					})
 				}
 				tarifs[item.kind][item.validity] = item
@@ -369,8 +383,9 @@ export default {
 	&-header,
 	&-col{
 		padding: 10px;
-		border: 1px solid #fff;
+	border-bottom: 1px solid #CCCCCC;
 	}
+
 
 	&-header{
 		position: relative;
@@ -467,9 +482,27 @@ export default {
 		font-weight: 400;
 		color: #737B8A;
 	}
-
+ &-item-description{
+		color: #737B8A;
+ }
 	&-col{
 		min-width: 25rem;
+	}
+	&-footer{
+		max-width: 661px;
+		width: 100%;
+		padding: 16px 0;
+		font-size: 16px;
+	}
+	&-title-table{
+
+		line-height: 30px;
+		border-bottom: 1px solid;
+	}
+	&-title-table-text{
+		padding: 0 0 12px 0;
+		font-size: 20px;
+		font-weight: 600;
 	}
 	&-action{
 		text-decoration: dotted underline;
