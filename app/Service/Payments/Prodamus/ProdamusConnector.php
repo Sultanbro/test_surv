@@ -5,14 +5,11 @@ namespace App\Service\Payments\Prodamus;
 
 use App\DTO\Api\PaymentDTO;
 use App\Models\CentralUser;
-use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPrice;
 use App\Service\Payments\Core\ConfirmationResponse;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\Hmac;
 use App\Service\Payments\Core\PaymentConnector;
-use BeGateway\GetPaymentToken;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;

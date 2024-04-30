@@ -92,7 +92,7 @@ class TariffPayment extends Model
                 'tariff_payment.extra_user_limit',
                 'tariff_payment.expire_date',
                 'tariff_payment.created_at',
-//                'tariff_payment.payment_id',
+                'tariff_payment.payment_id',
                 'tariff.kind',
                 'tariff.validity',
                 'tariff.users_limit',
