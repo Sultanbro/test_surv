@@ -297,7 +297,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
     private function monthDifference(): int
     {
-        dd(Carbon::parse($this->currentMonth())->diffInDays($this->previousMonth()));
+        dd(Carbon::parse($this->currentMonth())->diff($this->previousMonth())->days);
         return Carbon::parse($this->currentMonth())->diffInDays($this->previousMonth());
     }
 
