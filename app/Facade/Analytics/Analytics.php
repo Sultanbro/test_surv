@@ -134,7 +134,7 @@ final class Analytics
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
         $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
         $keys = $this->getKeys($rows, $columns);
-        dd_if(auth()->id() == 5, $keys);
+//        dd_if(auth()->id() == 5, $keys);
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
