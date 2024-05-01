@@ -148,9 +148,8 @@ final class Analytics
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
             foreach ($columns as $columnIndex => $column) {
-
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex) : 'A';
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -226,7 +225,7 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-                    if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
+                    if ($statistic->type == 'salary_day' && !in_array($column->name, ['sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
                         $statistic->save();
@@ -248,8 +247,7 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                }
-                else {
+                } else {
                     $type = 'initial';
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
@@ -286,6 +284,7 @@ final class Analytics
                         'sign' => '',
                     ];
                 }
+
                 $item[$column->name] = $arr;
             }
             $table[] = $item;
