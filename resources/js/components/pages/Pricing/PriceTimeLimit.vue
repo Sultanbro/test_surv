@@ -97,9 +97,9 @@ export default {
 	position: absolute;
 	z-index: 7;
 	width: 312px;
-	height: 312px;
-
+	height: 254px;
 	left: 75%;
+	bottom: 0%;
 }
 
 .price-trial-fire{

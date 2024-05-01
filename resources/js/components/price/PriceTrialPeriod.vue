@@ -8,7 +8,10 @@
 				Получите все преимущества* Pro тарифа на 30 дней в пару кликов. Привязка банковской карты не потребуется
 			</div>
 			<div class="price-trial-button-group">
-				<button class="price-trial-button">
+				<button
+					class="price-trial-button"
+					@click="tryFreePeriod('priceModal')"
+				>
 					Попробовать бесплатно
 				</button>
 				<div class="price-trial-text">
@@ -35,8 +38,29 @@
 </template>
 
 <script>
+import {useModalStore} from '../../stores/Modal';
+import { mapState, mapActions } from 'pinia'
+
 export default {
-	name: 'PriceTrialPeriod'
+	name: 'PriceTrialPeriod',
+	props: {
+
+	},
+	data(){
+		return {
+
+		}
+	},
+	computed:{
+		...mapState(useModalStore, ['currentModalId'])
+	},
+	methods: {
+		...mapActions(useModalStore, ['setCurrentModal']),
+		tryFreePeriod(value) {
+			this.setCurrentModal(value);
+		}
+	}
+
 }
 </script>
 

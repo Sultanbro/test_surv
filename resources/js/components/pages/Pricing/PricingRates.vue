@@ -76,10 +76,17 @@
 							</p>
 							<button
 								class="PricingRates-header-item"
-								:class="{'connection': connectedPack === item.connectionPack}"
+								:class="{
+									'connection': activeTariff === 'free' && item.connectionPack === activeTariff,
+									'selected': activeTariff !== item.connectionPack && activeTariff !== 'free'
+								}"
+								@click="pricingModal(item.name)"
 							>
-								{{ connectedPack === item.connectionPack ? 'Подключен' : 'Подключить' }}
+								{{ activeTariff === item.connectionPack ? (activeTariff !== 'free' ? 'Продлить' : 'Подключен') : 'Перейти' }}
 							</button>
+							<p class="activePro">
+								{{ activeTariff==='pro' && 'pro' === item.connectionPack ? 'Управление тарифом' : '' }}
+							</p>
 						</div>
 					</th>
 				</tr>
@@ -198,6 +205,8 @@ import { usePricingStore } from '@/stores/Pricing'
 import {
 	ChatIconMassReaded,
 } from '@icons'
+import {useModalStore} from '../../../stores/Modal';
+import {usePricingPeriodStore} from '../../../stores/PricingPeriod';
 
 // import {
 // 	fetchSettings,
@@ -314,7 +323,12 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingStore, ['items']),
+		...mapState(usePricingPeriodStore, ['tariffStore']),
+		activeTariff() {
+			return this.tariffStore;
+		},
 		tarifs(){
 			return this.items.reduce((tarifs, item) => {
 				if(!tarifs[item.kind]){
@@ -356,7 +370,12 @@ export default {
 		this.fetchDemo()
 	},
 	methods: {
+		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
+		pricingModal(value){
+			this.setCurrentModal('pricingToBuy')
+			this.setPrice(value)
+		},
 		useProDemo(){
 			this.$emit('use-pro')
 			// updateSettings({
@@ -591,5 +610,17 @@ export default {
 .connection{
 	background-color: #EDEDED;
 	color: #8991A1;
+}
+.selected{
+	background-color: #EDEDED;
+	color: #8991A1;
+}
+
+.activePro {
+  position: absolute;
+  top: 85%;
+  left: 13%;
+	color: #0C50FF;
+  margin-top: 5px;
 }
 </style>

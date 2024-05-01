@@ -1,5 +1,21 @@
 <template>
 	<div>
+		<JobtronOverlay
+			v-if="currentModalId === 'priceModal'"
+			@close="currentModalId = null"
+		>
+			<PricingModal>
+				<PricingModalDefault />
+			</PricingModal>
+		</JobtronOverlay>
+		<JobtronOverlay
+			v-if="currentModalId === 'pricingToBuy'"
+			@close="currentModalId = null"
+		>
+			<PricingModal>
+				<PricingModalToBuy />
+			</PricingModal>
+		</JobtronOverlay>
 		<PriceTrialPeriod />
 		<PriceTimeLimit />
 		<PriceSpace />
@@ -12,8 +28,6 @@
 				@update="updateRate"
 				@updateCurrency="updateCurrency"
 			/>
-
-
 			<template v-if="items && items.length">
 				<div class="PricingPage-currency mt-4">
 					Валюта:
@@ -140,10 +154,20 @@ import PriceSpace from '../components/price/PriceSpace.vue';
 import JobtronButton from '../components/ui/Button.vue';
 import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
 import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
+import PricingModal from '../components/pages/Pricing/PricingModal.vue';
+import {useModalStore} from '../stores/Modal';
+import JobtronOverlay from '../components/ui/Overlay.vue';
+import PricingModalToBuy from '../components/pages/Pricing/Modals/PricingModalToBuy.vue';
+import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModalDefault.vue';
+import {usePricingPeriodStore} from '../stores/PricingPeriod';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PricingModalDefault,
+		PricingModalToBuy,
+		JobtronOverlay,
+		PricingModal,
 		PriceTimeLimit,
 		PriceFAQ,
 		JobtronButton,
@@ -169,10 +193,15 @@ export default {
 			promoData: {},
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
+			freePeriod: false,
 		}
 	},
+
 	computed: {
 		...mapState(usePricingStore, ['priceForUser', 'items']),
+		...mapState(useModalStore, ['currentModalId']),
+		...mapState(usePricingPeriodStore, ['tariffStore']),
+
 		additionalPrice(){
 			if(!this.priceForUser) return 0
 			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
@@ -197,7 +226,9 @@ export default {
 		}
 	},
 
+
 	methods: {
+		...mapActions(useModalStore, ['setCurrentModal']),
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
@@ -208,6 +239,12 @@ export default {
 			this.selectedRate = value.rate
 			this.period = value.rate.validity
 
+		},
+		updateFreePeriod(newPeriod){
+			this.freePeriod = newPeriod
+			this.$nextTick(() => {
+				document.body.appendChild(this.$refs.pricingmodal);
+			});
 		},
 		updateCurrency(newCurrency) {
 			this.currency = newCurrency;

@@ -1,9 +1,12 @@
 <script>
 import Sidebars from '@/pages/Layouts/Sidebars'
 import ChatApp from '@/components/Chat/ChatApp'
+import {mapActions, mapState} from 'pinia';
+import {useModalStore} from '../stores/Modal';
 
 export default {
 	components: {
+
 		Sidebars,
 		ChatApp,
 	},
@@ -15,6 +18,12 @@ export default {
 			isLeft: false,
 			isRight: false,
 		}
+	},
+	computed:{
+		...mapState(useModalStore, ['currentModalId'])
+	},
+	methods: {
+		...mapActions(useModalStore, ['setCurrentModal']),
 	}
 }
 </script>
@@ -29,6 +38,7 @@ export default {
 			:is-right="isRight"
 		/>
 		<ChatApp />
+
 		<div class="wrapper">
 			<main class="main">
 				<div class="container">
