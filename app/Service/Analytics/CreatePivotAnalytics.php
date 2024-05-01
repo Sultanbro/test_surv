@@ -172,7 +172,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->whereIn('name', $this->getMonthlyTemplate($currentDate))
             ->orderBy('order')
             ->get();
-
+        dd($prevMonthCols->pluck('name')->toArray());
         $newColumns = [];
         $lastOrder = 0;
         foreach ($prevMonthCols as $col) {
@@ -311,7 +311,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
     private function getMonthlyTemplate(string $date): array
     {
         /**
-         * Добавляем 4 потому что есть колонки name, avg, sum и дни в месяце.
+         * Добавляем 3 потому что есть колонки name, avg, sum и дни в месяце.
          */
         $nameColumn = ['name', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
