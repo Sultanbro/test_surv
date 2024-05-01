@@ -297,8 +297,8 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
     private function monthDifference(): array
     {
-        $firstDate = Carbon::createFromFormat('Y-m', $this->currentMonth());
-        $secondDate = Carbon::createFromFormat('Y-m', $this->previousMonth());
+        $firstDate = Carbon::parse('Y-m', $this->currentMonth());
+        $secondDate = Carbon::parse('Y-m', $this->previousMonth());
 
         $missingDays = [];
         for ($date = $secondDate; $date->lte($firstDate); $date->addDay()) {
