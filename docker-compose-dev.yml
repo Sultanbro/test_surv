@@ -33,7 +33,7 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
-      - ./deployment/local/php:/usr/local/etc/php/conf.d
+      - ./deployment/local/php:/usr/local/etc/php
     networks:
       - app-network
     mem_limit: 1024m
@@ -54,7 +54,6 @@ services:
     networks:
       - app-network
     mem_limit: 1024m
-
   #MySQL Service
   db:
     image: mysql:8.0
@@ -81,8 +80,6 @@ services:
       nofile:
         soft: 20000
         hard: 40000
-
-
   phpmyadmin:
     container_name: 'phpmyadmin'
     image: 'phpmyadmin/phpmyadmin:latest'
@@ -95,7 +92,6 @@ services:
     networks:
       - app-network
     mem_limit: 256m
-
   #Redis Service
   redis:
     image: redis:4.0
@@ -105,7 +101,6 @@ services:
     networks:
       - app-network
     mem_limit: 128m
-
 #Docker Networks
 networks:
   app-network:
