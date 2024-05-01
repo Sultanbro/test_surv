@@ -125,16 +125,16 @@ final class Analytics
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
 
+        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
         $columns = $this->columnRepository
             ->getByGroupId($dto->groupId, $date);
-        dd($columns->pluck('name')->toArray());
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
         $fot = Salary::getSalaryForDays(['date' => $date, 'group_id' => $dto->groupId]);
         $keys = $this->getKeys($rows, $columns);
+        dd_if(auth()->id() == 5, $keys);
         $weekdays = AnalyticStat::getWeekdays($date);
 
         $table = [];
