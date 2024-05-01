@@ -217,7 +217,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ])
             ->whereIn('name', [
                 'name',
-                'plan',
                 'sum',
                 'avg',
             ])
