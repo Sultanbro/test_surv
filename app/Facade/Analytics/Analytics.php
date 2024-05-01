@@ -129,7 +129,7 @@ final class Analytics
 
         $columns = $this->columnRepository
             ->getByGroupId($dto->groupId, $date);
-
+        dd($columns->pluck('name')->toArray());
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
