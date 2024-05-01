@@ -295,13 +295,19 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->format('Y-m-d');
     }
 
-    private function monthDifference(): int
+    private function monthDifference(): array
     {
-        $currentLastDay = Carbon::parse($this->currentMonth())->endOfMonth()->day;
-        $prevLastDay = Carbon::parse($this->previousMonth())->endOfMonth()->day;
-        $diff = $currentLastDay - $prevLastDay;
-        dd(max($diff, 0));
-        return max($diff, 0); // this to prevent that case when the current month has less days than previous month
+        $firstDate = Carbon::createFromFormat('Y-m', $this->currentMonth());
+        $secondDate = Carbon::createFromFormat('Y-m', $this->previousMonth());
+
+        $missingDays = [];
+        for ($date = $secondDate; $date->lte($firstDate); $date->addDay()) {
+            if (!$firstDate->isSameMonth($date)) {
+                $missingDays[] = $date->format('d');
+            }
+        }
+        dd($missingDays);
+        return $missingDays;
     }
 
     private function getMonthlyTemplate(string $date): array
