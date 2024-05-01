@@ -44,6 +44,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
         $newRows = $this->createRows($group_id);
         $newCols = $this->createColumns($group_id);
+        dd($newCols);
 
         $colsWithValue = $this->getColsWithValue($currentDate, $group_id);
 
@@ -172,9 +173,9 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->whereIn('name', $this->getMonthlyTemplate($currentDate))
             ->orderBy('order')
             ->get();
-        dd($prevMonthCols->pluck('name')->toArray());
         $newColumns = [];
         $lastOrder = 0;
+
         foreach ($prevMonthCols as $col) {
             $newColumn = $col->replicate();
             $newColumn->date = $currentDate;
@@ -205,6 +206,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
              */
             $newColumns[$newColumn->getKey()] = $newColumn->getKey();
         }
+
         return $newColumns;
     }
 
