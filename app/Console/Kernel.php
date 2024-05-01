@@ -71,6 +71,8 @@ class Kernel extends ConsoleKernel
         |
         | Только запускаются в централной
         */
+        // test crontab
+        $schedule->command('ping:pong')->everyMinute();
 
         $schedule->command('mysql:dump')->dailyAt('19:00'); // dump the mysql database to dev server
         ///////////////////////////////////////////////////////////////////////////////////////////////////
