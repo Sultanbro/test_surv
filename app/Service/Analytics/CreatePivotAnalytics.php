@@ -301,8 +301,8 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         $lastDayInPrevMonth = Carbon::parse($this->previousMonth())->lastOfMonth()->day;
 
         $missingDays = [];
-        while ($lastDayInCurrentMonth >= $lastDayInPrevMonth) {
-            $missingDays[] = [$lastDayInCurrentMonth];
+        while ($lastDayInCurrentMonth > $lastDayInPrevMonth) {
+            $missingDays[] = $lastDayInCurrentMonth;
             $lastDayInCurrentMonth--;
         }
 
