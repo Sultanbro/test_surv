@@ -297,8 +297,11 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
 
     private function monthDifference(): int
     {
-        dd(Carbon::parse($this->currentMonth())->diff($this->previousMonth())->days);
-        return Carbon::parse($this->currentMonth())->diffInDays($this->previousMonth());
+        $currentLastDay = Carbon::parse($this->currentMonth())->endOfMonth()->day;
+        $prevLastDay = Carbon::parse($this->previousMonth())->endOfMonth()->day;
+        $diff = $currentLastDay - $prevLastDay;
+        dd(max($diff, 0));
+        return max($diff, 0); // this to prevent that case when the current month has less days than previous month
     }
 
     private function getMonthlyTemplate(string $date): array
