@@ -82,7 +82,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         /**
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
-        for ($diffDay = 0; $diffDay < $this->monthDifference(); $diffDay++) {
+        foreach ($this->monthDifference() as $diffDay) {
             foreach ($lastColumnStats as $key => $columnStat) {
                 AnalyticStat::query()->updateOrCreate(
                     [
@@ -188,7 +188,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newColumns[$col->id] = $newColumn->getKey();
         }
 
-        for ($diffDay = 0; $diffDay < $this->monthDifference(); $diffDay++) {
+        foreach ($this->monthDifference() as $diffDay) {
             $newColumn = AnalyticColumn::query()->firstOrCreate([
                 'group_id' => $group_id,
                 'name' => (string)$diffDay,
@@ -306,7 +306,6 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $lastDayInCurrentMonth--;
         }
 
-        dd($missingDays);
         return $missingDays;
     }
 
