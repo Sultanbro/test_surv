@@ -7,6 +7,7 @@ use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Repositories\ProfileGroupRepository;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -81,7 +82,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
         /**
          * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
-        foreach ($this->monthDifference() as $diffDay) {
+        for ($diffDay = 0; $diffDay < $this->monthDifference(); $diffDay++) {
             foreach ($lastColumnStats as $key => $columnStat) {
                 AnalyticStat::query()->updateOrCreate(
                     [
@@ -187,7 +188,7 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             $newColumns[$col->id] = $newColumn->getKey();
         }
 
-        foreach ($this->monthDifference() as $diffDay) {
+        for ($diffDay = 0; $diffDay < $this->monthDifference(); $diffDay++) {
             $newColumn = AnalyticColumn::query()->firstOrCreate([
                 'group_id' => $group_id,
                 'name' => (string)$diffDay,
@@ -294,36 +295,18 @@ class CreatePivotAnalytics implements CreatePivotAnalyticsInterface
             ->format('Y-m-d');
     }
 
-    private function monthDifference(): array
+    private function monthDifference(): int
     {
-        $daysInCurrentMonth = Carbon::parse($this->currentMonth())
-            ->daysInMonth;
-        $daysInPrevMonth = Carbon::parse($this->previousMonth())
-            ->daysInMonth;
-
-        return array_diff(
-            $this->monthDaysInArray($daysInCurrentMonth),
-            $this->monthDaysInArray($daysInPrevMonth)
-        );
-    }
-
-    private function monthDaysInArray(int $daysInMonth): array
-    {
-        $days = [];
-
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $days[] = $day;
-        }
-
-        return $days;
+        dd(Carbon::parse($this->currentMonth())->diffInDays($this->previousMonth()));
+        return Carbon::parse($this->currentMonth())->diffInDays($this->previousMonth());
     }
 
     private function getMonthlyTemplate(string $date): array
     {
         /**
-         * Добавляем 4 потому что есть колонки name, plan, avg, sum и дни в месяце.
+         * Добавляем 4 потому что есть колонки name, avg, sum и дни в месяце.
          */
-        $nameColumn = ['name', 'plan', 'sum', 'avg'];
+        $nameColumn = ['name', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
 
         for ($column = 1; $column <= $daysInMonth; $column++) {
