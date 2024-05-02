@@ -833,7 +833,7 @@ class AnalyticStat extends Model
             if ($column_letters == 'A') {
                 $c_index = 0;
             } else {
-                while ($column_letters != self::getLetter($i-1)) {
+                while ($column_letters != self::getLetter($i+1)) {
                     $i++;
                 }
                 $c_index = $i + 1;
