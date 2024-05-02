@@ -1,7 +1,16 @@
 <template>
 	<div class="pricing-buy-modal">
-		<h1 class="pricing-buy-title">
-			Оплата тарифа Pro
+		<h1
+			v-if="tariffStore === priceStore.name"
+			class="pricing-buy-title"
+		>
+			Оплата тарифа {{ priceStore.name }}
+		</h1>
+		<h1
+			v-if="tariffStore !== priceStore.name"
+			class="pricing-buy-title"
+		>
+			Переход на тариф {{ priceStore.name }}
 		</h1>
 		<div class="pricing-buy-description">
 			Выберите необходимые параметры
@@ -18,7 +27,7 @@
 				>
 					<p>1 месяц</p>
 					<p class="pricing-options-price">
-						17 636 ₽
+						{{ $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 					</p>
 				</button>
 				<button
@@ -32,13 +41,13 @@
 					</p>
 				</button>
 				<button
-					:class="{'activeOption' : activeOption === 3}"
+					:class="{'activeOption' : activeOption === 12}"
 					class="PricingRates-options-button"
-					@click="handleClickOptions(3)"
+					@click="handleClickOptions(12)"
 				>
 					<p>Год</p>
 					<p class="pricing-options-price">
-						169 549 ₽
+						{{ $separateThousands(Math.round(priceStore.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 					</p>
 				</button>
 			</div>
@@ -118,28 +127,102 @@
 				</p>
 			</div>
 			<p class="pricing-buy-added-price">
-				+1 800 ₽ к оплате
+				+200 ₽ к оплате
 			</p>
 		</div>
-		<p class="pricing-buy-link-promo">
+		<p
+			v-if="!activePromo"
+			class="pricing-buy-link-promo"
+			@click="activePromo = true"
+		>
 			У меня есть промокод
 		</p>
-		<div class="pricing-buy-promo-content">
+		<div
+			v-if="activePromo"
+			class="pricing-buy-promo-content"
+		>
 			<input
+				v-model="promo"
 				placeholder="Введите промокод"
 				class="pricing-buy-promo-input"
+				:class="{'inpput-promo-active': isPromoLoading}"
 			>
-			<button class="pricing-buy-promo-button">
+			<button
+				v-if="!isPromoLoading"
+				class="pricing-buy-promo-button"
+				@click="activatePromo"
+			>
 				Применить
+			</button>
+			<button
+				v-else
+				class="pricing-modal-promo-button"
+				@click="cancelPromo"
+			>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<g clip-path="url(#clip0_88_2747)">
+						<path
+							d="M18.75 5.25L5.25 18.75"
+							stroke="black"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+						<path
+							d="M18.75 18.75L5.25 5.25"
+							stroke="black"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</g>
+					<defs>
+						<clipPath id="clip0_88_2747">
+							<rect
+								width="24"
+								height="24"
+								fill="white"
+							/>
+						</clipPath>
+					</defs>
+				</svg>
 			</button>
 		</div>
 		<div class="pricing-buy-total-content">
 			<div class="pricing-buy-total-count">
 				<p class="pricing-buy-total-count-title">
-					Pro на 3 месяца
+					{{ priceStore.name }}  на {{ activeOption }} {{
+						activeOption === 1 ? 'месяц' :
+						activeOption === 3 ? 'месяца' :
+						'месяцев'
+					}}
 				</p>
 				<p class="pricing-buy-total-count-price">
-					52 908 ₽
+					{{ $separateThousands(Math.round(getPrice(activeOption))) }} {{ currency }}
+				</p>
+			</div>
+			<div class="pricing-buy-total-count">
+				<div class="pricing-buy-total-count-title">
+					<p class="pricing-buy-total-count-price-people">
+						Добавление пользователей
+					</p>
+					<p class="pricing-buy-total-count-price-description">
+						{{ sumPeople }} пользователя на {{ priceStore.name }} на {{ activeOption }} {{
+							activeOption === 1 ? 'месяц' :
+							activeOption === 3 ? 'месяца' :
+							'месяцев'
+						}}
+					</p>
+				</div>
+
+				<p class="pricing-buy-total-count-price">
+					{{ sumPeople * 200 }} ₽
 				</p>
 			</div>
 			<div class="pricing-buy-total">
@@ -147,19 +230,19 @@
 					Итого
 				</p>
 				<p class="pricing-buy-total-price">
-					54 708 ₽
+					{{ $separateThousands(Math.round(total)) }} {{ currency }}
 				</p>
 			</div>
 		</div>
+		<p
+			v-if="tariffStore !== priceStore.name"
+			class="pricing-buy-description-total"
+		>
+			Вы перейдете на тариф стандарт 18.05.2024, сразу же после окончания у вас оплаченного периода тарифа Pro
+		</p>
 		<div class="pricing-button-group">
 			<button class="pricing-button-connect">
 				Перейти к оплате
-			</button>
-			<button
-				class="pricing-button-later"
-				@click="closeModal"
-			>
-				Закрыть
 			</button>
 		</div>
 	</div>
@@ -167,21 +250,74 @@
 
 <script>
 import DropdownPrice from '../DropDown.vue';
-import {mapActions} from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import {useModalStore} from '../../../../stores/Modal';
+import {usePricingPeriodStore} from '../../../../stores/PricingPeriod';
+import {usePricingStore} from '../../../../stores/Pricing';
 
 export default {
 	name: 'PricingModalToBuy',
 	components: {DropdownPrice},
+	props: {
+		currency: {
+			type: String,
+			default: '₽'
+		},
+
+	},
 	data(){
 		return{
 			options: [{logo: '/images/price/logo.png', name: '1suol9rbcn'}, {logo: '/images/price/logo.png', name: 'ИП Самозанятость'}],
-			activeOption: 2,
-			sumPeople: 0
+			activeOption: 1,
+			sumPeople: 0,
+			promo: '',
+			promoData: {},
+			isPromoLoading: false,
+			selectedRate: null,
+			activePromo: false
 		}
 	},
+
+	computed:{
+		...mapState(useModalStore, ['price']),
+		...mapState(usePricingStore, ['priceForUser', 'items']),
+		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
+
+		additionalPrice(){
+			if(!this.priceForUser) return 0
+			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
+		},
+		total(){
+			if (!this.activeOption) return 0;
+
+			let price;
+			if (this.activeOption === 1) {
+				price = this.priceStore.monthly.multiCurrencyPrice[this.currencyCode];
+			} else if (this.activeOption === 12) {
+				price = this.priceStore.annual.multiCurrencyPrice[this.currencyCode];
+			} else {
+				price = 0;
+			}
+
+			const additionalPrice = this.sumPeople * 200;
+			let total = price + additionalPrice;
+			if (this.promoData?.value) {
+				total -= this.promoData.value;
+			}
+			return total;
+		},
+		currencyCode(){
+			return ({
+				'₽': 'rub',
+				'₸': 'kzt',
+				'$': 'usd'
+			})[this.currency]
+		},
+	},
+
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
+		...mapActions(usePricingStore, ['fetchPromo']),
 		handleClickOptions(id){
 			this.activeOption = id
 		},
@@ -194,6 +330,31 @@ export default {
 		removeSumPeople(){
 			if (this.sumPeople >0) this.sumPeople-=1
 		},
+		activatePromo(){
+			try {
+
+				this.promoData =  this.fetchPromo(this.promo);
+			} catch (error) {
+				console.error('Error fetching promo:', error);
+			} finally {
+				this.isPromoLoading = true;
+			}
+		},
+		getPrice(option) {
+			if (option === 1) {
+				return this.priceStore.monthly.multiCurrencyPrice[this.currencyCode];
+			} else if (option === 2) {
+				return 52908;
+			} else if (option === 3) {
+				return this.priceStore.annual.multiCurrencyPrice[this.currencyCode];
+			}
+			return 0;
+		},
+		cancelPromo(){
+			this.activePromo=false
+			this.isPromoLoading= false
+			this.promo = ''
+		}
 	}
 }
 </script>
@@ -278,6 +439,12 @@ export default {
   padding: 40px 40px 0 40px;
 }
 
+.pricing-buy-description-total{
+	max-width: 484px;
+	color: #737B8A;
+	font-size: 14px;
+}
+
 .pricing-buy-title{
 font-weight: 600;
 	font-size: 28px;
@@ -341,6 +508,7 @@ font-weight: 600;
 }
 
 .pricing-buy-link-promo{
+	cursor: pointer;
 color: #0C50FF;
 	font-weight: 500;
   margin-bottom: 24px;
@@ -369,7 +537,7 @@ background-color: #DBEAFE;
 background-color: #EDEDED;
 	border-radius: 8px;
 	padding: 24px;
-	margin-bottom: 84px;
+  margin-bottom: 34px;
 }
 
 .pricing-buy-total-count{
@@ -409,5 +577,29 @@ font-size: 28px;
 
 .pricing-options-price{
 	font-size: 12px;
+}
+
+.pricing-modal-promo-button{
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+	outline: none;
+	background-color: #F2F2F2;
+}
+
+.inpput-promo-active{
+	background-color: #F2F2F2;
+  outline: none;
+}
+.pricing-buy-total-count-price-description{
+	color: #737B8A;
+	font-size: 14px;
+	padding-top: 6px;
+	margin-bottom: 12px;
+}
+
+.pricing-buy-total-count-price-people{
+	margin-top: 12px;
 }
 </style>

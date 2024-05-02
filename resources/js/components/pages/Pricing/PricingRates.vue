@@ -16,13 +16,24 @@
 						Период
 					</div>
 					<div class="PricingRates-options-button-group">
-						<button class="PricingRates-options-button">
+						<button
+							class="PricingRates-options-button"
+							:class="{'activeOption' : activeMonth === 'monthly'}"
+							@click="activeMonth = 'monthly'"
+						>
 							1 месяц
 						</button>
-						<button class="PricingRates-options-button">
+						<button
+							class="PricingRates-options-button"
+							:class="{'activeOption' : activeMonth === ''}"
+						>
 							3 месяца
 						</button>
-						<button class="PricingRates-options-button">
+						<button
+							class="PricingRates-options-button"
+							:class="{'activeOption' : activeMonth === 'annual'}"
+							@click="activeMonth = 'annual'"
+						>
 							Год
 						</button>
 					</div>
@@ -46,13 +57,13 @@
 						>
 							₸
 						</button>
-						<button
-							class="PricingRates-options-button"
-							:class="{'active': currency === '$'}"
-							@click="changeCurrency('$')"
-						>
-							$
-						</button>
+						<!--						<button-->
+						<!--							class="PricingRates-options-button"-->
+						<!--							:class="{'active': currency === '$'}"-->
+						<!--							@click="changeCurrency('$')"-->
+						<!--						>-->
+						<!--							$-->
+						<!--						</button>-->
 					</div>
 				</div>
 			</div>
@@ -68,24 +79,39 @@
 							<p class="PricingRates-header-name">
 								{{ item.name }}
 							</p>
-							<p class="PricingRates-header-price">
-								{{ item.price }}
+							<p
+								v-if="activeMonth === 'monthly'"
+								class="PricingRates-header-price"
+							>
+								{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
-							<p class="PricingRates-header-connection">
+							<p
+								v-else-if="activeMonth === 'annual'"
+								class="PricingRates-header-price"
+							>
+								{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+							</p>
+							<p
+								v-if="activeMonth === 'monthly'"
+								class="PricingRates-header-connection"
+							>
 								{{ item.connection }}
+							</p>
+							<p v-else-if="activeMonth === 'annual'">
+								В год
 							</p>
 							<button
 								class="PricingRates-header-item"
 								:class="{
-									'connection': activeTariff === 'free' && item.connectionPack === activeTariff,
-									'selected': activeTariff !== item.connectionPack && activeTariff !== 'free'
+									'connection': activeTariff === 'Бесплатный' && item.name === activeTariff,
+									'selected': activeTariff !== item.name && activeTariff !== 'Бесплатный'
 								}"
-								@click="pricingModal(item.name)"
+								@click="pricingModal(item)"
 							>
-								{{ activeTariff === item.connectionPack ? (activeTariff !== 'free' ? 'Продлить' : 'Подключен') : 'Перейти' }}
+								{{ activeTariff === item.name ? (activeTariff !== 'Бесплатный' ? 'Перейти' : 'Подключен') : 'Подключить' }}
 							</button>
 							<p class="activePro">
-								{{ activeTariff==='pro' && 'pro' === item.connectionPack ? 'Управление тарифом' : '' }}
+								{{ activeTariff ==='PRO' && 'PRO' === item.name ? 'Управление тарифом' : '' }}
 							</p>
 						</div>
 					</th>
@@ -312,7 +338,7 @@ export default {
 				pro:'+'
 			},
 
-
+			activeMonth: 'monthly',
 
 			currencyTranslate: {
 				'₽': 'rub',
@@ -325,11 +351,12 @@ export default {
 	computed: {
 		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingStore, ['items']),
-		...mapState(usePricingPeriodStore, ['tariffStore']),
+		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
 		activeTariff() {
 			return this.tariffStore;
 		},
 		tarifs(){
+
 			return this.items.reduce((tarifs, item) => {
 				if(!tarifs[item.kind]){
 					tarifs[item.kind] = {}
@@ -372,9 +399,12 @@ export default {
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
-		pricingModal(value){
+		...mapActions(usePricingPeriodStore, ['addedPrice']),
+
+		pricingModal( item){
+			this.setPrice('pro')
 			this.setCurrentModal('pricingToBuy')
-			this.setPrice(value)
+			this.addedPrice(item)
 		},
 		useProDemo(){
 			this.$emit('use-pro')
@@ -394,233 +424,239 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.PricingRates{
-	&-table{
-		margin-top: 56px;
-	}
-	&-header,
-	&-col{
-		padding: 10px;
-	border-bottom: 1px solid #CCCCCC;
-	}
+	<style lang="scss">
+	.PricingRates{
+		&-table{
+			margin-top: 56px;
+		}
+		&-header,
+		&-col{
+			padding: 10px;
+		border-bottom: 1px solid #CCCCCC;
+		}
 
 
-	&-header{
-		position: relative;
-	padding: 0 0 24px 0;
+		&-header{
+			position: relative;
+		padding: 0 0 24px 0;
 
-		&_empty{
-			background-color: transparent;
-			color: #394863;
-		}
-		&:nth-child(2){
-			border-radius: 8px 0 0 0;
-		}
-		&:last-of-type{
-			border-radius: 0 8px 0 0;
-		}
-	}
-	&-name-col{
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-	&-row{
-		&:nth-child(even){
-			.PricingRates-col{
-				border-bottom-color: #CCCCCC;
+			&_empty{
+				background-color: transparent;
+				color: #394863;
+			}
+			&:nth-child(2){
+				border-radius: 8px 0 0 0;
+			}
+			&:last-of-type{
+				border-radius: 0 8px 0 0;
 			}
 		}
-	}
-
-	&-title{
-		font-size: 44px;
-		font-weight: 600;
-		line-height:54px;
-	}
-	&-options{
-		max-width: 802px;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-	}
-	&-options-content{
-		display: flex;
-		gap: 20px;
-		align-items: center;
-	}
-
-	&-options-title{
-		font-size: 16px;
-		font-weight: 400;
-	}
-
-	&-options-button-group{
-		display: flex;
-	background-color: #F2F2F2;
-		padding: 4px;
-	border-radius: 8px;
-	}
-
-	&-options-button{
-	background-color: #F2F2F2;
-		padding: 10px 31px ;
-		border-radius: 8px;
-	}
-
-  &-options-button:focus{
-	outline: none;
-
-  }
-	&-header-item{
-		background-color: #0C50FF;
-		color: white;
-		padding: 5px 24px;
-		font-size: 16px;
-		font-weight: 500;
-		border-radius: 8px;
-  }
-
-	.PricingRates-header-name{
-		font-size: 16px;
-		font-weight: 400;
-	color: black;
-
-  }
-
-	.PricingRates-header-price{
-		font-size: 44px;
-		font-weight: 600;
-		line-height: 54px;
-	color: black;
-	}
-
-	.PricingRates-header-connection{
-		font-size: 16px;
-		font-weight: 400;
-		color: #737B8A;
-	}
- &-item-description{
-		color: #737B8A;
- }
-	&-col{
-		min-width: 25rem;
-	}
-	&-footer{
-		max-width: 661px;
-		width: 100%;
-		padding: 16px 0;
-		font-size: 16px;
-	}
-	&-title-table{
-
-		line-height: 30px;
-		border-bottom: 1px solid;
-	}
-	&-title-table-text{
-		padding: 0 0 12px 0;
-		font-size: 20px;
-		font-weight: 600;
-	}
-	&-action{
-		text-decoration: dotted underline;
-		cursor: pointer;
-		color: #3361FF;
-		&:hover{
-			color: lighten(#3361FF, 10);
+		&-name-col{
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
 		}
+		&-row{
+			&:nth-child(even){
+				.PricingRates-col{
+					border-bottom-color: #CCCCCC;
+				}
+			}
+		}
+
+		&-title{
+			margin: 24px 0 24px 0;
+			font-size: 44px;
+			font-weight: 600;
+			line-height:54px;
+		}
+		&-options{
+			max-width: 975px;
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+		}
+		&-options-content{
+			display: flex;
+			gap: 20px;
+			align-items: center;
+		}
+
+		&-options-title{
+			font-size: 16px;
+			font-weight: 400;
+		}
+
+		&-options-button-group{
+			display: flex;
+		background-color: #F2F2F2;
+			padding: 4px;
+		border-radius: 8px;
+		}
+
+		&-options-button{
+		background-color: #F2F2F2;
+		padding: 7px 48px ;
+			border-radius: 8px;
+		}
+
+		&-options-button:focus{
+		outline: none;
+
+		}
+		&-header-item{
+			background-color: #0C50FF;
+			color: white;
+			padding: 5px 24px;
+			font-size: 16px;
+			font-weight: 500;
+			border-radius: 8px;
+		}
+
+		.PricingRates-header-name{
+			font-size: 16px;
+			font-weight: 400;
+		color: black;
+
+		}
+
+		.PricingRates-header-price{
+			font-size: 44px;
+			font-weight: 600;
+			line-height: 54px;
+		color: black;
+		}
+
+		.PricingRates-header-connection{
+			font-size: 16px;
+			font-weight: 400;
+			color: #737B8A;
+		}
+		&-item-description{
+			color: #737B8A;
+		}
+		&-col{
+			min-width: 25rem;
+		}
+		&-footer{
+			max-width: 661px;
+			width: 100%;
+			padding: 16px 0;
+			font-size: 16px;
+		}
+		&-title-table{
+
+			line-height: 30px;
+			border-bottom: 1px solid;
+		}
+		&-title-table-text{
+			padding: 0 0 12px 0;
+			font-size: 20px;
+			font-weight: 600;
+		}
+		&-action{
+			text-decoration: dotted underline;
+			cursor: pointer;
+			color: #3361FF;
+			&:hover{
+				color: lighten(#3361FF, 10);
+			}
+		}
+		&-usePro{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(30px, -50%);
+
+			&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label{
+				padding: 10px 0 0 50px;
+				margin: 0;
+			}
+		}
+		&-selected{
+			background-color: darken(#3361FF, 5%) !important;
+			font-weight: 700;
+		}
+		&_free{
+			.PricingRates{
+				&-header:nth-child(2),
+				&-col:nth-child(2){
+					border-bottom: 1px solid #3361FF;
+					background-color: #3361FF;
+					color: #fff;
+					.ChatIcon-shape{
+						fill: #fff;
+					}
+				}
+			}
+		}
+		&_base{
+			.PricingRates{
+				&-header:nth-child(3),
+				&-col:nth-child(3){
+					border-bottom: 1px solid #3361FF;
+					background-color: #3361FF;
+					color: #fff;
+					.ChatIcon-shape{
+						fill: #fff;
+					}
+				}
+			}
+		}
+		&_standard{
+			.PricingRates{
+				&-header:nth-child(4),
+				&-col:nth-child(4){
+					border-bottom: 1px solid #3361FF;
+					background-color: #3361FF;
+					color: #fff;
+					.ChatIcon-shape{
+						fill: #fff;
+					}
+				}
+			}
+		}
+		&_pro{
+			.PricingRates{
+				&-header:nth-child(5),
+				&-col:nth-child(5){
+					border-bottom: 1px solid #3361FF;
+					background-color: #3361FF;
+					color: #fff;
+					.ChatIcon-shape{
+						fill: #fff;
+					}
+				}
+			}
+		}
+		&_monthly{}
+		&_annual{}
 	}
-	&-usePro{
+
+	.active{
+		background-color: white;
+		color: #1E40AF;
+	}
+
+	.connection{
+		background-color: #EDEDED;
+		color: #8991A1;
+	}
+	.selected{
+		background-color: #EDEDED;
+		color: #8991A1;
+	}
+
+	.activePro {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(30px, -50%);
+		top: 85%;
+		left: 13%;
+		color: #0C50FF;
+		margin-top: 5px;
+	}
 
-		&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label{
-			padding: 10px 0 0 50px;
-			margin: 0;
-		}
+	.activeOption{
+	background-color: white;
+	color: #1E40AF;
 	}
-	&-selected{
-		background-color: darken(#3361FF, 5%) !important;
-		font-weight: 700;
-	}
-	&_free{
-		.PricingRates{
-			&-header:nth-child(2),
-			&-col:nth-child(2){
-				border-bottom: 1px solid #3361FF;
-				background-color: #3361FF;
-				color: #fff;
-				.ChatIcon-shape{
-					fill: #fff;
-				}
-			}
-		}
-	}
-	&_base{
-		.PricingRates{
-			&-header:nth-child(3),
-			&-col:nth-child(3){
-				border-bottom: 1px solid #3361FF;
-				background-color: #3361FF;
-				color: #fff;
-				.ChatIcon-shape{
-					fill: #fff;
-				}
-			}
-		}
-	}
-	&_standard{
-		.PricingRates{
-			&-header:nth-child(4),
-			&-col:nth-child(4){
-				border-bottom: 1px solid #3361FF;
-				background-color: #3361FF;
-				color: #fff;
-				.ChatIcon-shape{
-					fill: #fff;
-				}
-			}
-		}
-	}
-	&_pro{
-		.PricingRates{
-			&-header:nth-child(5),
-			&-col:nth-child(5){
-				border-bottom: 1px solid #3361FF;
-				background-color: #3361FF;
-				color: #fff;
-				.ChatIcon-shape{
-					fill: #fff;
-				}
-			}
-		}
-	}
-	&_monthly{}
-	&_annual{}
-}
-
-.active{
-  background-color: white;
-  color: #1E40AF;
-}
-
-.connection{
-	background-color: #EDEDED;
-	color: #8991A1;
-}
-.selected{
-	background-color: #EDEDED;
-	color: #8991A1;
-}
-
-.activePro {
-  position: absolute;
-  top: 85%;
-  left: 13%;
-	color: #0C50FF;
-  margin-top: 5px;
-}
-</style>
+	</style>

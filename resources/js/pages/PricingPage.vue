@@ -1,8 +1,8 @@
 <template>
-	<div>
+	<div class="pricing-page-content">
 		<JobtronOverlay
 			v-if="currentModalId === 'priceModal'"
-			@close="currentModalId = null"
+			@close="removeModal()"
 		>
 			<PricingModal>
 				<PricingModalDefault />
@@ -10,10 +10,10 @@
 		</JobtronOverlay>
 		<JobtronOverlay
 			v-if="currentModalId === 'pricingToBuy'"
-			@close="currentModalId = null"
+			@close="removeModal()"
 		>
 			<PricingModal>
-				<PricingModalToBuy />
+				<PricingModalToBuy :currency="currency" />
 			</PricingModal>
 		</JobtronOverlay>
 		<PriceTrialPeriod />
@@ -29,27 +29,6 @@
 				@updateCurrency="updateCurrency"
 			/>
 			<template v-if="items && items.length">
-				<div class="PricingPage-currency mt-4">
-					Валюта:
-					<JobtronButton
-						:fade="currency !== '₽'"
-						@click="currency = '₽'"
-					>
-						₽
-					</JobtronButton>
-					<JobtronButton
-						:fade="currency !== '₸'"
-						@click="currency = '₸'"
-					>
-						₸
-					</JobtronButton>
-					<JobtronButton
-						:fade="currency !== '$'"
-						@click="currency = '$'"
-					>
-						$
-					</JobtronButton>
-				</div>
 				<div
 					v-if="selectedRate"
 					class="PricingPage-users mt-4"
@@ -57,26 +36,7 @@
 					<div class="PricingPage-users-title">
 						Количество пользователей:
 					</div>
-					<div class="PricingPage-users-form">
-						<JobtronButton
-							class="PricingPage-users-less"
-							:disabled="users <= 0"
-							@click="decreseUsers"
-						>
-							-
-						</JobtronButton>
-						<input
-							v-model="users"
-							type="number"
-							class="PricingPage-users-input"
-						>
-						<JobtronButton
-							class="PricingPage-users-more"
-							@click="increseUsers"
-						>
-							+
-						</JobtronButton>
-					</div>
+
 					<img
 						v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
 						src="/images/dist/profit-info.svg"
@@ -103,39 +63,6 @@
 					</JobtronButton>
 				</div>
 				<hr class="my-4">
-				<div
-					v-if="isBP"
-					class="PricingPage-promo mt-4"
-				>
-					<div
-						v-if="promoData.code"
-						class="PricingPage-promo-active"
-					>
-						Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
-					</div>
-					<template v-else>
-						<div class="PricingPage-promo-title">
-							Есть бонусный код?
-						</div>
-						<div class="PricingPage-promo-text">
-							Активируйте его, чтобы получить бонус на первую оплату
-						</div>
-						<div class="PricingPage-promo-form mt-4">
-							<input
-								v-model="promo"
-								type="text"
-								class="PricingPage-promo-input form-control"
-								placeholder="Код купона"
-							>
-							<JobtronButton
-								:disabled="!promo || isPromoLoading"
-								@click="activatePromo"
-							>
-								{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
-							</JobtronButton>
-						</div>
-					</template>
-				</div>
 			</template>
 		</div>
 		<PriceFAQ />
@@ -214,6 +141,7 @@ export default {
 		currencyCode(){
 			return this.currencyTranslate[this.currency]
 		},
+
 	},
 
 	created(){
@@ -224,17 +152,21 @@ export default {
 				this.$toast.error('Платеж прошел неуспешно')
 			})
 		}
+
 	},
 
 
 	methods: {
-		...mapActions(useModalStore, ['setCurrentModal']),
+		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
 			'fetchCurrent',
 			'fetchStatus',
 		]),
+		removeModal(){
+			this.removeModalActive()
+		}	,
 		updateRate(value){
 			this.selectedRate = value.rate
 			this.period = value.rate.validity
@@ -311,6 +243,11 @@ export default {
 </script>
 
 <style lang="scss">
+.pricing-page-content{
+  display: flex;
+	flex-direction: column;
+	gap: 80px;
+}
 	.PricingPage-promo-title{
 		position: relative;
 	}

@@ -37,12 +37,6 @@
 			>
 				Подключить бесплатно
 			</button>
-			<button
-				class="pricing-button-later"
-				@click="closeModal"
-			>
-				Попробую позже
-			</button>
 		</div>
 	</div>
 </template>
@@ -65,15 +59,16 @@ export default {
 		...mapActions(usePricingPeriodStore, ['tariffStore'])
 	},
 	methods:{
-		...mapActions(useModalStore, ['removeModalActive']),
+		...mapActions(useModalStore, ['removeModalActive',  'setPrice']),
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 
 		closeModal(){
 			this.removeModalActive()
 		},
 		connectFreePeriod(){
-			this.connectedTariff('pro')
+			this.connectedTariff('PRO')
 			this.removeModalActive()
+
 		}
 	}
 }

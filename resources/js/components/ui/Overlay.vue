@@ -15,7 +15,7 @@ export default {
 	props: {
 		z: {
 			type: Number,
-			default: 10
+			default: 1000000
 		}
 	},
 	computed: {

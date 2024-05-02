@@ -62,14 +62,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pricing-modal{
 
-	overflow: hidden;
-	display: flex;
-	justify-content: flex-end;
-	height: 100vh;
-
-}
 .pricing-buttonCLose{
   position: relative;
   right: 10%;

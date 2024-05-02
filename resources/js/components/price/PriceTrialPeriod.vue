@@ -40,6 +40,7 @@
 <script>
 import {useModalStore} from '../../stores/Modal';
 import { mapState, mapActions } from 'pinia'
+import {usePricingPeriodStore} from '../../stores/PricingPeriod';
 
 export default {
 	name: 'PriceTrialPeriod',
@@ -51,11 +52,15 @@ export default {
 
 		}
 	},
+
 	computed:{
-		...mapState(useModalStore, ['currentModalId'])
+		...mapState(useModalStore, ['currentModalId']),
+		...mapState(usePricingPeriodStore, ['priceStore'])
 	},
+
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal']),
+
 		tryFreePeriod(value) {
 			this.setCurrentModal(value);
 		}
