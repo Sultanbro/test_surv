@@ -20,16 +20,23 @@
 							Тариф:
 						</p>
 						<p class="price-space-name-data">
-							Бесплатный
+							<template v-if="current">
+								{{ names[current.tariff.kind] }}
+							</template>
+							<b-skeleton v-else />
 						</p>
 					</div>
 					<div class="price-space-text-content">
 						<p class="price-space-text-name">
 							Пользователей:
 						</p>
-						<p class="price-space-name-data">
-							4 из 5
+						<p
+							v-if="current"
+							class="price-space-name-data"
+						>
+							4 из {{ totalUsers }}
 						</p>
+						<b-skeleton v-else />
 					</div>
 				</div>
 			</div>
@@ -37,7 +44,7 @@
 				<div class="price-space-image">
 					<img
 						class="price-space-image"
-						src="/images/price/AvatarManager.png"
+						:src="manager.photo || '/images/price/AvatarManager.png'"
 					>
 				</div>
 				<div class="price-space-info">
@@ -45,13 +52,22 @@
 						Ваш персональный менеджер
 					</div>
 					<div class="price-space-title-block">
-						Миркаримова Лейла
+						{{ manager.name }} {{ manager.lastName }}
 					</div>
 					<div class="price-space-description">
 						Я здесь и готова помочь по любому вопросу 😊
 					</div>
 					<div class="price-space-contact">
 						<p>+7 778 548-67-59</p>
+						<button
+							class="price-space-button"
+							@click="fff"
+						>
+							<WhatsAppIcon />
+						</button>
+						<button class="price-space-button">
+							<MessageIcon />
+						</button>
 					</div>
 				</div>
 			</div>
@@ -60,8 +76,39 @@
 </template>
 
 <script>
+import WhatsAppIcon from '../pages/Pricing/assets/WhatsAppIcon.vue';
+import MessageIcon from '../pages/Pricing/assets/MessageIcon.vue';
+import {mapActions, mapState} from 'pinia';
+import {usePricingStore} from '../../stores/Pricing';
+
 export default {
-	name: 'PriceSpace'
+	name: 'PriceSpace',
+	components: {MessageIcon, WhatsAppIcon},
+	data(){
+		return{
+			names: {
+				free: 'Бесплатный',
+				base: 'База',
+				standard: 'Стандарт',
+				pro: 'PRO',
+			},
+		}
+	},
+	computed:{
+		...mapState(usePricingStore, ['current', 'items', 'manager']),
+		totalUsers(){
+			if(!this.current) return 0
+			return (this.current.extra_user_limit || 0) + (this.current.tariff.users_limit || 0)
+		}
+	},
+	created(){
+		this.fetchManager()
+	},
+	methods:{
+		...mapActions(usePricingStore, ['fetchManager']),
+		fff(){
+		}
+	}
 }
 </script>
 
@@ -126,5 +173,16 @@ export default {
 
 .price-space-contact{
 		margin-top: auto;
+	display: flex;
+		gap: 12px;
+		align-items: center;
+}
+
+.price-space-button{
+		background-color: #EDEDED;
+	width: 40px;
+	height: 40px;
+		border-radius: 8px;
+		padding: 8px;
 }
 </style>

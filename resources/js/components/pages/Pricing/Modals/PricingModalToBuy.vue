@@ -241,7 +241,10 @@
 			Вы перейдете на тариф стандарт 18.05.2024, сразу же после окончания у вас оплаченного периода тарифа Pro
 		</p>
 		<div class="pricing-button-group">
-			<button class="pricing-button-connect">
+			<button
+				class="pricing-button-connect"
+				@click="submitPayment"
+			>
 				Перейти к оплате
 			</button>
 		</div>
@@ -255,7 +258,7 @@ import {useModalStore} from '../../../../stores/Modal';
 import {usePricingPeriodStore} from '../../../../stores/PricingPeriod';
 import {usePricingStore} from '../../../../stores/Pricing';
 
-export default {
+export default  {
 	name: 'PricingModalToBuy',
 	components: {DropdownPrice},
 	props: {
@@ -274,6 +277,7 @@ export default {
 			promoData: {},
 			isPromoLoading: false,
 			selectedRate: null,
+			autoPayment: true,
 			activePromo: false
 		}
 	},
@@ -317,7 +321,8 @@ export default {
 
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
-		...mapActions(usePricingStore, ['fetchPromo']),
+		...mapActions(usePricingStore, ['fetchPromo', 'postPaymentData']),
+
 		handleClickOptions(id){
 			this.activeOption = id
 		},
@@ -329,6 +334,55 @@ export default {
 		},
 		removeSumPeople(){
 			if (this.sumPeople >0) this.sumPeople-=1
+		},
+		async submitPayment(){
+			if(!this.priceStore) return
+			if(this.currency !== '₽') return this.submitWalletOne()
+			try{
+				/* eslint-disable camelcase */
+				const { url } = await this.postPaymentData({
+					currency: this.currencyCode,
+					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+						this.activeOption === 12 ? this.priceStore.annual.id :
+							this.activeOption === 3 ? this.priceStore.id : null,
+					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
+					auto_payment: this.autoPayment
+				})
+				/* eslint-enable camelcase */
+				window.location.assign(url)
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
+		},
+		async submitWalletOne(){
+			try{
+				/* eslint-disable camelcase */
+				const { url, params } = await this.postPaymentData({
+					currency: this.currencyCode,
+					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+						this.activeOption === 12 ? this.priceStore.annual.id :
+							this.activeOption === 3 ? this.priceStore.id : null,
+					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
+					auto_payment: this.autoPayment
+				})
+				const form = document.createElement('form')
+				form.method = 'post'
+				form.action = url
+				Object.keys(params).forEach(key => {
+					const inp = document.createElement('input')
+					inp.name = key
+					inp.value = params[key]
+					form.appendChild(inp)
+				})
+				document.body.appendChild(form)
+				form.submit()
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
 		},
 		activatePromo(){
 			try {

@@ -375,7 +375,7 @@ export default {
 						tarifs[item.kind].addWorkerDescription = this.addWorkerDescription[item.kind]
 					})
 				}
-				tarifs[item.kind][item.validity] = item
+				tarifs[item.kind][item.validity] = { ...item, id: item.id };
 				return tarifs
 			}, {})
 		},

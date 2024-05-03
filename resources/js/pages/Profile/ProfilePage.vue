@@ -17,6 +17,7 @@
 			</template>
 		</router-link>
 		<div class="intro">
+			<PriceTimeLimit small />
 			<IntroTop
 				:courses="intro['courses']"
 				:profit="intro['profit']"
@@ -173,10 +174,12 @@ import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 // import { useReferralStore } from '@/stores/Referral'
 import { usePortalStore } from '@/stores/Portal'
+import PriceTimeLimit from '../../components/pages/Pricing/PriceTimeLimit.vue';
 
 export default {
 	name: 'ProfilePage',
 	components: {
+		PriceTimeLimit,
 		IntroTop,
 		IntroStats,
 		// IntroSmartTable,

@@ -17,11 +17,10 @@
 			</PricingModal>
 		</JobtronOverlay>
 		<PriceTrialPeriod />
-		<PriceTimeLimit />
+		<PriceTimeLimit is-default />
 		<PriceSpace />
 		<div class="PricingPage py-4">
 			<PricingManager />
-			<PricingCurrent />
 			<PricingRates
 				:currency="currency"
 				:selected-rate="selectedRate"
@@ -58,7 +57,8 @@
 					v-if="selectedRate"
 					class="PricingPage-total mt-4"
 				>
-					Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <JobtronButton @click="submitPayment">
+					Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span>
+					<JobtronButton @click="submitPayment">
 						Оплатить
 					</JobtronButton>
 				</div>
@@ -74,7 +74,6 @@
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
 import PricingManager from '@/components/pages/Pricing/PricingManager'
-import  PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
 import PricingRates from '@/components/pages/Pricing/PricingRates'
 import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
@@ -101,7 +100,6 @@ export default {
 		PriceSpace,
 		PriceTrialPeriod,
 		PricingManager,
-		PricingCurrent,
 		PricingRates,
 	},
 	data(){
@@ -125,9 +123,9 @@ export default {
 	},
 
 	computed: {
-		...mapState(usePricingStore, ['priceForUser', 'items']),
+		...mapState(usePricingStore, ['priceForUser', 'items', 'current']),
 		...mapState(useModalStore, ['currentModalId']),
-		...mapState(usePricingPeriodStore, ['tariffStore']),
+		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
 
 		additionalPrice(){
 			if(!this.priceForUser) return 0
