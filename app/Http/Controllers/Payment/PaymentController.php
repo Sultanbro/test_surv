@@ -8,16 +8,11 @@ use App\Http\Requests\Api\Payment\DoPaymentRequest;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\PaymentToken;
-use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
-use App\Service\Payments\Core\PaymentFactory;
-use App\Service\Payments\Core\PaymentGatewayRegistry;
 use App\Service\Payments\Core\PaymentUpdateStatusService;
-use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {

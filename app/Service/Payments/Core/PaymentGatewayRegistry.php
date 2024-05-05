@@ -4,6 +4,7 @@ namespace App\Service\Payments\Core;
 
 use Exception;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 
 class PaymentGatewayRegistry
 {
@@ -23,10 +24,10 @@ class PaymentGatewayRegistry
      */
     function get($name): BasePaymentGateway
     {
-        if (in_array($name, $this->gateways)) {
+        if (array_key_exists($name, $this->gateways)) {
             return $this->gateways[$name];
         } else {
-            throw new Exception("Invalid gateway");
+            throw new InvalidArgumentException("Не известный провайдер $name");
         }
     }
 }

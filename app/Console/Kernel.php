@@ -6,7 +6,6 @@ use App\Console\Commands\BackupMysqlToDevServerCommand;
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
 use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
-use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
@@ -20,6 +19,7 @@ use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\TestingCommand;
+use App\Console\Commands\Tools\FastTestingCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -36,7 +36,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\Make\RepositoryMakeCommand::class,
         Commands\SaveUserKpi::class,
-        RunAutoPaymentCommand::class,
         BonusUpdate::class,
         CheckPaymentsStatusCommand::class,
         StartDayForItDepartmentCommand::class,
@@ -54,7 +53,8 @@ class Kernel extends ConsoleKernel
         DeleteTimeTrackingDuplicates::class,
         RunTestServerScriptCommand::class,
         RunDailyCommandsForTimetrackingSalaryAndTable::class,
-        BackupMysqlToDevServerCommand::class
+        BackupMysqlToDevServerCommand::class,
+        FastTestingCommand::class
     ];
 
     /**
