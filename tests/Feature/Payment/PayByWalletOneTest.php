@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Payment;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Models\CentralUser;
@@ -25,7 +25,7 @@ class PayByWalletOneTest extends TenantTestCase
     {
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Base)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'KZT',
             $tariff->getKey(),
             20,
@@ -46,7 +46,7 @@ class PayByWalletOneTest extends TenantTestCase
     {
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'KZT',
             $tariff->getKey(),
             20,
@@ -66,7 +66,7 @@ class PayByWalletOneTest extends TenantTestCase
     {
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'KZT',
             $tariff->getKey(),
             20,

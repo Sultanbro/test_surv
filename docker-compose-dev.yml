@@ -63,15 +63,16 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: jobtron
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_USER: "${DB_USERNAME}"
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - ./mysql:/var/lib/mysql/
-      - ${PWD}/deployment/local/mysql/my.cnf:/etc/mysql/my.cnf
+      - 'dbdata:/var/lib/mysql'
+      - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+      - './docker/mysql/grant_privileges.sql:/docker-entrypoint-initdb.d/grant_privileges.sql'
     networks:
       - app-network
     mem_limit: 12g

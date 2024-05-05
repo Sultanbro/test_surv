@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Core;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
@@ -13,7 +13,7 @@ use App\Models\Tariff\TariffPayment;
 use App\Support\Core\CustomException;
 use Exception;
 
-abstract class BasePaymentService
+abstract class BasePaymentGateway
 {
     /**
      * @return PaymentConnector
@@ -28,36 +28,15 @@ abstract class BasePaymentService
 
 
     /**
-     * @param PaymentDTO $data
+     * @param NewTariffPaymentDTO $data
      * @param CentralUser $authUser
      * @return ConfirmationResponse
      * @throws Exception
      */
-    public function pay(PaymentDTO $data, CentralUser $authUser): ConfirmationResponse
+    public function pay(NewTariffPaymentDTO $data, CentralUser $authUser): ConfirmationResponse
     {
-//        $activePayment = TariffPayment::getActivePaymentIfExist($authUser);
-//        if ($activePayment) {
-//            throw new Exception("activePaymentIsExist");
-//        }
-
         $connector = $this->connector();
-        $response = $connector->pay($data, $authUser);
-        $paymentId = $response->getPaymentId();
-
-        $tariff = Tariff::getTariffById($data->tariffId);
-        $payment = TariffPayment::createPaymentOrFail(
-            tenant('id'),
-            $data->tariffId,
-            $data->extraUsersLimit,
-            $tariff->calculateExpireDate(),
-            $paymentId,
-            $data->provider
-        );
-
-        ProcessCreatePaymentInvoiceLead::dispatch($authUser, $payment)
-            ->onConnection('sync');
-
-        return $response;
+        return $connector->pay($data, $authUser);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models\Tariff;
 
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\CentralUser;
 use App\Models\Tenant;
@@ -198,5 +199,21 @@ class TariffPayment extends Model
         $this->update([
             'status' => PaymentStatusEnum::STATUS_SUCCESS
         ]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function savePayment(NewTariffPaymentDTO $dto, PaymentToken $token): static
+    {
+        $tariff = Tariff::getTariffById($dto->tariffId);
+        return self::createPaymentOrFail(
+            tenant('id'),
+            $dto->tariffId,
+            $dto->extraUsersLimit,
+            $tariff->calculateExpireDate(),
+            $token->token,
+            $dto->provider
+        );
     }
 }

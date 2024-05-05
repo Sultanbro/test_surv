@@ -4,45 +4,45 @@ declare(strict_types=1);
 namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\TariffPayment;
-use App\Service\Payments\Prodamus\Prodamus;
-use App\Service\Payments\WalletOne\WalletOne;
+use App\Service\Payments\Prodamus\ProdamusGateway;
+use App\Service\Payments\WalletOne\WalletOneGateway;
 use InvalidArgumentException;
 
 final class PaymentFactory
 {
     /**
      * @param string $currency
-     * @return BasePaymentService
+     * @return BasePaymentGateway
      */
-    public function currencyProvider(string $currency): BasePaymentService
+    public function currencyProvider(string $currency): BasePaymentGateway
     {
         return match ($currency) {
-            'rub' => app(Prodamus::class),
-            'kzt', 'usd', 'kztOrUsd' => app(WalletOne::class),
+            'rub' => app(ProdamusGateway::class),
+            'kzt' => app(WalletOneGateway::class),
             default => throw new InvalidArgumentException("Не известная валюта $currency"),
         };
     }
 
     /**
      * @param string $type
-     * @return BasePaymentService
+     * @return BasePaymentGateway
      */
-    public function getPaymentsProviderByType(string $type): BasePaymentService
+    public function getPaymentsProviderByType(string $type): BasePaymentGateway
     {
         return match ($type) {
-            'prodamus' => app(Prodamus::class),
-            'wallet1' => app(WalletOne::class),
+            'prodamus' => app(ProdamusGateway::class),
+            'wallet1' => app(WalletOneGateway::class),
             default => throw new InvalidArgumentException("Не известный тип провайдера $type"),
         };
     }
 
     /**
      * @param TariffPayment $tariffPayment
-     * @return BasePaymentService
+     * @return BasePaymentGateway
      */
     public function getPaymentProviderByPayment(
         TariffPayment $tariffPayment
-    ): BasePaymentService
+    ): BasePaymentGateway
     {
         return $this->getPaymentsProviderByType($tariffPayment->service_for_payment);
     }

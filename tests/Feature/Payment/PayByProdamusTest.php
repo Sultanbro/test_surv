@@ -2,9 +2,10 @@
 
 namespace Tests\Feature\Payment;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
+use App\Facade\Payment\Gateway;
 use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
@@ -25,15 +26,16 @@ class PayByProdamusTest extends TenantTestCase
             'phone' => '+37493270709'
         ]);
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'RUB',
             $tariff->getKey(),
             20,
             'prodamus'
         );
-        $factory = new PaymentFactory;
-        $provider = $factory->currencyProvider('rub');
-        $response = $provider->pay($data, $user);
+
+        $gateway = Gateway::get('rub');
+
+        $response = $gateway->pay($data, $user);
         $this->assertDatabaseHas('tariff_payment', [
             'payment_id' => $response->getPaymentId()
         ],
@@ -50,7 +52,7 @@ class PayByProdamusTest extends TenantTestCase
     {
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'RUB',
             $tariff->getKey(),
             20,
@@ -70,7 +72,7 @@ class PayByProdamusTest extends TenantTestCase
     {
         $user = CentralUser::factory()->create();
         $tariff = Tariff::query()->where('kind', TariffKindEnum::Pro)->first();
-        $data = new PaymentDTO(
+        $data = new NewTariffPaymentDTO(
             'RUB',
             $tariff->getKey(),
             20,

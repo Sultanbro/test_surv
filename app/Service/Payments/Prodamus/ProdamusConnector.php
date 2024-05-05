@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Prodamus;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Models\CentralUser;
 use App\Service\Payments\Core\ConfirmationResponse;
 use App\Service\Payments\Core\HasIdempotenceKey;
@@ -34,7 +34,7 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function pay(PaymentDTO $data, CentralUser $user): ConfirmationResponse
+    public function pay(NewTariffPaymentDTO $data, CentralUser $user): ConfirmationResponse
     {
         $price = $this->getPrice($data);
         $paymentId = $this->generateIdempotenceKey();
@@ -71,6 +71,7 @@ class ProdamusConnector implements PaymentConnector
         return new ConfirmationResponse(
             $resp['payment_link'],
             $paymentId,
+            [],
             $response->successful()
         );
     }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\Payment;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Api\NewTariffPaymentDTO;
 use App\Enums\Payments\CurrencyEnum;
 use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
@@ -36,9 +36,9 @@ class DoPaymentRequest extends FormRequest
     }
 
     /**
-     * @return PaymentDTO
+     * @return NewTariffPaymentDTO
      */
-    public function toDto(): PaymentDTO
+    public function toDto(): NewTariffPaymentDTO
     {
         $validated = $this->validated();
 
@@ -47,7 +47,7 @@ class DoPaymentRequest extends FormRequest
         $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $provider = CurrencyEnum::provider($currency);
 
-        return new PaymentDTO(
+        return new NewTariffPaymentDTO(
             $currency,
             $tariffId,
             $extraUsersLimit,
