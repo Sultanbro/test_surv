@@ -2,7 +2,9 @@
 
 namespace App\Service\Payments\Core;
 
+use Closure;
 use Exception;
+use Generator;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 
@@ -10,10 +12,13 @@ class PaymentGatewayRegistry
 {
     protected array $gateways = [];
 
-    public function register(array|string $name, BasePaymentGateway|callable $instance): PaymentGatewayRegistry
+    public function register(array|string $aliases, BasePaymentGateway|Closure $instance): PaymentGatewayRegistry
     {
-        $instance = is_callable($instance) ? $instance(app()) : $instance;
-        foreach (Arr::wrap($name) as $key) {
+        if ($instance instanceof Closure) {
+            $instance = $instance(app());
+        }
+
+        foreach (Arr::wrap($aliases) as $key) {
             $this->gateways[$key] = $instance;
         }
         return $this;
@@ -29,5 +34,17 @@ class PaymentGatewayRegistry
         } else {
             throw new InvalidArgumentException("Не известный провайдер $name");
         }
+    }
+
+    function list(): array
+    {
+        $list = [];
+
+        foreach ($this->gateways as $name => $gateway) {
+            $className = is_string($gateway) ? $gateway : get_class($gateway);
+            $list[$className]["aliases"][] = $name;
+        }
+
+        return $list;
     }
 }

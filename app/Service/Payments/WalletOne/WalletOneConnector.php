@@ -57,8 +57,9 @@ class WalletOneConnector implements PaymentConnector
             "WMI_FAIL_URL" => $this->failUrl,
         ];
 
+        $signature = new Signature($this->shopKey);
         //Добавление параметра WMI_SIGNATURE в словарь параметров формы
-        $body["WMI_SIGNATURE"] = Signature::make($this->shopKey, $body);
+        $body["WMI_SIGNATURE"] = $signature->make($body);
 
         return new ConfirmationResponse(
             $this->paymentUrl,

@@ -3,7 +3,6 @@
 namespace App\Console\Commands\Tools;
 
 use App\Facade\Payment\Gateway;
-use App\Service\Payments\WalletOne\WalletOneGateway;
 use Illuminate\Console\Command;
 
 class FastTestingCommand extends Command
@@ -14,6 +13,6 @@ class FastTestingCommand extends Command
 
     public function handle(): void
     {
-        $gateway = Gateway::get("kzt");
+        dd(Gateway::fake());
     }
 }

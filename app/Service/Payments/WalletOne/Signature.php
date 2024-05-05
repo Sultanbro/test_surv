@@ -2,24 +2,30 @@
 
 namespace App\Service\Payments\WalletOne;
 
-class Signature
+use App\Service\Payments\Core\SignatureInterface;
+
+class Signature implements SignatureInterface
 {
-    public static function make(string $shopSecretKey, array $fields): string
+    public function __construct(private readonly string $shopKey)
+    {
+    }
+
+    public function make(array $data): string
     {
         //Сортировка значений внутри полей
-        foreach ($fields as $name => $val) {
+        foreach ($data as $name => $val) {
             if (is_array($val)) {
                 usort($val, "strcasecmp");
-                $fields[$name] = $val;
+                $data[$name] = $val;
             }
         }
 
         // Формирование сообщения, путем объединения значений формы,
         // отсортированных по именам ключей в порядке возрастания.
-        uksort($fields, "strcasecmp");
+        uksort($data, "strcasecmp");
         $fieldValues = "";
 
-        foreach ($fields as $value) {
+        foreach ($data as $value) {
             if (is_array($value))
                 foreach ($value as $v) {
                     //Конвертация из текущей кодировки (UTF-8)
@@ -39,6 +45,15 @@ class Signature
         // вычисления отпечатка, сформированного выше сообщения,
         // по алгоритму MD5 и представление его в Base64
 
-        return base64_encode(pack("H*", md5($fieldValues . $shopSecretKey)));
+        return base64_encode(pack("H*", md5($fieldValues . $this->shopKey)));
+    }
+
+    /**
+     * Проверяем полученный сигнатуру и тот который есть у нас
+     * для предотвращение взлома!...
+    */
+    public function verify(string $signature, array $data): bool
+    {
+        return $this->make($data) === $signature;
     }
 }
