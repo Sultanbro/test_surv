@@ -24,6 +24,7 @@ class AnalyticStatRepository extends CoreRepository
         return AnalyticStat::with('activity')
             ->where('date', $date)
             ->where('group_id', $groupId)
+            ->whereHas('column', fn($query) => $query->whereNot('name', 'plan'))
             ->get();
     }
 
