@@ -149,15 +149,6 @@ class Bonus extends Model
 
                 } else {
 
-
-                    dd_if(
-                        $group_id == 42,
-                        [
-                            'bonus' => $bonus,
-                            'users' => Arr::pluck($users, 'id')
-                        ]
-                    );
-
                     foreach ($users as $user_id) {
 
                         // Если группа Рекрутинг
