@@ -104,6 +104,10 @@ class Bonus extends Model
         // get users
         $users = (new UserService)->getUsersAll($group_id, $date)->pluck('id')->toArray();
 
+        dd_if(
+            $group_id,
+            $users
+        );
         //  fill $awards array
         foreach ($users as $user_id) {
             $awards[$user_id] = 0;

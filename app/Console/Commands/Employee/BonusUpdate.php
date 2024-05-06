@@ -145,11 +145,6 @@ class BonusUpdate extends Command
 
             /** Пересчет бонусов */
             Bonus::obtained_in_group($group->id, $this->date);
-
-            dd_if(
-                $group->id == 42,
-                $group
-            );
             //dump($awards);
         }
 
