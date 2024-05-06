@@ -63,7 +63,8 @@ class ObtainedBonus extends Model
      */
     public static function createOrUpdateForDay($arr): void
     {
-        dd($arr['user_id'] ==28432, $arr);
+        dd_if($arr['user_id'] == 28432, $arr);
+
         $ob = self::query()
             ->where('user_id', $arr['user_id'])
             ->where('date', Carbon::parse($arr['date'])->format('Y-m-d'))
