@@ -83,6 +83,8 @@ class EmployeeController extends Controller
     {
         $groups = ProfileGroup::query()
             ->where('active', 1)
+            ->get();ProfileGroup::query()
+            ->where('active', 1)
             ->get();
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
