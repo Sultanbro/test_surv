@@ -1823,7 +1823,7 @@ class KpiStatisticService
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
-            dd_if(auth()->id() == 5, count($kpi->users), $kpi_sum, $kpi->users->toArray());
+            dd_if(auth()->id() == 5, count($kpi->users), $kpi_sum, $kpi->users);
         }
 
         return [
