@@ -78,14 +78,15 @@ class ObtainedBonus extends Model
             ->where('date', Carbon::parse($arr['date'])->format('Y-m-d'))
             ->where('bonus_id', $arr['bonus_id'])
             ->first();
-        dd_if(
-            $ob->id==2129637,
-            $ob
-        );
+
         if ($ob) {
             $ob->amount = $arr['amount'];
             $ob->comment = $arr['comment'];
             $ob->save();
+            dd_if(
+                $ob->id==2129637,
+                $ob
+            );
         } else {
             self::query()->create([
                 'user_id' => $arr['user_id'],
