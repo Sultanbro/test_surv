@@ -8,6 +8,14 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $user_id
+ * @property int $bonus_id
+ * @property string $date
+ * @property string $amount
+ * @property string $comment
+ * @property bool $read
+*/
 class ObtainedBonus extends Model
 {
     public $timestamps = false;
@@ -63,14 +71,17 @@ class ObtainedBonus extends Model
      */
     public static function createOrUpdateForDay($arr): void
     {
-        dd_if($arr['user_id'] == 28432, $arr);
 
+        /** @var ObtainedBonus $ob */
         $ob = self::query()
             ->where('user_id', $arr['user_id'])
             ->where('date', Carbon::parse($arr['date'])->format('Y-m-d'))
             ->where('bonus_id', $arr['bonus_id'])
             ->first();
-
+        dd_if(
+            $ob->id==2129637,
+            $ob
+        );
         if ($ob) {
             $ob->amount = $arr['amount'];
             $ob->comment = $arr['comment'];
