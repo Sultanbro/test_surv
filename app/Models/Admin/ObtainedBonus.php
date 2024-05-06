@@ -83,10 +83,6 @@ class ObtainedBonus extends Model
             $ob->amount = $arr['amount'];
             $ob->comment = $arr['comment'];
             $ob->save();
-            dd_if(
-                $ob->id==2129637,
-                $ob
-            );
         } else {
             self::query()->create([
                 'user_id' => $arr['user_id'],
