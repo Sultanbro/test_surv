@@ -54,7 +54,7 @@
 						</div>
 						<button
 							class="material-modal-added-footer-button"
-							@click="addMaterial"
+							@click="saveMaterial"
 						>
 							Сохранить
 						</button>
@@ -92,6 +92,10 @@ export default {
 		AccessSelectSearch
 	},
 	props: {
+		isAccessOverlay: {
+			type: Boolean,
+			default: true
+		},
 		values: {
 			type: Array,
 			default: () => []
@@ -223,17 +227,26 @@ export default {
 	methods: {
 		...mapActions(useCourseStore, ['addMaterialsBlock']),
 		//superselect/get-alt
+
+
 		addMaterial(){
 			if (this.activeSelect){
 				const filterOptions = this.activeSelect.map(id => {
 					return this.filteredOptions.find(option => option.id === id);
 				}).filter(Boolean);
 				this.addMaterialsBlock(filterOptions)
+
 			}
+		},
+		saveMaterial(){
+			this.addMaterial()
+			this.$emit('close')
+
 		},
 		onSubmit(){
 			if(this.selectedTab === 'Все') return this.$emit('submit', ALL)
 			this.$emit('submit', this.accessList)
+
 		},
 		filterType() {
 			this.addMaterial();
@@ -248,13 +261,7 @@ export default {
 			});
 		},
 
-		changeType(i) {
-			this.addMaterial();
-			this.type = i;
-			this.searchText = '';
-			this.filterType();
-			this.addSelectedAttr();
-		},
+
 		fetch() {
 			this.loading = true;
 			this.axios

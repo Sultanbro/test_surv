@@ -7,46 +7,125 @@
 			</div>
 		</div>
 		<div class="material-course-body">
-			<h1 class="material-course-title">
+			<h1
+				title="Tooltip content"
+				class="material-course-title"
+			>
 				Название курса
 			</h1>
-			<div class="material-course-button-group">
-				<button
-					class="material-upload-icon"
+
+
+			<div class="material-course-content">
+				<div
+					v-if="materialBlocks.length > 0"
+					class="material-course-blocks"
+					:class="{'activeMaterialBlock' : materialBlocks.length > 0}"
 				>
-					<InputFile
-						accept="image/*"
-						@change="uploadFile('icon')"
+					<button
+						v-if="selectedBlocks.length > 0"
+						class="material-course-blocks-button-del"
+						@click="deleteSelectedBlocks"
 					>
-						<div v-if="loadingIcon">
-							<CustomSpinner />
+						<p>Удалить выбранные</p>
+					</button>
+					<div
+						v-for="item in materialBlocks"
+						:key="item.id"
+						class="material-course-blocks-content"
+						:class="{ 'selected': selectedBlocks.includes(item.name) }"
+						@click="toggleBlockSelection(item.name)"
+					>
+						<div class="material-course-blocks-name">
+							<MaterialBlock />
+							<p>{{ item.name }}</p>
 						</div>
-						<template v-else>
-							<UpLoadIcon />
-							<p class="material-upload-icon-text">
-								Загрузите html
-							</p>
-						</template>
-					</InputFile>
-				</button>
-				<button
-					class="material-upload-icon"
-					@click="uploadModal"
-				>
-					<UploadMaterial />
-					<p class="material-upload-icon-text">
-						Выбрать материал
-					</p>
-				</button>
+						<div class="material-course-blocks-name">
+							<button
+								v-if="item.selected === false"
+								:id="'tooltip-' + item.id + '-question'"
+								class="buttonHover"
+								@click="addTest"
+								@mouseover="showTooltip(item.id + '-question')"
+								@mouseleave="hideTooltip(item.id + '-question')"
+							>
+								<MaterialQuestionIcon />
+							</button>
+							<button
+								v-if="item.selected === false"
+								:id="'tooltip-' + item.id + '-trash'"
+								class="buttonHover"
+								@click="deleteSelectedBlocks(item.name)"
+								@mouseover="showTooltip(item.id + '-trash')"
+								@mouseleave="hideTooltip(item.id + '-trash')"
+							>
+								<MaterialTrashIcon />
+							</button>
+							<div
+								v-if="tooltipVisible[item.id + '-question']"
+								class="material-course-tooltip show"
+							>
+								Нет тестовых вопросов
+							</div>
+							<div
+								v-if="tooltipVisible[item.id + '-trash']"
+								class="material-course-tooltip show"
+							>
+								Удалить блок
+							</div>
+							<MaterialDropDown />
+						</div>
+					</div>
+					<button class="material-course-blocks-button">
+						<p> Cмотреть</p><MaterialEyeIcon />
+					</button>
+				</div>
+				<div class="material-course-button-group">
+					<button
+						class="material-upload-icon"
+					>
+						<InputFile
+							accept="image/*"
+							@change="uploadFile('icon')"
+						>
+							<div v-if="loadingIcon">
+								<CustomSpinner />
+							</div>
+							<template v-else>
+								<UpLoadIcon />
+								<p class="material-upload-icon-text">
+									Загрузите html
+								</p>
+							</template>
+						</InputFile>
+					</button>
+					<button
+						class="material-upload-icon"
+						@click="uploadModal"
+					>
+						<UploadMaterial />
+						<p class="material-upload-icon-text">
+							Выбрать материал
+						</p>
+					</button>
+				</div>
 			</div>
+
 			<JobtronOverlay
 				v-if="isAccessOverlay"
 				@close="isAccessOverlay = false"
 			>
 				<MaterialModal
-
 					submit-button=""
 					absolute
+					@close="isAccessOverlay = false"
+				/>
+			</JobtronOverlay>
+			<JobtronOverlay
+				v-if="isAddedTest"
+				@close="isAddedTest = false"
+			>
+				<MaterialTestModal
+					@close="isAddedTest = false"
 				/>
 			</JobtronOverlay>
 		</div>
@@ -67,7 +146,6 @@
 		</div>
 	</div>
 </template>
-
 <script>
 
 import MaterialHeaderIcon from '../../../assets/icons/MaterialHeaderIcon.vue';
@@ -78,11 +156,26 @@ import InputFile from '../../../../../components/ui/InputFile.vue';
 import UploadMaterial from '../../../assets/icons/UploadMaterial.vue';
 import JobtronOverlay from '../../../../../components/ui/Overlay.vue';
 import MaterialModal from './MaterialModal.vue';
+import {useCourseStore} from '../../../../../stores/createCourse';
+import {mapState, mapActions} from 'pinia';
+import MaterialBlock from '../../../assets/icons/MaterialBlock.vue';
+import MaterialDropDown from '../../../assets/icons/MaterialDropDown.vue';
+import MaterialQuestionIcon from '../../../assets/icons/MaterialQuestionIcon.vue';
+import MaterialEyeIcon from '../../../assets/icons/MaterialEyeIcon.vue';
+import MaterialTrashIcon from '../../../assets/icons/MaterialTrashIcon.vue';
+import MaterialTestModal from './MaterialTestModal.vue';
+
 
 
 export default {
 	name: 'MaterialCourse',
 	components: {
+		MaterialTestModal,
+		MaterialTrashIcon,
+		MaterialEyeIcon,
+		MaterialQuestionIcon,
+		MaterialDropDown,
+		MaterialBlock,
 		MaterialModal,
 		JobtronOverlay, UploadMaterial, InputFile, UpLoadIcon, CustomSpinner, MaterialsIcon, MaterialHeaderIcon},
 	data() {
@@ -90,15 +183,54 @@ export default {
 			loadingIcon: false,
 			loadingImage: false,
 			isAccessOverlay: false,
+			tooltipVisible: {},
+			selectedBlocks: [],
+			isAddedTest: false
+
 
 		}
 	},
 
+	computed:{
+		...mapState(useCourseStore, ['materialBlocks']),
+	},
+
 	methods: {
+		...mapActions(useCourseStore, ['removeMaterialBlocksByNames']),
+		toggleBlockSelection(id) {
+			const index = this.selectedBlocks.indexOf(id);
+			if (index === -1) {
+				this.selectedBlocks.push(id);
+			} else {
+				this.selectedBlocks.splice(index, 1);
+			}
+		},
+		addTest(){
+			this.isAddedTest = true;
+		},
+		deleteSelectedBlocks(id) {
+			if (id.length > 0) {
+				const index = this.selectedBlocks.indexOf(id);
+				if (index === -1) {
+					this.selectedBlocks.push(id);
+				} else {
+					this.selectedBlocks.splice(index, 1);
+				}
+			}
+			this.removeMaterialBlocksByNames(this.selectedBlocks)
+			this.selectedBlocks = [];
+
+		},
+		showTooltip(id) {
+			this.$set(this.tooltipVisible, id, true);
+		},
+		hideTooltip(id) {
+			this.$set(this.tooltipVisible, id, false);
+		},
 		async uploadFile(type) {
-			// const files = event.target.files;
-			// const file = files[0];
-			// const fileId = Date.now();
+		// const files = event.target.files;
+		// const file = files[0];
+		// const fileId = Date.now();
 
 			if (type === 'icon') {
 				this.loadingIcon = true;
@@ -112,10 +244,10 @@ export default {
 				} else if (type === 'image') {
 					this.loadingImage = false;
 				}
-				// store.commit('addCourse', {
-				// 	id: fileId,
-				// 	file: file
-				// });
+			// store.commit('addCourse', {
+			// 	id: fileId,
+			// 	file: file
+			// });
 			}, 2000);
 		},
 		addCourse(){
@@ -129,11 +261,100 @@ export default {
 </script>
 
 <style scoped>
+.selected {
+	border:2px solid #156AE8;
+}
+.buttonHover{
+		padding: 5px;
+		background-color: #F8F9FD;
+}
+.material-course-tooltip{
+	width: max-content;
+	position: absolute;
+	top: 10%;
+	font-weight: 600;
+	left: 70%;
+	transform: translateX(-50%);
+	background-color: #fff;
+	color: black;
+	padding: 10px 25px;
+	border-radius: 5px;
+	z-index: 99999;
+	display: none;
+
+}
+.material-course-tooltip.show {
+	display: block;
+}
+
+
+
+
+.material-course-blocks-button{
+		max-width: 119px;
+	width: 100%;
+	margin-top: 8px;
+	display: flex;
+		gap: 5px;
+		border-radius: 8px;
+		padding: 6px 12px;
+		color: #8DA0C1;
+		border: 1px solid #8DA0C1;
+		background-color: white;
+}
+.material-course-blocks-button-del{
+	justify-content: center;
+	margin-left: auto;
+	max-width: 229px;
+	width: 100%;
+	margin-top: 8px;
+	display: flex;
+	gap: 5px;
+	border-radius: 8px;
+	padding: 12px;
+	color: white;
+	background-color: #0B172D;
+}
+.material-course-content{
+	display: flex;
+		gap: 15px;
+
+}
+.activeMaterialBlock{
+	max-width: 793px;
+	width: 100%;
+		margin: 24px 33px;
+}
+.material-course-blocks{
+		background-color: #FFFFFF;
+	display: flex;
+		flex-direction: column;
+		gap: 8px;
+		border-radius: 20px;
+		padding: 24px;
+}
+
+.material-course-blocks-content{
+	position: relative;
+		background-color: #F8F9FD;
+		display: flex;
+		justify-content: space-between;
+		color: #156AE8;
+		padding: 8px;
+		border-radius: 8px;
+}
+
+.material-course-blocks-name{
+	display: flex;
+		gap:6px;
+}
+
 .material-course{
-		width: 100%;
+	width: 100%;
 		height: 100vh;
 	display: flex;
 	flex-direction: column;
+	background-color: #fafafa;
 }
 
 .material-course-header{
@@ -156,6 +377,7 @@ export default {
 .material-course-body{
 	display: flex;
 	flex-direction:column;
+
 }
 
 .material-course-title{
@@ -175,7 +397,7 @@ export default {
 	width: 180px;
 		height: 180px;
 	border-radius: 8px;
-	background-color: #F7F7F7;
+	background-color: white;
 	padding: 10px 25px;
 	display: flex;
 	flex-direction: column;

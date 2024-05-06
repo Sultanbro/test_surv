@@ -19,5 +19,15 @@ export const useCourseStore = defineStore('courseStore', {
 		addMaterialsBlock(newMaterials) {
 			Array.prototype.push.apply(this.materialBlocks, newMaterials);
 		},
+		removeMaterialBlocksByNames(names) {
+			names.forEach((name) => {
+				const index = this.materialBlocks.findIndex(
+					(block) => block.name === name
+				);
+				if (index !== -1) {
+					this.materialBlocks.splice(index, 1);
+				}
+			});
+		},
 	},
 });

@@ -13,6 +13,7 @@ export default {
 <style scoped>
 .tooltipCourse {
 	position: relative;
+	z-index: 99999999;
 }
 
 .tooltipCourse::before {

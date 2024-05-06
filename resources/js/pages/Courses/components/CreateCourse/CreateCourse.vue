@@ -61,6 +61,7 @@ export default {
 .create-course-content{
 	display: flex;
 		justify-content: space-around;
+	background-color: #fafafa;
 }
 
 
