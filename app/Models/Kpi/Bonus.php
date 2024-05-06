@@ -104,10 +104,10 @@ class Bonus extends Model
         // get users
         $users = (new UserService)->getUsersAll($group_id, $date)->pluck('id')->toArray();
 
-        dd_if(
-            $group_id,
-            $users
-        );
+//        dd_if(
+//            $group_id,
+//            $users
+//        );
         //  fill $awards array
         foreach ($users as $user_id) {
             $awards[$user_id] = 0;
@@ -176,7 +176,8 @@ class Bonus extends Model
                     }
 
                     // nullify awards if they are not actual
-                    ObtainedBonus::where('bonus_id', $bonus->id)
+                    ObtainedBonus::query()
+                        ->where('bonus_id', $bonus->id)
                         ->where('date', $date)
                         ->delete();
 
