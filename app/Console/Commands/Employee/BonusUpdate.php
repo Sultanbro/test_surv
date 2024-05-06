@@ -12,6 +12,7 @@ use App\UserNotification;
 use App\Models\User\NotificationTemplate;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class BonusUpdate extends Command
 {
@@ -36,9 +37,8 @@ class BonusUpdate extends Command
     protected $date;
 
 
-
     /**
-     * 
+     *
      */
     protected $userService;
 
@@ -57,14 +57,15 @@ class BonusUpdate extends Command
     /**
      * handle
      */
-    public function handle() {
+    public function handle()
+    {
 
-        if($this->argument('date')) {
+        if ($this->argument('date')) {
             $date = Carbon::parse($this->argument('date'));
-            $this->date =  $this->argument('date');
+            $this->date = $this->argument('date');
             $this->line('Начат пересчет бонусов на ' . $this->date);
             $this->update();
-            $this->line('Закончил расчет за '. $this->date);
+            $this->line('Закончил расчет за ' . $this->date);
 
             $this->notify($date);
         } else {
@@ -84,17 +85,16 @@ class BonusUpdate extends Command
                 $this->date = $day;
                 $this->line('Начат пересчет бонусов на ' . $this->date);
                 $this->update();
-                $this->line('Закончил расчет за '. $day);
+                $this->line('Закончил расчет за ' . $day);
             }
-
 
 
             //$this->notify(date('Y-m-d'));
         }
 
 
-
     }
+
     /**
      * Execute the console command.
      *
@@ -105,7 +105,7 @@ class BonusUpdate extends Command
         /**
          * ГРуппы
          */
-        if($this->argument('group_id')) {
+        if ($this->argument('group_id')) {
             $groups = ProfileGroup::where('active', 1)
                 ->where('id', $this->argument('group_id'))
                 ->get(['name', 'id']);
@@ -115,24 +115,23 @@ class BonusUpdate extends Command
         }
 
 
-    
-        if($this->argument('group_id')) {
+        if ($this->argument('group_id')) {
             /**
              * Выбрать пользователей
              */
             $group = ProfileGroup::find($this->argument('group_id'));
 
             $user_ids = $this->getUsers($group->id);
-            
+
             // Обнулить award
-             Salary::where('date', $this->date)
+            Salary::where('date', $this->date)
                 ->whereIn('user_id', $user_ids)
                 ->update([
                     'award' => 0
                 ]);
         } else {
             // Обнулить award
-             Salary::where('date', $this->date)->update([
+            Salary::where('date', $this->date)->update([
                 'award' => 0
             ]);
         }
@@ -141,12 +140,16 @@ class BonusUpdate extends Command
         /**
          * цикл по группам
          */
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $this->comment($group->name);
 
             /** Пересчет бонусов */
-            $awards = Bonus::obtained_in_group($group->id, $this->date);
-        
+            Bonus::obtained_in_group($group->id, $this->date);
+
+            dd_if(
+                $group->id == 42,
+                $group
+            );
             //dump($awards);
         }
 
@@ -156,7 +159,8 @@ class BonusUpdate extends Command
     /**
      * Update notification about bonuses
      */
-    public function notify($date) {
+    public function notify($date)
+    {
         $this->comment('Уведомления :');
         $noti = NotificationTemplate::find(15); // Сегодня получили бонусы
 
@@ -166,12 +170,12 @@ class BonusUpdate extends Command
             $this->line('Notify: ' . $group_id);
             $msg = $this->createNotificationMessage($group_id, $date);
 
-            if($msg == 'No bonuses') {
-                $this->line( $group_id . ' NO Bonuses ');
+            if ($msg == 'No bonuses') {
+                $this->line($group_id . ' NO Bonuses ');
                 continue;
             }
 
-            $workingUsers = (new UserService)->getEmployees($group_id, Carbon::now()->startOfMonth()->format('Y-m-d')); 
+            $workingUsers = (new UserService)->getEmployees($group_id, Carbon::now()->startOfMonth()->format('Y-m-d'));
             $workingUsers = collect($workingUsers)->pluck('id')->toArray();
 
             foreach ($workingUsers as $user_id) {
@@ -181,7 +185,7 @@ class BonusUpdate extends Command
                     ->whereDate('created_at', date('Y-m-d'))
                     ->first();
 
-                if($noti) {
+                if ($noti) {
                     $noti->message = $msg;
                     $noti->note = $group_id;
                     $noti->save();
@@ -196,7 +200,7 @@ class BonusUpdate extends Command
                     ]);
                 }
             }
-            
+
             $this->line($group_id . ' Users have notified');
         }
 
@@ -209,7 +213,7 @@ class BonusUpdate extends Command
 
         $kpi_bonuses = Bonus::where('group_id', $group_id)->get()->pluck('id')->toArray();
 
-        if($group_id == 42) {
+        if ($group_id == 42) {
             $bonus_ids = ObtainedBonus::where('date', $date)
                 ->where('amount', '>', 0)
                 ->whereIn('bonus_id', $kpi_bonuses)
@@ -219,22 +223,22 @@ class BonusUpdate extends Command
             $has_text = false;
 
 
-            foreach($bonus_ids as $bonus_id => $bonuses) {
+            foreach ($bonus_ids as $bonus_id => $bonuses) {
 
                 $best_bonus = null;
-                foreach($bonuses as $bonus) {
-                    if(!$best_bonus) {
+                foreach ($bonuses as $bonus) {
+                    if (!$best_bonus) {
                         $best_bonus = $bonus;
-                    } else if ($best_bonus->amount < $bonus->amount){
+                    } else if ($best_bonus->amount < $bonus->amount) {
                         $best_bonus = $bonus;
                     }
                 }
 
-                if($best_bonus) {
+                if ($best_bonus) {
                     $has_text = true;
                     $user = User::withTrashed()->find($best_bonus->user_id);
-                    if($user) {
-                        $msg .= '<b>' . $user->name . ' ' . $user->last_name . '</b>: <br> <b>' . $best_bonus->amount . ' KZT </b>'  . $best_bonus->comment . '<br><br>';
+                    if ($user) {
+                        $msg .= '<b>' . $user->name . ' ' . $user->last_name . '</b>: <br> <b>' . $best_bonus->amount . ' KZT </b>' . $best_bonus->comment . '<br><br>';
                     }
                 }
 
@@ -247,13 +251,13 @@ class BonusUpdate extends Command
                 ->get()
                 ->groupBy('bonus_id');
 
-            foreach($bonus_ids as $bonus_id => $bonuses) {
+            foreach ($bonus_ids as $bonus_id => $bonuses) {
 
-                foreach($bonuses as $bonus) {
+                foreach ($bonuses as $bonus) {
                     $user = User::withTrashed()->find($bonus->user_id);
 
-                    if($user) {
-                        $msg .= $user->name . ' ' . $user->last_name . ': ' . $bonus->amount . ' KZT '  . $bonus->comment . '<br>';
+                    if ($user) {
+                        $msg .= $user->name . ' ' . $user->last_name . ': ' . $bonus->amount . ' KZT ' . $bonus->comment . '<br>';
                     }
 
                 }
@@ -264,35 +268,34 @@ class BonusUpdate extends Command
         }
 
 
-
     }
 
     /**
      * Get users in Department
-     * 
+     *
      * @return mixed[]
      */
-    private function getUsers($group_id) 
+    private function getUsers($group_id)
     {
         $users = (new UserService)->getEmployees($group_id,
             Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
-        ); 
+        );
 
         $users = collect($users);
 
         $trainees = (new UserService)->getTrainees($group_id,
             Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
-        ); 
+        );
 
         $users = $users->merge(collect($trainees));
 
-        if($this->argument('fired')) {
-             // get users
+        if ($this->argument('fired')) {
+            // get users
             $users = (new UserService)->getUsersAll($group_id,
                 Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
             );
         }
-        
+
         return $users->pluck('id')->toArray();
     }
 }
