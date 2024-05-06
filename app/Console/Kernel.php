@@ -127,10 +127,9 @@ class Kernel extends ConsoleKernel
         // обновление зарплаты: за текущий день
         // автоматически завершить рабочий день если забыли нажать на кнопку
         // автоматически завершить рабочий день если забыли нажать на кнопку
-        $schedule->command('tenants:run salary:update')->daily();
-
+        $schedule->command('tenants:run salary:update')->everySixHours();
         $schedule->command('tenants:run timetracking:check')->everyThirtyMinutes();
-        $schedule->command('tenants:run count:hours')->everyThirtyMinutes();
+        $schedule->command('tenants:run count:hours')->everySixHours();
 
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав
