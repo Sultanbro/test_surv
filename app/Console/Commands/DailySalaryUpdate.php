@@ -13,7 +13,7 @@ class DailySalaryUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:update {date?} {group?} {--month}';  //php artisan salary:update  2022-04-12
+    protected $signature = 'salary:update {date?} {group?} {month?}';  //php artisan salary:update  2022-04-12
 
     public function __construct(
         private readonly UpdateSalaryInterface $updateSalary
@@ -33,7 +33,7 @@ class DailySalaryUpdate extends Command
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
         $groupId = $this->argument('group');
-        if ($this->option("month")) {
+        if ($this->argument("month")) {
             $from = Carbon::parse($date)->startOfMonth();
             $to = Carbon::parse($date)->endOfMonth();
             while ($from <= $to) {
