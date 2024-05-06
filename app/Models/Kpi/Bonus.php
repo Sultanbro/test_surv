@@ -22,6 +22,7 @@ use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Service\Department\UserService;
 use DB;
+use Illuminate\Support\Arr;
 
 class Bonus extends Model
 {
@@ -145,8 +146,15 @@ class Bonus extends Model
                 } else {
 
 
+                    dd_if(
+                        $group_id == 42,
+                        [
+                            'bonus' => $bonus,
+                            'users' => Arr::pluck($users, 'id')
+                        ]
+                    );
+
                     foreach ($users as $user_id) {
-                        dd_if($user_id == 28432, $bonus);
 
                         // Если группа Рекрутинг
                         // @TODO должна быть только у BPartners
