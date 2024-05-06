@@ -4,6 +4,8 @@ namespace App\Console;
 
 use App\Console\Commands\BackupMysqlToDevServerCommand;
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
+use App\Console\Commands\CountHours;
+use App\Console\Commands\DailySalaryUpdate;
 use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
@@ -54,7 +56,9 @@ class Kernel extends ConsoleKernel
         RunTestServerScriptCommand::class,
         RunDailyCommandsForTimetrackingSalaryAndTable::class,
         BackupMysqlToDevServerCommand::class,
-        FastTestingCommand::class
+        FastTestingCommand::class,
+        DailySalaryUpdate::class,
+        CountHours::class
     ];
 
     /**
@@ -124,6 +128,7 @@ class Kernel extends ConsoleKernel
         // автоматически завершить рабочий день если забыли нажать на кнопку
         // автоматически завершить рабочий день если забыли нажать на кнопку
         $schedule->command('tenants:run salary:update')->daily();
+
         $schedule->command('tenants:run timetracking:check')->everyThirtyMinutes();
         $schedule->command('tenants:run count:hours')->everyThirtyMinutes();
 

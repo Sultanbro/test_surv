@@ -7,7 +7,9 @@ use App\Service\Payments\Core\BasePaymentGateway;
 use App\Service\Payments\Core\ConfirmationResponse;
 use App\Service\Payments\Core\PaymentGatewayRegistry;
 use Closure;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Queue;
 use Mockery;
 
 /**
@@ -37,13 +39,15 @@ class Gateway extends Facade
                     'test',
                     1,
                     1
-                ),4
+                ),
+                4
             ])
             ->once()
             ->andReturn(new ConfirmationResponse(
                 'some url',
                 'some payment token'
             ));
+
         Gateway::register(["test"], $mock);
         return Gateway::get("test");
     }
