@@ -147,6 +147,10 @@ final class Analytics
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
+            dd_if(
+                auth()->id() == 4,
+                $stats->toArray()
+            );
             foreach ($columns as $columnIndex => $column) {
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
