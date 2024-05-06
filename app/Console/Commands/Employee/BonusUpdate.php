@@ -125,14 +125,14 @@ class BonusUpdate extends Command
             $user_ids = $this->getUsers($group->id);
             
             // Обнулить award
-            $salaries = Salary::where('date', $this->date)
+             Salary::where('date', $this->date)
                 ->whereIn('user_id', $user_ids)
                 ->update([
                     'award' => 0
                 ]);
         } else {
             // Обнулить award
-            $salaries = Salary::where('date', $this->date)->update([
+             Salary::where('date', $this->date)->update([
                 'award' => 0
             ]);
         }
@@ -270,7 +270,7 @@ class BonusUpdate extends Command
     /**
      * Get users in Department
      * 
-     * @return Collection
+     * @return mixed[]
      */
     private function getUsers($group_id) 
     {
