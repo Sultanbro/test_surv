@@ -533,7 +533,8 @@ class AnalyticsController extends Controller
             DM::updateTimesNew($dto->employeeId, $date);
         }
 
-        ProcessUpdateSalary::dispatch($date, $group->getKey())
+        ProcessUpdateSalary::dispatch($date, $dto->groupId)
+            ->onConnection("sync")
             ->afterCommit();
     }
 
