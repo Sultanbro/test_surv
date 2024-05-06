@@ -148,7 +148,7 @@ final class Analytics
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
             dd_if(
-                auth()->id() == 4,
+                auth()->id() == 5,
                 $stats->toArray()
             );
             foreach ($columns as $columnIndex => $column) {
