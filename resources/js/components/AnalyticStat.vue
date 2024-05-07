@@ -93,7 +93,6 @@
 
 						<template v-for="(field, f_index) in fields.slice(0, 4)">
 							<td
-								v-if="field.key != 'plan'"
 								:key="f_index"
 								class="t-cell font-bold"
 								:class="[
