@@ -143,7 +143,8 @@ final class Analytics
         $currentDay = Carbon::now();
         $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
 
-        dd_if(auth()->id() == 5 && $dto->groupId == 31, $columnIds);
+//        dd_if(auth()->id() == 5 && $dto->groupId == 31, $columnIds);
+
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
