@@ -45,6 +45,7 @@ class CardRepository extends CoreRepository
                 'bank' => $data['bank'],
                 'phone' => $data['phone'],
                 'country' => $data['country'],
+                'iban' => $data['iban'] ?? 0
             ]);
         }
     }
