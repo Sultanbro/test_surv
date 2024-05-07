@@ -138,19 +138,17 @@ final class Analytics
 
         $table = [];
 
-        $days = range(1, 31);
+        $days = range(1, Carbon::parse($date)->lastOfMonth()->day);
         $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
         $currentDay = Carbon::now();
         $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
 
+        dd_if(auth()->id() == 5 && $dto->groupId == 31, $columnIds);
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
-//            dd_if(
-//                auth()->id() == 5,
-//                $stats->toArray()
-//            );
+
             foreach ($columns as $columnIndex => $column) {
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
                 $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
