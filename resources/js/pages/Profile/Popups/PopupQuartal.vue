@@ -125,12 +125,13 @@ export default {
 		},
 		tabIndex(){
 			this.setSubtitle()
-		}
+		},
 	},
 	created(){
 		this.setMonth()
 		this.fetchBefore()
 	},
+
 	methods: {
 		...mapActions(useProfileSalaryStore, ['setReadedPremiums']),
 
