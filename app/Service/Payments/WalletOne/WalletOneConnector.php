@@ -36,7 +36,7 @@ class WalletOneConnector implements PaymentConnector
             "WMI_MERCHANT_ID" => $this->merchantId,
             "WMI_PTENABLED" => 'WalletOneKZT',
             "WMI_PTDISABLED" => 'W1RUB',
-            "WMI_AUTO_LOCATION" => 1,
+            "WMI_AUTO_LOCATION" => 0,
             "WMI_CUSTOMER_PHONE" => Phone::normalize($user->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
             "WMI_CURRENCY_ID" => self::CURRENCY,
