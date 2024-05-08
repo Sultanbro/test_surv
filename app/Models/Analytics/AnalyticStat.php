@@ -605,7 +605,8 @@ class AnalyticStat extends Model
             auth()->id() == 5
             && $statistic->row_id == 15348
             && $statistic->column_id == 25989,
-            $statistic
+            $statistic,
+            $matches[0]
         );
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
