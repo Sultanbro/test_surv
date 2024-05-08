@@ -54,7 +54,7 @@
 							class="ruler-cells t-cell text-center"
 						>
 							<div class="in-cell inner-div">
-								{{ letter }}
+								{{ letter }} test me
 							</div>
 						</td>
 					</tr>
@@ -87,7 +87,7 @@
 										class="pointer ChatIcon-parent"
 									/>
 								</span>
-								<span>{{ i_index }}</span>
+								<span>{{ i_index + 1 }}</span>
 							</div>
 						</td>
 
