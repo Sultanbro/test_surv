@@ -41,10 +41,10 @@
 						</div>
 						<div class="material-course-blocks-name">
 							<button
-								v-if="item.selected === false"
+
 								:id="'tooltip-' + item.id + '-question'"
 								class="buttonHover"
-								@click="addTest"
+								@click="addTest(item)"
 								@mouseover="showTooltip(item.id + '-question')"
 								@mouseleave="hideTooltip(item.id + '-question')"
 							>
@@ -125,6 +125,7 @@
 				@close="isAddedTest = false"
 			>
 				<MaterialTestModal
+					:selected-test="selectedTest"
 					@close="isAddedTest = false"
 				/>
 			</JobtronOverlay>
@@ -185,7 +186,8 @@ export default {
 			isAccessOverlay: false,
 			tooltipVisible: {},
 			selectedBlocks: [],
-			isAddedTest: false
+			isAddedTest: false,
+			selectedTest: [],
 
 
 		}
@@ -205,7 +207,8 @@ export default {
 				this.selectedBlocks.splice(index, 1);
 			}
 		},
-		addTest(){
+		addTest(item){
+			this.selectedTest = [...this.selectedTest, item]
 			this.isAddedTest = true;
 		},
 		deleteSelectedBlocks(id) {
@@ -251,7 +254,6 @@ export default {
 			}, 2000);
 		},
 		addCourse(){
-
 		},
 		uploadModal() {
 			this.isAccessOverlay = true;

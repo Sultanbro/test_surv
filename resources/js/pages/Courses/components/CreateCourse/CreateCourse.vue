@@ -12,6 +12,7 @@
 				<AppearanceCourse v-if="activeLink===1" />
 				<AppearanceUploadImage v-if="activeLink===1" />
 				<MaterialCourse v-if="activeLink===2" />
+				<CourseIsTaking v-if="activeLink===3" />
 			</div>
 		</DefaultLayout>
 	</div>
@@ -23,10 +24,13 @@ import AppearanceCourse from './Appearance/AppearanceCourse.vue';
 import AppearanceUploadImage from './Appearance/AppearanceUploadImage.vue';
 import DefaultLayout from '../../../../layouts/DefaultLayout.vue';
 import MaterialCourse from './MaterialCourse/MaterialCourse.vue';
+import CourseIsTaking from './CourseIsTaking/CourseIsTaking.vue';
 
 export default {
 	name: 'CreateCourse',
-	components: {MaterialCourse, DefaultLayout, AppearanceUploadImage, AppearanceCourse, SideBarCourse },
+	components: {
+		CourseIsTaking,
+		MaterialCourse, DefaultLayout, AppearanceUploadImage, AppearanceCourse, SideBarCourse },
 	data() {
 		return {
 			isOpen: false,

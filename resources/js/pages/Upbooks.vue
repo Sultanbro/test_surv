@@ -527,11 +527,25 @@ export default {
 	watch: {
 		token(){
 			this.init()
+		},
+		watch: {
+			'$route.params.id': {
+				immediate: true,
+				handler(value) {
+					if (value) {
+						this.fetchData();
+					}
+				}
+			}
 		}
 	},
 	created() {
 		if(this.token){
 			this.init()
+		}
+		const bookId = this.$route.params.id;
+		if (bookId) {
+			this.fetchData()
 		}
 	},
 	methods: {

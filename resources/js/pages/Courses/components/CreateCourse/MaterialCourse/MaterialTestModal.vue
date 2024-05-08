@@ -35,7 +35,10 @@
 			>
 				Отмена
 			</button>
-			<button class="material-test-add">
+			<button
+				class="material-test-add"
+				@click="addTest(selectedTest[0].id, selectedTest[0].type, selectedTest[0].type === 2 && selectedTest[0].category_id)"
+			>
 				Добавить
 			</button>
 		</div>
@@ -48,9 +51,37 @@ import MaterialTestModalIcon from '../../../assets/icons/MaterialTestModalIcon.v
 export default {
 	name: 'MaterialTestModal',
 	components: {MaterialTestModalIcon},
+	props:{
+		selectedTest:{
+			type: Array,
+			default: function() {
+				return [];
+			}
+		}
+	},
 	methods:{
 		cancel(){
 			this.$emit('close')
+		},
+		async	addTest(id, type, category) {
+
+			if (type === 3)  this.$router.push({ path: 'kb', query: { s: id } });
+			if (type === 1) {
+				this.$router.push({ path: `/admin/upbooks/${id}` });
+
+				try {
+					await this.axios.post('/admin/upbooks/segments/get', {
+						id: id,
+						// eslint-disable-next-line camelcase
+						course_item_id: 0
+					});
+				} catch (error) {
+					console.error('Ошибка при загрузке данных:', error);
+				}
+			}
+
+			// жесткий костыль с обновлением.
+			if (type === 2) this.$router.push({ path: `video_playlists/${category}/${id}` });  window.location.reload();
 		}
 	}
 }
