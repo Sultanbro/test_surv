@@ -364,7 +364,7 @@
 				<table class="as-table">
 					<tr>
 						<td
-							v-for="(letter, index) in letter_cells.slice(4, letter_cells.length - 1)"
+							v-for="(letter, index) in letter_cells.slice(4, letter_cells.length )"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
