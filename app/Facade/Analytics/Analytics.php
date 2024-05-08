@@ -399,7 +399,7 @@ final class Analytics
 
         $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
 
-        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $stats->pluck('show_value')->toArray());
+        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $stats->toArray());
 
         foreach ($stats as $stat) {
             if ($stat && is_numeric($stat->show_value)) {
