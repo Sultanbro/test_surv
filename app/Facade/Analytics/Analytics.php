@@ -205,7 +205,7 @@ final class Analytics
                         $val = round($val, 1);
                         $statistic->show_value = $val;
                         $statistic->save();
-
+                        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $val);
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -259,18 +259,18 @@ final class Analytics
                     if ($column->name == 'avg' && $rowIndex > 3) {
                         $type = 'avg';
                     }
-//                    AnalyticStat::query()->create([
-//                        'group_id' => $dto->groupId,
-//                        'date' => $date,
-//                        'row_id' => $row->id,
-//                        'column_id' => $column->id,
-//                        'value' => '',
-//                        'show_value' => '',
-//                        'decimals' => 0,
-//                        'type' => $type,
-//                        'class' => 'text-center' . $addClass,
-//                        'editable' => $rowIndex == 0 ? 0 : 1,
-//                    ]);
+                    AnalyticStat::query()->create([
+                        'group_id' => $dto->groupId,
+                        'date' => $date,
+                        'row_id' => $row->id,
+                        'column_id' => $column->id,
+                        'value' => '',
+                        'show_value' => '',
+                        'decimals' => 0,
+                        'type' => $type,
+                        'class' => 'text-center' . $addClass,
+                        'editable' => $rowIndex == 0 ? 0 : 1,
+                    ]);
                     $arr = [
                         'value' => '',
                         'show_value' => '',
