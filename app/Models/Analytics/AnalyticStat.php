@@ -601,17 +601,10 @@ class AnalyticStat extends Model
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-        dd_if(
-            auth()->id() == 5
-            && $statistic->row_id == 15348
-            && $statistic->column_id == 25989,
-            str_replace(["[", "]"], "", $matches[0])
-        );
-        foreach ($matches[0] as $match) {
-            $match = str_replace(["[", "]"], "", $match);
-            $exp = explode(':', $match);
-            $column_id = $exp[0];
-            $row_id = $exp[1];
+        $coordinates = str_replace(["[", "]"], "", $matches[0]);
+        foreach ($coordinates as $coordinate) {
+            $column_id = explode(':', $coordinate)[0];
+            $row_id = explode(':', $coordinate)[1];
 
             /** @var AnalyticStat $cell */
             $cell = ($stats ?? AnalyticStat::query())
@@ -626,7 +619,7 @@ class AnalyticStat extends Model
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
 
-                    $text = str_replace("[" . $match . "]", (float)$value, $text);
+                    $text = str_replace("[" . $coordinate . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
                     //dump($only_days);
                     $value = self::daysSum(
@@ -636,10 +629,10 @@ class AnalyticStat extends Model
                         stats: $stats
                     );
                     //dump('sum ' .$value);
-                    $text = str_replace("[" . $match . "]", (float)$value, $text);
+                    $text = str_replace("[" . $coordinate . "]", (float)$value, $text);
                 } else {
                     // dump('value ' . $cell->show_value);
-                    $text = str_replace("[" . $match . "]", (float)$cell->show_value, $text);
+                    $text = str_replace("[" . $coordinate . "]", (float)$cell->show_value, $text);
                 }
             }
         }
