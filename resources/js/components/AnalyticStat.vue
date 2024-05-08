@@ -1055,7 +1055,7 @@ export default {
 		},
 
 		focus(i, f) {
-			if (i < 3 && f == 0 && this.oldGroup) return ''
+			if (i < 2 && f == 0 && this.oldGroup) return ''
 
 			if (!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
@@ -1098,7 +1098,7 @@ export default {
 			const col = coord.replace(/(\d)/gi, '')
 			const row = coord.replace(/(\D)/gi, '')
 			const index = this.letter_cells.indexOf(col)
-			if (index < 3) return coord
+			if (index < 2) return coord
 			return this.letter_cells[index - 1] + row
 		},
 
