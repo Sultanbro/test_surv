@@ -444,6 +444,11 @@ class AnalyticStat extends Model
     {
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+        dd_if(
+            auth()->id() == 5
+            && $text == 'D14*280*4.9',
+            $matches[0]
+        );
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);

@@ -250,7 +250,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
