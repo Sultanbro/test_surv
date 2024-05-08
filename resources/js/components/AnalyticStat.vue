@@ -49,7 +49,7 @@
 							</div>
 						</td>
 						<td
-							v-for="(letter, index) in letter_cells.slice(0, 3)"
+							v-for="(letter, index) in letter_cells.slice(0, 2)"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
@@ -91,7 +91,7 @@
 							</div>
 						</td>
 
-						<template v-for="(field, f_index) in fields.slice(0, 3)">
+						<template v-for="(field, f_index) in fields.slice(0, 2)">
 							<td
 								:key="f_index"
 								class="t-cell font-bold"
@@ -1566,7 +1566,7 @@ export default {
 			let sl_pos = -1;
 			for (let i = 0; i < q - 1; i++) {
 				fl_pos = (i + 1) % letters.length;
-				if (fl_pos == 0) sl_pos++;
+				if (fl_pos === 0) sl_pos++;
 
 				if (sl_pos >= 0) {
 					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
