@@ -54,7 +54,7 @@
 							class="ruler-cells t-cell text-center"
 						>
 							<div class="in-cell inner-div">
-								{{ letter }} test me
+								{{ letter }}
 							</div>
 						</td>
 					</tr>

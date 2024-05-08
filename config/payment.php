@@ -10,7 +10,6 @@ return [
         'secret_key' => env('PRODAMUS_SHOP_KEY', 'ce5169b490209093ba24359f2beb6cf6b0914badc326c7788528645dd1fe6859'),
         'success_url' => 'https://exmaple.com',
         'failed_url' => 'https://exmaple.com',
-        'currency' => 'rub'
     ],
     'wallet1' => [
         'payment_url' => env('WALLET1_SHOP_PAYMENT_URL', 'https://wl.walletone.com/checkout/checkout/Index'),
@@ -18,6 +17,5 @@ return [
         'shop_key' =>    env('WALLET1_SHOP_KEY', "164796334920"),
         'success_url' => 'https://exmaple.com',
         'failed_url' => 'https://exmaple.com',
-        'currency' => 'kzt'
     ]
 ];
