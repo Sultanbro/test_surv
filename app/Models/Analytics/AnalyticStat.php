@@ -486,7 +486,7 @@ class AnalyticStat extends Model
     {
         if ($number == 0) return 'A';
 
-        $number = $number - 2;
+        $number = $number - 1;
 
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
