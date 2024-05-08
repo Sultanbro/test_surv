@@ -601,50 +601,48 @@ class AnalyticStat extends Model
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
-//        foreach ($matches[0] as $match) {
-        $coordinate = str_replace(["[", "]"], "", $matches[0]);
         dd_if(
             auth()->id() == 5
             && $statistic->row_id == 15348
             && $statistic->column_id == 25989,
-            $statistic,
-            $coordinate
+            str_replace(["[", "]"], "", explode($matches[0]))
         );
-        $exp = explode(':', $coordinate);
-        $column_id = $exp[0];
-        $row_id = $exp[1];
+        foreach ($matches[0] as $match) {
+            $match = str_replace(["[", "]"], "", $match);
+            $exp = explode(':', $match);
+            $column_id = $exp[0];
+            $row_id = $exp[1];
 
-        /** @var AnalyticStat $cell */
-        $cell = ($stats ?? AnalyticStat::query())
-            ->where('column_id', $column_id)
-            ->where('row_id', $row_id)
-            ->where('date', $date)
-            ->first();
+            /** @var AnalyticStat $cell */
+            $cell = ($stats ?? AnalyticStat::query())
+                ->where('column_id', $column_id)
+                ->where('row_id', $row_id)
+                ->where('date', $date)
+                ->first();
 
-        if ($cell) {
-            if ($cell->type == 'formula') {
-                $sameStat = $cell->row_id == $statistic->row_id && $cell->column_id == $statistic->column_id;
-                if ($sameStat) continue;
-                $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
+            if ($cell) {
+                if ($cell->type == 'formula') {
+                    $sameStat = $cell->row_id == $statistic->row_id && $cell->column_id == $statistic->column_id;
+                    if ($sameStat) continue;
+                    $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
 
-                $text = str_replace("[" . $match . "]", (float)$value, $text);
-            } else if ($cell->type == 'sum') {
-                //dump($only_days);
-                $value = self::daysSum(
-                    date: $date,
-                    row_id: $cell->row_id,
-                    group_id: $cell->group_id,
-                    stats: $stats
-                );
-                //dump('sum ' .$value);
-                $text = str_replace("[" . $match . "]", (float)$value, $text);
-            } else {
-                // dump('value ' . $cell->show_value);
-                $text = str_replace("[" . $match . "]", (float)$cell->show_value, $text);
+                    $text = str_replace("[" . $match . "]", (float)$value, $text);
+                } else if ($cell->type == 'sum') {
+                    //dump($only_days);
+                    $value = self::daysSum(
+                        date: $date,
+                        row_id: $cell->row_id,
+                        group_id: $cell->group_id,
+                        stats: $stats
+                    );
+                    //dump('sum ' .$value);
+                    $text = str_replace("[" . $match . "]", (float)$value, $text);
+                } else {
+                    // dump('value ' . $cell->show_value);
+                    $text = str_replace("[" . $match . "]", (float)$cell->show_value, $text);
+                }
             }
         }
-//        }
 
 
         try {
