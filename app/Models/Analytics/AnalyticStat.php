@@ -484,7 +484,7 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
-        if (0 >= $number) return "A";
+        if (($number - 1) == 0) return "A";
 
         $number = $number - 2; // to prevent cell mistakes
 
