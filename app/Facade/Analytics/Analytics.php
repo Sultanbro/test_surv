@@ -205,7 +205,6 @@ final class Analytics
                         $val = round($val, 1);
                         $statistic->show_value = $val;
                         $statistic->save();
-                        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $val);
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -395,6 +394,7 @@ final class Analytics
         $days = empty($days) ? range(1, 31) : $days;
 
         $columns = $columns->whereIn('name', $days)->pluck('id')->toArray();
+        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $columns);
 
         $total = 0;
 
