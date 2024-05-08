@@ -1823,7 +1823,7 @@ class KpiStatisticService
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
-            dd_if(auth()->id() == 5 && $kpi->id == 157, count($kpi->users), $kpi_sum, $kpi->users);
+//            dd_if(auth()->id() == 5 && $kpi->id == 157, count($kpi->users), $kpi_sum, $kpi->users);
         }
 
         return [
@@ -2087,7 +2087,7 @@ class KpiStatisticService
                     $user['id']
                 );
                 $item = $this->calculatePercent($item);
-                dd_if($user['id'] == 1739, $item['percent'], count($kpi->items));
+//                dd_if($user['id'] == 1739, $item['percent'], count($kpi->items));
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
             }
