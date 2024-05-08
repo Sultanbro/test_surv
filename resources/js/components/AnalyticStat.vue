@@ -1566,7 +1566,7 @@ export default {
 			let sl_pos = -1;
 			for (let i = 0; i < q - 1; i++) {
 				fl_pos = (i + 1) % letters.length;
-				if (fl_pos === 0) sl_pos++;
+				if (fl_pos == 0) sl_pos++;
 
 				if (sl_pos >= 0) {
 					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
