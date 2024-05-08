@@ -601,12 +601,7 @@ class AnalyticStat extends Model
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-        dd_if(
-            auth()->id() == 5
-            && $statistic->row_id == 15348
-            && $statistic->column_id == 25989,
-            $matches
-        );
+
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -619,6 +614,13 @@ class AnalyticStat extends Model
                 ->where('row_id', $row_id)
                 ->where('date', $date)
                 ->first();
+
+            dd_if(
+                auth()->id() == 5
+                && $statistic->row_id == 15348
+                && $statistic->column_id == 25989,
+                $cell
+            );
 
             if ($cell) {
                 if ($cell->type == 'formula') {
