@@ -180,6 +180,7 @@ final class Analytics
                         }
 
                         $statistic->show_value = $val;
+                        $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
