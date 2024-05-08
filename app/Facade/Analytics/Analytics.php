@@ -172,16 +172,10 @@ final class Analytics
                         if ($afterToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
-                                stat: $statistic,
+                                statistic: $statistic,
                                 date: $date,
                                 round: $statistic->decimals,
                                 stats: $stats
-                            );
-                            dd_if(
-                                auth()->id() == 5
-                                && $statistic->row_id == 15348
-                                && $statistic->column_id == 25989,
-                                $val
                             );
                         }
 
@@ -597,7 +591,7 @@ final class Analytics
         $stat = $this->implStat($group_id, $date);
         if ($stat) {
             $val = AnalyticStat::calcFormula(
-                stat: $stat,
+                statistic: $stat,
                 date: $date,
                 round: 2,
                 stats: $stats
@@ -632,7 +626,7 @@ final class Analytics
         $stats = $statRepository->getByGroupId($groupId, $date);
 
         return $stat ? AnalyticStat::calcFormula(
-            stat: $stat,
+            statistic: $stat,
             date: $date,
             round: 2,
             only_days: $days,
