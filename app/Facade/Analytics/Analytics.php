@@ -177,6 +177,8 @@ final class Analytics
                                 round: $statistic->decimals,
                                 stats: $stats
                             );
+                            dd_if(auth()->id() == 5 && $statistic->row_id = 15348 && $statistic->column_id = 25989, $val);
+
                         }
 
                         $statistic->show_value = $val;
@@ -399,7 +401,6 @@ final class Analytics
         $total = 0;
 
         $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
-//        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $stats->pluck('show_value')->toArray());
 
 
         foreach ($stats as $stat) {
