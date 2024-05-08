@@ -324,7 +324,6 @@
 
 import AnalyticStat from '@/components/AnalyticStat'
 import CallBase from '@/components/CallBase'
-
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 const RentabilityGauges = () => import(/* webpackChunkName: "RentabilityGauges" */ '@/components/pages/Top/RentabilityGauges')  // TOП спидометры, есть и в аналитике
 import TableDecomposition from '@/components/tables/TableDecomposition'
@@ -332,9 +331,9 @@ import AnalyticsDetailes from '@/components/pages/AnalyticsPage/AnalyticsDetaile
 import JobtronButton from '@ui/Button.vue'
 import PopupMenu from '@ui/PopupMenu.vue'
 
-import {useYearOptions} from '../composables/yearOptions'
-import {mapState} from 'pinia'
-import {usePortalStore} from '@/stores/Portal'
+import { useYearOptions } from '../composables/yearOptions'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import {
 	fetchAnalytics,
 	createAnalyticsGroup,
@@ -440,18 +439,18 @@ export default {
 	},
 	computed: {
 		...mapState(usePortalStore, ['portal', 'isMain']),
-		years() {
-			if (!this.portal.created_at) return [new Date().getFullYear()]
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
-		activitiesOptions() {
+		activitiesOptions(){
 			return this.activities.map(({name, id}) => ({
 				id,
 				name,
 			}))
 		},
-		gauges() {
-			if (!this.performances) return []
+		gauges(){
+			if(!this.performances) return []
 			return [{
 				gauges: [
 					...this.performances.utility,
@@ -462,22 +461,22 @@ export default {
 				]
 			}]
 		},
-		currentGroup() {
+		currentGroup(){
 			return this.ggroups.find(group => group.id === this.currentGroupId)
 		},
 	},
 	watch: {
-		groups() {
+		groups(){
 			this.init()
 		}
 	},
 	created() {
-		if (this.groups) {
+		if(this.groups){
 			this.init()
 		}
 	},
 	methods: {
-		init() {
+		init(){
 			// выбор группы
 			// переделать на роуты
 			const urlParams = new URLSearchParams(window.location.search)
@@ -503,7 +502,7 @@ export default {
 				group_id: this.currentGroupId,
 			})
 
-			if (load) this.fetchData()
+			if(load) this.fetchData()
 		},
 
 		/**
@@ -521,7 +520,7 @@ export default {
 			})
 
 			for (let i = 1; i <= 12; i++) {
-				const month = (i.length === 1 ? '0' : '') + i
+				const month = (i.length === 1 ? '0': '') + i
 
 				fieldsArray.push({
 					key: i,
@@ -541,7 +540,7 @@ export default {
 			//Расчет выходных дней
 			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
 			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6, 0]) //Колличество выходных
+			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
 			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays // Колличество рабочих дней
 			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 // Колличество рабочих дней
@@ -555,10 +554,10 @@ export default {
 
 		onTabChange(active) {
 			this.active = active
-			window.history.replaceState({id: '100'}, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
 		},
 
-		async onUpdateDecomposition() {
+		async onUpdateDecomposition(){
 			const loader = this.$loading.show()
 			const request = {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
@@ -569,72 +568,78 @@ export default {
 			loader.hide()
 		},
 
-		async fetchActivities(request) {
-			try {
+		async fetchActivities(request){
+			try{
 				const {activities, weeks} = await API.fetchActivitiesV2(request)
 				this.activities = activities
 				this.weeks = weeks
 				this.ready.activities = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке показателей')
 			}
 		},
 
-		async fetchDecompositions(request) {
-			try {
+		async fetchDecompositions(request){
+			try{
 				const dec = await API.fetchDecompositionsV2(request)
 				this.decompositions = dec
 				this.ready.decompositions = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке декомпозиции')
 			}
 		},
 
-		async fetchPerformances(request) {
-			try {
+		async fetchPerformances(request){
+			try{
 				this.performances = await API.fetchPerformancesV2(request)
 				this.ready.performances = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке полезности')
 			}
 		},
 
-		async fetchFiredInfo(request) {
-			try {
+		async fetchFiredInfo(request){
+			try{
 				this.firedInfo = await API.fetchFiredInfoV2(request)
 				this.ready.fired = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке информации о уволенных сотрудниках')
 			}
 		},
 
-		async fetchGroups(request) {
-			try {
-				const {is_active, is_archived} = await API.fetchAnalyticsGroupsV2(request)
+		async fetchGroups(request){
+			try{
+				const {is_active, is_archived } = await API.fetchAnalyticsGroupsV2(request)
 				const groups = Array.isArray(is_active) ? is_active : Object.values(is_active)
 				this.ggroups = groups.filter(group => group.has_analytics)
 				this.noAnGroups = groups.filter(group => !group.has_analytics)
 				this.archived_groups = Array.isArray(is_archived) ? is_archived : Object.values(is_archived)
 				this.ready.groups = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке информации о отделах')
 			}
 		},
 
-		async fetchAnalytics(request) {
-			try {
+		async fetchAnalytics(request){
+			try{
 				const {columns, table, report_cards: reportCards} = await API.fetchAnalyticsV2(request)
 				this.columns = Array.isArray(columns) ? columns : Object.values(columns)
-				if (this.columns[0]?.key !== 'name') this.columns.splice(0, 1)
+				if(this.columns[0]?.key !== 'name') this.columns.splice(0, 1)
 				this.table = Array.isArray(table) ? table : Object.values(table)
 				this.reportCards = reportCards || {}
 				this.ready.analytics = true
-			} catch (error) {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast('Ошибка при загрузке сводной')
 			}
@@ -677,7 +682,7 @@ export default {
 			this.active = active ? active : '1'
 
 			this.askey++
-			window.history.replaceState({id: '100'}, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroupId + '&active=' + this.active)
 			this.monthInfo.workDays = this.getBusinessDateCount(this.monthInfo.month, this.monthInfo.currentYear, this.currentGroup.workdays)
 		},
 
@@ -690,13 +695,13 @@ export default {
 			const end = new Date(next_year, next_month, 1)
 
 			const days = (end - start) / 86400000
-			const weekends = workdays == 5 ? [0, 6] : [0]
+			const weekends = workdays == 5 ? [0,6] : [0]
 
 			let business_days = 0
 
-			for (let i = 1; i <= days; i++) {
+			for(let i = 1; i <= days; i++) {
 				const d = new Date(year, month, i).getDay()
-				if (!weekends.includes(d)) business_days++
+				if(!weekends.includes(d)) business_days++
 			}
 
 			return business_days
@@ -711,14 +716,15 @@ export default {
 					group_id: this.groupForCreate,
 				})
 				const index = this.noAnGroups.findIndex(group => group.id === this.groupForCreate)
-				if (~index) {
+				if(~index){
 					const [group] = this.noAnGroups.splice(index, 1)
 					group.has_analytics = 1
 					this.ggroups.push(group)
 				}
 				this.$toast.success('Аналитика для группы добавлена')
 				this.fetchData()
-			} catch (error) {
+			}
+			catch (error) {
 				this.$toast.error('Аналитика для группы не добавлена')
 				console.error(error)
 			}
@@ -734,7 +740,7 @@ export default {
 					id: this.restore_group
 				})
 				const index = this.archived_groups.findIndex(group => group.id === this.restore_group)
-				if (~index) {
+				if(~index){
 					const group = this.archived_groups[index]
 					this.ggroups.push(group)
 					this.archived_groups.splice(index, 1)
@@ -744,7 +750,8 @@ export default {
 				this.restore_group = null
 				this.showArchive = false
 				this.fetchData()
-			} catch (error) {
+			}
+			catch (error) {
 				this.$toast.error('Не удалось восстановить аналитику')
 				console.error(error)
 			}
@@ -761,32 +768,33 @@ export default {
 				})
 				this.$toast.success('Архивирован')
 				const index = this.ggroups.findIndex(group => group.id === this.currentGroupId)
-				if (~index) {
+				if(~index){
 					const group = this.ggroups[index]
 					this.archived_groups.push(group)
 					this.ggroups.splice(index, 1)
 				}
 				this.currentGroupId = this.ggroups[0]?.id
 				this.fetchData()
-			} catch (error) {
+			}
+			catch (error) {
 				this.$toast.error('Не удалось архивировать аналитику')
 				console.error(error)
 			}
 			loader.hide()
 		},
-		onUpdateActivity(activities) {
+		onUpdateActivity(activities){
 			this.activities = activities
 			this.fetchData()
 		},
-		onDeleteActivity() {
+		onDeleteActivity(){
 			this.fetchData()
 		},
-		onOrderActivity() {
+		onOrderActivity(){
 			this.fetchData()
 		},
 
-		onClickAnControls() {
-			if (this.isAnControls) {
+		onClickAnControls(){
+			if(this.isAnControls){
 				this.isAnControls = false
 				return
 			}
@@ -794,14 +802,14 @@ export default {
 				this.isAnControls = true
 			}, 300)
 		},
-		onClickControlsOutside() {
+		onClickControlsOutside(){
 			this.isAnControls = false
-			if (this.anControlsTimeout) clearTimeout(this.anControlsTimeout)
+			if(this.anControlsTimeout) clearTimeout(this.anControlsTimeout)
 		},
 
-		async saveRenabilityGaguge(gauge) {
+		async saveRenabilityGaguge(gauge){
 			const loader = this.$loading.show()
-			if (typeof gauge.options === 'string') gauge.options = JSON.parse(gauge.options)
+			if(typeof gauge.options === 'string') gauge.options = JSON.parse(gauge.options)
 			gauge = this.gaugeSectionsCrutch(gauge)
 			const month = +this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M')
 			try {
@@ -814,24 +822,25 @@ export default {
 					type: 2,
 				})
 				this.$toast.success('Успешно сохранено')
-			} catch (error) {
+			}
+			catch (error) {
 				console.error('[TableRentability.saveRenabilityGaguge]', error)
 				alert(error)
 			}
 			loader.hide()
 		},
 
-		gaugeSectionsCrutch(gauge) {
-			if (!gauge.options) gauge.options = {}
-			if (!gauge.options.staticLabels) gauge.options.staticLabels = {}
+		gaugeSectionsCrutch(gauge){
+			if(!gauge.options) gauge.options = {}
+			if(!gauge.options.staticLabels) gauge.options.staticLabels = {}
 			const sections = JSON.parse(gauge.sections)
 			gauge.options.staticLabels.labels = sections
 			gauge.options.staticZones = this.createZones(sections)
 			return gauge
 		},
 
-		createZones(sections) {
-			switch (sections.length) {
+		createZones(sections){
+			switch(sections.length){
 			case 2:
 				return [
 					{
@@ -984,22 +993,19 @@ export default {
 </script>
 
 <style lang="scss">
-.AnalyticsPage {
-  &-gauges {
+.AnalyticsPage{
+  &-gauges{
     flex: 1;
-
     .TopGauges-group,
-    .TopGauges-gauges {
+    .TopGauges-gauges{
       flex: 1;
       justify-content: flex-start !important;
       align-items: flex-end;
     }
-
-    .TopGauges-gauges {
+    .TopGauges-gauges{
       gap: 1.5rem;
     }
-
-    .TopGauges-gauge {
+    .TopGauges-gauge{
       flex: 0 0 content;
       // &:last-of-type{
       // 	margin-left: auto;
@@ -1007,34 +1013,30 @@ export default {
     }
   }
 
-  &-header {
-    ~ .tabs {
+  &-header{
+    ~ .tabs{
       overflow: visible;
     }
   }
 
-  &-skeletonImg {
+  &-skeletonImg{
     width: 100px;
     height: 100px;
   }
 
   .btn {
     padding: .375rem .75rem;
-
     &.btn-sm {
       padding: 0.15rem 0.5rem;
     }
   }
-
-  .cell-input {
+  .cell-input{
     padding: 0 !important;
   }
 }
-
 .mw30 {
   min-width: 30px;
 }
-
 .rating {
   display: inline-block;
   unicode-bidi: bidi-override;
@@ -1063,27 +1065,23 @@ export default {
   display: flex;
   z-index: 0;
 }
-
 .ap-text {
   margin: 0;
   display: flex;
   font-size: 12px;
   align-items: center;
 }
-
 .ap-text span {
   font-size: 16px;
   font-weight: 700;
   margin-left: 5px;
 }
-
 .fz12 {
   font-size: 12px;
   margin-bottom: 0;
   line-height: 20px;
   color: #000 !important;
 }
-
 .wrap {
   background: #f3f7f9;
   margin-bottom: 15px;
