@@ -58,7 +58,6 @@
 							</div>
 						</td>
 					</tr>
-
 					<tr
 						v-for="(item, i_index) in items"
 						:key="i_index"
@@ -380,7 +379,7 @@
 					>
 						<template v-for="(field, f_index) in fields">
 							<td
-								v-if="f_index > 3"
+								v-if="f_index > 2"
 								:key="f_index"
 								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
@@ -448,7 +447,7 @@
 				<template v-for="(item, i_index) in items">
 					<template v-for="(field,f_index) in fields">
 						<div
-							v-if="f_index > 3 && item[field.key].context"
+							v-if="f_index > 2 && item[field.key].context"
 							:key="i_index + '-' + f_index"
 							:data-an-context="i_index + '-' + f_index"
 							class="contextor"
@@ -1056,7 +1055,7 @@ export default {
 		},
 
 		focus(i, f) {
-			if ([1, 2, 3].includes(i) && f == 0 && this.oldGroup) return ''
+			if (i < 3 && f == 0 && this.oldGroup) return ''
 
 			if (!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
