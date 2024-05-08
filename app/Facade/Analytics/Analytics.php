@@ -177,8 +177,12 @@ final class Analytics
                                 round: $statistic->decimals,
                                 stats: $stats
                             );
-                            dd_if(auth()->id() == 5 && $statistic->row_id = 15348 && $statistic->column_id = 25989, $val);
-
+                            dd_if(
+                                auth()->id() == 5
+                                && $statistic->row_id == 15348
+                                && $statistic->column_id == 25989,
+                                $val
+                            );
                         }
 
                         $statistic->show_value = $val;
