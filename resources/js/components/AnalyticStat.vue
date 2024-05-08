@@ -49,7 +49,7 @@
 							</div>
 						</td>
 						<td
-							v-for="(letter, index) in letter_cells.slice(0, 2)"
+							v-for="(letter, index) in letter_cells.slice(0, 3)"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
@@ -87,11 +87,11 @@
 										class="pointer ChatIcon-parent"
 									/>
 								</span>
-								<span>{{ i_index + 1 }}</span>
+								<span>{{ i_index }}</span>
 							</div>
 						</td>
 
-						<template v-for="(field, f_index) in fields.slice(0, 2)">
+						<template v-for="(field, f_index) in fields.slice(0, 3)">
 							<td
 								:key="f_index"
 								class="t-cell font-bold"
