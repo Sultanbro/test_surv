@@ -450,7 +450,7 @@ class AnalyticStat extends Model
 
             if (array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
 
-                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]]) . $row_keys[$exp[1]], $text);
+                $text = str_replace("[" . $match . "]", self::getLetter($col_keys[$exp[0]] - 2) . $row_keys[$exp[1]], $text);
             } else {
                 $text = str_replace("[" . $match . "]", '0', $text);
             }
@@ -484,14 +484,16 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
+        if (0 >= $number) return "A";
+
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
         $sl_pos = -1;
 
-        $fl_pos = ($number + 1) % 26;
+        $fl_pos = ($number + 1) % count($letters);
         if ($fl_pos == 0) $sl_pos++;
 
-        if ($number >= 26 && $fl_pos != 0) {
+        if ($number >= count($letters) && $fl_pos != 0) {
             $sl_pos = 0;
         }
 
@@ -500,7 +502,6 @@ class AnalyticStat extends Model
         } else {
             $res = $letters[$fl_pos];
         }
-
 
         return $res;
     }
