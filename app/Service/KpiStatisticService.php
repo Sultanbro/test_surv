@@ -2086,7 +2086,7 @@ class KpiStatisticService
                     $item,
                     $user['id']
                 );
-
+                dd_if($user->id == 1739, $item, $this->calculatePercent($item), $kpi->items->toArray());
                 $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
