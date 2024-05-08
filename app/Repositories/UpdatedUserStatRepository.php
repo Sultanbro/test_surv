@@ -29,6 +29,8 @@ class UpdatedUserStatRepository extends CoreRepository implements UpdatedUserSta
         string $value
     )
     {
+        /** @var User $authUser */
+        $authUser = auth()->user();
         return $this->model()->updateOrCreate(
             [
                 'user_id' => $userId,
@@ -41,7 +43,8 @@ class UpdatedUserStatRepository extends CoreRepository implements UpdatedUserSta
                 'date' => $date,
                 'activity_id' => $activityId,
                 'kpi_item_id' => $kpiItemId,
-                'value' => $value
+                'value' => $value,
+                'updated_at' => Carbon::now($authUser->timezone())->toDateTimeString()
             ]
         );
     }

@@ -4,6 +4,7 @@ namespace App\Models\Analytics;
 
 use App\DTO\Analytics\V2\CreateAnalyticDto;
 use App\Helpers\DateHelper;
+use App\Models\Scopes\AnalyticColumnScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,12 +29,18 @@ class AnalyticColumn extends Model
         'order',
     ];
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new AnalyticColumnScope);
+    }
 
     public static function defaults($group_id, $date)
     {
         $fields = [
             'name',
-            'plan',
             'sum',
             'avg',
         ];
@@ -66,11 +73,10 @@ class AnalyticColumn extends Model
      */
     public static function createAnalyticsColumns(CreateAnalyticDto $dto): void
     {
-        $date           = Carbon::createFromDate($dto->year, $dto->month)->firstOfMonth();
-        $daysInMonth    = DateHelper::daysInMonthToArray($dto->year, $dto->month);
-        $fields         = [
+        $date = Carbon::createFromDate($dto->year, $dto->month)->firstOfMonth();
+        $daysInMonth = DateHelper::daysInMonthToArray($dto->year, $dto->month);
+        $fields = [
             'name',
-            'plan',
             'sum',
             'avg',
         ];
@@ -78,13 +84,12 @@ class AnalyticColumn extends Model
 
         $insertionValues = [];
 
-        foreach ($columns as $index => $column)
-        {
+        foreach ($columns as $index => $column) {
             $insertionValues[] = [
-                'group_id'  => $dto->groupId,
-                'name'      => $column,
-                'date'      => $date->toDateString(),
-                'order'     => $index,
+                'group_id' => $dto->groupId,
+                'name' => $column,
+                'date' => $date->toDateString(),
+                'order' => $index,
             ];
         }
 

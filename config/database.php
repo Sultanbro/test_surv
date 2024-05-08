@@ -56,6 +56,9 @@ return [
             'strict' => false,
             'engine' => null,
             'timezone' => '+00:00',
+            'options'   => [
+                PDO::ATTR_EMULATE_PREPARES => true
+            ]
         ],
 
         'testing' => [
@@ -73,6 +76,7 @@ return [
             'engine' => null,
             'timezone' => '+00:00',
         ],
+
 
         /*
         |--------------------------------------------------------------------------
