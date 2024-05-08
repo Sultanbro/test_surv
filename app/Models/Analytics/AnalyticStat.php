@@ -503,7 +503,7 @@ class AnalyticStat extends Model
         if ($sl_pos >= 0) {
             $res = $letters[$sl_pos] . $letters[$fl_pos];
         } else {
-            $res = $letters[$fl_pos];
+            $res = $letters[$fl_pos] ?? "A";
         }
 
         return $res;
