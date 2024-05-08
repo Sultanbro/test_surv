@@ -49,7 +49,7 @@
 							</div>
 						</td>
 						<td
-							v-for="(letter, index) in letter_cells.slice(0, 2)"
+							v-for="(letter, index) in letter_cells.slice(0, 4)"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
