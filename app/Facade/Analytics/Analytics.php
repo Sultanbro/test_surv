@@ -152,7 +152,7 @@ final class Analytics
 
             foreach ($columns as $columnIndex => $column) {
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = AnalyticStat::getLetter($columnIndex);
+                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -697,7 +697,7 @@ final class Analytics
         }
 
         foreach ($columnsData as $index => $column) {
-            $columns[$column->id] = AnalyticStat::getLetter($index);
+            $columns[$column->id] = $index != 0 ? AnalyticStat::getLetter($index - 1) : 'A';
         }
 
         return [

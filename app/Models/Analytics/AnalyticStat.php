@@ -119,7 +119,7 @@ class AnalyticStat extends Model
         foreach ($rows as $r_index => $row) {
             $row_keys[$row->id] = $r_index + 1;
             foreach ($columns as $c_index => $column) {
-                $col_keys[$column->id] = self::getLetter($c_index);
+                $col_keys[$column->id] = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
             }
         }
 
@@ -144,7 +144,7 @@ class AnalyticStat extends Model
                 $add_class = Analytics::getClass($column->name, $weekdays, $depending_from_row);
 
 
-                $l = self::getLetter($c_index);
+                $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
                 $cell_letter = $l;
 
                 $stat = $all_stats->where('row_id', $row->id)
@@ -484,27 +484,23 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
-//        if ($number == 0) return "A";
-
-        $number = $number - 2; // to prevent cell mistakes
-
-
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
         $sl_pos = -1;
 
-        $fl_pos = ($number + 1) % count($letters);
+        $fl_pos = ($number + 1) % 26;
         if ($fl_pos == 0) $sl_pos++;
 
-        if ($number >= count($letters) && $fl_pos != 0) {
+        if ($number >= 26 && $fl_pos != 0) {
             $sl_pos = 0;
         }
 
         if ($sl_pos >= 0) {
             $res = $letters[$sl_pos] . $letters[$fl_pos];
         } else {
-            $res = $letters[$fl_pos] ?? "A";
+            $res = $letters[$fl_pos];
         }
+
 
         return $res;
     }
