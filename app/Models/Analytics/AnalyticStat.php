@@ -119,7 +119,7 @@ class AnalyticStat extends Model
         foreach ($rows as $r_index => $row) {
             $row_keys[$row->id] = $r_index + 1;
             foreach ($columns as $c_index => $column) {
-                $col_keys[$column->id] = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
+                $col_keys[$column->id] = self::getLetter($c_index);
             }
         }
 
@@ -144,7 +144,7 @@ class AnalyticStat extends Model
                 $add_class = Analytics::getClass($column->name, $weekdays, $depending_from_row);
 
 
-                $l = $c_index != 0 ? self::getLetter($c_index - 1) : 'A';
+                $l = self::getLetter($c_index);
                 $cell_letter = $l;
 
                 $stat = $all_stats->where('row_id', $row->id)
@@ -484,6 +484,10 @@ class AnalyticStat extends Model
 
     public static function getLetter($number): string
     {
+        if ($number == 0) return 'A';
+
+        $number = $number - 2;
+
         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
         $sl_pos = -1;
