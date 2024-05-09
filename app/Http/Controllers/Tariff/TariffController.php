@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers\Tariff;
 
 use App\Http\Controllers\Controller;
-use App\Service\Payments\Core\TariffGetAllService;
+use App\Service\Payments\Core\GetTariffsService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Cache;
 class TariffController extends Controller
 {
     /**
-     * @param TariffGetAllService $tariffGetAllService
+     * @param GetTariffsService $tariffGetAllService
      */
     public function __construct(
-        public TariffGetAllService $tariffGetAllService
+        public GetTariffsService $tariffGetAllService
     )
     {
     }
@@ -28,7 +28,7 @@ class TariffController extends Controller
         return $this->response(
             message: 'success',
             data: Cache::driver('central')
-                ->remember('currencies', 60 * 60 * 24, fn() => $this->tariffGetAllService->handle()),
+                ->rememberForever('currencies', fn() => $this->tariffGetAllService->handle()),
         );
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\Portal\Portal;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Support\Core\CustomException;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;

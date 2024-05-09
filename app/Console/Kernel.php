@@ -21,7 +21,7 @@ use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\TestingCommand;
-use App\Console\Commands\Tools\FastTestingCommand;
+use App\Console\Commands\Tools\ShowPaymentGatewaysCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -56,7 +56,7 @@ class Kernel extends ConsoleKernel
         RunTestServerScriptCommand::class,
         RunDailyCommandsForTimetrackingSalaryAndTable::class,
         BackupMysqlToDevServerCommand::class,
-        FastTestingCommand::class,
+        ShowPaymentGatewaysCommand::class,
         DailySalaryUpdate::class,
         CountHours::class
     ];

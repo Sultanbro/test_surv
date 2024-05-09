@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Core;
 
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Support\Core\CustomException;
 use Exception;
 
@@ -28,23 +28,22 @@ abstract class BasePaymentGateway
 
 
     /**
-     * @param NewTariffPaymentDTO $data
+     * @param CreateInvoiceDTO $data
      * @param CentralUser $authUser
-     * @return ConfirmationResponse
+     * @return Invoice
      * @throws Exception
      */
-    public function pay(NewTariffPaymentDTO $data, CentralUser $authUser): ConfirmationResponse
+    public function invoice(CreateInvoiceDTO $data, CentralUser $authUser): Invoice
     {
-        $connector = $this->connector();
-        return $connector->pay($data, $authUser);
+        return $this->connector()->createNewInvoice($data, $authUser);
     }
 
     /**
-     * @param TariffPayment $payment
+     * @param TariffSubscription $payment
      * @return bool
      * @throws Exception
      */
-    public function updateStatusByPayment(TariffPayment $payment): bool
+    public function updateStatusByPayment(TariffSubscription $payment): bool
     {
         try {
             $paymentInfo = $this->info($payment->payment_id);
@@ -63,5 +62,5 @@ abstract class BasePaymentGateway
         }
     }
 
-    abstract public function invoice(array $data): PaymentInvoice;
+    abstract public function report(array $data): PaymentReport;
 }

@@ -2,12 +2,12 @@
 
 namespace App\Service\Payments\Prodamus;
 
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\Hmac;
 use App\Service\Payments\Core\InvoiceResponse;
-use App\Service\Payments\Core\PaymentInvoice;
+use App\Service\Payments\Core\PaymentReport;
 
-class ProdamusInvoice extends PaymentInvoice
+class ProdamusReport extends PaymentReport
 {
     const CURRENCY = 'rub';
 
@@ -22,8 +22,8 @@ class ProdamusInvoice extends PaymentInvoice
     {
         $paymentId = $this->data['fields']['order_id'];
         $status = $this->data['fields']['payment_status'] ?? null;
-        /** @var TariffPayment $payment */
-        $payment = TariffPayment::query()->where('payment_id', $paymentId)->first();
+        /** @var TariffSubscription $payment */
+        $payment = TariffSubscription::query()->where('payment_id', $paymentId)->first();
         if ($payment && $status == 'success') {
             $payment->updateStatusToSuccess();
             return new InvoiceResponse(['success']);

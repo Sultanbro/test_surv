@@ -70,15 +70,75 @@ export default {
 </script>
 
 <style scoped>
-
+@media (min-width: 1400px) {
 	.price-trial{
 		background-color: #1A1A1A;
-		width: 1195px;
+		width: 1195px !important;
 		border-radius: 24px;
 		display: flex;
 		position: relative;
 		overflow: hidden;
 	}
+	.price-trial-icon-like{
+		position: absolute;
+		z-index: 7;
+		width: 88px;
+		height: 88px;
+		top: 10%;
+		left: 70%;
+	}
+
+	.price-trial-checkbox{
+		position: absolute;
+		z-index: 7;
+		width: 153px !important;
+		height: 153px !important;
+		top: 40% !important;
+		left: 65%;
+	}
+	.price-trial-icon-box{
+		position: absolute;
+		z-index: 7;
+		width: 262px !important;
+		height: 262px !important;
+		top: 0% !important;
+		left: 77%;
+	}
+}
+.price-trial{
+	background-color: #1A1A1A;
+	width: 1000px;
+	border-radius: 24px;
+	display: flex;
+	position: relative;
+	overflow: hidden;
+}
+.price-trial-icon-like{
+	position: absolute;
+	z-index: 7;
+	width: 88px;
+	height: 88px;
+	top: 10%;
+	left: 70%;
+}
+
+.price-trial-checkbox{
+	position: absolute;
+	z-index: 7;
+	width: 103px;
+	height: 103px;
+	top: 55%;
+	left: 65%;
+}
+.price-trial-icon-box{
+	position: absolute;
+	z-index: 7;
+	width: 212px;
+	height: 212px;
+	top: 20%;
+	left: 77%;
+}
+
 	.price-trial-content{
 			max-width: 610px;
 			width: 100%;
@@ -133,29 +193,5 @@ export default {
 		filter: blur(40px);
 	}
 
-	.price-trial-icon-like{
-		position: absolute;
-		z-index: 7;
-		width: 88px;
-		height: 88px;
-		top: 10%;
-		left: 70%;
-	}
 
-	.price-trial-checkbox{
-		position: absolute;
-		z-index: 7;
-		width: 153px;
-		height: 153px;
-		top: 40%;
-		left: 65%;
-  }
-	.price-trial-icon-box{
-		position: absolute;
-		z-index: 7;
-		width: 262px;
-		height: 262px;
-
-		left: 77%;
-  }
 </style>

@@ -14,7 +14,8 @@ class CompanyController extends Controller
      * @param CabinetService $cabinetService
      */
     public function __construct(public CabinetService $cabinetService)
-    {}
+    {
+    }
 
     /**
      * получить овнера компании
@@ -35,6 +36,16 @@ class CompanyController extends Controller
         return $this->response(
             message: 'Success',
             data: $owner
+        );
+    }
+
+    public function tenants(): JsonResponse
+    {
+        $owner = $this->cabinetService->getOwnerByTenantId(tenant('id'));
+        $tenants = $owner->tenants()->get()->toArray();
+        return $this->response(
+            message: 'Success',
+            data: $tenants
         );
     }
 }

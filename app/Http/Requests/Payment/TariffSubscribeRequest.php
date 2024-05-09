@@ -1,44 +1,30 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Http\Requests\Api\Payment;
+namespace App\Http\Requests\Payment;
 
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Enums\Payments\CurrencyEnum;
 use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class DoPaymentRequest extends FormRequest
+class TariffSubscribeRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules(): array
     {
         return [
             'currency' => 'required|in:kzt,rub,usd',
             'tariff_id' => ['required', 'integer', new TariffExist],
+            'tenant_id' => ['nullable', 'string'],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
         ];
     }
 
     /**
-     * @return NewTariffPaymentDTO
+     * @return CreateInvoiceDTO
      */
-    public function toDto(): NewTariffPaymentDTO
+    public function toDto(): CreateInvoiceDTO
     {
         $validated = $this->validated();
 
@@ -46,11 +32,13 @@ class DoPaymentRequest extends FormRequest
         $tariffId = Arr::get($validated, 'tariff_id');
         $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $provider = CurrencyEnum::provider($currency);
+        $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
 
-        return new NewTariffPaymentDTO(
+        return new CreateInvoiceDTO(
             $currency,
             $tariffId,
             $extraUsersLimit,
+            $tenant,
             $provider
         );
     }
