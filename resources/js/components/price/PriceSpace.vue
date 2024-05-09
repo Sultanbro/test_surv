@@ -38,6 +38,12 @@
 						</p>
 						<b-skeleton v-else />
 					</div>
+					<div class="price-space-buttons">
+						<button>Продлить</button>
+						<p @click="editRate">
+							Управление тарифом
+						</p>
+					</div>
 				</div>
 			</div>
 			<div class="price-space-content">
@@ -78,111 +84,143 @@
 <script>
 import WhatsAppIcon from '../pages/Pricing/assets/WhatsAppIcon.vue';
 import MessageIcon from '../pages/Pricing/assets/MessageIcon.vue';
-import {mapActions, mapState} from 'pinia';
-import {usePricingStore} from '../../stores/Pricing';
+import { mapActions, mapState } from 'pinia';
+import { usePricingStore } from '../../stores/Pricing';
+import { useModalStore } from '../../stores/Modal';
+import { usePricingPeriodStore } from '../../stores/PricingPeriod';
 
 export default {
 	name: 'PriceSpace',
-	components: {MessageIcon, WhatsAppIcon},
-	data(){
-		return{
+	components: { MessageIcon, WhatsAppIcon },
+	data() {
+		return {
 			names: {
 				free: 'Бесплатный',
 				base: 'База',
 				standard: 'Стандарт',
 				pro: 'PRO',
 			},
-		}
+		};
 	},
-	computed:{
+	computed: {
 		...mapState(usePricingStore, ['current', 'items', 'manager']),
-		totalUsers(){
-			if(!this.current) return 0
-			return (this.current.extra_user_limit || 0) + (this.current.tariff.users_limit || 0)
-		}
+		totalUsers() {
+			if (!this.current) return 0;
+			return (
+				(this.current.extra_user_limit || 0) +
+				(this.current.tariff.users_limit || 0)
+			);
+		},
 	},
-	created(){
-		this.fetchManager()
+	created() {
+		this.fetchManager();
 	},
-	methods:{
+	methods: {
+		...mapActions(usePricingPeriodStore, ['connectedTariff']),
+		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(usePricingStore, ['fetchManager']),
-		fff(){
+		fff() {},
+		editRate() {
+			this.connectedTariff('PRO')
+			this.setCurrentModal('editRate')
 		}
-	}
-}
+	},
+};
 </script>
 
 <style scoped>
-.price-space{
+.price-space {
 	width: 1195px;
 }
 
-.price-space-title{
+.price-space-title {
 	font-size: 44px;
-		font-weight: 600;
-		line-height: 54px;
+	font-weight: 600;
+	line-height: 54px;
 }
 
-.price-space-content{
+.price-space-content {
 	display: flex;
 	gap: 24px;
-
 }
 
-.price-space-image{
+.price-space-image {
 	max-width: 164px;
 	width: 100%;
 	border-radius: 16px;
 }
 
-.price-space-title-block{
-		font-size: 20px;
-		font-weight: 600;
-		line-height: 30px;
-		margin-bottom: 8px;
+.price-space-title-block {
+	font-size: 20px;
+	font-weight: 600;
+	line-height: 30px;
+	margin-bottom: 8px;
 }
 
-.price-space-text-content{
-		margin-top: 8px;
+.price-space-text-content {
+	margin-top: 8px;
 	display: flex;
-		gap: 4px;
+	gap: 4px;
 }
 
-.price-space-text-name{
-		color: #737B8A;
-		font-size: 16px;
-		font-weight: 400;
-}
-
-.price-space-name-data{
+.price-space-text-name {
+	color: #737b8a;
 	font-size: 16px;
-
+	font-weight: 400;
 }
-.price-space-info-blocks{
+
+.price-space-name-data {
+	font-size: 16px;
+}
+.price-space-info-blocks {
 	display: flex;
 	justify-content: space-between;
-		margin-top: 24px;
+	margin-top: 24px;
 }
 
-.price-space-info{
+.price-space-info {
 	display: flex;
-		flex-direction: column;
-	max-width: 258px;
+	flex-direction: column;
+	max-width: 358px;
 	width: 100%;
 }
 
-.price-space-contact{
-		margin-top: auto;
+.price-space-contact {
+	margin-top: auto;
 	display: flex;
-		gap: 12px;
-		align-items: center;
+	gap: 12px;
+	align-items: center;
 }
 
-.price-space-button{
-		background-color: #EDEDED;
+.price-space-button {
+	background-color: #ededed;
 	width: 40px;
 	height: 40px;
-		border-radius: 8px;
-		padding: 8px;
+	border-radius: 8px;
+	padding: 8px;
+}
+
+.price-space-buttons{
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.price-space-buttons button {
+  width: 156px;
+  height: 32px;
+  padding: 5px 24px;
+  outline: none;
+  color: white;
+  background-color: #0C50FF;
+  border-radius: 8px;
+}
+
+.price-space-buttons p {
+  color: #0C50FF;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
 }
 </style>
