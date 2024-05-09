@@ -164,7 +164,7 @@ class AnalyticStat extends Model
                     if ($stat->type == 'formula') {
                         $arr['value'] = self::convert_formula($stat->value, $row_keys, $col_keys);
                         $val = self::calcFormula(
-                            stat: $stat,
+                            statistic: $stat,
                             date: $date,
                             round: $stat->decimals,
                             stats: $stats
@@ -444,6 +444,11 @@ class AnalyticStat extends Model
     {
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+        dd_if(
+            auth()->id() == 5
+            && $text == 'D14*280*4.9',
+            $matches[0]
+        );
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -593,15 +598,20 @@ class AnalyticStat extends Model
         return $arr;
     }
 
-    public static function calcFormula(AnalyticStat $stat, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
+    public static function calcFormula(AnalyticStat $statistic, string $date, int $round = 1, array $only_days = [], Collection $stats = null): float|int
     {
         if (Carbon::parse($date)->isNextDay()) return 0;
 
-        $text = $stat->value;
+        $text = $statistic->value;
 
         $matches = [];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
-
+//        dd_if(
+//            auth()->id() == 5
+//            && $statistic->row_id == 15348
+//            && $statistic->column_id == 25989,
+//            $val
+//        );
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
             $exp = explode(':', $match);
@@ -617,7 +627,7 @@ class AnalyticStat extends Model
 
             if ($cell) {
                 if ($cell->type == 'formula') {
-                    $sameStat = $cell->row_id == $stat->row_id && $cell->column_id == $stat->column_id;
+                    $sameStat = $cell->row_id == $statistic->row_id && $cell->column_id == $statistic->column_id;
                     if ($sameStat) continue;
                     $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
 
@@ -691,7 +701,7 @@ class AnalyticStat extends Model
                 ->first();
             if ($stat) {
                 $val = self::calcFormula(
-                    stat: $stat,
+                    statistic: $stat,
                     date: $date,
                     round: 2,
                     stats: $stats
@@ -729,7 +739,7 @@ class AnalyticStat extends Model
 
             if ($stat && $stat->type == 'formula') {
                 $val = self::calcFormula(
-                    stat: $stat,
+                    statistic: $stat,
                     date: $date,
                     round: 2,
                     stats: $stats
@@ -776,7 +786,7 @@ class AnalyticStat extends Model
 
                     if ($stat->type == 'formula') {
                         $values[(int)$column->name] = self::calcFormula(
-                            stat: $stat,
+                            statistic: $stat,
                             date: $date,
                             stats: $stats
                         );
@@ -876,7 +886,7 @@ class AnalyticStat extends Model
             if ($stat) {
                 if ($stat->type == 'formula') {
                     $value = self::calcFormula(
-                        stat: $stat,
+                        statistic: $stat,
                         date: $date,
                         round: $round,
                         stats: $stats
@@ -911,7 +921,7 @@ class AnalyticStat extends Model
         $stats = $statRepository->getByGroupId($group_id, $date);
         if ($stat) {
             $impl = self::calcFormula(
-                stat: $stat,
+                statistic: $stat,
                 date: $date,
                 round: 2,
                 only_days: $only_days,
@@ -998,7 +1008,7 @@ class AnalyticStat extends Model
             $sum = 0;
             if ($stat->type == 'formula') {
                 $sum += self::calcFormula(
-                    stat: $stat,
+                    statistic: $stat,
                     date: $date,
                     stats: $stats
                 );

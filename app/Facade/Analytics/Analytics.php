@@ -172,7 +172,7 @@ final class Analytics
                         if ($afterToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
-                                stat: $statistic,
+                                statistic: $statistic,
                                 date: $date,
                                 round: $statistic->decimals,
                                 stats: $stats
@@ -250,7 +250,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
@@ -399,7 +400,6 @@ final class Analytics
         $total = 0;
 
         $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
-//        dd_if(auth()->id() == 5 && $stats->row_id = 15348 && $stats->column_id = 25987, $stats->pluck('show_value')->toArray());
 
 
         foreach ($stats as $stat) {
@@ -592,7 +592,7 @@ final class Analytics
         $stat = $this->implStat($group_id, $date);
         if ($stat) {
             $val = AnalyticStat::calcFormula(
-                stat: $stat,
+                statistic: $stat,
                 date: $date,
                 round: 2,
                 stats: $stats
@@ -627,7 +627,7 @@ final class Analytics
         $stats = $statRepository->getByGroupId($groupId, $date);
 
         return $stat ? AnalyticStat::calcFormula(
-            stat: $stat,
+            statistic: $stat,
             date: $date,
             round: 2,
             only_days: $days,
