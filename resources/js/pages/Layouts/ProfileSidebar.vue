@@ -185,7 +185,7 @@
 								День
 							</div>
 							<div
-								class="tab__item-include"
+								class="tsab__item-include"
 								onclick="switchTabsInclude(this)"
 								data-index="2"
 							>
