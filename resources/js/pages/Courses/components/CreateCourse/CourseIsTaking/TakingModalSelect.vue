@@ -1,54 +1,11 @@
 <template>
 	<button
-		v-if="selectedTab === 'База знаний' ? option.position : ''"
 		class="material-modal-select"
-		@click="setActiveSelect(option.position.id)"
+		@click="setActiveSelect(name)"
 	>
 		<MaterialModalIcon class="material-modal-icon" />
 		<div class="material-modal-title">
-			{{ option.position.name || 'Loading...' }}
-		</div>
-		<div class="material-modal-select-button">
-			<div
-				v-if="!isActiveSelect"
-				class="material-modal-select-default"
-			/>
-			<MaterialModalSelectIcon
-				v-else
-				class="material-modal-select-icon"
-			/>
-		</div>
-	</button>
-
-	<button
-		v-else-if="selectedTab === 'Книги' ? option.profile_groups : ''"
-		class="material-modal-select"
-		@click="setActiveSelect(option.profile_groups.id)"
-	>
-		<MaterialModalIcon class="material-modal-icon" />
-		<div class="material-modal-title">
-			{{ option.profile_groups.name || 'Loading...' }}
-		</div>
-		<div class="material-modal-select-button">
-			<div
-				v-if="!isActiveSelect"
-				class="material-modal-select-default"
-			/>
-			<MaterialModalSelectIcon
-				v-else
-				class="material-modal-select-icon"
-			/>
-		</div>
-	</button>
-
-	<button
-		v-else-if="selectedTab === 'Видео' ? option.users : ''"
-		class="material-modal-select"
-		@click="setActiveSelect(option.users.id)"
-	>
-		<MaterialModalIcon class="material-modal-icon" />
-		<div class="material-modal-title">
-			{{ option.users.name || 'Loading...' }}
+			{{ name || 'Loading...' }}
 		</div>
 		<div class="material-modal-select-button">
 			<div
@@ -86,7 +43,12 @@ export default {
 		activeSelect: {
 			type: Array,
 			default: Array
-		}
+		},
+		name:{
+			type: String,
+			default: ''
+		},
+
 	},
 	data(){
 		return {
@@ -95,16 +57,17 @@ export default {
 	},
 	computed: {
 		isActiveSelect(){
-			return this.activeSelect.includes(this.option.id)
+			return this.activeSelect.includes(this.name)
 		}
 	},
 	methods: {
-		setActiveSelect(id) {
+		setActiveSelect(name) {
+
 			let updatedActiveSelect;
-			if (this.activeSelect.includes(id)) {
-				updatedActiveSelect = this.activeSelect.filter(item => item !== id);
+			if (this.activeSelect.includes(name)) {
+				updatedActiveSelect = this.activeSelect.filter(item => item !== name);
 			} else {
-				updatedActiveSelect = [...this.activeSelect, id];
+				updatedActiveSelect = [...this.activeSelect, name];
 			}
 			this.$emit('update:activeSelect', updatedActiveSelect);
 		}

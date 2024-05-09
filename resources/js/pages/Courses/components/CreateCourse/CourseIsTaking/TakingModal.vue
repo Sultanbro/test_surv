@@ -27,20 +27,60 @@
 				<CustomSpinner />
 			</div>
 			<div v-else>
-				<div
-					v-for="(option, index) in filteredOptions"
-					:key="index"
-				>
-					<TakingModalSelect
+				<div v-if="selectedTab === 'Сотрудники'">
+					<div
+						v-for="(option, index) in users"
+
 						:key="index"
-						:option="option"
-						:selected-tab="selectedTab"
-						:active-select="activeSelect"
-						@update:activeSelect="activeSelect = $event"
-					/>
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.name"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
 				</div>
+				<div v-if="selectedTab === 'Отделы'">
+					<div
+						v-for="(option, index) in profileGroups"
+
+						:key="index"
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.name"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
+				</div>
+				<div v-if="selectedTab === 'Должности'">
+					<div
+						v-for="(option, index) in positions"
+
+						:key="index"
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.position"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
+				</div>
+
 				<div class="material-modal-bottom">
-					<button class="material-modal-added-data">
+					<button
+						class="material-modal-added-data"
+						@click="test"
+					>
 						<div class="material-modal-added-data-plus">
 							+
 						</div>
@@ -166,7 +206,10 @@ export default {
 				'Сотрудники': 3,
 				'Отделы': 1,
 				'Должности': 2,
-			}
+			},
+			positions:[],
+			profileGroups:[],
+			users:[]
 		}
 	},
 
@@ -234,17 +277,31 @@ export default {
 
 		addMaterial(){
 			if (this.activeSelect){
-				const filterOptions = this.activeSelect.map(id => {
-					return this.filteredOptions.find(option => option.id === id);
+				const users = this.activeSelect.map(name => {
+					return this.users.find(option => option.name === name);
 				}).filter(Boolean);
-				this.addMaterialsBlock(filterOptions)
+				this.addMaterialsBlock(users)
+
+				const profileGroups = this.activeSelect.map(name => {
+					return this.profileGroups.find(option => option.name === name);
+				}).filter(Boolean);
+				this.addMaterialsBlock(profileGroups)
+
+				const positions = this.activeSelect.map(name => {
+					return this.positions.find(option => option.position === name);
+				}).filter(Boolean);
+				this.addMaterialsBlock(positions)
+
+
 
 			}
 		},
+		test(){
+		},
+
 		saveMaterial(){
 			this.addMaterial()
 			this.$emit('close')
-
 		},
 		onSubmit(){
 			if(this.selectedTab === 'Все') return this.$emit('submit', ALL)
@@ -270,7 +327,13 @@ export default {
 			this.axios
 				.get('/messenger/api/v2/company', {})
 				.then((response) => {
-					this.options = response.data;
+					this.users = response.data.users;
+					this.positions = response.data.positions;
+					this.profileGroups = response.data.profile_groups;
+
+					this.options = [...this.users, ...this.profileGroups, ...this.positions];
+
+
 					this.filterType();
 					this.addSelectedAttr();
 				})
