@@ -70,8 +70,9 @@ export default {
 }
 .small-content{
   width: 100%;
-		max-height: 106px;
-		height: 100%;
+  max-height: 106px;
+  height: 100%;
+  z-index: 10001;
 
 
 	&-price-content{
@@ -109,10 +110,8 @@ export default {
   }
 
 }
-
-.default-content{
-  width: 1195px;
-
+.default-content {
+  width: 1000px;
   &-price-content{
 	max-width: 610px;
 	width: 100%;
@@ -127,15 +126,15 @@ export default {
   }
 
   &-fire{
-	width: 238px;
-	height: 238px;
-	top: 10%;
+	width: 188px;
+	height: 188px;
+	top: 30%;
 	left: 60%;
   }
 
   &-clock{
-	width: 312px;
-	height: 254px;
+	width: 262px;
+	height: 204px;
 	left: 75%;
 	bottom: 0%;
   }
@@ -146,9 +145,51 @@ export default {
 	border-radius: 50%;
 	top: 60%;
 	left: 95%;
-	}
+  }
 }
 
+
+@media (min-width: 1400px) {
+	.default-content{
+	width: 1195px;
+
+	&-price-content{
+		max-width: 610px;
+		width: 100%;
+		padding: 40px;
+	}
+
+	&-title{
+		font-size: 28px ;
+	}
+	&-description{
+		font-size: 18px ;
+	}
+
+	&-fire{
+		width: 238px;
+		height: 238px;
+		top: 10%;
+		left: 60%;
+	}
+
+	&-clock{
+		width: 312px;
+		height: 254px;
+		left: 75%;
+		bottom: 0%;
+	}
+	&-eclipse{
+		box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8);
+		width: 241px;
+		height: 121px;
+		border-radius: 50%;
+		top: 60%;
+		left: 95%;
+	}
+	}
+
+}
 .price-trial-content{
 
 	color: black;

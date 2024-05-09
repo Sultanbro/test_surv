@@ -1,10 +1,11 @@
 <template>
-	<router-link
+	<a
 		:to="href"
 		class="jNav-menu-link"
+		@click="scrollToElement"
 	>
 		{{ $lang(lang, text) }}
-	</router-link>
+	</a>
 </template>
 
 <script>
@@ -22,8 +23,18 @@ export default {
 			type: String,
 			default: ''
 		}
+	},
+	methods: {
+		scrollToElement() {
+			setTimeout(() => {
+				const element = document.querySelector(this.href);
+				if (element) {
+					element.scrollIntoView({ behavior: 'smooth' });
+				}
+			}, 0);
+		}
 	}
-}
+};
 </script>
 
 <style lang="scss">
