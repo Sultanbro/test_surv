@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int id
@@ -134,9 +135,16 @@ class CentralUser extends Model
         return $this->last_name . ' ' . $this->name;
     }
 
-    public static function userByEmail($user_email)
+    public static function userByEmail($user_email): ?CentralUser
     {
+        /** @var CentralUser */
         return self::query()->whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
     }
 
+    public static function fromAuthUser(): ?CentralUser
+    {
+        $user_email = Auth::user()->email;
+        /** @var CentralUser */
+        return self::query()->where('email', $user_email)->first();
+    }
 }

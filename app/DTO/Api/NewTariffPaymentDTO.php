@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Api;
 
-final class PaymentDTO
+final class NewTariffPaymentDTO
 {
     /**
      * @param string $currency

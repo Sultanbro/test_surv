@@ -58,7 +58,6 @@
 							</div>
 						</td>
 					</tr>
-
 					<tr
 						v-for="(item, i_index) in items"
 						:key="i_index"
@@ -91,9 +90,8 @@
 							</div>
 						</td>
 
-						<template v-for="(field, f_index) in fields.slice(0, 4)">
+						<template v-for="(field, f_index) in fields.slice(0, 3)">
 							<td
-								v-if="field.key != 'plan'"
 								:key="f_index"
 								class="t-cell font-bold"
 								:class="[
@@ -234,19 +232,19 @@
 												Формула с 1 по 31
 											</li>
 											<!-- <li
-												v-if="['name'].includes(field.key)"
-												@click="add_inhouse(item[field.key])"
-												@mouseover="toggleContext2(item[field.key], '')"
-											>
-												Отсутствие минут inhouse
-											</li>
-											<li
-												v-if="['name'].includes(field.key)"
-												@click="add_remote(item[field.key])"
-												@mouseover="toggleContext2(item[field.key], '')"
-											>
-												Отсутствие минут remote
-											</li> -->
+                        v-if="['name'].includes(field.key)"
+                        @click="add_inhouse(item[field.key])"
+                        @mouseover="toggleContext2(item[field.key], '')"
+                      >
+                        Отсутствие минут inhouse
+                      </li>
+                      <li
+                        v-if="['name'].includes(field.key)"
+                        @click="add_remote(item[field.key])"
+                        @mouseover="toggleContext2(item[field.key], '')"
+                      >
+                        Отсутствие минут remote
+                      </li> -->
 											<li
 												v-if="['name'].includes(field.key)"
 												@click="add_salary(item[field.key])"
@@ -365,7 +363,7 @@
 				<table class="as-table">
 					<tr>
 						<td
-							v-for="(letter, index) in letter_cells.slice(3, letter_cells.length - 1)"
+							v-for="(letter, index) in letter_cells.slice(3, letter_cells.length )"
 							:key="index"
 							class="ruler-cells t-cell text-center"
 						>
@@ -381,7 +379,7 @@
 					>
 						<template v-for="(field, f_index) in fields">
 							<td
-								v-if="f_index > 3"
+								v-if="f_index > 2"
 								:key="f_index"
 								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
@@ -449,22 +447,22 @@
 				<template v-for="(item, i_index) in items">
 					<template v-for="(field,f_index) in fields">
 						<div
-							v-if="f_index > 3 && item[field.key].context"
+							v-if="f_index > 2 && item[field.key].context"
 							:key="i_index + '-' + f_index"
 							:data-an-context="i_index + '-' + f_index"
 							class="contextor"
 						>
 							<ul class="types">
 								<!-- <li>
-									<div class="d-flex decimals">
-										<p>Дробные</p>
-										<input
-											v-model="item[field.key].decimals"
-											type="number"
-											@change="setDecimals(item[field.key])"
-										>
-									</div>
-								</li> -->
+                  <div class="d-flex decimals">
+                    <p>Дробные</p>
+                    <input
+                      v-model="item[field.key].decimals"
+                      type="number"
+                      @change="setDecimals(item[field.key])"
+                    >
+                  </div>
+                </li> -->
 								<li @click="change_type('initial', i_index, field.key)">
 									Обычный
 								</li>
@@ -472,8 +470,8 @@
 									Формула
 								</li>
 								<!-- <li @click="add_formula_1_31(item[field.key])">
-									Формула с 1 по 31
-								</li> -->
+                  Формула с 1 по 31
+                </li> -->
 							</ul>
 						</div>
 					</template>
@@ -566,15 +564,15 @@
 					>
 				</div>
 				<!-- <div class="col-4">
-					Количество цифр после запятой
-				</div>
-				<div class="col-8">
-					<input
-						v-model="formula_1_31_decimals"
-						type="text"
-						class="form-control form-control-sm"
-					>
-				</div> -->
+          Количество цифр после запятой
+        </div>
+        <div class="col-8">
+          <input
+            v-model="formula_1_31_decimals"
+            type="text"
+            class="form-control form-control-sm"
+          >
+        </div> -->
 			</div>
 		</b-modal>
 
@@ -607,8 +605,8 @@
 /* eslint-disable vue/prop-name-casing */
 
 const Parser = require('expr-eval').Parser
-import { mapState } from 'pinia'
-import { usePortalStore } from '@/stores/Portal'
+import {mapState} from 'pinia'
+import {usePortalStore} from '@/stores/Portal'
 // import { useCompanyStore } from '@/stores/Company'
 
 import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
@@ -700,14 +698,14 @@ export default {
 				inhouse: 'Отсутствие inhouse',
 			},
 			items: [
-				{
-					'plan': {
-						value: 'testplan',
-						show_value: 'x',
-						context: false,
-						type: 'initial',
-					},
-				},
+				// {
+				//   'plan': {
+				//     value: 'testplan',
+				//     show_value: 'x',
+				//     context: false,
+				//     type: 'initial',
+				//   },
+				// },
 			],
 			itemy: null,
 			letter_cells: [],
@@ -723,18 +721,18 @@ export default {
 			// 1702383023746 - время когад помялись правила аналитики
 			return this.$moment(this.currentGroup.created_at).valueOf() < 1702383023746
 		},
-		accessDictionaries(){
+		accessDictionaries() {
 			return {
 				users: [],
 				profile_groups: [],
 				positions: this.groupPositions,
 			}
 		},
-		reportCardsFix(){
+		reportCardsFix() {
 			return this.reportCards?.report_cards?.map(rc => rc.position_id) || []
 		},
-		rowsMap(){
-			if(!this.table) return {}
+		rowsMap() {
+			if (!this.table) return {}
 			return this.table.reduce((result, row) => {
 				const firstCell = row.name
 				result[firstCell.row_id] = {
@@ -747,10 +745,10 @@ export default {
 	},
 
 	watch: {
-		reportCards(){
+		reportCards() {
 			this.setReportCards()
 		},
-		groupPositions(){
+		groupPositions() {
 			this.setReportCards()
 		},
 	},
@@ -766,14 +764,14 @@ export default {
 		//this.fields = this.columns
 	},
 
-	mounted () {
+	mounted() {
 		document.addEventListener('keyup', this.nextItem)
 		// this.listener()
 		this.fetchPositions()
 	},
 
 	methods: {
-		setReportCards(){
+		setReportCards() {
 			this.hoursPositions = this.reportCardsFix.map(id => ({
 				id,
 				type: 3,
@@ -781,20 +779,20 @@ export default {
 
 			try {
 				this.hoursDivider = this.reportCards?.report_cards[0]?.divide_to
-			}
-			catch (error) {
+			} catch (error) {
 				console.error(error)
 			}
 		},
-		async fetchPositions(){
+		async fetchPositions() {
 			try {
-				const { data } = await this.axios.get('/v2/analytics-page/positions', {params: {
-					group_id: this.group_id
-				}})
+				const {data} = await this.axios.get('/v2/analytics-page/positions', {
+					params: {
+						group_id: this.group_id
+					}
+				})
 				const positions = data.data || []
 				this.groupPositions = positions.map(pos => ({...pos, type: 3}))
-			}
-			catch (error) {
+			} catch (error) {
 				console.error('[AnalyticStat.fetchPositions]', error)
 				// TMP
 				this.groupPositions = [{
@@ -807,10 +805,10 @@ export default {
 				}].map(pos => ({...pos, type: 3}))
 			}
 		},
-		fixNameValue(items){
+		fixNameValue(items) {
 			items.forEach(item => {
-				if(item.name){
-					if(!item.name.value && item.name.show_value){
+				if (item.name) {
+					if (!item.name.value && item.name.show_value) {
 						item.name.value = item.name.show_value
 					}
 				}
@@ -821,7 +819,7 @@ export default {
 			let arr = [];
 
 			this.items.forEach((item, index) => {
-				if(![0].includes(index)) {
+				if (![0].includes(index)) {
 					arr.push({
 						'row_id': item['name']['row_id'],
 						'name': index + 1,
@@ -829,7 +827,7 @@ export default {
 					});
 				}
 			});
-			this.dependencies  = arr
+			this.dependencies = arr
 
 			let depender = {};
 			this.items.forEach((item, index) => {
@@ -847,7 +845,7 @@ export default {
 			var ignoreClickOnMeElement = document.getElementById('wow-table');
 
 			var self = this;
-			document.addEventListener('click', function(event) {
+			document.addEventListener('click', function (event) {
 				var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
 				if (!isClickInsideElement) {
 					self.hideContextMenu();
@@ -859,11 +857,10 @@ export default {
 			let expression = this.getExpression(combinations);
 			let result = 0;
 
-			if(expression !== null && expression.length > 0) {
+			if (expression !== null && expression.length > 0) {
 				try {
 					result = Parser.evaluate(expression);
-				}
-				catch (error) {
+				} catch (error) {
 					console.error(error)
 				}
 			}
@@ -874,67 +871,66 @@ export default {
 		add_class(item, clasxs) {
 			let c = item.class
 
-			if(clasxs == 'text-center' && c !== null) {
+			if (clasxs == 'text-center' && c !== null) {
 				item.class = item.class.replace('text-left', '');
 				item.class = item.class.replace('text-right', '');
 			}
 
-			if(clasxs == 'text-left' && c !== null) {
+			if (clasxs == 'text-left' && c !== null) {
 				item.class = item.class.replace('text-center', '');
 				item.class = item.class.replace('text-right', '');
 			}
 
-			if(clasxs == 'text-right' && c !== null) {
+			if (clasxs == 'text-right' && c !== null) {
 				item.class = item.class.replace('text-left', '');
 				item.class = item.class.replace('text-center', '');
 			}
 
-			if(clasxs == 'bg-red' && c !== null) {
+			if (clasxs == 'bg-red' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
 
-			if(clasxs == 'bg-yellow' && c !== null) {
+			if (clasxs == 'bg-yellow' && c !== null) {
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
 
-			if(clasxs == 'bg-green' && c !== null) {
+			if (clasxs == 'bg-green' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
 
-			if(clasxs == 'bg-blue' && c !== null) {
+			if (clasxs == 'bg-blue' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
 
-			if(clasxs == 'bg-violet' && c !== null) {
+			if (clasxs == 'bg-violet' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-red', '');
 			}
 
-			if(c !== null && c.includes(clasxs)) {
+			if (c !== null && c.includes(clasxs)) {
 				item.class = item.class.replace(clasxs, '');
-			}
-			else {
+			} else {
 				item.class = item.class + ' ' + clasxs;
 			}
 
-			if(item.type == 'formula') {
+			if (item.type == 'formula') {
 				item.show_value = item.value;
 				let combinations = this.combinator(item.value);
-				item.formula  = this.getExpression(combinations, 'db');
+				item.formula = this.getExpression(combinations, 'db');
 				item.show_value = this.calc(combinations);
 			}
 
@@ -946,7 +942,7 @@ export default {
 
 			items.forEach(it => {
 				let combinations = this.combinator(it.value);
-				it.formula  = this.getExpression(combinations, 'db');
+				it.formula = this.getExpression(combinations, 'db');
 				it.show_value = Number(Number(this.calc(combinations).toFixed(it.decimals)));
 			});
 		},
@@ -954,32 +950,30 @@ export default {
 		getExpression(combinations, type = 'local') {
 			let expression = '';
 
-			if(type == 'local') { // для vue
+			if (type == 'local') { // для vue
 				combinations.forEach(item => {
-					if(item.type == 'formula') {
+					if (item.type == 'formula') {
 						let inner_combinations = this.combinator(item.value);
 						let inner_calc = 0;
 						let inner_item = this.searcher(item.text);
 						inner_calc = this.calc(inner_combinations);
 						inner_item.show_value = inner_calc;
 						expression += inner_calc;
-					}
-					else if(item.type == 'action'){
+					} else if (item.type == 'action') {
 						expression += item.text;
-					}
-					else {
+					} else {
 						item.value = Number(item.value);
-						expression += !isNaN(item.value) ?  item.value : 0;
+						expression += !isNaN(item.value) ? item.value : 0;
 					}
 				});
 			}
 
-			if(type == 'db') { // для хранения формулы в базе
+			if (type == 'db') { // для хранения формулы в базе
 				combinations.forEach(item => {
-					if(item.type == 'value') expression += item.value
-					if(item.type == 'cell') expression += item.code
-					if(item.type == 'formula') expression += item.code
-					if(item.type == 'action') expression += item.text
+					if (item.type == 'value') expression += item.value
+					if (item.type == 'cell') expression += item.code
+					if (item.type == 'formula') expression += item.code
+					if (item.type == 'action') expression += item.text
 				});
 			}
 
@@ -1010,7 +1004,7 @@ export default {
 
 
 		deleteRow(index) {
-			if(!confirm('Вы уверены?')) return
+			if (!confirm('Вы уверены?')) return
 			let loader = this.$loading.show();
 
 			this.axios.post('/timetracking/analytics/delete-row', {
@@ -1060,10 +1054,10 @@ export default {
 			});
 		},
 
-		focus(i,f) {
-			if([1,2,3].includes(i) && f == 0 && this.oldGroup) return ''
+		focus(i, f) {
+			if (i < 2 && f == 0 && this.oldGroup) return ''
 
-			if(!(this.focused_item == i && this.focused_field == f)) {
+			if (!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
 			}
 
@@ -1081,7 +1075,7 @@ export default {
 			this.coords = item.cell
 		},
 
-		focusName(i,f, s) {
+		focusName(i, f, s) {
 			this.hideContextMenu();
 			// indexes
 			this.focused_item = i
@@ -1100,11 +1094,11 @@ export default {
 			this.coords = this.items[i][field].cell
 		},
 
-		nextCellCoord(coord){
+		nextCellCoord(coord) {
 			const col = coord.replace(/(\d)/gi, '')
 			const row = coord.replace(/(\D)/gi, '')
 			const index = this.letter_cells.indexOf(col)
-			if(index < 3) return coord
+			if (index < 2) return coord
 			return this.letter_cells[index - 1] + row
 		},
 
@@ -1118,7 +1112,7 @@ export default {
 		},
 
 		openContextMenu(item, i_index, f_index) {
-			if(!this.isAdmin) return
+			if (!this.isAdmin) return
 			this.focus(i_index, f_index);
 			this.hideContextMenu();
 
@@ -1129,12 +1123,12 @@ export default {
 				const cell = document.querySelector(`[data-an-cell="${cellName}"]`)
 				const context = document.querySelector(`[data-an-context="${cellName}"]`)
 
-				if(!cell) return
-				if(!context) return
+				if (!cell) return
+				if (!context) return
 
 				const parent = cell.closest('.AnalyticStat-tables')
 
-				if(!parent) return
+				if (!parent) return
 
 				const cellRect = cell.getBoundingClientRect()
 				const parentRect = parent.getBoundingClientRect()
@@ -1145,7 +1139,7 @@ export default {
 				}
 
 				// корректировка left если уходит за предели предка
-				if(pos.left + context.clientWidth > parent.clientWidth) {
+				if (pos.left + context.clientWidth > parent.clientWidth) {
 					pos.left -= context.clientWidth
 				}
 
@@ -1154,13 +1148,14 @@ export default {
 			})
 		},
 
-		toggleContext2(item, content){
+		toggleContext2(item, content) {
 			content && this.clearContextForms()
 			this.$set(item, 'context2', content)
 			this.items = this.items.slice()
 		},
 
-		clearContextForms(){},
+		clearContextForms() {
+		},
 
 		editQuery(i_index, f_index) {
 			let item = this.items[i_index][f_index];
@@ -1316,19 +1311,19 @@ export default {
 			let item = this.items[i_index][f_index];
 			item.type = type
 
-			if(item.type == 'initial') {
+			if (item.type == 'initial') {
 				item.show_value = item.value;
 
 				this.calcGlobal()
 				this.editQuery(i_index, f_index);
 			}
 
-			if(item.type == 'formula') {
+			if (item.type == 'formula') {
 				item.show_value = item.value;
 
 				let combinations = this.combinator(item.value);
 
-				item.formula  = this.getExpression(combinations, 'db');
+				item.formula = this.getExpression(combinations, 'db');
 
 				item.show_value = this.calc(combinations);
 
@@ -1337,22 +1332,22 @@ export default {
 				this.editQuery(i_index, f_index);
 			}
 
-			if(item.type == 'time'){
+			if (item.type == 'time') {
 				this.item = item;
 				this.save_cell_time();
 			}
 
-			if(item.type == 'sum'){
+			if (item.type == 'sum') {
 				this.item = item;
 				this.save_cell_sum();
 			}
 
-			if(item.type == 'avg'){
+			if (item.type == 'avg') {
 				this.item = item;
 				this.save_cell_avg();
 			}
 
-			if(item.type == 'stat'){
+			if (item.type == 'stat') {
 				this.item = item;
 				this.showVariants = true;
 			}
@@ -1425,7 +1420,7 @@ export default {
 			const rowId = item.row_id
 			const row = this.table.find(row => row.name.row_id === rowId)
 			const dec = item.decimals
-			if(!row) return
+			if (!row) return
 			const requests = []
 			Object.keys(row).forEach(key => {
 				const cell = row[key]
@@ -1449,7 +1444,7 @@ export default {
 
 		save_formula_1_31() {
 			// let rows = [];
-			let text =  this.formula_1_31.replace(/[a-z]+([\d])/gi, '{$1}')
+			let text = this.formula_1_31.replace(/[a-z]+([\d])/gi, '{$1}')
 
 			this.items.forEach((item, index) => {
 				index++;
@@ -1458,11 +1453,10 @@ export default {
 
 			var regExp = /[a-zA-Z]/g;
 
-			if(regExp.test(text)){
+			if (regExp.test(text)) {
 				/* do something if letters are found in your string */
 				this.$toast.error('Вы не правильно ввели формулу');
-			}
-			else {
+			} else {
 				this.axios.post('/timetracking/analytics/add-formula-1-31', {
 					date: this.$moment(
 						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -1487,25 +1481,25 @@ export default {
 		change_stat(i_index, f_index) {
 			let item = this.items[i_index][f_index];
 
-			if(item.type == 'initial') {
+			if (item.type == 'initial') {
 				item.show_value = item.value;
 
 				this.calcGlobal();
 			}
 
-			if(item.type == 'formula') {
+			if (item.type == 'formula') {
 				item.show_value = item.value;
 
 				let combinations = this.combinator(item.value);
 
-				item.formula  = this.getExpression(combinations, 'db');
+				item.formula = this.getExpression(combinations, 'db');
 
 				item.show_value = this.calc(combinations);
 
 				this.calcGlobal()
 			}
 
-			if(item.type == 'remote' || item.type == 'inhouse') {
+			if (item.type == 'remote' || item.type == 'inhouse') {
 				item.show_value = item.value;
 
 				this.showCommentWindow = true;
@@ -1519,12 +1513,11 @@ export default {
 		},
 
 		saveComment() { // for remote/inhouse add hours
-			if(this.comment.length > 5) {
+			if (this.comment.length > 5) {
 				this.editQuery(this.comment_i, this.comment_f);
 				this.items[this.comment_i][this.comment_f].comment = this.comment;
 				this.showCommentWindow = false;
-			}
-			else {
+			} else {
 				this.$toast.info('Пожалуйста, напишите подробнее');
 			}
 		},
@@ -1533,7 +1526,7 @@ export default {
 			this.set_letters(this.fields.length);
 		},
 
-		nextItem () { // move by arrows
+		nextItem() { // move by arrows
 			return '';
 			// if (event.keyCode == 38) { // up
 			// 	if(this.focused_item !== 0) {
@@ -1560,7 +1553,7 @@ export default {
 		},
 
 		letters() {
-			return ['A','B','C', 'D','E','F','G','H','I','J','K','L','M','N','O', 'P','Q','R','S','T','U','V','W','X','Y','Z'];
+			return ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 		},
 
 		set_letters(q) {
@@ -1570,14 +1563,13 @@ export default {
 
 			let fl_pos = 0;
 			let sl_pos = -1;
-			for(let i = 0;i<q - 1;i++) {
+			for (let i = 0; i < q - 1; i++) {
 				fl_pos = (i + 1) % letters.length;
-				if(fl_pos == 0) sl_pos++;
+				if (fl_pos == 0) sl_pos++;
 
-				if(sl_pos >= 0) {
+				if (sl_pos >= 0) {
 					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
-				}
-				else {
+				} else {
 					this.letter_cells.push(letters[fl_pos]);
 				}
 			}
@@ -1585,20 +1577,20 @@ export default {
 
 		// get array of expression combinations
 		combinator(text) {
-			if(text === null) return [];
+			if (text === null) return [];
 			//let text = "-12+B4+AA10*12.7*AE31/aR7";
 			var positions = [];
 
 			text = text.toUpperCase();
-			let combinations =  text.match(/A?[A-Z][1-9]?[0-9]/gi);
+			let combinations = text.match(/A?[A-Z][1-9]?[0-9]/gi);
 			// eslint-disable-next-line no-useless-escape
-			let floats =  text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры
+			let floats = text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры
 
-			if(combinations === null) combinations = [];
-			if(floats === null) floats = [];
+			if (combinations === null) combinations = [];
+			if (floats === null) floats = [];
 			// find multipliers
 			var multiply = [];
-			for(let i=0; i<text.length;i++) {
+			for (let i = 0; i < text.length; i++) {
 				if (text[i] === '*') {
 					multiply.push(i);
 					positions.push({
@@ -1611,7 +1603,7 @@ export default {
 
 			// find additions
 			var addition = [];
-			for(let i=0; i<text.length;i++) {
+			for (let i = 0; i < text.length; i++) {
 				if (text[i] === '+') {
 					addition.push(i);
 					positions.push({
@@ -1624,7 +1616,7 @@ export default {
 
 			// find substract
 			var substract = [];
-			for(let i=0; i<text.length;i++) {
+			for (let i = 0; i < text.length; i++) {
 				if (text[i] === '-' && i != 0) {
 					substract.push(i);
 					positions.push({
@@ -1637,7 +1629,7 @@ export default {
 
 			// find dividers
 			var divider = [];
-			for(let i=0; i<text.length;i++) {
+			for (let i = 0; i < text.length; i++) {
 				if (text[i] === '/') {
 					divider.push(i);
 					positions.push({
@@ -1650,7 +1642,7 @@ export default {
 
 			// find parentheses
 			var parentheses = [];
-			for(let i=0; i<text.length;i++) {
+			for (let i = 0; i < text.length; i++) {
 				if (text[i] === '(' || text[i] === ')') {
 					parentheses.push(i);
 					positions.push({
@@ -1663,7 +1655,7 @@ export default {
 
 			// cells
 			let last_pos = -1;
-			for(let i = 0;i<combinations.length;i++) {
+			for (let i = 0; i < combinations.length; i++) {
 				// TODO find value of field
 				last_pos++;
 				let s = this.searcher(combinations[i]);
@@ -1673,14 +1665,14 @@ export default {
 					text: combinations[i],
 					index: last_pos,
 					type: s !== undefined && s.type == 'formula' ? 'formula' : 'cell',
-					value: s !== undefined ?  s.value : 0,
-					code: s !== undefined ?  '[' + s.column_id + ':'+ s.row_id + ']' : 0,
+					value: s !== undefined ? s.value : 0,
+					code: s !== undefined ? '[' + s.column_id + ':' + s.row_id + ']' : 0,
 				});
 			}
 
 			// just numbers in expression
 			let last_pos_floats = -1;
-			for(let i = 0;i<floats.length;i++) {
+			for (let i = 0; i < floats.length; i++) {
 
 				last_pos_floats++;
 
@@ -1688,9 +1680,9 @@ export default {
 
 				let f_text = floats[i];
 
-				if(['*','/','+', '-', '('].includes(floats[i][0])) {
+				if (['*', '/', '+', '-', '('].includes(floats[i][0])) {
 					last_pos_floats++;
-					f_text = f_text.substr(1,f_text.length);
+					f_text = f_text.substr(1, f_text.length);
 				}
 
 				positions.push({
@@ -1702,7 +1694,7 @@ export default {
 			}
 
 			// sort array
-			positions.sort(function(a, b) {
+			positions.sort(function (a, b) {
 				if (a.index < b.index) return -1;
 				if (a.index > b.index) return 1;
 				return 0;
@@ -1711,11 +1703,11 @@ export default {
 			return positions;
 		},
 
-		searcher(cell){
+		searcher(cell) {
 			let res;
-			for (var i=0; i < this.items.length; i++) {
+			for (var i = 0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
-					if(item.cell == cell) {
+					if (item.cell == cell) {
 						res = item;
 					}
 				});
@@ -1723,12 +1715,12 @@ export default {
 			return res;
 		},
 
-		formula_searcher(){
-			if(this.items) return []
+		formula_searcher() {
+			if (this.items) return []
 			let items = [];
-			for (var i=0; i < this.items.length; i++) {
+			for (var i = 0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
-					if(item.type == 'formula') {
+					if (item.type == 'formula') {
 						items.push(item);
 					}
 				});
@@ -1736,11 +1728,11 @@ export default {
 			return items;
 		},
 
-		async onSubmitHours(item){
+		async onSubmitHours(item) {
 			const divider = +this.hoursDivider
-			if(!this.hoursPositions.length) return this.$toast.warning('Выберите хотябы 1 должность')
-			if(!divider) return this.$toast.warning('На 0 нельзя')
-			if(divider < 1) return this.$toast.warning('Делитель должен быть больше или равен 1')
+			if (!this.hoursPositions.length) return this.$toast.warning('Выберите хотябы 1 должность')
+			if (!divider) return this.$toast.warning('На 0 нельзя')
+			if (divider < 1) return this.$toast.warning('Делитель должен быть больше или равен 1')
 
 			const loader = this.$loading.show()
 
@@ -1755,8 +1747,7 @@ export default {
 				})
 				this.$emit('cellUpdated')
 				this.$toast.success('Обновите чтобы подтянуть данные')
-			}
-			catch (error) {
+			} catch (error) {
 				console.error('[AnalyticStat.onSubmitHours]', error)
 				this.$toast.error('Ошибка')
 			}
@@ -1764,14 +1755,14 @@ export default {
 			loader.hide()
 		},
 
-		fixClassName(day, className, row){
-			if(+day === 31 && row && row[30]) return this.fixClassName(day, row[30].class)
-			if(!parseInt(day)) return className
+		fixClassName(day, className, row) {
+			if (+day === 31 && row && row[30]) return this.fixClassName(day, row[30].class)
+			if (!parseInt(day)) return className
 			const {currentYear, currentMonth} = this.monthInfo
 			const $date = this.$moment(`${currentYear}-${currentMonth}-${day}`, 'YYYY-MMMM-D')
 			const isWeekend = [0, 6].includes($date.day())
 			const resilt = className.replaceAll('weekday', '')
-			if(isWeekend) return resilt + ' weekday'
+			if (isWeekend) return resilt + ' weekday'
 			return resilt
 		},
 	}
@@ -1780,89 +1771,101 @@ export default {
 
 <style lang="scss">
 .z-12 {
-	z-index: 12
-}
-#wow-table{
-	z-index: 100;
+  z-index: 12
 }
 
-.AnalyticStat{
-	&-settings{
-		font-size: 0.8em;
-	}
-	&-addRow{
-		display: none;
-	}
-	&-rowControls{
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-		justify-content: center;
-		gap: 0.4rem;
-		&:hover{
-			.AnalyticStat{
-				&-addRow{
-					display: inline;
-				}
-			}
-		}
-	}
-	&-contexts{
-		input{
-			width: 50px;
-		}
-	}
-
-	&-addRow2{
-		padding: 5px;
-		cursor: pointer;
-		font-size: 14px;
-		color: #777;
-		&:hover{
-			color: #000;
-		}
-	}
-
-	.contextor{
-		input{
-			background-color: #fff !important;
-		}
-	}
+#wow-table {
+  z-index: 100;
 }
-.AnContext2{
-	width: 320px;
-	padding-left: 20px;
 
-	position: absolute;
-	top: 0;
-	left: 100%;
+.AnalyticStat {
+  &-settings {
+    font-size: 0.8em;
+  }
 
-	&-body{
-		border: 1px solid #333;
+  &-addRow {
+    display: none;
+  }
 
-		background-color: #e9ecef;
-		&_hours{
-			.AccessSelectTabs{
-				display: none;
-			}
-		}
-	}
-	&-row{
-		padding: 5px 10px;
-		border-bottom: 1px solid #dee2e6;
-	}
-	&-field{
-		display: flex;
-		align-items: center;
-	}
-	&-label{
-		display: block;
-	}
-	// &-input{}
+  &-rowControls {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
 
-	// AAAAAAAAA Ебучите селекторы по тэгам!!!
-	.AccessSelectListItem-input{
-		width: 0 !important;
-	}
+    &:hover {
+      .AnalyticStat {
+        &-addRow {
+          display: inline;
+        }
+      }
+    }
+  }
+
+  &-contexts {
+    input {
+      width: 50px;
+    }
+  }
+
+  &-addRow2 {
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #777;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  .contextor {
+    input {
+      background-color: #fff !important;
+    }
+  }
+}
+
+.AnContext2 {
+  width: 320px;
+  padding-left: 20px;
+
+  position: absolute;
+  top: 0;
+  left: 100%;
+
+  &-body {
+    border: 1px solid #333;
+
+    background-color: #e9ecef;
+
+    &_hours {
+      .AccessSelectTabs {
+        display: none;
+      }
+    }
+  }
+
+  &-row {
+    padding: 5px 10px;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  &-field {
+    display: flex;
+    align-items: center;
+  }
+
+  &-label {
+    display: block;
+  }
+
+  // &-input{}
+
+  // AAAAAAAAA Ебучите селекторы по тэгам!!!
+  .AccessSelectListItem-input {
+    width: 0 !important;
+  }
 }
 </style>

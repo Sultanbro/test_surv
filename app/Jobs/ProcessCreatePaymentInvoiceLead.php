@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessPaymentInvoiceLead implements ShouldQueue
+class ProcessCreatePaymentInvoiceLead implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -50,6 +50,7 @@ class ProcessPaymentInvoiceLead implements ShouldQueue
         ))
             ->setNeedCallback(false)
             ->publish();
+
         $payment->lead_id = $lead['result'];
         $payment->save();
     }

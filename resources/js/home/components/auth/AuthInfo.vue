@@ -100,17 +100,17 @@ $md4: 479.98px;
 	}
 }
 
-@container auth-info (max-width: 991.98px) {
+@container auth-info (max-width: 1024px) {
 	.auth__info{
 		&__title{
-			margin-top: 0;
+			margin-top: 0.4em;
 			font-size: 30px;
 			line-height: 1.1;
 		}
 		&__subtitle{
 			font-size: 20px;
 			line-height: 1.1;
-			margin: 0.5em 0 0.5em;
+			margin: 0 0 1.25em;
 		}
 		&__row{
 			gap: 12px;
