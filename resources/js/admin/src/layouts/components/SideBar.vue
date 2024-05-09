@@ -19,7 +19,7 @@ const sidebarWidth = computed(() => {
     </slot>
   </header>
   <section class="Sidebar-body">
-    <slot/>
+    <slot />
   </section>
   <footer class="Sidebar-footer">
     <slot name="footer"/>

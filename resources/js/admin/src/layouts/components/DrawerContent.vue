@@ -8,9 +8,7 @@ import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
 
 const vuetifyTheme = useTheme()
 const upgradeBanner = computed(() => {
-	return vuetifyTheme.global.name.value === 'light'
-		? upgradeBannerLight
-		: upgradeBannerDark
+  return vuetifyTheme.global.name.value === 'light' ? upgradeBannerLight : upgradeBannerDark
 })
 
 const isAdmin = userInfo.is_admin
@@ -27,9 +25,7 @@ const isAdmin = userInfo.is_admin
       <div v-html="logo" />
 
       <Transition name="vertical-nav-app-title">
-        <h1 class="font-weight-semibold leading-normal text-xl text-uppercase">
-          Admino
-        </h1>
+        <h1 class="font-weight-semibold leading-normal text-xl text-uppercase">Admino</h1>
       </Transition>
     </RouterLink>
   </div>

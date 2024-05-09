@@ -12,6 +12,7 @@
 			v-model="phone"
 			default-country-code="KZ"
 			:preferred-countries="['KZ', 'RU', 'KG']"
+			:is-valid="phone"
 			class="AuthPhone-wrapper"
 			@update="onUpdate"
 		/>
@@ -19,7 +20,7 @@
 			v-if="error"
 			class="AuthPhone-error"
 		>
-			{{ error }}
+			{{ error[0] }}
 		</span>
 		<span
 			v-else-if="text"
@@ -184,6 +185,7 @@ export default {
 	}
 	&-error{
 		color: #E13C3C;
+		font-size: 14px;
 	}
 }
 </style>

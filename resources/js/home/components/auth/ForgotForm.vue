@@ -8,15 +8,13 @@
 				{{ lang.sendedtitle }}
 			</AuthTitle>
 			<AuthSubTitle>
-				{{ lang.sendedsubtitle1 }}
+				{{ lang.sendedsubtitle1 }},
 				{{ email }}
 				{{ lang.sendedsubtitle2 }}
 			</AuthSubTitle>
-			<AuthSubmit
-				:disabled="resendTimer"
-			>
-				{{ lang.sendedsubmit }}
-			</AuthSubmit>
+			<AuthGoToMailVue :email="email">
+				{{ lang.goToMail }}
+			</AuthGoToMailVue>
 			<AuthSubTitle
 				v-if="resendTimer"
 			>
@@ -62,6 +60,7 @@ import AuthInput from './AuthInput.vue';
 import AuthSubmit from './AuthSubmit.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
+import AuthGoToMailVue from './AuthGoToMail.vue';
 
 import axios from 'axios';
 import * as LANG from './ForgotForm.lang.js'
@@ -73,16 +72,17 @@ export default {
 		AuthSubmit,
 		AuthTitle,
 		AuthSubTitle,
+		AuthGoToMailVue
 	},
 	props: {},
 	data(){
 		return {
-			email: '',
+			email: 'is@yandex.ru',
 			errors: {
 				email: '',
 			},
 			isLoading: false,
-			isSended: false,
+			isSended: true,
 			resendTimer: 0,
 			resendIterval: null,
 		}
@@ -109,7 +109,13 @@ export default {
 			try {
 				const {data} = await axios.post('/setting/reset', {
 					email: this.email,
-				})
+				},
+				{
+					headers: {
+						From: this.email
+					}
+				}
+				)
 				if(data.success) {
 					this.isSended = true
 					this.resendTimer = 60

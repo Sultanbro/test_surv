@@ -26,6 +26,7 @@
 					{{ LANG.support }}
 				</span>
 			</router-link> -->
+			<AuthSupport />
 		</div>
 	</div>
 </template>
@@ -33,6 +34,7 @@
 <script>
 import AuthLang from './AuthLang.vue';
 import IconBack from './IconBack.vue'
+import AuthSupport from './Support.vue'
 // import IconChat from './IconChat.vue'
 
 import * as LANG from './AuthHeader.lang.js'
@@ -41,6 +43,7 @@ export default {
 	components: {
 		AuthLang,
 		IconBack,
+		AuthSupport
 		// IconChat,
 	},
 	props: {
