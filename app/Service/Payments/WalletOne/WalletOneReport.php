@@ -4,10 +4,10 @@ namespace App\Service\Payments\WalletOne;
 
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\InvoiceResponse;
-use App\Service\Payments\Core\PaymentInvoice;
+use App\Service\Payments\Core\PaymentReport;
 use Illuminate\Support\Str;
 
-class WalletOneInvoice extends PaymentInvoice
+class WalletOneReport extends PaymentReport
 {
     const CURRENCY = ['kzt', 'usd'];
 

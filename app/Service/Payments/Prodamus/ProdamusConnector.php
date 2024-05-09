@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Prodamus;
 
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Models\CentralUser;
-use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\Hmac;
@@ -34,7 +34,7 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function pay(NewTariffPaymentDTO $data, CentralUser $user): ConfirmationResponse
+    public function createNewInvoice(CreateInvoiceDTO $data, CentralUser $user): Invoice
     {
         $price = $this->getPrice($data);
         $paymentId = $this->generateIdempotenceKey();
@@ -68,7 +68,7 @@ class ProdamusConnector implements PaymentConnector
         }
 
         $resp = json_decode($response->body(), true);
-        return new ConfirmationResponse(
+        return new Invoice(
             $resp['payment_link'],
             $paymentId,
             [],

@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
 
 /**
  * @property  string $kind
  * @property  string $validity
  * @property  int $users_limit
- * @property  string $price
+ * @property Collection<TariffPrice> $prices
  */
 class Tariff extends Model
 {
@@ -33,33 +34,13 @@ class Tariff extends Model
         'kind',
         'validity',
         'users_limit',
-        'price'
     ];
-
-    /**
-     * @return HasMany
-     */
-    public function tariffPayments(): HasMany
-    {
-        return $this->hasMany(TariffPayment::class);
-    }
-
-    /**
-     * Return specific tariff record from DB.
-     *
-     * @param int $tariffId
-     * @return Builder[]|Collection
-     */
-    public function getTariff(int $tariffId): Collection|array
-    {
-        return $this->where('id', $tariffId)->get();
-    }
 
     /**
      * @param int $tariffId
      * @return ?Tariff
      */
-    public static function getTariffById(
+    public static function find(
         int $tariffId
     ): ?Tariff
     {
@@ -81,14 +62,12 @@ class Tariff extends Model
         return $date;
     }
 
-    /**
-     * @param int $extraUsers
-     * @return TariffPrice
-     */
-    public function getPrice(
-        int $extraUsers
-    ): TariffPrice
+    public function prices(): HasMany
     {
-        return new TariffPrice($this, $extraUsers);
+        return $this->hasMany(
+            TariffPrice::class,
+            'tariff_id',
+            'id'
+        );
     }
 }

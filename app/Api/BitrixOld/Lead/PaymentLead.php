@@ -11,17 +11,17 @@ use App\Api\BitrixOld\Lead\Field\Phone as PhoneField;
 use App\Api\BitrixOld\Lead\Field\PaymentInfo as PaymentInfoField;
 use App\Api\BitrixOld\Lead\Fields;
 use App\Models\CentralUser;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\User;
 
 final class PaymentLead extends Lead
 {
 
     public function __construct(
-        CentralUser   $user,
-        TariffPayment $payment,
-        ?string       $tenantId,
-        ?BitrixOld    $bitrix,
+        CentralUser        $user,
+        TariffSubscription $payment,
+        ?string            $tenantId,
+        ?BitrixOld         $bitrix,
     )
     {
         parent::__construct(new Fields(

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\DTO\Api;
+namespace App\DTO\Payment;
 
 final class CreateInvoiceDTO
 {

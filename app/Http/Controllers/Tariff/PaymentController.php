@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers\Tariff;
 
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Payment\DoPaymentRequest;
-use App\Jobs\ProcessCreatePaymentInvoiceLead;
+use App\Http\Requests\Payment\TariffSubscribeRequest;
 use App\Models\CentralUser;
-use App\Models\Tariff\PaymentToken;
-use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\Core\PaymentUpdateStatusService;
+use App\Service\Payments\Pipeline\PaymentPipeline;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,26 +23,18 @@ class PaymentController extends Controller
     /**
      * Делаем оплату.
      *
-     * @param DoPaymentRequest $request
+     * @param TariffSubscribeRequest $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function payment(DoPaymentRequest $request): JsonResponse
+    public function payment(TariffSubscribeRequest $request): JsonResponse
     {
-        $data = $request->toDto();
-
-        $user = CentralUser::fromAuthUser();
-        $gateway = Gateway::driver($data->currency);
-        $response = $gateway->pay($data, $user);
-        $token = new PaymentToken($response->getPaymentId());
-        $payment = TariffPayment::savePayment($data, $token);
-
-        ProcessCreatePaymentInvoiceLead::dispatch($user, $payment)
-            ->onConnection('sync');
+        $pipeline = new PaymentPipeline($request->toDto());
+        $pipeline->apply(); // create payment invoice and subscribe to the tariff plan
 
         return $this->response(
             message: 'Success',
-            data: $response
+            data: $pipeline->invoice()
         );
     }
 
@@ -60,14 +50,17 @@ class PaymentController extends Controller
     {
         $headers = $request->header();
         $fields = $request->all();
-        $invoice = Gateway::driver($currency)
-            ->invoice([
+        $report = Gateway::provider($currency)
+            ->report([
                 'headers' => $headers,
                 'fields' => $fields
             ])
             ->handle();
 
-        return response()->json($invoice);
+        return $this->response(
+            message: "successful",
+            data: $report
+        );
     }
 
     /**
@@ -76,7 +69,7 @@ class PaymentController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function updateToTariffPayments(): JsonResponse
+    public function status(): JsonResponse
     {
         $user = CentralUser::fromAuthUser();
         $response = $this->updateStatusService->handle($user);

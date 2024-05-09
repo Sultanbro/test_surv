@@ -2,20 +2,19 @@
 
 namespace App\Facade\Payment;
 
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payments\Core\BasePaymentGateway;
-use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\PaymentGatewayRegistry;
 use Closure;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Queue;
 use Mockery;
 
 /**
  * @method static PaymentGatewayRegistry register(string|array $aliases, BasePaymentGateway|Closure $gateway)
- * @method static BasePaymentGateway get(string $name)
+ * @method static BasePaymentGateway provider(string $name)
  * @method static array list()
+ * @method static bool exists(string $name)
  * @mixin PaymentGatewayRegistry
  */
 class Gateway extends Facade
@@ -33,22 +32,23 @@ class Gateway extends Facade
     public static function fake(): BasePaymentGateway
     {
         $mock = Mockery::mock(BasePaymentGateway::class);
-        $mock->shouldReceive("pay")
+        $mock->shouldReceive("invoice")
             ->with([
-                new NewTariffPaymentDTO(
+                new CreateInvoiceDTO(
                     'test',
+                    1,
                     1,
                     1
                 ),
                 4
             ])
             ->once()
-            ->andReturn(new ConfirmationResponse(
+            ->andReturn(new Invoice(
                 'some url',
                 'some payment token'
             ));
 
         Gateway::register(["test"], $mock);
-        return Gateway::get("test");
+        return Gateway::provider("test");
     }
 }

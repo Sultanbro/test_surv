@@ -37,7 +37,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
+    Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
 });
 
 // Portal Api
@@ -168,9 +168,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
-	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
@@ -734,11 +734,12 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
-        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
+        Route::get('/', [Root\Tariff\TariffInformationController::class, 'tenantPaymentInfo']);
+        Route::post('/', [Root\Tariff\PaymentController::class, 'payment']);
+        Route::post('/status', [Root\Tariff\PaymentController::class, 'status']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Tariff\PaymentController::class, 'callback']);
     });
 
     Route::group([
@@ -787,6 +788,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
             Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
         });
+
+        Route::get('/tenants', [Company\CompanyController::class, 'tenants'])->name('get-tenants');
 
         Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function () {
             Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');

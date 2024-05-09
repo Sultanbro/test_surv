@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace App\Service\Payments\Core;
 
 use App\Models\Tariff\Tariff;
-use App\Traits\CurrencyTrait;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 
-final class TariffGetAllService
+final class GetTariffsService
 {
-    use CurrencyTrait;
-
-    private float $priceForOnePersonInKzt;
+    private array $priceForOnePersonWithCurrencies;
 
     public function __construct()
     {
-        $this->priceForOnePersonInKzt = (float)config('payment.payment_for_one_person');
+        $this->priceForOnePersonWithCurrencies = [
+            'kzt' => config('payment.payment_for_one_person.kzt'),
+            'rub' => config('payment.payment_for_one_person.rub')
+        ];
     }
 
     /**
@@ -29,12 +29,12 @@ final class TariffGetAllService
         $tariffs = Tariff::with('prices')->get();
 
         foreach ($tariffs as $tariff) {
-            $tariff->multiCurrencyPrice = $this::createMultiCurrencyPrice((float)$tariff->prices);
+            $tariff->multiCurrencyPrice = $tariff->prices->pluck('value', 'currency')->toArray();
         }
 
         return array(
             'tariffs' => $tariffs,
-            'priceForOnePerson' => $this::createMultiCurrencyPrice($this->priceForOnePersonInKzt),
+            'priceForOnePerson' => $this->priceForOnePersonWithCurrencies,
         );
     }
 }

@@ -5,9 +5,9 @@ namespace App\Service\Payments\Prodamus;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\Hmac;
 use App\Service\Payments\Core\InvoiceResponse;
-use App\Service\Payments\Core\PaymentInvoice;
+use App\Service\Payments\Core\PaymentReport;
 
-class ProdamusInvoice extends PaymentInvoice
+class ProdamusReport extends PaymentReport
 {
     const CURRENCY = 'rub';
 

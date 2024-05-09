@@ -13,7 +13,7 @@ class PaymentRegistryTest extends TestCase
     {
         dd(1);
 //        dd(1);
-//        $provider = Gateway::get('rub');
+//        $provider = Gateway::driver('rub');
 //        dd($provider);
 //        $provider->pay();
     }

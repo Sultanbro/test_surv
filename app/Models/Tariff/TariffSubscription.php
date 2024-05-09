@@ -2,11 +2,9 @@
 
 namespace App\Models\Tariff;
 
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Enums\Payments\PaymentStatusEnum;
-use App\Models\CentralUser;
 use App\Models\Tenant;
-use App\User;
 use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -23,21 +21,21 @@ use Carbon\Carbon;
  * @property bool $auto_payment
  * @property string $payment_id
  * @property string $payment_driver
- * @property string $status,
+ * @property string $status
  * @property string $lead_id
  */
-class TariffPayment extends Model
+class TariffSubscription extends Model
 {
     protected $connection = 'mysql';
 
-    protected $table = 'tariff_payments';
+    protected $table = 'tariff_subscriptions';
 
     public $timestamps = true;
 
     protected $casts = [
         'created_at' => 'date:d.m.Y H:i',
         'updated_at' => 'date:d.m.Y H:i',
-        'expire_date' => 'date:d.m.Y',
+        'expire_date' => 'date:d.m.Y'
     ];
 
     protected $fillable = [
@@ -54,7 +52,7 @@ class TariffPayment extends Model
 
     public static function getStatus($paymentId): string
     {
-        /**  @var TariffPayment $payment */
+        /**  @var TariffSubscription $payment */
         $payment = self::query()->where('payment_id', $paymentId)->first();
         return $payment->status;
     }
@@ -78,32 +76,32 @@ class TariffPayment extends Model
     /**
      * Returns valid tariff for current subdomain.
      *
-     * @return TariffPayment|null
+     * @return TariffSubscription|null
      */
-    public static function getValidTariffPayment(): ?TariffPayment
+    public static function getValidTariffPayment(): ?TariffSubscription
     {
         $today = Carbon::today();
 
-        /** @var TariffPayment */
+        /** @var TariffSubscription */
         return self::query()
             ->select(
-                'tariff_payment.id',
-                'tariff_payment.tenant_id',
-                'tariff_payment.tariff_id',
-                'tariff_payment.extra_user_limit',
-                'tariff_payment.expire_date',
-                'tariff_payment.created_at',
-                'tariff_payment.payment_id',
+                'tariff_subscriptions.id',
+                'tariff_subscriptions.tenant_id',
+                'tariff_subscriptions.tariff_id',
+                'tariff_subscriptions.extra_user_limit',
+                'tariff_subscriptions.expire_date',
+                'tariff_subscriptions.created_at',
+                'tariff_subscriptions.payment_id',
                 'tariff.kind',
                 'tariff.validity',
                 'tariff.users_limit',
-                DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
+                DB::raw('(`tariff`.`users_limit` + `tariff_subscriptions`.`extra_user_limit`) as total_user_limit')
             )
-            ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
-            ->where('tariff_payment.expire_date', '>', $today->format('Y-m-d'))
+            ->leftJoin('tariff', 'tariff.id', 'tariff_subscriptions.tariff_id')
+            ->where('tariff_subscriptions.expire_date', '>', $today->format('Y-m-d'))
             ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
-            ->orderBy('tariff_payment.expire_date', 'desc')
-            ->groupBy('tariff_payment.id')
+            ->orderBy('tariff_subscriptions.expire_date', 'desc')
+            ->groupBy('tariff_subscriptions.id')
             ->first();
     }
 
@@ -112,13 +110,13 @@ class TariffPayment extends Model
      * Returns bool active payment exists.
      *
      * @param Tenant $tenant
-     * @return ?TariffPayment
+     * @return ?TariffSubscription
      */
-    public static function getActivePaymentIfExist(Tenant $tenant): ?TariffPayment
+    public static function getActivePaymentIfExist(Tenant $tenant): ?TariffSubscription
     {
         $today = Carbon::today();
 
-        /** @var TariffPayment */
+        /** @var TariffSubscription */
         return $tenant
             ->tariffPayment()
             ->where('expire_date', '>', $today)
@@ -132,11 +130,11 @@ class TariffPayment extends Model
      * Return the last tariff payment with status pending
      *
      * @param string $tenantId
-     * @return TariffPayment
+     * @return TariffSubscription
      */
-    public static function getLastPendingTariffPayment(string $tenantId): TariffPayment
+    public static function getLastPendingTariffPayment(string $tenantId): TariffSubscription
     {
-        /** @var TariffPayment */
+        /** @var TariffSubscription */
         return self::getBasePendingTariffsQuery($tenantId)
             ->latest()
             ->first();
@@ -161,24 +159,22 @@ class TariffPayment extends Model
      * @param int $extraUsersLimit
      * @param string $expireDate
      * @param string $paymentId
-     * @param string $serviceForPayment
+     * @param string $paymentProvider
      * @param bool $autoPayment
-     * @return TariffPayment
+     * @return TariffSubscription
      * @throws Exception
      */
-    public static function createPaymentOrFail(
+    public static function new(
         string $tenantId,
         int    $tariffId,
         int    $extraUsersLimit,
         string $expireDate,
         string $paymentId,
-        string $serviceForPayment,
+        string $paymentProvider,
         bool   $autoPayment = false
-    ): TariffPayment
+    ): TariffSubscription
     {
-
-//        try {
-        /** @var TariffPayment */
+        /** @var TariffSubscription */
         return self::query()->create([
             'tenant_id' => $tenantId,
             'tariff_id' => $tariffId,
@@ -187,11 +183,8 @@ class TariffPayment extends Model
             'auto_payment' => $autoPayment,
             'payment_id' => $paymentId,
             'status' => PaymentStatusEnum::STATUS_PENDING,
-            'service_for_payment' => $serviceForPayment
+            'payment_provider' => $paymentProvider
         ]);
-//        } catch (Exception) {
-//            throw new Exception('При сохранений данных произошла ошибка');
-//        }
     }
 
     public function updateStatusToSuccess(): void
@@ -204,11 +197,12 @@ class TariffPayment extends Model
     /**
      * @throws Exception
      */
-    public static function savePayment(NewTariffPaymentDTO $dto, PaymentToken $token): static
+    public static function subscribe(CreateInvoiceDTO $dto, PaymentToken $token): static
     {
-        $tariff = Tariff::getTariffById($dto->tariffId);
-        return self::createPaymentOrFail(
-            tenant('id'),
+        $tariff = Tariff::find($dto->tariffId);
+
+        return self::new(
+            $dto->tenantId,
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),

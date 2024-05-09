@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Models\Portal\Portal;
 use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -59,7 +59,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
      */
     public function tariffPayment(): HasOne
     {
-        return $this->hasOne(TariffPayment::class, 'tenant_id', 'id');
+        return $this->hasOne(TariffSubscription::class, 'tenant_id', 'id');
     }
 
     public function hasActiveTariff(): bool

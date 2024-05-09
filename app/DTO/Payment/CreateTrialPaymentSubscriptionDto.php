@@ -2,7 +2,11 @@
 
 namespace App\DTO\Payment;
 
-class TrialPaymentSubscriptionDto
+class CreateTrialPaymentSubscriptionDto
 {
-
+    public function __construct(
+        public string $tenantId
+    )
+    {
+    }
 }

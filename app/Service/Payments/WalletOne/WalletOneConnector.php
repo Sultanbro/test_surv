@@ -3,9 +3,9 @@
 namespace App\Service\Payments\WalletOne;
 
 use App\Classes\Helpers\Phone;
-use App\DTO\Api\NewTariffPaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Models\CentralUser;
-use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\PaymentConnector;
@@ -28,7 +28,7 @@ class WalletOneConnector implements PaymentConnector
     {
     }
 
-    public function pay(NewTariffPaymentDTO $data, CentralUser $user): ConfirmationResponse
+    public function createNewInvoice(CreateInvoiceDTO $data, CentralUser $user): Invoice
     {
         $price = $this->getPrice($data);
         $idempotenceKey = $this->generateIdempotenceKey();
@@ -58,7 +58,7 @@ class WalletOneConnector implements PaymentConnector
         //Добавление параметра WMI_SIGNATURE в словарь параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
 
-        return new ConfirmationResponse(
+        return new Invoice(
             $this->paymentUrl,
             $idempotenceKey,
             $body
