@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Rules\Mailing;
+namespace App\Rules;
 
-use App\Enums\Mailing\MailingEnum;
-use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
 
-class ValidateDaily implements Rule
+class CanUseTrialTariff implements Rule
 {
     /**
      * Create a new rule instance.
@@ -25,16 +23,9 @@ class ValidateDaily implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value): bool
+    public function passes($attribute, $value)
     {
-        if ($value['frequency'] == MailingEnum::DAILY)
-        {
-            if (!empty($value['days']))
-            {
-                return false;
-            }
-        }
-        return true;
+        //
     }
 
     /**
@@ -44,6 +35,6 @@ class ValidateDaily implements Rule
      */
     public function message()
     {
-        return 'If type of frequency is daily array should be empty';
+        return 'The validation error message.';
     }
 }

@@ -13,7 +13,6 @@ class FastTestingCommand extends Command
 
     public function handle(): void
     {
-        Gateway::register(['new test', 'new test 2','new test 3'], fn() => 'another test');
         dd(Gateway::list());
     }
 }

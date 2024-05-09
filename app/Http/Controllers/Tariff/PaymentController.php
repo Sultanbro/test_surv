@@ -34,7 +34,7 @@ class PaymentController extends Controller
         $data = $request->toDto();
 
         $user = CentralUser::fromAuthUser();
-        $gateway = Gateway::get($data->currency);
+        $gateway = Gateway::driver($data->currency);
         $response = $gateway->pay($data, $user);
         $token = new PaymentToken($response->getPaymentId());
         $payment = TariffPayment::savePayment($data, $token);
@@ -60,7 +60,7 @@ class PaymentController extends Controller
     {
         $headers = $request->header();
         $fields = $request->all();
-        $invoice = Gateway::get($currency)
+        $invoice = Gateway::driver($currency)
             ->invoice([
                 'headers' => $headers,
                 'fields' => $fields

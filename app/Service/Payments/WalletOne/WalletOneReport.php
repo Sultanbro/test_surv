@@ -2,7 +2,7 @@
 
 namespace App\Service\Payments\WalletOne;
 
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\InvoiceResponse;
 use App\Service\Payments\Core\PaymentInvoice;
 use Illuminate\Support\Str;
@@ -20,8 +20,8 @@ class WalletOneInvoice extends PaymentInvoice
         $paymentId = $this->data['WMI_PAYMENT_NO'];
         $status = Str::lower($this->data['WMI_ORDER_STATE']);
 
-        /** @var TariffPayment $payment */
-        $payment = TariffPayment::query()->where('payment_id', $paymentId)->first();
+        /** @var TariffSubscription $payment */
+        $payment = TariffSubscription::query()->where('payment_id', $paymentId)->first();
 
         if ($payment->payment_id == $paymentId && $status == "accepted") {
             $payment->updateStatusToSuccess();

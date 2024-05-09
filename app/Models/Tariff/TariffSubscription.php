@@ -22,7 +22,7 @@ use Carbon\Carbon;
  * @property string $expire_date
  * @property bool $auto_payment
  * @property string $payment_id
- * @property string $service_for_payment
+ * @property string $payment_driver
  * @property string $status,
  * @property string $lead_id
  */
@@ -30,7 +30,7 @@ class TariffPayment extends Model
 {
     protected $connection = 'mysql';
 
-    protected $table = 'tariff_payment';
+    protected $table = 'tariff_payments';
 
     public $timestamps = true;
 
@@ -47,7 +47,7 @@ class TariffPayment extends Model
         'expire_date',
         'auto_payment',
         'payment_id',
-        'service_for_payment',
+        'payment_driver',
         'status',
         'lead_id'
     ];
@@ -80,7 +80,7 @@ class TariffPayment extends Model
      *
      * @return TariffPayment|null
      */
-    public static function getValidTariffPayments(): ?TariffPayment
+    public static function getValidTariffPayment(): ?TariffPayment
     {
         $today = Carbon::today();
 

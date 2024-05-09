@@ -6,6 +6,7 @@ namespace App\Service\Payments\Core;
 use App\Models\Tariff\Tariff;
 use App\Traits\CurrencyTrait;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 
 final class TariffGetAllService
 {
@@ -15,7 +16,7 @@ final class TariffGetAllService
 
     public function __construct()
     {
-        $this->priceForOnePersonInKzt = (float) config('payment.payment_for_one_person');
+        $this->priceForOnePersonInKzt = (float)config('payment.payment_for_one_person');
     }
 
     /**
@@ -24,10 +25,11 @@ final class TariffGetAllService
      */
     public function handle(): array
     {
-        $tariffs = Tariff::all();
+        /** @var Collection<Tariff> $tariffs */
+        $tariffs = Tariff::with('prices')->get();
 
         foreach ($tariffs as $tariff) {
-            $tariff->multiCurrencyPrice = $this::createMultiCurrencyPrice((float) $tariff->price);
+            $tariff->multiCurrencyPrice = $this::createMultiCurrencyPrice((float)$tariff->prices);
         }
 
         return array(
