@@ -83,6 +83,8 @@ class EmployeeController extends Controller
     {
         $groups = ProfileGroup::query()
             ->where('active', 1)
+            ->get();ProfileGroup::query()
+            ->where('active', 1)
             ->get();
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
@@ -1196,8 +1198,6 @@ class EmployeeController extends Controller
         $user = User::withTrashed()->where('id', $request->id)->first();
 
         if ($user) {
-            $user->deleted_at = null;
-            $user->save();
             $user->restore();
 
 //            (new UserService)->restoredUser($user->id);

@@ -2,18 +2,17 @@
 
 namespace App\Service\Payments\Core;
 
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPrice;
+use App\Models\Tariff\PriceConvertor;
 
 trait HasPriceConverter
 {
-    private function getPrice(PaymentDTO $data, ?string $currency = null): TariffPrice
+    private function getPrice(CreateInvoiceDTO $data): PriceConvertor
     {
-        $tariff = Tariff::getTariffById($data->tariffId);
+        $tariff = Tariff::find($data->tariffId);
 
         return $tariff
-            ->getPrice($data->extraUsersLimit)
-            ->setCurrency($currency ?? $data->currency);
+            ->getPriceV2($data->extraUsersLimit, $data->currency);
     }
 }

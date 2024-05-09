@@ -4,7 +4,7 @@ namespace App\Repositories\Tariffs;
 
 use App\Models\CentralUser;
 use App\Repositories\CoreRepository;
-use App\Models\Tariff\TariffPayment as Model;
+use App\Models\Tariff\TariffSubscription as Model;
 
 /**
  * Класс для работы с Repository.
@@ -26,11 +26,9 @@ class TariffPaymentRepository extends CoreRepository
      */
     public function tariffForOwnerAlreadyExist(): bool
     {
-        $authUser = auth()->id();
-        $centralUser = CentralUser::query()->where('email', $authUser)->first();
         return $this->model()
             ->query()
-            ->where('owner_id', $centralUser)
+            ->where('tenant_id', tenant('id'))
             ->where('expire_date', '<', now()->format('Y-m-d'))
             ->where('status', 'succeeded')
             ->exists();

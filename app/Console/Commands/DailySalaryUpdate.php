@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Service\Salary\UpdateSalaryInterface;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class DailySalaryUpdate extends Command
@@ -12,7 +13,7 @@ class DailySalaryUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:update {date?} {group?}';  //php artisan salary:update  2022-04-12
+    protected $signature = 'salary:update {date?} {group?} {month?}';  //php artisan salary:update  2022-04-12
 
     public function __construct(
         private readonly UpdateSalaryInterface $updateSalary
@@ -32,6 +33,15 @@ class DailySalaryUpdate extends Command
     {
         $date = $this->argument('date') ?? now()->format('Y-m-d');
         $groupId = $this->argument('group');
+        if ($this->argument("month")) {
+            $from = Carbon::parse($date)->startOfMonth();
+            $to = Carbon::parse($date)->endOfMonth();
+            while ($from <= $to) {
+                $this->updateSalary->touch($from->format("Y-m-d"), $groupId);
+                $from->addDay();
+            }
+            return;
+        }
         $this->updateSalary->touch($date, $groupId);
     }
 }

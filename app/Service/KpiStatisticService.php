@@ -369,11 +369,11 @@ class KpiStatisticService
         $year = $request->year ?? null;
 
         $group = ProfileGroup::with([
-                'bonuses' => fn($bs) => $bs->where('activity_id', $bonus->activity_id)
-                    ->when($year && $month, fn($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
-                'users' => fn($user) => $user->select('id', 'name', 'last_name'),
-                'users.obtainedBonuses' => fn($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
-            ])
+            'bonuses' => fn($bs) => $bs->where('activity_id', $bonus->activity_id)
+                ->when($year && $month, fn($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+            'users' => fn($user) => $user->select('id', 'name', 'last_name'),
+            'users.obtainedBonuses' => fn($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+        ])
             ->where('id', $bonus->targetable_id)
             ->select(['id', 'name'])->first();
 
@@ -1805,7 +1805,7 @@ class KpiStatisticService
 
         $kpis = $this->kpis($date, $params, $query)->paginate();
         $kpis->data = $kpis->getCollection()->makeHidden(['targetable', 'children']);
-
+//        dd_if(auth()->id = 18, $kpis->data);
         foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
@@ -1823,6 +1823,7 @@ class KpiStatisticService
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum / count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
+            dd_if(auth()->id() == 5 && $kpi->id == 157, count($kpi->users), $kpi_sum, $kpi->users);
         }
 
         return [

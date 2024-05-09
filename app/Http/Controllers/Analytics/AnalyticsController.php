@@ -325,7 +325,17 @@ class AnalyticsController extends Controller
             ->where('date', $request->get("date"))
             ->where('row_id', $request->get("row_id"))
             ->where('column_id', $request->get("column_id"))
-            ->first();
+            ->firstOrCreate([
+                'date' => Carbon::parse($request->get("date"))->startOfMonth(),
+                'row_id' => $request->get("row_id"),
+                'column_id' => $request->get("column_id"),
+                'group_id' => $request->get("group_id"),
+                'value' => $request->get("value"),
+                'show_value' => $request->get("show_value"),
+                'type' => $request->get("type"),
+                'class' => $request->get("class"),
+                'activity_id' => $request->get("activity_id"),
+            ]);
 
         if (!$stat) return $this->response(
             message: 'Statistic not found!',
@@ -533,7 +543,8 @@ class AnalyticsController extends Controller
             DM::updateTimesNew($dto->employeeId, $date);
         }
 
-        ProcessUpdateSalary::dispatch($date, $group->getKey())
+        ProcessUpdateSalary::dispatch($date, $dto->groupId)
+            ->onConnection("sync")
             ->afterCommit();
     }
 

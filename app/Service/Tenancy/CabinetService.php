@@ -37,9 +37,8 @@ final class CabinetService
 
     private function getCentralUser(User $user): CentralUser
     {
-        $centralUser = CentralUser::where('email', $user->email)->first();
-
-        return $centralUser ?? CentralUser::create([
+        /** @var CentralUser $centralUser */
+        $centralUser = CentralUser::query()->where('email', $user->email)->firstOrCreate([
             'email' => $user->email,
             'phone' => $user->phone ?? '77000000000',
             'name' => $user->name ?? 'Noname',
@@ -50,6 +49,8 @@ final class CabinetService
             'country' => $user->working_country,
             'currency' => $user->currency,
         ]);
+
+        return $centralUser;
     }
 
     public function getOwnerByTenantId(string $tenantId): CentralUser

@@ -2,9 +2,9 @@
 
 namespace App\Service\Payments\Core;
 
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 
 interface AutoPayment
 {
-    public function makeAutoPayment(TariffPayment $tariffPayment): void;
+    public function makeAutoPayment(TariffSubscription $tariffPayment): void;
 }

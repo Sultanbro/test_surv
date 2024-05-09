@@ -102,7 +102,6 @@ class TopController extends Controller
         $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month, true, true, ProfileGroup::SWITCH_PROCEEDS);
         $statRepository = app(AnalyticStatRepository::class);
         $allStats = $statRepository->getByGroupIds($this->groups, $firstDayMonth);
-
         foreach ($this->groups as $group_id) {
             $stats = $allStats->where('group_id', $group_id);
             $group = ProfileGroup::find($group_id);
@@ -172,7 +171,8 @@ class TopController extends Controller
         $total_row['Итого'] = (int)$total_row['Итого'];
 
 
-        $cps = CustomProceed::whereYear('date', $days[0]->year)
+        $cps = CustomProceed::query()
+            ->whereYear('date', $days[0]->year)
             ->whereMonth('date', $days[0]->month)
             ->get()
             ->groupBy('order');

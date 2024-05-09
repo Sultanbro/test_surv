@@ -3,9 +3,9 @@
 namespace App\Service\Payments\WalletOne;
 
 use App\Classes\Helpers\Phone;
-use App\DTO\Api\PaymentDTO;
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Models\CentralUser;
-use App\Service\Payments\Core\ConfirmationResponse;
+use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
 use App\Service\Payments\Core\PaymentConnector;
@@ -16,10 +16,7 @@ class WalletOneConnector implements PaymentConnector
     use HasIdempotenceKey;
     use HasPriceConverter;
 
-    const CURRENCIES = [
-        'usd' => 840,
-        'kzt' => 398
-    ];
+    const CURRENCY = 398;
 
     public function __construct(
         private readonly string $paymentUrl,
@@ -31,36 +28,40 @@ class WalletOneConnector implements PaymentConnector
     {
     }
 
-    public function pay(PaymentDTO $data, CentralUser $user): ConfirmationResponse
+    public function createNewInvoice(CreateInvoiceDTO $data, CentralUser $user): Invoice
     {
         $price = $this->getPrice($data);
         $idempotenceKey = $this->generateIdempotenceKey();
+        $body = [
+            "WMI_MERCHANT_ID" => $this->merchantId,
+//            "WMI_PTENABLED" => 'W1KZT',
+//            "WMI_PTDISABLED" => 'W1RUB',
+            "WMI_CUSTOMER_PHONE" => Phone::normalize($user->phone),
+            "WMI_PAYMENT_NO" => $idempotenceKey,
+            "WMI_CURRENCY_ID" => self::CURRENCY,
+            "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
+            "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
+            "WMI_CUSTOMER_EMAIL" => $user->email,
+            "WMI_ORDER_ITEMS" => json_encode([[
+                "Title" => urlencode("Покупка тарифа"),
+                "Quantity" => 1,
+                "UnitPrice" => 150.00,
+                "SubTotal" => 450.00,
+                "TaxType" => "tax_ru_1",
+                "Tax" => 0.00
+            ]]),
+            "WMI_SUCCESS_URL" => $this->successUrl,
+            "WMI_FAIL_URL" => $this->failUrl,
+        ];
 
-        return new ConfirmationResponse(
+        $signature = new Signature($this->shopKey);
+        //Добавление параметра WMI_SIGNATURE в словарь параметров формы
+        $body["WMI_SIGNATURE"] = $signature->make($body);
+
+        return new Invoice(
             $this->paymentUrl,
             $idempotenceKey,
-            true,
-            [
-                "WMI_MERCHANT_ID" => $this->merchantId,
-                "WMI_PTENABLED" => 'WalletOne',
-                "WMI_PTDISABLED" => 'W1RUB',
-                "WMI_CUSTOMER_PHONE" => Phone::normalize($user->phone),
-                "WMI_PAYMENT_NO" => $idempotenceKey,
-                "WMI_CURRENCY_ID" => self::CURRENCIES[Str::lower($data->currency)],
-                "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
-                "WMI_DESCRIPTION" => "BASE64:".base64_encode('Заказ №' . time()),
-                "WMI_CUSTOMER_EMAIL" => $user->email,
-                "WMI_ORDER_ITEMS" => json_encode([[
-                    "Title" => urlencode("Покупка тарифа"),
-                    "Quantity" => 1,
-                    "UnitPrice" => 150.00,
-                    "SubTotal" => 450.00,
-                    "TaxType" => "tax_ru_1",
-                    "Tax" => 0.00
-                ]]),
-                "WMI_SUCCESS_URL" => $this->successUrl,
-                "WMI_FAIL_URL" => $this->failUrl,
-            ],
+            $body
         );
     }
 

@@ -4,9 +4,10 @@ namespace App\Console;
 
 use App\Console\Commands\BackupMysqlToDevServerCommand;
 use App\Console\Commands\Cache\CacheTopRentabilityPerDay;
+use App\Console\Commands\CountHours;
+use App\Console\Commands\DailySalaryUpdate;
 use App\Console\Commands\Duplicates\DeleteTimeTrackingDuplicates;
 use App\Console\Commands\Payment\CheckPaymentsStatusCommand;
-use App\Console\Commands\Payment\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
@@ -20,6 +21,7 @@ use App\Console\Commands\RunTestServerScriptCommand;
 use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\TestingCommand;
+use App\Console\Commands\Tools\ShowPaymentGatewaysCommand;
 use App\Console\Commands\Tools\TenantMigrateFreshCommand;
 use App\Models\Tenant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -36,7 +38,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\Make\RepositoryMakeCommand::class,
         Commands\SaveUserKpi::class,
-        RunAutoPaymentCommand::class,
         BonusUpdate::class,
         CheckPaymentsStatusCommand::class,
         StartDayForItDepartmentCommand::class,
@@ -54,7 +55,10 @@ class Kernel extends ConsoleKernel
         DeleteTimeTrackingDuplicates::class,
         RunTestServerScriptCommand::class,
         RunDailyCommandsForTimetrackingSalaryAndTable::class,
-        BackupMysqlToDevServerCommand::class
+        BackupMysqlToDevServerCommand::class,
+        ShowPaymentGatewaysCommand::class,
+        DailySalaryUpdate::class,
+        CountHours::class
     ];
 
     /**
@@ -71,6 +75,8 @@ class Kernel extends ConsoleKernel
         |
         | Только запускаются в централной
         */
+        // test crontab
+//        $schedule->command('ping:pong')->everyMinute();
 
         $schedule->command('mysql:dump')->dailyAt('19:00'); // dump the mysql database to dev server
         ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +127,9 @@ class Kernel extends ConsoleKernel
         // обновление зарплаты: за текущий день
         // автоматически завершить рабочий день если забыли нажать на кнопку
         // автоматически завершить рабочий день если забыли нажать на кнопку
-        $schedule->command('daily:required-commands')->everyThirtyMinutes();
+        $schedule->command('tenants:run salary:update')->everySixHours();
+        $schedule->command('tenants:run timetracking:check')->everyThirtyMinutes();
+        $schedule->command('tenants:run count:hours')->everySixHours();
 
         $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         $schedule->command('tenants:run salary:group')->daily(); // Сохранить заработанное группой без вычета шт и ав

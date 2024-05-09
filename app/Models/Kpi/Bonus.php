@@ -22,6 +22,7 @@ use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Service\Department\UserService;
 use DB;
+use Illuminate\Support\Arr;
 
 class Bonus extends Model
 {
@@ -37,8 +38,8 @@ class Bonus extends Model
     protected $appends = ['target', 'group_id', 'source', 'expanded'];
 
     protected $casts = [
-        'created_at'  => 'date:d.m.Y H:i',
-        'updated_at'  => 'date:d.m.Y H:i',
+        'created_at' => 'date:d.m.Y H:i',
+        'updated_at' => 'date:d.m.Y H:i',
     ];
 
     protected $fillable = [
@@ -62,17 +63,17 @@ class Bonus extends Model
     /**
      * Unit
      */
-    CONST FOR_ONE = 'one';
-    CONST FOR_ALL = 'all';
-    CONST FOR_FIRST = 'first';
-    CONST PERCENT = 'percent';
+    const FOR_ONE = 'one';
+    const FOR_ALL = 'all';
+    const FOR_FIRST = 'first';
+    const PERCENT = 'percent';
 
     /**
      * Dayparts
      */
-    CONST FULL_DAY = 0;
-    CONST PERIOD = 1;
-    CONST MONTH = 2;
+    const FULL_DAY = 0;
+    const PERIOD = 1;
+    const MONTH = 2;
 
     /**
      * Получает все активные кв-премий без доп запросов.
@@ -103,6 +104,10 @@ class Bonus extends Model
         // get users
         $users = (new UserService)->getUsersAll($group_id, $date)->pluck('id')->toArray();
 
+//        dd_if(
+//            $group_id,
+//            $users
+//        );
         //  fill $awards array
         foreach ($users as $user_id) {
             $awards[$user_id] = 0;
@@ -115,29 +120,28 @@ class Bonus extends Model
         foreach ($bonuses as $bonus) {
 
             // если награда 0 и активность не указана пропускаем
-            if($bonus->sum == 0) continue;
-            if($bonus->activity_id == 0) continue;
-
+            if ($bonus->sum == 0) continue;
+            if ($bonus->activity_id == 0) continue;
             // за первый
-            if($bonus->unit == self::FOR_FIRST) {
+            if ($bonus->unit == self::FOR_FIRST) {
 
                 $best_user = 0;
                 $best_value = 0;
 
                 // Если группа Евраз и Хоум  подтягивать с каллибро
-                if(in_array($group_id, [53,57])) {
+                if (in_array($group_id, [53, 57])) {
 
                     $best_user = self::fetch_best_user_from_callibro($bonus, $group_id, $date);
 
                     // save award to the best user
-                    if($best_user != 0) {
+                    if ($best_user != 0) {
 
                         $data = [
-                            'user_id'  => $best_user,
-                            'date'     => $date,
+                            'user_id' => $best_user,
+                            'date' => $date,
                             'bonus_id' => $bonus->id,
-                            'amount'   => $bonus->sum,
-                            'comment'  => $bonus->title . ' : ' . $best_value . ';'
+                            'amount' => $bonus->sum,
+                            'comment' => $bonus->title . ' : ' . $best_value . ';'
                         ];
 
                         ObtainedBonus::createOrUpdate($data, $bonus->daypart);
@@ -145,37 +149,37 @@ class Bonus extends Model
 
                 } else {
 
-
                     foreach ($users as $user_id) {
 
                         // Если группа Рекрутинг
                         // @TODO должна быть только у BPartners
-                        if($group_id == 48) {
+                        if ($group_id == 48) {
                             $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                         } else {
                             $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                         }
 
                         // лучший результат
-                        if((int)$val >= $bonus->quantity && (int)$val >= $best_value) {
+                        if ((int)$val >= $bonus->quantity && (int)$val >= $best_value) {
                             $best_user = $user_id;
                             $best_value = (int)$val;
                         }
                     }
 
                     // nullify awards if they are not actual
-                    ObtainedBonus::where('bonus_id', $bonus->id)
+                    ObtainedBonus::query()
+                        ->where('bonus_id', $bonus->id)
                         ->where('date', $date)
                         ->delete();
 
                     // save award to the best user
-                    if($best_user != 0 && (int)$best_value >= $bonus->quantity) {
+                    if ($best_user != 0 && (int)$best_value >= $bonus->quantity) {
                         $data = [
-                            'user_id'  => $best_user,
-                            'date'     => $date,
+                            'user_id' => $best_user,
+                            'date' => $date,
                             'bonus_id' => $bonus->id,
-                            'amount'   => $bonus->sum,
-                            'comment'  => $bonus->title . ' : ' . $best_value . ';'
+                            'amount' => $bonus->sum,
+                            'comment' => $bonus->title . ' : ' . $best_value . ';'
                         ];
 
                         ObtainedBonus::createOrUpdate($data, $bonus->daypart);
@@ -185,7 +189,7 @@ class Bonus extends Model
             }
 
             // за все
-            if($bonus->unit == self::FOR_ALL) {
+            if ($bonus->unit == self::FOR_ALL) {
 
                 // nullify awards if they are not actual
                 ObtainedBonus::where('bonus_id', $bonus->id)
@@ -194,27 +198,27 @@ class Bonus extends Model
 
                 foreach ($users as $user_id) {
 
-                    dump('*              '.$user_id);
+                    dump('*              ' . $user_id);
 
                     // Если группа Рекрутинг
                     // @TODO должна быть только у BPartners
-                    if($group_id == 48) {
+                    if ($group_id == 48) {
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                     } else {
                         $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                     }
 
-                    dump('HH  '. $val . ' --- ' . $bonus->quantity);
+                    dump('HH  ' . $val . ' --- ' . $bonus->quantity);
 
                     // план выполнен
-                    if((int)$val >= $bonus->quantity) {
+                    if ((int)$val >= $bonus->quantity) {
 
                         $data = [
-                            'user_id'  => $user_id,
-                            'date'     => $date,
+                            'user_id' => $user_id,
+                            'date' => $date,
                             'bonus_id' => $bonus->id,
-                            'amount'   => $bonus->sum,
-                            'comment'  => $bonus->title . ' : ' . (int)$val . ';'
+                            'amount' => $bonus->sum,
+                            'comment' => $bonus->title . ' : ' . (int)$val . ';'
                         ];
 
                         ObtainedBonus::createOrUpdate($data, $bonus->daypart);
@@ -224,17 +228,17 @@ class Bonus extends Model
             }
 
             // за каждую единиу
-            if($bonus->unit == self::FOR_ONE) {
+            if ($bonus->unit == self::FOR_ONE) {
 
                 foreach ($users as $user_id) {
 
-                    if($group_id == 48) { // рекрутинг @TODO должна быть только у BPartners
+                    if ($group_id == 48) { // рекрутинг @TODO должна быть только у BPartners
 
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
 
-                    } else if( // Если группа Евраз и Хоум  подтягивать с каллибро
-                        in_array($group_id, [53,57,79])
-                        && in_array($bonus->activity_id, [16,37,18,38,146,147])
+                    } else if ( // Если группа Евраз и Хоум  подтягивать с каллибро
+                        in_array($group_id, [53, 57, 79])
+                        && in_array($bonus->activity_id, [16, 37, 18, 38, 146, 147])
                     ) { // Минуты и согласия
 
                         $val = self::fetch_value_from_callibro($bonus, $group_id, $date, $user_id);
@@ -246,11 +250,11 @@ class Bonus extends Model
                     }
 
                     $data = [
-                        'user_id'  => $user_id,
-                        'date'     => $date,
+                        'user_id' => $user_id,
+                        'date' => $date,
                         'bonus_id' => $bonus->id,
-                        'amount'   => (int) $val * $bonus->sum,
-                        'comment'  => $bonus->title . ' : ' . $val . ';'
+                        'amount' => (int)$val * $bonus->sum,
+                        'comment' => $bonus->title . ' : ' . $val . ';'
                     ];
 
                     ObtainedBonus::createOrUpdate($data, $bonus->daypart);
@@ -258,7 +262,7 @@ class Bonus extends Model
             }
 
             // проценты от продаж
-            if($bonus->unit == self::PERCENT) {
+            if ($bonus->unit == self::PERCENT) {
 
                 // nullify awards if they are not actual
                 ObtainedBonus::where('bonus_id', $bonus->id)
@@ -267,27 +271,27 @@ class Bonus extends Model
 
                 foreach ($users as $user_id) {
 
-                    dump('*              '.$user_id);
+                    dump('*              ' . $user_id);
 
                     // Если группа Рекрутинг
                     // @TODO должна быть только у BPartners
-                    if($group_id == 48) {
+                    if ($group_id == 48) {
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                     } else {
                         $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                     }
 
-                    dump('HH  '. $val . ' --- ' . $bonus->quantity);
+                    dump('HH  ' . $val . ' --- ' . $bonus->quantity);
 
                     // план выполнен
-                    if((int)$val > 0) {
+                    if ((int)$val > 0) {
 
                         $data = [
-                            'user_id'  => $user_id,
-                            'date'     => $date,
+                            'user_id' => $user_id,
+                            'date' => $date,
                             'bonus_id' => $bonus->id,
-                            'amount'   => ($val * $bonus->sum) / 100,
-                            'comment'  => $bonus->title . ' : ' . (int)$val . ';'
+                            'amount' => ($val * $bonus->sum) / 100,
+                            'comment' => $bonus->title . ' : ' . (int)$val . ';'
                         ];
 
                         ObtainedBonus::createOrUpdate($data, $bonus->daypart);
@@ -311,13 +315,13 @@ class Bonus extends Model
 
         // FIND USER
         $user = User::withTrashed()->find($user_id);
-        if(!$user) return 0;
+        if (!$user) return 0;
 
         $account = DB::connection('callibro')->table('call_account')
             ->where('email', $user->email)
             ->first();
 
-        if(!$account) return 0;
+        if (!$account) return 0;
         $vars['account_id'] = $account->id;
 
         // get calls
@@ -333,31 +337,31 @@ class Bonus extends Model
     {
         $vars = [];
 
-        if($bonus->daypart == 1) {
-            $vars['start_date'] = $date.' '.$bonus->from.':00';
-            $vars['end_date']   = $date.' '.$bonus->to.':00';
-        } elseif($bonus->daypart == 2) {
+        if ($bonus->daypart == 1) {
+            $vars['start_date'] = $date . ' ' . $bonus->from . ':00';
+            $vars['end_date'] = $date . ' ' . $bonus->to . ':00';
+        } elseif ($bonus->daypart == 2) {
             $date = Carbon::parse($date);
 
             $vars['start_date'] = $date->startOfMonth()->format('Y-m-d') . ' 00:00:00';
-            $vars['end_date']   = $date->endOfMonth()->format('Y-m-d') . ' 23:59:59';
+            $vars['end_date'] = $date->endOfMonth()->format('Y-m-d') . ' 23:59:59';
         } else {
             $vars['start_date'] = $date . ' 00:00:00';
-            $vars['end_date']   = $date . ' 23:59:59';
+            $vars['end_date'] = $date . ' 23:59:59';
         }
 
-        if($group_id == 53) {
+        if ($group_id == 53) {
             $vars['dialer_id'] = 398;
             $vars['script_status_ids'] = [2519]; // Cтатус в скрипте: Дата Визита
         }
 
-        if($group_id == 79) {
+        if ($group_id == 79) {
             $vars['dialer_id'] = 444;
             $vars['script_status_ids'] = [13559];
         }
 
         $vars['type'] = 'calls';
-        if(in_array($bonus->activity_id, [18,38,146])) {
+        if (in_array($bonus->activity_id, [18, 38, 146])) {
             $vars['type'] = 'aggrees';
         }
 
@@ -369,13 +373,13 @@ class Bonus extends Model
      */
     public static function callibro_query($vars)
     {
-        if($vars['type'] == 'calls') {
+        if ($vars['type'] == 'calls') {
             $items = DB::connection('callibro')->table('calls')
-                    ->select('call_account_id as account_id', 'billsec', 'start_time')
-                    ->whereBetween('start_time', [$vars['start_date'], $vars['end_date']])
-                    ->where('billsec', '>=', 10)
-                    ->where('call_dialer_id', $vars['dialer_id'])
-                    ->where('cause', '!=', 'SYSTEM_SHUTDOWN');
+                ->select('call_account_id as account_id', 'billsec', 'start_time')
+                ->whereBetween('start_time', [$vars['start_date'], $vars['end_date']])
+                ->where('billsec', '>=', 10)
+                ->where('call_dialer_id', $vars['dialer_id'])
+                ->where('cause', '!=', 'SYSTEM_SHUTDOWN');
         } else { // aggrees
             $items = DB::connection('callibro')->table('calls')
                 ->select('call_account_id as account_id', 'billsec', 'start_time')
@@ -385,7 +389,7 @@ class Bonus extends Model
                 ->whereIn('script_status_id', $vars['script_status_ids']);
         }
 
-        if(array_key_exists('account_id', $vars)) {
+        if (array_key_exists('account_id', $vars)) {
             $items = $items->where('call_account_id', $vars['account_id']);
         }
 
@@ -414,10 +418,10 @@ class Bonus extends Model
 
         // find user id in lara
         $leader_id = 0;
-        if($leader) {
+        if ($leader) {
             $user = User::withTrashed()->where('email', $leader->email)->first();
-            if($user) {
-               $leader_id = $user->id;
+            if ($user) {
+                $leader_id = $user->id;
             }
         }
 
@@ -434,22 +438,22 @@ class Bonus extends Model
         $last_calls = [];
 
         foreach ($calls as $call) {
-            if(!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
+            if (!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
             $accounts[$call->account_id]++;
-            if($accounts[$call->account_id] <= $quantity) {
+            if ($accounts[$call->account_id] <= $quantity) {
                 $last_calls[$call->account_id] = $call->start_time;
             }
         }
 
-        $filteredAccounts = array_filter($accounts, function($value) use ($quantity){
+        $filteredAccounts = array_filter($accounts, function ($value) use ($quantity) {
             return ($value >= $quantity);
         });
 
         $keys = array_keys($filteredAccounts);
 
         $filteredLastCalls = [];
-        foreach($last_calls as $account_id => $last_call) {
-            if(in_array($account_id, $keys)) {
+        foreach ($last_calls as $account_id => $last_call) {
+            if (in_array($account_id, $keys)) {
                 $filteredLastCalls[$account_id] = $last_call;
             }
         }
@@ -457,10 +461,10 @@ class Bonus extends Model
         $first = 0;
         $first_time = 0;
 
-        if(count($filteredAccounts) > 0) {
-            foreach($filteredLastCalls as $account_id => $time) {
+        if (count($filteredAccounts) > 0) {
+            foreach ($filteredLastCalls as $account_id => $time) {
                 $time = Carbon::parse($time)->timestamp;
-                if($first_time == 0 || $time < $first_time) {
+                if ($first_time == 0 || $time < $first_time) {
                     $first_time = $time;
                     $first = $account_id;
                 }
@@ -475,7 +479,7 @@ class Bonus extends Model
      */
     public static function fetch_value_from_activity($activity_id, $user_id, $date)
     {
-        if($activity_id == 0) return 0;
+        if ($activity_id == 0) return 0;
 
         $date = Carbon::parse($date);
 
@@ -493,7 +497,7 @@ class Bonus extends Model
      */
     public static function fetch_value_from_activity_new($bonus, $user_id, $date)
     {
-        if($bonus->activity_id == 0) return 0;
+        if ($bonus->activity_id == 0) return 0;
 
         $stat = UserStat::query()
             ->select([
@@ -502,7 +506,7 @@ class Bonus extends Model
             ->where('user_id', $user_id)
             ->where('activity_id', $bonus->activity_id);
 
-        if($bonus->daypart == 2) {
+        if ($bonus->daypart == 2) {
 
             $date = Carbon::parse($date);
 
@@ -535,28 +539,28 @@ class Bonus extends Model
             54 => 7,
         ]; // activity => index
 
-        if(!array_key_exists($bonus->activity_id, $indexes)) {
+        if (!array_key_exists($bonus->activity_id, $indexes)) {
             return 0;
         }
 
         $date = Carbon::parse($date);
 
-        if($bonus->activity_id == 45) {
+        if ($bonus->activity_id == 45) {
 
             $records = RecruiterStat::query()
                 ->where('calls', '>', 0)
                 ->where('user_id', $user_id);
 
-            if($bonus->daypart != 2) {
+            if ($bonus->daypart != 2) {
                 $records->where('date', $date);
             } else {
                 $records->whereMonth($date->month)
-                        ->whereYear($date->year);
+                    ->whereYear($date->year);
             }
 
-            if($bonus->daypart == 1) {
+            if ($bonus->daypart == 1) {
                 $records->where('hour', '>=', $bonus->from)
-                        ->where('hour', '<', $bonus->to);
+                    ->where('hour', '<', $bonus->to);
             }
 
             return $records->get()->sum('calls');
@@ -582,7 +586,7 @@ class Bonus extends Model
         $html .= '</b><br>';
 
         //me($bonuses);
-        if($bonuses->count() > 0) {
+        if ($bonuses->count() > 0) {
             foreach ($bonuses as $key => $bonus) {
                 $html .= `<div class="kaspi__item">
                     <img src="/images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
@@ -606,26 +610,26 @@ class Bonus extends Model
     {
         $group = ProfileGroup::find(79);
         $users = json_decode($group->users);
-        $group_users = User::whereIn('id',$users)->get();
+        $group_users = User::whereIn('id', $users)->get();
         $awards = [];
-        foreach($group_users as $user){
-            $account = DB::connection('callibro')->table('call_account')->where('email',$user->email)->first();
-            if($account){
+        foreach ($group_users as $user) {
+            $account = DB::connection('callibro')->table('call_account')->where('email', $user->email)->first();
+            if ($account) {
                 $call = DB::connection('callibro')->table('calls')
-                     ->where('call_dialer_id', 444)
-                     ->where('call_account_id', $account->id)
-                     ->where('script_status_id', 13559)
-                     ->whereBetween('start_time',[$from,$to])
-                     ->orderBy('id', 'asc')
-                     ->take(15)
-                     ->get();
+                    ->where('call_dialer_id', 444)
+                    ->where('call_account_id', $account->id)
+                    ->where('script_status_id', 13559)
+                    ->whereBetween('start_time', [$from, $to])
+                    ->orderBy('id', 'asc')
+                    ->take(15)
+                    ->get();
             }
 
-            if(sizeof($call) == 15){
-                if(sizeof($awards) == 0){
+            if (sizeof($call) == 15) {
+                if (sizeof($awards) == 0) {
                     $awards[] = [$user->id, sizeof($call), $call[0]->start_time];
-                }else{
-                    if(Carbon::parse($awards[0][2])->gt(Carbon::parse($call[0]->start_time))){
+                } else {
+                    if (Carbon::parse($awards[0][2])->gt(Carbon::parse($call[0]->start_time))) {
                         $awards[0] = [$user->id, sizeof($call), $call[0]->start_time];
                     }
                 }

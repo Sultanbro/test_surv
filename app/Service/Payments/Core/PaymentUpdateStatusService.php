@@ -3,19 +3,12 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Core;
 
-use App\Models\CentralUser;
-use App\Models\Tariff\TariffPayment;
+use App\Facade\Payment\Gateway;
+use App\Models\Tariff\TariffSubscription;
 use Exception;
 
 final class PaymentUpdateStatusService
 {
-    /**
-     * @param PaymentFactory $factory
-     */
-    public function __construct(public PaymentFactory $factory)
-    {
-    }
-
     /**
      * @param string $ownerId
      * @return bool
@@ -23,9 +16,9 @@ final class PaymentUpdateStatusService
      */
     public function handle(string $ownerId): bool
     {
-        $lastPayment = TariffPayment::getLastPendingTariffPayment($ownerId);
+        $lastPayment = TariffSubscription::getLastPendingTariffPayment($ownerId);
 
-        $paymentProvider = $this->factory->getPaymentProviderByPayment($lastPayment);
+        $paymentProvider = Gateway::provider($lastPayment->payment_driver);
 
         return $paymentProvider->updateStatusByPayment($lastPayment);
     }

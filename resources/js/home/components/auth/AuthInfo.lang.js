@@ -11,7 +11,7 @@ export const ru = {
 		{
 			id: 2,
 			path: 'graduation',
-			title: 'Автоматизированное обучение сотрудников (LSM)',
+			title: 'Автоматизированное обучение сотрудников (LMS)',
 			desc: 'Нет системности в отделах? Объедините все регламенты, документы, должностные инструкции и др. в одном месте',
 		},
 		{
@@ -66,7 +66,7 @@ export const kz = {
 		{
 			id: 2,
 			path: 'graduation',
-			title: 'Қызметкерлерді автоматты түрде оқыту (LSM)',
+			title: 'Қызметкерлерді автоматты түрде оқыту (LMS)',
 			desc: 'Бөлімдердегі жүйелілік жоқ па? Барлық регламенттерді, құжаттарды, жұмыс нұсқауларын және басқаларын бір орында біріктіріңіз',
 		},
 		{
@@ -121,7 +121,7 @@ export const en = {
 		{
 			id: 2,
 			path: 'graduation',
-			title: 'Automated Employee Training (LSM)',
+			title: 'Automated Employee Training (LMS)',
 			desc: 'Lack of systematization in departments? Consolidate all regulations, documents, job instructions, etc., in one place',
 		},
 		{

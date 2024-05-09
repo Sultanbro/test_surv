@@ -13,7 +13,7 @@ use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Bitrix\Segment;
 use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Position;
 use App\Repositories\DayTypeRepository;
 use App\Repositories\ProfileGroupRepository;
@@ -102,7 +102,7 @@ class UserService
             new CustomException('Пользователь с указанным email или данными уже существует в системе', ErrorCode::BAD_REQUEST, []);
         }
 
-        $tariffPlan = TariffPayment::getValidTariffPayments();
+        $tariffPlan = TariffSubscription::getValidTariffPayment();
 
         $userLimit = Tariff::$defaultUserLimit;
 

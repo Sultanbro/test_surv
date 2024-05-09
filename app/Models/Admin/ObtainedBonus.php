@@ -8,10 +8,20 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $user_id
+ * @property int $bonus_id
+ * @property string $date
+ * @property string $amount
+ * @property string $comment
+ * @property bool $read
+*/
 class ObtainedBonus extends Model
 {
     public $timestamps = false;
+
     protected $table = 'kpi_obtained_bonuses';
+
     protected $fillable = [
         'user_id',
         'bonus_id',
@@ -61,11 +71,14 @@ class ObtainedBonus extends Model
      */
     public static function createOrUpdateForDay($arr): void
     {
+
+        /** @var ObtainedBonus $ob */
         $ob = self::query()
             ->where('user_id', $arr['user_id'])
-            ->where('date', $arr['date'])
+            ->where('date', Carbon::parse($arr['date'])->format('Y-m-d'))
             ->where('bonus_id', $arr['bonus_id'])
             ->first();
+
         if ($ob) {
             $ob->amount = $arr['amount'];
             $ob->comment = $arr['comment'];
