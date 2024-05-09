@@ -2,22 +2,30 @@
 
 namespace App\Providers;
 
-use App\Service\Payments\Prodamus\Prodamus;
+use App\Service\Payments\Core\PaymentGatewayRegistry;
+use App\Service\Payments\Prodamus\ProdamusGateway;
 use App\Service\Payments\Prodamus\ProdamusConnector;
-use App\Service\Payments\WalletOne\WalletOne;
+use App\Service\Payments\WalletOne\WalletOneGateway;
 use App\Service\Payments\WalletOne\WalletOneConnector;
-use BeGateway\GetPaymentToken;
-use BeGateway\Logger;
-use BeGateway\QueryByPaymentToken;
-use BeGateway\Settings;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(PaymentGatewayRegistry::class);
+    }
 
-        $this->app->bind(WalletOne::class, function () {
+    /**
+     * @throws BindingResolutionException
+     */
+    public function boot(): void
+    {
+        /** @var PaymentGatewayRegistry $registry */
+        $registry = $this->app->make(PaymentGatewayRegistry::class);
+
+        $registry->register(["wallet1", "kzt"], function () {
             $connector = new WalletOneConnector(
                 config('payment.wallet1.payment_url'),
                 config('payment.wallet1.shop_key'),
@@ -25,17 +33,17 @@ class PaymentServiceProvider extends ServiceProvider
                 config('payment.wallet1.success_url'),
                 config('payment.wallet1.failed_url')
             );
-            return new WalletOne($connector);
+            return new WalletOneGateway($connector);
         });
 
-        $this->app->bind(Prodamus::class, function () {
+        $registry->register(["prodamus", "rub"], function () {
             $connector = new ProdamusConnector(
                 config('payment.prodamus.payment_url'),
                 config('payment.prodamus.secret_key'),
                 config('payment.prodamus.success_url'),
                 config('payment.prodamus.failed_url')
             );
-            return new Prodamus($connector);
+            return new ProdamusGateway($connector);
         });
     }
 }

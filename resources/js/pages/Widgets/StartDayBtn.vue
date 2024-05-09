@@ -196,7 +196,7 @@ export default {
     left:0;
     width: 2rem;
     height: 2rem;
-    background: url("../../../../public/images/dist/start-icon.svg") center no-repeat;
+    //background: url("../../../../public/images/dist/start-icon.svg") center no-repeat;
     background-size: cover;
   }
 }

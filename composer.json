@@ -39,7 +39,8 @@
     "spatie/laravel-permission": "^5.5",
     "stancl/tenancy": "^3.6",
     "yoomoney/yookassa-sdk-php": "^2.7",
-    "ext-iconv": "*"
+    "ext-iconv": "*",
+    "ext-pdo": "*"
   },
   "require-dev": {
     "drfraker/snipe-migrations": "^1.4",

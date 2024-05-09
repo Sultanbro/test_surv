@@ -26,11 +26,9 @@ class TariffPaymentRepository extends CoreRepository
      */
     public function tariffForOwnerAlreadyExist(): bool
     {
-        $authUser = auth()->id();
-        $centralUser = CentralUser::query()->where('email', $authUser)->first();
         return $this->model()
             ->query()
-            ->where('owner_id', $centralUser)
+            ->where('tenant_id', tenant('id'))
             ->where('expire_date', '<', now()->format('Y-m-d'))
             ->where('status', 'succeeded')
             ->exists();

@@ -3,11 +3,11 @@
 namespace App\Console\Commands\Payment;
 
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Facade\Payment\Gateway;
 use App\Models\Tariff\TariffPayment;
-use App\Service\Payments\Core\PaymentFactory;
-use App\User;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class CheckPaymentsStatusCommand extends Command
 {
@@ -26,23 +26,13 @@ class CheckPaymentsStatusCommand extends Command
     protected $description = 'Запускается для обновления статусов оплаты';
 
     /**
-     * @var PaymentFactory
-     */
-    private PaymentFactory $factory;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->factory = new PaymentFactory();
-    }
-
-    /**
      * Execute the console command.
      *
      * @throws Exception
      */
     public function handle(): void
     {
+        /** @var Collection<TariffPayment> $payments */
         $payments = TariffPayment::query()
             ->with('tenant')
             ->where('status', '=', PaymentStatusEnum::STATUS_PENDING)
@@ -50,9 +40,8 @@ class CheckPaymentsStatusCommand extends Command
 
         foreach ($payments as $payment) {
             try {
-                $this->factory
-                    ->getPaymentProviderByPayment($payment)
-                    ->updateStatusByPayment($payment);
+                $gateway = Gateway::get($payment->service_for_payment);
+                $gateway->updateStatusByPayment($payment);
             } catch (Exception) {
                 //TODO log exception
             }

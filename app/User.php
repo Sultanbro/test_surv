@@ -443,13 +443,10 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             givenDate: $date
         )['end'];
 
-
-        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
-            $workEndTime->addDay();
-        }
-
+//        if ($record->isWorkEndTimeSetToNextDay($workEndTime)) {
+//            $workEndTime->addDay();
+//        }
         if (!$workEndTime->isBefore($date->addDay())) return;
-
 
         $record->setExit($workEndTime)
             ->setStatus(Timetracking::DAY_ENDED)
@@ -1620,7 +1617,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         }
 
-        if ($start->greaterThan($end)) {
+        if ($start->isAfter($end)) {
             $end->addDay();
         }
 

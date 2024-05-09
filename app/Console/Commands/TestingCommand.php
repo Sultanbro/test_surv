@@ -12,7 +12,7 @@ use Throwable;
 
 class TestingCommand extends Command
 {
-    protected $signature = 'test:service';
+    protected $signature = 'ping:pong';
 
     protected $description = 'just for fast testing... :)';
 

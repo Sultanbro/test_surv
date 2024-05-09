@@ -21,14 +21,33 @@
 							<table class="PopupBonuses-table">
 								<thead>
 									<tr>
+										<th class="text-center" />
 										<th class="text-center">
-											Название
+											Наименование активности
 										</th>
 										<th class="text-center">
-											За что
+											Вид плана
 										</th>
 										<th class="text-center">
-											Сумма
+											План
+										</th>
+										<th class="text-center">
+											Период
+										</th>
+										<th
+											v-if="bonus.items[i].daypart===1"
+											class="text-center"
+										>
+											Период От
+										</th>
+										<th
+											v-if="bonus.items[i].daypart===1"
+											class="text-center"
+										>
+											Период До
+										</th>
+										<th class="text-center">
+											Вознагрождение
 										</th>
 									</tr>
 								</thead>
@@ -38,10 +57,31 @@
 										:key="index"
 									>
 										<td class="text-center">
+											{{ index +1 }}
+										</td>
+										<td class="text-center">
 											{{ item.title }}
 										</td>
 										<td class="text-center">
-											{{ item.text }}
+											{{ unit[item.unit] || item.unit }}
+										</td>
+										<td class="text-center">
+											{{ item.quantity }}
+										</td>
+										<td class="text-center">
+											{{ daypart[item.daypart] || item.daypart }}
+										</td>
+										<td
+											v-if="item.daypart===1"
+											class="text-center"
+										>
+											{{ item.from }}
+										</td>
+										<td
+											v-if="item.daypart===1"
+											class="text-center"
+										>
+											{{ item.to }}
 										</td>
 										<td class="text-center">
 											{{ item.sum }}
@@ -133,6 +173,19 @@ export default {
 				weekDays: 0,
 				daysInMonth: 0
 			},
+			unit:{
+				all: 'За все',
+				one: 'За каждую единицу',
+				first: 'Первый кто достигнет',
+				percent: '% с продаж',
+			},
+
+			daypart:{
+				0: 'Полный день',
+				1: 'Период',
+				2: 'Месяц',
+			},
+
 			history: [],
 			loading: false,
 			selectedDate: this.$moment().format('DD.MM.YYYY'),
@@ -156,7 +209,8 @@ export default {
 			this.$nextTick(() => {
 				this.fetchData()
 			})
-		}
+		},
+
 	},
 	created(){
 		this.setMonth()
