@@ -16,6 +16,14 @@
 				<PricingModalToBuy :currency="currency" />
 			</PricingModal>
 		</JobtronOverlay>
+		<JobtronOverlay
+			v-if="currentModalId === 'editRate'"
+			@close="removeModal()"
+		>
+			<PricingModal>
+				<PricingModalEditRate :currency="currency" />
+			</PricingModal>
+		</JobtronOverlay>
 		<PriceTrialPeriod />
 		<PriceTimeLimit is-default />
 		<PriceSpace />
@@ -37,7 +45,9 @@
 					</div>
 
 					<img
-						v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
+						v-b-popover.hover.right="
+							'Если необходимо к тарифу можете добавить пользователей'
+						"
 						src="/images/dist/profit-info.svg"
 						alt=""
 					>
@@ -57,7 +67,8 @@
 					v-if="selectedRate"
 					class="PricingPage-total mt-4"
 				>
-					Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span>
+					Итого к оплате:
+					<span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span>
 					<JobtronButton @click="submitPayment">
 						Оплатить
 					</JobtronButton>
@@ -71,21 +82,22 @@
 
 <script>
 /* global Laravel */
-import { mapActions, mapState } from 'pinia'
-import { usePricingStore } from '@/stores/Pricing'
-import PricingManager from '@/components/pages/Pricing/PricingManager'
-import PricingRates from '@/components/pages/Pricing/PricingRates'
+import { mapActions, mapState } from 'pinia';
+import { usePricingStore } from '@/stores/Pricing';
+import PricingManager from '@/components/pages/Pricing/PricingManager';
+import PricingRates from '@/components/pages/Pricing/PricingRates';
 import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
 import JobtronButton from '../components/ui/Button.vue';
 import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
 import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 import PricingModal from '../components/pages/Pricing/PricingModal.vue';
-import {useModalStore} from '../stores/Modal';
+import { useModalStore } from '../stores/Modal';
 import JobtronOverlay from '../components/ui/Overlay.vue';
 import PricingModalToBuy from '../components/pages/Pricing/Modals/PricingModalToBuy.vue';
 import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModalDefault.vue';
-import {usePricingPeriodStore} from '../stores/PricingPeriod';
+import { usePricingPeriodStore } from '../stores/PricingPeriod';
+import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModalEditRate.vue';
 
 export default {
 	name: 'PricingPage',
@@ -101,8 +113,9 @@ export default {
 		PriceTrialPeriod,
 		PricingManager,
 		PricingRates,
+		PricingModalEditRate,
 	},
-	data(){
+	data() {
 		return {
 			selectedRate: null,
 			users: 0,
@@ -112,14 +125,14 @@ export default {
 			currencyTranslate: {
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'usd',
+				$: 'usd',
 			},
 			promo: '',
 			promoData: {},
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 			freePeriod: false,
-		}
+		};
 	},
 
 	computed: {
@@ -127,32 +140,35 @@ export default {
 		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
 
-		additionalPrice(){
-			if(!this.priceForUser) return 0
-			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
+		additionalPrice() {
+			if (!this.priceForUser) return 0;
+			return (
+				this.users *
+				this.priceForUser[this.currencyCode] *
+				(this.selectedRate.validity === 'monthly' ? 1 : 12)
+			);
 		},
-		total(){
-			if(!this.selectedRate) return 0
-			const total = this.selectedRate.multiCurrencyPrice[this.currencyCode] + this.additionalPrice
-			return this.promoData?.value ? total - this.promoData.value : total
+		total() {
+			if (!this.selectedRate) return 0;
+			const total =
+				this.selectedRate.multiCurrencyPrice[this.currencyCode] +
+				this.additionalPrice;
+			return this.promoData?.value ? total - this.promoData.value : total;
 		},
-		currencyCode(){
-			return this.currencyTranslate[this.currency]
+		currencyCode() {
+			return this.currencyTranslate[this.currency];
 		},
-
 	},
 
-	created(){
-		this.fetchCurrent(Laravel.userId)
-		if(this.$route.query.status){
-			this.fetchStatus().then(status => {
-				if(status) return this.$toast.success('Платеж прошел успешно')
-				this.$toast.error('Платеж прошел неуспешно')
-			})
+	created() {
+		this.fetchCurrent(Laravel.userId);
+		if (this.$route.query.status) {
+			this.fetchStatus().then((status) => {
+				if (status) return this.$toast.success('Платеж прошел успешно');
+				this.$toast.error('Платеж прошел неуспешно');
+			});
 		}
-
 	},
-
 
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
@@ -162,16 +178,15 @@ export default {
 			'fetchCurrent',
 			'fetchStatus',
 		]),
-		removeModal(){
-			this.removeModalActive()
-		}	,
-		updateRate(value){
-			this.selectedRate = value.rate
-			this.period = value.rate.validity
-
+		removeModal() {
+			this.removeModalActive();
 		},
-		updateFreePeriod(newPeriod){
-			this.freePeriod = newPeriod
+		updateRate(value) {
+			this.selectedRate = value.rate;
+			this.period = value.rate.validity;
+		},
+		updateFreePeriod(newPeriod) {
+			this.freePeriod = newPeriod;
 			this.$nextTick(() => {
 				document.body.appendChild(this.$refs.pricingmodal);
 			});
@@ -179,99 +194,97 @@ export default {
 		updateCurrency(newCurrency) {
 			this.currency = newCurrency;
 		},
-		decreseUsers(){
-			if(this.users > 0) --this.users
+		decreseUsers() {
+			if (this.users > 0) --this.users;
 		},
-		increseUsers(){
-			if(!this.selectedRate) return
-			++this.users
+		increseUsers() {
+			if (!this.selectedRate) return;
+			++this.users;
 		},
-		async submitPayment(){
-			if(!this.selectedRate) return
-			if(this.currency !== '₽') return this.submitWalletOne()
-			try{
+		async submitPayment() {
+			if (!this.selectedRate) return;
+			if (this.currency !== '₽') return this.submitWalletOne();
+			try {
 				/* eslint-disable camelcase */
 				const { url } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
-					auto_payment: this.autoPayment
-				})
+					auto_payment: this.autoPayment,
+				});
 				/* eslint-enable camelcase */
-				window.location.assign(url)
-			}
-			catch(error){
-				console.error('submitPayment', error)
-				this.$toast.error('Ошибка при попытке оплаты')
+				window.location.assign(url);
+			} catch (error) {
+				console.error('submitPayment', error);
+				this.$toast.error('Ошибка при попытке оплаты');
 			}
 		},
-		async submitWalletOne(){
-			try{
+		async submitWalletOne() {
+			try {
 				/* eslint-disable camelcase */
 				const { url, params } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
-					auto_payment: this.autoPayment
-				})
-				const form = document.createElement('form')
-				form.method = 'post'
-				form.action = url
-				Object.keys(params).forEach(key => {
-					const inp = document.createElement('input')
-					inp.name = key
-					inp.value = params[key]
-					form.appendChild(inp)
-				})
-				document.body.appendChild(form)
-				form.submit()
-			}
-			catch(error){
-				console.error('submitPayment', error)
-				this.$toast.error('Ошибка при попытке оплаты')
+					auto_payment: this.autoPayment,
+				});
+				const form = document.createElement('form');
+				form.method = 'post';
+				form.action = url;
+				Object.keys(params).forEach((key) => {
+					const inp = document.createElement('input');
+					inp.name = key;
+					inp.value = params[key];
+					form.appendChild(inp);
+				});
+				document.body.appendChild(form);
+				form.submit();
+			} catch (error) {
+				console.error('submitPayment', error);
+				this.$toast.error('Ошибка при попытке оплаты');
 			}
 		},
-		async activatePromo(){
-			this.isPromoLoading = true
-			this.promoData = await this.fetchPromo(this.promo)
-			this.isPromoLoading = false
-		}
+		async activatePromo() {
+			this.isPromoLoading = true;
+			this.promoData = await this.fetchPromo(this.promo);
+			this.isPromoLoading = false;
+		},
 	},
 };
 </script>
 
 <style lang="scss">
-.pricing-page-content{
-  display: flex;
+.pricing-page-content {
+	display: flex;
 	flex-direction: column;
 	gap: 80px;
 }
-	.PricingPage-promo-title{
-		position: relative;
-	}
-	.price-beta{
-		position: absolute;
-		top: 5px;
-		left: 205px;
-		padding: 3px 6px;
-		border-radius: 4px;
-		font-size: 12px;
-		background-color: #cd2525;
-		color: #fff;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-.PricingPage{
+.PricingPage-promo-title {
+	position: relative;
+}
+.price-beta {
+	position: absolute;
+	top: 5px;
+	left: 205px;
+	padding: 3px 6px;
+	border-radius: 4px;
+	font-size: 12px;
+	background-color: #cd2525;
+	color: #fff;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+.PricingPage {
 	z-index: 3;
 	line-height: 1.3;
 	&-total,
-	&-users{
+	&-users {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
 		gap: 1rem;
 	}
-	&-users-form{
+	&-users-form {
 		display: inline-flex;
 		flex-flow: row nowrap;
 		align-items: stretch;
@@ -279,16 +292,16 @@ export default {
 		border-radius: 0.6rem;
 		font-size: 1.4rem;
 	}
-	&-users-input{
+	&-users-input {
 		flex: 1 1 100%;
 		padding: 0 1rem;
-		background-color: #F7FAFC;
+		background-color: #f7fafc;
 		-moz-appearance: textfield;
-		&:focus{
-			background-color: #F7FAFC;
+		&:focus {
+			background-color: #f7fafc;
 		}
 		&::-webkit-outer-spin-button,
-		&::-webkit-inner-spin-button{
+		&::-webkit-inner-spin-button {
 			-webkit-appearance: none;
 			margin: 0;
 		}
@@ -318,23 +331,23 @@ export default {
 	// 	border-radius: 0 0.6rem 0.6rem 0;
 	// }
 
-	&-currency{
+	&-currency {
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
 		gap: 10px;
 	}
-	&-total-value{
+	&-total-value {
 		font-size: 1.3em;
 	}
-	&-promo-title{
+	&-promo-title {
 		font-size: 1.3em;
 	}
-	&-promo-text{
+	&-promo-text {
 		font-size: 0.8em;
 		opacity: 0.5;
 	}
-	&-promo-input{
+	&-promo-input {
 		display: inline-block;
 		width: auto;
 	}
