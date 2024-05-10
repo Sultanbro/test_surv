@@ -85,7 +85,7 @@ export default {
 	bottom: 5%;
 	height: 326px;
 	background-color: #1A1A1A;
-	border-radius: 8px;
+	border-radius: 40px;
 	overflow: hidden;
 
 }
