@@ -9,8 +9,8 @@ class ConfirmationResponse implements JsonSerializable
     public function __construct(
         private readonly string $url,
         private readonly string $paymentId,
-        private readonly bool   $success = true,
         private readonly array  $params = [],
+        private readonly bool   $success = true,
     )
     {
     }

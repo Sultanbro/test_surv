@@ -125,11 +125,10 @@ final class Analytics
     public function analytics(GetAnalyticDto $dto): array
     {
         $date = DateHelper::firstOfMonth($dto->year, $dto->month);
-        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
 
+        $rows = $this->rowRepository->getByGroupId($dto->groupId, $date);
         $columns = $this->columnRepository
             ->getByGroupId($dto->groupId, $date);
-
         $stats = $this->statRepository->getByGroupId($dto->groupId, $date);
 
         $activities = $this->activityRepository->getByGroupIdWithTrashed($dto->groupId);
@@ -139,19 +138,21 @@ final class Analytics
 
         $table = [];
 
-        $days = range(1, 31);
+        $days = range(1, Carbon::parse($date)->lastOfMonth()->day);
         $columnIds = $columns->whereIn('name', $days)->pluck('id')->toArray();
         $currentDay = Carbon::now();
         $isCurrentMonth = $currentDay->month === Carbon::parse($date)->month;
+
+//        dd_if(auth()->id() == 5 && $dto->groupId == 31, $columnIds);
 
         foreach ($rows as $rowIndex => $row) {
             $item = [];
             $dependingFromRow = $rows->where('depend_id', $row->id)->first();
             $cellNumber = $rowIndex + 1;
-            foreach ($columns as $columnIndex => $column) {
 
+            foreach ($columns as $columnIndex => $column) {
                 $addClass = self::getClass($column->name, $weekdays, $dependingFromRow);
-                $cellLetter = $columnIndex != 0 ? AnalyticStat::getLetter($columnIndex - 1) : 'A';
+                $cellLetter = AnalyticStat::getLetter($columnIndex);
                 /** @var AnalyticStat $statistic */
                 $statistic = $stats
                     ->where('row_id', $row->id)
@@ -171,7 +172,7 @@ final class Analytics
                         if ($afterToday) $val = 0;
                         else {
                             $val = AnalyticStat::calcFormula(
-                                stat: $statistic,
+                                statistic: $statistic,
                                 date: $date,
                                 round: $statistic->decimals,
                                 stats: $stats
@@ -179,6 +180,7 @@ final class Analytics
                         }
 
                         $statistic->show_value = $val;
+                        $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
                         $arr['show_value'] = $val;
                     }
@@ -204,7 +206,6 @@ final class Analytics
                         $val = round($val, 1);
                         $statistic->show_value = $val;
                         $statistic->save();
-
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
@@ -227,7 +228,7 @@ final class Analytics
                         $arr['value'] = $val;
                         $arr['show_value'] = $val;
                     }
-                    if ($statistic->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
+                    if ($statistic->type == 'salary_day' && !in_array($column->name, ['sum', 'avg', 'name'])) {
                         $val = $fot[$column->name] ?? 0;
                         $statistic->show_value = $val;
                         $statistic->save();
@@ -249,7 +250,8 @@ final class Analytics
                         $arr['value'] = round($val, 1);
                         $arr['show_value'] = round($val, 1);
                     }
-                } else {
+                }
+                else {
                     $type = 'initial';
                     if ($column->name == 'sum' && $rowIndex > 3) {
                         $type = 'sum';
@@ -258,18 +260,18 @@ final class Analytics
                     if ($column->name == 'avg' && $rowIndex > 3) {
                         $type = 'avg';
                     }
-//                    AnalyticStat::query()->create([
-//                        'group_id' => $dto->groupId,
-//                        'date' => $date,
-//                        'row_id' => $row->id,
-//                        'column_id' => $column->id,
-//                        'value' => '',
-//                        'show_value' => '',
-//                        'decimals' => 0,
-//                        'type' => $type,
-//                        'class' => 'text-center' . $addClass,
-//                        'editable' => $rowIndex == 0 ? 0 : 1,
-//                    ]);
+                    AnalyticStat::query()->create([
+                        'group_id' => $dto->groupId,
+                        'date' => $date,
+                        'row_id' => $row->id,
+                        'column_id' => $column->id,
+                        'value' => '',
+                        'show_value' => '',
+                        'decimals' => 0,
+                        'type' => $type,
+                        'class' => 'text-center' . $addClass,
+                        'editable' => $rowIndex == 0 ? 0 : 1,
+                    ]);
                     $arr = [
                         'value' => '',
                         'show_value' => '',
@@ -286,6 +288,7 @@ final class Analytics
                         'sign' => '',
                     ];
                 }
+
                 $item[$column->name] = $arr;
             }
             $table[] = $item;
@@ -307,12 +310,8 @@ final class Analytics
             ->toArray();
 
         foreach ($filtered as $key => $id) {
-            $columnKeys[$id] = $key - 1;
+            $columnKeys[$id] = $key;
         }
-
-//        dd_if(auth()y->id() === 5,
-//            $columnKyeys
-//        );y
 
         return [
             'rows' => $rowKeys,
@@ -401,6 +400,7 @@ final class Analytics
         $total = 0;
 
         $stats = $stats->where('row_id', $rowId)->whereIn('column_id', $columns);
+
 
         foreach ($stats as $stat) {
             if ($stat && is_numeric($stat->show_value)) {
@@ -592,7 +592,7 @@ final class Analytics
         $stat = $this->implStat($group_id, $date);
         if ($stat) {
             $val = AnalyticStat::calcFormula(
-                stat: $stat,
+                statistic: $stat,
                 date: $date,
                 round: 2,
                 stats: $stats
@@ -627,7 +627,7 @@ final class Analytics
         $stats = $statRepository->getByGroupId($groupId, $date);
 
         return $stat ? AnalyticStat::calcFormula(
-            stat: $stat,
+            statistic: $stat,
             date: $date,
             round: 2,
             only_days: $days,
@@ -699,7 +699,7 @@ final class Analytics
         }
 
         foreach ($columnsData as $index => $column) {
-            $columns[$column->id] = $index != 0 ? AnalyticStat::getLetter($index - 1) : 'A';
+            $columns[$column->id] = AnalyticStat::getLetter($index);
         }
 
         return [

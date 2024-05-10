@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace App\Service\Payments\Prodamus;
 
-use App\Service\Payments\Core\BasePaymentService;
+use App\Service\Payments\Core\BasePaymentGateway;
 use App\Service\Payments\Core\PaymentInvoice;
 use App\Service\Payments\Core\PaymentStatus;
 use App\Service\Payments\Core\PaymentConnector;
 
-class Prodamus extends BasePaymentService
+class ProdamusGateway extends BasePaymentGateway
 {
     public function __construct(
         private readonly ProdamusConnector $connector

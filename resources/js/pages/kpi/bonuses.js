@@ -7,7 +7,7 @@ var fields = [
 		visible: true,
 		type: 'superselect',
 		class: 'text-left w-lg',
-		alter_class: 'col-md-12'
+		alter_class: 'col-md-12',
 	},
 	{
 		name: 'Название',
@@ -15,7 +15,7 @@ var fields = [
 		visible: true,
 		type: 'text',
 		class: 'text-center',
-		alter_class: 'col-md-12'
+		alter_class: 'col-md-12',
 	},
 	{
 		name: 'Показатели',
@@ -23,7 +23,7 @@ var fields = [
 		visible: true,
 		type: 'number',
 		class: 'text-center',
-		alter_class: 'col-md-12'
+		alter_class: 'col-md-12',
 	},
 	{
 		name: 'За',
@@ -31,15 +31,15 @@ var fields = [
 		visible: true,
 		type: 'text',
 		class: 'text-center',
-		alter_class: 'col-md-4'
+		alter_class: 'col-md-4',
 	},
 	{
-		name: 'Кол-во',
+		name: 'План',
 		key: 'quantity',
 		visible: true,
 		type: 'number',
 		class: 'text-center',
-		alter_class: 'col-md-4'
+		alter_class: 'col-md-4',
 	},
 	{
 		name: 'Вознаграждение, %',
@@ -47,7 +47,7 @@ var fields = [
 		visible: true,
 		type: 'number',
 		class: 'text-center wsnw',
-		alter_class: 'col-md-4 wsnw'
+		alter_class: 'col-md-4 wsnw',
 	},
 	{
 		name: 'Период',
@@ -55,23 +55,16 @@ var fields = [
 		visible: true,
 		type: 'number',
 		class: 'text-center',
-		alter_class: 'col-md-6'
+		alter_class: 'col-md-6',
 	},
-	{
-		name: 'Текст',
-		key: 'text',
-		visible: true,
-		type: 'text',
-		class: 'text-center',
-		alter_class: 'col-md-6'
-	},
+
 	{
 		name: 'Дата создания',
 		key: 'created_at',
 		visible: true,
 		type: 'date',
 		class: 'text-center',
-		alter_class: 'col-md-6'
+		alter_class: 'col-md-6',
 	},
 	{
 		name: 'Дата изменения',
@@ -79,7 +72,7 @@ var fields = [
 		visible: true,
 		type: 'date',
 		class: 'text-center',
-		alter_class: 'col-md-6'
+		alter_class: 'col-md-6',
 	},
 	{
 		name: 'Постановщик',
@@ -87,7 +80,7 @@ var fields = [
 		visible: true,
 		type: 'text',
 		class: 'text-center',
-		alter_class: 'col-md-6'
+		alter_class: 'col-md-6',
 	},
 	{
 		name: 'Изменил',
@@ -95,27 +88,35 @@ var fields = [
 		visible: true,
 		type: 'text',
 		class: 'text-center',
-		alter_class: 'col-md-6'
-	}
+		alter_class: 'col-md-6',
+	},
 ];
 
 // dates
 function formatDate(d) {
 	var day = d.getDate() + '';
-	if(day.length == 1) day = '0' + day;
+	if (day.length == 1) day = '0' + day;
 
-	var month = (d.getMonth() + 1) + '';
-	if(month.length == 1) month = '0' + month;
+	var month = d.getMonth() + 1 + '';
+	if (month.length == 1) month = '0' + month;
 
-	return day  + '.' + month + '.' + d.getFullYear() + ' ' +
-        d.getHours() + ':' + d.getMinutes();
+	return (
+		day +
+		'.' +
+		month +
+		'.' +
+		d.getFullYear() +
+		' ' +
+		d.getHours() +
+		':' +
+		d.getMinutes()
+	);
 }
 
 var datestring = formatDate(new Date());
 
-
 function newBonus() {
-	return  {
+	return {
 		id: 0,
 		target: null,
 		title: '',
@@ -141,5 +142,5 @@ function newBonus() {
 // eslint-disable-next-line no-undef
 module.exports = {
 	fields: fields,
-	newBonus: newBonus
+	newBonus: newBonus,
 };

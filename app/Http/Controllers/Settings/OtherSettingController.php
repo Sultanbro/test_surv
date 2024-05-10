@@ -27,7 +27,6 @@ class OtherSettingController extends Controller
      */
     public function reset(Request $request): JsonResponse
     {
-        /** @var CentralUser $centralUser */
         $centralUser = CentralUser::userByEmail($request->get('email'));
 
         if (!$centralUser) {

@@ -1055,7 +1055,8 @@ class TimetrackingController extends Controller
 //            $userStat->value = intval($request->minutes) / 60;
 //            $userStat->save();
 //        }
-        ProcessUpdateSalary::dispatch($date->format("Y-m-d"), $user->activeGroup()->getKey())
+        dispatch(new ProcessUpdateSalary($date->format("Y-m-d"), $user->activeGroup()?->getKey()))
+            ->onConnection('sync')
             ->afterCommit();
 
         $result = [

@@ -8,6 +8,7 @@ use App\Models\Analytics\AnalyticStat as Model;
 use App\Repositories\CoreRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Класс для работы с Repository.
@@ -24,6 +25,7 @@ class AnalyticStatRepository extends CoreRepository
         return AnalyticStat::with('activity')
             ->where('date', $date)
             ->where('group_id', $groupId)
+            ->whereRelation('column', fn($query) => $query->whereNot('name', 'plan'))
             ->get();
     }
 

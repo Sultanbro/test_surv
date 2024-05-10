@@ -506,8 +506,8 @@ export default {
 		},
 
 		/**
-		 * ACTIVITY YEAR
-		 */
+     * ACTIVITY YEAR
+     */
 		setActivityYearTableFields() {
 			const fieldsArray = []
 			let order = 1
@@ -994,99 +994,99 @@ export default {
 
 <style lang="scss">
 .AnalyticsPage{
-	&-gauges{
-		flex: 1;
-		.TopGauges-group,
-		.TopGauges-gauges{
-			flex: 1;
-			justify-content: flex-start !important;
-			align-items: flex-end;
-		}
-		.TopGauges-gauges{
-			gap: 1.5rem;
-		}
-		.TopGauges-gauge{
-			flex: 0 0 content;
-			// &:last-of-type{
-			// 	margin-left: auto;
-			// }
-		}
-	}
+  &-gauges{
+    flex: 1;
+    .TopGauges-group,
+    .TopGauges-gauges{
+      flex: 1;
+      justify-content: flex-start !important;
+      align-items: flex-end;
+    }
+    .TopGauges-gauges{
+      gap: 1.5rem;
+    }
+    .TopGauges-gauge{
+      flex: 0 0 content;
+      // &:last-of-type{
+      // 	margin-left: auto;
+      // }
+    }
+  }
 
-	&-header{
-		~ .tabs{
-			overflow: visible;
-		}
-	}
+  &-header{
+    ~ .tabs{
+      overflow: visible;
+    }
+  }
 
-	&-skeletonImg{
-		width: 100px;
-		height: 100px;
-	}
+  &-skeletonImg{
+    width: 100px;
+    height: 100px;
+  }
 
-	.btn {
-		padding: .375rem .75rem;
-		&.btn-sm {
-			padding: 0.15rem 0.5rem;
-		}
-	}
-	.cell-input{
-		padding: 0 !important;
-	}
+  .btn {
+    padding: .375rem .75rem;
+    &.btn-sm {
+      padding: 0.15rem 0.5rem;
+    }
+  }
+  .cell-input{
+    padding: 0 !important;
+  }
 }
 .mw30 {
-	min-width: 30px;
+  min-width: 30px;
 }
 .rating {
-	display: inline-block;
-	unicode-bidi: bidi-override;
-	color: #888888;
-	font-size: 25px;
-	height: 25px;
-	width: auto;
-	margin: 0;
-	position: relative;
-	padding: 0;
+  display: inline-block;
+  unicode-bidi: bidi-override;
+  color: #888888;
+  font-size: 25px;
+  height: 25px;
+  width: auto;
+  margin: 0;
+  position: relative;
+  padding: 0;
 }
 
 .rating-upper {
-	color: #c52b2f;
-	padding: 0;
-	position: absolute;
-	z-index: 1;
-	display: flex;
-	top: 0;
-	left: 0;
-	overflow: hidden;
+  color: #c52b2f;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }
 
 .rating-lower {
-	padding: 0;
-	display: flex;
-	z-index: 0;
+  padding: 0;
+  display: flex;
+  z-index: 0;
 }
 .ap-text {
-	margin: 0;
-	display: flex;
-	font-size: 12px;
-	align-items: center;
+  margin: 0;
+  display: flex;
+  font-size: 12px;
+  align-items: center;
 }
 .ap-text span {
-	font-size: 16px;
-	font-weight: 700;
-	margin-left: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-left: 5px;
 }
 .fz12 {
-	font-size: 12px;
-	margin-bottom: 0;
-	line-height: 20px;
-	color: #000 !important;
+  font-size: 12px;
+  margin-bottom: 0;
+  line-height: 20px;
+  color: #000 !important;
 }
 .wrap {
-	background: #f3f7f9;
-	margin-bottom: 15px;
-	padding-top: 15px;
-	border: 1px solid #dde8ee;
-	border-radius: 5px;
+  background: #f3f7f9;
+  margin-bottom: 15px;
+  padding-top: 15px;
+  border: 1px solid #dde8ee;
+  border-radius: 5px;
 }
 </style>
