@@ -188,6 +188,9 @@ export default {
 		left: 95%;
 	}
 	}
+  .price-trial-button:focus{
+	outline: none;
+  }
 
 }
 .price-trial-content{
@@ -219,6 +222,10 @@ export default {
 	padding: 16px 32px;
 	font-size: 16px;
 	color: white;
+
+}
+.price-trial-button:focus{
+  outline: none !important;
 }
 
 

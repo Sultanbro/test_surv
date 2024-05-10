@@ -260,6 +260,10 @@ export default {
   max-width: 1300px;
   width: 100%;
   margin-left: 30px;
+	button:focus{
+	outline: none !important;
+
+  }
 }
 .PricingPage-promo-title {
 	position: relative;

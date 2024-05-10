@@ -172,6 +172,9 @@ export default {
 			padding: 16px 32px;
 			font-size: 16px;
   }
+.price-trial-button:focus{
+	outline: none !important;
+}
 	.price-trial-text{
 			font-size: 14px;
 			line-height: 21px;
