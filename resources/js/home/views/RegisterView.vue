@@ -2,10 +2,8 @@
 	<AuthLayout class="RegisterView">
 		<template #form>
 			<form
-				action="/register"
-				method="POST"
 				class="RegisterView-form"
-				@submit.prevent
+				@submit.prevent="onSubmit"
 			>
 				<AuthTitle>
 					{{ lang.title }}
@@ -62,7 +60,6 @@
 					<AuthSubmit
 						v-else
 						:disabled="isLoading"
-						@click="onSubmit"
 					>
 						{{ isLoading ? lang.creating : lang.register }}
 					</AuthSubmit>
@@ -70,15 +67,24 @@
 
 				<AuthNote>
 					{{ lang.agree1 }}
-					<router-link to="/aggreement">
+					<router-link
+						to="/aggreement"
+						target="_blank"
+					>
 						{{ lang.aggreement }}
 					</router-link>
 					{{ lang.agree2 }}
-					<router-link to="/offer">
+					<router-link
+						to="/offer"
+						target="_blank"
+					>
 						{{ lang.offer }}
 					</router-link>
 					{{ lang.agree3 }}
-					<router-link to="/terms">
+					<router-link
+						to="/terms"
+						target="_blank"
+					>
 						{{ lang.terms }}
 					</router-link>
 					{{ lang.agree4 }}
@@ -186,7 +192,7 @@ export default {
 			isSended: false,
 			errors: {},
 			capchaKey: 1,
-			useCapcha: true,
+			useCapcha: false,
 		}
 	},
 	computed: {
@@ -225,6 +231,17 @@ export default {
 		async onSubmit(token){
 			if(this.isLoading) return
 			this.isLoading = true
+
+			const emailPattern = /@gmail\.com$|@yandex\.ru$/;
+			if (!emailPattern.test(this.email)) {
+				alert('Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru');
+				this.isLoading = false; // Остановка загрузки, если email невалидный
+				return;
+			}
+
+			if (!this.email || !this.phone || !this.name) {
+				return alert('Все поля обязательны!')
+			}
 
 			try {
 				await axios.post('/register', {

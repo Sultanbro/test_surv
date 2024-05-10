@@ -295,6 +295,7 @@ export async function fetchAnalyticsV2(request){
 			}
 			return result
 		}, {})),
+
 		report_cards: {
 			report_cards: arrayUniqueKey(data.data.report_cards?.report_cards || [])
 		}
