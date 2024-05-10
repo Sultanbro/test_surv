@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Api\BitrixOld\Lead\PaymentLead;
 use App\Models\CentralUser;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,8 +21,8 @@ class ProcessCreatePaymentInvoiceLead implements ShouldQueue
      * @return void
      */
     public function __construct(
-        private readonly CentralUser   $user,
-        private readonly TariffPayment $tariffPayment)
+        private readonly CentralUser        $user,
+        private readonly TariffSubscription $subscription)
     {
         //
     }
@@ -32,26 +32,26 @@ class ProcessCreatePaymentInvoiceLead implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $this->createPaymentLead($this->user, $this->tariffPayment);
+        $this->createPaymentLead($this->user, $this->subscription);
     }
 
     private function createPaymentLead(
-        CentralUser   $user,
-        TariffPayment $payment,
+        CentralUser        $user,
+        TariffSubscription $subscription,
     ): void
     {
         $lead = (new PaymentLead(
             $user,
-            $payment,
+            $subscription,
             tenant('id'),
             null
         ))
             ->setNeedCallback(false)
             ->publish();
 
-        $payment->lead_id = $lead['result'];
-        $payment->save();
+        $subscription->lead_id = $lead['result'];
+        $subscription->save();
     }
 }

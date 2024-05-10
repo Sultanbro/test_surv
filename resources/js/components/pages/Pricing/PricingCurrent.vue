@@ -54,6 +54,7 @@ export default {
 			return (this.current.extra_user_limit || 0) + (this.current.tariff.users_limit || 0)
 		}
 	},
+
 }
 </script>
 

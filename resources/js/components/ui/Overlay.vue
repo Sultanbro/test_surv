@@ -15,7 +15,7 @@ export default {
 	props: {
 		z: {
 			type: Number,
-			default: 10
+			default: 1000000
 		}
 	},
 	computed: {
@@ -35,6 +35,6 @@ export default {
 	top: 0;
 	right: 0;
 
-	background-color: rgba(#000, 0.25);
+	background-color: rgba(#000000, 0.25);
 }
 </style>

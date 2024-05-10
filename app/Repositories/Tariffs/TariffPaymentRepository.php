@@ -4,7 +4,7 @@ namespace App\Repositories\Tariffs;
 
 use App\Models\CentralUser;
 use App\Repositories\CoreRepository;
-use App\Models\Tariff\TariffPayment as Model;
+use App\Models\Tariff\TariffSubscription as Model;
 
 /**
  * Класс для работы с Repository.

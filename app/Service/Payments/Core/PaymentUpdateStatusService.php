@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Payments\Core;
 
 use App\Facade\Payment\Gateway;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use Exception;
 
 final class PaymentUpdateStatusService
@@ -16,9 +16,9 @@ final class PaymentUpdateStatusService
      */
     public function handle(string $ownerId): bool
     {
-        $lastPayment = TariffPayment::getLastPendingTariffPayment($ownerId);
+        $lastPayment = TariffSubscription::getLastPendingTariffPayment($ownerId);
 
-        $paymentProvider = Gateway::get($lastPayment->service_for_payment);
+        $paymentProvider = Gateway::provider($lastPayment->payment_driver);
 
         return $paymentProvider->updateStatusByPayment($lastPayment);
     }

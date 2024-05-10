@@ -1198,8 +1198,6 @@ class EmployeeController extends Controller
         $user = User::withTrashed()->where('id', $request->id)->first();
 
         if ($user) {
-            $user->deleted_at = null;
-            $user->save();
             $user->restore();
 
 //            (new UserService)->restoredUser($user->id);

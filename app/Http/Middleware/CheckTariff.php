@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Tariff\Tariff;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class CheckTariff
             return $response;
         }
 
-        $tariffPlan = TariffPayment::getValidTariffPayments();
+        $tariffPlan = TariffSubscription::getValidTariffPayment();
 
         $userLimit = Tariff::$defaultUserLimit;
 

@@ -21,9 +21,9 @@ return new class extends Migration {
                 $table->enum('validity', TariffValidityEnum::getAllValues())
                     ->comment('Период действия monthly-ежемесячно, annual-ежегодно');
                 $table->integer('users_limit')->comment('How many people can be assigned');
-                $table->decimal('price')->comment('Price in KZT');
+                $table->decimal('price'); // TODO we should delete this and make another table named tariff_prices for kzt, usd, rub, ect..
                 $table->timestamp('created_at')->useCurrent();
-                $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+                $table->timestamp('updated_at')->useCurrentOnUpdate();
             });
     }
 

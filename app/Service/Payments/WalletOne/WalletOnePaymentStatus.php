@@ -2,7 +2,7 @@
 
 namespace App\Service\Payments\WalletOne;
 
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\PaymentStatus;
 
 class WalletOnePaymentStatus implements PaymentStatus
@@ -15,6 +15,6 @@ class WalletOnePaymentStatus implements PaymentStatus
 
     public function getPaymentStatus(): string
     {
-        return TariffPayment::getStatus($this->paymentId);
+        return TariffSubscription::getStatus($this->paymentId);
     }
 }

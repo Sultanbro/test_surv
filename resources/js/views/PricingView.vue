@@ -8,6 +8,7 @@ export default {
 		DefaultLayout,
 		PricingPage,
 	},
+
 }
 </script>
 
@@ -15,6 +16,7 @@ export default {
 	<DefaultLayout>
 		<div class="old__content">
 			<PricingPage />
+			<portal-target name="trial-period-portal" />
 		</div>
 	</DefaultLayout>
 </template>

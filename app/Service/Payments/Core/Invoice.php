@@ -2,9 +2,10 @@
 
 namespace App\Service\Payments\Core;
 
+use App\Models\Tariff\PaymentToken;
 use JsonSerializable;
 
-class ConfirmationResponse implements JsonSerializable
+class Invoice implements JsonSerializable
 {
     public function __construct(
         private readonly string $url,
@@ -20,9 +21,9 @@ class ConfirmationResponse implements JsonSerializable
         return $this->url;
     }
 
-    public function getPaymentId(): string
+    public function getPaymentToken(): PaymentToken
     {
-        return $this->paymentId;
+        return new PaymentToken($this->paymentId);
     }
 
     public function getIsSuccess(): string
@@ -33,7 +34,7 @@ class ConfirmationResponse implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'payment_id' => $this->getPaymentId(),
+            'payment_id' => $this->getPaymentToken()->token,
             'url' => $this->getUrl(),
             'is_success' => $this->getIsSuccess(),
             'params' => $this->getParams()

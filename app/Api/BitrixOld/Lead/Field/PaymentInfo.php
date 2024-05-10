@@ -2,13 +2,13 @@
 
 namespace App\Api\BitrixOld\Lead\Field;
 
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 
 final class PaymentInfo extends Field
 {
     public function __construct(
-        TariffPayment $payment,
-        ?string $tenantId,
+        TariffSubscription $payment,
+        ?string            $tenantId,
     )
     {
         $portal = $tenantId || 'Jobtron.org';
@@ -16,7 +16,7 @@ final class PaymentInfo extends Field
         $strPayment = "Платеж: $payment->id"
             .'\n'."Портал: $portal"
             .'\n'."Статус: $payment->status"
-            .'\n'."Платежный сервис: $payment->service_for_payment"
+            .'\n'."Платежный сервис: $payment->payment_driver"
             .'\n'."Внешний ID: $payment->payment_id";
 
         parent::__construct('UF_CRM_1677471730901', $strPayment);
