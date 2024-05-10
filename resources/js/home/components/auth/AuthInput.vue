@@ -16,6 +16,7 @@
 						:value="value"
 						:type="type"
 						:placeholder="placeholder"
+						required
 						class="AuthInput-input"
 						@input="$emit('input', $event.target.value)"
 					>
@@ -27,7 +28,7 @@
 			v-if="error"
 			class="AuthInput-error"
 		>
-			{{ error }}
+			{{ error[0] }}
 		</span>
 		<span
 			v-else-if="text"
@@ -135,6 +136,7 @@ export default {
 	}
 	&-error{
 		color: #E13C3C;
+		font-size: 14px;
 	}
 
 	&:hover{

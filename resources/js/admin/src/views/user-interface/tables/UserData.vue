@@ -67,7 +67,7 @@ function getManagerName(userId: number){
   <VContainer class="UserData">
     <template v-if="userDataStore.userData.length">
       <VTable fixed-header>
-        <thead>
+        <!-- <thead>
           <tr>
             <th
               v-if="userDataStore.showCols.id"
@@ -164,7 +164,7 @@ function getManagerName(userId: number){
               Менеджер
             </th>
           </tr>
-        </thead>
+        </thead> -->
         <tbody>
           <tr
             v-for="item in userDataStore.userData"
