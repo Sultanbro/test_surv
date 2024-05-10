@@ -98,6 +98,7 @@ const router = new VueRouter({
 		// upbooks.blade.php
 		{
 			path: '/admin/upbooks',
+			alias: ['/admin/upbooks/:id'],
 			name: 'UpbooksView',
 			component: UpbooksView,
 			meta: {

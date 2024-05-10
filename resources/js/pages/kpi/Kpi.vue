@@ -449,27 +449,44 @@ export default {
 		fetchKPI(filter = null) {
 			let loader = this.$loading.show();
 
-			this.filters = filter
+			this.filters = filter;
 			this.axios.post(this.uri + '/' + 'get', {
 				filters: {
 					...filter,
 					query: this.searchText
 				}
 			}).then(({data}) => {
-				const { kpis, activities, groups } = data.data
-				this.items = this.processKpis(kpis, activities || [])
-				this.all_items = this.processKpis(kpis, activities || [])
+				const { kpis, activities, groups } = data.data;
+
+				this.items = this.processKpis(kpis, activities || []).map(item => ({
+					...item,
+					created_at: this.adjustDate(item.created_at),
+					updated_at: this.adjustDate(item.updated_at)
+				}));
+				this.all_items = [...this.items]; // Копируем элементы, чтобы не изменять исходные данные
 				this.activities = activities;
 				this.groups = groups;
 
 				this.page_items = this.items.slice(0, this.pageSize);
-
 				this.addStatusToItems();
-				loader.hide()
+				loader.hide();
 			}).catch(error => {
-				loader.hide()
-				alert(error)
+				loader.hide();
+				alert(error);
 			});
+		},
+
+		adjustDate(dateString) {
+			if (!dateString) return '';
+			const [day, month, year, time] = dateString.split(/[. ]/);
+			const [hours, minutes] = time.split(':');
+			const isoDateString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
+			const date = new Date(isoDateString);
+			date.setHours(date.getHours() + 5);
+
+			const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+			return formattedDate;
 		},
 
 		processKpis(kpis, activities){
@@ -570,6 +587,7 @@ export default {
 			});
 
 			this.fields = visible_fields;
+
 		},
 
 		addKpi() {

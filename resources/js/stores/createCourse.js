@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useCourseStore = defineStore('courseStore', {
 	state: () => ({
 		courses: [],
+		materialBlocks: [],
 	}),
 	actions: {
 		addCourse(newCourse) {
@@ -14,6 +15,19 @@ export const useCourseStore = defineStore('courseStore', {
 			} else {
 				this.courses.push(newCourse);
 			}
+		},
+		addMaterialsBlock(newMaterials) {
+			Array.prototype.push.apply(this.materialBlocks, newMaterials);
+		},
+		removeMaterialBlocksByNames(names) {
+			names.forEach((name) => {
+				const index = this.materialBlocks.findIndex(
+					(block) => block.name === name
+				);
+				if (index !== -1) {
+					this.materialBlocks.splice(index, 1);
+				}
+			});
 		},
 	},
 });

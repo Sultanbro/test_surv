@@ -16,6 +16,7 @@
 		/>
 		<MaterialSelectTabs
 			v-model="selectedTab"
+			:tabs="['Сотрудники', 'Отделы', 'Должности']"
 			class="AccessSelect-tabs"
 		/>
 		<div class="material-modal-select-block">
@@ -26,20 +27,60 @@
 				<CustomSpinner />
 			</div>
 			<div v-else>
-				<div
-					v-for="(option, index) in filteredOptions"
-					:key="index"
-				>
-					<MaterialModalSelect
+				<div v-if="selectedTab === 'Сотрудники'">
+					<div
+						v-for="(option, index) in users"
+
 						:key="index"
-						:option="option"
-						:selected-tab="selectedTab"
-						:active-select="activeSelect"
-						@update:activeSelect="activeSelect = $event"
-					/>
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.name"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
 				</div>
+				<div v-if="selectedTab === 'Отделы'">
+					<div
+						v-for="(option, index) in profileGroups"
+
+						:key="index"
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.name"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
+				</div>
+				<div v-if="selectedTab === 'Должности'">
+					<div
+						v-for="(option, index) in positions"
+
+						:key="index"
+					>
+						<TakingModalSelect
+							:key="index"
+							:option="option"
+							:name="option.position"
+							:selected-tab="selectedTab"
+							:active-select="activeSelect"
+							@update:activeSelect="activeSelect = $event"
+						/>
+					</div>
+				</div>
+
 				<div class="material-modal-bottom">
-					<button class="material-modal-added-data">
+					<button
+						class="material-modal-added-data"
+						@click="test"
+					>
 						<div class="material-modal-added-data-plus">
 							+
 						</div>
@@ -74,22 +115,24 @@
 <script>
 
 
-import AccessSelectSearch from '../../../../../components/ui/AccessSelect/AccessSelectSearch.vue';
-import MaterialSelectTabs from './MaterialSelectTabs.vue';
-import MaterialModalSelect from './MaterialModalSelect.vue';
-import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
+
 import { mapState, mapActions } from 'pinia'
 import {useCourseStore} from '../../../../../stores/createCourse';
+import CustomSpinner from '../../../../../components/Spinners/Spinner.vue';
+import MaterialSelectTabs from '../MaterialCourse/MaterialSelectTabs.vue';
+import AccessSelectSearch from '../../../../../components/ui/AccessSelect/AccessSelectSearch.vue';
+import TakingModalSelect from './TakingModalSelect.vue';
 
 const ALL = [{id: 0, type: 0, name: 'Все'}]
 
 export default {
-	name: 'MaterialModal',
+	name: 'TakingModal',
 	components: {
-		CustomSpinner,
-		MaterialModalSelect,
+		TakingModalSelect,
+		AccessSelectSearch,
 		MaterialSelectTabs,
-		AccessSelectSearch
+		CustomSpinner,
+
 	},
 	props: {
 		isAccessOverlay: {
@@ -102,7 +145,7 @@ export default {
 		},
 		tabs: {
 			type: Array,
-			default: () => ['Сотрудники', 'Отделы', 'Должности', 'Все']
+			default: () => ['Сотрудники', 'Отделы', 'Должности']
 		},
 		preselectTab: {
 			type: String,
@@ -151,7 +194,7 @@ export default {
 
 	data(){
 		return {
-			selectedTab: 'База знаний',
+			selectedTab: 'Сотрудники',
 			accessList: JSON.parse(JSON.stringify(this.value)),
 			options: [],
 			accessSearch: '',
@@ -160,10 +203,13 @@ export default {
 			loading: false,
 			activeSelect: [],
 			tabTypeMap: {
-				'База знаний': 3,
-				'Книги': 1,
-				'Видео': 2,
-			}
+				'Сотрудники': 3,
+				'Отделы': 1,
+				'Должности': 2,
+			},
+			positions:[],
+			profileGroups:[],
+			users:[]
 		}
 	},
 
@@ -219,6 +265,7 @@ export default {
 		},
 
 
+
 	},
 
 	mounted() {
@@ -226,22 +273,35 @@ export default {
 	},
 	methods: {
 		...mapActions(useCourseStore, ['addMaterialsBlock']),
-		//superselect/get-alt
 
 
 		addMaterial(){
 			if (this.activeSelect){
-				const filterOptions = this.activeSelect.map(id => {
-					return this.filteredOptions.find(option => option.id === id);
+				const users = this.activeSelect.map(name => {
+					return this.users.find(option => option.name === name);
 				}).filter(Boolean);
-				this.addMaterialsBlock(filterOptions)
+				this.addMaterialsBlock(users)
+
+				const profileGroups = this.activeSelect.map(name => {
+					return this.profileGroups.find(option => option.name === name);
+				}).filter(Boolean);
+				this.addMaterialsBlock(profileGroups)
+
+				const positions = this.activeSelect.map(name => {
+					return this.positions.find(option => option.position === name);
+				}).filter(Boolean);
+				this.addMaterialsBlock(positions)
+
+
 
 			}
 		},
+		test(){
+		},
+
 		saveMaterial(){
 			this.addMaterial()
 			this.$emit('close')
-
 		},
 		onSubmit(){
 			if(this.selectedTab === 'Все') return this.$emit('submit', ALL)
@@ -265,9 +325,15 @@ export default {
 		fetch() {
 			this.loading = true;
 			this.axios
-				.get('/superselect/get-alt', {})
+				.get('/messenger/api/v2/company', {})
 				.then((response) => {
-					this.options = response.data.options;
+					this.users = response.data.users;
+					this.positions = response.data.positions;
+					this.profileGroups = response.data.profile_groups;
+
+					this.options = [...this.users, ...this.profileGroups, ...this.positions];
+
+
 					this.filterType();
 					this.addSelectedAttr();
 				})
@@ -292,7 +358,7 @@ export default {
 	filter: invert(99%) sepia(1%) saturate(1439%) hue-rotate(238deg) brightness(107%) contrast(69%);
 	cursor: pointer;
 	&:hover {
-	filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
+		filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
 	}
   }
   // &-search,
@@ -322,29 +388,29 @@ export default {
 
 .material-modal-select-block{
   display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding: 10px 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
 }
 
 .material-modal-added-data{
-	border: 1px solid #E5EBF6;
-	padding: 15px 25px;
-	display: flex;
-	gap: 10px;
-	align-items: center;
-	color: #658CDA;
-	background-color: white;
+  border: 1px solid #E5EBF6;
+  padding: 15px 25px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #658CDA;
+  background-color: white;
 }
 
 .material-modal-added-data-plus{
-	font-size: 22px;
+  font-size: 22px;
   font-weight: 500;
 }
 
 .material-modal-added-data-title{
-	font-size: 14px;
-	font-weight: 500;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .material-modal-bottom{
@@ -354,41 +420,41 @@ export default {
   background: white;
 }
 .material-modal-added-border-bottom{
-	margin: 10px 0;
-	border-bottom: 1px solid #EAEAEA;
-	width: 100%;
+  margin: 10px 0;
+  border-bottom: 1px solid #EAEAEA;
+  width: 100%;
 }
 
 .material-modal-added-footer{
   margin: 10px 0 0 0 ;
-	display: flex;
-	justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
   padding-bottom: 10px;
 }
 
 .material-modal-added-footer-text{
-padding: 15px 10px;
-	color: #8DA0C1;
-	font-size: 13px;
-	line-height: 20px;
+  padding: 15px 10px;
+  color: #8DA0C1;
+  font-size: 13px;
+  line-height: 20px;
 }
 
 .material-modal-added-footer-button{
-	background-color: #156AE8;
-	padding: 10px 38px;
-	border-radius: 8px;
-	font-size: 14px;
-	font-weight: 500;
+  background-color: #156AE8;
+  padding: 10px 38px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 20px;
-	color: white;
+  color: white;
 }
 
 .customSpinner{
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
   display: flex;
-	justify-content: center;
-	align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 </style>
