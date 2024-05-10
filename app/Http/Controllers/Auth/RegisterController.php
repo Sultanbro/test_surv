@@ -54,9 +54,9 @@ class RegisterController extends Controller
 
         $this->cabinetService->add($tenant->id, $user, true);
 
-        $this->createRegistrationLead($user, $centralUser);
 
         if (!app()->environment('local')) {
+            $this->createRegistrationLead($user, $centralUser);
             ProcessSendPasswordMail::dispatch($user, $this->password)->onConnection('sync');
         }
 
