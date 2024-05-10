@@ -129,31 +129,75 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 1600px) {
+	.price-space {
+		width: 1195px !important;
+	}
+
+	.price-space-title {
+		font-size: 36px !important;
+		line-height: 54px !important;
+	}
+
+	.price-space-image {
+		max-width: 164px !important;
+		border-radius: 16px !important;
+	}
+
+	.price-space-title-block {
+		font-size: 20px !important;
+		line-height: 30px !important;
+	}
+
+	.price-space-text-name {
+		font-size: 16px !important;
+	}
+
+	.price-space-name-data {
+		font-size: 16px !important;
+	}
+
+	.price-space-info {
+		max-width: 358px !important;
+	}
+
+	.price-space-buttons button {
+		padding: 5px 24px !important;
+		font-size: 16px !important;
+
+	}
+
+	.price-space-buttons p {
+		font-size: 16px !important;
+
+	}
+}
+
 .price-space {
-	width: 1195px;
+	width: 1000px;
 }
 
 .price-space-title {
-	font-size: 44px;
+	font-size: 36px;
 	font-weight: 600;
-	line-height: 54px;
+	line-height: 46px;
 }
 
 .price-space-content {
 	display: flex;
-	gap: 24px;
+	gap: 14px;
 }
 
 .price-space-image {
-	max-width: 164px;
+	max-width: 144px;
 	width: 100%;
-	border-radius: 16px;
+	border-radius: 12px;
 }
 
 .price-space-title-block {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 600;
-	line-height: 30px;
+	line-height: 28px;
 	margin-bottom: 8px;
 }
 
@@ -165,13 +209,14 @@ export default {
 
 .price-space-text-name {
 	color: #737b8a;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 400;
 }
 
 .price-space-name-data {
-	font-size: 16px;
+	font-size: 14px;
 }
+
 .price-space-info-blocks {
 	display: flex;
 	justify-content: space-between;
@@ -181,7 +226,7 @@ export default {
 .price-space-info {
 	display: flex;
 	flex-direction: column;
-	max-width: 358px;
+	max-width: 318px;
 	width: 100%;
 }
 
@@ -200,27 +245,27 @@ export default {
 	padding: 8px;
 }
 
-.price-space-buttons{
-  margin-top: 30px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.price-space-buttons {
+	margin-top: 16px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
 .price-space-buttons button {
-  width: 156px;
-  height: 32px;
-  padding: 5px 24px;
-  outline: none;
-  color: white;
-  background-color: #0C50FF;
-  border-radius: 8px;
+	font-size: 14px;
+	padding: 5px 24px;
+	outline: none;
+	color: white;
+	background-color: #0c50ff;
+	border-radius: 8px;
 }
 
 .price-space-buttons p {
-  color: #0C50FF;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
+		font-size: 14px;
+	color: #0c50ff;
+	font-weight: 700;
+	cursor: pointer;
+	width: 100%;
 }
 </style>

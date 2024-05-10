@@ -70,7 +70,7 @@ export default {
 </script>
 
 <style scoped>
-@media (min-width: 1400px) {
+@media (min-width: 1600px) {
 	.price-trial{
 		background-color: #1A1A1A;
 		width: 1195px !important;
@@ -106,6 +106,7 @@ export default {
 	}
 }
 .price-trial{
+		margin-top: 36px;
 	background-color: #1A1A1A;
 	width: 1000px;
 	border-radius: 24px;

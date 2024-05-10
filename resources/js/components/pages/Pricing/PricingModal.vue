@@ -74,13 +74,15 @@ export default {
 
 .pricing-modal-content{
   position: absolute;
-  right: 3%;
+  right: 1%;
+	max-width: 564px;
+	width: 100%;
 		display: flex;
 		flex-direction: column;
 		padding: 8px;
 		background-color: #FFFFFF;
 	box-shadow: 4px 0px 32px 0px #C3C3C340;
-	border-radius: 8px;
+	border-radius: 40px;
   height: 100vh;
 
 }

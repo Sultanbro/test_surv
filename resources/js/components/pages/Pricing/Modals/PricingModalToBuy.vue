@@ -490,7 +490,7 @@ export default  {
 	height: 100vh;
   position: relative;
   bottom: 7%;
-  padding: 40px 40px 0 40px;
+  padding: 32px 32px 0 32px;
 }
 
 .pricing-buy-description-total{

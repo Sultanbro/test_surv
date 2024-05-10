@@ -25,7 +25,7 @@
 			</PricingModal>
 		</JobtronOverlay>
 		<PriceTrialPeriod />
-		<PriceTimeLimit is-default />
+		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
 		<div class="PricingPage py-4">
 			<PricingManager />
@@ -90,7 +90,6 @@ import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
 import JobtronButton from '../components/ui/Button.vue';
 import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
-import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 import PricingModal from '../components/pages/Pricing/PricingModal.vue';
 import { useModalStore } from '../stores/Modal';
 import JobtronOverlay from '../components/ui/Overlay.vue';
@@ -106,7 +105,6 @@ export default {
 		PricingModalToBuy,
 		JobtronOverlay,
 		PricingModal,
-		PriceTimeLimit,
 		PriceFAQ,
 		JobtronButton,
 		PriceSpace,
@@ -254,10 +252,14 @@ export default {
 </script>
 
 <style lang="scss">
+
 .pricing-page-content {
-	display: flex;
-	flex-direction: column;
-	gap: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  max-width: 1300px;
+  width: 100%;
+  margin-left: 30px;
 }
 .PricingPage-promo-title {
 	position: relative;

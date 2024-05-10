@@ -86,20 +86,77 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 1400px) {
+	.faq-item-question-title {
+		font-size: 20px !important;
+		font-weight: 600 !important;
+	}
+
+	.faq-item-price {
+		font-weight: 600 !important;
+		font-size: 44px !important;
+		line-height: 54px !important;
+	}
+
+	.referral-link-faq-content {
+		font-size: 16px !important;
+		overflow-y: auto !important;
+	}
+
+	.referral-faq-question {
+		padding: 20px 0 20px 0 !important;
+	}
+
+	.faq-item {
+		padding: 20px 0 20px 0 !important;
+	}
+
+	.faq-item-content {
+		transition: max-height 0.3s ease-out !important;
+	}
+
+	.answer {
+		margin-top: 10px !important;
+	}
+
+	.answer--visible {
+		max-height: 100vh !important;
+		opacity: 1 !important;
+		transform: translateY(0) !important;
+	}
+
+	.faq-item-question {
+		display: flex !important;
+		justify-content: space-between !important;
+	}
+
+	.faq-item-image-block {
+		padding: 8px !important;
+	}
+
+	.faq-item-image {
+		transition: transform 0.3s ease !important;
+	}
+
+	.faq-item-image.active {
+		transform: rotate(45deg) !important;
+	}
+}
 
 .faq-item-question-title {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 600;
 }
 
 .faq-item-price {
 	font-weight: 600;
-	font-size: 44px;
+	font-size: 36px;
 	line-height: 54px;
+
 }
 
 .referral-link-faq-content {
-	font-size: 16px;
+	font-size: 14px;
 	overflow-y: auto;
 }
 
@@ -107,15 +164,15 @@ export default {
 	display: flex;
 	flex-direction: column;
 
-	padding: 20px;
+	padding: 20px 0 20px 0;
 }
 
 .faq-item {
-	max-width: 900px;
+	max-width: 800px;
 	width: 100%;
 	background-color: white;
 	cursor: pointer;
-	padding: 20px;
+	padding: 20px 0 20px 0 !important;
 	border-bottom: 1px solid #CCCCCC;
 }
 

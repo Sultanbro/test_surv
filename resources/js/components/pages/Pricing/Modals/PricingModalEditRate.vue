@@ -178,7 +178,6 @@ export default {
 }
 .pricing-button-group {
 	margin-top: auto;
-	padding: 0 0 32px 0;
 	font-weight: 500;
 	font-size: 16px;
 	display: flex;
@@ -202,13 +201,14 @@ export default {
 }
 
 .pricing-buy-modal {
-	width: 564px;
+	max-width: 564px;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
 	position: relative;
 	bottom: 7%;
-	padding: 40px 40px 0 40px;
+	padding: 32px 32px 0 32px;
 }
 
 .pricing-buy-description-total {

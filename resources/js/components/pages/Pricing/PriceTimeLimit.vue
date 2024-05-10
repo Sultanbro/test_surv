@@ -149,7 +149,7 @@ export default {
 }
 
 
-@media (min-width: 1400px) {
+@media (min-width: 1600px) {
 	.default-content{
 	width: 1195px;
 
