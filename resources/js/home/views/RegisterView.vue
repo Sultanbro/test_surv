@@ -52,7 +52,7 @@
 						:data-callback="onSubmit"
 						class="AuthSubmit"
 						:class="{
-							'AuthSubmit_disabled': isLoading
+							AuthSubmit_disabled: isLoading,
 						}"
 					>
 						{{ isLoading ? lang.creating : lang.register }}
@@ -136,32 +136,32 @@ import AuthSelect from '../components/auth/AuthSelect.vue';
 import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
-import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import AuthPhone from '../components/auth/AuthPhone.vue';
 
+import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
-import * as LANG from './RegisterView.lang.js'
+import * as LANG from './RegisterView.lang.js';
 
-function emptyErrors(){
+function emptyErrors() {
 	return {
 		email: '',
 		phone: '',
 		name: '',
 		currency: '',
-	}
+	};
 }
 
-function parseErrors(errors){
+function parseErrors(errors) {
 	const fields = {
 		username: 'email',
+	};
+	const result = {};
+	for (var field in errors) {
+		result[fields[field] || field] = errors[field];
 	}
-	const result = {}
-	for(var field in errors){
-		result[fields[field] || field] = errors[field]
-	}
-	return result
+	return result;
 }
 
 export default {
@@ -176,12 +176,12 @@ export default {
 		AuthHeader,
 		AuthFooter,
 		AuthInfo,
+		AuthPhone,
 		GRecaptcha,
 		AuthSubmit,
-		AuthPhone,
 	},
 	props: {},
-	data(){
+	data() {
 		return {
 			email: '',
 			phone: '',
@@ -193,16 +193,16 @@ export default {
 			errors: {},
 			capchaKey: 1,
 			useCapcha: false,
-		}
+		};
 	},
 	computed: {
-		isMobile(){
-			return this.$viewportSize.width < 768
+		isMobile() {
+			return this.$viewportSize.width < 768;
 		},
-		lang(){
-			return LANG[this.$root.$data.lang || 'ru']
+		lang() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
-		currencyOptions(){
+		currencyOptions() {
 			return [
 				{
 					value: 'rub',
@@ -216,80 +216,85 @@ export default {
 					value: 'usd',
 					title: this.lang['usd'],
 				},
-			]
+			];
 		},
 	},
 	watch: {},
-	created(){
-		if(window.Laravel?.userId) location.assign('/')
-		const bitrix = document.querySelector('.b24-widget-button-shadow')
-		if(bitrix?.parentNode) bitrix?.parentNode.remove()
+	created() {
+		if (window.Laravel?.userId) location.assign('/');
+		const bitrix = document.querySelector('.b24-widget-button-shadow');
+		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
-	mounted(){},
-	beforeDestroy(){},
+	mounted() {},
+	beforeDestroy() {},
 	methods: {
-		async onSubmit(token){
-			if(this.isLoading) return
-			this.isLoading = true
+		async onSubmit(token) {
+			if (this.isLoading) return;
+			this.isLoading = true;
 
 			const emailPattern = /@gmail\.com$|@yandex\.ru$/;
 			if (!emailPattern.test(this.email)) {
-				alert('Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru');
+				alert(
+					'Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru'
+				);
 				this.isLoading = false; // Остановка загрузки, если email невалидный
 				return;
 			}
 
 			if (!this.email || !this.phone || !this.name) {
-				return alert('Все поля обязательны!')
+				return alert('Все поля обязательны!');
 			}
 
 			try {
-				await axios.post('/register', {
+				const registerUser = await axios.post('/register', {
 					name: this.name,
 					email: this.email,
 					phone: this.phone,
 					currency: this.currency,
 					'g-recaptcha-response': token,
-				})
-				this.isSended = true
-			}
-			catch (error) {
-				const {status, data} = error.response
-				if(status === 422){
+				});
+
+				if (registerUser.data) {
+					this.$router.push(registerUser.data.link);
+					this.isSended = true;
+				}
+        
+			} catch (error) {
+				const { status, data } = error.response;
+				if (status === 422) {
 					this.errors = {
 						...emptyErrors(),
 						...parseErrors(data.errors),
-					}
+					};
+				} else {
+					alert('Не удалось создать кабинет, попробуйте позже');
 				}
-				else{
-					alert('Не удалось создать кабинет, попробуйте позже')
-				}
-				++this.capchaKey
+				++this.capchaKey;
 			}
 
-			this.isLoading = false
+			this.isLoading = false;
 		},
-		onValidate(){
-			return true
+		onValidate() {
+			return true;
 		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.outside-badge{
+.outside-badge {
 	visibility: hidden !important;
 	opacity: 0 !important;
 }
-.RegisterView{
-	&-inputs{
+.RegisterView {
+	&-inputs {
 		display: flex;
 		flex-flow: column nowrap;
 		gap: 20px;
 	}
-	.AuthSubmit{
+	.AuthSubmit {
 		position: relative;
-		button{
+		button {
 			width: 100%;
 
 			position: absolute;
@@ -308,9 +313,9 @@ export default {
 		}
 	}
 }
-@media (max-width: 1599px){
-	.RegisterView{
-		&-inputs{
+@media (max-width: 1599px) {
+	.RegisterView {
+		&-inputs {
 			gap: 10px;
 		}
 	}

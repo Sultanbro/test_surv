@@ -166,6 +166,7 @@
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
+
 export default {
 	name: 'ProfileCourses',
 	props: {},
