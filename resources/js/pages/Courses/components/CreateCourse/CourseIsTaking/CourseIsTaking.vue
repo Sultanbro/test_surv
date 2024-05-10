@@ -39,11 +39,47 @@
 						<p>Выберите сотрудников</p>
 						<InfoIcon />
 					</div>
-					<input
-						class="taking-input"
-						@click="isAccessOverlay=true"
-					>
-					<SearchIcon class="taking-search" />
+					<div v-if="materialBlocks.length > 0">
+						<div
+							class="taking-input taking-count"
+						>
+							<div
+								v-for="course in materialBlocks"
+								:key="course.id"
+								class="taking-content"
+							>
+								<img
+									class="taking-avatar"
+									:src="course.avatar"
+								>
+								<p class="taking-name">
+									{{ course.name }}
+								</p>
+								<svg
+									width="11"
+									height="10"
+									viewBox="0 0 11 10"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									@click="removeUser(course.name)"
+								>
+									<path
+										d="M9.75 0.75L1.25 9.25M1.25 0.75L9.75 9.25"
+										stroke="#0B172D"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									/>
+								</svg>
+							</div>
+						</div>
+					</div>
+					<div v-else>
+						<button
+							class="taking-input"
+							@click="isAccessOverlay=true"
+						/>
+						<SearchIcon class="taking-search" />
+					</div>
 				</div>
 			</div>
 			<JobtronOverlay
@@ -81,6 +117,8 @@ import InfoIcon from '../../../assets/icons/InfoIcon.vue';
 import SearchIcon from '../../../assets/icons/SearchIcon.vue';
 import JobtronOverlay from '../../../../../components/ui/Overlay.vue';
 import TakingModal from './TakingModal.vue';
+import {mapActions, mapState} from 'pinia';
+import {useCourseStore} from '../../../../../stores/createCourse';
 
 export default {
 	name: 'CourseIsTaking',
@@ -91,12 +129,49 @@ export default {
 		return{
 			isAccessOverlay: false,
 		}
+	},
+	computed:{
+		...mapState(useCourseStore, ['materialBlocks']),
+
+	},
+	methods:{
+		...mapActions(useCourseStore, ['removeMaterialBlocksByNames']),
+		removeUser(name){
+			this.removeMaterialBlocksByNames([name])
+		}
 	}
 
 }
 </script>
 
 <style scoped>
+
+.taking-count{
+	display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
+		width: 531px;
+}
+
+.taking-content{
+	gap: 6px;
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	border-radius: 100px;
+	padding: 4px 6px;
+	background-color: #EBF3FB;
+	width: max-content;
+}
+
+.taking-name{
+		font-size: 18px;
+		color: #0B172D;
+}
+.taking-avatar{
+		border-radius: 50%;
+		object-fit: cover;
+}
 .material-course-content{
 	display: flex;
 	flex-direction: column;
@@ -108,15 +183,15 @@ export default {
 	position: absolute;
 		background-color: #F7FAFC;
 		border-radius: 8px;
-		padding: 10px 20px;
+		padding: 20px 20px;
 		max-width:507px;
 		width: 100%;
 }
 
 .taking-search{
 	position: relative;
-	left: 0%;
-	top: 22%;
+	left: 10px;
+	top: 10px;
 }
 
 .taking-title-input{
