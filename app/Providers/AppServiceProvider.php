@@ -104,7 +104,7 @@ class AppServiceProvider extends ServiceProvider
         if (tenant('id') == null) {
             tenancy()->initialize('bp');
         }
-
+        dd(tenant('id'));
         $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
 
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
