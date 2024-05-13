@@ -100,7 +100,7 @@ class AppServiceProvider extends ServiceProvider
     private function dataToVue(): array
     {
         if (\Auth::guest()) return ['csrfToken' => csrf_token()];
-
+        dd(auth()->user());
         $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
 
         if (auth()->user()->program_id === 1 && tenant('id') == 'bp') {
