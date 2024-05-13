@@ -28,16 +28,16 @@ use Stancl\Tenancy\Features\UserImpersonation;
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
-    Route::any('/courses2', [User\ProfileController::class, 'newprofile']);
-    Route::get('login', [PageController::class, 'home'])->name('login');
-    Route::post('login', [Auth\LoginController::class, 'login']);
+    Route::any('/payworkshopknowledgebase', [User\ProfileController::class, 'newprofile']);
+    Route::get('login', [PageController::class, 'home'])->name('login2');
+    Route::post('login', [Auth\LoginController::class, 'login'])->name('login');
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
     Route::get('password/reset', [Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('password/email', [Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
+    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
 });
 
 // Portal Api
@@ -168,9 +168,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
-    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
-    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
-    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
@@ -734,12 +734,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::get('/', [Root\Tariff\TariffInformationController::class, 'tenantPaymentInfo']);
-        Route::post('/', [Root\Tariff\PaymentController::class, 'payment']);
-        Route::post('/status', [Root\Tariff\PaymentController::class, 'status']);
+        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
+        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Tariff\PaymentController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
     });
 
     Route::group([
