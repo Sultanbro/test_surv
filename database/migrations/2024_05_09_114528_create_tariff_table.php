@@ -14,6 +14,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::connection('mysql')->dropIfExists('tariff');
         Schema::connection('mysql')
             ->create('tariff', function (Blueprint $table) {
                 $table->id();
