@@ -64,34 +64,32 @@
 						{{ isLoading ? lang.creating : lang.register }}
 					</AuthSubmit>
 				</div>
-
 				<AuthNote>
 					{{ lang.agree1 }}
-					<router-link
-						to="/aggreement"
+					<a
+						href="/aggreement"
 						target="_blank"
 					>
 						{{ lang.aggreement }}
-					</router-link>
+					</a>
 					{{ lang.agree2 }}
-					<router-link
-						to="/offer"
+					<a
+						href="/offer"
 						target="_blank"
 					>
 						{{ lang.offer }}
-					</router-link>
+					</a>
 					{{ lang.agree3 }}
-					<router-link
-						to="/terms"
+					<a
+						href="/terms"
 						target="_blank"
 					>
 						{{ lang.terms }}
-					</router-link>
+					</a>
 					{{ lang.agree4 }}
 				</AuthNote>
 			</form>
 		</template>
-
 		<template
 			v-if="isMobile"
 			#form-header
@@ -104,7 +102,6 @@
 		>
 			<AuthFooter />
 		</template>
-
 		<template
 			v-if="!isMobile"
 			#info
@@ -192,7 +189,7 @@ export default {
 			isSended: false,
 			errors: {},
 			capchaKey: 1,
-			useCapcha: false,
+			useCapcha: true,
 		};
 	},
 	computed: {
@@ -232,33 +229,15 @@ export default {
 			if (this.isLoading) return;
 			this.isLoading = true;
 
-			const emailPattern = /@gmail\.com$|@yandex\.ru$/;
-			if (!emailPattern.test(this.email)) {
-				alert(
-					'Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru'
-				);
-				this.isLoading = false; // Остановка загрузки, если email невалидный
-				return;
-			}
-
-			if (!this.email || !this.phone || !this.name) {
-				return alert('Все поля обязательны!');
-			}
-
 			try {
-				const registerUser = await axios.post('/register', {
+				await axios.post('/register', {
 					name: this.name,
 					email: this.email,
 					phone: this.phone,
 					currency: this.currency,
 					'g-recaptcha-response': token,
 				});
-
-				if (registerUser.data) {
-					this.$router.push(registerUser.data.link);
-					this.isSended = true;
-				}
-        
+				this.isSended = true;
 			} catch (error) {
 				const { status, data } = error.response;
 				if (status === 422) {
