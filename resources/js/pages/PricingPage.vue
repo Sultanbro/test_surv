@@ -28,7 +28,6 @@
 		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
 		<div class="PricingPage py-4">
-			<PricingManager />
 			<PricingRates
 				:currency="currency"
 				:selected-rate="selectedRate"
@@ -84,7 +83,6 @@
 /* global Laravel */
 import { mapActions, mapState } from 'pinia';
 import { usePricingStore } from '@/stores/Pricing';
-import PricingManager from '@/components/pages/Pricing/PricingManager';
 import PricingRates from '@/components/pages/Pricing/PricingRates';
 import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
@@ -109,7 +107,6 @@ export default {
 		JobtronButton,
 		PriceSpace,
 		PriceTrialPeriod,
-		PricingManager,
 		PricingRates,
 		PricingModalEditRate,
 	},

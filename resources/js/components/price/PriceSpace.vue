@@ -55,25 +55,26 @@
 				</div>
 				<div class="price-space-info">
 					<div class="price-space-info">
-						Ваш персональный менеджер
+						{{ title }}
 					</div>
 					<div class="price-space-title-block">
 						{{ manager.name }} {{ manager.lastName }}
 					</div>
 					<div class="price-space-description">
-						Я здесь и готова помочь по любому вопросу 😊
+						{{ text }}
 					</div>
 					<div class="price-space-contact">
 						<p>+7 778 548-67-59</p>
-						<button
+						<a
 							class="price-space-button"
-							@click="fff"
+							:href="'https://wa.me/' + managerPlainPhone"
 						>
 							<WhatsAppIcon />
-						</button>
-						<button class="price-space-button">
+						</a>
+						<a class="price-space-button">
+							:href="'mailto:' + manager.email"
 							<MessageIcon />
-						</button>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -104,6 +105,20 @@ export default {
 	},
 	computed: {
 		...mapState(usePricingStore, ['current', 'items', 'manager']),
+		...mapState(usePricingStore, ['manager']),
+
+		managerPlainPhone(){
+			if(!this.manager) return ''
+			return this.manager.phone.replace(/[^\d+]/g, '')
+		},
+		title(){
+			if(!this.manager) return ''
+			return this.manager.title || 'Ваш персональный менеджер'
+		},
+		text(){
+			if(!this.manager) return ''
+			return this.manager.text || 'Я здесь и помогу по любому вопросу 😊'
+		},
 		totalUsers() {
 			if (!this.current) return 0;
 			return (
@@ -115,6 +130,7 @@ export default {
 	created() {
 		this.fetchManager();
 	},
+
 	methods: {
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
