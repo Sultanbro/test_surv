@@ -50,30 +50,30 @@
 				<div class="price-space-image">
 					<img
 						class="price-space-image"
-						:src="manager.photo || '/images/price/AvatarManager.png'"
+						:src="manager && manager.photo ? manager.photo : '/images/price/AvatarManager.png'"
 					>
 				</div>
 				<div class="price-space-info">
 					<div class="price-space-info">
-						Ваш персональный менеджер
+						{{ title }}
 					</div>
 					<div class="price-space-title-block">
-						{{ manager.name }} {{ manager.lastName }}
+						{{ manager ? manager.name : '' }} {{ manager ? manager.lastName : '' }}
 					</div>
 					<div class="price-space-description">
-						Я здесь и готова помочь по любому вопросу 😊
+						{{ text }}
 					</div>
 					<div class="price-space-contact">
 						<p>+7 778 548-67-59</p>
-						<button
+						<a
 							class="price-space-button"
-							@click="fff"
+							:href="'https://wa.me/' + managerPlainPhone"
+							target="_blank"
+							rel="noopener noreferrer"
 						>
 							<WhatsAppIcon />
-						</button>
-						<button class="price-space-button">
-							<MessageIcon />
-						</button>
+						</a>
+						<PricingSpaceMessage />
 					</div>
 				</div>
 			</div>
@@ -81,17 +81,18 @@
 	</div>
 </template>
 
+
 <script>
 import WhatsAppIcon from '../pages/Pricing/assets/WhatsAppIcon.vue';
-import MessageIcon from '../pages/Pricing/assets/MessageIcon.vue';
 import { mapActions, mapState } from 'pinia';
 import { usePricingStore } from '../../stores/Pricing';
 import { useModalStore } from '../../stores/Modal';
 import { usePricingPeriodStore } from '../../stores/PricingPeriod';
+import PricingSpaceMessage from '../pages/Pricing/PricingSpaceMessage.vue';
 
 export default {
 	name: 'PriceSpace',
-	components: { MessageIcon, WhatsAppIcon },
+	components: {PricingSpaceMessage, WhatsAppIcon },
 	data() {
 		return {
 			names: {
@@ -104,6 +105,20 @@ export default {
 	},
 	computed: {
 		...mapState(usePricingStore, ['current', 'items', 'manager']),
+		...mapState(usePricingStore, ['manager']),
+
+		managerPlainPhone(){
+			if(!this.manager) return ''
+			return this.manager.phone.replace(/[^\d+]/g, '')
+		},
+		title(){
+			if(!this.manager) return ''
+			return this.manager.title || 'Ваш персональный менеджер'
+		},
+		text(){
+			if(!this.manager) return ''
+			return this.manager.text || 'Я здесь и помогу по любому вопросу 😊'
+		},
 		totalUsers() {
 			if (!this.current) return 0;
 			return (
@@ -115,11 +130,14 @@ export default {
 	created() {
 		this.fetchManager();
 	},
+
 	methods: {
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(usePricingStore, ['fetchManager']),
+
 		fff() {},
+
 		editRate() {
 			this.connectedTariff('PRO')
 			this.setCurrentModal('editRate')
@@ -178,7 +196,7 @@ export default {
 }
 
 .price-space-title {
-	font-size: 36px;
+	font-size: 32px;
 	font-weight: 600;
 	line-height: 46px;
 }

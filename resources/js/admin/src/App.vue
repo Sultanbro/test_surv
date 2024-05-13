@@ -9,22 +9,22 @@
 </template>
 
 <style>
-.aic{
+.aic {
   align-items: center;
 }
-.scrollable{
+.scrollable {
   overflow: auto;
 }
-.vam{
+.vam {
   vertical-align: middle;
 }
-.whsnw{
+.whsnw {
   white-space: nowrap;
 }
-.por{
+.por {
   position: relative;
 }
-.layout-nav-type-vertical .layout-vertical-nav .nav-header.nav-header{
+.layout-nav-type-vertical .layout-vertical-nav .nav-header.nav-header {
   margin: 0;
 }
 </style>

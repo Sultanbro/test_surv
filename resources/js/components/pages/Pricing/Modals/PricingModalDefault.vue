@@ -75,15 +75,122 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 1600px) {
+	.pricing-default-modal{
+		display: flex;
+		flex-direction: column;
+		height: 100vh !important;
+	}
+	.pricing-img-block{
+		position: relative;
+		bottom: 5%;
+		height: 326px !important;
+		background-color: #1A1A1A;
+		border-radius: 40px;
+		overflow: hidden;
+
+	}
+
+	.pricing-eclipse{
+		background-color: #0C50FF;
+		box-shadow: 0 0 130px 10px rgba(12, 80, 255, 0.8);
+		width: 351px !important;
+		height: 351px !important;
+		border-radius: 50%;
+		position: absolute;
+		top: 50%;
+		left: 60%;
+		transform: translate(-50%, -50%);
+		z-index: 2;
+		filter: blur(40px);
+	}
+
+	.pricing-icon-like{
+		position: absolute;
+		z-index: 7;
+		width: 88px !important;
+		height: 88px !important;
+		top: 5% !important;
+		left: 16% !important;
+	}
+
+	.pricing-icon-checkBox{
+		position: absolute;
+		z-index: 7;
+		width: 153px !important;
+		height: 153px !important;
+		top: 35% !important;
+		left: 5% !important;
+	}
+
+	.pricing-icon-box{
+		position: absolute;
+		z-index: 7;
+		width: 262px !important;
+		height: 262px !important;
+		left: 35% !important;
+		top: 10% !important;
+
+	}
+
+	.pricing-title{
+		padding: 0 32px 0 32px !important;
+		margin: 0 0 12px 0 !important;
+		font-weight: 600;
+		font-size: 28px !important;
+		line-height: 36px	!important;
+		width: 100% !important;
+	}
+
+	.pricing-description{
+		padding: 0 32px 0 32px;
+		width: 484px;
+		font-size: 16px;
+		margin-bottom: 24px;
+	}
+
+	.pricing-choice-tariff{
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 32px;
+	}
+
+	.pricing-tariff-title{
+		color: #737B8A;
+		font-size: 16px;
+	}
+
+	.pricing-button-group{
+		margin-top: auto !important;
+		padding: 0 32px 32px 32px !important;
+		font-weight: 500;
+		font-size: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pricing-button-connect{
+		width: 100%;
+		padding: 13px 0;
+		text-align: center;
+		border-radius: 8px;
+		background-color: #0C50FF;
+		color: white;
+	}
+
+}
+
 .pricing-default-modal{
 	display: flex;
-		flex-direction: column;
+	flex-direction: column;
 	height: 100vh;
 }
 .pricing-img-block{
 	position: relative;
 	bottom: 5%;
-	height: 326px;
+	height: 256px;
 	background-color: #1A1A1A;
 	border-radius: 40px;
 	overflow: hidden;
@@ -107,37 +214,38 @@ export default {
 .pricing-icon-like{
 	position: absolute;
 	z-index: 7;
-	width: 88px;
-	height: 88px;
-	top: 5%;
+	width: 68px;
+	height: 68px;
+	top: 10%;
 	left: 16%;
 }
 
 .pricing-icon-checkBox{
 	position: absolute;
 	z-index: 7;
-	width: 153px;
-	height: 153px;
-	top: 35%;
-	left: 5%;
+	width: 103px;
+	height: 103px;
+	top: 40%;
+	left: 10%;
 }
 
 .pricing-icon-box{
 	position: absolute;
 	z-index: 7;
-	width: 262px;
-	height: 262px;
+	width: 202px;
+	height: 202px;
 	left: 35%;
 	top: 10%;
-
 }
+
+
 
 .pricing-title{
 	padding: 0 32px 0 32px;
-	margin: 32px 0 12px 0;
+	margin: 0 0 12px 0;
 	font-weight: 600;
-	font-size: 28px;
-	line-height: 36px	;
+	font-size: 24px;
+	line-height: 24px	;
 	width: 484px;
 }
 
@@ -162,7 +270,7 @@ export default {
 
 .pricing-button-group{
 	margin-top: auto;
-	padding: 0 32px 32px 32px;
+	padding: 0 32px 20px 32px;
 	font-weight: 500;
 	font-size: 16px;
 	display: flex;
@@ -178,11 +286,5 @@ export default {
 	background-color: #0C50FF;
 	color: white;
 }
-.pricing-button-later{
-	width: 100%;
-	padding: 13px 0;
-	text-align: center;
-	border-radius: 8px;
-	background-color: #EDEDED;
-}
+
 </style>

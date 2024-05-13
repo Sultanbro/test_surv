@@ -132,6 +132,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media (min-width: 1600px) {
+  .pricing-buy-added-content {
+	max-width: 326px !important;
+		width: 100%;
+	display: flex;
+	gap: 8px;
+  }
+}
 .PricingRates {
 	&-options-content {
 		display: flex;
@@ -236,6 +244,8 @@ export default {
 	margin-bottom: 24px;
 }
 .pricing-buy-added-content {
+  max-width: 250px;
+  width: 100%;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -247,8 +257,8 @@ export default {
 }
 
 .pricing-buy-added-button-content {
-	display: flex;
-	gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .pricing-buy-added-button {

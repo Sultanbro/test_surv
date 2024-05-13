@@ -79,6 +79,14 @@ export default {
 		position: relative;
 		overflow: hidden;
 	}
+	.price-trial-title{
+		font-size: 24px !important;
+		line-height:24px;
+	}
+	.price-trial-description{
+		font-size: 16px !important;
+		line-height: 24px;
+	}
 	.price-trial-icon-like{
 		position: absolute;
 		z-index: 7;
@@ -104,9 +112,12 @@ export default {
 		top: 0% !important;
 		left: 77%;
 	}
+	.price-trial-content{
+		padding: 40px !important;
+	}
 }
 .price-trial{
-		margin-top: 36px;
+		margin-top: 24px;
 	background-color: #1A1A1A;
 	width: 1000px;
 	border-radius: 24px;
@@ -136,12 +147,12 @@ export default {
 	z-index: 7;
 	width: 212px;
 	height: 212px;
-	top: 20%;
+	top: 10%;
 	left: 77%;
 }
 
 	.price-trial-content{
-			max-width: 610px;
+			max-width: 630px;
 			width: 100%;
 			color: white;
 			display: flex;
@@ -151,12 +162,12 @@ export default {
 	}
 	.price-trial-title{
 			font-weight: 600;
-			font-size: 28px;
+			font-size: 20px;
 			line-height:24px;
 	}
 	.price-trial-description{
-			font-size: 18px;
-			line-height: 27px;
+			font-size: 14px;
+			line-height: 24px;
 	}
 
 	.price-trial-button-group{
@@ -181,6 +192,7 @@ export default {
 	}
 
 	.price-trial-icons-content{
+
 	}
 
 	.price-trial-eclipse{

@@ -327,6 +327,14 @@ const router = new VueRouter({
 				title: 'FixAwardView',
 			},
 		},
+		{
+			path: '/payworkshopknowledgebase',
+			name: 'Workshop',
+			component: () => import('@/pages/workshop/WorkshopPage.vue'),
+			meta: {
+				title: 'Страница оплаты',
+			},
+		},
 	],
 });
 

@@ -34,7 +34,8 @@ export default {
 	position: fixed;
 	top: 0;
 	right: 0;
-
+	overflow: hidden;
 	background-color: rgba(#000000, 0.25);
+	backdrop-filter: blur(10px);
 }
 </style>

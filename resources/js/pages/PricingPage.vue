@@ -27,54 +27,13 @@
 		<PriceTrialPeriod />
 		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
-		<div class="PricingPage py-4">
-			<PricingManager />
+		<div class="PricingPage ">
 			<PricingRates
 				:currency="currency"
 				:selected-rate="selectedRate"
 				@update="updateRate"
 				@updateCurrency="updateCurrency"
 			/>
-			<template v-if="items && items.length">
-				<div
-					v-if="selectedRate"
-					class="PricingPage-users mt-4"
-				>
-					<div class="PricingPage-users-title">
-						Количество пользователей:
-					</div>
-
-					<img
-						v-b-popover.hover.right="
-							'Если необходимо к тарифу можете добавить пользователей'
-						"
-						src="/images/dist/profit-info.svg"
-						alt=""
-					>
-				</div>
-				<div
-					v-if="false && selectedRate"
-					class="PricingPage-auto mt-4"
-				>
-					<b-form-checkbox
-						v-model="autoPayment"
-						switch
-					>
-						Авто оплата
-					</b-form-checkbox>
-				</div>
-				<div
-					v-if="selectedRate"
-					class="PricingPage-total mt-4"
-				>
-					Итого к оплате:
-					<span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span>
-					<JobtronButton @click="submitPayment">
-						Оплатить
-					</JobtronButton>
-				</div>
-				<hr class="my-4">
-			</template>
 		</div>
 		<PriceFAQ />
 	</div>
@@ -84,11 +43,8 @@
 /* global Laravel */
 import { mapActions, mapState } from 'pinia';
 import { usePricingStore } from '@/stores/Pricing';
-import PricingManager from '@/components/pages/Pricing/PricingManager';
 import PricingRates from '@/components/pages/Pricing/PricingRates';
 import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
-import PriceSpace from '../components/price/PriceSpace.vue';
-import JobtronButton from '../components/ui/Button.vue';
 import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
 import PricingModal from '../components/pages/Pricing/PricingModal.vue';
 import { useModalStore } from '../stores/Modal';
@@ -97,19 +53,18 @@ import PricingModalToBuy from '../components/pages/Pricing/Modals/PricingModalTo
 import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModalDefault.vue';
 import { usePricingPeriodStore } from '../stores/PricingPeriod';
 import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModalEditRate.vue';
+import PriceSpace from '../components/price/PriceSpace.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PriceSpace,
 		PricingModalDefault,
 		PricingModalToBuy,
 		JobtronOverlay,
 		PricingModal,
 		PriceFAQ,
-		JobtronButton,
-		PriceSpace,
 		PriceTrialPeriod,
-		PricingManager,
 		PricingRates,
 		PricingModalEditRate,
 	},
@@ -252,11 +207,19 @@ export default {
 </script>
 
 <style lang="scss">
+@media (min-width: 1600px) {
+  .pricing-page-content {
+
+	gap: 80px !important;
+
+  }
+}
+
 
 .pricing-page-content {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 40px;
   max-width: 1300px;
   width: 100%;
   margin-left: 30px;

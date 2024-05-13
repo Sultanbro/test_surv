@@ -2,10 +2,8 @@
 	<AuthLayout class="RegisterView">
 		<template #form>
 			<form
-				action="/register"
-				method="POST"
 				class="RegisterView-form"
-				@submit.prevent
+				@submit.prevent="onSubmit"
 			>
 				<AuthTitle>
 					{{ lang.title }}
@@ -46,16 +44,7 @@
 						:label="lang.currency"
 						:text="lang.canchange"
 					/>
-					<button
-						class="AuthSubmit"
-						:class="{
-							AuthSubmit_disabled: isLoading,
-						}"
-						@click="onSubmit"
-					>
-						{{ lang.register }}
-					</button>
-					<!-- <GRecaptcha
+					<GRecaptcha
 						v-if="useCapcha"
 						:key="capchaKey"
 						data-sitekey="6LeuEr8pAAAAAAvhivvwP88W3NW2ZCzYuJ65Mzam"
@@ -63,7 +52,7 @@
 						:data-callback="onSubmit"
 						class="AuthSubmit"
 						:class="{
-							'AuthSubmit_disabled': isLoading
+							AuthSubmit_disabled: isLoading,
 						}"
 					>
 						{{ isLoading ? lang.creating : lang.register }}
@@ -71,23 +60,31 @@
 					<AuthSubmit
 						v-else
 						:disabled="isLoading"
-						@click="onSubmit"
 					>
 						{{ isLoading ? lang.creating : lang.register }}
-					</AuthSubmit> -->
+					</AuthSubmit>
 				</div>
 
 				<AuthNote>
 					{{ lang.agree1 }}
-					<router-link to="/aggreement">
+					<router-link
+						to="/aggreement"
+						target="_blank"
+					>
 						{{ lang.aggreement }}
 					</router-link>
 					{{ lang.agree2 }}
-					<router-link to="/offer">
+					<router-link
+						to="/offer"
+						target="_blank"
+					>
 						{{ lang.offer }}
 					</router-link>
 					{{ lang.agree3 }}
-					<router-link to="/terms">
+					<router-link
+						to="/terms"
+						target="_blank"
+					>
 						{{ lang.terms }}
 					</router-link>
 					{{ lang.agree4 }}
@@ -141,8 +138,8 @@ import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
 import AuthPhone from '../components/auth/AuthPhone.vue';
 
-// import AuthSubmit from "../components/auth/AuthSubmit.vue";
-// import GRecaptcha from "@finpo/vue2-recaptcha-invisible";
+import AuthSubmit from '../components/auth/AuthSubmit.vue';
+import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
 import * as LANG from './RegisterView.lang.js';
@@ -180,6 +177,8 @@ export default {
 		AuthFooter,
 		AuthInfo,
 		AuthPhone,
+		GRecaptcha,
+		AuthSubmit,
 	},
 	props: {},
 	data() {
@@ -193,7 +192,7 @@ export default {
 			isSended: false,
 			errors: {},
 			capchaKey: 1,
-			useCapcha: true,
+			useCapcha: false,
 		};
 	},
 	computed: {
@@ -233,6 +232,19 @@ export default {
 			if (this.isLoading) return;
 			this.isLoading = true;
 
+			const emailPattern = /@gmail\.com$|@yandex\.ru$/;
+			if (!emailPattern.test(this.email)) {
+				alert(
+					'Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru'
+				);
+				this.isLoading = false; // Остановка загрузки, если email невалидный
+				return;
+			}
+
+			if (!this.email || !this.phone || !this.name) {
+				return alert('Все поля обязательны!');
+			}
+
 			try {
 				const registerUser = await axios.post('/register', {
 					name: this.name,
@@ -243,22 +255,21 @@ export default {
 				});
 
 				if (registerUser.data) {
-					this.$router.push('/');
+					this.$router.push(registerUser.data.link);
+					this.isSended = true;
 				}
 
-				this.isSended = true
 			} catch (error) {
-				const {status, data} = error.response
-				if(status === 422){
+				const { status, data } = error.response;
+				if (status === 422) {
 					this.errors = {
 						...emptyErrors(),
 						...parseErrors(data.errors),
-					}
+					};
+				} else {
+					alert('Не удалось создать кабинет, попробуйте позже');
 				}
-				else{
-					alert('Не удалось создать кабинет, попробуйте позже')
-				}
-				++this.capchaKey
+				++this.capchaKey;
 			}
 
 			this.isLoading = false;
