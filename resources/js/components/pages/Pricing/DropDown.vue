@@ -74,17 +74,27 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 1600px) {
+
+	.price-dropdown-toggle {
+		max-width: 574px !important;
+
+		padding: 8px !important;
+
+	}
+}
 .price-dropdown {
 	position: relative;
 	display: inline-block;
 }
 
 .price-dropdown-toggle {
-	width: 474px;
+	max-width: 474px;
+	width: 100%;
 	background-color: #f8f9fa;
 	border: 1px solid #CDD1DB;
 		border-radius: 8px;
-	padding: 8px;
+	padding: 6px;
 	cursor: pointer;
 	display: flex;
 		justify-content: space-between;

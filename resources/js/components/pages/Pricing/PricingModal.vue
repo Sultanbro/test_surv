@@ -63,6 +63,32 @@ export default {
 
 <style lang="scss" scoped>
 
+
+@media (min-width: 1600px) {
+  .pricing-buttonCLose{
+	position: relative;
+	right: 10%;
+	width: 40px !important;
+	height: 40px !important;
+	padding: 8px !important;
+	border-radius: 8px !important;
+  }
+
+  .pricing-modal-content{
+	position: absolute;
+	right: 1%;
+	max-width: 564px !important;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	padding: 8px !important;
+	background-color: #FFFFFF;
+	box-shadow: 4px 0px 32px 0px #C3C3C340;
+	border-radius: 40px;
+	height: 100vh !important;
+  }
+}
+
 .pricing-buttonCLose{
   position: relative;
   right: 10%;
@@ -75,16 +101,15 @@ export default {
 .pricing-modal-content{
   position: absolute;
   right: 1%;
-	max-width: 564px;
-	width: 100%;
-		display: flex;
-		flex-direction: column;
-		padding: 8px;
-		background-color: #FFFFFF;
-	box-shadow: 4px 0px 32px 0px #C3C3C340;
-	border-radius: 40px;
+  max-width: 464px;
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+  box-shadow: 4px 0px 32px 0px #C3C3C340;
+  border-radius: 40px;
   height: 100vh;
-
 }
 
 

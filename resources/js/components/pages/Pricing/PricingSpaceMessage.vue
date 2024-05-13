@@ -1,22 +1,19 @@
 <template>
-	<a
-		href="#"
-		class="header__right-icon loop"
+	<button
+		class="price-space-button"
 		@click="click"
 	>
-		<img
-			src="/images/dist/header-right-3.svg"
-			alt="nav icon"
-			class="header__icon-img"
-		>
-	</a>
+		<MessageIcon />
+	</button>
 </template>
 
 <script>
+import MessageIcon from './assets/MessageIcon.vue';
 import {mapActions, mapGetters} from 'vuex';
 
-// noinspection JSUnusedGlobalSymbols
 export default {
+	name: 'PricingSpaceMessage',
+	components: {MessageIcon},
 	computed: {
 		...mapGetters(['isOpen'])
 	},
@@ -37,5 +34,11 @@ export default {
 </script>
 
 <style scoped>
-
+.price-space-button {
+	background-color: #ededed;
+	width: 40px;
+	height: 40px;
+	border-radius: 8px;
+	padding: 8px;
+}
 </style>

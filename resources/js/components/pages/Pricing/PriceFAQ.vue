@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1 class="faq-item-price">
+		<h1 class="faq-item-price pb-4">
 			Вопросы по тарифам
 		</h1>
 		<div class="referral-link-faq-content">

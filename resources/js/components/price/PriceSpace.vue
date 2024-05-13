@@ -50,7 +50,7 @@
 				<div class="price-space-image">
 					<img
 						class="price-space-image"
-						:src="manager.photo || '/images/price/AvatarManager.png'"
+						:src="manager && manager.photo ? manager.photo : '/images/price/AvatarManager.png'"
 					>
 				</div>
 				<div class="price-space-info">
@@ -58,7 +58,7 @@
 						{{ title }}
 					</div>
 					<div class="price-space-title-block">
-						{{ manager.name }} {{ manager.lastName }}
+						{{ manager ? manager.name : '' }} {{ manager ? manager.lastName : '' }}
 					</div>
 					<div class="price-space-description">
 						{{ text }}
@@ -68,13 +68,12 @@
 						<a
 							class="price-space-button"
 							:href="'https://wa.me/' + managerPlainPhone"
+							target="_blank"
+							rel="noopener noreferrer"
 						>
 							<WhatsAppIcon />
 						</a>
-						<a class="price-space-button">
-							:href="'mailto:' + manager.email"
-							<MessageIcon />
-						</a>
+						<PricingSpaceMessage />
 					</div>
 				</div>
 			</div>
@@ -82,17 +81,18 @@
 	</div>
 </template>
 
+
 <script>
 import WhatsAppIcon from '../pages/Pricing/assets/WhatsAppIcon.vue';
-import MessageIcon from '../pages/Pricing/assets/MessageIcon.vue';
 import { mapActions, mapState } from 'pinia';
 import { usePricingStore } from '../../stores/Pricing';
 import { useModalStore } from '../../stores/Modal';
 import { usePricingPeriodStore } from '../../stores/PricingPeriod';
+import PricingSpaceMessage from '../pages/Pricing/PricingSpaceMessage.vue';
 
 export default {
 	name: 'PriceSpace',
-	components: { MessageIcon, WhatsAppIcon },
+	components: {PricingSpaceMessage, WhatsAppIcon },
 	data() {
 		return {
 			names: {
@@ -135,7 +135,9 @@ export default {
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(usePricingStore, ['fetchManager']),
+
 		fff() {},
+
 		editRate() {
 			this.connectedTariff('PRO')
 			this.setCurrentModal('editRate')
@@ -194,7 +196,7 @@ export default {
 }
 
 .price-space-title {
-	font-size: 36px;
+	font-size: 32px;
 	font-weight: 600;
 	line-height: 46px;
 }
