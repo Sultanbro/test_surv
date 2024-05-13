@@ -2,7 +2,6 @@
 	<div class="AuthHeader">
 		<div class="AuthHeader-left">
 			<a
-				v-if="back"
 				:href="root"
 				class="main__link"
 			>
@@ -17,7 +16,7 @@
 				:value="lang"
 				@input="$root.$data.setLang($event)"
 			/>
-			<!-- <router-link
+			<router-link
 				to="/"
 				class="main__link"
 			>
@@ -25,7 +24,7 @@
 				<span>
 					{{ LANG.support }}
 				</span>
-			</router-link> -->
+			</router-link>
 		</div>
 	</div>
 </template>
@@ -33,7 +32,7 @@
 <script>
 import AuthLang from './AuthLang.vue';
 import IconBack from './IconBack.vue'
-// import IconChat from './IconChat.vue'
+import IconChat from './IconChat.vue'
 
 import * as LANG from './AuthHeader.lang.js'
 
@@ -41,7 +40,7 @@ export default {
 	components: {
 		AuthLang,
 		IconBack,
-		// IconChat,
+		IconChat,
 	},
 	props: {
 		back: Boolean,
@@ -90,13 +89,13 @@ export default {
 		.AuthLangItem-label{
 			display: none;
 		}
-		.AuthHeader-right{
-			.main__link{
-				span{
-					display: none;
-				}
-			}
-		}
+		// .AuthHeader-right{
+		// 	.main__link{
+		// 		span{
+		// 			display: none;
+		// 		}
+		// 	}
+		// }
 	}
 }
 

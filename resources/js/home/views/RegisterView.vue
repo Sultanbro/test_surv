@@ -54,7 +54,7 @@
 						:data-callback="onSubmit"
 						class="AuthSubmit"
 						:class="{
-							'AuthSubmit_disabled': isLoading
+							AuthSubmit_disabled: isLoading,
 						}"
 					>
 						{{ isLoading ? lang.creating : lang.register }}
@@ -67,25 +67,32 @@
 						{{ isLoading ? lang.creating : lang.register }}
 					</AuthSubmit>
 				</div>
-
 				<AuthNote>
 					{{ lang.agree1 }}
-					<router-link to="/aggreement">
+					<a
+						href="/aggreement"
+						target="_blank"
+					>
 						{{ lang.aggreement }}
-					</router-link>
+					</a>
 					{{ lang.agree2 }}
-					<router-link to="/offer">
+					<a
+						href="/offer"
+						target="_blank"
+					>
 						{{ lang.offer }}
-					</router-link>
+					</a>
 					{{ lang.agree3 }}
-					<router-link to="/terms">
+					<a
+						href="/terms"
+						target="_blank"
+					>
 						{{ lang.terms }}
-					</router-link>
+					</a>
 					{{ lang.agree4 }}
 				</AuthNote>
 			</form>
 		</template>
-
 		<template
 			v-if="isMobile"
 			#form-header
@@ -98,7 +105,6 @@
 		>
 			<AuthFooter />
 		</template>
-
 		<template
 			v-if="!isMobile"
 			#info
@@ -136,26 +142,26 @@ import AuthPhone from '../components/auth/AuthPhone.vue';
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
-import * as LANG from './RegisterView.lang.js'
+import * as LANG from './RegisterView.lang.js';
 
-function emptyErrors(){
+function emptyErrors() {
 	return {
 		email: '',
 		phone: '',
 		name: '',
 		currency: '',
-	}
+	};
 }
 
-function parseErrors(errors){
+function parseErrors(errors) {
 	const fields = {
 		username: 'email',
+	};
+	const result = {};
+	for (var field in errors) {
+		result[fields[field] || field] = errors[field];
 	}
-	const result = {}
-	for(var field in errors){
-		result[fields[field] || field] = errors[field]
-	}
-	return result
+	return result;
 }
 
 export default {
@@ -175,7 +181,7 @@ export default {
 		AuthPhone,
 	},
 	props: {},
-	data(){
+	data() {
 		return {
 			email: '',
 			phone: '',
@@ -187,16 +193,16 @@ export default {
 			errors: {},
 			capchaKey: 1,
 			useCapcha: true,
-		}
+		};
 	},
 	computed: {
-		isMobile(){
-			return this.$viewportSize.width < 768
+		isMobile() {
+			return this.$viewportSize.width < 768;
 		},
-		lang(){
-			return LANG[this.$root.$data.lang || 'ru']
+		lang() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
-		currencyOptions(){
+		currencyOptions() {
 			return [
 				{
 					value: 'rub',
@@ -210,21 +216,21 @@ export default {
 					value: 'usd',
 					title: this.lang['usd'],
 				},
-			]
+			];
 		},
 	},
 	watch: {},
-	created(){
-		if(window.Laravel?.userId) location.assign('/')
-		const bitrix = document.querySelector('.b24-widget-button-shadow')
-		if(bitrix?.parentNode) bitrix?.parentNode.remove()
+	created() {
+		if (window.Laravel?.userId) location.assign('/');
+		const bitrix = document.querySelector('.b24-widget-button-shadow');
+		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
-	mounted(){},
-	beforeDestroy(){},
+	mounted() {},
+	beforeDestroy() {},
 	methods: {
-		async onSubmit(token){
-			if(this.isLoading) return
-			this.isLoading = true
+		async onSubmit(token) {
+			if (this.isLoading) return;
+			this.isLoading = true;
 
 			try {
 				await axios.post('/register', {
@@ -233,46 +239,44 @@ export default {
 					phone: this.phone,
 					currency: this.currency,
 					'g-recaptcha-response': token,
-				})
-				this.isSended = true
-			}
-			catch (error) {
-				const {status, data} = error.response
-				if(status === 422){
+				});
+				this.isSended = true;
+			} catch (error) {
+				const { status, data } = error.response;
+				if (status === 422) {
 					this.errors = {
 						...emptyErrors(),
 						...parseErrors(data.errors),
-					}
+					};
+				} else {
+					alert('Не удалось создать кабинет, попробуйте позже');
 				}
-				else{
-					alert('Не удалось создать кабинет, попробуйте позже')
-				}
-				++this.capchaKey
+				++this.capchaKey;
 			}
 
-			this.isLoading = false
+			this.isLoading = false;
 		},
-		onValidate(){
-			return true
+		onValidate() {
+			return true;
 		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.outside-badge{
+.outside-badge {
 	visibility: hidden !important;
 	opacity: 0 !important;
 }
-.RegisterView{
-	&-inputs{
+.RegisterView {
+	&-inputs {
 		display: flex;
 		flex-flow: column nowrap;
 		gap: 20px;
 	}
-	.AuthSubmit{
+	.AuthSubmit {
 		position: relative;
-		button{
+		button {
 			width: 100%;
 
 			position: absolute;
@@ -291,9 +295,9 @@ export default {
 		}
 	}
 }
-@media (max-width: 1599px){
-	.RegisterView{
-		&-inputs{
+@media (max-width: 1599px) {
+	.RegisterView {
+		&-inputs {
 			gap: 10px;
 		}
 	}
