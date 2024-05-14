@@ -351,6 +351,7 @@ class AnalyticsController extends Controller
             /** @var Analytics $service */
             $service = app(Analytics::class);
             $stat->value = $service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula"));
+            dd($service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula")));
         }
 
         if ($request->get("type") == 'remote' || $request->get("type") == 'inhouse') {
