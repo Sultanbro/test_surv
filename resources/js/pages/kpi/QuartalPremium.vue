@@ -951,7 +951,7 @@ export default {
 					...item,
 					items: item.items.map(innerItem => ({
 						...innerItem,
-						method: innerItem.method || 1,
+						method: innerItem.method || '1',
 					})),
 					is_active: item.items.reduce((result, itm) => result && itm.is_active, true)
 				}))

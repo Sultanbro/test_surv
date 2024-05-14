@@ -24,6 +24,7 @@ import QualityControlView from '@/views/QualityControlView';
 import MapView from '@/views/MapView';
 import PromotionalMaterialView from '@/views/PromotionalMaterialView';
 import ReferralPrsentationView from '@/views/ReferralPrsentationView';
+import WorkshopPage from '../pages/workshop/WorkshopPage.vue';
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView';
@@ -324,6 +325,14 @@ const router = new VueRouter({
 				import(/* webpackChunkName: "FixAwardView" */ '@/views/FixAwardView'),
 			meta: {
 				title: 'FixAwardView',
+			},
+		},
+		{
+			path: '/payworkshopknowledgebase',
+			name: 'Workshop',
+			component: WorkshopPage,
+			meta: {
+				title: 'Страница оплаты',
 			},
 		},
 	],
