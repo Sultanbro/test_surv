@@ -8,7 +8,6 @@ use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\Settings\OtherSettingController;
 use App\Http\Controllers\User\ProjectController;
 use App\Http\Middleware\OnlyCentralDomain;
-use App\Http\Controllers\User as User;
 
 //--------------------/login routs/--------------------------//
 Route::get('login', [PageController::class, 'home'])->name('_login2');
@@ -40,7 +39,7 @@ Route::get('/', [PageController::class, 'home']);
 Route::get('/contacts', [PageController::class, 'home'])->name('contacts');
 Route::get('/payments', [PageController::class, 'home'])->name('payments');
 Route::get('/contract-offer', [PageController::class, 'home'])->name('contract-offer');
-Route::get('/payworkshopknowledgebase', [User\ProfileController::class, 'newprofile']);
+Route::get('/payworkshopknowledgebase', [PageController::class, 'newprofile']);
 Route::get('/site-use-agreement', [PageController::class, 'home'])->name('site-use-agreement');
 Route::get('/personal-data', [PageController::class, 'home'])->name('personal-data');
 Route::get('/privacy-policy', [PageController::class, 'home'])->name('privacy-policy');

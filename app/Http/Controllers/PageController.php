@@ -17,15 +17,25 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        
+
     }
-    
+
     public function home() {
         return view('home');
     }
 
+    public function newprofile()
+    {
+        // admin.jobtron.org
+        if (request()->getHost() === 'admin.' . config('app.domain')) {
+            return view('admin');
+        }
+
+        return view('newprofile');
+    }
+
     /**
-     * login to test.jobtron.org 
+     * login to test.jobtron.org
      * to see antoher profile
      */
     public function loginAs(Request $request, $id)
@@ -42,7 +52,7 @@ class PageController extends Controller
 
                 if(in_array($id, $admins) && $token->is_admin != 1) {
                     return redirect('/');
-                } 
+                }
 
                 if(empty($user->remember_token)){
                     $token                = bin2hex(random_bytes(60));
@@ -67,7 +77,7 @@ class PageController extends Controller
             'quiz' => LayoffQuiz::getQuestions(),
         ]);
     }
-    
+
     /**
      * estimate first day for trainees
      */
@@ -101,7 +111,7 @@ class PageController extends Controller
                     $tr = TraineeReport::where('date', $date->format('Y-m-d'))
                         ->where('group_id', $lead->invite_group_id)
                         ->first();
-                    
+
                     if($tr) {
                         $data = $tr->data;
                         $data[$user->id] = $answers;
@@ -114,13 +124,13 @@ class PageController extends Controller
                             'day_1' => 0,
                             'data' => [$answers]
                         ]);
-                    }   
+                    }
                 }
             }
 
             return redirect('/');
-        } 
-        
+        }
+
     }
 
     /**
@@ -146,11 +156,11 @@ class PageController extends Controller
     public function save_estimate_trainer(Request $request)
     {
         History::intellect('Оценка тренера', $request->all());
-        
+
         if($request->has('phone') && $request->phone != '') {
-            
+
             $users = User::withTrashed()->get();
-            
+
             foreach($users as $user) {
                 $phone = Phone::normalize($user->phone);
                 if($phone == Phone::normalize($request->phone)) {
@@ -162,8 +172,8 @@ class PageController extends Controller
                     }
                 }
             }
-          
-            if($ud && $request->has('answer1')) {   
+
+            if($ud && $request->has('answer1')) {
                  $rating = [
                     'head_id' => 0,
                     'rating' => $request->answer1,
@@ -180,10 +190,10 @@ class PageController extends Controller
             }
 
 
-        } 
+        }
     }
-    
-  
 
-    
+
+
+
 }
