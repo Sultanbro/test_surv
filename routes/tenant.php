@@ -28,7 +28,6 @@ use Stancl\Tenancy\Features\UserImpersonation;
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
-    Route::any('/payworkshopknowledgebase', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [PageController::class, 'home'])->name('login2');
     Route::post('login', [Auth\LoginController::class, 'login'])->name('login');
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
