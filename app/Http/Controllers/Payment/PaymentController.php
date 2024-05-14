@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Payment;
 
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Payment\DoPaymentRequest;
+use App\Http\Requests\Payment\TariffSubscribeRequest;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\PaymentToken;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\PaymentUpdateStatusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -25,19 +25,19 @@ class PaymentController extends Controller
     /**
      * Делаем оплату.
      *
-     * @param DoPaymentRequest $request
+     * @param TariffSubscribeRequest $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function payment(DoPaymentRequest $request): JsonResponse
+    public function payment(TariffSubscribeRequest $request): JsonResponse
     {
         $data = $request->toDto();
 
         $user = CentralUser::fromAuthUser();
-        $gateway = Gateway::get($data->currency);
-        $response = $gateway->pay($data, $user);
-        $token = new PaymentToken($response->getPaymentId());
-        $payment = TariffPayment::savePayment($data, $token);
+        $gateway = Gateway::provider($data->currency);
+        $response = $gateway->invoice($data, $user);
+        $token = new PaymentToken($response->getPaymentToken()->token);
+        $payment = TariffSubscription::subscribe($data, $token);
 
         ProcessCreatePaymentInvoiceLead::dispatch($user, $payment)
             ->onConnection('sync');
@@ -55,13 +55,14 @@ class PaymentController extends Controller
      * @param Request $request
      * @param string $currency
      * @return JsonResponse
+     * @throws Exception
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
         $headers = $request->header();
         $fields = $request->all();
-        $invoice = Gateway::get($currency)
-            ->invoice([
+        $invoice = Gateway::provider($currency)
+            ->report([
                 'headers' => $headers,
                 'fields' => $fields
             ])
