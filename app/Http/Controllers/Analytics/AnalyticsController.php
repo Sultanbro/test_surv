@@ -349,7 +349,7 @@ class AnalyticsController extends Controller
 
         if ($request->get("type") == 'formula') {
             /** @var Analytics $service */
-            $service = app(Analytics::class);
+//            $service = app(Analytics::class);
             $stat->value = $request->get("formula");
             //$service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula"));
 //            dd($service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula")));
