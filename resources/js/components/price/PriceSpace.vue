@@ -138,6 +138,7 @@ export default {
 
 		fff() {},
 
+
 		editRate() {
 			this.connectedTariff('PRO')
 			this.setCurrentModal('editRate')
