@@ -16,10 +16,7 @@ class WalletOneConnector implements PaymentConnector
     use HasIdempotenceKey;
     use HasPriceConverter;
 
-    const CURRENCIES = [
-        'usd' => 840,
-        'kzt' => 398
-    ];
+    const CURRENCY = 398;
 
     public function __construct(
         private readonly string $paymentUrl,
@@ -37,11 +34,11 @@ class WalletOneConnector implements PaymentConnector
         $idempotenceKey = $this->generateIdempotenceKey();
         $body = [
             "WMI_MERCHANT_ID" => $this->merchantId,
-            "WMI_PTENABLED" => 'WalletOne',
-            "WMI_PTDISABLED" => 'W1RUB',
+//            "WMI_PTENABLED" => 'W1KZT',
+//            "WMI_PTDISABLED" => 'W1RUB',
             "WMI_CUSTOMER_PHONE" => Phone::normalize($user->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
-            "WMI_CURRENCY_ID" => self::CURRENCIES[Str::lower($data->currency)],
+            "WMI_CURRENCY_ID" => self::CURRENCY,
             "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
             "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
             "WMI_CUSTOMER_EMAIL" => $user->email,

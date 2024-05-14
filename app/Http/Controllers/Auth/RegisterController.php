@@ -54,9 +54,11 @@ class RegisterController extends Controller
 
         $this->cabinetService->add($tenant->id, $user, true);
 
-        $this->createRegistrationLead($user, $centralUser);
 
-        ProcessSendPasswordMail::dispatch($user, $this->password)->onConnection('sync');
+        if (!app()->environment('local')) {
+            $this->createRegistrationLead($user, $centralUser);
+            ProcessSendPasswordMail::dispatch($user, $this->password)->onConnection('sync');
+        }
 
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
