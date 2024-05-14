@@ -37,7 +37,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
+    Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
 });
 
 // Portal Api
