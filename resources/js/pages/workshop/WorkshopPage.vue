@@ -1,21 +1,14 @@
 <template>
-	<DefaultLayout>
-		<div class="workshop">
-			<button @click="openPayForm">
-				Оплата картой Казахстана
-			</button>
-		</div>
-	</DefaultLayout>
+	<div class="workshop">
+		<button @click="openPayForm">
+			Оплата картой Казахстана
+		</button>
+	</div>
 </template>
 
 <script>
-import DefaultLayout from '@/layouts/DefaultLayout';
-
 export default {
 	name: 'WorkshopPage',
-	components: {
-		DefaultLayout,
-	},
 	methods: {
 		openPayForm() {
 			window.open(
