@@ -99,9 +99,11 @@ export default {
 }
 
 .pricing-modal-content{
+  overflow: hidden;
+
   position: absolute;
-  right: 1%;
-  max-width: 464px;
+  right: 3%;
+  max-width: 404px;
   width: 100%;
   padding: 5px;
   display: flex;

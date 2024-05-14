@@ -414,17 +414,264 @@ export default  {
 </script>
 
 <style lang="scss" scoped>
+@media (min-width: 1600px) {
+  .PricingRates {
+	&-options-content {
+		display: flex !important;
+		gap: 12px !important;
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		margin-bottom: 24px !important;
+	}
+
+	&-options-title {
+		font-size: 16px !important;
+		font-weight: 400 !important;
+	}
+
+	&-options-button-group {
+		display: flex !important;
+		background-color: #f2f2f2 !important;
+		padding: 4px !important;
+		border-radius: 8px !important;
+	}
+
+	&-options-button {
+		background-color: #f2f2f2 !important;
+		padding: 7px 48px !important;
+		border-radius: 8px !important;
+		font-size: 16px !important;
+	}
+
+	&-options-button:focus {
+		outline: none !important;
+	}
+  }
+
+  .pricing-choice-tariff {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 8px !important;
+	max-width: 414px !important;
+	margin-bottom: 24px !important;
+  }
+
+  .pricing-tariff-title {
+	color: #737b8a !important;
+	font-size: 16px !important;
+  }
+  .pricing-button-group {
+	margin-top: auto !important;
+	padding: 0 0 32px 0 !important;
+	font-weight: 500 !important;
+	font-size: 16px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 12px !important;
+  }
+  .pricing-button-connect {
+	width: 100% !important;
+	padding: 13px 0 !important;
+	text-align: center !important;
+	border-radius: 8px !important;
+	background-color: #0c50ff !important;
+	color: white !important;
+  }
+  .pricing-button-later {
+	width: 100% !important;
+	padding: 13px 0 !important;
+	text-align: center !important;
+	border-radius: 8px !important;
+	background-color: #ededed !important;
+  }
+
+  .pricing-buy-modal {
+	width: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	height: 100vh !important;
+	position: relative !important;
+	bottom: 7% !important;
+	padding: 32px 32px 0 32px !important;
+  }
+
+  .pricing-buy-description-total {
+	max-width: 484px !important;
+	color: #737b8a !important;
+	font-size: 14px !important;
+  }
+
+  .pricing-buy-title {
+	font-weight: 600 !important;
+	font-size: 28px !important;
+	margin-bottom: 12px !important;
+		margin-top: 0 !important;
+  }
+
+  .pricing-buy-description {
+	font-size: 16px !important;
+	color: #333333 !important;
+	margin-bottom: 32px !important;
+  }
+
+  .pricing-buy-added-people {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	margin-bottom: 24px !important;
+  }
+  .pricing-buy-added-content {
+	width: 258px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 8px !important;
+  }
+
+  .pricing-buy-added-title {
+	color: #737b8a !important;
+	font-size: 16px !important;
+  }
+
+  .pricing-buy-added-button-content {
+	display: flex !important;
+	gap: 8px !important;
+  }
+
+  .pricing-buy-added-button {
+	background-color: #f2f2f2 !important;
+	border-radius: 8px !important;
+	padding: 12px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 48px !important;
+	height: 48px !important;
+  }
+
+  .pricing-buy-added-input {
+	padding: 14px 16px !important;
+	border-radius: 8px !important;
+	border: 1px solid #cdd1db !important;
+	max-width: 88px !important;
+  }
+
+  .pricing-buy-added-clue {
+	color: #737b8a !important;
+	font-size: 14px !important;
+  }
+
+  .pricing-buy-added-price {
+	font-weight: 600 !important;
+	line-height: 24px !important;
+  }
+
+  .pricing-buy-link-promo {
+	cursor: pointer !important;
+	color: #0c50ff !important;
+	font-weight: 500 !important;
+	margin-bottom: 24px !important;
+  }
+
+  .pricing-buy-promo-content {
+	display: flex !important;
+	gap: 8px !important;
+	margin-bottom: 24px !important;
+  }
+
+  .pricing-buy-promo-input {
+	border-radius: 8px !important;
+	border: 1px solid #afb5c0 !important;
+	padding: 14px 16px !important;
+  }
+
+  .pricing-buy-promo-button {
+	background-color: #dbeafe !important;
+	border-radius: 8px !important;
+	padding: 13px 24px !important;
+	color: #0c50ff !important;
+  }
+
+  .pricing-buy-total-content {
+	background-color: #ededed !important;
+	border-radius: 8px !important;
+	padding: 24px !important;
+	margin-bottom: 34px !important;
+  }
+
+  .pricing-buy-total-count {
+	display: flex !important;
+	justify-content: space-between !important;
+  }
+
+  .pricing-buy-total-count-title {}
+
+  .pricing-buy-total-count-price {}
+
+  .pricing-buy-total {
+	display: flex !important;
+	justify-content: space-between !important;
+  }
+
+  .pricing-buy-total-title {
+	font-size: 28px !important;
+	font-weight: 600 !important;
+	line-height: 36px !important;
+  }
+
+  .pricing-buy-total-price {
+	font-size: 28px !important;
+	font-weight: 600 !important;
+	line-height: 36px !important;
+  }
+
+  .activeOption {
+	background-color: white !important;
+	color: #1e40af !important;
+  }
+
+  .pricing-options-price {
+	font-size: 12px !important;
+  }
+
+  .pricing-modal-promo-button {
+	padding: 20px !important;
+	border-radius: 12px !important;
+	display: flex !important;
+	align-items: center !important;
+	outline: none !important;
+	background-color: #f2f2f2 !important;
+  }
+
+  .inpput-promo-active {
+	background-color: #f2f2f2 !important;
+	outline: none !important;
+  }
+
+  .pricing-buy-total-count-price-description {
+	color: #737b8a !important;
+	font-size: 14px !important;
+	padding-top: 6px !important;
+	margin-bottom: 12px !important;
+  }
+
+  .pricing-buy-total-count-price-people {
+	margin-top: 12px !important;
+  }
+}
+
+
 .PricingRates{
+	overflow: hidden !important;
   &-options-content{
 	display: flex;
 	gap: 12px;
 	flex-direction: column;
 	align-items: flex-start;
-	margin-bottom: 24px;
+	margin-bottom: 12px;
   }
 
   &-options-title{
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 400;
   }
 
@@ -437,8 +684,9 @@ export default  {
 
   &-options-button{
 	background-color: #F2F2F2;
-	padding: 7px 48px ;
+	padding: 4px 24px ;
 	border-radius: 8px;
+		font-size: 14px;
   }
 
   &-options-button:focus{
@@ -457,11 +705,11 @@ export default  {
 
 .pricing-tariff-title{
   color: #737B8A;
-  font-size: 16px;
+  font-size: 14px;
 }
 .pricing-button-group{
   margin-top: auto;
-  padding: 0 0 32px 0;
+  padding: 0 0 0 0;
   font-weight: 500;
   font-size: 16px;
   display: flex;
@@ -487,37 +735,40 @@ export default  {
 .pricing-buy-modal{
   display: flex;
   flex-direction: column;
+  width: 404px;
 	height: 100vh;
   position: relative;
   bottom: 7%;
-  padding: 32px 32px 0 32px;
+  padding: 24px 24px 0 24px;
 }
 
 .pricing-buy-description-total{
-	max-width: 484px;
+	max-width: 404px;
 	color: #737B8A;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .pricing-buy-title{
 font-weight: 600;
-	font-size: 28px;
+	font-size: 20px;
 	margin-bottom: 12px;
+	margin-top: 24px;
 }
 
 .pricing-buy-description{
-font-size: 16px;
+font-size: 14px;
 	color: #333333;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .pricing-buy-added-people{
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 .pricing-buy-added-content{
+  width: 230px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -565,13 +816,13 @@ font-weight: 600;
 	cursor: pointer;
 color: #0C50FF;
 	font-weight: 500;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .pricing-buy-promo-content{
   display: flex;
 	gap: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .pricing-buy-promo-input{
@@ -590,8 +841,8 @@ background-color: #DBEAFE;
 .pricing-buy-total-content{
 background-color: #EDEDED;
 	border-radius: 8px;
-	padding: 24px;
-  margin-bottom: 34px;
+	padding: 12px;
+  margin-bottom: 24px;
 }
 
 .pricing-buy-total-count{
@@ -613,15 +864,15 @@ background-color: #EDEDED;
 }
 
 .pricing-buy-total-title{
-font-size: 28px;
+font-size: 24px;
 	font-weight: 600;
-	line-height: 36px;
+	line-height: 32px;
 }
 
 .pricing-buy-total-price{
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
-  line-height: 36px;
+  line-height: 32px;
 }
 
 .activeOption{

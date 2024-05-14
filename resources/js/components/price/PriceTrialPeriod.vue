@@ -90,10 +90,10 @@ export default {
 	.price-trial-icon-like{
 		position: absolute;
 		z-index: 7;
-		width: 88px;
-		height: 88px;
-		top: 10%;
-		left: 70%;
+		width: 88px !important;
+		height: 88px !important;
+		top: 10% !important;
+		left: 70% !important;
 	}
 
 	.price-trial-checkbox{
@@ -115,11 +115,19 @@ export default {
 	.price-trial-content{
 		padding: 40px !important;
 	}
+	.price-trial-button{
+		padding: 16px 32px !important;
+		font-size: 16px !important;
+	}
+	.price-trial-eclipse{
+		box-shadow: 0 0 230px 20px rgba(12, 80, 255, 0.8) !important;
+		width: 401px !important;
+	}
 }
 .price-trial{
 		margin-top: 24px;
 	background-color: #1A1A1A;
-	width: 1000px;
+	width: 900px;
 	border-radius: 24px;
 	display: flex;
 	position: relative;
@@ -128,8 +136,8 @@ export default {
 .price-trial-icon-like{
 	position: absolute;
 	z-index: 7;
-	width: 88px;
-	height: 88px;
+	width: 78px;
+	height: 78px;
 	top: 10%;
 	left: 70%;
 }
@@ -137,16 +145,16 @@ export default {
 .price-trial-checkbox{
 	position: absolute;
 	z-index: 7;
-	width: 103px;
-	height: 103px;
+	width: 93px;
+	height: 93px;
 	top: 55%;
 	left: 65%;
 }
 .price-trial-icon-box{
 	position: absolute;
 	z-index: 7;
-	width: 212px;
-	height: 212px;
+	width: 192px;
+	height: 192px;
 	top: 10%;
 	left: 77%;
 }
@@ -180,8 +188,8 @@ export default {
 	.price-trial-button{
 		background: linear-gradient(92deg, #15368C 0%, #215DF8 100%);
 		border-radius: 8px;
-			padding: 16px 32px;
-			font-size: 16px;
+			padding: 13px 28px;
+			font-size: 14px;
   }
 .price-trial-button:focus{
 	outline: none !important;
@@ -197,8 +205,8 @@ export default {
 
 	.price-trial-eclipse{
 		background-color: #0C50FF;
-		box-shadow: 0 0 230px 20px rgba(12, 80, 255, 0.8);
-		width: 401px;
+		box-shadow: 0 0 180px 20px rgba(12, 80, 255, 0.8);
+		width: 251px;
 		height: 401px;
 		border-radius: 50%;
 		position: absolute;

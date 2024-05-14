@@ -193,13 +193,13 @@ export default {
 }
 
 .price-space {
-	width: 1000px;
+	width: 900px;
 }
 
 .price-space-title {
-	font-size: 32px;
+	font-size: 30px;
 	font-weight: 600;
-	line-height: 46px;
+	line-height: 40px;
 }
 
 .price-space-content {
@@ -208,13 +208,13 @@ export default {
 }
 
 .price-space-image {
-	max-width: 144px;
+	max-width: 134px;
 	width: 100%;
 	border-radius: 12px;
 }
 
 .price-space-title-block {
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 600;
 	line-height: 28px;
 	margin-bottom: 8px;
@@ -265,7 +265,7 @@ export default {
 }
 
 .price-space-buttons {
-	margin-top: 16px;
+	margin-top: 8px;
 	display: flex;
 	align-items: center;
 	gap: 12px;
