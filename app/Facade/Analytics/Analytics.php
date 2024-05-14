@@ -92,7 +92,7 @@ final class Analytics
                 $c_index = $i + 1;
             }
         }
-dd($c_index);
+
         if ($row_letters != '') {
             $r_index = (int)$row_letters - 1;
         }
