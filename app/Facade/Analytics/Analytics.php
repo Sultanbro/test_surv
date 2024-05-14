@@ -178,7 +178,6 @@ final class Analytics
                                 stats: $stats
                             );
                         }
-                        dd_if(auth()->id() == 5 && $column->id == 25955 && $row->id == 15330, $statistic, $val, AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']));
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
