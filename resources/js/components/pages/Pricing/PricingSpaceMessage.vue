@@ -17,6 +17,7 @@ export default {
 	methods: {
 		openChat() {
 			if (!this.isBp && window.jChatWidget) {
+				window.jChatWidget.open();
 				window.jChatWidgetBtn.classList.toggle('hidden');
 			}
 		},
