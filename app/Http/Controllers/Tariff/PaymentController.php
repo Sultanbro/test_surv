@@ -51,7 +51,7 @@ class PaymentController extends Controller
         $headers = $request->header();
         $fields = $request->all();
         $report = Gateway::provider($currency)
-            ->report([
+            ->webhook([
                 'headers' => $headers,
                 'fields' => $fields
             ])
