@@ -52,6 +52,7 @@ final class Analytics
     {
         $date = $stat->date;
         $coordinates = $this->getCoordinates($stat->group_id, $date, $value);
+        dd($coordinates);
         if (!$coordinates) return $formula;
         if (Str::contains($formula, $coordinates)) return $formula;
         return $coordinates . $formula;
