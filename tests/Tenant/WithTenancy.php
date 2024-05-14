@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests;
+namespace Tests\Tenant;
 
 use App\Models\Tenant;
+use App\Providers\TenancyServiceProvider;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 trait WithTenancy
@@ -18,7 +18,6 @@ trait WithTenancy
     protected function setUpTraits(): array
     {
         $uses = parent::setUpTraits();
-
         if (isset($uses[WithTenancy::class])) {
             $this->initializeTenancy($uses);
         }
@@ -31,33 +30,25 @@ trait WithTenancy
      */
     protected function initializeTenancy(array $uses): void
     {
-        $tenantId = 'test';
+        $tenantDto = new DefaultTestTenantDto;
 
-        $tenant = Tenant::query()->firstOr(function () use ($tenantId) {
-            $dbName = config('tenancy.database.prefix') . $tenantId;
+        Tenant::query()
+            ->where('id', $tenantDto->id)
+            ->existsOr(function () use ($tenantDto) {
+                DB::unprepared("DROP DATABASE IF EXISTS " . $tenantDto->db);
+                Tenant::query()->create($tenantDto->toArray());
+            });
 
-            DB::unprepared("DROP DATABASE IF EXISTS `$dbName`");
-            /** @var Tenant $tenant */
-            $tenant = Tenant::query()->create(['id' => $tenantId]);
 
-            if (!$tenant->domains()->count()) {
-                $tenant->domains()->create(['domain' => $tenantId]);
-            }
-
-            return $tenant;
-        });
-
-        tenancy()->initialize($tenant);
-        URL::forceRootUrl('http://' . $tenantId . '.localhost');
-
+        tenancy()->initialize($tenantDto->id);
 
         if (isset($uses[DatabaseTransactions::class]) || isset($uses[RefreshDatabase::class])) {
             $this->beginTenantDatabaseTransaction();
         }
 
         if (isset($uses[DatabaseMigrations::class]) || isset($uses[RefreshDatabase::class])) {
-            $this->beforeApplicationDestroyed(function () use ($tenant) {
-                $tenant->delete();
+            $this->beforeApplicationDestroyed(function () {
+                tenancy()->end();
             });
         }
     }
@@ -66,7 +57,7 @@ trait WithTenancy
     {
         $database = $this->app->make('db');
 
-        $connection = $database->connection('tenant');
+        $connection = $database->connection(TenancyServiceProvider::$dbConnection);
         $dispatcher = $connection->getEventDispatcher();
 
         $connection->unsetEventDispatcher();
@@ -74,7 +65,7 @@ trait WithTenancy
         $connection->setEventDispatcher($dispatcher);
 
         $this->beforeApplicationDestroyed(function () use ($database) {
-            $connection = $database->connection('tenant');
+            $connection = $database->connection(TenancyServiceProvider::$dbConnection);
             $dispatcher = $connection->getEventDispatcher();
 
             $connection->unsetEventDispatcher();

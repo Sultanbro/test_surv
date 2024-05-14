@@ -5,6 +5,7 @@ namespace App\Service\Payments\WalletOne;
 use App\Classes\Helpers\Phone;
 use App\DTO\Payment\CreateInvoiceDTO;
 use App\Models\CentralUser;
+use App\Service\Payments\Core\Customer\CustomerDto;
 use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
@@ -28,7 +29,7 @@ class WalletOneConnector implements PaymentConnector
     {
     }
 
-    public function createNewInvoice(CreateInvoiceDTO $data, CentralUser $user): Invoice
+    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
     {
         $price = $this->getPrice($data);
         $idempotenceKey = $this->generateIdempotenceKey();
@@ -36,12 +37,12 @@ class WalletOneConnector implements PaymentConnector
             "WMI_MERCHANT_ID" => $this->merchantId,
 //            "WMI_PTENABLED" => 'W1KZT',
 //            "WMI_PTDISABLED" => 'W1RUB',
-            "WMI_CUSTOMER_PHONE" => Phone::normalize($user->phone),
+            "WMI_CUSTOMER_PHONE" => Phone::normalize($customer->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
             "WMI_CURRENCY_ID" => self::CURRENCY,
             "WMI_PAYMENT_AMOUNT" => $price->getTotal(),
             "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
-            "WMI_CUSTOMER_EMAIL" => $user->email,
+            "WMI_CUSTOMER_EMAIL" => $customer->email,
             "WMI_ORDER_ITEMS" => json_encode([[
                 "Title" => urlencode("Покупка тарифа"),
                 "Quantity" => 1,

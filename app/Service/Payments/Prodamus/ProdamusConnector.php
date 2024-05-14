@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Payments\Prodamus;
 
 use App\DTO\Payment\CreateInvoiceDTO;
-use App\Models\CentralUser;
+use App\Service\Payments\Core\Customer\CustomerDto;
 use App\Service\Payments\Core\Invoice;
 use App\Service\Payments\Core\HasIdempotenceKey;
 use App\Service\Payments\Core\HasPriceConverter;
@@ -34,7 +34,7 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function createNewInvoice(CreateInvoiceDTO $data, CentralUser $user): Invoice
+    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
     {
         $price = $this->getPrice($data);
         $paymentId = $this->generateIdempotenceKey();
@@ -45,7 +45,7 @@ class ProdamusConnector implements PaymentConnector
             'callbackType' => 'json',
             'installments_disabled' => 1,
             'order_id' => $paymentId,
-            'customer_phone' => $user->phone,
+            'customer_phone' => $customer->phone,
             'currency' => $data->currency,
             'products' => [
                 [
@@ -69,10 +69,9 @@ class ProdamusConnector implements PaymentConnector
 
         $resp = json_decode($response->body(), true);
         return new Invoice(
-            $resp['payment_link'],
-            $paymentId,
-            [],
-            $response->successful()
+            url: $resp['payment_link'],
+            paymentId: $paymentId,
+            success: $response->successful()
         );
     }
 

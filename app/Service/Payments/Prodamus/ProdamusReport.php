@@ -4,10 +4,10 @@ namespace App\Service\Payments\Prodamus;
 
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\Hmac;
-use App\Service\Payments\Core\InvoiceResponse;
-use App\Service\Payments\Core\PaymentReport;
+use App\Service\Payments\Core\WebhookCallbackResponse;
+use App\Service\Payments\Core\WebhookCallback;
 
-class ProdamusReport extends PaymentReport
+class ProdamusReport extends WebhookCallback
 {
     const CURRENCY = 'rub';
 
@@ -18,7 +18,7 @@ class ProdamusReport extends PaymentReport
     {
     }
 
-    public function handle(): InvoiceResponse
+    public function handle(): WebhookCallbackResponse
     {
         $paymentId = $this->data['fields']['order_id'];
         $status = $this->data['fields']['payment_status'] ?? null;
@@ -26,9 +26,9 @@ class ProdamusReport extends PaymentReport
         $payment = TariffSubscription::query()->where('payment_id', $paymentId)->first();
         if ($payment && $status == 'success') {
             $payment->updateStatusToSuccess();
-            return new InvoiceResponse(['success']);
+            return new WebhookCallbackResponse(['success']);
         }
-        return new InvoiceResponse(['failed']);
+        return new WebhookCallbackResponse(['failed']);
     }
 
     private function sign(): bool

@@ -10,6 +10,7 @@ use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
+use App\Service\Payments\Core\Customer\CustomerDto;
 use App\Support\Core\CustomException;
 use Exception;
 
@@ -29,13 +30,12 @@ abstract class BasePaymentGateway
 
     /**
      * @param CreateInvoiceDTO $data
-     * @param CentralUser $authUser
+     * @param CustomerDto $customer
      * @return Invoice
-     * @throws Exception
      */
-    public function invoice(CreateInvoiceDTO $data, CentralUser $authUser): Invoice
+    public function invoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
     {
-        return $this->connector()->createNewInvoice($data, $authUser);
+        return $this->connector()->createNewInvoice($data, $customer);
     }
 
     /**
@@ -62,5 +62,5 @@ abstract class BasePaymentGateway
         }
     }
 
-    abstract public function report(array $data): PaymentReport;
+    abstract public function webhook(array $data): WebhookCallback;
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests;
+namespace Tests\Tenant;
 
 use App\User;
 
 trait HasAuthUser
 {
-    private function authenticate(): User
+    protected function givenUser(): User
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'sanctum');
         return $user;
     }
 }
