@@ -57,14 +57,22 @@
 							AuthSubmit_disabled: isLoading,
 						}"
 					>
-						{{ isLoading ? lang.creating : lang.register }}
+						<div
+							v-if="isLoading"
+							style="display: flex; justify-content: center; align-items: center;"
+						>
+							<AuthSpinner />
+						</div>
+						<div v-else>
+							{{ lang.register }}
+						</div>
 					</GRecaptcha>
 					<AuthSubmit
 						v-else
 						:disabled="isLoading"
 						@click="onSubmit"
 					>
-						{{ isLoading ? lang.creating : lang.register }}
+						{{ lang.register }}
 					</AuthSubmit>
 				</div>
 				<AuthNote>
@@ -139,6 +147,8 @@ import AuthInfo from '../components/auth/AuthInfo.vue';
 import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import AuthPhone from '../components/auth/AuthPhone.vue';
 
+import AuthSpinner from '../components/auth/AuthSpinner.vue';
+
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
@@ -177,6 +187,7 @@ export default {
 		AuthFooter,
 		AuthInfo,
 		GRecaptcha,
+		AuthSpinner,
 		AuthSubmit,
 		AuthPhone,
 	},
