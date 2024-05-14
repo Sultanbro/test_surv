@@ -625,10 +625,10 @@ class AnalyticStat extends Model
                 ->where('date', $date)
                 ->first();
 
-//            dd_if(
-//                auth()->id() == 5 && $column_id == 25955 && $row_id == 15330,
-//                $statistic, $cell
-//            );
+            dd_if(
+                auth()->id() == 5 && $column_id == 25955 && $row_id == 15330,
+                $statistic, $cell, $match
+            );
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $statistic->row_id && $cell->column_id == $statistic->column_id;
