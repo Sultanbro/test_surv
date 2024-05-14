@@ -274,6 +274,7 @@ export default {
 		flex-flow: column nowrap;
 		gap: 20px;
 	}
+
 	.AuthSubmit {
 		position: relative;
 		button {

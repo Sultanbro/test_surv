@@ -16,7 +16,16 @@
 				:value="lang"
 				@input="$root.$data.setLang($event)"
 			/>
-			<router-link
+			<a
+				href="/"
+				class="main__link"
+			>
+				<IconChat />
+				<span>
+					{{ LANG.support }}
+				</span>
+			</a>
+			<!-- <router-link
 				to="/"
 				class="main__link"
 			>
@@ -24,17 +33,17 @@
 				<span>
 					{{ LANG.support }}
 				</span>
-			</router-link>
+			</router-link> -->
 		</div>
 	</div>
 </template>
 
 <script>
 import AuthLang from './AuthLang.vue';
-import IconBack from './IconBack.vue'
-import IconChat from './IconChat.vue'
+import IconBack from './IconBack.vue';
+import IconChat from './IconChat.vue';
 
-import * as LANG from './AuthHeader.lang.js'
+import * as LANG from './AuthHeader.lang.js';
 
 export default {
 	components: {
@@ -45,14 +54,14 @@ export default {
 	props: {
 		back: Boolean,
 	},
-	data(){
+	data() {
 		return {
 			root: 'https://jobtron.org',
-		}
+		};
 	},
 	computed: {
-		LANG(){
-			return LANG[this.$root.$data.lang || 'ru']
+		LANG() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
 		lang() {
 			return this.$root.$data.lang;
@@ -76,17 +85,15 @@ export default {
 		gap: 10px;
 	}
 }
-@container auth-info (max-width: 991.98px){
-	.AuthHeader{
+@container auth-info (max-width: 991.98px) {
+	.AuthHeader {
 		margin-bottom: 10px;
 	}
 }
 
-
-
-@container auth-header (max-width: 415px){
-	.AuthHeader{
-		.AuthLangItem-label{
+@container auth-header (max-width: 415px) {
+	.AuthHeader {
+		.AuthLangItem-label {
 			display: none;
 		}
 		// .AuthHeader-right{
@@ -114,20 +121,20 @@ export default {
 	font-size: 16px;
 	line-height: 20px;
 
-	&:hover{
-		color: #0C50FF;
-		.AuthIcon{
-			&-stroke{
-				stroke: #0C50FF;
+	&:hover {
+		color: #0c50ff;
+		.AuthIcon {
+			&-stroke {
+				stroke: #0c50ff;
 			}
-			&-fill{
-				fill: #0C50FF;
+			&-fill {
+				fill: #0c50ff;
 			}
 		}
 	}
 }
-.AuthIcon{
-	&-stroke{
+.AuthIcon {
+	&-stroke {
 		stroke: #333333;
 	}
 }

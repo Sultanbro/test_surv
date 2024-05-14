@@ -33,5 +33,39 @@ export default {
 		Tariffs,
 		SectionFooter,
 	},
+	mounted() {
+		this.initChat();
+		this.openChat()
+	},
+
+	methods: {
+		initChat() {
+			if (!window.jChatWidget) {
+				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
+				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + (Date.now() / 60000 | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s, h);
+			}
+		},
+		openChat() {
+			if (!this.isBp && window.jChatWidget) {
+				window.jChatWidget.open();
+			}
+		},
+		onInitChatWidget(event) {
+			window.jChatWidget = event.detail.widget;
+
+			this.$nextTick(() => {
+				const elem = document.querySelector('.b24-widget-button-shadow');
+				if (!elem) return;
+				const parent = elem.parentNode;
+				parent.className = 'hidden';
+				window.jChatWidgetBtn = parent;
+			});
+		},
+	}
 };
 </script>
