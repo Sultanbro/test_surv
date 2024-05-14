@@ -79,6 +79,7 @@ final class Analytics
         if (count($matches[0]) > 0) {
             $row_letters = $matches[0][0];
         }
+        dd($column_letters, $row_letters);
         if ($column_letters != '') {
             $i = 0;
             if ($column_letters == 'A') {
