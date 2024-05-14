@@ -190,7 +190,7 @@ export default {
 .pricing-img-block{
 	position: relative;
 	bottom: 5%;
-	height: 256px;
+	height: 206px;
 	background-color: #1A1A1A;
 	border-radius: 40px;
 	overflow: hidden;
@@ -241,17 +241,17 @@ export default {
 
 
 .pricing-title{
-	padding: 0 32px 0 32px;
+	padding: 0 16px 0 16px;
 	margin: 0 0 12px 0;
 	font-weight: 600;
 	font-size: 24px;
 	line-height: 24px	;
-	width: 484px;
+	width: 404px;
 }
 
 .pricing-description{
-	padding: 0 32px 0 32px;
-	width: 484px;
+	padding: 0 16px 0 16px;
+	width: 404px;
 	font-size: 16px;
 	margin-bottom: 24px;
 }
@@ -260,7 +260,7 @@ export default {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	padding: 32px;
+	padding: 16px;
 }
 
 .pricing-tariff-title{
@@ -270,7 +270,7 @@ export default {
 
 .pricing-button-group{
 	margin-top: auto;
-	padding: 0 32px 20px 32px;
+	padding: 0 16px 25px 16px;
 	font-weight: 500;
 	font-size: 16px;
 	display: flex;

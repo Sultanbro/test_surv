@@ -21,6 +21,13 @@ return [
         env('DOMAIN_NAME', 'jobtron.org'),
     ],
 
+    'testing' => [
+        'id' => 'test_tenant_id',
+        'name' => 'test_tenant_name',
+        'domain' => 'test_tenant_domain',
+        'db' => 'test_tenant_db_name'
+    ],
+
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.
      * Their responsibility is making Laravel features tenant-aware.

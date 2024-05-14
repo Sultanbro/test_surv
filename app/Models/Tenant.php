@@ -21,11 +21,13 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase, HasDomains, HasFactory, MaintenanceMode;
 
-    protected $fillable = [
-        'id',
-        'global_id',
-        'data'
-    ];
+    public static function getCustomColumns(): array
+    {
+        return [
+            'id',
+            'global_id'
+        ];
+    }
 
     /**
      * @param string $id

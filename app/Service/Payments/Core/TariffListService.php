@@ -7,7 +7,7 @@ use App\Models\Tariff\Tariff;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 
-final class GetTariffsService
+class TariffListService
 {
     private array $priceForOnePersonWithCurrencies;
 

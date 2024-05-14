@@ -1,28 +1,27 @@
 services:
-
-  #PHP Service
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: digitalocean.com/php
-    container_name: app
-    restart: unless-stopped
-    tty: true
-    environment:
-      SERVICE_NAME: app
-      SERVICE_TAGS: dev
-    working_dir: /var/www
+  #  application
+  frontend:
+    image: node:16-alpine
+    container_name: npm
     volumes:
-      - ./:/var/www
-      - ./deployment/local/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .:/var/www/html
+    working_dir: /var/www/html
+    command: sh -c 'npm i && npm run watch'
     networks:
-      - app-network
-
+      - jobtron-network
+    ports:
+      - 3000:3000
+      - 3001:3001
+    mem_limit: 2g
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
   #Nginx Service
   webserver:
     image: nginx:alpine
-    container_name: webserver
+    container_name: nginx
     restart: unless-stopped
     tty: true
     ports:
@@ -32,41 +31,65 @@ services:
       - ./:/var/www
       - ./deployment/local/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
-      - app-network
-
-  #MySQL Service
-  db:
-    image: mysql:5.7.22
-    container_name: db
-    restart: unless-stopped
-    tty: true
+      - jobtron-network
+  app:
+    container_name: php
+    build:
+      context: "./docker/php"
+      dockerfile: Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: sail-8.2/app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
-      - "3307:3307"
+      - '${APP_PORT:-81}:81'
+      - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
     environment:
-      MYSQL_DATABASE: cc
-      MYSQL_ROOT_PASSWORD: fX_va98v3432
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+      XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+      IGNITION_LOCAL_SITES_PATH: '${PWD}'
     volumes:
-      - ./mysql:/var/lib/mysql/
-      - ./deployment/local/mysql/my.cnf:/etc/mysql/my.cnf
+      - '.:/var/www/html'
     networks:
-      - app-network
-
-  #Redis Service
-  redis:
-    image: redis:4.0
-    container_name: redis
+      - jobtron-network
+    depends_on:
+      - webserver
+      - db
+  db:
+    container_name: mysql
+    image: 'mysql/mysql-server:8.0'
+    restart: no #always
     ports:
-      - "6382:6379"
+      - '${FORWARD_DB_PORT:-3307}:3307'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'jobtron-mysql:/var/lib/mysql'
+      - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+      - './docker/mysql/grant_privileges.sql:/docker-entrypoint-initdb.d/grant_privileges.sql'
     networks:
-      - app-network
-
-#Docker Networks
+      - jobtron-network
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-p${DB_PASSWORD}'
+      retries: 3
+      timeout: 5s
 networks:
-  app-network:
+  jobtron-network:
+    name: jobtron-network
     driver: bridge
-#Volumes
 volumes:
-  dbdata:
+  jobtron-mysql:
+    name: jobtron-mysql
     driver: local

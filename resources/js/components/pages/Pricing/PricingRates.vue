@@ -425,12 +425,255 @@ export default {
 </script>
 
 	<style lang="scss">
-	.PricingRates{
+  @media (min-width: 1600px) {
+	.PricingRates {
+		max-width: 1195px;
+		width: 100%;
+		&-table {
+		margin-top: 56px !important;
+		}
+		&-header,
+		&-col {
+		padding: 10px !important;
+		border-bottom: 1px solid #CCCCCC !important;
+		}
+
+		&-header {
+		position: relative !important;
+		padding: 0 0 24px 0 !important;
+
+		&_empty {
+			background-color: transparent !important;
+			color: #394863 !important;
+		}
+		&:nth-child(2) {
+			border-radius: 8px 0 0 0 !important;
+		}
+		&:last-of-type {
+			border-radius: 0 8px 0 0 !important;
+		}
+		}
+		&-name-col {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 12px !important;
+		}
+		&-row {
+		&:nth-child(even) {
+			.PricingRates-col {
+			border-bottom-color: #CCCCCC !important;
+			}
+		}
+		}
+
+		&-title {
+		margin: 24px 0 24px 0 !important;
+		font-size: 44px !important;
+		font-weight: 600 !important;
+		line-height: 54px !important;
+		}
+		&-options {
+		max-width: 975px !important;
+		width: 100% !important;
+		display: flex !important;
+		justify-content: space-between !important;
+		}
+		&-options-content {
+		display: flex !important;
+		gap: 20px !important;
+		align-items: center !important;
+		}
+
+		&-options-title {
+		font-size: 16px !important;
+		font-weight: 400 !important;
+		}
+
+		&-options-button-group {
+		display: flex !important;
+		background-color: #f2f2f2 !important;
+		padding: 4px !important;
+		border-radius: 8px !important;
+		}
+
+		&-options-button {
+		background-color: #f2f2f2 !important;
+		padding: 7px 48px !important;
+		border-radius: 8px !important;
+		}
+
+		&-options-button:focus {
+		outline: none !important;
+		}
+		&-header-item {
+		background-color: #0c50ff !important;
+		color: white !important;
+		padding: 5px 24px !important;
+		font-size: 16px !important;
+		font-weight: 500 !important;
+		border-radius: 8px !important;
+		width: 148px !important;
+		}
+
+		.PricingRates-header-name {
+		font-size: 16px !important;
+		font-weight: 400 !important;
+		color: black !important;
+		}
+
+		.PricingRates-header-price {
+		font-size: 44px !important;
+		font-weight: 600 !important;
+		line-height: 54px !important;
+		color: black !important;
+		}
+
+		.PricingRates-header-connection {
+		font-size: 16px !important;
+		font-weight: 400 !important;
+		color: #737b8a !important;
+		}
+		&-item-description {
+		color: #737b8a !important;
+		}
+		&-col {
+		min-width: 25rem !important;
+		}
+		&-footer {
+		max-width: 661px !important;
+		width: 100% !important;
+		padding: 16px 0 !important;
+		font-size: 16px !important;
+		}
+		&-title-table {
+
+		line-height: 30px !important;
+		border-bottom: 1px solid !important;
+		}
+		&-title-table-text {
+		padding: 0 0 12px 0 !important;
+		font-size: 20px !important;
+		font-weight: 600 !important;
+		}
+		&-action {
+		text-decoration: dotted underline !important;
+		cursor: pointer !important;
+		color: #3361ff !important;
+		&:hover {
+			color: lighten(#3361ff, 10) !important;
+		}
+		}
+		&-usePro {
+		position: absolute !important;
+		top: 50% !important;
+		left: 50% !important;
+		transform: translate(30px, -50%) !important;
+
+		&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label {
+			padding: 10px 0 0 50px !important;
+			margin: 0 !important;
+		}
+		}
+		&-selected {
+		background-color: darken(#3361ff, 5%) !important;
+		font-weight: 700 !important;
+		}
+		&_free {
+		.PricingRates {
+			&-header:nth-child(2),
+			&-col:nth-child(2) {
+			border-bottom: 1px solid #3361ff !important;
+			background-color: #3361ff !important;
+			color: #fff !important;
+			.ChatIcon-shape {
+				fill: #fff !important;
+			}
+			}
+		}
+		}
+		&_base {
+		.PricingRates {
+			&-header:nth-child(3),
+			&-col:nth-child(3) {
+			border-bottom: 1px solid #3361ff !important;
+			background-color: #3361ff !important;
+			color: #fff !important;
+			.ChatIcon-shape {
+				fill: #fff !important;
+			}
+			}
+		}
+		}
+		&_standard {
+		.PricingRates {
+			&-header:nth-child(4),
+			&-col:nth-child(4) {
+			border-bottom: 1px solid #3361ff !important;
+			background-color: #3361ff !important;
+			color: #fff !important;
+			.ChatIcon-shape {
+				fill: #fff !important;
+			}
+			}
+		}
+		}
+		&_pro {
+		.PricingRates {
+			&-header:nth-child(5),
+			&-col:nth-child(5) {
+			border-bottom: 1px solid #3361ff !important;
+			background-color: #3361ff !important;
+			color: #fff !important;
+			.ChatIcon-shape {
+				fill: #fff !important;
+			}
+			}
+		}
+		}
+		&_monthly {}
+		&_annual {}
+	}
+
+	.active {
+		background-color: white !important;
+		color: #1e40af !important;
+	}
+
+	.connection {
+		background-color: #ededed !important;
+		color: #8991a1 !important;
+	}
+	.selected {
+		background-color: #ededed !important;
+		color: #8991a1 !important;
+	}
+
+	.activePro {
+	font-size: 16px !important;
+	position: absolute !important;
+		top: 85% !important;
+		left: 13% !important;
+		color: #0c50ff !important;
+		margin-top: 5px !important;
+	}
+
+	.activeOption {
+		background-color: white !important;
+		color: #1e40af !important;
+	}
+	}
+
+  .PricingRates{
+		max-width: 900px;
+		width: 100%;
 		&-table{
 			margin-top: 56px;
+		max-width: 900px;
+		width: 100%;
 		}
 		&-header,
 		&-col{
+
 			padding: 10px;
 		border-bottom: 1px solid #CCCCCC;
 		}
@@ -438,7 +681,7 @@ export default {
 
 		&-header{
 			position: relative;
-		padding: 0 0 24px 0;
+		padding: 0 0 12px 0;
 
 			&_empty{
 				background-color: transparent;
@@ -453,8 +696,9 @@ export default {
 		}
 		&-name-col{
 			display: flex;
+			align-items: center;
 			flex-direction: column;
-			gap: 12px;
+			gap: 6px;
 		}
 		&-row{
 			&:nth-child(even){
@@ -465,25 +709,25 @@ export default {
 		}
 
 		&-title{
-			margin: 24px 0 24px 0;
-			font-size: 44px;
+			margin: 12px 0 12px 0;
+			font-size: 30px;
 			font-weight: 600;
-			line-height:54px;
+			line-height:44px;
 		}
 		&-options{
-			max-width: 975px;
+			max-width: 650px;
 			width: 100%;
 			display: flex;
 			justify-content: space-between;
 		}
 		&-options-content{
 			display: flex;
-			gap: 20px;
+			gap: 10px;
 			align-items: center;
 		}
 
 		&-options-title{
-			font-size: 16px;
+			font-size: 14px;
 			font-weight: 400;
 		}
 
@@ -496,7 +740,7 @@ export default {
 
 		&-options-button{
 		background-color: #F2F2F2;
-		padding: 7px 48px ;
+		padding: 4px 24px ;
 			border-radius: 8px;
 		}
 
@@ -507,28 +751,30 @@ export default {
 		&-header-item{
 			background-color: #0C50FF;
 			color: white;
-			padding: 5px 24px;
-			font-size: 16px;
+			padding: 3px 12px;
+			font-size: 14px;
 			font-weight: 500;
 			border-radius: 8px;
-		}
+			width: 128px;
+
+	}
 
 		.PricingRates-header-name{
-			font-size: 16px;
+			font-size: 14px;
 			font-weight: 400;
 		color: black;
 
 		}
 
 		.PricingRates-header-price{
-			font-size: 44px;
+			font-size: 24px;
 			font-weight: 600;
-			line-height: 54px;
+			line-height: 32px;
 		color: black;
 		}
 
 		.PricingRates-header-connection{
-			font-size: 16px;
+			font-size: 14px;
 			font-weight: 400;
 			color: #737B8A;
 		}
@@ -536,13 +782,13 @@ export default {
 			color: #737B8A;
 		}
 		&-col{
-			min-width: 25rem;
+			min-width: 15rem;
 		}
 		&-footer{
 			max-width: 661px;
 			width: 100%;
 			padding: 16px 0;
-			font-size: 16px;
+			font-size: 14px;
 		}
 		&-title-table{
 
@@ -551,7 +797,7 @@ export default {
 		}
 		&-title-table-text{
 			padding: 0 0 12px 0;
-			font-size: 20px;
+			font-size: 18px;
 			font-weight: 600;
 		}
 		&-action{
@@ -569,7 +815,7 @@ export default {
 			transform: translate(30px, -50%);
 
 			&.custom-control.custom-switch input[type="checkbox"] + .custom-control-label{
-				padding: 10px 0 0 50px;
+				padding: 5px 0 0 25px;
 				margin: 0;
 			}
 		}
@@ -648,11 +894,12 @@ export default {
 	}
 
 	.activePro {
+		font-size: 12px;
 		position: absolute;
 		top: 85%;
-		left: 13%;
+		left: 10%;
 		color: #0C50FF;
-		margin-top: 5px;
+		margin-top: 10px;
 	}
 
 	.activeOption{

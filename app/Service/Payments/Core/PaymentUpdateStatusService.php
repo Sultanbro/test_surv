@@ -10,13 +10,13 @@ use Exception;
 final class PaymentUpdateStatusService
 {
     /**
-     * @param string $ownerId
+     * @param string $tenantId
      * @return bool
      * @throws Exception
      */
-    public function handle(string $ownerId): bool
+    public function handle(string $tenantId): bool
     {
-        $lastPayment = TariffSubscription::getLastPendingTariffPayment($ownerId);
+        $lastPayment = TariffSubscription::getLastPendingTariffPayment($tenantId);
 
         $paymentProvider = Gateway::provider($lastPayment->payment_driver);
 

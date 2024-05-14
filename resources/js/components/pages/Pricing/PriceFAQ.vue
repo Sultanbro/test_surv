@@ -45,7 +45,7 @@
 </template>
 
 <script>
-export default {
+export default  {
 	name: 'PriceFAQ',
 	data() {
 		return {
@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style scoped>
-@media (min-width: 1400px) {
+@media (min-width: 1600px) {
 	.faq-item-question-title {
 		font-size: 20px !important;
 		font-weight: 600 !important;
@@ -144,14 +144,14 @@ export default {
 }
 
 .faq-item-question-title {
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 600;
 }
 
 .faq-item-price {
 	font-weight: 600;
-	font-size: 36px;
-	line-height: 54px;
+	font-size: 30px;
+	line-height: 44px;
 
 }
 

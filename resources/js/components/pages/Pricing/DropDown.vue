@@ -89,7 +89,7 @@ export default {
 }
 
 .price-dropdown-toggle {
-	max-width: 474px;
+	max-width: 404px;
 	width: 100%;
 	background-color: #f8f9fa;
 	border: 1px solid #CDD1DB;

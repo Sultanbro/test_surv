@@ -3,21 +3,18 @@
 namespace App\Http\Controllers\Tariff;
 
 use App\Http\Controllers\Controller;
-use App\Models\CentralUser;
-use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payments\Core\GetTariffsService;
+use App\Service\Payments\Core\TariffListService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class TariffInformationController extends Controller
 {
     /**
-     * @param GetTariffsService $tariffGetAllService
+     * @param TariffListService $tariffGetAllService
      */
     public function __construct(
-        public GetTariffsService $tariffGetAllService
+        public TariffListService $tariffGetAllService
     )
     {
     }

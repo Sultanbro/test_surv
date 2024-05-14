@@ -5,11 +5,8 @@ namespace App\Http\Controllers\Payment;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\TariffSubscribeRequest;
-use App\Jobs\ProcessCreatePaymentInvoiceLead;
-use App\Models\CentralUser;
-use App\Models\Tariff\PaymentToken;
-use App\Models\Tariff\TariffSubscription;
 use App\Service\Payments\Core\PaymentUpdateStatusService;
+use App\Service\Payments\Pipeline\PaymentPipeline;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,26 +28,19 @@ class PaymentController extends Controller
      */
     public function payment(TariffSubscribeRequest $request): JsonResponse
     {
-        $data = $request->toDto();
-
-        $user = CentralUser::fromAuthUser();
-        $gateway = Gateway::provider($data->currency);
-        $response = $gateway->invoice($data, $user);
-        $token = new PaymentToken($response->getPaymentToken()->token);
-        $payment = TariffSubscription::subscribe($data, $token);
-
-        ProcessCreatePaymentInvoiceLead::dispatch($user, $payment)
-            ->onConnection('sync');
+        $pipeline = new PaymentPipeline($request->toDto());
+        $pipeline->apply();
 
         return $this->response(
             message: 'Success',
-            data: $response
+            data: $pipeline->invoice()
         );
     }
 
     /**
      * Вебхук: коротый отправляется от сервиса опалты.
      * Тут мы должны проверить сигнатуру и сохранить статус оплаты
+     * После чего вернуть ответ об статусе транзакции
      *
      * @param Request $request
      * @param string $currency
@@ -59,16 +49,14 @@ class PaymentController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
-        $headers = $request->header();
-        $fields = $request->all();
-        $invoice = Gateway::provider($currency)
-            ->report([
-                'headers' => $headers,
-                'fields' => $fields
+        $response = Gateway::provider($currency)
+            ->webhook([
+                'headers' => $request->header(),
+                'fields' => $request->all()
             ])
             ->handle();
 
-        return response()->json($invoice);
+        return response()->json($response);
     }
 
     /**
@@ -79,8 +67,7 @@ class PaymentController extends Controller
      */
     public function updateToTariffPayments(): JsonResponse
     {
-        $user = CentralUser::fromAuthUser();
-        $response = $this->updateStatusService->handle($user);
+        $response = $this->updateStatusService->handle(tenant('id'));
 
         return $this->response(
             message: 'Success',

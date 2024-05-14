@@ -3,11 +3,11 @@
 namespace App\Service\Payments\WalletOne;
 
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payments\Core\InvoiceResponse;
-use App\Service\Payments\Core\PaymentReport;
+use App\Service\Payments\Core\WebhookCallbackResponse;
+use App\Service\Payments\Core\WebhookCallback;
 use Illuminate\Support\Str;
 
-class WalletOneReport extends PaymentReport
+class WalletOneReport extends WebhookCallback
 {
     const CURRENCY = ['kzt', 'usd'];
 
@@ -15,7 +15,7 @@ class WalletOneReport extends PaymentReport
     {
     }
 
-    public function handle(): InvoiceResponse
+    public function handle(): WebhookCallbackResponse
     {
         $paymentId = $this->data['WMI_PAYMENT_NO'];
         $status = Str::lower($this->data['WMI_ORDER_STATE']);
@@ -25,9 +25,9 @@ class WalletOneReport extends PaymentReport
 
         if ($payment->payment_id == $paymentId && $status == "accepted") {
             $payment->updateStatusToSuccess();
-            return new InvoiceResponse(['WMI_RESULT' => 'OK']);
+            return new WebhookCallbackResponse(['WMI_RESULT' => 'OK']);
         }
 
-        return new InvoiceResponse(['WMI_RESULT' => 'RETRY']);
+        return new WebhookCallbackResponse(['WMI_RESULT' => 'RETRY']);
     }
 }
