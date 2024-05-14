@@ -19,7 +19,6 @@
 				/>
 			</template>
 		</template>
-
 		<template
 			v-if="isMobile"
 			#form-header

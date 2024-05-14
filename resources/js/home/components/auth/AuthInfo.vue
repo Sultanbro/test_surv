@@ -6,7 +6,6 @@
 		<h4 class="auth__info__subtitle">
 			Инструменты, которые помогут вам расти и развиваться!
 		</h4>
-
 		<div class="auth__info__row">
 			<div
 				v-for="item in items"
@@ -33,7 +32,7 @@
 </template>
 
 <script>
-import * as LANG from './AuthInfo.lang.js'
+import * as LANG from './AuthInfo.lang.js';
 
 export default {
 	components: {},
@@ -41,12 +40,12 @@ export default {
 		return {};
 	},
 	computed: {
-		lang(){
-			return LANG[this.$root.$data.lang || 'ru']
+		lang() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
-		items(){
-			return this.lang.items
-		}
+		items() {
+			return this.lang.items;
+		},
 	},
 };
 </script>
@@ -60,11 +59,9 @@ $md4: 479.98px;
 .auth__info {
 	color: #333333;
 	font-family: "Inter", sans-serif;
-
 	&__title {
-		font-size: 56px;
+		font-size: 50px;
 		font-weight: 600;
-		margin: 1em 0 0.4em;
 	}
 	&__subtitle {
 		font-size: 24px;
@@ -77,8 +74,8 @@ $md4: 479.98px;
 		gap: 20px;
 	}
 	&__item {
-		background: #ffffff;
-		padding: 20px;
+		background: #FFFFFF66;
+		padding: 10px;
 		border-radius: 24px;
 		display: flex;
 		&__icon {
@@ -101,31 +98,31 @@ $md4: 479.98px;
 }
 
 @container auth-info (max-width: 1024px) {
-	.auth__info{
-		&__title{
+	.auth__info {
+		&__title {
 			margin-top: 0.4em;
 			font-size: 30px;
 			line-height: 1.1;
 		}
-		&__subtitle{
+		&__subtitle {
 			font-size: 20px;
 			line-height: 1.1;
 			margin: 0 0 1.25em;
 		}
-		&__row{
+		&__row {
 			gap: 12px;
 		}
-		&__item{
+		&__item {
 			padding: 15px;
-			&__icon{
+			&__icon {
 				margin-right: 15px;
 			}
-			&__content{
-				&__title{
+			&__content {
+				&__title {
 					font-size: 14px;
 					line-height: 1.1;
 				}
-				&__desc{
+				&__desc {
 					font-size: 12px;
 					line-height: 1.1;
 				}
@@ -134,24 +131,24 @@ $md4: 479.98px;
 	}
 }
 @container auth-info (max-width: 767.98px) {
-	.auth__info{
-		&__title{
+	.auth__info {
+		&__title {
 			font-size: 24px;
 			text-align: center;
 		}
-		&__subtitle{
+		&__subtitle {
 			font-size: 16px;
 			text-align: center;
 		}
-		&__row{
+		&__row {
 			grid-template-columns: 1fr;
 		}
-		&__item{
-			&__content{
-				&__title{
+		&__item {
+			&__content {
+				&__title {
 					font-size: 14px;
 				}
-				&__desc{
+				&__desc {
 					font-size: 12px;
 				}
 			}
@@ -159,8 +156,8 @@ $md4: 479.98px;
 	}
 }
 @container auth-info (max-width: 479.98px) {
-	.auth__info{
-		&__title{
+	.auth__info {
+		&__title {
 			font-size: 18px;
 		}
 	}
