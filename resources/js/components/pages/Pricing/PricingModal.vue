@@ -2,7 +2,7 @@
 	<div class="pricing-modal">
 		<div class="pricing-modal-content">
 			<button
-				class="pricing-buttonCLose"
+				class="pricing-buttonClose"
 				@click="closeModal"
 			>
 				<svg
@@ -65,7 +65,7 @@ export default {
 
 
 @media (min-width: 1600px) {
-  .pricing-buttonCLose{
+  .pricing-buttonClose{
 	position: relative;
 	right: 10%;
 	width: 40px !important;
@@ -76,7 +76,7 @@ export default {
 
   .pricing-modal-content{
 	position: absolute;
-	right: 1%;
+	right: 1% !important;
 	max-width: 564px !important;
 	width: 100%;
 	display: flex;
@@ -89,30 +89,39 @@ export default {
   }
 }
 
-.pricing-buttonCLose{
+.pricing-buttonClose{
   position: relative;
-  right: 10%;
+  right: 14%;
   width: 40px;
   height: 40px;
   padding: 8px;
   border-radius: 8px;
 }
-
 .pricing-modal-content{
-  overflow: hidden;
-
   position: absolute;
   right: 3%;
+  animation: fadeInUp 0.3s ease;
   max-width: 404px;
   width: 100%;
   padding: 5px;
   display: flex;
   flex-direction: column;
-  background-color: #FFFFFF;
-  box-shadow: 4px 0px 32px 0px #C3C3C340;
+  background-color: #ffffff;
+  box-shadow: 4px 0px 32px 0px #c3c3c340;
   border-radius: 40px;
   height: 100vh;
 }
 
+
+@keyframes fadeInUp {
+  0% {
+	opacity: 0;
+	transform: translateX(400px);
+  }
+  100% {
+	opacity: 1;
+	transform: translateX(0);
+  }
+}
 
 </style>

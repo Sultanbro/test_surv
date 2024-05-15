@@ -30,11 +30,14 @@
 							3 месяца
 						</button>
 						<button
-							class="PricingRates-options-button"
+							class="PricingRates-options-button options-button-discount"
 							:class="{'activeOption' : activeMonth === 'annual'}"
 							@click="activeMonth = 'annual'"
 						>
 							Год
+							<div class="pricing-discount">
+								До -20%
+							</div>
 						</button>
 					</div>
 				</div>
@@ -110,9 +113,12 @@
 							>
 								{{ activeTariff === item.name ? (activeTariff !== 'Бесплатный' ? 'Перейти' : 'Подключен') : 'Подключить' }}
 							</button>
-							<p class="activePro">
+							<button
+								class="activePro"
+								@click="editRate"
+							>
 								{{ activeTariff ==='PRO' && 'PRO' === item.name ? 'Управление тарифом' : '' }}
-							</p>
+							</button>
 						</div>
 					</th>
 				</tr>
@@ -400,7 +406,12 @@ export default {
 		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
 		...mapActions(usePricingPeriodStore, ['addedPrice']),
+		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 
+		editRate(){
+			this.connectedTariff('PRO');
+			this.setCurrentModal('editRate');
+		},
 		pricingModal( item){
 			this.setPrice('pro')
 			this.setCurrentModal('pricingToBuy')
@@ -498,7 +509,7 @@ export default {
 
 		&-options-button {
 		background-color: #f2f2f2 !important;
-		padding: 7px 48px !important;
+		padding: 7px 40px !important;
 		border-radius: 8px !important;
 		}
 
@@ -905,5 +916,19 @@ export default {
 	.activeOption{
 	background-color: white;
 	color: #1E40AF;
+	}
+
+	.pricing-discount{
+		background-color: #FF5E5C;
+		color: white;
+		padding: 4px;
+		font-size: 12px;
+		font-weight: 400;
+		border-radius: 8px;
+	}
+
+	.options-button-discount{
+	display: flex;
+		gap: 6px;
 	}
 	</style>
