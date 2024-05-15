@@ -325,17 +325,8 @@ class AnalyticsController extends Controller
             ->where('date', $request->get("date"))
             ->where('row_id', $request->get("row_id"))
             ->where('column_id', $request->get("column_id"))
-            ->firstOrCreate([
-                'date' => Carbon::parse($request->get("date"))->startOfMonth(),
-                'row_id' => $request->get("row_id"),
-                'column_id' => $request->get("column_id"),
-                'group_id' => $request->get("group_id"),
-                'value' => $request->get("value"),
-                'show_value' => $request->get("show_value"),
-                'type' => $request->get("type"),
-                'class' => $request->get("class"),
-                'activity_id' => $request->get("activity_id"),
-            ]);
+            ->first();
+
 
         if (!$stat) return $this->response(
             message: 'Statistic not found!',
@@ -349,8 +340,10 @@ class AnalyticsController extends Controller
 
         if ($request->get("type") == 'formula') {
             /** @var Analytics $service */
-            $service = app(Analytics::class);
-            $stat->value = $service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula"));
+//            $service = app(Analytics::class);
+            $stat->value = $request->get("formula");
+            //$service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula"));
+//            dd($service->convertCellFormulaToCoordinates($stat, $request->get("value"), $request->get("formula")));
         }
 
         if ($request->get("type") == 'remote' || $request->get("type") == 'inhouse') {

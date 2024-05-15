@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Tariff;
 
 use App\Http\Controllers\Controller;
-use App\Service\Payments\Core\TariffListService;
+use App\Service\Payment\Core\TariffListService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;

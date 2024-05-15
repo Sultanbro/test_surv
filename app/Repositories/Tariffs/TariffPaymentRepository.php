@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Tariffs;
 
-use App\Models\CentralUser;
+use App\Models\Tariff\TariffSubscription;
 use App\Repositories\CoreRepository;
 use App\Models\Tariff\TariffSubscription as Model;
 
@@ -40,15 +40,14 @@ class TariffPaymentRepository extends CoreRepository
      */
     public function getTariffByPayment(
         int $ownerId
-    ): ?object
+    ): ?TariffSubscription
     {
+        /** @var TariffSubscription */
         return $this->model()
-            ->with('tariff')
-            ->orderBy('expire_date', 'desc')
-            ->where([
-                ['status', '=', 'succeeded'],
-                ['expire_date', '<', now()],
-                ['owner_id', '=', $ownerId]
-            ])->first();
+            ->query()
+            ->where('tenant_id', tenant('id'))
+            ->where('expire_date', '<', now()->format('Y-m-d'))
+            ->where('status', 'succeeded')
+            ->first();
     }
 }

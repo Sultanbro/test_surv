@@ -2,8 +2,10 @@
 	<AuthLayout class="RegisterView">
 		<template #form>
 			<form
+				action="/register"
+				method="POST"
 				class="RegisterView-form"
-				@submit.prevent="onSubmit"
+				@submit.prevent
 			>
 				<AuthTitle>
 					{{ lang.title }}
@@ -60,43 +62,42 @@
 					<AuthSubmit
 						v-else
 						:disabled="isLoading"
+						@click="onSubmit"
 					>
-						{{ isLoading ? lang.creating : lang.register }}
+						{{ lang.register }}
 					</AuthSubmit>
 				</div>
-
 				<AuthNote>
 					{{ lang.agree1 }}
-					<router-link
-						to="/aggreement"
+					<a
+						href="/aggreement"
 						target="_blank"
 					>
 						{{ lang.aggreement }}
-					</router-link>
+					</a>
 					{{ lang.agree2 }}
-					<router-link
-						to="/offer"
+					<a
+						href="/offer"
 						target="_blank"
 					>
 						{{ lang.offer }}
-					</router-link>
+					</a>
 					{{ lang.agree3 }}
-					<router-link
-						to="/terms"
+					<a
+						href="/terms"
 						target="_blank"
 					>
 						{{ lang.terms }}
-					</router-link>
+					</a>
 					{{ lang.agree4 }}
 				</AuthNote>
 			</form>
 		</template>
-
 		<template
 			v-if="isMobile"
 			#form-header
 		>
-			<AuthHeader />
+			<AuthHeader @open-chat="openChat" />
 		</template>
 		<template
 			v-if="isMobile"
@@ -104,7 +105,6 @@
 		>
 			<AuthFooter />
 		</template>
-
 		<template
 			v-if="!isMobile"
 			#info
@@ -115,7 +115,7 @@
 			v-if="!isMobile"
 			#info-header
 		>
-			<AuthHeader />
+			<AuthHeader @open-chat="openChat" />
 		</template>
 		<template
 			v-if="!isMobile"
@@ -136,9 +136,9 @@ import AuthSelect from '../components/auth/AuthSelect.vue';
 import AuthHeader from '../components/auth/AuthHeader.vue';
 import AuthFooter from '../components/auth/AuthFooter.vue';
 import AuthInfo from '../components/auth/AuthInfo.vue';
+import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import AuthPhone from '../components/auth/AuthPhone.vue';
 
-import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
@@ -176,9 +176,9 @@ export default {
 		AuthHeader,
 		AuthFooter,
 		AuthInfo,
-		AuthPhone,
 		GRecaptcha,
 		AuthSubmit,
+		AuthPhone,
 	},
 	props: {},
 	data() {
@@ -192,7 +192,7 @@ export default {
 			isSended: false,
 			errors: {},
 			capchaKey: 1,
-			useCapcha: false,
+			useCapcha: true,
 		};
 	},
 	computed: {
@@ -225,25 +225,14 @@ export default {
 		const bitrix = document.querySelector('.b24-widget-button-shadow');
 		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
-	mounted() {},
+	mounted() {
+		this.initChat();
+	},
 	beforeDestroy() {},
 	methods: {
 		async onSubmit(token) {
 			if (this.isLoading) return;
 			this.isLoading = true;
-
-			const emailPattern = /@gmail\.com$|@yandex\.ru$/;
-			if (!emailPattern.test(this.email)) {
-				alert(
-					'Пожалуйста, введите корректный email в формате *@gmail.com или *@yandex.ru'
-				);
-				this.isLoading = false; // Остановка загрузки, если email невалидный
-				return;
-			}
-
-			if (!this.email || !this.phone || !this.name) {
-				return alert('Все поля обязательны!');
-			}
 
 			try {
 				const registerUser = await axios.post('/register', {
@@ -255,10 +244,9 @@ export default {
 				});
 
 				if (registerUser.data) {
-					this.$router.push(registerUser.data.link);
+					window.location.href = registerUser.data.link
 					this.isSended = true;
 				}
-        
 			} catch (error) {
 				const { status, data } = error.response;
 				if (status === 422) {
@@ -277,6 +265,37 @@ export default {
 		onValidate() {
 			return true;
 		},
+		initChat() {
+			if (!window.jChatWidget) {
+				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
+				const url =
+					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + ((Date.now() / 60000) | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s, h);
+			} else {
+				this.onInitChatWidget({ detail: { widget: window.jChatWidget } });
+			}
+		},
+		onInitChatWidget(event) {
+			window.jChatWidget = event.detail.widget;
+
+			this.$nextTick(() => {
+				const elem = document.querySelector('.b24-widget-button-shadow');
+				if (!elem) return;
+				const parent = elem.parentNode;
+				parent.className = 'hidden';
+				window.jChatWidgetBtn = parent;
+			});
+			// this.openChat();
+		},
+		openChat() {
+			if (!this.isBp) {
+				window.jChatWidget.open();
+			}
+		},
 	},
 };
 </script>
@@ -292,6 +311,7 @@ export default {
 		flex-flow: column nowrap;
 		gap: 20px;
 	}
+
 	.AuthSubmit {
 		position: relative;
 		button {

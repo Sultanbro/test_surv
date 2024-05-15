@@ -6,6 +6,7 @@ namespace App\Service\Admin\Owners;
 use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\CentralUser;
+use App\Models\Tariff\TariffSubscription;
 use App\Models\Tenant;
 use App\Repositories\Tariffs\TariffPaymentRepository;
 use App\Support\Core\CustomException;
@@ -38,7 +39,7 @@ class OwnerInfoService
 
         return [
             'owner' => $owner,
-            'tariff' => $this->paymentRepository->getTariffByPayment($owner->id)
+            'tariff' => TariffSubscription::getValidTariffPayment()
         ];
     }
 

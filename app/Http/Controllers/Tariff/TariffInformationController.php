@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Tariff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payments\Core\TariffListService;
+use App\Service\Payment\Core\TariffListService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 

@@ -2,7 +2,6 @@
 	<div class="AuthHeader">
 		<div class="AuthHeader-left">
 			<a
-				v-if="back"
 				:href="root"
 				class="main__link"
 			>
@@ -17,6 +16,13 @@
 				:value="lang"
 				@input="$root.$data.setLang($event)"
 			/>
+			<button
+				class="main__link"
+				@click="$emit('open-chat')"
+			>
+				<IconChat />
+				{{ LANG.support }}
+			</button>
 			<!-- <router-link
 				to="/"
 				class="main__link"
@@ -26,46 +32,53 @@
 					{{ LANG.support }}
 				</span>
 			</router-link> -->
-			<AuthSupport />
 		</div>
 	</div>
 </template>
 
 <script>
 import AuthLang from './AuthLang.vue';
-import IconBack from './IconBack.vue'
-import AuthSupport from './Support.vue'
-// import IconChat from './IconChat.vue'
+import IconBack from './IconBack.vue';
+import IconChat from './IconChat.vue';
 
-import * as LANG from './AuthHeader.lang.js'
+import * as LANG from './AuthHeader.lang.js';
 
 export default {
 	components: {
 		AuthLang,
 		IconBack,
-		AuthSupport
-		// IconChat,
+		IconChat,
 	},
 	props: {
 		back: Boolean,
 	},
-	data(){
+	data() {
 		return {
 			root: 'https://jobtron.org',
-		}
+		};
 	},
 	computed: {
-		LANG(){
-			return LANG[this.$root.$data.lang || 'ru']
+		LANG() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
 		lang() {
 			return this.$root.$data.lang;
 		},
 	},
+	methods: {
+		openWindowChat() {
+			this.$emit('open-chat')
+		}
+	},
 };
 </script>
 
 <style lang="scss">
+button {
+	border: 0;
+	cursor: pointer;
+}
+
 .AuthHeader {
 	display: flex;
 	justify-content: space-between;
@@ -80,26 +93,24 @@ export default {
 		gap: 10px;
 	}
 }
-@container auth-info (max-width: 991.98px){
-	.AuthHeader{
+@container auth-info (max-width: 991.98px) {
+	.AuthHeader {
 		margin-bottom: 10px;
 	}
 }
 
-
-
-@container auth-header (max-width: 415px){
-	.AuthHeader{
-		.AuthLangItem-label{
+@container auth-header (max-width: 415px) {
+	.AuthHeader {
+		.AuthLangItem-label {
 			display: none;
 		}
-		.AuthHeader-right{
-			.main__link{
-				span{
-					display: none;
-				}
-			}
-		}
+		// .AuthHeader-right{
+		// 	.main__link{
+		// 		span{
+		// 			display: none;
+		// 		}
+		// 	}
+		// }
 	}
 }
 
@@ -118,20 +129,20 @@ export default {
 	font-size: 16px;
 	line-height: 20px;
 
-	&:hover{
-		color: #0C50FF;
-		.AuthIcon{
-			&-stroke{
-				stroke: #0C50FF;
+	&:hover {
+		color: #0c50ff;
+		.AuthIcon {
+			&-stroke {
+				stroke: #0c50ff;
 			}
-			&-fill{
-				fill: #0C50FF;
+			&-fill {
+				fill: #0c50ff;
 			}
 		}
 	}
 }
-.AuthIcon{
-	&-stroke{
+.AuthIcon {
+	&-stroke {
 		stroke: #333333;
 	}
 }

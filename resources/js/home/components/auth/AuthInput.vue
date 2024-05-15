@@ -28,7 +28,7 @@
 			v-if="error"
 			class="AuthInput-error"
 		>
-			{{ error[0] }}
+			{{ error }}
 		</span>
 		<span
 			v-else-if="text"

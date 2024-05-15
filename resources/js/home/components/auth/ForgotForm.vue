@@ -15,9 +15,7 @@
 			<AuthGoToMailVue :email="email">
 				{{ lang.goToMail }}
 			</AuthGoToMailVue>
-			<AuthSubTitle
-				v-if="resendTimer"
-			>
+			<AuthSubTitle v-if="resendTimer">
 				{{ lang.sendedtimer }}
 				{{ resendTimer }}
 				{{ lang.sendedsec }}
@@ -48,9 +46,11 @@
 					:error="errors.email"
 				/>
 			</div>
-			<AuthSubmit>
-				{{ lang.submit }}
-			</AuthSubmit>
+			<div class="ForgotForm-button">
+				<AuthSubmit>
+					{{ lang.submit }}
+				</AuthSubmit>
+			</div>
 		</template>
 	</form>
 </template>
@@ -63,7 +63,7 @@ import AuthSubTitle from './AuthSubTitle.vue';
 import AuthGoToMailVue from './AuthGoToMail.vue';
 
 import axios from 'axios';
-import * as LANG from './ForgotForm.lang.js'
+import * as LANG from './ForgotForm.lang.js';
 
 export default {
 	name: 'ForgotForm',
@@ -72,71 +72,75 @@ export default {
 		AuthSubmit,
 		AuthTitle,
 		AuthSubTitle,
-		AuthGoToMailVue
+		AuthGoToMailVue,
 	},
 	props: {},
-	data(){
+	data() {
 		return {
-			email: 'is@yandex.ru',
+			email: '',
 			errors: {
 				email: '',
 			},
 			isLoading: false,
-			isSended: true,
+			isSended: false,
 			resendTimer: 0,
 			resendIterval: null,
-		}
+		};
 	},
 	computed: {
-		lang(){
-			return LANG[this.$root.$data.lang || 'ru']
+		lang() {
+			return LANG[this.$root.$data.lang || 'ru'];
 		},
 	},
 	watch: {},
-	created(){},
-	mounted(){
+	created() {},
+	mounted() {
 		this.resendIterval = setInterval(() => {
-			this.resendTimer && --this.resendTimer
-		}, 1000)
+			this.resendTimer && --this.resendTimer;
+		}, 1000);
 	},
-	beforeDestroy(){
-		clearInterval(this.resendIterval)
+	beforeDestroy() {
+		clearInterval(this.resendIterval);
 	},
 	methods: {
-		async onSubmit(){
-			if(this.resendTimer) return
-			this.isLoading = true
+		async onSubmit() {
+			if (this.resendTimer) return;
+			this.isLoading = true;
 			try {
-				const {data} = await axios.post('/setting/reset', {
-					email: this.email,
-				},
-				{
-					headers: {
-						From: this.email
+				const { data } = await axios.post(
+					'/setting/reset',
+					{
+						email: this.email,
+					},
+					{
+						headers: {
+							From: this.email,
+						},
 					}
-				}
-				)
-				if(data.success) {
-					this.isSended = true
-					this.resendTimer = 60
+				);
+				if (data.success) {
+					this.isSended = true;
+					this.resendTimer = 60;
 					//toast? На вашу почту отправлен новый пароль!
-					return
+					return;
 				}
-				this.errors.email = 'Вы не зарегистрированы в нашей системе!'
+				// this.errors.email = "Вы не зарегистрированы в нашей системе!";
+			} catch (error) {
+				this.errors.email = 'Вы не зарегистрированы в нашей системе!';
 			}
-			catch (error) {
-				this.errors.email = 'Вы не зарегистрированы в нашей системе!'
-			}
-			this.isLoading = false
+			this.isLoading = false;
 		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.ForgotForm{
-	&-inputs{
+.ForgotForm {
+	&-inputs {
 		margin-top: 20px;
+	}
+	&-button {
+		margin-top: 32px;
 	}
 }
 </style>
