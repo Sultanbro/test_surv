@@ -9,7 +9,7 @@
 			{{ lang.title }}
 		</AuthTitle>
 
-		<AuthSubTitle v-if="contralDomain">
+		<AuthSubTitle>
 			{{ lang.notexists }}
 			<router-link
 				to="/register"

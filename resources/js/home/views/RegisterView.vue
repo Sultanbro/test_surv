@@ -57,15 +57,7 @@
 							AuthSubmit_disabled: isLoading,
 						}"
 					>
-						<div
-							v-if="isLoading"
-							style="display: flex; justify-content: center; align-items: center;"
-						>
-							<AuthSpinner />
-						</div>
-						<div v-else>
-							{{ lang.register }}
-						</div>
+						{{ isLoading ? lang.creating : lang.register }}
 					</GRecaptcha>
 					<AuthSubmit
 						v-else
@@ -147,8 +139,6 @@ import AuthInfo from '../components/auth/AuthInfo.vue';
 import AuthSubmit from '../components/auth/AuthSubmit.vue';
 import AuthPhone from '../components/auth/AuthPhone.vue';
 
-import AuthSpinner from '../components/auth/AuthSpinner.vue';
-
 import GRecaptcha from '@finpo/vue2-recaptcha-invisible';
 
 import axios from 'axios';
@@ -187,7 +177,6 @@ export default {
 		AuthFooter,
 		AuthInfo,
 		GRecaptcha,
-		AuthSpinner,
 		AuthSubmit,
 		AuthPhone,
 	},
@@ -246,14 +235,18 @@ export default {
 			this.isLoading = true;
 
 			try {
-				await axios.post('/register', {
+				const registerUser = await axios.post('/register', {
 					name: this.name,
 					email: this.email,
 					phone: this.phone,
 					currency: this.currency,
 					'g-recaptcha-response': token,
 				});
-				this.isSended = true;
+
+				if (registerUser.data) {
+					this.$router.push(registerUser.data.link);
+					this.isSended = true;
+				}
 			} catch (error) {
 				const { status, data } = error.response;
 				if (status === 422) {
