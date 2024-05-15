@@ -15,11 +15,11 @@
 			<AuthGoToMailVue :email="email">
 				{{ lang.goToMail }}
 			</AuthGoToMailVue>
-			<AuthSubTitle v-if="resendTimer">
+			<!-- <AuthSubTitle v-if="resendTimer">
 				{{ lang.sendedtimer }}
 				{{ resendTimer }}
 				{{ lang.sendedsec }}
-			</AuthSubTitle>
+			</AuthSubTitle> -->
 		</template>
 		<template v-else>
 			<AuthSubTitle>
@@ -81,7 +81,6 @@ export default {
 			errors: {
 				email: '',
 			},
-			isLoading: false,
 			isSended: false,
 			resendTimer: 0,
 			resendIterval: null,
@@ -104,10 +103,11 @@ export default {
 	},
 	methods: {
 		async onSubmit() {
-			if (this.resendTimer) return;
-			this.isLoading = true;
+			this.isSended = true;
+			// if (this.resendTimer) return;
+			// this.isLoading = true;
 			try {
-				const { data } = await axios.post(
+				await axios.post(
 					'/setting/reset',
 					{
 						email: this.email,
@@ -118,17 +118,17 @@ export default {
 						},
 					}
 				);
-				if (data.success) {
-					this.isSended = true;
-					this.resendTimer = 60;
-					//toast? На вашу почту отправлен новый пароль!
-					return;
-				}
+				// if (data.success) {
+				// 	this.isSended = true;
+				// 	this.resendTimer = 60;
+				// 	//toast? На вашу почту отправлен новый пароль!
+				// 	return;
+				// }
 				// this.errors.email = "Вы не зарегистрированы в нашей системе!";
 			} catch (error) {
 				this.errors.email = 'Вы не зарегистрированы в нашей системе!';
 			}
-			this.isLoading = false;
+			// this.isLoading = false;
 		},
 	},
 };
