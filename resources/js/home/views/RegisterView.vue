@@ -105,7 +105,7 @@
 			v-if="isMobile"
 			#form-header
 		>
-			<AuthHeader />
+			<AuthHeader @open-chat="openChat" />
 		</template>
 		<template
 			v-if="isMobile"
@@ -123,7 +123,7 @@
 			v-if="!isMobile"
 			#info-header
 		>
-			<AuthHeader />
+			<AuthHeader @open-chat="openChat" />
 		</template>
 		<template
 			v-if="!isMobile"
@@ -236,7 +236,9 @@ export default {
 		const bitrix = document.querySelector('.b24-widget-button-shadow');
 		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
-	mounted() {},
+	mounted() {
+		this.initChat();
+	},
 	beforeDestroy() {},
 	methods: {
 		async onSubmit(token) {
@@ -269,6 +271,37 @@ export default {
 		},
 		onValidate() {
 			return true;
+		},
+		initChat() {
+			if (!window.jChatWidget) {
+				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
+				const url =
+					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + ((Date.now() / 60000) | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s, h);
+			} else {
+				this.onInitChatWidget({ detail: { widget: window.jChatWidget } });
+			}
+		},
+		onInitChatWidget(event) {
+			window.jChatWidget = event.detail.widget;
+
+			this.$nextTick(() => {
+				const elem = document.querySelector('.b24-widget-button-shadow');
+				if (!elem) return;
+				const parent = elem.parentNode;
+				parent.className = 'hidden';
+				window.jChatWidgetBtn = parent;
+			});
+			// this.openChat();
+		},
+		openChat() {
+			if (!this.isBp) {
+				window.jChatWidget.open();
+			}
 		},
 	},
 };

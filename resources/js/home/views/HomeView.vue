@@ -34,40 +34,17 @@ export default {
 		SectionFooter,
 	},
 	mounted() {
-		this.initChat();
-	},
-	methods: {
-		initChat() {
-			if (!window.jChatWidget) {
-				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
-				const url =
-					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
-				const s = document.createElement('script');
-				s.async = true;
-				s.src = url + '?' + ((Date.now() / 60000) | 0);
-				const h = document.getElementsByTagName('script')[0];
-				h.parentNode.insertBefore(s, h);
-			} else {
-				this.onInitChatWidget({ detail: { widget: window.jChatWidget } });
-			}
-		},
-		onInitChatWidget(event) {
-			window.jChatWidget = event.detail.widget;
-
-			this.$nextTick(() => {
-				const elem = document.querySelector('.b24-widget-button-shadow');
-				if (!elem) return;
-				const parent = elem.parentNode;
-				parent.className = 'hidden';
-				window.jChatWidgetBtn = parent;
-			});
-			this.openChat();
-		},
-		openChat() {
-			if (!this.isBp) {
-				window.jChatWidget.open();
-			}
-		},
+		(function (w, d, u) {
+			var s = d.createElement('script');
+			s.async = true;
+			s.src = u + '?' + ((Date.now() / 60000) | 0);
+			var h = d.getElementsByTagName('script')[0];
+			h.parentNode.insertBefore(s, h);
+		})(
+			window,
+			document,
+			'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js'
+		);
 	},
 };
 </script>
