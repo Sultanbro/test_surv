@@ -184,7 +184,6 @@
 						v-for="item in tarifs"
 						:key="'monthly' + item.name"
 						class="PricingRates-col  text-center"
-						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 					>
 						<p>{{ item.space }}</p>
 						<p class="PricingRates-item-description">
