@@ -1444,7 +1444,7 @@ export default {
 
 		save_formula_1_31() {
 			// let rows = [];
-			let text = this.formula_1_31.replace(/[a-z]+([\d])/gi, '{$1}')
+			let text = this.formula_1_31.replace(/[a-z]+(\d+)/gi, '{$1}');
 
 			this.items.forEach((item, index) => {
 				index++;
