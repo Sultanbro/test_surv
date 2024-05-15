@@ -27,7 +27,7 @@
 
 						<div
 							v-if="openedIndex === index"
-							class="answer answer--visible"
+							class="answer"
 						>
 							{{ item.answer }}
 						</div>
@@ -66,6 +66,7 @@ export default  {
 				{ question: 'Нет ответа на ваш вопрос?', answer: '...' },
 			],
 			openedIndex: null,
+			close: false,
 		};
 	},
 	computed: {
@@ -80,6 +81,7 @@ export default  {
 			} else {
 				this.openedIndex = index;
 			}
+
 		},
 	},
 };
@@ -119,11 +121,6 @@ export default  {
 		margin-top: 10px !important;
 	}
 
-	.answer--visible {
-		max-height: 100vh !important;
-		opacity: 1 !important;
-		transform: translateY(0) !important;
-	}
 
 	.faq-item-question {
 		display: flex !important;
@@ -185,18 +182,23 @@ export default  {
 .answer {
 	margin-top: 10px;
 	color: gray;
-	max-height: 0;
-	opacity: 0;
+	max-height: 100vh;
+	animation: fadeInUp 0.3s ease;
 	overflow: hidden;
-	transform: translateY(-10px);
-	transition: transform 0.2s ease-out, opacity 0.2s ease-out, max-height 0.3s ease-out;
 }
 
-.answer--visible {
-	max-height: 100vh;
-	opacity: 1;
-	transform: translateY(0);
+
+@keyframes fadeInUp {
+	0% {
+
+		transform: translateY(-40px);
+	}
+	100% {
+
+		transform: translateY(0);
+	}
 }
+
 
 
 .faq-item-question {

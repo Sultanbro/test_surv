@@ -45,7 +45,12 @@
 					class="PricingRates-options-button"
 					@click="handleClickOptions(12)"
 				>
-					<p>Год</p>
+					<div class="pricing-option-discount">
+						<p>Год</p>
+						<div class="pricing-discount">
+							-20%
+						</div>
+					</div>
 					<p class="pricing-options-price">
 						{{ $separateThousands(Math.round(priceStore.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 					</p>
@@ -436,9 +441,10 @@ export default  {
 		border-radius: 8px !important;
 	}
 
+
 	&-options-button {
 		background-color: #f2f2f2 !important;
-		padding: 7px 48px !important;
+		padding: 7px 40px !important;
 		border-radius: 8px !important;
 		font-size: 16px !important;
 	}
@@ -446,6 +452,9 @@ export default  {
 	&-options-button:focus {
 		outline: none !important;
 	}
+  }
+  .pricing-discount{
+	font-size: 12px !important;
   }
 
   .pricing-choice-tariff {
@@ -462,7 +471,7 @@ export default  {
   }
   .pricing-button-group {
 	margin-top: auto !important;
-	padding: 0 0 32px 0 !important;
+	padding: 0 0 0 0 !important;
 	font-weight: 500 !important;
 	font-size: 16px !important;
 	display: flex !important;
@@ -684,7 +693,7 @@ export default  {
 
   &-options-button{
 	background-color: #F2F2F2;
-	padding: 4px 24px ;
+	padding: 4px 20px ;
 	border-radius: 8px;
 		font-size: 14px;
   }
@@ -844,6 +853,14 @@ background-color: #EDEDED;
 	padding: 12px;
   margin-bottom: 24px;
 }
+.pricing-discount{
+  background-color: #FF5E5C;
+  color: white;
+  padding: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  border-radius: 8px;
+}
 
 .pricing-buy-total-count{
   display: flex;
@@ -882,6 +899,10 @@ font-size: 24px;
 
 .pricing-options-price{
 	font-size: 12px;
+}
+.pricing-option-discount{
+  display: flex;
+	gap: 6px;
 }
 
 .pricing-modal-promo-button{
