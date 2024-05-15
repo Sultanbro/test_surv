@@ -244,7 +244,7 @@ export default {
 				});
 
 				if (registerUser.data) {
-					this.$router.push(registerUser.data.link);
+					window.location.href = registerUser.data.link
 					this.isSended = true;
 				}
 			} catch (error) {
