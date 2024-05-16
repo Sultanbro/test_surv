@@ -39,6 +39,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
     Route::get('/tariffs/subscriptions', [Root\Subscription\SubscriptionController::class, 'get']);
     Route::post('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
+    Route::get('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
 });
 
 // Portal Api

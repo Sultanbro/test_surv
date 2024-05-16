@@ -37,8 +37,8 @@ class CreateInvoiceRequest extends FormRequest
         return new CreateInvoiceDTO(
             $currency,
             $tariffId,
-            $extraUsersLimit,
             $tenant,
+            $extraUsersLimit,
             $provider
         );
     }

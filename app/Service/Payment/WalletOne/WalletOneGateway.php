@@ -28,4 +28,9 @@ class WalletOneGateway extends BasePaymentGateway
     {
         return new WalletOneCallback($data);
     }
+
+    public function name(): string
+    {
+        return 'wallet1';
+    }
 }

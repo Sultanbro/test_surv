@@ -38,7 +38,7 @@ class Gateway extends Facade
                     'test',
                     1,
                     1,
-                    1
+                    1,
                 ),
                 4
             ])

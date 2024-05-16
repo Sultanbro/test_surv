@@ -23,12 +23,12 @@ class SubscribeService
     public function subscribe(): TariffSubscription
     {
         $tariff = Tariff::find($this->dto->tariffId);
-
+        $expiate_at = $this->dto->expiate_at ?? $tariff->calculateExpireDate();
         return TariffSubscription::new(
             $this->dto->tenantId,
             $this->dto->tariffId,
             $this->dto->extraUsersLimit,
-            $tariff->calculateExpireDate(),
+            $expiate_at,
             $this->token->token,
             $this->dto->provider
         );

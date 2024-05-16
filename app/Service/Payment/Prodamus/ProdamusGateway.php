@@ -37,4 +37,9 @@ class ProdamusGateway extends BasePaymentGateway
     {
         return new ProdamusCallback($this->connector->getShopKey(), $data);
     }
+
+    public function name(): string
+    {
+        return 'prodamus';
+    }
 }

@@ -57,6 +57,14 @@ class TariffSubscription extends Model
         return $payment->status;
     }
 
+    public static function hasTrial(mixed $tenant): bool
+    {
+       return self::query()
+            ->where('tenant_id', $tenant)
+            ->where('payment_id', 'trial')
+            ->exists();
+    }
+
     /**
      * @return BelongsTo
      */

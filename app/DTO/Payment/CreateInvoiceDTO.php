@@ -8,16 +8,18 @@ final class CreateInvoiceDTO
     /**
      * @param string $currency
      * @param int $tariffId
-     * @param int $extraUsersLimit
      * @param string $tenantId
+     * @param int $extraUsersLimit
      * @param string $provider
+     * @param string|null $expiate_at
      */
     public function __construct(
-        public string $currency,
-        public int    $tariffId,
-        public int    $extraUsersLimit,
-        public string $tenantId,
-        public string $provider = 'prodamus'
+        public string      $currency,
+        public int         $tariffId,
+        public string      $tenantId,
+        public int         $extraUsersLimit = 0,
+        public string      $provider = 'prodamus',
+        public string|null $expiate_at = null,
     )
     {
     }
@@ -29,7 +31,8 @@ final class CreateInvoiceDTO
             'tariff_id' => $this->tariffId,
             'tenant_id' => $this->tenantId,
             'extra_users_limit' => $this->extraUsersLimit,
-            'provider' => $this->provider
+            'provider' => $this->provider,
+            'expiate_at' => $this->expiate_at,
         ];
     }
 }
