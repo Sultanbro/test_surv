@@ -58,6 +58,9 @@ class OwnerRepository extends CoreRepository
             ->orderBy($request->get('order_by') ?? 'id', $request->get('order_direction') ?? 'ASC')
             ->paginate($request->get('per_page') ?? 20);
 
+        $defaultManagerId = Setting::query()->where('name', Setting::DEFAULT_MANAGER)->first()?->value;
+        $defaultManager = User::query()->find($defaultManagerId);
+
         foreach ($owners as $owner) {
             $subDomains = [];
             foreach ($owner->portals as $portal) {
@@ -68,7 +71,7 @@ class OwnerRepository extends CoreRepository
             }
 
             $owner->subdomains = $subDomains;
-            $owner->manager = $owner->managerHasOwner?->manager;
+            $owner->manager = $owner->managerHasOwner ? $owner->managerHasOwner->manager : $defaultManager;
             $owner->balance = ($owner->balance ?? 0) . ' ' . strtoupper($owner->currency);
             unset($owner->portals);
             unset($owner->managerHasOwner);
