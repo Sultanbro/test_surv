@@ -1,13 +1,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useUserRolesStore } from '@/stores/user-roles'
-import { VueCropper }  from 'vue-cropperjs'
+import { VueCropper } from 'vue-cropperjs'
 import Cropper from 'cropperjs'
 import FilePicker from '@core/components/FilePicker.vue'
-import {useToast} from "vue-toastification";
+import { useToast } from 'vue-toastification'
+import { useUserDataStore } from '@/stores/user-data'
+import { fetchManagers } from '@/stores/api'
+
+import { useUserPermissionsStore } from '@/stores/user-permissions'
+
+const userPermissionsStore = useUserPermissionsStore()
 
 type Props = {
-	errors: {
+  errors: {
     [key: string]: Array<string>
   }
   user?: Manager
@@ -18,8 +24,21 @@ const emit = defineEmits<{
   (e: 'submit', data: AddUserPermissionsRequest): void
 }>()
 
+const filters = ref<UserDataRequest>({
+  '>balance': '',
+  '<balance': '',
+  '>login_at': '',
+  '<login_at': '',
+  '>birthday': '',
+  '<birthday': '',
+  query: '',
+})
+
+const userDataStore = useUserDataStore()
+
 const userRolesStore = useUserRolesStore()
 userRolesStore.fetchRoles()
+
 const toast = useToast()
 const id = ref(0)
 const name = ref('')
@@ -33,16 +52,15 @@ const isDefault = ref(false)
 const form = ref(true)
 
 watchEffect(() => {
-	id.value = props.user?.id || 0
-	name.value = props.user?.name || ''
-	last_name.value = props.user?.last_name || ''
-	email.value = props.user?.email || ''
-	phone.value = props.user?.phone || ''
-	password.value = ''
-	role_id.value = props.user?.role_id || 0
+  id.value = props.user?.id || 0
+  name.value = props.user?.name || ''
+  last_name.value = props.user?.last_name || ''
+  email.value = props.user?.email || ''
+  phone.value = props.user?.phone || ''
+  password.value = ''
+  role_id.value = props.user?.role_id || 0
   image.value = props.user?.img_url || ''
   isDefault.value = props.user?.is_default || false
-
 })
 
 const roleOptions = computed(() => {
@@ -56,25 +74,23 @@ const roleOptions = computed(() => {
         value: role.id,
         title: role.name,
       }
-    })
+    }),
   ]
 })
 
-function onSubmit(){
-
-     emit('submit', {
-       id: id.value,
-       name: name.value,
-       last_name: last_name.value,
-       email: email.value,
-       password: password.value,
-       password_confirmation: password.value,
-       role_id: role_id.value,
-       phone: phone.value,
-       is_default: isDefault.value,
-       image: newImage.value ? newImage.value : '',
-     })
-
+function onSubmit() {
+  emit('submit', {
+    id: id.value,
+    name: name.value,
+    last_name: last_name.value,
+    email: email.value,
+    password: password.value,
+    password_confirmation: password.value,
+    role_id: role_id.value,
+    phone: phone.value,
+    is_default: isDefault.value,
+    image: newImage.value ? newImage.value : '',
+  })
 }
 
 let cropper = null
@@ -83,7 +99,7 @@ const srcImage = ref<string | ArrayBuffer | null>(null)
 const newImage = ref<Blob | null>(null)
 
 watchEffect(() => {
-  if(!srcImage.value) return
+  if (!srcImage.value) return
   if (cropperImage.value) {
     cropper = new Cropper(cropperImage.value, {
       aspectRatio: 1,
@@ -95,30 +111,37 @@ watchEffect(() => {
       cropBoxMovable: false,
       cropBoxResizable: false,
     })
-  }
-  else {
+  } else {
     cropper && cropper.destroy()
   }
 })
-watch(srcImage, () => {
-  if(!cropper) return
-  cropper.replace(srcImage.value)
-}, {
-  flush: 'post'
-})
-function resetCropper(){
+watch(
+  srcImage,
+  () => {
+    if (!cropper) return
+    cropper.replace(srcImage.value)
+  },
+  {
+    flush: 'post',
+  },
+)
+function resetCropper() {
   srcImage.value = null
 }
-function cropImage(){
-  if(!cropper) return
+function cropImage() {
+  if (!cropper) return
   const canvas = cropper.getCroppedCanvas()
   image.value = canvas.toDataURL('image/jpeg', 0.8)
-  canvas.toBlob(blob => {
-    newImage.value = blob
-    resetCropper()
-  }, 'image/jpeg', 0.8)
+  canvas.toBlob(
+    blob => {
+      newImage.value = blob
+      resetCropper()
+    },
+    'image/jpeg',
+    0.8,
+  )
 }
-function onSelectImage(files: FileList){
+function onSelectImage(files: FileList) {
   const image = files ? files[0] : null
   if (!image) return
   if (image.type.indexOf('image/') === -1) return alert('Выберете изображение')
@@ -128,12 +151,21 @@ function onSelectImage(files: FileList){
   }
   reader.readAsDataURL(image)
 }
+
+const getCurrenManager = async () => {
+  const managers = await fetchManagers()
+  const currentManager = await managers.data.find(manager => {
+    return manager.id === id.value
+  })
+
+  console.log(currentManager);
+}
+
+if (isDefault) getCurrenManager()
 </script>
 
 <template>
-  <VCard
-    class="UserPermissionsEdit"
-  >
+  <VCard class="UserPermissionsEdit">
     <VCardTitle>
       <span class="text-h5">Добавить доступ</span>
     </VCardTitle>
@@ -222,9 +254,9 @@ function onSelectImage(files: FileList){
           size="large"
           type="submit"
           variant="elevated"
-        >Добавить доступ</VBtn>
+          >Добавить доступ</VBtn
+        >
       </VForm>
-
       <VDialog
         :model-value="!!srcImage"
         max-width="500"
@@ -238,20 +270,22 @@ function onSelectImage(files: FileList){
                 ref="cropperImage"
                 :src="srcImage"
                 alt=""
-              >
+              />
             </div>
           </VCardText>
           <VCardActions class="py-0 mx-10">
             <VBtn
               @click="resetCropper"
-              text color="red"
+              text
+              color="red"
             >
               Cancel
             </VBtn>
-            <VSpacer/>
+            <VSpacer />
             <VBtn
               @click="cropImage"
-              text color="blue"
+              text
+              color="blue"
             >
               Crop
             </VBtn>
@@ -264,10 +298,10 @@ function onSelectImage(files: FileList){
 
 <style lang="scss" scoped>
 .UserPermissionsEdit {
-  &-cropper{
+  &-cropper {
     .cropper-crop-box {
       &::before,
-      &::after{
+      &::after {
         content: '';
         position: absolute;
         pointer-events: none;
@@ -280,22 +314,20 @@ function onSelectImage(files: FileList){
         bottom: 0;
         opacity: 0.75;
       }
-      &::before{
+      &::before {
         border-radius: 50rem;
       }
-      &::after{
+      &::after {
         border-radius: 2rem;
       }
     }
   }
-  .FilePicker{
+  .FilePicker {
     width: fit-content;
     margin: 0 auto;
   }
 }
-.v-field__field{
+.v-field__field {
   height: 50px !important;
 }
-
-
 </style>

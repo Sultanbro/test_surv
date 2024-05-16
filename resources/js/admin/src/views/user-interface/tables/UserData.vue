@@ -35,7 +35,7 @@ function formatDate(dateZ: string){
 }
 function formatDateTime(dateZ: string){
   const date = new Date(dateZ)
-  return `${o(date.getHours())}:${o(date.getMinutes())} ${formatDate(dateZ)}`
+  return `${formatDate(dateZ)} ${o(date.getHours())}:${o(date.getMinutes())}`
 }
 
 // const scrollTD = ref<Element | null>(null)
@@ -61,13 +61,17 @@ function getManagerName(userId: number){
   const manager = managersStore.managers.find(manager => manager.id === managerId)
   return manager ? `${manager.name} ${manager.last_name}` : 'Нет'
 }
+
+function defineEmits<T>() {
+  throw new Error('Function not implemented.')
+}
 </script>
 
 <template>
   <VContainer class="UserData">
     <template v-if="userDataStore.userData.length">
       <VTable fixed-header>
-        <!-- <thead>
+        <thead>
           <tr>
             <th
               v-if="userDataStore.showCols.id"
@@ -164,7 +168,7 @@ function getManagerName(userId: number){
               Менеджер
             </th>
           </tr>
-        </thead> -->
+        </thead>
         <tbody>
           <tr
             v-for="item in userDataStore.userData"
