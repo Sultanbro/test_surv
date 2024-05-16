@@ -1,13 +1,13 @@
 <template>
 	<div class="pricing-buy-modal">
 		<h1
-			v-if="tariffStore === priceStore.name"
+			v-if="tariffStore === priceStore.name || tariffStore === 'Бесплатный'"
 			class="pricing-buy-title"
 		>
 			Оплата тарифа {{ priceStore.name }}
 		</h1>
 		<h1
-			v-if="tariffStore !== priceStore.name"
+			v-if="tariffStore !== priceStore.name && tariffStore !== 'Бесплатный'"
 			class="pricing-buy-title"
 		>
 			Переход на тариф {{ priceStore.name }}
@@ -62,8 +62,9 @@
 				Подключить тариф для пространства
 			</div>
 			<DropdownPrice
-				:options="options"
+				:options="options.data"
 				placeholder="Выберите компанию"
+				@update="updateSelected"
 			/>
 		</div>
 		<div class="pricing-buy-added-people">
@@ -275,7 +276,7 @@ export default  {
 	},
 	data(){
 		return{
-			options: [{logo: '/images/price/logo.png', name: '1suol9rbcn'}, {logo: '/images/price/logo.png', name: 'ИП Самозанятость'}],
+			options: [],
 			activeOption: 1,
 			sumPeople: 0,
 			promo: '',
@@ -283,7 +284,10 @@ export default  {
 			isPromoLoading: false,
 			selectedRate: null,
 			autoPayment: true,
-			activePromo: false
+			activePromo: false,
+			data: [],
+			selectedOption: null
+
 		}
 	},
 
@@ -322,12 +326,27 @@ export default  {
 				'$': 'usd'
 			})[this.currency]
 		},
-	},
 
+	},
+	mounted() {
+		this.getPriceData()
+
+	},
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
 		...mapActions(usePricingStore, ['fetchPromo', 'postPaymentData']),
-
+		updateSelected(option) {
+			this.selectedOption = option;
+		},
+		async getPriceData() {
+			try {
+				this.axios.get('/tenants').then((response) => {
+					this.options = response.data;
+				})
+			} catch (error) {
+				console.error('Failed to fetch price data:', error);
+			}
+		},
 		handleClickOptions(id){
 			this.activeOption = id
 		},

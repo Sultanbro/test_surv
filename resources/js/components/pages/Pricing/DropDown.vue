@@ -8,10 +8,10 @@
 				<img
 					v-if="selectedOption && selectedOption.logo"
 					class="price-dropdown-img"
-					:src="selectedOption.logo"
+					:src="selectedOption.logo || '/images/price/DefaultAvatar.png'"
 				>
 				<p class="price-dropdown-title">
-					{{ selectedOption && selectedOption.name ? selectedOption.name : placeholder }}
+					{{ selectedOption && selectedOption.id ? selectedOption.id : placeholder }}
 				</p>
 			</div>
 			<DropDownIcon />
@@ -21,18 +21,32 @@
 			class="price-dropdown-menu"
 		>
 			<div
-				v-for="option in options"
-				:key="option.name"
-				class="price-dropdown-item"
-				@click="selectOption(option)"
+				v-if="options"
+				class="price-dropdown-menu-item"
 			>
-				<img
-					class="price-dropdown-img"
-					:src="option.logo"
+				<div
+					v-for="option in options"
+					:key="option.name"
+					class="price-dropdown-item"
+					@click="selectOption(option)"
 				>
-				<p class="price-dropdown-title">
-					{{ option.name }}
-				</p>
+					<img
+						class="price-dropdown-img"
+						:src="option.logo || '/images/price/DefaultAvatar.png'"
+					>
+					<p
+						v-if="option"
+						class="price-dropdown-title"
+					>
+						{{ option.id }}
+					</p>
+				</div>
+			</div>
+			<div
+				v-else
+				class="price-dropdown-skeleton"
+			>
+				<b-skeleton />
 			</div>
 		</div>
 	</div>
@@ -54,11 +68,14 @@ export default {
 			type: String,
 			default: 'Select an option',
 		},
+		selectedOption: {
+			type: [String, null],
+			default: null
+		}
 	},
 	data() {
 		return {
 			isOpen: false,
-			selectedOption: null,
 		};
 	},
 	methods: {
@@ -66,7 +83,7 @@ export default {
 			this.isOpen = !this.isOpen;
 		},
 		selectOption(option) {
-			this.selectedOption = option;
+			this.$emit('update', option)
 			this.isOpen = false;
 		},
 	},
@@ -87,6 +104,15 @@ export default {
 	position: relative;
 	display: inline-block;
 }
+.price-dropdown-menu-item{
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.price-dropdown-skeleton{
+		padding: 10px;
+}
 
 .price-dropdown-toggle {
 	max-width: 404px;
@@ -105,10 +131,13 @@ export default {
 	position: absolute;
 	background-color: #fff;
 	border: 1px solid #ced4da;
+
 	padding: 0;
 	margin: 0;
 	z-index: 444;
 	width: 100%;
+	height: 200px;
+	overflow-y: auto;
 }
 
 .price-dropdown-menu li {

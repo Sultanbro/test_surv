@@ -26,13 +26,17 @@
 				Подключить тариф для пространства
 			</div>
 			<DropdownPrice
-				:options="options"
+				:selected-option="selectedOption"
+				:options="options.data"
 				placeholder="Выберите компанию"
+				@update="updateSelected"
 			/>
 		</div>
 		<div class="pricing-button-group">
 			<button
 				class="pricing-button-connect"
+				:class="{ 'disabledSelect': selectedOption === null }"
+				:disabled="selectedOption === null"
 				@click="connectFreePeriod"
 			>
 				Подключить бесплатно
@@ -52,22 +56,49 @@ export default {
 	components: {DropdownPrice},
 	data(){
 		return{
-			options: [{logo: '/images/price/logo.png', name: '1suol9rbcn'}, {logo: '/images/price/logo.png', name: 'ИП Самозанятость'}]
+			options: [],
+			selectedOption: null
 		}
 	},
 	computed:{
 		...mapActions(usePricingPeriodStore, ['tariffStore'])
 	},
+	mounted() {
+		this.getPriceData()
+
+	},
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive',  'setPrice']),
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
-
+		updateSelected(option) {
+			this.selectedOption = option;
+		},
+		async getPriceData() {
+			try {
+				this.axios.get('/tenants').then((response) => {
+					this.options = response.data;
+				})
+			} catch (error) {
+				console.error('Failed to fetch price data:', error);
+			}
+		},
+		async postDemo() {
+			try {
+				await this.axios.post('/tariffs/trial', {
+					// eslint-disable-next-line camelcase
+					tenant_id: this.selectedOption.id
+				})
+			} catch (error) {
+				console.error('Failed to fetch price data:', error);
+			}
+		},
 		closeModal(){
 			this.removeModalActive()
 		},
 		connectFreePeriod(){
-			this.connectedTariff('PRO')
+			this.postDemo()
 			this.removeModalActive()
+			window.location.reload();
 
 		}
 	}
@@ -187,6 +218,12 @@ export default {
 	flex-direction: column;
 	height: 100vh;
 }
+
+.disabledSelect{
+		background-color: gray !important;
+	cursor: not-allowed !important;
+}
+
 .pricing-img-block{
 	position: relative;
 	bottom: 5%;
