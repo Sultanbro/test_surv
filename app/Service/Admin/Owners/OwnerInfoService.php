@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class OwnerInfoService
 {
     /**
@@ -25,7 +25,8 @@ class OwnerInfoService
     public function __construct(
         public TariffPaymentRepository $paymentRepository
     )
-    {}
+    {
+    }
 
     /**
      * @return array
@@ -39,7 +40,8 @@ class OwnerInfoService
 
         return [
             'owner' => $owner,
-            'tariff' => TariffSubscription::getValidTariffPayment()
+            'tariff' => TariffSubscription::getValidTariffPayment(),
+            'users_count' => User::query()->count() - 1
         ];
     }
 
