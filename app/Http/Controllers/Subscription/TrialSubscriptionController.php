@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Subscription;
 
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
@@ -33,7 +34,10 @@ class TrialSubscriptionController extends Controller
         );
 
         $service = new SubscribeService($invoice, new PaymentToken("trial"));
-        $service->subscribe();
+
+        $service->subscribe()->update([
+            'status' => PaymentStatusEnum::STATUS_SUCCESS
+        ]);
 
         return $this->response(
             message: 'Success',
