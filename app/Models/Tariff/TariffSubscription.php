@@ -188,7 +188,6 @@ class TariffSubscription extends Model
             'tariff_id' => $tariffId,
             'extra_user_limit' => $extraUsersLimit,
             'expire_date' => $expireDate,
-            'auto_payment' => $autoPayment,
             'payment_id' => $paymentId,
             'status' => PaymentStatusEnum::STATUS_PENDING,
             'payment_provider' => $paymentProvider

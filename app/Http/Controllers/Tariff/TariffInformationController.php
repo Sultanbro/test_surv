@@ -28,7 +28,7 @@ class TariffInformationController extends Controller
         $tariff = TariffSubscription::getValidTariffPayment();
         return $this->response(
             message: 'success',
-            data: $tariff,
+            data: $tariff
         );
     }
 }
