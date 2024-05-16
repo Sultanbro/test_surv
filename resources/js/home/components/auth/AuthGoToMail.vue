@@ -28,6 +28,9 @@ export default {
 			case 'yandex.ru':
 				emailServiceURL = 'https://mail.yandex.ru/';
 				break;
+			case 'mail.ru':
+				emailServiceURL = 'https://mail.ru/';
+				break;
 			default:
 				alert('Технические затруднения')
 				break;

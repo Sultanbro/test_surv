@@ -144,7 +144,7 @@ export default {
 						auth_method: method,
 						username: email,
 						phone,
-						password,
+						password: password.trim(),
 					}),
 				});
 				if (response.type === 'opaqueredirect') return location.assign('/');

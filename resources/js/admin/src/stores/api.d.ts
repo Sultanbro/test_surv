@@ -89,15 +89,15 @@ declare interface UserPermissionsResponse {
 }
 
 declare interface AddUserPermissionsRequest {
-  last_name: string
+  last_name?: string
   name: string
-  email: string
-  password: string
-  password_confirmation: string
+  email?: string
+  password?: string
+  password_confirmation?: string
   role_id?: number
-  image: string | Blob
-  phone: string
-  is_default: boolean
+  image?: string | Blob
+  phone?: string
+  is_default?: boolean
 }
 
 declare interface UserPermissionsResponse {
