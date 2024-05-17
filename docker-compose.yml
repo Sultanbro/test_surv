@@ -1,50 +1,16 @@
 services:
-  #  application
-  frontend:
-    image: node:16-alpine
-    container_name: npm
-    volumes:
-      - .:/var/www/html
-    working_dir: /var/www/html
-    command: sh -c 'npm i && npm run watch'
-    networks:
-      - jobtron-network
-    ports:
-      - 3000:3000
-      - 3001:3001
-    mem_limit: 2g
-    ulimits:
-      nproc: 65535
-      nofile:
-        soft: 20000
-        hard: 40000
-  #Nginx Service
-  webserver:
-    image: nginx:alpine
-    container_name: nginx
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "81:81"
-      - "443:443"
-    volumes:
-      - ./:/var/www
-      - ./deployment/local/nginx/conf.d/:/etc/nginx/conf.d/
-    networks:
-      - jobtron-network
   app:
-    container_name: php
+    container_name: app
     build:
-      context: "./docker/php"
+      context: ./docker/php
       dockerfile: Dockerfile
       args:
         WWWGROUP: '${WWWGROUP}'
-    image: sail-8.2/app
+    image: sail-8.1/app
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
-      - '${APP_PORT:-81}:81'
-      - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+      - '${APP_PORT:-89}:80'
     environment:
       WWWUSER: '${WWWUSER}'
       LARAVEL_SAIL: 1
@@ -54,14 +20,13 @@ services:
     volumes:
       - '.:/var/www/html'
     networks:
-      - jobtron-network
+      - sail
     depends_on:
-      - webserver
       - db
   db:
     container_name: mysql
     image: 'mysql/mysql-server:8.0'
-    restart: no #always
+    restart: 'no'
     ports:
       - '${FORWARD_DB_PORT:-3307}:3307'
     environment:
@@ -72,11 +37,47 @@ services:
       MYSQL_PASSWORD: '${DB_PASSWORD}'
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
-      - 'jobtron-mysql:/var/lib/mysql'
+      - 'sail-mysql:/var/lib/mysql'
       - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
       - './docker/mysql/grant_privileges.sql:/docker-entrypoint-initdb.d/grant_privileges.sql'
     networks:
-      - jobtron-network
+      - sail
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-p${DB_PASSWORD}'
+      retries: 3
+      timeout: 5s
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: 'phpmyadmin:latest'
+    links:
+      - db
+    restart: always
+    ports:
+      - '8082:81'
+    networks:
+      - sail
+    environment:
+      - PMA_ARBITRARY=1
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'sail-mysql:/var/lib/mysql'
+      - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+    networks:
+      - sail
     healthcheck:
       test:
         - CMD
@@ -86,10 +87,8 @@ services:
       retries: 3
       timeout: 5s
 networks:
-  jobtron-network:
-    name: jobtron-network
+  sail:
     driver: bridge
 volumes:
-  jobtron-mysql:
-    name: jobtron-mysql
+  sail-mysql:
     driver: local

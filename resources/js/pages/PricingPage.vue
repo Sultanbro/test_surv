@@ -24,7 +24,16 @@
 				<PricingModalEditRate :currency="currency" />
 			</PricingModal>
 		</JobtronOverlay>
-		<PriceTrialPeriod />
+
+		<JobtronOverlay
+			v-if="currentModalId === 'pricingToFree'"
+			@close="removeModal()"
+		>
+			<PricingModalFreeLayout>
+				<PricingToFree :currency="currency" />
+			</PricingModalFreeLayout>
+		</JobtronOverlay>
+		<PriceTrialPeriod v-if="!trialPeriod" />
 		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
 		<div class="PricingPage ">
@@ -54,10 +63,14 @@ import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModal
 import { usePricingPeriodStore } from '../stores/PricingPeriod';
 import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModalEditRate.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
+import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingModalFreeLayout.vue';
+import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PricingToFree,
+		PricingModalFreeLayout,
 		PriceSpace,
 		PricingModalDefault,
 		PricingModalToBuy,
@@ -85,6 +98,7 @@ export default {
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 			freePeriod: false,
+			trialPeriod: false
 		};
 	},
 
@@ -121,6 +135,7 @@ export default {
 				this.$toast.error('Платеж прошел неуспешно');
 			});
 		}
+		this.trialPeriodFetch()
 	},
 
 	methods: {
@@ -133,6 +148,11 @@ export default {
 		]),
 		removeModal() {
 			this.removeModalActive();
+		},
+		trialPeriodFetch(){
+			this.axios.get('/tariffs/trial').then(res => {
+				this.trialPeriod = res.data.data.has_trial
+			})
 		},
 		updateRate(value) {
 			this.selectedRate = value.rate;

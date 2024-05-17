@@ -6,6 +6,7 @@ namespace App\Service\Admin\Owners;
 use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\CentralUser;
+use App\Models\Tariff\TariffSubscription;
 use App\Models\Tenant;
 use App\Repositories\Tariffs\TariffPaymentRepository;
 use App\Support\Core\CustomException;
@@ -14,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 /**
-* Класс для работы с Service.
-*/
+ * Класс для работы с Service.
+ */
 class OwnerInfoService
 {
     /**
@@ -24,7 +25,8 @@ class OwnerInfoService
     public function __construct(
         public TariffPaymentRepository $paymentRepository
     )
-    {}
+    {
+    }
 
     /**
      * @return array
@@ -38,7 +40,8 @@ class OwnerInfoService
 
         return [
             'owner' => $owner,
-            'tariff' => $this->paymentRepository->getTariffByPayment($owner->id)
+            'tariff' => TariffSubscription::getValidTariffPayment(),
+            'users_count' => User::query()->count() - 1
         ];
     }
 

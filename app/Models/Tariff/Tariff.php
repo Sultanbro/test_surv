@@ -2,14 +2,14 @@
 
 namespace App\Models\Tariff;
 
+use App\Enums\Tariff\TariffKindEnum;
 use App\Enums\Tariff\TariffValidityEnum;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
 
 /**
+ * @property  int $id
  * @property  string $kind
  * @property  string $validity
  * @property  int $users_limit
@@ -46,6 +46,12 @@ class Tariff extends Model
     {
         /** @var Tariff */
         return self::query()->find($tariffId);
+    }
+
+    public static function pro(): Tariff
+    {
+        /** @var Tariff */
+        return self::query()->where('kind', TariffKindEnum::Pro)->first();
     }
 
     /**

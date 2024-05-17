@@ -52,6 +52,7 @@ final class Analytics
     {
         $date = $stat->date;
         $coordinates = $this->getCoordinates($stat->group_id, $date, $value);
+//        dd($formula, $coordinates, Str::contains($formula, $coordinates));
         if (!$coordinates) return $formula;
         if (Str::contains($formula, $coordinates)) return $formula;
         return $coordinates . $formula;
@@ -79,6 +80,7 @@ final class Analytics
         if (count($matches[0]) > 0) {
             $row_letters = $matches[0][0];
         }
+
         if ($column_letters != '') {
             $i = 0;
             if ($column_letters == 'A') {
@@ -178,7 +180,10 @@ final class Analytics
                                 stats: $stats
                             );
                         }
-
+//                        dd_if(
+//                            $row->id == 15330 && $column->id == 25956,
+//                            $statistic, $val, AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns'])
+//                        );
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);

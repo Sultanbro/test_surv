@@ -16,15 +16,13 @@
 				:value="lang"
 				@input="$root.$data.setLang($event)"
 			/>
-			<a
-				href="/"
+			<button
 				class="main__link"
+				@click="$emit('open-chat')"
 			>
 				<IconChat />
-				<span>
-					{{ LANG.support }}
-				</span>
-			</a>
+				{{ LANG.support }}
+			</button>
 			<!-- <router-link
 				to="/"
 				class="main__link"
@@ -67,10 +65,20 @@ export default {
 			return this.$root.$data.lang;
 		},
 	},
+	methods: {
+		openWindowChat() {
+			this.$emit('open-chat')
+		}
+	},
 };
 </script>
 
 <style lang="scss">
+button {
+	border: 0;
+	cursor: pointer;
+}
+
 .AuthHeader {
 	display: flex;
 	justify-content: space-between;
