@@ -359,7 +359,8 @@ export default  {
 						this.activeOption === 12 ? this.priceStore.yearly.id :
 							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
-					auto_payment: this.autoPayment
+					auto_payment: this.autoPayment,
+					tenant_id: this.selectedOption.id
 				})
 				/* eslint-enable camelcase */
 				window.location.assign(url)
@@ -378,7 +379,8 @@ export default  {
 						this.activeOption === 12 ? this.priceStore.yearly.id :
 							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
-					auto_payment: this.autoPayment
+					auto_payment: this.autoPayment,
+					tenant_id: this.selectedOption.id
 				})
 				const form = document.createElement('form')
 				form.method = 'post'
