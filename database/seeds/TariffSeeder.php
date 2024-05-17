@@ -35,6 +35,7 @@ class TariffSeeder extends Seeder
                 $tariffModel->validity = $validity;
                 $tariffModel->users_limit = $tariff['users_limit'];
                 $tariffModel->save();
+                dd($tariffModel);
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
