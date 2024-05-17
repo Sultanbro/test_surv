@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::connection('mysql')->table('tariff', function (Blueprint $table) {
-            $table->removeColumn('price');
+            $table->dropColumn('price');
         });
 
         Schema::connection('mysql')->create('tariff_prices', function (Blueprint $table) {

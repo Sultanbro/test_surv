@@ -24,8 +24,8 @@ class TariffSeeder extends Seeder
         $tariffs = config('tariffs');
         $validates = [1, 3, 12];
 
-        foreach ($tariffs as $name => $tariff) {
-            foreach ($validates as $validity) {
+        foreach ($validates as $validity) {
+            foreach ($tariffs as $name => $tariff) {
                 $tariffModel = new Tariff();
                 $tariffModel->validity = $validity;
                 $tariffModel->kind = $name;
