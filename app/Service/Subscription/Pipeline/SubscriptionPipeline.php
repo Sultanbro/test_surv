@@ -53,6 +53,7 @@ class SubscriptionPipeline
      */
     private function createPaymentInvoice(): void
     {
+        dd($this->getPrice($this->data));
         $invoice = new CreateInvoiceDTO(
             $this->data->currency,
             $this->getPrice($this->data)
