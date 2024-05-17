@@ -106,18 +106,19 @@
 							<button
 								class="PricingRates-header-item"
 								:class="{
-									'connection': activeTariff === 'Бесплатный' && item.name === activeTariff,
-									'selected': activeTariff !== item.name && activeTariff !== 'Бесплатный'
+									'connection': info.tariff === null && item.name==='Бесплатный',
+									'selected': info.tariff && item.name !== names[info.tariff.kind]
 								}"
 								@click="pricingModal(item)"
 							>
-								{{ activeTariff === item.name ? (activeTariff !== 'Бесплатный' ? 'Перейти' : 'Подключен') : 'Подключить' }}
+								{{ info.tariff ? (names[info.tariff.kind] === item.name ? 'Продлить' : 'Перейти'): '' }}
+								{{ info.tariff === null ?(item.name === 'Бесплатный' ? 'Подключен' : 'Подключить'): '' }}
 							</button>
 							<button
 								class="activePro"
 								@click="editRate"
 							>
-								{{ activeTariff ==='PRO' && 'PRO' === item.name ? 'Управление тарифом' : '' }}
+								{{ info.tariff && names[info.tariff.kind] ===item.name ? 'Управление тарифом' : '' }}
 							</button>
 						</div>
 					</th>
@@ -262,6 +263,12 @@ export default {
 	data(){
 		return {
 			showFeatures: false,
+			kinds: {
+				null: 'Бесплатный',
+				base: 'База',
+				standard: 'Стандарт',
+				pro: 'PRO',
+			},
 			features: [
 				// {field: 'users', title: 'Количество пользователей'},
 				// {field: 'space', title: 'Место'},
@@ -351,6 +358,7 @@ export default {
 				'$': 'usd',
 			},
 			proUsed: false,
+			info: []
 		}
 	},
 	computed: {
@@ -395,24 +403,41 @@ export default {
 	watch: {
 		proUsed(){
 			if(this.proUsed) this.useProDemo()
-		}
+		},
+
 	},
+
 	created(){
 		this.fetchPricing()
 		this.fetchDemo()
+		this.infoFetch()
 	},
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
 		...mapActions(usePricingPeriodStore, ['addedPrice']),
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
-
+		infoFetch(){
+			this.axios('tariffs/subscriptions').then((response) => {
+				this.info = response.data.data
+				this.managerPlainPhone()
+			})
+		},
 		editRate(){
-			this.connectedTariff('PRO');
+			if (this.info.tariff) this.connectedTariff(this.names[this.info.tariff.kind])
+			else this.connectedTariff('Бесплатный')
 			this.setCurrentModal('editRate');
 		},
 		pricingModal( item){
-			this.setPrice('pro')
+			if (this.info.tariff) {
+				this.connectedTariff(this.names[this.info.tariff.kind])
+				this.setPrice(this.info.tariff.kind)
+			}
+			else{
+				this.connectedTariff('Бесплатный')
+				this.setPrice('free')
+			}
+
 			this.setCurrentModal('pricingToBuy')
 			this.addedPrice(item)
 		},
@@ -450,7 +475,7 @@ export default {
 
 		&-header {
 		position: relative !important;
-		padding: 0 0 24px 0 !important;
+		padding: 0 0 32px 0 !important;
 
 		&_empty {
 			background-color: transparent !important;
@@ -654,8 +679,8 @@ export default {
 		color: #8991a1 !important;
 	}
 	.selected {
-		background-color: #ededed !important;
-		color: #8991a1 !important;
+		background-color: #DBEAFE !important;
+		color: #0C50FF !important;
 	}
 
 	.activePro {

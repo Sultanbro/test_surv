@@ -24,7 +24,7 @@
 				<PricingModalEditRate :currency="currency" />
 			</PricingModal>
 		</JobtronOverlay>
-		<PriceTrialPeriod />
+		<PriceTrialPeriod v-if="!trialPeriod" />
 		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
 		<div class="PricingPage ">
@@ -85,6 +85,7 @@ export default {
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
 			freePeriod: false,
+			trialPeriod: false
 		};
 	},
 
@@ -121,6 +122,7 @@ export default {
 				this.$toast.error('Платеж прошел неуспешно');
 			});
 		}
+		this.trialPeriodFetch()
 	},
 
 	methods: {
@@ -133,6 +135,11 @@ export default {
 		]),
 		removeModal() {
 			this.removeModalActive();
+		},
+		trialPeriodFetch(){
+			this.axios.get('/tariffs/trial').then(res => {
+				this.trialPeriod = res.data.data.has_trial
+			})
 		},
 		updateRate(value) {
 			this.selectedRate = value.rate;
