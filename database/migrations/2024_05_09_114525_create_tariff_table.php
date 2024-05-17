@@ -21,8 +21,8 @@ return new class extends Migration {
         Schema::connection('mysql')
             ->create('tariff', function (Blueprint $table) {
                 $table->id();
-                $table->string('kind')->default(TariffKindEnum::Base)->comment('Вид тарифа');
-                $table->string('validity')->default(TariffValidityEnum::Monthly)
+                $table->string('kind')->default(TariffKindEnum::Base->value)->comment('Вид тарифа');
+                $table->string('validity')->default(TariffValidityEnum::Monthly->value)
                     ->comment('Период действия monthly-ежемесячно, annual-ежегодно');
                 $table->integer('users_limit')->comment('How many people can be assigned');
                 $table->timestamp('created_at')->useCurrent();
