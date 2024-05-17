@@ -3,7 +3,7 @@
 namespace App\Service\Subscription\Pipeline;
 
 use App\DTO\Payment\CreateInvoiceDTO;
-use App\DTO\Payment\NewInvoiceDTO;
+use App\DTO\Payment\NewSubscriptionDTO;
 use App\Facade\Payment\Gateway;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
@@ -21,7 +21,7 @@ class SubscriptionPipeline
     private TariffSubscription $subscription;
     private Invoice $invoice;
 
-    public function __construct(private readonly NewInvoiceDTO $data)
+    public function __construct(private readonly NewSubscriptionDTO $data)
     {
     }
 

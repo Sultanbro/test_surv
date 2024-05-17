@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Subscription;
 
-use App\DTO\Payment\NewInvoiceDTO;
+use App\DTO\Payment\NewSubscriptionDTO;
 use App\Enums\Payments\CurrencyEnum;
 use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class CreateInvoiceRequest extends FormRequest
+class CreateSubscriptionRequest extends FormRequest
 {
     public function rules(): array
     {
@@ -22,9 +22,9 @@ class CreateInvoiceRequest extends FormRequest
     }
 
     /**
-     * @return NewInvoiceDTO
+     * @return NewSubscriptionDTO
      */
-    public function toDto(): NewInvoiceDTO
+    public function toDto(): NewSubscriptionDTO
     {
         $validated = $this->validated();
 
@@ -34,7 +34,7 @@ class CreateInvoiceRequest extends FormRequest
         $provider = CurrencyEnum::provider($currency);
         $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
 
-        return new NewInvoiceDTO(
+        return new NewSubscriptionDTO(
             $currency,
             $tariffId,
             $tenant,

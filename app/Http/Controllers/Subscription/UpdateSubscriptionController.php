@@ -7,13 +7,11 @@ use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
-use App\Service\Admin\Owners\OwnerInfoService;
 use App\Service\Payment\Core\CanCalculateTariffPrice;
 use App\Service\Payment\Core\TariffListService;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
-class SubscriptionController extends Controller
+class UpdateSubscriptionController extends Controller
 {
     use CanCalculateTariffPrice;
 
@@ -26,22 +24,7 @@ class SubscriptionController extends Controller
     {
     }
 
-    /**
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function get(): JsonResponse
-    {
-        /** @var OwnerInfoService $service */
-        $service = app(OwnerInfoService::class);
-
-        return $this->response(
-            message: 'success',
-            data: $service->handle()
-        );
-    }
-
-    public function update(UpdateSubscriptionRequest $request): JsonResponse
+    public function __invoke(UpdateSubscriptionRequest $request): JsonResponse
     {
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->customer();

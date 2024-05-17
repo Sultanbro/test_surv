@@ -36,11 +36,18 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
-    Route::get('/tariffs/subscriptions', [Root\Subscription\SubscriptionController::class, 'get']);
-    Route::get('/tariffs/subscriptions/info', [Root\Tariff\TariffInformationController::class, 'tenantPaymentInfo']);
-    Route::post('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
-    Route::get('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
+    Route::prefix('tariff')->group(function () {
+        Route::get('/get', [Root\Tariff\TariffController::class, 'get']);
+        Route::post('/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
+        Route::get('/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
+        Route::prefix('subscriptions')->group(function () {
+            Route::get('/', Root\Subscription\GetSubscriptionController::class);
+            Route::post('/', Root\Subscription\NewSubscriptionController::class);
+            Route::post('/{subscription}', Root\Subscription\UpdateSubscriptionController::class);
+            Route::post('/{subscription}/extend', Root\Subscription\ExtendSubscriptionController::class);
+        });
+    });
+
 });
 
 // Portal Api
@@ -171,9 +178,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
-	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
@@ -737,11 +744,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Root\Subscription\PaymentController::class, 'invoice']);
-        Route::post('/status', [Root\Subscription\PaymentController::class, 'updateToTariffPayments']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Subscription\PaymentController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Subscription\CallbackController::class, 'callback']);
     });
 
     Route::group([

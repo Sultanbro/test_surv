@@ -2,7 +2,7 @@
 
 namespace App\Models\Tariff;
 
-use App\DTO\Payment\NewInvoiceDTO;
+use App\DTO\Payment\NewSubscriptionDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Facade\Payment\Gateway;
 use App\Models\Tenant;
@@ -208,7 +208,7 @@ class TariffSubscription extends Model
     /**
      * @throws Exception
      */
-    public static function subscribe(NewInvoiceDTO $dto, PaymentToken $token): static
+    public static function subscribe(NewSubscriptionDTO $dto, PaymentToken $token): static
     {
         $tariff = Tariff::find($dto->tariffId);
 

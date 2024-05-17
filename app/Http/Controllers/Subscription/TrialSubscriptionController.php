@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Subscription;
 
-use App\DTO\Payment\NewInvoiceDTO;
+use App\DTO\Payment\NewSubscriptionDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Facade\Payment\Gateway;
@@ -12,19 +12,23 @@ use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Subscription\SubscribeService;
 use App\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TrialSubscriptionController extends Controller
 {
 
+    /**
+     * @throws Exception
+     */
     public function enable(Request $request): JsonResponse
     {
         $tenant = $request->get('tenant_id') ?? tenant('id');
         $tariff = Tariff::pro();
         /** @var User $user */
         $user = $request->user();
-        $invoice = new NewInvoiceDTO(
+        $invoice = new NewSubscriptionDTO(
             $user->currency,
             $tariff->id,
             $tenant,
@@ -35,9 +39,9 @@ class TrialSubscriptionController extends Controller
 
         $service = new SubscribeService($invoice, new PaymentToken("trial"));
 
-        $service->subscribe()->update([
-            'status' => PaymentStatusEnum::STATUS_SUCCESS
-        ]);
+        $subscription = $service->subscribe();
+        $subscription->status = PaymentStatusEnum::STATUS_SUCCESS;
+        $subscription->save();
 
         return $this->response(
             message: 'Success',

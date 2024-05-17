@@ -2,7 +2,7 @@
 
 namespace App\Service\Payment\Core;
 
-use App\DTO\Payment\NewInvoiceDTO;
+use App\DTO\Payment\NewSubscriptionDTO;
 use App\Models\Tariff\Tariff;
 
 class Calculator
@@ -17,7 +17,7 @@ class Calculator
         ];
     }
 
-    public function calc(NewInvoiceDTO $newInvoiceDTO): float
+    public function calc(NewSubscriptionDTO $newInvoiceDTO): float
     {
         $tariff = Tariff::find($newInvoiceDTO->tariffId);
         $tariffPrice = $tariff->getPrice($newInvoiceDTO->currency)->value;
