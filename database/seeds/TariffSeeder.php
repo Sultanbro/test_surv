@@ -22,6 +22,7 @@ class TariffSeeder extends Seeder
         DB::connection('mysql')->table('tariff')->delete();
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
+        ksort($tariffs);
         $validates = [
             'yearly' => 12,
             '3_monthly' => 3,
