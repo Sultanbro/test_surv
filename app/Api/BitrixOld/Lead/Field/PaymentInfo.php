@@ -16,7 +16,7 @@ final class PaymentInfo extends Field
         $strPayment = "Платеж: $payment->id"
             .'\n'."Портал: $portal"
             .'\n'."Статус: $payment->status"
-            .'\n'."Платежный сервис: $payment->payment_driver"
+            .'\n'."Платежный сервис: $payment->payment_provider"
             .'\n'."Внешний ID: $payment->payment_id";
 
         parent::__construct('UF_CRM_1677471730901', $strPayment);

@@ -21,7 +21,7 @@ use Carbon\Carbon;
  * @property string $expire_date
  * @property bool $auto_payment
  * @property string $payment_id
- * @property string $payment_driver
+ * @property string $payment_provider
  * @property string $status
  * @property string $lead_id
  */
@@ -46,7 +46,7 @@ class TariffSubscription extends Model
         'expire_date',
         'auto_payment',
         'payment_id',
-        'payment_driver',
+        'payment_provider',
         'status',
         'lead_id'
     ];
@@ -103,7 +103,7 @@ class TariffSubscription extends Model
                 'tariff_subscriptions.expire_date',
                 'tariff_subscriptions.created_at',
                 'tariff_subscriptions.payment_id',
-                'tariff_subscriptions.payment_driver',
+                'tariff_subscriptions.payment_provider',
                 'tariff.kind',
                 'tariff.validity',
                 'tariff.users_limit',

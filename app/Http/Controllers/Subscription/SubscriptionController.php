@@ -44,7 +44,7 @@ class SubscriptionController extends Controller
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->customer();
         $existingSubscription = TariffSubscription::getValidTariffPayment($data->tenantId);
-        $gateway = Gateway::provider($existingSubscription->payment_driver);
+        $gateway = Gateway::provider($existingSubscription->payment_provider);
 
         $invoice = new CreateInvoiceDTO(
             $gateway->currency(),
@@ -54,7 +54,7 @@ class SubscriptionController extends Controller
             $gateway->name()
         );
 
-        $invoice = Gateway::provider($existingSubscription->payment_driver)->invoice($invoice, $customer);
+        $invoice = Gateway::provider($existingSubscription->payment_provider)->invoice($invoice, $customer);
 
         return $this->response(
             message: 'success',
