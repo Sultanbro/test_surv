@@ -13,7 +13,11 @@
 			@close="removeModal()"
 		>
 			<PricingModal>
-				<PricingModalToBuy :currency="currency" />
+				<PricingModalToBuy
+					:currency="currency"
+					:active-option="activeOption"
+					@updateOption="updateOption"
+				/>
 			</PricingModal>
 		</JobtronOverlay>
 		<JobtronOverlay
@@ -40,6 +44,8 @@
 			<PricingRates
 				:currency="currency"
 				:selected-rate="selectedRate"
+				:active-option="activeOption"
+				@updateOption="updateOption"
 				@update="updateRate"
 				@updateCurrency="updateCurrency"
 			/>
@@ -83,6 +89,7 @@ export default {
 	},
 	data() {
 		return {
+			activeOption: 3,
 			selectedRate: null,
 			users: 0,
 			period: '',
@@ -146,6 +153,10 @@ export default {
 			'fetchCurrent',
 			'fetchStatus',
 		]),
+		updateOption(id){
+			this.activeOption = id
+
+		},
 		removeModal() {
 			this.removeModalActive();
 		},

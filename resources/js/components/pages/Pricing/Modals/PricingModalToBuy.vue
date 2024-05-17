@@ -23,7 +23,7 @@
 				<button
 					:class="{'activeOption' : activeOption === 1}"
 					class="PricingRates-options-button"
-					@click="handleClickOptions(1)"
+					@click="$emit('updateOption', 1)"
 				>
 					<p>1 месяц</p>
 					<p class="pricing-options-price">
@@ -33,7 +33,7 @@
 				<button
 					:class="{'activeOption' : activeOption === 3}"
 					class="PricingRates-options-button"
-					@click="handleClickOptions(3)"
+					@click="$emit('updateOption', 3)"
 				>
 					<p>3 месяца</p>
 					<p class="pricing-options-price">
@@ -43,7 +43,7 @@
 				<button
 					:class="{'activeOption' : activeOption === 12}"
 					class="PricingRates-options-button"
-					@click="handleClickOptions(12)"
+					@click="$emit('updateOption', 12)"
 				>
 					<div class="pricing-option-discount">
 						<p>Год</p>
@@ -272,12 +272,14 @@ export default  {
 			type: String,
 			default: '₽'
 		},
-
+		activeOption:{
+			type: Number,
+			default: 3
+		},
 	},
 	data(){
 		return{
 			options: [],
-			activeOption: 3,
 			sumPeople: 0,
 			promo: '',
 			promoData: {},
@@ -336,9 +338,7 @@ export default  {
 				console.error('Failed to fetch price data:', error);
 			}
 		},
-		handleClickOptions(id){
-			this.activeOption = id
-		},
+
 		closeModal(){
 			this.removeModalActive()
 		},
