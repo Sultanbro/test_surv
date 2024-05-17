@@ -73,8 +73,6 @@ class TariffSeeder extends Seeder
                         'tariff_id' => $tariffId,
                         'currency' => $currency,
                         'value' => ($price * $monthsCount) - $salePrice,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
                     ]);
                 }
             }
