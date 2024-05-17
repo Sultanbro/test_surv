@@ -250,7 +250,7 @@ export default {
   }
   * {
 	font-family: inherit !important;
-
+	font-weight: 400;
   }
 }
 .PricingPage-promo-title {
