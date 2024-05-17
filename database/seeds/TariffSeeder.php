@@ -23,13 +23,13 @@ class TariffSeeder extends Seeder
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
         $validates = [
-            'monthly' => 1,
-            '3_monthly' => 3,
             'yearly' => 12,
+            '3_monthly' => 3,
+            'monthly' => 1,
         ];
 
-        dd($validates);
         foreach ($validates as $validity => $monthsCount) {
+            dd($validity);
             foreach ($tariffs as $name => $tariff) {
                 $tariffModel = new Tariff();
                 $tariffModel->kind = $name;
