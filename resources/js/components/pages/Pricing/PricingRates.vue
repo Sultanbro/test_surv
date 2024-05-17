@@ -162,7 +162,7 @@
 						:key="item.name"
 						class="PricingRates-col text-center"
 					>
-						<p>{{ item.addWorker }}</p>
+						<p>{{ Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}</p>
 						<p class="PricingRates-item-description">
 							{{ item.addWorkerDescription }}
 						</p>
@@ -338,12 +338,7 @@ export default {
 				standard:'standard',
 				pro:'pro'
 			},
-			addWorker: {
-				free:'-',
-				base:'200 ₽',
-				standard:'200 ₽',
-				pro:'200 ₽'
-			},
+
 			addWorkerDescription: {
 				free:'',
 				base:'За 1 сотр. / мес',
@@ -376,7 +371,7 @@ export default {
 	},
 	computed: {
 		...mapState(useModalStore, ['currentModalId']),
-		...mapState(usePricingStore, ['items']),
+		...mapState(usePricingStore, ['items', 'priceForOnePerson']),
 		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
 		activeTariff() {
 			return this.tariffStore;
@@ -394,7 +389,6 @@ export default {
 						tarifs[item.kind].price = this.price[item.kind]
 						tarifs[item.kind].connection = this.connection[item.kind]
 						tarifs[item.kind].connectionPack = this.connectionPack[item.kind]
-						tarifs[item.kind].addWorker = this.addWorker[item.kind]
 						tarifs[item.kind].addCourseWorker = this.addCourseWorker[item.kind]
 						tarifs[item.kind].domain = this.domain[item.kind]
 						tarifs[item.kind].priceDescription = this.priceDescription[item.kind]

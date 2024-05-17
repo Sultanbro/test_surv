@@ -26,6 +26,7 @@ export const usePricingStore = defineStore('pricing', {
 		manager: {},
 		current: null,
 		items: [],
+		priceForOnePerson: {},
 		priceForUser: null,
 	}),
 	actions: {
@@ -85,6 +86,7 @@ export const usePricingStore = defineStore('pricing', {
 			try {
 				const { data } = await fetchPricing();
 				this.items = data.tariffs;
+				this.priceForOnePerson = data.priceForOnePerson;
 				this.priceForUser = data.priceForOnePerson;
 			} catch (error) {
 				console.error('fetchPricing', error);

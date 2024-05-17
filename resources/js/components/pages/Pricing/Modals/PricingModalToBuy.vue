@@ -134,7 +134,7 @@
 				</p>
 			</div>
 			<p class="pricing-buy-added-price">
-				+200 ₽ к оплате
+				+{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
 			</p>
 		</div>
 		<p
@@ -227,9 +227,8 @@
 						}}
 					</p>
 				</div>
-
 				<p class="pricing-buy-total-count-price">
-					{{ sumPeople * 200 }} ₽
+					{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}
 				</p>
 			</div>
 			<div class="pricing-buy-total">
@@ -296,7 +295,7 @@ export default  {
 		...mapState(useModalStore, ['price']),
 		...mapState(usePricingStore, ['priceForUser', 'items']),
 		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
-
+		...mapState(usePricingStore, ['priceForOnePerson']),
 		additionalPrice(){
 			if(!this.priceForUser) return 0
 			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
@@ -309,7 +308,7 @@ export default  {
 			// if (this.promoData?.value) {
 			// 	price -= this.promoData.value;
 			// }
-			return price += Number(this.sumPeople * 200);
+			return price +=   this.sumPeople * Math.round( this.priceForOnePerson[this.currencyCode]) ;
 		},
 		currencyCode(){
 			return ({
@@ -321,7 +320,6 @@ export default  {
 	},
 	mounted() {
 		this.getPriceData()
-
 	},
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
