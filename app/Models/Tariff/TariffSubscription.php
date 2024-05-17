@@ -16,6 +16,7 @@ use Carbon\Carbon;
  * @property int $id
  * @property string $tenant_id
  * @property int $tariff_id
+
  * @property int $extra_user_limit
  * @property string $expire_date
  * @property bool $auto_payment
@@ -59,7 +60,7 @@ class TariffSubscription extends Model
 
     public static function hasTrial(mixed $tenant): bool
     {
-       return self::query()
+        return self::query()
             ->where('tenant_id', $tenant)
             ->where('payment_id', 'trial')
             ->exists();
@@ -84,14 +85,16 @@ class TariffSubscription extends Model
     /**
      * Returns valid tariff for current subdomain.
      *
+     * @param string|null $tenant
      * @return TariffSubscription|null
      */
-    public static function getValidTariffPayment(): ?TariffSubscription
+    public static function getValidTariffPayment(string $tenant = null): ?TariffSubscription
     {
         $today = Carbon::today();
 
         /** @var TariffSubscription */
         return self::query()
+            ->when($tenant, fn($query) => $query->where('tenant_id', $tenant))
             ->select(
                 'tariff_subscriptions.id',
                 'tariff_subscriptions.tenant_id',
@@ -100,6 +103,7 @@ class TariffSubscription extends Model
                 'tariff_subscriptions.expire_date',
                 'tariff_subscriptions.created_at',
                 'tariff_subscriptions.payment_id',
+                'tariff_subscriptions.payment_driver',
                 'tariff.kind',
                 'tariff.validity',
                 'tariff.users_limit',
