@@ -8,6 +8,7 @@ return [
             'kzt' => 0,
             'rub' => 0,
         ],
+        'sale_percent' => 0,
     ],
     'base' => [
         'id' => 2,
