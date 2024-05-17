@@ -25,14 +25,15 @@
 						</button>
 						<button
 							class="PricingRates-options-button"
-							:class="{'activeOption' : activeMonth === ''}"
+							:class="{'activeOption' : activeMonth === 'threeMonthly'}"
+							@click="activeMonth = 'threeMonthly'"
 						>
 							3 месяца
 						</button>
 						<button
 							class="PricingRates-options-button options-button-discount"
-							:class="{'activeOption' : activeMonth === 'annual'}"
-							@click="activeMonth = 'annual'"
+							:class="{'activeOption' : activeMonth === 'yearly'}"
+							@click="activeMonth = 'yearly'"
 						>
 							Год
 							<div class="pricing-discount">
@@ -42,19 +43,22 @@
 					</div>
 				</div>
 				<div class="PricingRates-options-content">
-					<div class="PricingRates-options-title">
+					<div
+						style="width: 100%;"
+						class="PricingRates-options-title"
+					>
 						Стоимость в
 					</div>
-					<div class="PricingRates-options-button-group">
+					<div class=" PricingRates-options-button-currency-group">
 						<button
-							class="PricingRates-options-button"
+							class=" PricingRates-options-button-currency"
 							:class="{'active': currency === '₽'}"
 							@click="changeCurrency('₽')"
 						>
 							₽
 						</button>
 						<button
-							class="PricingRates-options-button"
+							class="PricingRates-options-button-currency"
 							:class="{'active': currency === '₸'}"
 							@click="changeCurrency('₸')"
 						>
@@ -89,10 +93,16 @@
 								{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
 							<p
-								v-else-if="activeMonth === 'annual'"
+								v-else-if="activeMonth === 'yearly'"
 								class="PricingRates-header-price"
 							>
-								{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+								{{ $separateThousands(Math.round(item.yearly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+							</p>
+							<p
+								v-else-if="activeMonth === 'threeMonthly'"
+								class="PricingRates-header-price"
+							>
+								{{ $separateThousands(Math.round(item.threeMonthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
 							<p
 								v-if="activeMonth === 'monthly'"
@@ -100,8 +110,11 @@
 							>
 								{{ item.connection }}
 							</p>
-							<p v-else-if="activeMonth === 'annual'">
+							<p v-else-if="activeMonth === 'yearly'">
 								В год
+							</p>
+							<p v-else-if="activeMonth === 'threeMonthly'">
+								В 3 месяца
 							</p>
 							<button
 								class="PricingRates-header-item"
@@ -149,7 +162,7 @@
 						:key="item.name"
 						class="PricingRates-col text-center"
 					>
-						<p>{{ item.addWorker }}</p>
+						<p>{{ Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}</p>
 						<p class="PricingRates-item-description">
 							{{ item.addWorkerDescription }}
 						</p>
@@ -325,12 +338,7 @@ export default {
 				standard:'standard',
 				pro:'pro'
 			},
-			addWorker: {
-				free:'-',
-				base:'200 ₽',
-				standard:'200 ₽',
-				pro:'200 ₽'
-			},
+
 			addWorkerDescription: {
 				free:'',
 				base:'За 1 сотр. / мес',
@@ -350,7 +358,7 @@ export default {
 				pro:'+'
 			},
 
-			activeMonth: 'monthly',
+			activeMonth: 'threeMonthly',
 
 			currencyTranslate: {
 				'₽': 'rub',
@@ -363,7 +371,7 @@ export default {
 	},
 	computed: {
 		...mapState(useModalStore, ['currentModalId']),
-		...mapState(usePricingStore, ['items']),
+		...mapState(usePricingStore, ['items', 'priceForOnePerson']),
 		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
 		activeTariff() {
 			return this.tariffStore;
@@ -381,7 +389,6 @@ export default {
 						tarifs[item.kind].price = this.price[item.kind]
 						tarifs[item.kind].connection = this.connection[item.kind]
 						tarifs[item.kind].connectionPack = this.connectionPack[item.kind]
-						tarifs[item.kind].addWorker = this.addWorker[item.kind]
 						tarifs[item.kind].addCourseWorker = this.addCourseWorker[item.kind]
 						tarifs[item.kind].domain = this.domain[item.kind]
 						tarifs[item.kind].priceDescription = this.priceDescription[item.kind]
@@ -405,6 +412,7 @@ export default {
 			if(this.proUsed) this.useProDemo()
 		},
 
+
 	},
 
 	created(){
@@ -418,7 +426,7 @@ export default {
 		...mapActions(usePricingPeriodStore, ['addedPrice']),
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 		infoFetch(){
-			this.axios('tariffs/subscriptions').then((response) => {
+			this.axios('tariff/subscriptions').then((response) => {
 				this.info = response.data.data
 				this.managerPlainPhone()
 			})
@@ -429,9 +437,15 @@ export default {
 			this.setCurrentModal('editRate');
 		},
 		pricingModal( item){
-			if (this.info.tariff && this.item.name !== 'Бесплатный') {
+
+			if (this.info.tariff) {
 				this.connectedTariff(this.names[this.info.tariff.kind])
 				this.setPrice(this.info.tariff.kind)
+				this.setCurrentModal('pricingToBuy')
+			}
+			if ( item.name !== 'Бесплатный') {
+				this.connectedTariff('free')
+				this.setPrice('free')
 				this.setCurrentModal('pricingToBuy')
 			}
 			else{
@@ -460,8 +474,17 @@ export default {
 }
 </script>
 
-	<style lang="scss">
+	<style lang="scss" scoped>
   @media (min-width: 1600px) {
+	.pricing-discount{
+		background-color: #FF5E5C;
+		color: white;
+		padding: 4px !important;
+		font-size: 10px !important;
+		font-weight: 400;
+		border-radius: 8px;
+		width: 49px !important;
+	}
 	.PricingRates {
 		max-width: 1195px;
 		width: 100%;
@@ -473,6 +496,10 @@ export default {
 		padding: 10px !important;
 		border-bottom: 1px solid #CCCCCC !important;
 		}
+	&-header {
+	border-bottom:0 !important;
+
+  }
 
 		&-header {
 		position: relative !important;
@@ -526,6 +553,8 @@ export default {
 		}
 
 		&-options-button-group {
+		max-width: 385px !important;
+		width: 100%;
 		display: flex !important;
 		background-color: #f2f2f2 !important;
 		padding: 4px !important;
@@ -534,9 +563,36 @@ export default {
 
 		&-options-button {
 		background-color: #f2f2f2 !important;
-		padding: 7px 40px !important;
+		padding: 10px 15px !important;
+		display: flex;
+			font-size: 16px !important;
+			justify-content: center;
 		border-radius: 8px !important;
+		width: 128px !important;
 		}
+
+	&-options-button-currency-group{
+	max-width: 385px !important;
+	width: 100%;
+	display: flex !important;
+	background-color: #f2f2f2 !important;
+	padding: 4px !important;
+	border-radius: 8px !important;
+	}
+
+		&-options-button-currency{
+		background-color: #f2f2f2 !important;
+		padding: 10px 15px !important;
+		display: flex;
+		font-size: 16px !important;
+		justify-content: center;
+		border-radius: 8px !important;
+		width: 60px !important;
+		}
+
+	&-options-button-currency:focus {
+		outline: none !important;
+	}
 
 		&-options-button:focus {
 		outline: none !important;
@@ -702,6 +758,29 @@ export default {
   .PricingRates{
 		max-width: 900px;
 		width: 100%;
+
+	&-options-button-currency-group{
+		max-width: 385px ;
+		width: 100%;
+		display: flex ;
+		background-color: #f2f2f2 ;
+		padding: 4px ;
+		border-radius: 8px ;
+	}
+
+	&-options-button-currency{
+		background-color: #f2f2f2 ;
+		padding: 10px 15px ;
+		display: flex;
+		font-size: 16px ;
+		justify-content: center;
+		border-radius: 8px ;
+		width: 60px ;
+	}
+
+	&-options-button-currency:focus {
+		outline: none ;
+	}
 		&-table{
 			margin-top: 56px;
 		max-width: 900px;
@@ -713,7 +792,10 @@ export default {
 			padding: 10px;
 		border-bottom: 1px solid #CCCCCC;
 		}
+	&-header {
+		border-bottom: 0!important;
 
+	}
 
 		&-header{
 			position: relative;
@@ -745,6 +827,7 @@ export default {
 		}
 
 		&-title{
+			color: #333333;
 			margin: 12px 0 12px 0;
 			font-size: 30px;
 			font-weight: 600;
@@ -768,16 +851,21 @@ export default {
 		}
 
 		&-options-button-group{
-			display: flex;
+		max-width: 340px;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		display: flex;
 		background-color: #F2F2F2;
-			padding: 4px;
+		padding: 8px;
 		border-radius: 8px;
 		}
 
 		&-options-button{
 		background-color: #F2F2F2;
-		padding: 4px 24px ;
-			border-radius: 8px;
+		padding: 10px 20px;
+		border-radius: 8px;
+		font-size: 14px;
 		}
 
 		&-options-button:focus{
@@ -943,13 +1031,16 @@ export default {
 	color: #1E40AF;
 	}
 
+
 	.pricing-discount{
 		background-color: #FF5E5C;
 		color: white;
 		padding: 4px;
-		font-size: 12px;
+		font-size: 10px;
 		font-weight: 400;
 		border-radius: 8px;
+		width: 49px;
+		display: flex;
 	}
 
 	.options-button-discount{

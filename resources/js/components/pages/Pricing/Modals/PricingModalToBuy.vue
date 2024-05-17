@@ -27,17 +27,17 @@
 				>
 					<p>1 месяц</p>
 					<p class="pricing-options-price">
-						{{ priceStore.monthly.multiCurrencyPrice ? $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])): '' }} {{ currency }}
+						{{ $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])) || 0 }} {{ currency }}
 					</p>
 				</button>
 				<button
-					:class="{'activeOption' : activeOption === 2}"
+					:class="{'activeOption' : activeOption === 3}"
 					class="PricingRates-options-button"
-					@click="handleClickOptions(2)"
+					@click="handleClickOptions(3)"
 				>
 					<p>3 месяца</p>
 					<p class="pricing-options-price">
-						52 908 ₽
+						{{ $separateThousands(Math.round(priceStore.threeMonthly.multiCurrencyPrice[currencyCode])) || 0 }} {{ currency }}
 					</p>
 				</button>
 				<button
@@ -52,7 +52,7 @@
 						</div>
 					</div>
 					<p class="pricing-options-price">
-						{{ priceStore.monthly.multiCurrencyPrice ? $separateThousands(Math.round(priceStore.annual.multiCurrencyPrice[currencyCode])): '' }} {{ currency }}
+						{{ $separateThousands(Math.round(priceStore.yearly.multiCurrencyPrice[currencyCode])) || 0 }} {{ currency }}
 					</p>
 				</button>
 			</div>
@@ -62,6 +62,7 @@
 				Подключить тариф для пространства
 			</div>
 			<DropdownPrice
+				:selected-option="selectedOption"
 				:options="options.data"
 				placeholder="Выберите компанию"
 				@update="updateSelected"
@@ -133,7 +134,7 @@
 				</p>
 			</div>
 			<p class="pricing-buy-added-price">
-				+200 ₽ к оплате
+				+{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
 			</p>
 		</div>
 		<p
@@ -210,7 +211,7 @@
 					}}
 				</p>
 				<p class="pricing-buy-total-count-price">
-					{{ getPrice(activeOption) ? $separateThousands(Math.round(getPrice(activeOption))) : '' }} {{ currency }}
+					{{ $separateThousands(Math.round(getPrice(activeOption))) }} {{ currency }}
 				</p>
 			</div>
 			<div class="pricing-buy-total-count">
@@ -226,9 +227,8 @@
 						}}
 					</p>
 				</div>
-
 				<p class="pricing-buy-total-count-price">
-					{{ sumPeople * 200 }} ₽
+					{{ sumPeople * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}
 				</p>
 			</div>
 			<div class="pricing-buy-total">
@@ -277,7 +277,7 @@ export default  {
 	data(){
 		return{
 			options: [],
-			activeOption: 1,
+			activeOption: 3,
 			sumPeople: 0,
 			promo: '',
 			promoData: {},
@@ -295,7 +295,7 @@ export default  {
 		...mapState(useModalStore, ['price']),
 		...mapState(usePricingStore, ['priceForUser', 'items']),
 		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
-
+		...mapState(usePricingStore, ['priceForOnePerson']),
 		additionalPrice(){
 			if(!this.priceForUser) return 0
 			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
@@ -303,34 +303,23 @@ export default  {
 		total(){
 			if (!this.activeOption) return 0;
 
-			let price;
-			if (this.activeOption === 1) {
-				price = this.priceStore.monthly.multiCurrencyPrice[this.currencyCode];
-			} else if (this.activeOption === 12) {
-				price = this.priceStore.annual.multiCurrencyPrice[this.currencyCode];
-			} else {
-				price = 0;
-			}
+			let price = Number(this.getPrice(this.activeOption));
 
-			const additionalPrice = this.sumPeople * 200;
-			let total = price + additionalPrice;
-			if (this.promoData?.value) {
-				total -= this.promoData.value;
-			}
-			return total;
+			// if (this.promoData?.value) {
+			// 	price -= this.promoData.value;
+			// }
+			return price +=   this.sumPeople * Math.round( this.priceForOnePerson[this.currencyCode]) ;
 		},
 		currencyCode(){
 			return ({
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'usd'
 			})[this.currency]
 		},
 
 	},
 	mounted() {
 		this.getPriceData()
-
 	},
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
@@ -367,8 +356,8 @@ export default  {
 				const { url } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
-						this.activeOption === 12 ? this.priceStore.annual.id :
-							this.activeOption === 3 ? this.priceStore.id : null,
+						this.activeOption === 12 ? this.priceStore.yearly.id :
+							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 					auto_payment: this.autoPayment
 				})
@@ -386,8 +375,8 @@ export default  {
 				const { url, params } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
-						this.activeOption === 12 ? this.priceStore.annual.id :
-							this.activeOption === 3 ? this.priceStore.id : null,
+						this.activeOption === 12 ? this.priceStore.yearly.id :
+							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 					auto_payment: this.autoPayment
 				})
@@ -421,10 +410,10 @@ export default  {
 		getPrice(option) {
 			if (option === 1) {
 				return this.priceStore.monthly.multiCurrencyPrice[this.currencyCode];
-			} else if (option === 2) {
-				return 52908;
 			} else if (option === 3) {
-				return this.priceStore.annual.multiCurrencyPrice[this.currencyCode];
+				return this.priceStore.threeMonthly.multiCurrencyPrice[this.currencyCode];
+			} else if (option === 12) {
+				return this.priceStore.yearly.multiCurrencyPrice[this.currencyCode];
 			}
 			return 0;
 		},
@@ -544,7 +533,6 @@ export default  {
 
   .pricing-buy-added-people {
 	display: flex !important;
-	justify-content: center !important;
 	align-items: center !important;
 	margin-bottom: 24px !important;
   }
@@ -768,6 +756,10 @@ export default  {
   position: relative;
   bottom: 7%;
   padding: 24px 24px 0 24px;
+  font-family: Inter,serif !important;
+  * {
+	font-family: inherit !important;
+  }
 }
 
 .pricing-buy-description-total{
@@ -780,7 +772,9 @@ export default  {
 font-weight: 600;
 	font-size: 20px;
 	margin-bottom: 12px;
-	margin-top: 24px;
+  color: #333333;
+
+  margin-top: 24px;
 }
 
 .pricing-buy-description{
@@ -791,7 +785,6 @@ font-size: 14px;
 
 .pricing-buy-added-people{
   display: flex;
-  justify-content: center;
   align-items: center;
   margin-bottom: 12px;
 }

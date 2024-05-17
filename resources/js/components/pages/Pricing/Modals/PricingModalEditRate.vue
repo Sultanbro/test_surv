@@ -229,6 +229,8 @@ export default {
 	font-weight: 600;
 	font-size: 28px;
 	margin-bottom: 12px;
+  color: #333333;
+
 }
 
 .pricing-buy-description {

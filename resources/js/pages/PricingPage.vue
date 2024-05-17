@@ -150,7 +150,7 @@ export default {
 			this.removeModalActive();
 		},
 		trialPeriodFetch(){
-			this.axios.get('/tariffs/trial').then(res => {
+			this.axios.get('/tariff/trial').then(res => {
 				this.trialPeriod = res.data.data.has_trial
 			})
 		},
@@ -237,6 +237,7 @@ export default {
 
 
 .pricing-page-content {
+	font-family: Inter,serif  !important;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -247,9 +248,14 @@ export default {
 	outline: none !important;
 
   }
+  * {
+	font-family: inherit !important;
+	font-weight: 400;
+  }
 }
 .PricingPage-promo-title {
 	position: relative;
+  font-family: Inter,serif;
 }
 .price-beta {
 	position: absolute;

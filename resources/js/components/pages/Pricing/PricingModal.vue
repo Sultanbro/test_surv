@@ -99,7 +99,7 @@ export default {
 }
 .pricing-modal-content{
   position: absolute;
-  right: 3%;
+  right: 1%;
   animation: fadeInUp 0.3s ease;
   max-width: 404px;
   width: 100%;
