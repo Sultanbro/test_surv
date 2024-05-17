@@ -2,8 +2,8 @@
 
 return [
     #Payment price for one extra user
-    'payment_for_one_person_kzt' => floatval(env('PAYMENT_FOR_ONE_PERSON', 980)),
-    'payment_for_one_person_rub' => floatval(env('PAYMENT_FOR_ONE_PERSON', 200)),
+    'payment_for_one_person_kzt' => floatval(env('PAYMENT_FOR_ONE_PERSON_KZT', 980)),
+    'payment_for_one_person_rub' => floatval(env('PAYMENT_FOR_ONE_PERSON_RUB', 200)),
 
     'prodamus' => [
 //        'payment_url' => env('PRODAMUS_SHOP_PAYMENT_URL', 'https://bp.payform.ru/'),
