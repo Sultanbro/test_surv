@@ -429,16 +429,17 @@ export default {
 			this.setCurrentModal('editRate');
 		},
 		pricingModal( item){
-			if (this.info.tariff) {
+			if (this.info.tariff && this.item.name !== 'Бесплатный') {
 				this.connectedTariff(this.names[this.info.tariff.kind])
 				this.setPrice(this.info.tariff.kind)
+				this.setCurrentModal('pricingToBuy')
 			}
 			else{
 				this.connectedTariff('Бесплатный')
 				this.setPrice('free')
+				this.setCurrentModal('pricingToFree')
 			}
 
-			this.setCurrentModal('pricingToBuy')
 			this.addedPrice(item)
 		},
 		useProDemo(){
