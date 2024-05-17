@@ -22,6 +22,7 @@ class TariffSeeder extends Seeder
         DB::connection('mysql')->table('tariff')->delete();
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
+        ksort($tariffs);
         $validates = [
             'yearly' => 12,
             '3_monthly' => 3,
@@ -35,6 +36,7 @@ class TariffSeeder extends Seeder
                 $tariffModel->validity = $validity;
                 $tariffModel->users_limit = $tariff['users_limit'];
                 $tariffModel->save();
+                dump($validity, $tariffModel);
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
