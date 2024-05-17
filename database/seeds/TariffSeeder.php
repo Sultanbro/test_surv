@@ -69,7 +69,7 @@ class TariffSeeder extends Seeder
                         $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
                     }
 
-                    DB::table('tariff_prices')->insert([
+                    DB::connection('mysql')->table('tariff_prices')->insert([
                         'tariff_id' => $tariffId,
                         'currency' => $currency,
                         'value' => ($price * $monthsCount) - $salePrice,
