@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\Tariff\TariffKindEnum;
 use App\Enums\Tariff\TariffValidityEnum;
+use App\Models\Tariff\Tariff;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -16,29 +17,34 @@ class TariffSeeder extends Seeder
      */
     public function run(): void
     {
-        $tariffKinds = TariffKindEnum::getAllValues();
-        $validates = TariffValidityEnum::getAllValues();
+        DB::connection('mysql')->table('tariff_payment')->truncate();
+        DB::connection('mysql')->table('tariff')->truncate();
 
-        $data = array();
-        $usersLimit = [5, 20, 50, 100];
-        $price = [0, 0, 7158, 92460, 22966, 220711, 85004, 817227];
+        $tariffs = config('tariffs');
+        $validates = [1, 3, 12];
 
-        $counter = 0;
-        foreach ($tariffKinds as $kindKey => $tariffKind){
-            foreach ($validates as $validity){
-                $data[] = [
-                    'id' => $counter+1,
-                    'validity' => $validity,
-                    'kind' => $tariffKind,
-                    'users_limit' => $usersLimit[$kindKey],
-                    'price' => $price[$counter]
-                ];
-                $counter++;
+        foreach ($tariffs as $name => $tariff) {
+            foreach ($validates as $validity) {
+                $tariffModel = new Tariff();
+                $tariffModel->id = $tariff['id'];
+                $tariffModel->validity = $validity;
+                $tariffModel->kind = $name;
+                $tariffModel->users_limit = $tariff['users_limit'];
+                $tariffModel->save();
+
+                $salePrice = 0;
+                foreach ($tariff['prices'] as $currency => $price) {
+
+                    if ($validity > 1) {
+                        $salePrice = ($price * $validity) * $tariff['sale_percent'] / 100;
+                    }
+
+                    $tariffModel->prices()->create([
+                        'currency' => $currency,
+                        'price' => ($price * $validity) - $salePrice,
+                    ]);
+                }
             }
         }
-
-        DB::connection('mysql')->table('tariff_payment')->delete();
-        DB::connection('mysql')->table('tariff')->delete();
-        DB::connection('mysql')->table('tariff')->insert($data);
     }
 }

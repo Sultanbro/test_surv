@@ -33,4 +33,15 @@ class SubscriptionController extends Controller
             data: $service->handle()
         );
     }
+
+    public function update(): JsonResponse
+    {
+        /** @var OwnerInfoService $service */
+        $service = app(OwnerInfoService::class);
+
+        return $this->response(
+            message: 'success',
+            data: $service->handle()
+        );
+    }
 }

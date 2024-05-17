@@ -26,7 +26,7 @@ class PaymentController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function payment(CreateInvoiceRequest $request): JsonResponse
+    public function invoice(CreateInvoiceRequest $request): JsonResponse
     {
         $pipeline = new SubscriptionPipeline($request->toDto());
         $pipeline->apply();

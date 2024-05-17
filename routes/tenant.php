@@ -737,7 +737,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Root\Subscription\PaymentController::class, 'payment']);
+        Route::post('/', [Root\Subscription\PaymentController::class, 'invoice']);
         Route::post('/status', [Root\Subscription\PaymentController::class, 'updateToTariffPayments']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
