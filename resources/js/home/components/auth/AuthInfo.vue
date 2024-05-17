@@ -78,7 +78,6 @@ $md4: 479.98px;
 		padding: 10px;
 		border-radius: 24px;
 		display: flex;
-    align-items: center;
 		&__icon {
 			margin-right: 20px;
 		}
@@ -164,47 +163,24 @@ $md4: 479.98px;
 	}
 }
 
-@media (max-width: 1200px) {
-  .auth__info {
+@media (max-height: 700px) {
+	.auth__info {
 		&__title {
-			font-size: 22px;
+			font-size: 25px;
 		}
 		&__subtitle {
-			font-size: 18px;
+			font-size: 16px;
 		}
 		&__item {
-      padding: 8px;
 			&__content {
 				&__title {
-					font-size: 12px;
+					font-size: 16px;
 				}
 				&__desc {
-					font-size: 10px;
+					font-size: 12px;
 				}
 			}
 		}
 	}
 }
-
-// @container auth-info (max-width: 1200px) {
-// 	.auth__info {
-// 		&__title {
-// 			font-size: 22px;
-// 		}
-// 		&__subtitle {
-// 			font-size: 18px;
-// 		}
-// 		&__item {
-//       padding: 8px;
-// 			&__content {
-// 				&__title {
-// 					font-size: 12px;
-// 				}
-// 				&__desc {
-// 					font-size: 10px;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
 </style>
