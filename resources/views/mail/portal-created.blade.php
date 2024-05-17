@@ -5,8 +5,8 @@
 <br>
 <br>
 
-Вы успешно создали свой портал на <a href="https://{{$mailData['host']}}/login"> {{ $mailData['domen'] }}.{{$mailData['host']}}</a><br>
-Пароль для входа: <b>{{$password}}</b> 
+Вы успешно создали свой портал на <a href="https://{{$mailData['host']}}/login">{{$mailData['host']}}</a><br>
+Пароль для входа: <b>{{$password}}</b>
 <br> Вы всегда можоте изменить его в личном кабинете.
 <br>
 <br>
