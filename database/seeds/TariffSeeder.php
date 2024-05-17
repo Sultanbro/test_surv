@@ -22,9 +22,13 @@ class TariffSeeder extends Seeder
         DB::connection('mysql')->table('tariff')->truncate();
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
-        $validates = [1, 3, 12];
+        $validates = [
+            'monthly' => 1,
+            '3_monthly' => 3,
+            'yearly' => 12,
+        ];
 
-        foreach ($validates as $validity) {
+        foreach ($validates as  $validity => $monthsCount) {
             foreach ($tariffs as $name => $tariff) {
                 $tariffModel = new Tariff();
                 $tariffModel->validity = $validity;
@@ -35,13 +39,13 @@ class TariffSeeder extends Seeder
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
-                    if ($validity > 1) {
-                        $salePrice = ($price * $validity) * $tariff['sale_percent'] / 100;
+                    if ($monthsCount > 1) {
+                        $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
                     }
 
                     $tariffModel->prices()->create([
                         'currency' => $currency,
-                        'value' => ($price * $validity) - $salePrice,
+                        'value' => ($price * $monthsCount) - $salePrice,
                     ]);
                 }
             }
