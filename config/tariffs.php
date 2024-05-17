@@ -2,13 +2,13 @@
 
 return [
     'free' => [
-        'sale_percent' => 0,
         'id' => 1,
         'users_limit' => 5,
         'prices' => [
             'kzt' => 0,
             'rub' => 0,
         ],
+        'sale_percent' => 0,
     ],
     'base' => [
         'sale_percent' => 20,

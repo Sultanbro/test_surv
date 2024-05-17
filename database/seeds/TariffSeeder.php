@@ -29,8 +29,8 @@ class TariffSeeder extends Seeder
             'yearly' => 12,
         ];
 
-        foreach ($validates as $validity => $monthsCount) {
-            foreach ($tariffs as $name => $tariff) {
+        foreach ($tariffs as $name => $tariff) {
+            foreach ($validates as $validity => $monthsCount) {
                 $tariffModel = new Tariff();
                 $tariffModel->kind = $name;
                 $tariffModel->validity = $validity;
