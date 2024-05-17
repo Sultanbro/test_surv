@@ -608,9 +608,9 @@ class AnalyticStat extends Model
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
 //        dd_if(
 //            auth()->id() == 5
-//            && $statistic->row_id == 15348
-//            && $statistic->column_id == 25989,
-//            $val
+//            && $statistic->row_id == 13194
+//            && $statistic->column_id == 23331,
+//            $matches[0], $stats->count()
 //        );
         foreach ($matches[0] as $match) {
             $match = str_replace(["[", "]"], "", $match);
@@ -626,14 +626,14 @@ class AnalyticStat extends Model
                 ->first();
 
 //            dd_if(
-//                auth()->id() == 5 && $column_id == 25955 && $row_id == 15330,
+//                $statistic->row_id == 13194 && $statistic->column_id == 23331 && $key == 1,
 //                $statistic, $cell, $match
 //            );
             if ($cell) {
                 if ($cell->type == 'formula') {
                     $sameStat = $cell->row_id == $statistic->row_id && $cell->column_id == $statistic->column_id;
                     if ($sameStat) continue;
-                    $value = self::calcFormula($cell, $date, 10, $only_days, $stats);
+                    $value = self::calcFormula($cell, $date, $round, $only_days, $stats);
 
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else if ($cell->type == 'sum') {
@@ -644,7 +644,11 @@ class AnalyticStat extends Model
                         group_id: $cell->group_id,
                         stats: $stats
                     );
-                    //dump('sum ' .$value);
+//                    dump('sum ' .$value);
+//                    dd_if(
+//                        $statistic->row_id == 13194 && $statistic->column_id == 23331 && $key == 1,
+//                        $cell, $value, $date, $stats->where('row_id', 13193)->toArray(),
+//                    );
                     $text = str_replace("[" . $match . "]", (float)$value, $text);
                 } else {
                     // dump('value ' . $cell->show_value);
@@ -653,7 +657,10 @@ class AnalyticStat extends Model
             }
         }
 
-
+//        dd_if(
+//            $statistic->row_id == 13194 && $statistic->column_id == 23331,
+//            $text
+//        );
         try {
             $text = str_replace(",", ".", $text);
             $text = str_replace("=", "", $text);

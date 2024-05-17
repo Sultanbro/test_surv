@@ -314,12 +314,32 @@
 										</div>
 									</div>
 
+									<!--									<input-->
+									<!--										v-model="item[field.key].value"-->
+									<!--										type="text"-->
+									<!--										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"-->
+									<!--										class="in-cell name-input"-->
+									<!--										@change="change_stat(i_index, field.key)"-->
+									<!--									>-->
 									<input
+										v-if="focused_item === i_index && focused_field === f_index && item[field.key].type === 'formula'"
 										v-model="item[field.key].value"
 										type="text"
-										:placeholder="['name'].includes(field.key) ? 'Введите название показателя' : ''"
-										class="in-cell name-input"
+										class="in-cell"
 										@change="change_stat(i_index, field.key)"
+									>
+
+									<input
+										v-else-if="i_index !== 0 && item[field.key].type === 'formula'"
+										type="text"
+										class="in-cell"
+										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + (item[field.key].sign || '') : '')"
+									>
+									<input
+										v-else
+										type="text"
+										class="in-cell"
+										:value="item[field.key].value"
 									>
 
 									<div
