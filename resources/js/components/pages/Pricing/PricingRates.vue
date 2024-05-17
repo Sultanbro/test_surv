@@ -486,10 +486,10 @@ export default {
 		background-color: #FF5E5C;
 		color: white;
 		padding: 4px !important;
-		font-size: 12px !important;
+		font-size: 10px !important;
 		font-weight: 400;
 		border-radius: 8px;
-		width: 55px !important;
+		width: 49px !important;
 	}
 	.PricingRates {
 		max-width: 1195px;
@@ -1045,7 +1045,7 @@ export default {
 		font-size: 10px;
 		font-weight: 400;
 		border-radius: 8px;
-		width: 47px;
+		width: 49px;
 		display: flex;
 	}
 
