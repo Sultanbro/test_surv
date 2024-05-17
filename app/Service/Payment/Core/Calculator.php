@@ -22,10 +22,7 @@ class Calculator
         $tariff = Tariff::find($newInvoiceDTO->tariffId);
         $tariffPrice = $tariff->getPrice($newInvoiceDTO->currency)->value;
         $extraUsersPrice = $this->priceForOnePersonWithCurrencies[$newInvoiceDTO->currency] * $newInvoiceDTO->extraUsersLimit;
-        dd(
-            $tariffPrice,
-            $extraUsersPrice
-        );
+
         return (float)$tariffPrice + (float)$extraUsersPrice;
     }
 }
