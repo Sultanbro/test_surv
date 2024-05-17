@@ -2,8 +2,9 @@
 
 namespace App\Models\Tariff;
 
-use App\DTO\Payment\CreateInvoiceDTO;
+use App\DTO\Payment\NewInvoiceDTO;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Facade\Payment\Gateway;
 use App\Models\Tenant;
 use DB;
 use Exception;
@@ -16,7 +17,6 @@ use Carbon\Carbon;
  * @property int $id
  * @property string $tenant_id
  * @property int $tariff_id
-
  * @property int $extra_user_limit
  * @property string $expire_date
  * @property bool $auto_payment
@@ -208,7 +208,7 @@ class TariffSubscription extends Model
     /**
      * @throws Exception
      */
-    public static function subscribe(CreateInvoiceDTO $dto, PaymentToken $token): static
+    public static function subscribe(NewInvoiceDTO $dto, PaymentToken $token): static
     {
         $tariff = Tariff::find($dto->tariffId);
 
@@ -220,5 +220,10 @@ class TariffSubscription extends Model
             $token->token,
             $dto->provider
         );
+    }
+
+    public function getCurrency(): string
+    {
+        return Gateway::provider($this->payment_provider)->currency();
     }
 }

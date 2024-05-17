@@ -7,7 +7,6 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Customer\CustomerDto;
 use App\Service\Payment\Core\Invoice;
 use App\Service\Payment\Core\HasIdempotenceKey;
-use App\Service\Payment\Core\HasPriceConverter;
 use App\Service\Payment\Core\Hmac;
 use App\Service\Payment\Core\PaymentConnector;
 use Exception;
@@ -18,7 +17,6 @@ use Illuminate\Support\Facades\Http;
 class ProdamusConnector implements PaymentConnector
 {
     use HasIdempotenceKey;
-    use HasPriceConverter;
 
     public function __construct(
         private readonly string $shopUrl,
@@ -34,11 +32,10 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
+    public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
     {
-        $price = $this->getPrice($data);
         $paymentId = $this->generateIdempotenceKey();
-        $data = [
+        $params = [
             'do' => 'link',
             'type' => 'json',
             'demo_mode' => 0,
@@ -46,21 +43,21 @@ class ProdamusConnector implements PaymentConnector
             'installments_disabled' => 1,
             'order_id' => $paymentId,
             'customer_phone' => $customer->phone,
-            'currency' => $data->currency,
+            'currency' => $invoice->currency,
             'products' => [
                 [
                     'sku' => $paymentId,
-                    'name' => 'Оплата тарифа',
-                    'price' => (string)$price->getTotal(),
-                    'quantity' => '1'
+                    'name' => $invoice->description,
+                    'price' => $invoice->price,
+                    'quantity' => (string)$invoice->quantity
                 ]
             ]
         ];
 
-        $signature = new Hmac($data, $this->shopKey);
-        $data['signature'] = $signature->create();
+        $signature = new Hmac($params, $this->shopKey);
+        $params['signature'] = $signature->create();
 
-        $response = $this->submit($data);
+        $response = $this->submit($params);
 
         // Check the status of the payment
         if (!$response->successful()) {
@@ -68,6 +65,7 @@ class ProdamusConnector implements PaymentConnector
         }
 
         $resp = json_decode($response->body(), true);
+
         return new Invoice(
             url: $resp['payment_link'],
             paymentId: $paymentId,

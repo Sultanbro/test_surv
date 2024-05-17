@@ -7,14 +7,16 @@ use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
-use App\Models\Tariff\TariffSubscription;
 use App\Service\Admin\Owners\OwnerInfoService;
+use App\Service\Payment\Core\CanCalculateTariffPrice;
 use App\Service\Payment\Core\TariffListService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionController extends Controller
 {
+    use CanCalculateTariffPrice;
+
     /**
      * @param TariffListService $tariffGetAllService
      */
@@ -43,18 +45,15 @@ class SubscriptionController extends Controller
     {
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->customer();
-        $existingSubscription = TariffSubscription::getValidTariffPayment($data->tenantId);
-        $gateway = Gateway::provider($existingSubscription->payment_provider);
+        $gateway = Gateway::provider($data->provider);
 
-        $invoice = new CreateInvoiceDTO(
-            $gateway->currency(),
-            $existingSubscription->tariff_id,
-            $data->tenantId,
-            $data->extraUsersLimit,
-            $gateway->name()
+        $dto = new CreateInvoiceDTO(
+            $data->currency,
+            $this->getPrice($data),
+            'Рашерение тарифа'
         );
 
-        $invoice = Gateway::provider($existingSubscription->payment_provider)->invoice($invoice, $customer);
+        $invoice = $gateway->invoice($dto, $customer);
 
         return $this->response(
             message: 'success',

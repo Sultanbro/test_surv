@@ -3,22 +3,25 @@
 namespace App\Service\Subscription\Pipeline;
 
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\DTO\Payment\NewInvoiceDTO;
 use App\Facade\Payment\Gateway;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Payment\Core\Customer\CustomerDto;
+use App\Service\Payment\Core\CanCalculateTariffPrice;
 use App\Service\Payment\Core\Invoice;
 use App\Service\Subscription\SubscribeService;
 use Exception;
 
 class SubscriptionPipeline
 {
+    use CanCalculateTariffPrice;
     private CustomerDto $customer;
     private TariffSubscription $subscription;
     private Invoice $invoice;
 
-    public function __construct(private readonly CreateInvoiceDTO $data)
+    public function __construct(private readonly NewInvoiceDTO $data)
     {
     }
 
@@ -48,7 +51,12 @@ class SubscriptionPipeline
      */
     private function createPaymentInvoice(): void
     {
-        $this->invoice = Gateway::provider($this->data->provider)->invoice($this->data, $this->customer);
+        $invoice = new CreateInvoiceDTO(
+            $this->data->currency,
+            $this->getPrice($this->data)
+        );
+
+        $this->invoice = Gateway::provider($this->data->provider)->invoice($invoice, $this->customer);
     }
 
     /**

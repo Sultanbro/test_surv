@@ -7,32 +7,18 @@ final class CreateInvoiceDTO
 {
     /**
      * @param string $currency
-     * @param int $tariffId
-     * @param string $tenantId
-     * @param int $extraUsersLimit
-     * @param string $provider
+     * @param float $price
+     * @param string $description
+     * @param int $quantity
      * @param string|null $expiate_at
      */
     public function __construct(
         public string      $currency,
-        public int         $tariffId,
-        public string      $tenantId,
-        public int         $extraUsersLimit = 0,
-        public string      $provider = 'prodamus',
+        public float       $price,
+        public string      $description = 'Оплата тарифа',
+        public int         $quantity = 1,
         public string|null $expiate_at = null,
     )
     {
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'currency' => $this->currency,
-            'tariff_id' => $this->tariffId,
-            'tenant_id' => $this->tenantId,
-            'extra_users_limit' => $this->extraUsersLimit,
-            'provider' => $this->provider,
-            'expiate_at' => $this->expiate_at,
-        ];
     }
 }

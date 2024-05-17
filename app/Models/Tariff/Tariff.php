@@ -76,4 +76,15 @@ class Tariff extends Model
             'id'
         );
     }
+
+    public function getPriceV2(int $extraUsersLimit, string $currency)
+    {
+
+    }
+
+    public function getPrice(string $currency): TariffPrice
+    {
+        /** @var TariffPrice */
+        return $this->prices()->where('currency', $currency)->first();
+    }
 }

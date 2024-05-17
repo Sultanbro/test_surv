@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Subscription;
 
-use App\DTO\Payment\CreateInvoiceDTO;
+use App\DTO\Payment\NewInvoiceDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Facade\Payment\Gateway;
@@ -24,7 +24,7 @@ class TrialSubscriptionController extends Controller
         $tariff = Tariff::pro();
         /** @var User $user */
         $user = $request->user();
-        $invoice = new CreateInvoiceDTO(
+        $invoice = new NewInvoiceDTO(
             $user->currency,
             $tariff->id,
             $tenant,

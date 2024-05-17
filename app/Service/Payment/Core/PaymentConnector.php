@@ -8,7 +8,7 @@ use App\Service\Payment\Core\Customer\CustomerDto;
 
 interface PaymentConnector
 {
-    public function createNewInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice;
+    public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice;
 
     public function getShopKey(): string;
 }

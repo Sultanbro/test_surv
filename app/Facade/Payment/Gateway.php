@@ -2,7 +2,7 @@
 
 namespace App\Facade\Payment;
 
-use App\DTO\Payment\CreateInvoiceDTO;
+use App\DTO\Payment\NewInvoiceDTO;
 use App\Service\Payment\Core\BasePaymentGateway;
 use App\Service\Payment\Core\Invoice;
 use App\Service\Payment\Core\PaymentGatewayRegistry;
@@ -34,7 +34,7 @@ class Gateway extends Facade
         $mock = Mockery::mock(BasePaymentGateway::class);
         $mock->shouldReceive("invoice")
             ->with([
-                new CreateInvoiceDTO(
+                new NewInvoiceDTO(
                     'test',
                     1,
                     1,

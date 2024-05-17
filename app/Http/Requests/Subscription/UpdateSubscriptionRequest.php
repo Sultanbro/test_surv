@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Subscription;
 
-use App\DTO\Payment\CreateInvoiceDTO;
-use App\DTO\Payment\UpdateInvoiceDTO;
-use App\Enums\Payments\CurrencyEnum;
-use App\Rules\TariffExist;
+use App\DTO\Payment\NewInvoiceDTO;
+use App\Models\Tariff\TariffSubscription;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -21,18 +19,21 @@ class UpdateSubscriptionRequest extends FormRequest
     }
 
     /**
-     * @return UpdateInvoiceDTO
+     * @return NewInvoiceDTO
      */
-    public function toDto(): UpdateInvoiceDTO
+    public function toDto(): NewInvoiceDTO
     {
         $validated = $this->validated();
-
         $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
+        $existingSubscription = TariffSubscription::getValidTariffPayment($tenant);
 
-        return new UpdateInvoiceDTO(
+        return new NewInvoiceDTO(
+            $existingSubscription->getCurrency(),
+            $existingSubscription->tariff_id,
             $tenant,
             $extraUsersLimit,
+            $existingSubscription->payment_provider,
         );
     }
 }
