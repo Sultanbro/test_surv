@@ -18,9 +18,9 @@ class TariffSeeder extends Seeder
     public function run(): void
     {
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::connection('mysql')->table('tariff_prices')->delete();
-        DB::connection('mysql')->table('tariff_subscriptions')->delete();
-        DB::connection('mysql')->table('tariff')->delete();
+        DB::connection('mysql')->table('tariff_prices')->truncate();
+        DB::connection('mysql')->table('tariff_subscriptions')->truncate();
+        DB::connection('mysql')->table('tariff')->truncate();
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
         $validates = [
