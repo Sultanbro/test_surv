@@ -11,14 +11,22 @@
 export default {
 	name: 'AuthSubTitle',
 	props: {},
-}
+};
 </script>
 
 <style lang="scss">
-.AuthSubTitle{
+.AuthSubTitle {
 	margin: 0 0 12px;
 	font-size: 16px;
 	font-weight: 400;
 	line-height: 24px;
+
+	a {
+		text-decoration: none;
+		color: #0c50ff;
+		&:hover {
+			color: #4a7cfd;
+		}
+	}
 }
 </style>

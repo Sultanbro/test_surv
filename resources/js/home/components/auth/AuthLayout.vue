@@ -70,7 +70,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .AuthLayout {
 	display: flex;
 	flex-flow: row nowrap;
@@ -107,13 +107,13 @@ export default {
 		}
 		.AuthLayout {
 			&-body {
-				a {
-					text-decoration: none;
-					color: #0c50ff;
-					&:hover {
-						color: #4a7cfd;
-					}
-				}
+				// a {
+				// 	text-decoration: none;
+				// 	color: #0c50ff;
+				// 	&:hover {
+				// 		color: #4a7cfd;
+				// 	}
+				// }
 			}
 		}
 

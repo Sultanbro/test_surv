@@ -12,16 +12,22 @@
 					>
 				</div>
 				<div class="price-space-info">
-					<div class="price-space-title-block">
-						1suol9rbcn
+					<div
+						v-if="current"
+						class="price-space-title-block"
+					>
+						{{ current.tenant_id }}
 					</div>
 					<div class="price-space-text-content">
 						<p class="price-space-text-name">
 							Тариф:
 						</p>
 						<p class="price-space-name-data">
-							<template v-if="current">
-								{{ names[current.tariff.kind] }}
+							<template v-if="info.tariff">
+								{{ names[info.tariff.kind] }}
+							</template>
+							<template v-else-if="info">
+								Бесплатный
 							</template>
 							<b-skeleton v-else />
 						</p>
@@ -31,10 +37,10 @@
 							Пользователей:
 						</p>
 						<p
-							v-if="current"
+							v-if="info"
 							class="price-space-name-data"
 						>
-							4 из {{ totalUsers }}
+							{{ totalUsers }} из {{ info.tariff? info.tariff.total_user_limit : '5' }}
 						</p>
 						<b-skeleton v-else />
 					</div>
@@ -55,16 +61,31 @@
 				</div>
 				<div class="price-space-info">
 					<div class="price-space-info">
-						{{ title }}
+						<p v-if="owner">
+							{{ title }}
+						</p>
+						<b-skeleton v-else />
 					</div>
+
+
+
 					<div class="price-space-title-block">
-						{{ manager ? manager.name : '' }} {{ manager ? manager.lastName : '' }}
+						<p v-if="info">
+							{{ info ? info.owner.full_name : '' }}
+						</p>
+						<b-skeleton v-else />
 					</div>
 					<div class="price-space-description">
-						{{ text }}
+						<p v-if="owner">
+							{{ text }}
+						</p>
+						<b-skeleton v-else />
 					</div>
 					<div class="price-space-contact">
-						<p>+7 778 548-67-59</p>
+						<p v-if="owner">
+							{{ managerPlainPhone }}
+						</p>
+						<b-skeleton v-else />
 						<a
 							class="price-space-button"
 							:href="'https://wa.me/' + managerPlainPhone"
@@ -96,11 +117,15 @@ export default {
 	data() {
 		return {
 			names: {
-				free: 'Бесплатный',
+				null: 'Бесплатный',
 				base: 'База',
 				standard: 'Стандарт',
 				pro: 'PRO',
 			},
+			info: [],
+			owner:[],
+			tariff:[],
+			current: []
 		};
 	},
 	computed: {
@@ -108,39 +133,81 @@ export default {
 		...mapState(usePricingStore, ['manager']),
 
 		managerPlainPhone(){
-			if(!this.manager) return ''
-			return this.manager.phone.replace(/[^\d+]/g, '')
+			if(!this.info) return ''
+			else if (this.owner && this.info.owner.phone.startsWith('8')) {
+				return  this.info.owner.phone.replace(/^8/, '+7');
+			}
+			else if (this.info && !this.info.owner.phone.includes('+')) {
+				return	this.updatePhoneIfNeeded()
+			}
+			return this.info.owner.phone
+		},
+		ownerInfo() {
+			return newValue => [...this.owner, newValue.owner];
+		},
+		tariffInfo() {
+			return newValue => [...this.tariff, newValue.tariff];
 		},
 		title(){
-			if(!this.manager) return ''
-			return this.manager.title || 'Ваш персональный менеджер'
+			if(!this.ownerInfo) return ''
+			return 'Ваш персональный менеджер'
 		},
 		text(){
-			if(!this.manager) return ''
-			return this.manager.text || 'Я здесь и помогу по любому вопросу 😊'
+			if(!this.ownerInfo) return ''
+			return 'Я здесь и помогу по любому вопросу 😊'
 		},
 		totalUsers() {
-			if (!this.current) return 0;
-			return (
-				(this.current.extra_user_limit || 0) +
-				(this.current.tariff.users_limit || 0)
-			);
+			if (!this.info) return 0;
+			return this.info.users_count
 		},
+	},
+	watch:{
+		info(newValue){
+			this.tariffUpdate(newValue.tariff)
+			this.ownerUpdate(newValue.owner)
+		}
 	},
 	created() {
 		this.fetchManager();
+		this.infoFetch();
+		this.currentFetch()
 	},
+	mounted(){
 
+	},
 	methods: {
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(usePricingStore, ['fetchManager']),
+		ownerUpdate(newValue) {
+			this.owner = [...this.owner, newValue.owner];
+		},
 
+		tariffUpdate(newValue) {
+			this.tariff = [...this.tariff, newValue.tariff];
+		},
+		updatePhoneIfNeeded() {
+			if (!this.info.owner.phone.includes('+')) {
+				this.info.owner.phone = '+' + this.info.owner.phone;
+			}
+		},
 		fff() {},
+		infoFetch(){
+			this.axios('tariffs/subscriptions').then((response) => {
+				this.info = response.data.data
+				this.managerPlainPhone()
+			})
+		},
+		currentFetch(){
+			this.axios.get('/portal/current').then(res => {
+				this.current = res.data.data
+			})
+		},
 
 
 		editRate() {
-			this.connectedTariff('PRO')
+			if (this.info) this.connectedTariff(this.info.tariff.kind)
+			else this.connectedTariff('Бесплатный')
 			this.setCurrentModal('editRate')
 		}
 	},

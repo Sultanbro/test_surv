@@ -61,6 +61,58 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media (min-width: 1600px) {
+  .default-content{
+	width: 1195px !important;
+
+	&-price-content{
+		max-width: 610px !important;
+		width: 100% !important;
+		padding: 40px !important;
+	}
+
+	&-title{
+		font-size: 28px  !important;
+	}
+	&-description{
+		font-size: 18px  !important;
+	}
+
+	&-fire{
+		width: 200px !important;
+		height: 200px !important;
+		top: 30% !important;
+		left: 60% !important;
+	}
+
+	&-clock{
+		width: 312px !important;
+		height: 254px !important;
+		left: 75% !important;
+		bottom: 0% !important;
+	}
+	&-eclipse{
+	box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8) !important;
+	width: 441px !important;
+	height: 221px !important;
+	border-radius: 50% !important;
+	top: 60% !important;
+	left: 90% !important;
+	}
+	}
+	.price-trial-button:focus{
+	outline: none;
+	}
+  .price-trial-button{
+	padding: 16px 32px !important;
+	font-size: 16px !important;
+
+  }
+  .price-trial-content{
+	gap: 12px !important;
+  }
+}
+
 .price-trial{
 	background-color: #EDEDED;
 	border-radius: 24px;
@@ -111,7 +163,7 @@ export default {
 
 }
 .default-content {
-  width: 1000px;
+  width: 900px;
   &-price-content{
 	max-width: 610px;
 	width: 100%;
@@ -119,86 +171,43 @@ export default {
   }
 
   &-title{
-	font-size: 28px ;
+	font-size: 20px ;
   }
   &-description{
-	font-size: 18px ;
+	font-size: 16px ;
   }
 
   &-fire{
-	width: 188px;
-	height: 188px;
-	top: 30%;
-	left: 60%;
+	width: 108px;
+	height: 108px;
+	top: 54%;
+	left: 67%;
   }
 
   &-clock{
-	width: 262px;
-	height: 204px;
+	width: 212px;
+	height: 154px;
 	left: 75%;
 	bottom: 0%;
   }
   &-eclipse{
-	box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8);
-	width: 241px;
+	box-shadow: 0 0 180px 20px rgba(237, 161, 12, 0.8);
+	width: 251px;
 	height: 121px;
 	border-radius: 50%;
 	top: 60%;
-	left: 95%;
+	left: 90%;
   }
 }
 
 
-@media (min-width: 1600px) {
-	.default-content{
-	width: 1195px;
 
-	&-price-content{
-		max-width: 610px;
-		width: 100%;
-		padding: 40px;
-	}
-
-	&-title{
-		font-size: 28px ;
-	}
-	&-description{
-		font-size: 18px ;
-	}
-
-	&-fire{
-		width: 238px;
-		height: 238px;
-		top: 10%;
-		left: 60%;
-	}
-
-	&-clock{
-		width: 312px;
-		height: 254px;
-		left: 75%;
-		bottom: 0%;
-	}
-	&-eclipse{
-		box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8);
-		width: 241px;
-		height: 121px;
-		border-radius: 50%;
-		top: 60%;
-		left: 95%;
-	}
-	}
-  .price-trial-button:focus{
-	outline: none;
-  }
-
-}
 .price-trial-content{
 
 	color: black;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 6px;
 
 }
 .price-trial-title{
@@ -219,8 +228,8 @@ export default {
 .price-trial-button{
 	background: linear-gradient(92deg, #15368C 0%, #215DF8 100%);
 	border-radius: 8px;
-	padding: 16px 32px;
-	font-size: 16px;
+	padding: 13px 28px;
+	font-size: 14px;
 	color: white;
 
 }

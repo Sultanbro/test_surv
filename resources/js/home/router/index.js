@@ -1,12 +1,13 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView'
-import ContactsView from '../views/ContactsView'
-import PaymentsView from '../views/PaymentsView'
-import ContractOffer from '../views/ContractOffer'
-import SiteUseAgreement from '../views/SiteUseAgreement'
-import PersonalData from '../views/PersonalData'
-import PrivacyPolicy from '../views/PrivacyPolicy'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import HomeView from '../views/HomeView';
+import ContactsView from '../views/ContactsView';
+import PaymentsView from '../views/PaymentsView';
+import ContractOffer from '../views/ContractOffer';
+import SiteUseAgreement from '../views/SiteUseAgreement';
+import PersonalData from '../views/PersonalData';
+import PrivacyPolicy from '../views/PrivacyPolicy';
+import WorkshopPage from '../../pages/workshop/WorkshopPage.vue';
 
 const router = new VueRouter({
 	mode: 'history',
@@ -70,7 +71,8 @@ const router = new VueRouter({
 		{
 			path: '/login',
 			name: 'LoginView',
-			component: () => import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
+			component: () =>
+				import(/* webpackChunkName: "AuthView" */ '../views/LoginView'),
 			meta: {
 				title: 'Jobtron',
 			},
@@ -78,21 +80,30 @@ const router = new VueRouter({
 		{
 			path: '/register',
 			name: 'RegisterView',
-			component: () => import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
+			component: () =>
+				import(/* webpackChunkName: "AuthView" */ '../views/RegisterView'),
 			meta: {
 				title: 'Jobtron',
 			},
 		},
-	]
+		{
+			path: '/payworkshopknowledgebase',
+			name: 'Workshop',
+			component: WorkshopPage,
+			meta: {
+				title: 'Страница оплаты',
+			},
+		},
+	],
 });
 
 const DEFAULT_TITLE = 'Jobtron';
-router.afterEach(to => {
+router.afterEach((to) => {
 	// Use next tick to handle router history correctly
 	// see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
 	Vue.nextTick(() => {
-		document.title = to.meta.title || DEFAULT_TITLE
-	})
+		document.title = to.meta.title || DEFAULT_TITLE;
+	});
 });
 
-export default router
+export default router;

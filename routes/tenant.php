@@ -14,6 +14,7 @@ use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Deal as Deal;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Learning as Learning;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
@@ -21,14 +22,12 @@ use App\Http\Controllers\TaxGroupController;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
-use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Features\UserImpersonation;
 
 Route::middleware(['web', 'tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
-    Route::any('/payworkshopknowledgebase', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [PageController::class, 'home'])->name('login2');
     Route::post('login', [Auth\LoginController::class, 'login'])->name('login');
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
@@ -38,6 +37,10 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
     Route::get('/tariffs/get', [Root\Tariff\TariffController::class, 'get']);
+    Route::get('/tariffs/subscriptions', [Root\Subscription\SubscriptionController::class, 'get']);
+    Route::get('/tariffs/subscriptions/info', [Root\Tariff\TariffInformationController::class, 'tenantPaymentInfo']);
+    Route::post('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
+    Route::get('/tariffs/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
 });
 
 // Portal Api
@@ -734,11 +737,11 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
-        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
+        Route::post('/', [Root\Subscription\PaymentController::class, 'invoice']);
+        Route::post('/status', [Root\Subscription\PaymentController::class, 'updateToTariffPayments']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Subscription\PaymentController::class, 'callback']);
     });
 
     Route::group([

@@ -3,9 +3,9 @@
 namespace App\Facade\Payment;
 
 use App\DTO\Payment\CreateInvoiceDTO;
-use App\Service\Payments\Core\BasePaymentGateway;
-use App\Service\Payments\Core\Invoice;
-use App\Service\Payments\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Core\BasePaymentGateway;
+use App\Service\Payment\Core\Invoice;
+use App\Service\Payment\Core\PaymentGatewayRegistry;
 use Closure;
 use Illuminate\Support\Facades\Facade;
 use Mockery;
@@ -38,7 +38,7 @@ class Gateway extends Facade
                     'test',
                     1,
                     1,
-                    1
+                    1,
                 ),
                 4
             ])
