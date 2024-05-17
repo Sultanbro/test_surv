@@ -20,6 +20,7 @@ class SubscriptionPipeline
     private CustomerDto $customer;
     private TariffSubscription $subscription;
     private Invoice $invoice;
+    private ?CentralUser $user;
 
     public function __construct(private readonly NewSubscriptionDTO $data)
     {
@@ -43,6 +44,7 @@ class SubscriptionPipeline
 
     private function setCustomer(): void
     {
+        $this->user = CentralUser::fromAuthUser();
         $this->customer = CentralUser::fromAuthUser()->customer();
     }
 
@@ -70,7 +72,7 @@ class SubscriptionPipeline
 
     private function createLeadInCrm(): void
     {
-        ProcessCreatePaymentInvoiceLead::dispatch($this->customer, $this->subscription)
+        ProcessCreatePaymentInvoiceLead::dispatch($this->user, $this->subscription)
             ->onConnection('sync');
     }
 }

@@ -24,16 +24,17 @@ class UpdateSubscriptionRequest extends FormRequest
     public function toDto(): NewSubscriptionDTO
     {
         $validated = $this->validated();
+        /** @var TariffSubscription $subscription */
+        $subscription = $this->subscription;
         $extraUsersLimit = (int)Arr::get($validated, 'extra_users_limit');
         $tenant = Arr::get($validated, 'tenant_id', tenant('id'));
-        $existingSubscription = TariffSubscription::getValidTariffPayment($tenant);
 
         return new NewSubscriptionDTO(
-            $existingSubscription->getCurrency(),
-            $existingSubscription->tariff_id,
+            $subscription->getCurrency(),
+            $subscription->tariff_id,
             $tenant,
             $extraUsersLimit,
-            $existingSubscription->payment_provider,
+            $subscription->payment_provider,
         );
     }
 }

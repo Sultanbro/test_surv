@@ -7,6 +7,7 @@ use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
+use App\Models\Tariff\TariffSubscription;
 use App\Service\Payment\Core\CanCalculateTariffPrice;
 use App\Service\Payment\Core\TariffListService;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,7 @@ class UpdateSubscriptionController extends Controller
     {
     }
 
-    public function __invoke(UpdateSubscriptionRequest $request): JsonResponse
+    public function __invoke(UpdateSubscriptionRequest $request, TariffSubscription $subscription): JsonResponse
     {
         $data = $request->toDto();
         $customer = CentralUser::fromAuthUser()->customer();
