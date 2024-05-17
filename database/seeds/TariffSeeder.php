@@ -24,7 +24,7 @@ class TariffSeeder extends Seeder
         $tariffs = config('tariffs');
         $validates = [
             'monthly' => 1,
-            '3_monthly' => 3,
+            'threeMonthly' => 3,
             'yearly' => 12,
         ];
 
