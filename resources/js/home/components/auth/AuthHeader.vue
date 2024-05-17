@@ -67,8 +67,8 @@ export default {
 	},
 	methods: {
 		openWindowChat() {
-			this.$emit('open-chat')
-		}
+			this.$emit('open-chat');
+		},
 	},
 };
 </script>
@@ -96,6 +96,18 @@ button {
 @container auth-info (max-width: 991.98px) {
 	.AuthHeader {
 		margin-bottom: 10px;
+	}
+}
+
+@media (max-width: 1200px) {
+	.AuthHeader {
+		&-left,
+		&-right {
+			.main__link {
+        font-size: 12px;
+        padding: 0px 5px;
+      }
+		}
 	}
 }
 

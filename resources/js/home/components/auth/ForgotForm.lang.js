@@ -23,6 +23,7 @@ export const kz = {
 	title: 'Құпия сөзді қалпына келтіру',
 	subtitle: 'Тіркеу кезінде көрсеткен электрондық поштаны енгізіңіз',
 	submit: 'Жалғастыру',
+	goToMail: 'Поштаға өтіңіз'
 }
 
 export const en = {
@@ -36,4 +37,5 @@ export const en = {
 	title: 'Password recovery',
 	subtitle: 'Enter the email you provided during registration',
 	submit: 'Continue',
+	goToMail: 'Go to the mail'
 }

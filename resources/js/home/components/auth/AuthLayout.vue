@@ -91,7 +91,7 @@ export default {
 
 	&-form {
 		container: auth-info / inline-size;
-		width: 545px;
+		width: 522px;
 		max-width: 100%;
 		padding: 72px;
 
@@ -128,8 +128,8 @@ export default {
 		background-color: #e8eefd;
 		container: auth-info / inline-size;
 		flex: 1;
-		padding: 32px;
-		padding-left: 80px;
+		padding: 19px;
+		padding-left: 40px;
 		position: relative;
 		z-index: 1;
 

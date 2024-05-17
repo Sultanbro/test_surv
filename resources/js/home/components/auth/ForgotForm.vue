@@ -15,11 +15,6 @@
 			<AuthGoToMailVue :email="email">
 				{{ lang.goToMail }}
 			</AuthGoToMailVue>
-			<!-- <AuthSubTitle v-if="resendTimer">
-				{{ lang.sendedtimer }}
-				{{ resendTimer }}
-				{{ lang.sendedsec }}
-			</AuthSubTitle> -->
 		</template>
 		<template v-else>
 			<AuthSubTitle>

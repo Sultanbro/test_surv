@@ -51,11 +51,12 @@
 				:error="errors.password"
 			>
 				<template #inner-after>
-					<img
-						:src="showPassword ? '/svg/EyeSlash2.svg' : '/svg/EyeSlash.svg'"
+					<div
 						class="LoginForm-showPassword"
-						@click.stop="showPassword = !showPassword"
+						@click="showPassword = !showPassword"
 					>
+						<OpenEyeSlash />
+					</div>
 				</template>
 			</AuthInput>
 		</div>
@@ -85,6 +86,7 @@ import AuthInput from './AuthInput.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
 import AuthSubmit from './AuthSubmit.vue';
+import OpenEyeSlash from '../../assets/img/auth/OpenEyeSlash.vue'
 
 import * as LANG from './LoginForm.lang.js'
 
@@ -97,6 +99,7 @@ export default {
 		AuthSubTitle,
 		AuthSubmit,
 		AuthPhone,
+		OpenEyeSlash
 	},
 	props: {
 		action: {
