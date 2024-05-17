@@ -2,8 +2,8 @@
 	<label
 		class="AuthSelect"
 		:class="{
-			'AuthSelect_error': error,
-			'AuthSelect_selected': selected,
+			AuthSelect_error: error,
+			AuthSelect_selected: selected,
 		}"
 	>
 		<span class="AuthSelect-label">
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+
 export default {
 	name: 'AuthSelect',
 	components: {},
@@ -82,25 +83,25 @@ export default {
 			default: '',
 		},
 	},
-	data(){
-		return {}
+	data() {
+		return {};
 	},
 	computed: {
-		selected(){
-			return this.options.find(opt => opt.value === this.value)
-		}
+		selected() {
+			return this.options.find((opt) => opt.value === this.value);
+		},
 	},
 	watch: {},
-	created(){},
-	mounted(){},
-	beforeDestroy(){},
+	created() {},
+	mounted() {},
+	beforeDestroy() {},
 	methods: {},
-}
+};
 </script>
 
 <style lang="scss">
-.AuthSelect{
-	&-label{
+.AuthSelect {
+	&-label {
 		display: block;
 		margin-bottom: 4px;
 
@@ -108,9 +109,9 @@ export default {
 		font-weight: 500;
 		line-height: 20px;
 		text-align: left;
-		color: #737B8A;
+		color: #737b8a;
 	}
-	&-wrapper{
+	&-wrapper {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
@@ -119,18 +120,18 @@ export default {
 		width: 100%;
 		height: 48px;
 		padding: 10px 16px 10px 16px;
-		border: 1px solid #CDD1DB;
+		border: 1px solid #cdd1db;
 		background-color: #fff;
 
 		position: relative;
 
 		border-radius: 8px;
 	}
-	&-inputWrapper{
+	&-inputWrapper {
 		flex: 1;
 		display: block;
 	}
-	&-selected{
+	&-selected {
 		display: block;
 		width: 100%;
 		padding: 0;
@@ -142,11 +143,11 @@ export default {
 		line-height: 20px;
 		text-align: left;
 
-		&:focus{
+		&:focus {
 			outline: none;
 		}
 	}
-	&-input{
+	&-input {
 		width: 100%;
 		opacity: 0;
 		position: absolute;
@@ -157,49 +158,49 @@ export default {
 		bottom: 0;
 	}
 	&-text,
-	&-error{
-		color: #737B8A;
+	&-error {
+		color: #737b8a;
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 16px;
 		text-align: left;
 	}
-	&-error{
-		color: #E13C3C;
+	&-error {
+		color: #e13c3c;
 	}
 
-	&:hover{
-		.AuthSelect{
-			&-wrapper{
-				border-color: #60A5FA;
+	&:hover {
+		.AuthSelect {
+			&-wrapper {
+				border-color: #60a5fa;
 			}
 		}
 	}
-	&:has(:focus){
-		.AuthSelect{
-			&-wrapper{
-				border-color: #0C50FF;
+	&:has(:focus) {
+		.AuthSelect {
+			&-wrapper {
+				border-color: #0c50ff;
 			}
 		}
 	}
-	&_selected{
-		.AuthSelect{
-			&-wrapper{
-				border-color: #AFB5C0;
+	&_selected {
+		.AuthSelect {
+			&-wrapper {
+				border-color: #afb5c0;
 			}
 		}
 	}
-	&_error{
-		.AuthSelect{
-			&-wrapper{
-				border-color: #E13C3C;
+	&_error {
+		.AuthSelect {
+			&-wrapper {
+				border-color: #e13c3c;
 			}
 		}
 	}
-	&_success{
-		.AuthSelect{
-			&-wrapper{
-				border-color: #4FC168;
+	&_success {
+		.AuthSelect {
+			&-wrapper {
+				border-color: #4fc168;
 			}
 		}
 	}

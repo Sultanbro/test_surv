@@ -156,9 +156,8 @@ export default {
 					this.isLoading = false;
 					this.loginErrors = {
 						...emptyErrors(),
-						password: `Введенный ${
-							method === 'email' ? 'email' : 'номер телефона'
-						} или пароль не совпадает`,
+						email: 'Такой email не зарегистрирован в системе',
+						password: 'Неправильный пароль',
 					};
 					return;
 				}
