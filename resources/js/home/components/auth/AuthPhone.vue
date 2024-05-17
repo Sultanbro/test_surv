@@ -2,7 +2,7 @@
 	<div
 		class="AuthPhone"
 		:class="{
-			'AuthPhone_error': error,
+			AuthPhone_error: error,
 		}"
 	>
 		<span class="AuthInput-label">
@@ -13,6 +13,7 @@
 			default-country-code="KZ"
 			:preferred-countries="['KZ', 'RU', 'KG']"
 			:is-valid="phone"
+			:fetch-country="true"
 			class="AuthPhone-wrapper"
 			@update="onUpdate"
 		/>
@@ -43,7 +44,7 @@ export default {
 	props: {
 		value: {
 			type: String,
-			default: ''
+			default: '',
 		},
 		label: {
 			type: String,
@@ -62,46 +63,45 @@ export default {
 			default: '',
 		},
 	},
-	data(){
+	data() {
 		return {
-			phone: this.value
-		}
+			phone: this.value,
+		};
 	},
 	computed: {},
 	watch: {
-		value(){
-			this.phone = this.value
-		}
+		value() {
+			this.phone = this.value;
+		},
 	},
-	created(){},
-	mounted(){},
-	beforeDestroy(){},
+	created() {},
+	mounted() {},
+	beforeDestroy() {},
 	methods: {
-		onUpdate($event){
-			this.$emit('input', $event.e164)
-		}
+		onUpdate($event) {
+			this.$emit('input', $event.e164);
+		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.AuthPhone{
-	.country-selector__country-flag,
+.AuthPhone {
 	.country-selector__toggle,
 	.input-tel__label,
-	.country-selector__label{
+	.country-selector__label {
 		display: none;
 	}
-	.input-tel__input{
+	.input-tel__input {
 		border: none;
 	}
-	.country-selector{
+	.country-selector {
 		height: 48px;
 	}
-	.country-selector__input{
-		width: 64px;
+	.country-selector__input {
+		width: 76px;
 		height: 48px;
-		padding: 10px 0 10px 16px !important;
+		padding: 10px 0px 10px 35px !important;
 		border: none;
 		font-size: 16px;
 		// color: #333;
@@ -109,12 +109,12 @@ export default {
 		box-shadow: none !important;
 		background-color: transparent;
 	}
-	.select-country-container{
+	.select-country-container {
 		width: auto !important;
 		min-width: auto !important;
 		flex: 0 0 64px !important;
 	}
-	.input-tel__input{
+	.input-tel__input {
 		height: 48px;
 		font-size: 16px;
 		// color: #333;
@@ -123,13 +123,13 @@ export default {
 		box-shadow: none !important;
 	}
 
-	&-wrapper{
+	&-wrapper {
 		border-radius: 8px;
-		border: 1px solid #AFB5C0;
+		border: 1px solid #afb5c0;
 		background-color: #fff;
 	}
 
-	&-label{
+	&-label {
 		display: block;
 		margin-bottom: 4px;
 
@@ -137,54 +137,54 @@ export default {
 		font-weight: 500;
 		line-height: 20px;
 		text-align: left;
-		color: #737B8A;
+		color: #737b8a;
 	}
 
-	&:hover{
-		.AuthPhone{
-			&-wrapper{
-				border-color: #60A5FA;
+	&:hover {
+		.AuthPhone {
+			&-wrapper {
+				border-color: #60a5fa;
 			}
 		}
 	}
-	&:has(input:empty){
-		.AuthPhone{
-			&-wrapper{
-				border-color: #CDD1DB;
+	&:has(input:empty) {
+		.AuthPhone {
+			&-wrapper {
+				border-color: #cdd1db;
 			}
 		}
 	}
-	&:has(input:focus){
-		.AuthPhone{
-			&-wrapper{
-				border-color: #0C50FF;
+	&:has(input:focus) {
+		.AuthPhone {
+			&-wrapper {
+				border-color: #0c50ff;
 			}
 		}
 	}
-	&_error{
-		.AuthPhone{
-			&-wrapper{
-				border-color: #E13C3C;
+	&_error {
+		.AuthPhone {
+			&-wrapper {
+				border-color: #e13c3c;
 			}
 		}
 	}
-	&_success{
-		.AuthPhone{
-			&-wrapper{
-				border-color: #4FC168;
+	&_success {
+		.AuthPhone {
+			&-wrapper {
+				border-color: #4fc168;
 			}
 		}
 	}
 	&-text,
-	&-error{
-		color: #737B8A;
+	&-error {
+		color: #737b8a;
 		font-size: 12px;
 		font-weight: 400;
 		line-height: 16px;
 		text-align: left;
 	}
-	&-error{
-		color: #E13C3C;
+	&-error {
+		color: #e13c3c;
 		font-size: 14px;
 	}
 }
