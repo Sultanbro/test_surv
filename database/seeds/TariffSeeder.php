@@ -59,7 +59,6 @@ class TariffSeeder extends Seeder
                     'users_limit' => $tariff['users_limit'],
                     'created_at' => now()->toDateTimeString(),
                     'updated_at' => now()->toDateTimeString(),
-                    'price' => 0,
                 ]);
 
                 $salePrice = 0;
