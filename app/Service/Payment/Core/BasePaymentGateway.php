@@ -65,4 +65,5 @@ abstract class BasePaymentGateway
     abstract public function webhook(array $data): WebhookCallback;
 
     abstract public function name():string;
+    abstract public function currency():string;
 }

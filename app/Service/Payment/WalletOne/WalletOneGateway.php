@@ -33,4 +33,10 @@ class WalletOneGateway extends BasePaymentGateway
     {
         return 'wallet1';
     }
+
+
+    public function currency(): string
+    {
+        return 'kzt';
+    }
 }

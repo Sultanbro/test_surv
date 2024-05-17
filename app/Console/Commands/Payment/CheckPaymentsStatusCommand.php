@@ -40,7 +40,7 @@ class CheckPaymentsStatusCommand extends Command
 
         foreach ($payments as $payment) {
             try {
-                $gateway = Gateway::provider($payment->payment_driver);
+                $gateway = Gateway::provider($payment->payment_provider);
                 $gateway->updateStatusByPayment($payment);
             } catch (Exception) {
                 //TODO log exception

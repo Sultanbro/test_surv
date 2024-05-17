@@ -17,31 +17,34 @@ class TariffSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::connection('mysql')->table('tariff_payment')->truncate();
-        DB::connection('mysql')->table('tariff')->truncate();
-
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::connection('mysql')->table('tariff_payment')->delete();
+        DB::connection('mysql')->table('tariff')->delete();
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         $tariffs = config('tariffs');
-        $validates = [1, 3, 12];
+        $validates = [
+            'monthly' => 1,
+            '3_monthly' => 3,
+            'yearly' => 12,
+        ];
 
-        foreach ($tariffs as $name => $tariff) {
-            foreach ($validates as $validity) {
+        foreach ($validates as $validity => $monthsCount) {
+            foreach ($tariffs as $name => $tariff) {
                 $tariffModel = new Tariff();
-                $tariffModel->id = $tariff['id'];
-                $tariffModel->validity = $validity;
                 $tariffModel->kind = $name;
+                $tariffModel->validity = $validity;
                 $tariffModel->users_limit = $tariff['users_limit'];
                 $tariffModel->save();
-
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
-                    if ($validity > 1) {
-                        $salePrice = ($price * $validity) * $tariff['sale_percent'] / 100;
+                    if ($monthsCount > 1) {
+                        $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
                     }
 
                     $tariffModel->prices()->create([
                         'currency' => $currency,
-                        'price' => ($price * $validity) - $salePrice,
+                        'value' => ($price * $monthsCount) - $salePrice,
                     ]);
                 }
             }

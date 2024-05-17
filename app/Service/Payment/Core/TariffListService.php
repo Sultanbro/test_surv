@@ -14,8 +14,8 @@ class TariffListService
     public function __construct()
     {
         $this->priceForOnePersonWithCurrencies = [
-            'kzt' => config('payment.payment_for_one_person.kzt'),
-            'rub' => config('payment.payment_for_one_person.rub')
+            'kzt' => config('payment.payment_for_one_person_kzt'),
+            'rub' => config('payment.payment_for_one_person_rub')
         ];
     }
 

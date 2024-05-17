@@ -42,4 +42,9 @@ class ProdamusGateway extends BasePaymentGateway
     {
         return 'prodamus';
     }
+
+    public function currency(): string
+    {
+        return 'rub';
+    }
 }

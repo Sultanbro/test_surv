@@ -18,7 +18,7 @@ final class PaymentUpdateStatusService
     {
         $lastPayment = TariffSubscription::getLastPendingTariffPayment($tenantId);
 
-        $paymentProvider = Gateway::provider($lastPayment->payment_driver);
+        $paymentProvider = Gateway::provider($lastPayment->payment_provider);
 
         return $paymentProvider->updateStatusByPayment($lastPayment);
     }
