@@ -46,7 +46,10 @@
 					</div>
 					<div class="price-space-buttons">
 						<button>Продлить</button>
-						<p @click="editRate">
+						<p
+							v-if="info.tariff"
+							@click="editRate"
+						>
 							Управление тарифом
 						</p>
 					</div>
@@ -206,8 +209,8 @@ export default {
 
 
 		editRate() {
-			if (this.info) this.connectedTariff(this.info.tariff.kind)
-			else this.connectedTariff('Бесплатный')
+			if (this.info.tariff) this.connectedTariff(this.info.tariff.kind)
+
 			this.setCurrentModal('editRate')
 		}
 	},

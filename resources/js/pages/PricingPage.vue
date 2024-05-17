@@ -24,6 +24,15 @@
 				<PricingModalEditRate :currency="currency" />
 			</PricingModal>
 		</JobtronOverlay>
+
+		<JobtronOverlay
+			v-if="currentModalId === 'pricingToFree'"
+			@close="removeModal()"
+		>
+			<PricingModalFreeLayout>
+				<PricingToFree :currency="currency" />
+			</PricingModalFreeLayout>
+		</JobtronOverlay>
 		<PriceTrialPeriod v-if="!trialPeriod" />
 		<!--		<PriceTimeLimit is-default />-->
 		<PriceSpace />
@@ -54,10 +63,14 @@ import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModal
 import { usePricingPeriodStore } from '../stores/PricingPeriod';
 import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModalEditRate.vue';
 import PriceSpace from '../components/price/PriceSpace.vue';
+import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingModalFreeLayout.vue';
+import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PricingToFree,
+		PricingModalFreeLayout,
 		PriceSpace,
 		PricingModalDefault,
 		PricingModalToBuy,

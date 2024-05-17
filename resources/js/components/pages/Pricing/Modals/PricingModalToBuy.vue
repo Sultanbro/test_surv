@@ -27,7 +27,7 @@
 				>
 					<p>1 месяц</p>
 					<p class="pricing-options-price">
-						{{ $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+						{{ priceStore.monthly.multiCurrencyPrice ? $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])): '' }} {{ currency }}
 					</p>
 				</button>
 				<button
@@ -52,7 +52,7 @@
 						</div>
 					</div>
 					<p class="pricing-options-price">
-						{{ $separateThousands(Math.round(priceStore.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+						{{ priceStore.monthly.multiCurrencyPrice ? $separateThousands(Math.round(priceStore.annual.multiCurrencyPrice[currencyCode])): '' }} {{ currency }}
 					</p>
 				</button>
 			</div>
@@ -210,7 +210,7 @@
 					}}
 				</p>
 				<p class="pricing-buy-total-count-price">
-					{{ $separateThousands(Math.round(getPrice(activeOption))) }} {{ currency }}
+					{{ getPrice(activeOption) ? $separateThousands(Math.round(getPrice(activeOption))) : '' }} {{ currency }}
 				</p>
 			</div>
 			<div class="pricing-buy-total-count">
