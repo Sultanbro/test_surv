@@ -339,7 +339,7 @@
 										v-else
 										type="text"
 										class="in-cell"
-										:value="item[field.key].value"
+										:value="item[field.key].type === 'avg' ? (Number(item[field.key].value).toFixed(item[field.key].decimals) + (item[field.key].sign || '')) : item[field.key].value"
 									>
 
 									<div
