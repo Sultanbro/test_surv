@@ -11,12 +11,12 @@
 
 		<AuthSubTitle>
 			{{ lang.notexists }}
-			<router-link
-				to="/register"
+			<a
+				href="/register"
 				class="fw500"
 			>
 				{{ lang.register }}
-			</router-link>
+			</a>
 		</AuthSubTitle>
 
 		<AuthMethod
@@ -24,7 +24,6 @@
 			v-model="method"
 			:items="authMethods"
 		/>
-
 		<div class="LoginForm-inputs">
 			<AuthInput
 				v-if="method === 'email'"
@@ -55,7 +54,8 @@
 						class="LoginForm-showPassword"
 						@click="showPassword = !showPassword"
 					>
-						<OpenEyeSlash />
+						<OpenEyeIcon v-if="showPassword" />
+						<CloseEyeIcon v-else />
 					</div>
 				</template>
 			</AuthInput>
@@ -86,7 +86,8 @@ import AuthInput from './AuthInput.vue';
 import AuthTitle from './AuthTitle.vue';
 import AuthSubTitle from './AuthSubTitle.vue';
 import AuthSubmit from './AuthSubmit.vue';
-import OpenEyeSlash from '../../assets/img/auth/OpenEyeSlash.vue'
+import OpenEyeIcon from '../../assets/img/auth/OpenEyeIcon.vue'
+import CloseEyeIcon from '../../assets/img/auth/CloseEyeIcon.vue'
 
 import * as LANG from './LoginForm.lang.js'
 
@@ -99,7 +100,8 @@ export default {
 		AuthSubTitle,
 		AuthSubmit,
 		AuthPhone,
-		OpenEyeSlash
+		OpenEyeIcon,
+		CloseEyeIcon
 	},
 	props: {
 		action: {
@@ -171,6 +173,7 @@ export default {
 		margin-top: 20px;
 	}
 	&-showPassword{
+    cursor: pointer;
 		&:hover{
 			filter: sepia(100%) hue-rotate(180deg);
 		}

@@ -21,7 +21,7 @@
 		>
 			<AuthHeader
 				back
-				@open-chat="openChat"
+				@open-chat="openChatButton"
 			/>
 		</template>
 		<template
@@ -43,7 +43,7 @@
 		>
 			<AuthHeader
 				back
-				@open-chat="openChat"
+				@open-chat="openChatButton"
 			/>
 		</template>
 		<template
@@ -69,7 +69,6 @@ function emptyErrors() {
 		email: '',
 		phone: '',
 		password: '',
-		// email: '',
 	};
 }
 function parseErrors(errors) {
@@ -115,7 +114,6 @@ export default {
 		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
 	mounted() {
-		this.initChat();
 	},
 	beforeDestroy() {},
 	methods: {
@@ -147,6 +145,7 @@ export default {
 						password: password.trim(),
 					}),
 				});
+
 				if (response.type === 'opaqueredirect') return location.assign('/');
 				if (!response.ok) {
 					this.isLoading = false;
@@ -166,7 +165,6 @@ export default {
 				this.onSuccessLogin(data);
 			} catch (error) {
 				const { status, data } = error.response;
-				console.error(status, data);
 				switch (status) {
 				case 422:
 					this.loginErrors = {
@@ -177,9 +175,8 @@ export default {
 				case 401:
 					this.loginErrors = {
 						...emptyErrors(),
-						password: `Введенный ${
-							method === 'email' ? 'email' : 'номер телефона'
-						} или пароль не совпадает`,
+						email: 'Такой email не зарегистрирован в системе',
+						password: 'Не правильный пароль'
 					};
 					break;
 				case 302:
@@ -195,7 +192,7 @@ export default {
 			if (!window.jChatWidget) {
 				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
 				const url =
-					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
 				const s = document.createElement('script');
 				s.async = true;
 				s.src = url + '?' + ((Date.now() / 60000) | 0);
@@ -216,15 +213,16 @@ export default {
 				window.jChatWidgetBtn = parent;
 			});
 		},
-		openChat() {
-			if (!this.isBp) {
-				window.jChatWidget.open();
+		openChatButton() {
+			this.isOpenButtonChat = !this.isOpenButtonChat;
+
+			if (this.isOpenButtonChat) {
+				this.initChat();
+				window.jChatWidgetBtn.style.display = 'block'
+			} else {
+				window.jChatWidgetBtn.style.display = 'none'
 			}
 		},
 	},
 };
 </script>
-
-<style lang="scss">
-//.LoginView{}
-</style>

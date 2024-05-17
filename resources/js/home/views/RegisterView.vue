@@ -12,12 +12,12 @@
 				</AuthTitle>
 				<AuthSubTitle>
 					{{ lang.exists }}
-					<router-link
-						to="/login"
+					<a
+						href="/login"
 						class="fw500"
 					>
 						{{ lang.login }}
-					</router-link>
+					</a>
 				</AuthSubTitle>
 				<div class="RegisterView-inputs">
 					<AuthInput
@@ -97,7 +97,7 @@
 			v-if="isMobile"
 			#form-header
 		>
-			<AuthHeader @open-chat="openChat" />
+			<AuthHeader @open-chat="openChatButton" />
 		</template>
 		<template
 			v-if="isMobile"
@@ -115,7 +115,7 @@
 			v-if="!isMobile"
 			#info-header
 		>
-			<AuthHeader @open-chat="openChat" />
+			<AuthHeader @open-chat="openChatButton" />
 		</template>
 		<template
 			v-if="!isMobile"
@@ -190,6 +190,7 @@ export default {
 
 			isLoading: false,
 			isSended: false,
+			isOpenButtonChat: false,
 			errors: {},
 			capchaKey: 1,
 			useCapcha: true,
@@ -225,9 +226,7 @@ export default {
 		const bitrix = document.querySelector('.b24-widget-button-shadow');
 		if (bitrix?.parentNode) bitrix?.parentNode.remove();
 	},
-	mounted() {
-		this.initChat();
-	},
+	mounted() {},
 	beforeDestroy() {},
 	methods: {
 		async onSubmit(token) {
@@ -244,7 +243,7 @@ export default {
 				});
 
 				if (registerUser.data) {
-					window.location.href = registerUser.data.link
+					window.location.href = registerUser.data.link;
 					this.isSended = true;
 				}
 			} catch (error) {
@@ -269,7 +268,7 @@ export default {
 			if (!window.jChatWidget) {
 				window.addEventListener('onBitrixLiveChat', this.onInitChatWidget);
 				const url =
-					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+					'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js';
 				const s = document.createElement('script');
 				s.async = true;
 				s.src = url + '?' + ((Date.now() / 60000) | 0);
@@ -289,11 +288,15 @@ export default {
 				parent.className = 'hidden';
 				window.jChatWidgetBtn = parent;
 			});
-			// this.openChat();
 		},
-		openChat() {
-			if (!this.isBp) {
-				window.jChatWidget.open();
+		openChatButton() {
+			this.isOpenButtonChat = !this.isOpenButtonChat;
+
+			if (this.isOpenButtonChat) {
+				this.initChat();
+				window.jChatWidgetBtn.style.display = 'block'
+			} else {
+				window.jChatWidgetBtn.style.display = 'none'
 			}
 		},
 	},

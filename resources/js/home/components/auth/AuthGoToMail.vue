@@ -1,7 +1,7 @@
 <template>
 	<button
 		class="AuthSubmit"
-		@click="openEmailService"
+		@click.stop.prevent="openEmailService"
 	>
 		<slot />
 	</button>
