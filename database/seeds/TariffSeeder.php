@@ -29,14 +29,13 @@ class TariffSeeder extends Seeder
         ];
 
         foreach ($validates as $validity => $monthsCount) {
-            dd($validity);
             foreach ($tariffs as $name => $tariff) {
                 $tariffModel = new Tariff();
                 $tariffModel->kind = $name;
                 $tariffModel->validity = $validity;
                 $tariffModel->users_limit = $tariff['users_limit'];
                 $tariffModel->save();
-
+                dd($tariffModel);
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
