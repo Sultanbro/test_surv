@@ -17,8 +17,10 @@ class TariffSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::connection('mysql')->raw('set foreign_key_checks = 0');
         DB::connection('mysql')->table('tariff_payment')->truncate();
         DB::connection('mysql')->table('tariff')->truncate();
+        DB::connection('mysql')->raw('set foreign_key_checks = 1');
 
         $tariffs = config('tariffs');
         $validates = [1, 3, 12];
