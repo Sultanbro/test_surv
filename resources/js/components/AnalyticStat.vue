@@ -1075,7 +1075,7 @@ export default {
 		},
 
 		focus(i, f) {
-			if (i < 2 && f == 0 && this.oldGroup) return ''
+			// if (i < 2 && f == 0 && this.oldGroup) return ''
 
 			if (!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
