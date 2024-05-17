@@ -42,7 +42,7 @@ class TariffSeeder extends Seeder
 
                     $tariffModel->prices()->create([
                         'currency' => $currency,
-                        'price' => ($price * $validity) - $salePrice,
+                        'value' => ($price * $validity) - $salePrice,
                     ]);
                 }
             }
