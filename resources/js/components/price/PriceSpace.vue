@@ -196,7 +196,7 @@ export default {
 		},
 		fff() {},
 		infoFetch(){
-			this.axios('tariffs/subscriptions').then((response) => {
+			this.axios('tariff/subscriptions').then((response) => {
 				this.info = response.data.data
 				this.managerPlainPhone()
 			})
@@ -270,6 +270,7 @@ export default {
 	font-size: 30px;
 	font-weight: 600;
 	line-height: 40px;
+		color: #333333;
 }
 
 .price-space-content {
@@ -335,7 +336,7 @@ export default {
 }
 
 .price-space-buttons {
-	margin-top: 8px;
+	margin-top: auto;
 	display: flex;
 	align-items: center;
 	gap: 12px;

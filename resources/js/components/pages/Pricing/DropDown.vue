@@ -6,7 +6,7 @@
 		>
 			<div class="price-dropdown-option">
 				<img
-					v-if="selectedOption && selectedOption.logo"
+					v-if="selectedOption"
 					class="price-dropdown-img"
 					:src="selectedOption.logo || '/images/price/DefaultAvatar.png'"
 				>

@@ -168,6 +168,7 @@ export default  {
 	font-weight: 600;
 	font-size: 30px;
 	line-height: 44px;
+	color: #333333;
 
 }
 

@@ -84,7 +84,7 @@ export default {
 		},
 		async postDemo() {
 			try {
-				await this.axios.post('/tariffs/trial', {
+				await this.axios.post('/tariff/trial', {
 					// eslint-disable-next-line camelcase
 					tenant_id: this.selectedOption.id
 				})
@@ -174,10 +174,12 @@ export default {
 	}
 
 	.pricing-description{
-		padding: 0 32px 0 32px;
-		width: 484px;
-		font-size: 16px;
-		margin-bottom: 24px;
+		padding: 0 32px 0 32px !important;
+		width: 548px !important;
+		font-size: 16px !important;
+		margin-bottom: 24px !important;
+			line-height: 24px !important;
+		font-family: Inter,serif;
 	}
 
 	.pricing-choice-tariff{
@@ -188,8 +190,8 @@ export default {
 	}
 
 	.pricing-tariff-title{
-		color: #737B8A;
-		font-size: 16px;
+		color: #737B8A !important;
+		font-size: 16px !important;
 	}
 
 	.pricing-button-group{
@@ -216,6 +218,7 @@ export default {
 .pricing-default-modal{
 	display: flex;
 	flex-direction: column;
+	font-family: Inter,serif !important;
 	height: 100vh;
 }
 
@@ -284,6 +287,9 @@ export default {
 	font-size: 24px;
 	line-height: 24px	;
 	width: 404px;
+	color: #333333;
+
+	font-family: Inter,serif !important;
 }
 
 .pricing-description{
@@ -291,6 +297,7 @@ export default {
 	width: 404px;
 	font-size: 16px;
 	margin-bottom: 24px;
+	font-family: Inter,serif;
 }
 
 .pricing-choice-tariff{
@@ -302,6 +309,7 @@ export default {
 
 .pricing-tariff-title{
 	color: #737B8A;
+	font-family: Inter,serif;
 	font-size: 16px;
 }
 
@@ -322,6 +330,7 @@ export default {
 	border-radius: 8px;
 	background-color: #0C50FF;
 	color: white;
+	font-family: Inter,serif;
 }
 
 </style>
