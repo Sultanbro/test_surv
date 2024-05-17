@@ -13,7 +13,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::connection('mysql')->table('tariff', function (Blueprint $table) {
-            $table->dropColumn('price');
+            if (column_exists('tariff', 'price', 'mysql')) {
+                $table->dropColumn('price');
+            }
         });
 
         Schema::connection('mysql')->create('tariff_prices', function (Blueprint $table) {
