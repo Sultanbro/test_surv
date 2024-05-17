@@ -29,13 +29,39 @@ class TariffSeeder extends Seeder
             'monthly' => 1,
         ];
 
+//        foreach ($validates as $validity => $monthsCount) {
+//            foreach ($tariffs as $name => $tariff) {
+//                $tariffModel = new Tariff();
+//                $tariffModel->kind = $name;
+//                $tariffModel->validity = $validity;
+//                $tariffModel->users_limit = $tariff['users_limit'];
+//                $tariffModel->save();
+//                $salePrice = 0;
+//                foreach ($tariff['prices'] as $currency => $price) {
+//
+//                    if ($monthsCount > 1) {
+//                        $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
+//                    }
+//
+//                    $tariffModel->prices()->create([
+//                        'currency' => $currency,
+//                        'value' => ($price * $monthsCount) - $salePrice,
+//                    ]);
+//                }
+//            }
+//        }
+
         foreach ($validates as $validity => $monthsCount) {
             foreach ($tariffs as $name => $tariff) {
-                $tariffModel = new Tariff();
-                $tariffModel->kind = $name;
-                $tariffModel->validity = $validity;
-                $tariffModel->users_limit = $tariff['users_limit'];
-                $tariffModel->save();
+                $tariffId = DB::connection('mysql')->table('tariff')->insertGetId([
+                    'kind' => $name,
+                    'validity' => $validity,
+                    'users_limit' => $tariff['users_limit'],
+                    'created_at' => now()->toDateTimeString(),
+                    'updated_at' => now()->toDateTimeString(),
+                    'price' => 0,
+                ]);
+
                 $salePrice = 0;
                 foreach ($tariff['prices'] as $currency => $price) {
 
@@ -43,9 +69,12 @@ class TariffSeeder extends Seeder
                         $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
                     }
 
-                    $tariffModel->prices()->create([
+                    DB::table('tariff_prices')->insert([
+                        'tariff_id' => $tariffId,
                         'currency' => $currency,
                         'value' => ($price * $monthsCount) - $salePrice,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
                     ]);
                 }
             }
