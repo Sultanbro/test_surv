@@ -4,6 +4,7 @@ use App\Enums\Tariff\TariffKindEnum;
 use App\Enums\Tariff\TariffValidityEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -14,7 +15,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0;');
         Schema::connection('mysql')->dropIfExists('tariff');
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
         Schema::connection('mysql')
             ->create('tariff', function (Blueprint $table) {
                 $table->id();
