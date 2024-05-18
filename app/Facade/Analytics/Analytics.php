@@ -206,7 +206,7 @@ final class Analytics
                         );
                         dd_if(
                             $row->id == 15374 && $column->id == 26021,
-                            $statistic->toArray(), $val
+                            $statistic->toArray(), $val, $columns->whereIn('name', range(1,31))->pluck('id')->toArray()
                         );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
