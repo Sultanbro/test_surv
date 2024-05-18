@@ -180,10 +180,6 @@ final class Analytics
                                 stats: $stats
                             );
                         }
-//                        dd_if(
-//                            $row->id == 15330 && $column->id == 25956,
-//                            $statistic, $val, AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns'])
-//                        );
                         $statistic->show_value = $val;
                         $statistic->save();
                         $arr['value'] = AnalyticStat::convert_formula($statistic->value, $keys['rows'], $keys['columns']);
@@ -207,6 +203,10 @@ final class Analytics
                             $columns,
                             $stats,
                             $row->id
+                        );
+                        dd_if(
+                            $row->id == 15374 && $column->id == 26021,
+                            $statistic->toArray(), $val
                         );
                         $val = round($val, 1);
                         $statistic->show_value = $val;
