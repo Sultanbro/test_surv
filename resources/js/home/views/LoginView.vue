@@ -30,7 +30,6 @@
 		>
 			<AuthFooter />
 		</template>
-
 		<template
 			v-if="!isMobile"
 			#info

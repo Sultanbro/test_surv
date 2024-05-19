@@ -230,7 +230,7 @@ function defineEmits<T>() {
               v-if="userDataStore.showCols.lead"
               class="text-center"
             >
-              <a v-if="item.lead" :href="item.lead" target="_blank">
+              <a v-if="item.lead" :href="item.lead + '/'" target="_blank">
                 {{ item.lead.split('/').reverse()[0] }}
               </a>
             </td>
