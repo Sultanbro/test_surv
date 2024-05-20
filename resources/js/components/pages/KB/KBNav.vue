@@ -3,11 +3,11 @@
 		<div
 			class="KBNav-search"
 		>
-			<i class="fa fa-search" />
+			<SearchIcon class="fa fa-search" />
 			<input
 				v-model="search.input"
 				type="text"
-				placeholder="Искать в базе..."
+				placeholder="Быстрый поиск"
 				class="form-control"
 				@input="searchInput"
 				@blur="searchCheck"
@@ -22,12 +22,16 @@
 			v-if="!currentBook"
 			class="KBNav-glossary"
 		>
-			<div
-				class="btn btn-grey btn-block mb-3"
+			<button
+				class="KBNav-button"
 				@click="$emit('glossary-open')"
 			>
-				<span>Глоссарий</span>
-			</div>
+				Глоссарий
+			</button>
+
+			<button class="KBNav__button-settings">
+				<SettingsIcon />
+			</button>
 
 			<div
 				v-if="isOwner && mode === 'edit'"
@@ -261,6 +265,9 @@ import * as KBAPI from '@/stores/api/kb.js'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 
+import SearchIcon from '../../../../assets/icons/SearchIcon.vue'
+import SettingsIcon from '../../../../assets/icons/SettingsIcon.vue'
+
 import KBNavItems from './KBNavItems.vue'
 
 const API = {
@@ -272,6 +279,8 @@ const API = {
 export default {
 	name: 'KBNav',
 	components: {
+		SearchIcon,
+		SettingsIcon,
 		KBNavItems,
 	},
 	props: {
@@ -461,13 +470,13 @@ $KBNav-padding: 15px;
 	padding: $KBNav-padding;
 	border-right: 1px solid #dfdfdf;
 
-	background-color: #f8f8f8;
+	background-color: #FFFFFF;
 	&-search{
 		position: relative;
 		.fa-search{
 			position: absolute;
-			top: 10px;
-			left: 10px;
+			top: 7px;
+			left: 9px;
 			color: #bdcadf;
 		}
 		.form-control{
@@ -486,20 +495,36 @@ $KBNav-padding: 15px;
 		}
 	}
 	&-glossary{
+    margin-top: 16px;
 		display: flex;
 		align-items: center;
-		gap: .25rem;
+		gap: 2%;
 		.fa-cog{
 			color: #333;
 		}
 	}
+
+  &-button{
+    padding: 8.5px 73px;
+    color: #8DA0C1;
+    border: 1px solid #8DA0C1;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+  }
+
+  &__button-settings{
+    padding: 5px;
+    border-radius: 6.79px;
+    border: 1px solid #8DA0C1;
+    background-color: #FFFFFF;
+  }
 
 	&-searchResults,
 	&-archive,
 	&-items{
 		flex: 1;
 		padding: 0 $KBNav-padding;
-		margin: 0 -$KBNav-padding;
+		margin: 23px;
 		overflow-y: auto;
 	}
 
