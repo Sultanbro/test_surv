@@ -63,7 +63,7 @@
 						<a
 							class="jFooter-link"
 							href="tel:87777880800"
-						>8 777 788 08 00</a>
+						>8 (700) 991-01-30</a>
 					</p>
 					<p class="jFooter-contact">
 						<a
