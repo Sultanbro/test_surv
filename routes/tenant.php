@@ -38,6 +38,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
 
     Route::prefix('tariff')->group(function () {
         Route::get('/get', [Root\Tariff\TariffController::class, 'get']);
+        Route::get('/validity', [Root\Tariff\TariffValidityController::class, 'validity']);
         Route::post('/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
         Route::get('/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
         Route::prefix('subscriptions')->group(function () {
