@@ -350,7 +350,7 @@ class Recruiting
 
 
             // $applied_users_without = User::withTrashed()
-            //     
+            //
             //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             //     ->whereYear('users.created_at', $date->year)
             //     ->whereMonth('users.created_at', $date->month)
@@ -364,7 +364,7 @@ class Recruiting
             // foreach($applied_users_without as $auser) {
             //     //if(is_null($auser->tid)) {
             //     $count_app += $auser->full_time == 1 ? 1 : 0.5;
-            //   //  } 
+            //   //  }
             // }
 
             if ($count_app > 0) {
@@ -643,7 +643,7 @@ class Recruiting
 
             // $arr
             $arr['name'] = $user->name . ' ' . $user->last_name;
-            $arr['out']['value'] = $calls; //Исх 
+            $arr['out']['value'] = $calls; //Исх
             $arr['out']['plan'] = $data[self::I_CALL_PLAN]['plan'] ? $data[self::I_CALL_PLAN]['plan'] * $workDays : 0;
             $arr['out']['percent'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10;
             $arr['calls'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10;
@@ -725,11 +725,11 @@ class Recruiting
             // ===================
             return 1;
         } else {
-            History::user(\Auth::user()->id, 'Перенос обучения', [
-                'error' => 'Не найден лид',
-                'lead' => $lead,
-                'data' => $request->all(),
-            ]);
+//            History::user(\Auth::user()->id, 'Перенос обучения', [
+//                'error' => 'Не найден лид',
+//                'lead' => $lead,
+//                'data' => $request->all(),
+//            ]);
             return 'LeadNotFound';
         }
 
@@ -751,7 +751,7 @@ class Recruiting
         $users_ids = array_unique($users_ids);
         foreach ($users_ids as $user_id) {
 
-            //  если есть записи у user, тогда берем их, 
+            //  если есть записи у user, тогда берем их,
             //  если нет берем пустой шаблон.
             $user = User::withTrashed()->find($user_id);
             if (!$user) continue;
@@ -1577,4 +1577,4 @@ class Recruiting
     // public static function ratingsHeads(array $date) {
 
     // }
-}   
+}

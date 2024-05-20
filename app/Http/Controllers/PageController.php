@@ -155,7 +155,7 @@ class PageController extends Controller
      */
     public function save_estimate_trainer(Request $request)
     {
-        History::intellect('Оценка тренера', $request->all());
+//        History::intellect('Оценка тренера', $request->all());
 
         if($request->has('phone') && $request->phone != '') {
 

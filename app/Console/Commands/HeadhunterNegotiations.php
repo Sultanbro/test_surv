@@ -99,22 +99,22 @@ class HeadhunterNegotiations extends Command
                     $n->lead_id = $leads->first()->lead_id;
                     $n->save();
 
-                    History::system('Дубликат hh.ru', [
-                        'lead_id' => $leads->first()->lead_id,
-                        'phone' => $n->phone,
-                        'negotiation_id' => $n->negotiation_id,
-                    ]);
+//                    History::system('Дубликат hh.ru', [
+//                        'lead_id' => $leads->first()->lead_id,
+//                        'phone' => $n->phone,
+//                        'negotiation_id' => $n->negotiation_id,
+//                    ]);
                 }
             } else {
                 $lead_id = $this->createLead($n);
                 $leadId = $lead_id;
                 $this->line('Lead created: ' . $lead_id);
 
-                History::system('Создание лида hh.ru', [
-                    'lead_id' => $lead_id,
-                    'phone' => $n->phone,
-                    'negotiation_id' => $n->negotiation_id,
-                ]);
+//                History::system('Создание лида hh.ru', [
+//                    'lead_id' => $lead_id,
+//                    'phone' => $n->phone,
+//                    'negotiation_id' => $n->negotiation_id,
+//                ]);
 
                 usleep(4000000); // 4 sec
             }
@@ -122,11 +122,11 @@ class HeadhunterNegotiations extends Command
             try {
                 $this->hh->put('/negotiations/consider/' . $n->negotiation_id);
             } catch (\Exception $e) {
-                History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
-                    'lead_id' => $leads->first()->lead_id ?? $leadId,
-                    'phone' => $n->phone,
-                    'negotiation_id' => $n->negotiation_id,
-                ]);
+//                History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
+//                    'lead_id' => $leads->first()->lead_id ?? $leadId,
+//                    'phone' => $n->phone,
+//                    'negotiation_id' => $n->negotiation_id,
+//                ]);
             }
         }
     }
@@ -152,10 +152,10 @@ class HeadhunterNegotiations extends Command
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
                 if ($e->getCode() == 404) {
-                    History::system('Ошибка hh.ru: резюме', [
-                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
-                        'resume' => $n->resume_id,
-                    ]);
+//                    History::system('Ошибка hh.ru: резюме', [
+//                        'error' => 'Резюме не существует или недоступно для текущего пользователя',
+//                        'resume' => $n->resume_id,
+//                    ]);
                     $this->line('error:Резюме не существует или недоступно для текущего пользователя');
                     Negotiation::whereDate('time', '>=', $this->date)
                         ->where('has_updated', 1)
@@ -168,17 +168,17 @@ class HeadhunterNegotiations extends Command
                         ->delete();
                     continue;
                 } elseif ($e->getCode() == 429) {
-                    History::system('Ошибка hh.ru: резюме', [
-                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
-                        'resume' => $n->resume_id,
-                    ]);
+//                    History::system('Ошибка hh.ru: резюме', [
+//                        'error' => 'Для работодателя превышен лимит просмотров резюме в сутки',
+//                        'resume' => $n->resume_id,
+//                    ]);
                     $this->line('error:Для работодателя превышен лимит просмотров резюме в сутки');
                     break;
                 } else {
-                    History::system('Ошибка hh.ru: резюме', [
-                        'error' => 'Требуется авторизация пользователя',
-                        'resume' => $n->resume_id,
-                    ]);
+//                    History::system('Ошибка hh.ru: резюме', [
+//                        'error' => 'Требуется авторизация пользователя',
+//                        'resume' => $n->resume_id,
+//                    ]);
                     $this->line('error:Требуется авторизация пользователя');
                     break;
                 }
