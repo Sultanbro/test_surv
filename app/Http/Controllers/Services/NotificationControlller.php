@@ -120,7 +120,7 @@ class NotificationControlller extends Controller
                    $data['error'] = $result;
                 }
 
-                History::user($user_id, 'Перенос обучения', $data);
+//                History::user($user_id, 'Перенос обучения', $data);
 
                 return  $result;
             }

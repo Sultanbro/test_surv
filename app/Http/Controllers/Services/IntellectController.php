@@ -23,7 +23,7 @@ class IntellectController extends Controller
      */
     public function start(Request $request)
     {
-        History::bitrix('Запуск чатбота', $request->all());
+//        History::bitrix('Запуск чатбота', $request->all());
 
         if ($request->phone && $request->lead_id) {
 
@@ -78,7 +78,7 @@ class IntellectController extends Controller
      */
     public function bitrixCreateLead(Request $request)
     {
-        History::bitrix('Переименовали лид в удаленный', $request->all());
+//        History::bitrix('Переименовали лид в удаленный', $request->all());
 
         if ($request->phone && $request->lead_id) {
             $hash = md5(uniqid() . mt_rand());
@@ -124,7 +124,7 @@ class IntellectController extends Controller
      */
     public function changeResp(Request $request)
     {
-        History::bitrix('Смена ответственного', $request->all());
+//        History::bitrix('Смена ответственного', $request->all());
 
         if ($request->lead_id) {
             $lead = Lead::where('lead_id', $request->lead_id)->first();
@@ -152,7 +152,7 @@ class IntellectController extends Controller
     public function loseDeal(Request $request)
     {
 
-        History::bitrix('Cделка проиграна', $request->all());
+//        History::bitrix('Cделка проиграна', $request->all());
 
         if ($request->lead_id) {
             $trainee = Trainee::where('lead_id', $request->lead_id)->first();
@@ -201,7 +201,7 @@ class IntellectController extends Controller
     public function newLead(Request $request)
     {
 
-        History::bitrix('Ручная конвертация', $request->all());
+//        History::bitrix('Ручная конвертация', $request->all());
 
         $name = $request->name ? $request->name : 'Без имени';
         $langs = [
@@ -298,9 +298,9 @@ class IntellectController extends Controller
      */
     public function inhouse(Request $request)
     {
-        History::bitrix('inhouse', [
-            $request->all(),
-        ]);
+//        History::bitrix('inhouse', [
+//            $request->all(),
+//        ]);
 
         $lead = Lead::where('lead_id', $request->lead_id)->first();
 
@@ -318,9 +318,9 @@ class IntellectController extends Controller
     public function editDeal(Request $request)
     {
 
-        History::bitrix('Edit deal', [
-            $request->all(),
-        ]);
+//        History::bitrix('Edit deal', [
+//            $request->all(),
+//        ]);
 
         $langs = [
             'Только Русский 100%' => 2, // Только Русский 100%
@@ -401,9 +401,9 @@ class IntellectController extends Controller
     public function editLead(Request $request)
     {
 
-        History::bitrix('Edit lead', [
-            $request->all(),
-        ]);
+//        History::bitrix('Edit lead', [
+//            $request->all(),
+//        ]);
 
         $langs = [
             'Только Русский 100%' => 2, // Только Русский 100%
@@ -476,9 +476,9 @@ class IntellectController extends Controller
      */
     public function create_lead(Request $request)
     {
-        History::bitrix('Create lead QR', [
-            $request->all(),
-        ]);
+//        History::bitrix('Create lead QR', [
+//            $request->all(),
+//        ]);
 
         if ($request->has('phone') && $request->has('name')) {
 
@@ -721,7 +721,7 @@ class IntellectController extends Controller
     public function change_status(Request $request)
     {
 
-        History::intellect('Смена статуса', $request->all());
+//        History::intellect('Смена статуса', $request->all());
 
         if ($request->has('phone')) {
 
@@ -864,7 +864,7 @@ class IntellectController extends Controller
         curl_close($curl);
         $result = json_decode($result, 1);
         if (array_key_exists('error', $result)) {
-            History::bitrix('Ошибка IntellectController::curl_post', $result);
+//            History::bitrix('Ошибка IntellectController::curl_post', $result);
         }
 
         return $result;
@@ -905,10 +905,10 @@ class IntellectController extends Controller
                     $files = [$front_name];
                 } catch (\Exception $e) {
 
-                    History::system('Ошибка в подписании соглашения', [
-                        'error' => $e->getMessage(),
-                        'request' => $request->all(),
-                    ]);
+//                    History::system('Ошибка в подписании соглашения', [
+//                        'error' => $e->getMessage(),
+//                        'request' => $request->all(),
+//                    ]);
 
                     return '';
                 }
@@ -927,10 +927,10 @@ class IntellectController extends Controller
 
                 $lead->save();
 
-                History::system('Подписание соглашения', [
-                    'lead_id' => $lead->lead_id,
-                    'date' => date('Y-m-d H:i:s', time() + 3600 * 6),
-                ]);
+//                History::system('Подписание соглашения', [
+//                    'lead_id' => $lead->lead_id,
+//                    'date' => date('Y-m-d H:i:s', time() + 3600 * 6),
+//                ]);
 
                 ////////// РАСЧЕТ БЛИЖАЙШЕГО ВРЕМЕНИ
 
@@ -1042,7 +1042,7 @@ class IntellectController extends Controller
     public function quiz_after_fire(Request $request)
     {
 
-        History::intellect('Уволенный анкета', $request->all());
+//        History::intellect('Уволенный анкета', $request->all());
 
         if ($request->has('phone')) {
 
@@ -1101,7 +1101,7 @@ class IntellectController extends Controller
             $language = $bitrix->getUserField("UF_CRM_1626255643", $bitrixLead['UF_CRM_1626255643']);
             $wishtime = $bitrix->getUserField("UF_CRM_1629291391354", $bitrixLead['UF_CRM_1629291391354']);
             $skyped = Carbon::parse($bitrixLead['MOVED_TIME'])->setTimezone('Asia/Almaty');
-            History::lead($bitrixLead);
+//            History::lead($bitrixLead);
             $lead = Lead::query()
                 ->updateOrCreate(
                     [
