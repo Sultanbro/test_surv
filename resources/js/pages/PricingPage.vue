@@ -38,7 +38,11 @@
 			</PricingModalFreeLayout>
 		</JobtronOverlay>
 		<PriceTrialPeriod v-if="!trialPeriod" />
-		<!--		<PriceTimeLimit is-default />-->
+		<PriceTimeLimit
+			v-if="expiredAt <= 5"
+			:expired-at="expiredAt"
+			is-default
+		/>
 		<PriceSpace />
 		<div class="PricingPage ">
 			<PricingRates
@@ -72,10 +76,12 @@ import PriceSpace from '../components/price/PriceSpace.vue';
 import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingModalFreeLayout.vue';
 import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
 import {useValidityStore} from '../stores/api/pricing/validity';
+import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PriceTimeLimit,
 		PricingToFree,
 		PricingModalFreeLayout,
 		PriceSpace,
@@ -124,6 +130,9 @@ export default {
 				(this.selectedRate.validity === 'monthly' ? 1 : 12)
 			);
 		},
+		expiredAt(){
+			return this.validity ;
+		},
 		total() {
 			if (!this.selectedRate) return 0;
 			const total =
@@ -134,9 +143,6 @@ export default {
 		currencyCode() {
 			return this.currencyTranslate[this.currency];
 		},
-	},
-	watch:{
-
 	},
 	created() {
 		this.fetchValidityCorses()

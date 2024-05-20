@@ -403,6 +403,10 @@ export default {
 				return tarifs
 			}, {})
 		},
+
+		expiredAt(){
+			return this.validity;
+		},
 		currencyCode(){
 			return ({
 				'₽': 'rub',
@@ -416,19 +420,19 @@ export default {
 			if(this.proUsed) this.useProDemo()
 		},
 
-
 	},
 
 	created(){
 		this.fetchPricing()
 		this.fetchDemo()
 		this.infoFetch()
+
 	},
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'setPrice']),
 		...mapActions(usePricingStore, ['fetchPricing']),
 		...mapActions(usePricingPeriodStore, ['addedPrice']),
-		...mapActions(usePricingPeriodStore, ['connectedTariff']),
+		...mapActions(usePricingPeriodStore, ['connectedTariff', 'setTariffId']),
 		infoFetch(){
 			this.axios('tariff/subscriptions').then((response) => {
 				this.info = response.data.data
@@ -445,19 +449,16 @@ export default {
 
 			if (this.info.tariff) {
 				this.connectedTariff(this.names[this.info.tariff.kind])
-				this.setPrice(this.info.tariff.kind)
+				this.setPrice(item.name)
+				this.setTariffId(this.info.tariff)
 				this.setCurrentModal('pricingToBuy')
 			}
-			if ( item.name !== 'Бесплатный') {
-				this.connectedTariff('free')
-				this.setPrice('free')
-				this.setCurrentModal('pricingToBuy')
-			}
-			else{
+			if ( item.name === 'Бесплатный') {
 				this.connectedTariff('Бесплатный')
 				this.setPrice('free')
 				this.setCurrentModal('pricingToFree')
 			}
+
 
 			this.addedPrice(item)
 		},

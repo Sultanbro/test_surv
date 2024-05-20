@@ -17,7 +17,7 @@
 				class="price-trial-description"
 				:class="{'small-content-description' : small, 'default-content-description' : isDefault}"
 			>
-				Осталось 5 дней до конца действия тарифа. Оплатите его сейчас, чтобы сохранить все преимущества
+				Осталось {{ Math.round(expiredAt) }} {{ Math.round(expiredAt) === (5 || 1) ? 'дней': 'дня' }}  до конца действия тарифа. Оплатите его сейчас, чтобы сохранить все преимущества
 			</div>
 			<div class="price-trial-button-group">
 				<button
@@ -52,6 +52,10 @@ export default {
 	props:{
 		small: {
 			type: Boolean,
+		},
+		expiredAt:{
+			type: Number,
+			required: true
 		},
 		isDefault: {
 			type: Boolean,
@@ -111,6 +115,50 @@ export default {
   .price-trial-content{
 	gap: 12px !important;
   }
+	.small-content{
+	width: 100% !important;
+	max-height: 106px !important;
+	height: 100% !important;
+	z-index: 10001 !important;
+
+
+	&-price-content{
+		max-width: 932px !important;
+		width: 100% !important;
+		padding: 24px !important;
+	}
+	&-title{
+		font-size: 20px  !important;
+	}
+	&-description{
+		font-size: 14px  !important;
+	max-width: 826px !important;
+	width: 100% !important;
+	}
+
+	&-fire{
+		width: 74px !important;
+		height: 74px !important;
+		top: 29% !important;
+		left: 85% !important;
+	}
+
+	&-clock{
+		width: 121px !important;
+		height: 91px !important;
+		left: 90% !important;
+		bottom: 0% !important;
+	}
+	&-eclipse{
+		box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8) !important;
+		width: 193px !important;
+		height: 101px !important;
+		border-radius: 50% !important;
+		top: 60% !important;
+		left: 94% !important;
+	}
+
+	}
 }
 
 .price-trial{
@@ -119,6 +167,7 @@ export default {
 	display: flex;
 	position: relative;
 	overflow: hidden;
+  margin-top: 30px;
 }
 .small-content{
   width: 100%;
@@ -133,32 +182,34 @@ export default {
 	padding: 24px;
 	}
   &-title{
-	font-size: 20px ;
+	font-size: 18px ;
   }
   &-description{
-	font-size: 14px ;
+	font-size: 12px ;
+	max-width: 626px;
+	width: 100%;
   }
 
   &-fire{
-	width: 74px;
-	height: 74px;
-	top: 29%;
+	width: 54px;
+	height: 54px;
+	top: 47%;
 	left: 85%;
   }
 
   &-clock{
-	width: 121px;
-	height: 91px;
+	width: 101px;
+	height: 79px;
 	left: 90%;
 	bottom: 0%;
   }
   &-eclipse{
 	box-shadow: 0 0 230px 20px rgba(237, 161, 12, 0.8);
-	width: 401px;
-	height: 401px;
+	width: 193px;
+	height: 101px;
 	border-radius: 50%;
 	top: 60%;
-	left: 85%;
+	left: 94%;
   }
 
 }

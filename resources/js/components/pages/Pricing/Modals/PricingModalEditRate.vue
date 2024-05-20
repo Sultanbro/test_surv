@@ -103,7 +103,10 @@
 			Далее оплачивать добавленных сотрудников вы сможете при продлении тарифа
 		</p>
 		<div class="pricing-button-group">
-			<button class="pricing-button-connect">
+			<button
+				class="pricing-button-connect"
+				@click="editToBuyRate"
+			>
 				Перейти к оплате
 			</button>
 		</div>
@@ -124,20 +127,17 @@ export default {
 	},
 	data() {
 		return {
-			count: 0
+			count: 0,
+			info: [],
 		}
 	},
 	computed:{
 		...mapState(usePricingStore, ['priceForOnePerson']),
 		total(){
-			if (!this.activeOption) return 0;
-
-			let price;
-
 			// if (this.promoData?.value) {
 			// 	price -= this.promoData.value;
 			// }
-			return price +=   this.count * Math.round( this.priceForOnePerson[this.currencyCode]) ;
+			return  this.count * Math.round( this.priceForOnePerson[this.currencyCode]) ;
 		},
 		currencyCode(){
 			return ({
@@ -146,13 +146,62 @@ export default {
 			})[this.currency]
 		},
 	},
+	created(){
+		this.infoFetch()
+	},
 	methods: {
 		increment() {
 			this.count++
 		},
 		decrement() {
 			if (this.count > 0) this.count--
-		}
+		},
+		infoFetch(){
+			this.axios('tariff/subscriptions').then((response) => {
+				this.info = response.data.data
+				this.managerPlainPhone()
+			})
+		},
+		editToBuyRate(){
+			try{
+				if(this.currency !== '₽') return this.submitWalletOne()
+				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.tariff_id}`, {
+					currency: this.currencyCode,
+					// eslint-disable-next-line camelcase
+					extra_users_limit: this.count > 0 ? this.count : 0,
+				}).then(res => {
+					if (res && res.data.data) {
+						window.location.assign(res.data.data.url);
+					} else {
+						console.error('URL not found in response', res);
+					}
+				})
+
+			}
+			catch(error){
+				this.$toast.error('Ошибка при попытке оплаты')
+
+			}
+		},
+		submitWalletOne(){
+			try{
+				if (this.info.tariff) this.axios.post(`/tariff/subscriptions/${this.info.tariff.id}`, {
+					currency: this.currencyCode,
+					// eslint-disable-next-line camelcase
+					extra_users_limit: this.count > 0 ? this.count : 0,
+				}).then(res => {
+					if (res && res.data.data) {
+						window.location.assign(res.data.data.url);
+					} else {
+						console.error('URL not found in response', res);
+					}
+				})
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
+		},
 	},
 };
 </script>

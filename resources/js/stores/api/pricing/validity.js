@@ -10,7 +10,12 @@ export const useValidityStore = defineStore('useValidityStore', {
 	actions: {
 		async fetchValidityCorses() {
 			const data = await fetchValidity();
-			this.validity = data;
+			this.validity = data.data;
+			const newDate = new Date(this.validity.expired_at);
+			const currentDate = new Date();
+			const timeDiff = newDate - currentDate;
+			const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+			this.validity = daysDiff;
 		},
 	},
 });
