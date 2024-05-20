@@ -17,23 +17,23 @@
 					</div>
 					<div class="PricingRates-options-button-group">
 						<button
+							:class="{'activeOption' : activeOption === 1}"
 							class="PricingRates-options-button"
-							:class="{'activeOption' : activeMonth === 'monthly'}"
-							@click="activeMonth = 'monthly'"
+							@click="$emit('updateOption', 1)"
 						>
 							1 месяц
 						</button>
 						<button
+							:class="{'activeOption' : activeOption === 3}"
 							class="PricingRates-options-button"
-							:class="{'activeOption' : activeMonth === 'threeMonthly'}"
-							@click="activeMonth = 'threeMonthly'"
+							@click="$emit('updateOption', 3)"
 						>
 							3 месяца
 						</button>
 						<button
-							class="PricingRates-options-button options-button-discount"
-							:class="{'activeOption' : activeMonth === 'yearly'}"
-							@click="activeMonth = 'yearly'"
+							:class="{'activeOption' : activeOption === 12}"
+							class="PricingRates-options-button"
+							@click="$emit('updateOption', 12)"
 						>
 							Год
 							<div class="pricing-discount">
@@ -87,33 +87,33 @@
 								{{ item.name }}
 							</p>
 							<p
-								v-if="activeMonth === 'monthly'"
+								v-if="activeOption === 1"
 								class="PricingRates-header-price"
 							>
 								{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
 							<p
-								v-else-if="activeMonth === 'yearly'"
+								v-else-if="activeOption === 12"
 								class="PricingRates-header-price"
 							>
 								{{ $separateThousands(Math.round(item.yearly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
 							<p
-								v-else-if="activeMonth === 'threeMonthly'"
+								v-else-if="activeOption === 3"
 								class="PricingRates-header-price"
 							>
 								{{ $separateThousands(Math.round(item.threeMonthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 							</p>
 							<p
-								v-if="activeMonth === 'monthly'"
+								v-if="activeOption === 1"
 								class="PricingRates-header-connection"
 							>
 								{{ item.connection }}
 							</p>
-							<p v-else-if="activeMonth === 'yearly'">
+							<p v-else-if="activeOption === 12">
 								В год
 							</p>
-							<p v-else-if="activeMonth === 'threeMonthly'">
+							<p v-else-if="activeOption === 3">
 								В 3 месяца
 							</p>
 							<button
@@ -264,6 +264,10 @@ export default {
 		ChatIconMassReaded,
 	},
 	props: {
+		activeOption:{
+			type: Number,
+			default: 3
+		},
 		currency: {
 			type: String,
 			default: '₽'
@@ -431,6 +435,7 @@ export default {
 				this.managerPlainPhone()
 			})
 		},
+
 		editRate(){
 			if (this.info.tariff) this.connectedTariff(this.names[this.info.tariff.kind])
 			else this.connectedTariff('Бесплатный')

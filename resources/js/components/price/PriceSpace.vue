@@ -253,7 +253,7 @@ export default {
 	.price-space-buttons button {
 		padding: 5px 24px !important;
 		font-size: 16px !important;
-
+		gap: 12px !important;
 	}
 
 	.price-space-buttons p {
@@ -339,12 +339,12 @@ export default {
 	margin-top: auto;
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: 5px;
 }
 
 .price-space-buttons button {
 	font-size: 14px;
-	padding: 5px 24px;
+	padding: 5px 16px;
 	outline: none;
 	color: white;
 	background-color: #0c50ff;
@@ -352,7 +352,7 @@ export default {
 }
 
 .price-space-buttons p {
-		font-size: 14px;
+		font-size: 13px;
 	color: #0c50ff;
 	font-weight: 700;
 	cursor: pointer;
