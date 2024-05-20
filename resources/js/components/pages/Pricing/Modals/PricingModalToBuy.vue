@@ -1,16 +1,9 @@
 <template>
 	<div class="pricing-buy-modal">
 		<h1
-			v-if="tariffStore === priceStore.name || tariffStore === 'Бесплатный'"
 			class="pricing-buy-title"
 		>
 			Оплата тарифа {{ priceStore.name }}
-		</h1>
-		<h1
-			v-if="tariffStore !== priceStore.name && tariffStore !== 'Бесплатный'"
-			class="pricing-buy-title"
-		>
-			Переход на тариф {{ priceStore.name }}
 		</h1>
 		<div class="pricing-buy-description">
 			Выберите необходимые параметры
@@ -493,8 +486,6 @@ export default  {
 	padding: 13px 0 !important;
 	text-align: center !important;
 	border-radius: 8px !important;
-	background-color: #0c50ff !important;
-	color: white !important;
   }
   .pricing-button-later {
 	width: 100% !important;
@@ -741,6 +732,10 @@ export default  {
   border-radius: 8px;
   background-color: #0C50FF;
   color: white;
+}
+.pricing-button-connect:hover{
+  background-color: #0d3bb2;
+
 }
 .pricing-button-later{
   width: 100%;

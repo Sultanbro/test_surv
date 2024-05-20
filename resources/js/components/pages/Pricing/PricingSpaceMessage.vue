@@ -12,17 +12,26 @@ import MessageIcon from './assets/MessageIcon.vue';
 
 export default {
 	name: 'PricingSpaceMessage',
-	components: { MessageIcon },
+	components: {MessageIcon},
 
 	methods: {
 		openChat() {
 			if (!this.isBp && window.jChatWidget) {
-				window.jChatWidget.open();
-				window.jChatWidgetBtn.classList.toggle('hidden');
+				if (window.jChatWidget.open && window.jChatWidget.close) {
+					if (window.jChatWidget.isOpen) {
+						window.jChatWidget.close();
+					} else {
+						window.jChatWidget.open();
+					}
+					window.jChatWidgetBtn.classList.toggle('hidden');
+				} else {
+					console.error('Chat widget methods open or close are not available');
+				}
 			}
-		},
-	},
-};
+
+		}
+	}
+}
 </script>
 
 <style scoped>
@@ -32,5 +41,8 @@ export default {
 	height: 40px;
 	border-radius: 8px;
 	padding: 8px;
+}
+.price-space-button:hover {
+	background-color: #bbbbbb;
 }
 </style>

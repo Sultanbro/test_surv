@@ -4,8 +4,7 @@
 			Управление тарифом
 		</h1>
 		<div class="pricing-buy-description">
-			Вы можете подключить к своему тарифу дополнительных сотрудников за 200
-			₽/мес
+			Вы можете подключить к своему тарифу дополнительных сотрудников за {{ count * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}/мес
 		</div>
 		<div class="pricing-buy-added-people">
 			<div class="pricing-buy-added-content">
@@ -73,7 +72,7 @@
 				</p>
 			</div>
 			<p class="pricing-buy-added-price">
-				+0 ₽ к оплате
+				+{{ count * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}  к оплате
 			</p>
 		</div>
 		<div class="pricing-buy-promo-content" />
@@ -85,18 +84,18 @@
 					</p>
 				</div>
 				<p class="pricing-buy-total-count-price">
-					1 800 ₽
+					{{ count * Math.round(priceForOnePerson[currencyCode]) }} {{ currency }}
 				</p>
 			</div>
 			<p class="pricing-buy-added-clue pricing-buy-added-clue_top">
-				3 пользователя на 24 дня оставшегося тарифа
+				{{ count }} пользователя на 24 дня оставшегося тарифа
 			</p>
 			<div class="pricing-buy-total">
 				<p class="pricing-buy-total-title">
 					Итого
 				</p>
 				<p class="pricing-buy-total-price">
-					1 800 ₽
+					{{ $separateThousands(Math.round(total)) }} {{ currency }}
 				</p>
 			</div>
 		</div>
@@ -112,13 +111,40 @@
 </template>
 
 <script>
+import {mapState} from 'pinia';
+import {usePricingStore} from '../../../../stores/Pricing';
+
 export default {
 	name: 'PricingModalEditRate',
-
+	props:{
+		currency: {
+			type: String,
+			default: '₽'
+		},
+	},
 	data() {
 		return {
 			count: 0
 		}
+	},
+	computed:{
+		...mapState(usePricingStore, ['priceForOnePerson']),
+		total(){
+			if (!this.activeOption) return 0;
+
+			let price;
+
+			// if (this.promoData?.value) {
+			// 	price -= this.promoData.value;
+			// }
+			return price +=   this.count * Math.round( this.priceForOnePerson[this.currencyCode]) ;
+		},
+		currencyCode(){
+			return ({
+				'₽': 'rub',
+				'₸': 'kzt',
+			})[this.currency]
+		},
 	},
 	methods: {
 		increment() {
@@ -138,6 +164,37 @@ export default {
 		width: 100%;
 	display: flex;
 	gap: 8px;
+  }
+	.pricing-buy-title{
+		font-size: 28px !important;
+	}
+	.pricing-buy-description{
+		font-size: 16px !important;
+	}
+
+	.pricing-buy-added-people{
+		font-size: 16px !important;
+	}
+  .pricing-buy-added-title {
+	font-size: 16px !important;
+  }
+  .pricing-buy-modal {
+	max-width: 564px !important;
+
+	padding: 32px 32px 0 32px !important;
+  }
+  .pricing-buy-added-price {
+		font-size: 16px !important;
+	width: 287px !important;
+  }
+  .pricing-buy-total-title {
+	font-size: 28px !important;
+	line-height: 36px !important;
+  }
+
+  .pricing-buy-total-price {
+	font-size: 28px !important;
+	line-height: 36px !important;
   }
 }
 .PricingRates {
@@ -200,6 +257,10 @@ export default {
 	background-color: #0c50ff;
 	color: white;
 }
+.pricing-button-connect:hover{
+  background-color: #0d3bb2;
+
+}
 .pricing-button-later {
 	width: 100%;
 	padding: 13px 0;
@@ -209,14 +270,14 @@ export default {
 }
 
 .pricing-buy-modal {
-	max-width: 564px;
+	max-width: 404px;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
 	position: relative;
 	bottom: 7%;
-	padding: 32px 32px 0 32px;
+	padding: 32px 22px 0 22px;
 }
 
 .pricing-buy-description-total {
@@ -227,21 +288,23 @@ export default {
 
 .pricing-buy-title {
 	font-weight: 600;
-	font-size: 28px;
+	font-size: 22px;
 	margin-bottom: 12px;
   color: #333333;
 
 }
 
 .pricing-buy-description {
-	font-size: 16px;
-	color: #000000;
+	font-size: 14px;
+  color: #333333;
 	margin-bottom: 32px;
 }
 
 .pricing-buy-added-people {
 	display: flex;
 	align-items: center;
+	font-size: 14px;
+	gap: 14px;
   justify-content: space-between;
 	margin-bottom: 24px;
 }
@@ -255,7 +318,7 @@ export default {
 
 .pricing-buy-added-title {
 	color: #737b8a;
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .pricing-buy-added-button-content {
@@ -294,6 +357,9 @@ export default {
 .pricing-buy-added-price {
 	font-weight: 600;
 	line-height: 24px;
+	font-size: 14px;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 .pricing-buy-link-promo {
@@ -339,6 +405,7 @@ export default {
 }
 
 .pricing-buy-total-count-price {
+
 }
 
 .pricing-buy-total {
@@ -348,15 +415,15 @@ export default {
 }
 
 .pricing-buy-total-title {
-	font-size: 28px;
+	font-size: 20px;
 	font-weight: 600;
-	line-height: 36px;
+	line-height: 30px;
 }
 
 .pricing-buy-total-price {
-	font-size: 28px;
+	font-size: 20px;
 	font-weight: 600;
-	line-height: 36px;
+	line-height: 30px;
 }
 
 .activeOption {
@@ -389,6 +456,6 @@ export default {
 }
 
 .pricing-buy-total-count-price-people {
-	margin-top: 12px;
+
 }
 </style>

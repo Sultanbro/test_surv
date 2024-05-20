@@ -333,4 +333,9 @@ export default {
 	font-family: Inter,serif;
 }
 
+.pricing-button-connect:hover{
+	background-color: #0d3bb2;
+
+}
+
 </style>

@@ -119,8 +119,8 @@
 							<button
 								class="PricingRates-header-item"
 								:class="{
-									'connection': info.tariff === null && item.name==='Бесплатный',
-									'selected': info.tariff && item.name !== names[info.tariff.kind]
+									'connectionBtn': info.tariff === null && item.name==='Бесплатный',
+									'selectedBtn': info.tariff && item.name !== names[info.tariff.kind]
 								}"
 								@click="pricingModal(item)"
 							>
@@ -567,7 +567,6 @@ export default {
 		}
 
 		&-options-button {
-		background-color: #f2f2f2 !important;
 		padding: 10px 15px !important;
 		display: flex;
 			font-size: 16px !important;
@@ -586,7 +585,6 @@ export default {
 	}
 
 		&-options-button-currency{
-		background-color: #f2f2f2 !important;
 		padding: 10px 15px !important;
 		display: flex;
 		font-size: 16px !important;
@@ -598,12 +596,16 @@ export default {
 	&-options-button-currency:focus {
 		outline: none !important;
 	}
-
+	&-footer{
+		max-width: 661px !important;
+		width: 100% !important;
+		padding: 16px 0 !important;
+		font-size: 14px !important;
+	}
 		&-options-button:focus {
 		outline: none !important;
 		}
 		&-header-item {
-		background-color: #0c50ff !important;
 		color: white !important;
 		padding: 5px 24px !important;
 		font-size: 16px !important;
@@ -632,6 +634,7 @@ export default {
 		}
 		&-item-description {
 		color: #737b8a !important;
+			font-size: 16px !important;
 		}
 		&-col {
 		min-width: 25rem !important;
@@ -731,20 +734,6 @@ export default {
 		&_annual {}
 	}
 
-	.active {
-		background-color: white !important;
-		color: #1e40af !important;
-	}
-
-	.connection {
-		background-color: #ededed !important;
-		color: #8991a1 !important;
-	}
-	.selected {
-		background-color: #DBEAFE !important;
-		color: #0C50FF !important;
-	}
-
 	.activePro {
 	font-size: 16px !important;
 	position: absolute !important;
@@ -754,10 +743,7 @@ export default {
 		margin-top: 5px !important;
 	}
 
-	.activeOption {
-		background-color: white !important;
-		color: #1e40af !important;
-	}
+
 	}
 
   .PricingRates{
@@ -773,6 +759,7 @@ export default {
 		border-radius: 8px ;
 	}
 
+
 	&-options-button-currency{
 		background-color: #f2f2f2 ;
 		padding: 10px 15px ;
@@ -782,7 +769,10 @@ export default {
 		border-radius: 8px ;
 		width: 60px ;
 	}
+	&-options-button-currency:hover{
+	background-color: #c2bfbf;
 
+	}
 	&-options-button-currency:focus {
 		outline: none ;
 	}
@@ -821,7 +811,7 @@ export default {
 			display: flex;
 			align-items: center;
 			flex-direction: column;
-			gap: 6px;
+			gap: 12px;
 		}
 		&-row{
 			&:nth-child(even){
@@ -862,17 +852,23 @@ export default {
 		align-items: center;
 		display: flex;
 		background-color: #F2F2F2;
-		padding: 8px;
+		padding: 4px;
 		border-radius: 8px;
+
 		}
 
 		&-options-button{
 		background-color: #F2F2F2;
 		padding: 10px 20px;
+		display: flex;
 		border-radius: 8px;
 		font-size: 14px;
+		gap: 5px;
 		}
+	&-options-button:hover{
+	background-color: #c2bfbf;
 
+  }
 		&-options-button:focus{
 		outline: none;
 
@@ -884,10 +880,13 @@ export default {
 			font-size: 14px;
 			font-weight: 500;
 			border-radius: 8px;
-			width: 128px;
+			width: 105px;
 
 	}
-
+	&-header-item:hover{
+		background-color: #093fcb;
+		color: white !important;
+	}
 		.PricingRates-header-name{
 			font-size: 14px;
 			font-weight: 400;
@@ -909,12 +908,13 @@ export default {
 		}
 		&-item-description{
 			color: #737B8A;
+			font-size: 14px;
 		}
 		&-col{
 			min-width: 15rem;
 		}
 		&-footer{
-			max-width: 661px;
+			max-width: 561px;
 			width: 100%;
 			padding: 16px 0;
 			font-size: 14px;
@@ -1013,29 +1013,32 @@ export default {
 		color: #1E40AF;
 	}
 
-	.connection{
+	.connectionBtn{
 		background-color: #EDEDED;
 		color: #8991A1;
 	}
-	.selected{
-		background-color: #EDEDED;
-		color: #8991A1;
+
+	.selectedBtn{
+		background-color: #DBEAFE;
+		color: #0C50FF !important;
 	}
 
 	.activePro {
 		font-size: 12px;
 		position: absolute;
-		top: 85%;
+		top: 99%;
 		left: 10%;
 		color: #0C50FF;
 		margin-top: 10px;
 	}
 
-	.activeOption{
+  .activeOption {
 	background-color: white;
-	color: #1E40AF;
-	}
-
+	color: #1e40af ;
+  }
+  .activeOption:hover {
+	background-color: #c5c4c4;
+  }
 
 	.pricing-discount{
 		background-color: #FF5E5C;
