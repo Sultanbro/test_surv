@@ -131,7 +131,7 @@
 			</p>
 		</div>
 		<p
-			v-if="!activePromo && tariffStore === 'free'"
+			v-if="!activePromo"
 			class="pricing-buy-link-promo"
 			@click="isActivePromo"
 		>
