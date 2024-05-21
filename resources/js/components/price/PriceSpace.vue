@@ -44,10 +44,13 @@
 						</p>
 						<b-skeleton v-else />
 					</div>
-					<div class="price-space-buttons">
+					<div
+						v-if="info.tariff"
+						class="price-space-buttons"
+					>
 						<button>Продлить</button>
 						<p
-							v-if="info.tariff"
+
 							@click="editRate"
 						>
 							Управление тарифом
@@ -63,7 +66,7 @@
 					>
 				</div>
 				<div class="price-space-info">
-					<div class="price-space-info">
+					<div class="price-space-info-text">
 						<p v-if="owner">
 							{{ title }}
 						</p>
@@ -73,20 +76,30 @@
 
 
 					<div class="price-space-title-block">
-						<p v-if="info">
-							{{ info ? info.owner.full_name : '' }}
+						<p
+							v-if="info"
+							class="price-space-title-block"
+						>
+							{{ info ? info.owner.name : '' }}
+							{{ info ? info.owner.last_name : '' }}
 						</p>
 						<b-skeleton v-else />
 					</div>
 					<div class="price-space-description">
-						<p v-if="owner">
+						<p
+							v-if="owner"
+							class="price-space-info-text"
+						>
 							{{ text }}
 						</p>
 						<b-skeleton v-else />
 					</div>
 					<div class="price-space-contact">
-						<p v-if="owner">
-							{{ managerPlainPhone }}
+						<p
+							v-if="owner"
+							class="price-space-contact-text"
+						>
+							{{ managerPhone }}
 						</p>
 						<b-skeleton v-else />
 						<a
@@ -116,7 +129,7 @@ import PricingSpaceMessage from '../pages/Pricing/PricingSpaceMessage.vue';
 
 export default {
 	name: 'PriceSpace',
-	components: {PricingSpaceMessage, WhatsAppIcon },
+	components: { PricingSpaceMessage, WhatsAppIcon },
 	data() {
 		return {
 			names: {
@@ -134,6 +147,7 @@ export default {
 	computed: {
 		...mapState(usePricingStore, ['current', 'items', 'manager']),
 		...mapState(usePricingStore, ['manager']),
+		//  эт для ватсапа сделано
 
 		managerPlainPhone(){
 			if(!this.info) return ''
@@ -145,6 +159,15 @@ export default {
 			}
 			return this.info.owner.phone
 		},
+		// 	чтоб красиво было тип такого +7 778 548-67-59
+		managerPhone() {
+			if (!this.info || !this.owner || !this.info.owner.phone) return '';
+
+			const phone = this.info.owner.phone;
+			return this.formatPhoneNumber(phone);
+		},
+
+
 		ownerInfo() {
 			return newValue => [...this.owner, newValue.owner];
 		},
@@ -185,7 +208,20 @@ export default {
 		ownerUpdate(newValue) {
 			this.owner = [...this.owner, newValue.owner];
 		},
+		formatPhoneNumber(phone) {
+			// Удаляем все символы, кроме цифр
+			const cleaned = ('' + phone).replace(/\D/g, '');
 
+			// Разбиваем номер на части
+			const match = cleaned.match(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/);
+
+			if (match) {
+				// Форматируем номер телефона
+				return `${match[1]} ${match[2]} ${match[3]}-${match[4]}-${match[5]}`;
+			}
+
+			return phone;
+		},
 		tariffUpdate(newValue) {
 			this.tariff = [...this.tariff, newValue.tariff];
 		},
@@ -236,6 +272,7 @@ export default {
 	.price-space-title-block {
 		font-size: 20px !important;
 		line-height: 30px !important;
+		margin-bottom: 8px !important;
 	}
 
 	.price-space-text-name {
@@ -248,6 +285,11 @@ export default {
 
 	.price-space-info {
 		max-width: 358px !important;
+	}
+
+	.price-space-buttons{
+			flex-direction: row !important;
+			align-items: center !important;
 	}
 
 	.price-space-buttons button {
@@ -285,10 +327,11 @@ export default {
 }
 
 .price-space-title-block {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: 600;
 	line-height: 28px;
-	margin-bottom: 8px;
+	display: flex;
+		gap: 5px;
 }
 
 .price-space-text-content {
@@ -319,12 +362,28 @@ export default {
 	max-width: 318px;
 	width: 100%;
 }
-
+.price-space-info-text {
+	display: flex;
+	flex-direction: column;
+	max-width: 318px;
+	width: 100%;
+	color: #737B8A;
+	font-size: 14px;
+	gap: 5px;
+}
 .price-space-contact {
 	margin-top: auto;
 	display: flex;
 	gap: 12px;
 	align-items: center;
+		font-weight: 500;
+}
+.price-space-contact-text {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+		font-weight: 500;
+		font-size: 14px;
 }
 
 .price-space-button {
@@ -334,11 +393,15 @@ export default {
 	border-radius: 8px;
 	padding: 8px;
 }
+.price-space-button:hover {
+	background-color: #bbbbbb;
+}
 
 .price-space-buttons {
 	margin-top: auto;
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	align-items: flex-start;
 	gap: 5px;
 }
 
@@ -351,11 +414,21 @@ export default {
 	border-radius: 8px;
 }
 
+.price-space-buttons button:hover {
+
+	color: white;
+	background-color: #0839b6;
+
+}
+
 .price-space-buttons p {
 		font-size: 13px;
 	color: #0c50ff;
 	font-weight: 700;
 	cursor: pointer;
 	width: 100%;
+}
+.price-space-buttons p:hover {
+	color: #0d3cb2;
 }
 </style>

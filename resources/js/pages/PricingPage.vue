@@ -38,7 +38,11 @@
 			</PricingModalFreeLayout>
 		</JobtronOverlay>
 		<PriceTrialPeriod v-if="!trialPeriod" />
-		<!--		<PriceTimeLimit is-default />-->
+		<PriceTimeLimit
+			v-if="expiredAt <= 5"
+			:expired-at="expiredAt"
+			is-default
+		/>
 		<PriceSpace />
 		<div class="PricingPage ">
 			<PricingRates
@@ -71,10 +75,13 @@ import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModa
 import PriceSpace from '../components/price/PriceSpace.vue';
 import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingModalFreeLayout.vue';
 import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
+import {useValidityStore} from '../stores/api/pricing/validity';
+import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
+		PriceTimeLimit,
 		PricingToFree,
 		PricingModalFreeLayout,
 		PriceSpace,
@@ -113,6 +120,7 @@ export default {
 		...mapState(usePricingStore, ['priceForUser', 'items', 'current']),
 		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
+		...mapState(useValidityStore, ['validity']),
 
 		additionalPrice() {
 			if (!this.priceForUser) return 0;
@@ -121,6 +129,9 @@ export default {
 				this.priceForUser[this.currencyCode] *
 				(this.selectedRate.validity === 'monthly' ? 1 : 12)
 			);
+		},
+		expiredAt(){
+			return this.validity ;
 		},
 		total() {
 			if (!this.selectedRate) return 0;
@@ -133,8 +144,8 @@ export default {
 			return this.currencyTranslate[this.currency];
 		},
 	},
-
 	created() {
+		this.fetchValidityCorses()
 		this.fetchCurrent(Laravel.userId);
 		if (this.$route.query.status) {
 			this.fetchStatus().then((status) => {
@@ -147,6 +158,7 @@ export default {
 
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
+		...mapActions(useValidityStore, ['fetchValidityCorses']),
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
@@ -251,7 +263,7 @@ export default {
 	font-family: Inter,serif  !important;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 60px;
   max-width: 1300px;
   width: 100%;
   margin-left: 30px;

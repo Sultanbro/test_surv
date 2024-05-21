@@ -1,16 +1,9 @@
 <template>
 	<div class="pricing-buy-modal">
 		<h1
-			v-if="tariffStore === priceStore.name || tariffStore === 'Бесплатный'"
 			class="pricing-buy-title"
 		>
 			Оплата тарифа {{ priceStore.name }}
-		</h1>
-		<h1
-			v-if="tariffStore !== priceStore.name && tariffStore !== 'Бесплатный'"
-			class="pricing-buy-title"
-		>
-			Переход на тариф {{ priceStore.name }}
 		</h1>
 		<div class="pricing-buy-description">
 			Выберите необходимые параметры
@@ -296,7 +289,7 @@ export default  {
 	computed:{
 		...mapState(useModalStore, ['price']),
 		...mapState(usePricingStore, ['priceForUser', 'items']),
-		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore']),
+		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore', 'tariffId']),
 		...mapState(usePricingStore, ['priceForOnePerson']),
 		additionalPrice(){
 			if(!this.priceForUser) return 0
@@ -320,6 +313,7 @@ export default  {
 		},
 
 	},
+
 	mounted() {
 		this.getPriceData()
 	},
@@ -351,19 +345,40 @@ export default  {
 		async submitPayment(){
 			if(!this.priceStore) return
 			if(this.currency !== '₽') return this.submitWalletOne()
+
 			try{
 				/* eslint-disable camelcase */
-				const { url } = await this.postPaymentData({
-					currency: this.currencyCode,
-					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
-						this.activeOption === 12 ? this.priceStore.yearly.id :
-							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
-					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
-					auto_payment: this.autoPayment,
-					tenant_id: this.selectedOption.id
-				})
-				/* eslint-enable camelcase */
-				window.location.assign(url)
+				if (this.tariffStore === this.price){
+					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
+						currency: this.currencyCode,
+						// eslint-disable-next-line camelcase
+						extra_users_limit: this.count > 0 ? this.count : 0,
+						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+							this.activeOption === 12 ? this.priceStore.yearly.id :
+								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
+					}).then(res => {
+
+						if (res && res.data.data.url) {
+							window.location.assign(res.data.data.url);
+						} else {
+							console.error('URL not found in response', res);
+						}
+					})
+				}
+				else{
+					const { url } = await this.postPaymentData({
+						currency: this.currencyCode,
+						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+							this.activeOption === 12 ? this.priceStore.yearly.id :
+								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
+						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
+						auto_payment: this.autoPayment,
+						tenant_id: this.selectedOption.id
+					})
+					/* eslint-enable camelcase */
+					window.location.assign(url)
+				}
+
 			}
 			catch(error){
 				console.error('submitPayment', error)
@@ -372,27 +387,37 @@ export default  {
 		},
 		async submitWalletOne(){
 			try{
-				/* eslint-disable camelcase */
-				const { url, params } = await this.postPaymentData({
-					currency: this.currencyCode,
-					tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
-						this.activeOption === 12 ? this.priceStore.yearly.id :
-							this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
-					extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
-					auto_payment: this.autoPayment,
-					tenant_id: this.selectedOption.id
-				})
-				const form = document.createElement('form')
-				form.method = 'post'
-				form.action = url
-				Object.keys(params).forEach(key => {
-					const inp = document.createElement('input')
-					inp.name = key
-					inp.value = params[key]
-					form.appendChild(inp)
-				})
-				document.body.appendChild(form)
-				form.submit()
+			/* eslint-disable camelcase */
+				if (this.tariffStore !== 'free'){
+					this.axios.post(`/tariff/subscriptions/${this.info.tariff.tariff_id}/extend`, {
+						currency: this.currencyCode,
+						// eslint-disable-next-line camelcase
+						extra_users_limit: this.count > 0 ? this.count : 0,
+						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+							this.activeOption === 12 ? this.priceStore.yearly.id :
+								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
+					}).then(res => {
+						if (res && res.data.data) {
+							window.location.assign(res.data.data.url);
+						} else {
+							console.error('URL not found in response', res);
+						}
+					})
+				}
+				else{
+					const { url } = await this.postPaymentData({
+						currency: this.currencyCode,
+						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
+							this.activeOption === 12 ? this.priceStore.yearly.id :
+								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
+						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
+						auto_payment: this.autoPayment,
+						tenant_id: this.selectedOption.id
+					})
+					/* eslint-enable camelcase */
+					window.location.assign(url)
+				}
+
 			}
 			catch(error){
 				console.error('submitPayment', error)
@@ -493,8 +518,6 @@ export default  {
 	padding: 13px 0 !important;
 	text-align: center !important;
 	border-radius: 8px !important;
-	background-color: #0c50ff !important;
-	color: white !important;
   }
   .pricing-button-later {
 	width: 100% !important;
@@ -741,6 +764,10 @@ export default  {
   border-radius: 8px;
   background-color: #0C50FF;
   color: white;
+}
+.pricing-button-connect:hover{
+  background-color: #0d3bb2;
+
 }
 .pricing-button-later{
   width: 100%;

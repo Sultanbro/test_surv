@@ -19,6 +19,11 @@ export async function fetchOwnerInfo() {
 	return data;
 }
 
+export async function fetchValidity() {
+	const { data } = await axios.get('/tariff/validity');
+	return data;
+}
+
 /**
  * Получене возможных тарифов
  * @return {ApiResponse.PricingResponse}

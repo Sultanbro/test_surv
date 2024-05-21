@@ -76,7 +76,7 @@ export default {
 
   .pricing-modal-content{
 	position: absolute;
-	right: 1% !important;
+	right: 0% !important;
 	max-width: 564px !important;
 	width: 100%;
 	display: flex;
@@ -84,7 +84,6 @@ export default {
 	padding: 8px !important;
 	background-color: #FFFFFF;
 	box-shadow: 4px 0px 32px 0px #C3C3C340;
-	border-radius: 40px;
 	height: 100vh !important;
   }
 }
@@ -99,7 +98,7 @@ export default {
 }
 .pricing-modal-content{
   position: absolute;
-  right: 1%;
+  right: 0%;
   animation: fadeInUp 0.3s ease;
   max-width: 404px;
   width: 100%;
@@ -108,7 +107,10 @@ export default {
   flex-direction: column;
   background-color: #ffffff;
   box-shadow: 4px 0px 32px 0px #c3c3c340;
-  border-radius: 40px;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
   height: 100vh;
 }
 
