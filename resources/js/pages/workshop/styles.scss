@@ -9,10 +9,14 @@
 	button {
 		width: 450px;
 		background-color: #33b4ff;
-		padding: 5%;
+		padding: 3%;
 		color: white;
 		border-radius: 10px;
 		transition: all ease 100ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-content: space-between;
 		&:hover {
 			background-color: #0193e8;
 		}
