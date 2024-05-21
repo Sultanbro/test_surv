@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Service\Payments\Core\PaymentGatewayRegistry;
-use App\Service\Payments\Prodamus\ProdamusGateway;
-use App\Service\Payments\Prodamus\ProdamusConnector;
-use App\Service\Payments\WalletOne\WalletOneGateway;
-use App\Service\Payments\WalletOne\WalletOneConnector;
+use App\Service\Payment\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Prodamus\ProdamusGateway;
+use App\Service\Payment\Prodamus\ProdamusConnector;
+use App\Service\Payment\WalletOne\WalletOneGateway;
+use App\Service\Payment\WalletOne\WalletOneConnector;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 

@@ -18,6 +18,8 @@ class CreatePermissionTables extends Migration
         $columnNames = config('permission.column_names');
         $teams = config('permission.teams');
 
+        if (Schema::hasTable($tableNames['permissions'])) return;
+
         if (empty($tableNames)) {
             throw new \Exception('Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.');
         }

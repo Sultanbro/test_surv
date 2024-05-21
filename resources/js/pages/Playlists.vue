@@ -13,7 +13,7 @@
 					:key="cat.id"
 					class="section d-flex aic jcsb my-2"
 					:class="{'active': activeCat != null && activeCat.id == cat.id}"
-					@click="selectCat(index)"
+					@click="selectCat(cat)"
 				>
 					<p class="mb-0">
 						{{ cat.title }}
@@ -141,7 +141,7 @@
 									v-for="(playlistItem, p_index) in activeCat.playlists"
 									:key="playlistItem.id"
 									class="PlayList playlist mb-4"
-									@click="selectPl(p_index)"
+									@click="selectPl(playlistItem.id)"
 								>
 									<div class="left">
 										<img
@@ -429,7 +429,8 @@ export default {
 	watch:{
 		token(){
 			this.init()
-		}
+		},
+
 	},
 	created() {
 		if(this.token){
@@ -476,19 +477,16 @@ export default {
 				});
 		},
 
-		selectPl(i) {
-			this.activePlaylist = this.activeCat.playlists[i];
-			this.data_playlist = i+1;
-
+		selectPl(playlistId) {
+			this.activePlaylist = this.activeCat.playlists.find(pl => pl.id === playlistId);
+			this.data_playlist = playlistId;
 
 			if (history.pushState) {
 				var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
 				history.pushState(null, null, newUrl);
-			}
-			else {
+			} else {
 				console.warn('History API не поддерживает ваш браузер');
 			}
-
 		},
 
 		editCat(i) {
@@ -514,22 +512,20 @@ export default {
 					});
 			}
 		},
-		selectCat(i) {
-			this.activeCat = this.categories[i];
+		selectCat(cat) {
+			// eslint-disable-next-line no-self-compare
+			this.activeCat = this.categories.find(cat => cat.id === cat.id);
 			this.activePlaylist = null;
-			this.data_category = i+1;
+			this.data_category = cat.id;
 			this.data_playlist = 0;
-
 
 			if (history.pushState) {
 				var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
 				history.pushState(null, null, newUrl);
-			}
-			else {
+			} else {
 				console.warn('History API не поддерживает ваш браузер');
 			}
 			this.myvideo = 0;
-
 		},
 
 		deleteCat(i) {

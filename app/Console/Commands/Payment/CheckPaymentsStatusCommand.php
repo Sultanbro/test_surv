@@ -4,7 +4,7 @@ namespace App\Console\Commands\Payment;
 
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Facade\Payment\Gateway;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,15 +32,15 @@ class CheckPaymentsStatusCommand extends Command
      */
     public function handle(): void
     {
-        /** @var Collection<TariffPayment> $payments */
-        $payments = TariffPayment::query()
+        /** @var Collection<TariffSubscription> $payments */
+        $payments = TariffSubscription::query()
             ->with('tenant')
             ->where('status', '=', PaymentStatusEnum::STATUS_PENDING)
             ->get();
 
         foreach ($payments as $payment) {
             try {
-                $gateway = Gateway::get($payment->service_for_payment);
+                $gateway = Gateway::provider($payment->payment_provider);
                 $gateway->updateStatusByPayment($payment);
             } catch (Exception) {
                 //TODO log exception

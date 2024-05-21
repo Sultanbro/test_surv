@@ -17,6 +17,11 @@
 			</template>
 		</router-link>
 		<div class="intro">
+			<PriceTimeLimit
+				v-if="isOwner && expiredAt <= 5 && expiredAt > 0"
+				small
+				:expired-at="expiredAt"
+			/>
 			<IntroTop
 				:courses="intro['courses']"
 				:profit="intro['profit']"
@@ -141,15 +146,11 @@
 		>
 			<Nominations @get-desc="getDesc" />
 		</Popup>
-
-		<WellcomeNewCabinet
-			v-if="isOwner && isWellcomeMessage"
-			@close="isWellcomeMessage = false"
-		/>
 	</div>
 </template>
 
 <script>
+/* global Laravel */
 import IntroTop from '@/pages/Profile/IntroTop.vue'
 import IntroStats from '@/pages/Profile/IntroStats.vue'
 // import IntroSmartTable from '@/pages/Profile/IntroSmartTable.vue'
@@ -166,11 +167,10 @@ import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
 // import RefWidget from '@/components/pages/Profile/RefWidget.vue'
-const WellcomeNewCabinet = () => import(/* webpackChunkName: "WellcomeNewCabinet" */ '@/pages/Profile/WellcomeNewCabinet.vue')
 
 
 import { mapGetters } from 'vuex'
-import { mapState, /* mapActions */ } from 'pinia'
+import {mapActions, mapState, /* mapActions */} from 'pinia'
 import { useSettingsStore } from '@/stores/Settings'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
@@ -178,11 +178,14 @@ import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 // import { useReferralStore } from '@/stores/Referral'
-import { usePortalStore } from '@/stores/Portal.js'
+import { usePortalStore } from '@/stores/Portal'
+import PriceTimeLimit from '../../components/pages/Pricing/PriceTimeLimit.vue';
+import {useValidityStore} from '../../stores/api/pricing/validity';
 
 export default {
 	name: 'ProfilePage',
 	components: {
+		PriceTimeLimit,
 		IntroTop,
 		IntroStats,
 		// IntroSmartTable,
@@ -199,7 +202,6 @@ export default {
 		PopupQuartal,
 		Nominations,
 		// RefWidget,
-		WellcomeNewCabinet,
 	},
 	props: {},
 	data: function () {
@@ -210,6 +212,8 @@ export default {
 			popKpi: false,
 			popBonuses: false,
 			popQuartalPremiums: false,
+			project: window.location.hostname.split('.')[0],
+			tenants: (Laravel.tenants || []).map(tenant => tenant.toLowerCase()),
 			popNominations: false,
 			popQPSubTitle: '',
 			intro: {
@@ -234,11 +238,11 @@ export default {
 			documents: [],
 			person: null,
 			isWarnReady: false,
-			isWellcomeMessage: false,
 		};
 	},
 	computed: {
 		...mapGetters(['user']),
+		...mapState(useValidityStore, ['validity']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
 		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
@@ -247,10 +251,16 @@ export default {
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		// ...mapState(useReferralStore, {refReady: 'isReady'}),
-		...mapState(usePortalStore, ['isOwner', 'portal']),
+		...mapState(usePortalStore, ['isOwner']),
 		isTrainee(){
 			if(!this.person) return true
 			return !!this.person?.user_description?.is_trainee
+		},
+		expiredAt(){
+			return this.validity ;
+		},
+		isOwner() {
+			return this.tenants && this.tenants.includes(this.project)
 		},
 		coursesFinished(){
 			const completed = this.courses.filter(course => course.all_stages && (course.all_stages === course.completed_stages))
@@ -297,6 +307,9 @@ export default {
 			if(value) this.init()
 		}
 	},
+	created(){
+		this.fetchValidityCorses()
+	},
 	mounted(){
 		if(this.isReady) this.init()
 		// if(this.isBP) this.fetchUserStats()
@@ -310,22 +323,14 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions(useValidityStore, ['fetchValidityCorses']),
+
 		// ...mapActions(useReferralStore, ['fetchUserStats']),
 		init(){
 			setTimeout(() => {
 				this.initAnimOnScroll()
 				this.isWarnReady = true
 			}, 100)
-			this.showWellcome()
-		},
-		showWellcome(){
-			if(!this.portal?.created_at) return setTimeout(this.showWellcome, 100)
-			const today = new Date(this.portal.created_at).toLocaleDateString() === new Date().toLocaleDateString()
-			const sended = localStorage.getItem('ProfilePage-wellcome')
-			if(today && !sended){
-				localStorage.setItem('ProfilePage-wellcome', '1')
-				this.isWellcomeMessage = true
-			}
 		},
 		async fetchDocs(){
 			const { data } = await this.axios.get(`/signature/users/${this.$laravel.userId}/files`)

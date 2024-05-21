@@ -45,7 +45,7 @@ return [
         'mysql' => [
             'driver' => env('DB_DRIVER', 'mysql'),
             'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
+            'port' => env('DB_PORT', 3306),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
@@ -152,7 +152,7 @@ return [
         |--------------------------------------------------------------------------
         |
         | Callibro - Call center service named U-calls at cp.callibro.org
-        | It provides call accounts, dialers, call_scripts, calls 
+        | It provides call accounts, dialers, call_scripts, calls
         | and contacts to form analytics
         |
         | Call_center - freeswitch DB that controls calls' queues

@@ -13,14 +13,20 @@
 		/>
 		<path
 			d="M15.8002 2.21C15.3902 1.8 14.6802 2.08 14.6802 2.65V6.14C14.6802 7.6 15.9202 8.81 17.4302 8.81C18.3802 8.82 19.7002 8.82 20.8302 8.82C21.4002 8.82 21.7002 8.15 21.3002 7.75C19.8602 6.3 17.2802 3.69 15.8002 2.21Z"
-			fill="#8DA0C1"
+			:fill="currentColor"
 		/>
 	</svg>
 </template>
 
 <script>
 export default {
-	name: 'MaterialsIcon'
+	name: 'MaterialsIcon',
+	props: {
+		currentColor: {
+			type: String,
+			default: '#8DA0C1'
+		}
+	}
 }
 </script>
 

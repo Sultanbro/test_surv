@@ -1,144 +1,102 @@
 <template>
-	<div class="PricingPage py-4">
-		<PricingManager />
-		<PricingCurrent />
-		<PricingRates
-			:currency="currency"
-			:selected-rate="selectedRate"
-			@update="updateRate"
-		/>
+	<div class="pricing-page-content">
+		<JobtronOverlay
+			v-if="currentModalId === 'priceModal'"
+			@close="removeModal()"
+		>
+			<PricingModal>
+				<PricingModalDefault />
+			</PricingModal>
+		</JobtronOverlay>
+		<JobtronOverlay
+			v-if="currentModalId === 'pricingToBuy'"
+			@close="removeModal()"
+		>
+			<PricingModal>
+				<PricingModalToBuy
+					:currency="currency"
+					:active-option="activeOption"
+					@updateOption="updateOption"
+				/>
+			</PricingModal>
+		</JobtronOverlay>
+		<JobtronOverlay
+			v-if="currentModalId === 'editRate'"
+			@close="removeModal()"
+		>
+			<PricingModal>
+				<PricingModalEditRate :currency="currency" />
+			</PricingModal>
+		</JobtronOverlay>
 
-		<template v-if="items && items.length">
-			<div class="PricingPage-currency mt-4">
-				Валюта:
-				<JobtronButton
-					:fade="currency !== '₽'"
-					@click="currency = '₽'"
-				>
-					₽
-				</JobtronButton>
-				<JobtronButton
-					:fade="currency !== '₸'"
-					@click="currency = '₸'"
-				>
-					₸
-				</JobtronButton>
-				<JobtronButton
-					:fade="currency !== '$'"
-					@click="currency = '$'"
-				>
-					$
-				</JobtronButton>
-			</div>
-			<div
-				v-if="selectedRate"
-				class="PricingPage-users mt-4"
-			>
-				<div class="PricingPage-users-title">
-					Количество пользователей:
-				</div>
-				<div class="PricingPage-users-form">
-					<JobtronButton
-						class="PricingPage-users-less"
-						:disabled="users <= 0"
-						@click="decreseUsers"
-					>
-						-
-					</JobtronButton>
-					<input
-						v-model="users"
-						type="number"
-						class="PricingPage-users-input"
-					>
-					<JobtronButton
-						class="PricingPage-users-more"
-						@click="increseUsers"
-					>
-						+
-					</JobtronButton>
-				</div>
-				<img
-					v-b-popover.hover.right="'Если необходимо к тарифу можете добавить пользователей'"
-					src="/images/dist/profit-info.svg"
-					alt=""
-				>
-			</div>
-			<div
-				v-if="false && selectedRate"
-				class="PricingPage-auto mt-4"
-			>
-				<b-form-checkbox
-					v-model="autoPayment"
-					switch
-				>
-					Авто оплата
-				</b-form-checkbox>
-			</div>
-			<div
-				v-if="selectedRate"
-				class="PricingPage-total mt-4"
-			>
-				Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <JobtronButton @click="submitPayment">
-					Оплатить
-				</JobtronButton>
-			</div>
-			<hr class="my-4">
-			<div
-				v-if="isBP"
-				class="PricingPage-promo mt-4"
-			>
-				<div
-					v-if="promoData.code"
-					class="PricingPage-promo-active"
-				>
-					Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
-				</div>
-				<template v-else>
-					<div class="PricingPage-promo-title">
-						Есть бонусный код?
-					</div>
-					<div class="PricingPage-promo-text">
-						Активируйте его, чтобы получить бонус на первую оплату
-					</div>
-					<div class="PricingPage-promo-form mt-4">
-						<input
-							v-model="promo"
-							type="text"
-							class="PricingPage-promo-input form-control"
-							placeholder="Код купона"
-						>
-						<JobtronButton
-							:disabled="!promo || isPromoLoading"
-							@click="activatePromo"
-						>
-							{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
-						</JobtronButton>
-					</div>
-				</template>
-			</div>
-		</template>
+		<JobtronOverlay
+			v-if="currentModalId === 'pricingToFree'"
+			@close="removeModal()"
+		>
+			<PricingModalFreeLayout>
+				<PricingToFree :currency="currency" />
+			</PricingModalFreeLayout>
+		</JobtronOverlay>
+		<PriceTrialPeriod v-if="!trialPeriod" />
+		<PriceTimeLimit
+			v-if="expiredAt <= 5 && expiredAt > 0"
+			:expired-at="expiredAt"
+			is-default
+		/>
+		<PriceSpace />
+		<div class="PricingPage ">
+			<PricingRates
+				:currency="currency"
+				:selected-rate="selectedRate"
+				:active-option="activeOption"
+				@updateOption="updateOption"
+				@update="updateRate"
+				@updateCurrency="updateCurrency"
+			/>
+		</div>
+		<PriceFAQ />
 	</div>
 </template>
 
 <script>
 /* global Laravel */
-import { mapActions, mapState } from 'pinia'
-import { usePricingStore } from '@/stores/Pricing'
-import PricingManager from '@/components/pages/Pricing/PricingManager'
-import PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
-import PricingRates from '@/components/pages/Pricing/PricingRates'
-import JobtronButton from '@ui/Button'
+import { mapActions, mapState } from 'pinia';
+import { usePricingStore } from '@/stores/Pricing';
+import PricingRates from '@/components/pages/Pricing/PricingRates';
+import PriceTrialPeriod from '../components/price/PriceTrialPeriod.vue';
+import PriceFAQ from '../components/pages/Pricing/PriceFAQ.vue';
+import PricingModal from '../components/pages/Pricing/PricingModal.vue';
+import { useModalStore } from '../stores/Modal';
+import JobtronOverlay from '../components/ui/Overlay.vue';
+import PricingModalToBuy from '../components/pages/Pricing/Modals/PricingModalToBuy.vue';
+import PricingModalDefault from '../components/pages/Pricing/Modals/PricingModalDefault.vue';
+import { usePricingPeriodStore } from '../stores/PricingPeriod';
+import PricingModalEditRate from '../components/pages/Pricing/Modals/PricingModalEditRate.vue';
+import PriceSpace from '../components/price/PriceSpace.vue';
+import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingModalFreeLayout.vue';
+import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
+import {useValidityStore} from '../stores/api/pricing/validity';
+import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
 
 export default {
 	name: 'PricingPage',
 	components: {
-		PricingManager,
-		PricingCurrent,
+		PriceTimeLimit,
+		PricingToFree,
+		PricingModalFreeLayout,
+		PriceSpace,
+		PricingModalDefault,
+		PricingModalToBuy,
+		JobtronOverlay,
+		PricingModal,
+		PriceFAQ,
+		PriceTrialPeriod,
 		PricingRates,
-		JobtronButton,
+		PricingModalEditRate,
 	},
-	data(){
+	data() {
 		return {
+			activeOption: 3,
 			selectedRate: null,
 			users: 0,
 			period: '',
@@ -147,138 +105,205 @@ export default {
 			currencyTranslate: {
 				'₽': 'rub',
 				'₸': 'kzt',
-				'$': 'usd',
+				$: 'usd',
 			},
 			promo: '',
 			promoData: {},
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
-		}
-	},
-	computed: {
-		...mapState(usePricingStore, ['priceForUser', 'items']),
-		additionalPrice(){
-			if(!this.priceForUser) return 0
-			return this.users * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
-		},
-		total(){
-			if(!this.selectedRate) return 0
-			const total = this.selectedRate.multiCurrencyPrice[this.currencyCode] + this.additionalPrice
-			return this.promoData?.value ? total - this.promoData.value : total
-		},
-		currencyCode(){
-			return this.currencyTranslate[this.currency]
-		},
+			freePeriod: false,
+			trialPeriod: false
+		};
 	},
 
-	created(){
-		this.fetchCurrent(Laravel.userId)
-		if(this.$route.query.status){
-			this.fetchStatus().then(status => {
-				if(status) return this.$toast.success('Платеж прошел успешно')
-				this.$toast.error('Платеж прошел неуспешно')
-			})
+	computed: {
+		...mapState(usePricingStore, ['priceForUser', 'items', 'current']),
+		...mapState(useModalStore, ['currentModalId']),
+		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
+		...mapState(useValidityStore, ['validity', 'date']),
+
+		additionalPrice() {
+			if (!this.priceForUser) return 0;
+			return (
+				this.users *
+				this.priceForUser[this.currencyCode] *
+				(this.selectedRate.validity === 'monthly' ? 1 : 12)
+			);
+		},
+		expiredAt(){
+			return this.validity ;
+		},
+		total() {
+			if (!this.selectedRate) return 0;
+			const total =
+				this.selectedRate.multiCurrencyPrice[this.currencyCode] +
+				this.additionalPrice;
+			return this.promoData?.value ? total - this.promoData.value : total;
+		},
+		currencyCode() {
+			return this.currencyTranslate[this.currency];
+		},
+	},
+	created() {
+		this.fetchValidityCorses()
+		this.fetchCurrent(Laravel.userId);
+		if (this.$route.query.status) {
+			this.fetchStatus().then((status) => {
+				if (status) return this.$toast.success('Платеж прошел успешно');
+				this.$toast.error('Платеж прошел неуспешно');
+			});
 		}
+		this.trialPeriodFetch()
 	},
 
 	methods: {
+		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
+		...mapActions(useValidityStore, ['fetchValidityCorses']),
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
 			'fetchCurrent',
 			'fetchStatus',
 		]),
-		updateRate(value){
-			this.selectedRate = value.rate
-			this.period = value.rate.validity
+		updateOption(id){
+			this.activeOption = id
+
 		},
-		decreseUsers(){
-			if(this.users > 0) --this.users
+		removeModal() {
+			this.removeModalActive();
 		},
-		increseUsers(){
-			if(!this.selectedRate) return
-			++this.users
+		trialPeriodFetch(){
+			this.axios.get('/tariff/trial').then(res => {
+				this.trialPeriod = res.data.data.has_trial
+			})
 		},
-		async submitPayment(){
-			if(!this.selectedRate) return
-			if(this.currency !== '₽') return this.submitWalletOne()
-			try{
+		updateRate(value) {
+			this.selectedRate = value.rate;
+			this.period = value.rate.validity;
+		},
+		updateFreePeriod(newPeriod) {
+			this.freePeriod = newPeriod;
+			this.$nextTick(() => {
+				document.body.appendChild(this.$refs.pricingmodal);
+			});
+		},
+		updateCurrency(newCurrency) {
+			this.currency = newCurrency;
+		},
+		decreseUsers() {
+			if (this.users > 0) --this.users;
+		},
+		increseUsers() {
+			if (!this.selectedRate) return;
+			++this.users;
+		},
+		async submitPayment() {
+			if (!this.selectedRate) return;
+			if (this.currency !== '₽') return this.submitWalletOne();
+			try {
 				/* eslint-disable camelcase */
 				const { url } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
-					auto_payment: this.autoPayment
-				})
+					auto_payment: this.autoPayment,
+				});
 				/* eslint-enable camelcase */
-				window.location.assign(url)
-			}
-			catch(error){
-				console.error('submitPayment', error)
-				this.$toast.error('Ошибка при попытке оплаты')
+				window.location.assign(url);
+			} catch (error) {
+				console.error('submitPayment', error);
+				this.$toast.error('Ошибка при попытке оплаты');
 			}
 		},
-		async submitWalletOne(){
-			try{
+		async submitWalletOne() {
+			try {
 				/* eslint-disable camelcase */
 				const { url, params } = await this.postPaymentData({
 					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.users > 0 ? this.users : 0,
-					auto_payment: this.autoPayment
-				})
-				const form = document.createElement('form')
-				form.method = 'post'
-				form.action = url
-				Object.keys(params).forEach(key => {
-					const inp = document.createElement('input')
-					inp.name = key
-					inp.value = params[key]
-					form.appendChild(inp)
-				})
-				document.body.appendChild(form)
-				form.submit()
-			}
-			catch(error){
-				console.error('submitPayment', error)
-				this.$toast.error('Ошибка при попытке оплаты')
+					auto_payment: this.autoPayment,
+				});
+				const form = document.createElement('form');
+				form.method = 'post';
+				form.action = url;
+				Object.keys(params).forEach((key) => {
+					const inp = document.createElement('input');
+					inp.name = key;
+					inp.value = params[key];
+					form.appendChild(inp);
+				});
+				document.body.appendChild(form);
+				form.submit();
+			} catch (error) {
+				console.error('submitPayment', error);
+				this.$toast.error('Ошибка при попытке оплаты');
 			}
 		},
-		async activatePromo(){
-			this.isPromoLoading = true
-			this.promoData = await this.fetchPromo(this.promo)
-			this.isPromoLoading = false
-		}
+		async activatePromo() {
+			this.isPromoLoading = true;
+			this.promoData = await this.fetchPromo(this.promo);
+			this.isPromoLoading = false;
+		},
 	},
 };
 </script>
 
 <style lang="scss">
-	.PricingPage-promo-title{
-		position: relative;
-	}
-	.price-beta{
-		position: absolute;
-		top: 5px;
-		left: 205px;
-		padding: 3px 6px;
-		border-radius: 4px;
-		font-size: 12px;
-		background-color: #cd2525;
-		color: #fff;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-.PricingPage{
+@media (min-width: 1600px) {
+  .pricing-page-content {
+	padding: 20px 0 !important;
+	gap: 80px !important;
+
+  }
+}
+
+
+.pricing-page-content {
+  padding: 15px 0;
+	font-family: Inter,serif  !important;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  max-width: 1300px;
+  width: 100%;
+  margin-left: 30px;
+	button:focus{
+	outline: none !important;
+
+  }
+  * {
+	font-family: inherit !important;
+	font-weight: 400;
+  }
+}
+.PricingPage-promo-title {
+	position: relative;
+  font-family: Inter,serif;
+}
+.price-beta {
+	position: absolute;
+	top: 5px;
+	left: 205px;
+	padding: 3px 6px;
+	border-radius: 4px;
+	font-size: 12px;
+	background-color: #cd2525;
+	color: #fff;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+.PricingPage {
+	z-index: 3;
 	line-height: 1.3;
 	&-total,
-	&-users{
+	&-users {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
 		gap: 1rem;
 	}
-	&-users-form{
+	&-users-form {
 		display: inline-flex;
 		flex-flow: row nowrap;
 		align-items: stretch;
@@ -286,16 +311,16 @@ export default {
 		border-radius: 0.6rem;
 		font-size: 1.4rem;
 	}
-	&-users-input{
+	&-users-input {
 		flex: 1 1 100%;
 		padding: 0 1rem;
-		background-color: #F7FAFC;
+		background-color: #f7fafc;
 		-moz-appearance: textfield;
-		&:focus{
-			background-color: #F7FAFC;
+		&:focus {
+			background-color: #f7fafc;
 		}
 		&::-webkit-outer-spin-button,
-		&::-webkit-inner-spin-button{
+		&::-webkit-inner-spin-button {
 			-webkit-appearance: none;
 			margin: 0;
 		}
@@ -325,23 +350,23 @@ export default {
 	// 	border-radius: 0 0.6rem 0.6rem 0;
 	// }
 
-	&-currency{
+	&-currency {
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
 		gap: 10px;
 	}
-	&-total-value{
+	&-total-value {
 		font-size: 1.3em;
 	}
-	&-promo-title{
+	&-promo-title {
 		font-size: 1.3em;
 	}
-	&-promo-text{
+	&-promo-text {
 		font-size: 0.8em;
 		opacity: 0.5;
 	}
-	&-promo-input{
+	&-promo-input {
 		display: inline-block;
 		width: auto;
 	}

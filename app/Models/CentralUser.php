@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Enums\ErrorCode;
 use App\Models\Admin\ManagerHasOwner;
 use App\Models\Portal\Portal;
-use App\Models\Tariff\TariffPayment;
+use App\Models\Tariff\TariffSubscription;
+use App\Service\Payment\Core\Customer\CustomerDto;
+use App\Service\Payment\Core\Customer\ICustomer;
 use App\Support\Core\CustomException;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,7 +39,7 @@ use Illuminate\Support\Facades\Auth;
  * @property Collection $cabinets
  * @property Collection $tenants
  */
-class CentralUser extends Model
+class CentralUser extends Model implements ICustomer
 {
     use HasFactory;
 
@@ -146,5 +148,15 @@ class CentralUser extends Model
         $user_email = Auth::user()->email;
         /** @var CentralUser */
         return self::query()->where('email', $user_email)->first();
+    }
+
+    public function customer(): CustomerDto
+    {
+        return new CustomerDto(
+            $this->id,
+            $this->name . ' ' . $this->last_name,
+            $this->phone,
+            $this->currency,
+        );
     }
 }

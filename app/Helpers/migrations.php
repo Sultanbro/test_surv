@@ -24,8 +24,13 @@ if (!function_exists('table_exists')) {
      */
     function table_exists(string $table, string|null $connection = null): bool
     {
-        $connection = $connection ?? config('database.default');
-        return Schema::connection($connection)->hasTable($table);
+        try {
+
+            $connection = $connection ?? config('database.default');
+            return Schema::connection($connection)->hasTable($table);
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 }
 
