@@ -31,7 +31,6 @@ class Calculator
     private function promoCodePercent(NewSubscriptionDTO $newInvoiceDTO): int|string
     {
         $percent = 0;
-dd(PromoCode::find($newInvoiceDTO->promo_code));
         if ($newInvoiceDTO->promo_code) {
             $percent = PromoCode::find($newInvoiceDTO->promo_code)->rate;
 
