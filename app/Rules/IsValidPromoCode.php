@@ -5,7 +5,7 @@ namespace App\Rules;
 use App\Repositories\PromoCode\PromoCodeRepositoryInterface;
 use Illuminate\Contracts\Validation\Rule;
 
-class ValidPromoCode implements Rule
+class IsValidPromoCode implements Rule
 {
     /**
      * Create a new rule instance.
