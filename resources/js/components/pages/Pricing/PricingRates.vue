@@ -276,6 +276,7 @@ export default {
 			type: Object,
 			default: null,
 		},
+
 	},
 	data(){
 		return {
@@ -459,6 +460,12 @@ export default {
 				this.setCurrentModal('pricingToFree')
 			}
 
+			if (!this.info.tariff && item.name !== 'Бесплатный') {
+				this.connectedTariff('Бесплатный')
+				this.setPrice('free')
+				this.setCurrentModal('pricingToBuy')
+			}
+
 
 			this.addedPrice(item)
 		},
@@ -607,7 +614,6 @@ export default {
 		outline: none !important;
 		}
 		&-header-item {
-		color: white !important;
 		padding: 5px 24px !important;
 		font-size: 16px !important;
 		font-weight: 500 !important;

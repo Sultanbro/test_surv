@@ -18,7 +18,7 @@
 		</router-link>
 		<div class="intro">
 			<PriceTimeLimit
-				v-if="expiredAt <= 5"
+				v-if="isOwner && expiredAt <= 5 && expiredAt > 0"
 				small
 				:expired-at="expiredAt"
 			/>
@@ -150,6 +150,7 @@
 </template>
 
 <script>
+/* global Laravel */
 import IntroTop from '@/pages/Profile/IntroTop.vue'
 import IntroStats from '@/pages/Profile/IntroStats.vue'
 // import IntroSmartTable from '@/pages/Profile/IntroSmartTable.vue'
@@ -211,6 +212,8 @@ export default {
 			popKpi: false,
 			popBonuses: false,
 			popQuartalPremiums: false,
+			project: window.location.hostname.split('.')[0],
+			tenants: (Laravel.tenants || []).map(tenant => tenant.toLowerCase()),
 			popNominations: false,
 			popQPSubTitle: '',
 			intro: {
@@ -255,6 +258,9 @@ export default {
 		},
 		expiredAt(){
 			return this.validity ;
+		},
+		isOwner() {
+			return this.tenants && this.tenants.includes(this.project)
 		},
 		coursesFinished(){
 			const completed = this.courses.filter(course => course.all_stages && (course.all_stages === course.completed_stages))
