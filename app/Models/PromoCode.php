@@ -27,4 +27,5 @@ class PromoCode extends Model
     ];
 
     protected $primaryKey = 'code';
+    public $incrementing = false;
 }
