@@ -62,7 +62,7 @@
 				<div class="price-space-image">
 					<img
 						class="price-space-image"
-						:src="manager && manager.photo ? manager.photo : '/images/price/AvatarManager.png'"
+						:src="manager && manager.photo ? manager.photo : '/images/price/DefaultAvatar.png'"
 					>
 				</div>
 				<div class="price-space-info">
