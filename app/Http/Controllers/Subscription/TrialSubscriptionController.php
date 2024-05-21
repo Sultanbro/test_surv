@@ -29,12 +29,12 @@ class TrialSubscriptionController extends Controller
         /** @var User $user */
         $user = $request->user();
         $invoice = new NewSubscriptionDTO(
-            $user->currency,
-            $tariff->id,
-            $tenant,
-            0,
-            Gateway::provider($user->currency)->name(),
-            now()->addMonth()->toDateTimeString()
+            currency: $user->currency,
+            tariffId: $tariff->id,
+            tenantId: $tenant,
+            extraUsersLimit: 0,
+            provider: Gateway::provider($user->currency)->name(),
+            expiate_at: now()->addMonth()->toDateTimeString()
         );
 
         $service = new SubscribeService($invoice, new PaymentToken("trial"));

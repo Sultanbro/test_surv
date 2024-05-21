@@ -39,7 +39,7 @@
 		</JobtronOverlay>
 		<PriceTrialPeriod v-if="!trialPeriod" />
 		<PriceTimeLimit
-			v-if="expiredAt <= 5"
+			v-if="expiredAt <= 5 && expiredAt > 0"
 			:expired-at="expiredAt"
 			is-default
 		/>
@@ -120,7 +120,7 @@ export default {
 		...mapState(usePricingStore, ['priceForUser', 'items', 'current']),
 		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
-		...mapState(useValidityStore, ['validity']),
+		...mapState(useValidityStore, ['validity', 'date']),
 
 		additionalPrice() {
 			if (!this.priceForUser) return 0;
@@ -252,7 +252,7 @@ export default {
 <style lang="scss">
 @media (min-width: 1600px) {
   .pricing-page-content {
-
+	padding: 20px 0 !important;
 	gap: 80px !important;
 
   }
@@ -260,6 +260,7 @@ export default {
 
 
 .pricing-page-content {
+  padding: 15px 0;
 	font-family: Inter,serif  !important;
   display: flex;
   flex-direction: column;

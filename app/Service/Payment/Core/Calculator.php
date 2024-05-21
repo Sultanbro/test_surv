@@ -3,6 +3,7 @@
 namespace App\Service\Payment\Core;
 
 use App\DTO\Payment\NewSubscriptionDTO;
+use App\Models\PromoCode;
 use App\Models\Tariff\Tariff;
 
 class Calculator
@@ -22,7 +23,18 @@ class Calculator
         $tariff = Tariff::find($newInvoiceDTO->tariffId);
         $tariffPrice = $tariff->getPrice($newInvoiceDTO->currency)->value;
         $extraUsersPrice = $this->priceForOnePersonWithCurrencies[$newInvoiceDTO->currency] * $newInvoiceDTO->extraUsersLimit;
+        $price = (float)$tariffPrice + (float)$extraUsersPrice;
 
-        return (float)$tariffPrice + (float)$extraUsersPrice;
+        return subtractPercent($price, $this->promoCodePercent($newInvoiceDTO));
+    }
+
+    private function promoCodePercent(NewSubscriptionDTO $newInvoiceDTO): int|string
+    {
+        $percent = 0;
+        if ($newInvoiceDTO->promo_code) {
+            $percent = PromoCode::find($newInvoiceDTO->promo_code)->rate;
+
+        }
+        return $percent;
     }
 }

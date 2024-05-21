@@ -72,12 +72,8 @@ export default {
 <style scoped>
 @media (min-width: 1600px) {
 	.price-trial{
-		background-color: #1A1A1A;
-		width: 1195px !important;
-		border-radius: 24px;
-		display: flex;
-		position: relative;
-		overflow: hidden;
+		width: 1495px !important;
+
 	}
 	.price-trial-title{
 		font-size: 24px !important;
@@ -93,27 +89,28 @@ export default {
 		width: 88px !important;
 		height: 88px !important;
 		top: 10% !important;
-		left: 70% !important;
+		left: 73% !important;
 	}
 
 	.price-trial-checkbox{
 		position: absolute;
 		z-index: 7;
-		width: 153px !important;
-		height: 153px !important;
-		top: 40% !important;
-		left: 65%;
+		width: 143px !important;
+		height: 143px !important;
+		top: 33% !important;
+		left: 71%;
 	}
 	.price-trial-icon-box{
 		position: absolute;
 		z-index: 7;
-		width: 262px !important;
-		height: 262px !important;
-		top: 0% !important;
-		left: 77%;
+		width: 252px !important;
+		height: 252px !important;
+		top: -9% !important;
+		left: 82% !important;
 	}
 	.price-trial-content{
 		padding: 40px !important;
+			gap: 0 !important;
 	}
 	.price-trial-button{
 		padding: 16px 32px !important;
@@ -127,7 +124,7 @@ export default {
 .price-trial{
 		margin-top: 24px;
 	background-color: #1A1A1A;
-	width: 900px;
+	width: 1100px;
 	border-radius: 24px;
 	display: flex;
 	position: relative;
@@ -139,7 +136,7 @@ export default {
 	width: 78px;
 	height: 78px;
 	top: 10%;
-	left: 70%;
+	left: 74%;
 }
 
 .price-trial-checkbox{
@@ -156,7 +153,7 @@ export default {
 	width: 192px;
 	height: 192px;
 	top: 10%;
-	left: 77%;
+	left: 81%;
 }
 
 	.price-trial-content{

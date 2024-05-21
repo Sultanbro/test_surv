@@ -13,6 +13,7 @@ class CreateSavedKpiTable extends Migration
      */
     public function up()
     {
+        if(Schema::hasTable('saved_kpi')) return;
         Schema::create('saved_kpi', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->index();
