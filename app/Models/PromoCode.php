@@ -16,8 +16,6 @@ class PromoCode extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql';
-
     protected $table = 'promo_codes';
 
     protected $fillable = [
