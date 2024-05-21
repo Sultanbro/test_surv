@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tariff;
+namespace App\Http\Controllers\PromoCode;
 
 use App\Actions\PromoCode\DeleteAction\DeletePromoCodeAction;
 use App\Actions\PromoCode\DeleteAction\DeletePromoCodeDto;

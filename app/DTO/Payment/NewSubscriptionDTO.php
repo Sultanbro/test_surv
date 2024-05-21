@@ -12,6 +12,7 @@ final class NewSubscriptionDTO
      * @param int $extraUsersLimit
      * @param string $provider
      * @param string|null $expiate_at
+     * @param string|null $promo_code
      */
     public function __construct(
         public string      $currency,
@@ -20,6 +21,7 @@ final class NewSubscriptionDTO
         public int         $extraUsersLimit = 0,
         public string      $provider = 'prodamus',
         public string|null $expiate_at = null,
+        public string|null $promo_code = null,
     )
     {
     }
@@ -33,6 +35,7 @@ final class NewSubscriptionDTO
             'extra_users_limit' => $this->extraUsersLimit,
             'provider' => $this->provider,
             'expiate_at' => $this->expiate_at,
+            'promo_code' => $this->promo_code,
         ];
     }
 }

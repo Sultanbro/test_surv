@@ -28,4 +28,10 @@ class PromoCode extends Model
 
     protected $primaryKey = 'code';
     public $incrementing = false;
+
+    public static function first(string $code): PromoCode
+    {
+        /** @var PromoCode */
+        return self::query()->where('code', $code)->first();
+    }
 }
