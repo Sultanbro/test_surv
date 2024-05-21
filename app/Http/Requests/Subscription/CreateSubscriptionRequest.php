@@ -6,6 +6,7 @@ namespace App\Http\Requests\Subscription;
 use App\DTO\Payment\NewSubscriptionDTO;
 use App\Enums\Payments\CurrencyEnum;
 use App\Rules\TariffExist;
+use App\Rules\ValidPromoCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,7 @@ class CreateSubscriptionRequest extends FormRequest
             'tariff_id' => ['required', 'integer', new TariffExist],
             'tenant_id' => ['nullable', 'string'],
             'extra_users_limit' => ['required', 'integer', 'min:0'],
-            'promo_code' => ['nullable', 'string', Rule::exists('promo_codes', 'code')],
+            'promo_code' => ['nullable', 'string', new ValidPromoCode()],
         ];
     }
 

@@ -18,6 +18,8 @@ class PromoCode extends Model
 
     protected $table = 'promo_codes';
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'code',
         'name',
@@ -29,9 +31,11 @@ class PromoCode extends Model
     protected $primaryKey = 'code';
     public $incrementing = false;
 
-    public static function first(string $code): PromoCode
+    public static function find(string $code): PromoCode
     {
         /** @var PromoCode */
-        return self::query()->where('code', $code)->first();
+        return self::query()
+            ->where('code', $code)
+            ->where('code', $code)->first();
     }
 }

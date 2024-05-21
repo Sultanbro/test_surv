@@ -33,7 +33,7 @@ class Calculator
         $percent = 0;
 
         if ($newInvoiceDTO->promo_code) {
-            $percent = PromoCode::first($newInvoiceDTO->promo_code)->rate;
+            $percent = PromoCode::find($newInvoiceDTO->promo_code)->rate;
         }
         return $percent;
     }
