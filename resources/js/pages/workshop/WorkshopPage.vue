@@ -1,47 +1,48 @@
 <template>
 	<div class="workshop">
-		<button @click="openPayForm">
-			Оплата картой Казахстана
-		</button>
+		<div
+			v-for="button in buttons"
+			:key="button.id"
+		>
+			<button @click="openPayForm(button.link)">
+				{{ button.title }}
+			</button>
+		</div>
 	</div>
 </template>
 
 <script>
 export default {
 	name: 'WorkshopPage',
+	data() {
+		return {
+			buttons: [
+				{
+					id: 1,
+					title: 'Оплата картой Казахстана',
+					link: 'https://wl.walletone.com/checkout/refill/CreditCard/347428001/NewCard',
+				},
+				{
+					id: 2,
+					title: 'Оплата картой РФ',
+					link: 'https://proeducation.kz/e44NQ/',
+				},
+				{
+					id: 3,
+					title: 'Оплата Каспи Рассрочка',
+					link: '',
+				}
+			],
+		};
+	},
 	methods: {
-		openPayForm() {
-			window.open(
-				'https://wl.walletone.com/checkout/refill/CreditCard/347428001/NewCard',
-				'_blank'
-			);
+		openPayForm(link) {
+			window.open(link, '_blank');
 		},
 	},
 };
 </script>
 
 <style scoped lang="scss">
-.workshop {
-	font-size: 25px;
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	button {
-		background-color: #33b4ff;
-		padding: 1%;
-		color: white;
-		border-radius: 10px;
-		transition: all ease 100ms;
-		&:hover {
-			background-color: #0193e8;
-		}
-		&:focus {
-			outline: none;
-		}
-		a {
-			color: white;
-		}
-	}
-}
+@import url("./styles.scss");
 </style>
