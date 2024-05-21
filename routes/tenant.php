@@ -49,6 +49,11 @@ Route::middleware(['web', 'tenant'])->group(function () {
         });
     });
 
+    Route::prefix('promo-codes')->group(function () {
+        Route::get('/', [Root\Tariff\PromoCodeController::class, 'get']);
+        Route::post('/', [Root\Tariff\PromoCodeController::class, 'save']);
+        Route::delete('/', [Root\Tariff\PromoCodeController::class, 'destroy']);
+    });
 });
 
 // Portal Api
