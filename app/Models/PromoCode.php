@@ -35,7 +35,6 @@ class PromoCode extends Model
     {
         /** @var PromoCode */
         return self::query()
-            ->where('code', $code)
             ->where('code', $code)->first();
     }
 }
