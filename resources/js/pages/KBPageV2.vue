@@ -1467,9 +1467,9 @@ export default {
 
 		min-height: 35px;
 		padding: 5px 15px;
-		border-bottom: 1px solid #dfdfdf;
 
-		background-color: #f8f8f8;
+		background-color: #F7F7F7;
+    padding: 19px 21px 12px 38px;
 	}
 	&-body{
 		flex: 1;

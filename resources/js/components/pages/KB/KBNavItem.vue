@@ -2,24 +2,19 @@
 	<li
 		v-if="!sectionsMode || item.is_category"
 		class="KBNavItem"
-		:class="[
-			'KBNavItem_' + type,
-			'KBNavItem_' + mode,
-		]"
+		:class="['KBNavItem_' + type, 'KBNavItem_' + mode]"
 		:data-id="item.id"
 	>
 		<div class="KBNavItem-button">
 			<div class="d-flex aic gap-2">
 				<template v-if="type === 'book'">
-					<i
+					<CategoryIcon
 						v-if="isEditMode && (parent ? parent.canEdit : true)"
 						class="KBNavItem-mover fa fa-bars"
 					/>
 				</template>
 				<template v-else>
-					<div
-						class="KBNavItem-handler"
-					>
+					<div class="KBNavItem-handler">
 						<div
 							v-if="isEditMode && (parent ? parent.canEdit : true)"
 							class="KBNavItem-handlerIcon KBNavItem-mover"
@@ -38,37 +33,45 @@
 					class="KBNavItem-name"
 					@click.stop="$emit('open', item)"
 				>
-					{{ item.title }}
+					<div class="KBNavItem-title">
+						{{ item.title }}
+					</div>
 				</div>
 			</div>
 			<div
 				v-if="isEditMode && item.canEdit"
 				class="KBNavItem-actions"
 			>
-				<i
+				<!-- <i
 					v-if="!sectionsMode"
 					class="KBNavItem-action fa fa-plus"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
-				/>
-				<i
+				/> -->
+				<div
 					v-if="type === 'book' && $laravel.is_admin"
 					title="Добавить раздел"
-					class="KBNavItem-action far fa-plus-square"
 					@click.stop="$emit('add-book', item)"
-				/>
-				<i
+				>
+					<AddСhapterIcon />
+				</div>
+				<div
 					v-if="type === 'book' && (parent ? parent.canEdit : true)"
 					title="Удалить раздел"
-					class="KBNavItem-action fa fa-trash"
 					@click.stop="$emit('remove-book', item)"
-				/>
-				<i
+				>
+					<DeleteChapterIcon />
+				</div>
+				<div
 					v-if="type === 'book' && (parent ? parent.canEdit : true)"
 					title="Настройки"
-					class="KBNavItem-action fa fa-cog"
 					@click.stop="$emit('settings', item)"
-				/>
+				>
+					<SettingsChapterIcon />
+				</div>
+				<!-- <button class="KBNavItem-actions-button">
+          123
+        </button> -->
 			</div>
 		</div>
 		<slot name="nested" />
@@ -76,59 +79,85 @@
 </template>
 
 <script>
+import CategoryIcon from '../../../../assets/icons/CategoryIcon.vue';
+import AddСhapterIcon from '../../../../assets/icons/AddСhapterIcon.vue';
+import DeleteChapterIcon from '../../../../assets/icons/DeleteChapterIcon.vue';
+import SettingsChapterIcon from '../../../../assets/icons/SettingsChapterIcon.vue';
+
 export default {
 	name: 'KBNavItem',
-	components: {},
+	components: {
+		CategoryIcon,
+		AddСhapterIcon,
+		DeleteChapterIcon,
+		SettingsChapterIcon,
+	},
 	props: {
 		item: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		parent: {
-			validator(value){
-				return ['[object Null]', '[object Object]'].includes(Object.prototype.toString.call(value))
+			validator(value) {
+				return ['[object Null]', '[object Object]'].includes(
+					Object.prototype.toString.call(value)
+				);
 			},
 			required: true,
 		},
 		mode: {
 			type: String,
-			default: 'read'
+			default: 'read',
 		},
 		sectionsMode: {
-			type: Boolean
-		}
+			type: Boolean,
+		},
 	},
-	data(){
-		return {}
+	data() {
+		return {
+			isHideIcons: false,
+		};
 	},
 	computed: {
-		type(){
-			return !this.item.parent_id || this.item.is_category ? 'book' : 'page'
+		type() {
+			return !this.item.parent_id || this.item.is_category ? 'book' : 'page';
 		},
-		hasChildren(){
-			return this.item.children && this.item.children.length
+		hasChildren() {
+			return this.item.children && this.item.children.length;
 		},
-		isEditMode(){
-			return this.mode === 'edit'
+		isEditMode() {
+			return this.mode === 'edit';
 		},
-		handler(){
-			if(this.hasChildren && this.item.opened) return 'fa fa-chevron-down'
-			if(this.hasChildren) return 'fa fa-chevron-right'
-			return 'fa fa-circle'
-		}
+		handler() {
+			if (this.hasChildren && this.item.opened) return 'fa fa-chevron-down';
+			if (this.hasChildren) return 'fa fa-chevron-right';
+			return 'fa fa-circle';
+		},
 	},
 	watch: {},
-	created(){},
-	mounted(){},
-	methods: {},
-}
+	created() {},
+	mounted() {},
+	methods: {
+		showIcons() {
+			this.isHideIcons = true;
+		},
+		unshowIcons() {
+			this.isHideIcons = false;
+		},
+	},
+};
 </script>
 
 <style lang="scss">
-.KBNavItem{
+.KBNavItem {
 	color: #212529;
 
-	&-button{
+  &-actions-button {
+    background-color: transparent
+  }
+
+	margin-top: 2px;
+	&-button {
 		position: relative;
 
 		font-size: 13px;
@@ -138,16 +167,15 @@ export default {
 
 		overflow: hidden;
 		cursor: pointer;
-		&:hover{
-			background-color: #f1f1f1;
-			.KBNavItem{
-				&-actions{
+		&:hover {
+			.KBNavItem {
+				&-actions {
 					display: flex;
 				}
 			}
 		}
 	}
-	&-handler{
+	&-handler {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -155,34 +183,45 @@ export default {
 		height: 28px;
 		min-width: 25px;
 		width: 25px;
-		.KBNavItem{
-			&-mover{
+		.KBNavItem {
+			&-mover {
 				display: none;
 			}
 		}
-		.fa-circle{
+		.fa-circle {
 			font-size: 5px;
 		}
 	}
-	&-handlerIcon{
+	&-handlerIcon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		width: 100%;
 		height: 100%;
 	}
-	&-mover{
+	&-mover {
 		color: #1db332 !important;
 		cursor: move;
 	}
 	// &-shower{}
-	&-name{
+	&-name {
+		margin-top: 1%;
 		flex: 1;
+		font-size: 16px;
 		padding: 8px 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 20px;
+		.KBNavItem-title {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
 	}
-	&-actions{
+	&-actions {
 		display: none;
 
 		position: absolute;
@@ -192,7 +231,7 @@ export default {
 		text-align: center;
 		transform: translateY(-50%);
 	}
-	&-action{
+	&-action {
 		width: 27px;
 		padding: 5px;
 		margin-left: 5px;
@@ -202,36 +241,37 @@ export default {
 		border-radius: 4px;
 		cursor: pointer;
 
-		&:hover{
+		&:hover {
 			color: #007bff;
 		}
 	}
 
-	.fa-plus-square{
+	.fa-plus-square {
 		padding: 2px;
 		font-size: 20px;
 	}
 
-	&_page{
-		.KBNavItem{
-			&-button{
+	&_page {
+		.KBNavItem {
+			&-button {
 				padding: 0;
 			}
-			&-name{
+			&-name {
 				padding: 6px 0;
 			}
 		}
 	}
 
-	&_edit{
-		.KBNavItem{
-			&-handler{
-				&:hover{
-					.KBNavItem{
-						&-mover{
+	&_edit {
+		.KBNavItem {
+			&-handler {
+				&:hover {
+					background-color: white;
+					.KBNavItem {
+						&-mover {
 							display: flex;
 						}
-						&-shower{
+						&-shower {
 							display: none;
 						}
 					}

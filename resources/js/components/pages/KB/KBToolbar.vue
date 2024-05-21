@@ -7,7 +7,7 @@
 			>
 				База знаний
 			</router-link>
-			<template v-for="breadcrumb, index in breadcrumbs">
+			<template v-for="(breadcrumb, index) in breadcrumbs">
 				<i
 					:key="index"
 					class="fa fa-chevron-right"
@@ -26,15 +26,13 @@
 				v-if="canEdit"
 				v-b-popover.hover.top="'Включить редактирование Базы знаний'"
 				class="KBToolbar-action"
-				:class="{'KBToolbar-action_active': isEdit}"
+				:class="{ 'KBToolbar-action_active': isEdit }"
 				@click="$emit('mode', isEdit ? 'read' : 'edit')"
 			>
-				<i class="fa fa-pen" />
+				<SettingsToolbarIcon />
 			</button>
 			<template v-if="activeBook">
-				<template
-					v-if="editBook"
-				>
+				<template v-if="editBook">
 					<button
 						class="KBToolbar-action KBToolbar-action_info"
 						@click="$emit('upload-image')"
@@ -92,28 +90,32 @@
 				</template>
 			</template>
 			<template v-else>
-				<div
+				<button
 					v-if="isAdmin"
 					class="KBToolbar-action"
+					@click="$emit('settings')"
 				>
-					<i
-						class="icon-nd-settings"
-						@click="$emit('settings')"
-					/>
-				</div>
+					<EditToolbarIcon />
+				</button>
 			</template>
 		</div>
 	</nav>
 </template>
 
 <script>
-import { mapState } from 'pinia'
-import { usePortalStore } from '@/stores/Portal'
-import { copy2clipboard } from '@/composables/copy2clipboard.js'
+import { mapState } from 'pinia';
+import { usePortalStore } from '@/stores/Portal';
+import { copy2clipboard } from '@/composables/copy2clipboard.js';
+
+import SettingsToolbarIcon from '../../../../assets/icons/SettingsToolbarIcon.vue';
+import EditToolbarIcon from '../../../../assets/icons/EditToolbarIcon.vue';
 
 export default {
 	name: 'KBToolbar',
-	components: {},
+	components: {
+		SettingsToolbarIcon,
+		EditToolbarIcon,
+	},
 	props: {
 		mode: {
 			type: String,
@@ -121,78 +123,77 @@ export default {
 		},
 		activeBook: {
 			type: Object,
-			default: null
+			default: null,
 		},
 		breadcrumbs: {
 			type: Array,
-			default: () => []
+			default: () => [],
 		},
 		canEdit: {
-			type: Boolean
+			type: Boolean,
 		},
 		editBook: {
-			type: Boolean
+			type: Boolean,
 		},
 	},
-	data(){
-		return {}
+	data() {
+		return {};
 	},
 	computed: {
 		...mapState(usePortalStore, ['isOwner', 'isAdmin']),
-		isEdit(){
-			return this.mode === 'edit'
+		isEdit() {
+			return this.mode === 'edit';
 		},
-		isActiveCategory(){
-			if(!this.activeBook) return false
-			return !this.activeBook.parent_id || this.activeBook.is_category
+		isActiveCategory() {
+			if (!this.activeBook) return false;
+			return !this.activeBook.parent_id || this.activeBook.is_category;
 		},
 	},
 	watch: {},
-	created(){},
-	mounted(){},
+	created() {},
+	mounted() {},
 	methods: {
-		copyLink(){
+		copyLink() {
 			try {
-				copy2clipboard(window.location.origin + '/corp_book/' + this.activeBook.hash)
-				this.$toast.info('Ссылка на страницу скопирована')
+				copy2clipboard(
+					window.location.origin + '/corp_book/' + this.activeBook.hash
+				);
+				this.$toast.info('Ссылка на страницу скопирована');
+			} catch (error) {
+				this.$toast.error('Не удалось скопировать ссылку');
 			}
-			catch (error) {
-				this.$toast.error('Не удалось скопировать ссылку')
-			}
-		}
+		},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.KBToolbar{
+.KBToolbar {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
-	&-breadcrumbs{
+	&-breadcrumbs {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
 		gap: 10px;
-		.fa-chevron-right{
+		.fa-chevron-right {
 			position: relative;
 			top: 1px;
 			font-size: 8px;
 			color: #ccc;
 		}
 	}
-	&-breadcrumb{
+	&-breadcrumb {
 		display: block;
-		font-size: 12px;
-		color: #858585;
-		&:last-child{
+		font-size: 20px;
+		font-weight: 500;
+		color: #0b172d;
+		&:last-child {
 			color: #000;
 		}
-		&:hover{
-			color: #ddd;
-		}
 	}
-	&-actions{
+	&-actions {
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
@@ -200,47 +201,47 @@ export default {
 
 		margin-left: auto;
 	}
-	&-action{
+	&-action {
 		display: flex;
 		padding: 6px;
-		border: 1px solid #dcdee5;
+		border: 1px solid #8da0c1;
 
 		font-size: 14px;
 
-		background: #eaebef;
+		background: #f7f7f7;
 		border-radius: 5px;
 		cursor: pointer;
-		&_info{
+		&_info {
 			color: #fff;
 			background: #285ba7;
 			border-color: #285ba7;
-			.fa-cog{
+			.fa-cog {
 				color: #fff;
 			}
-			&:hover{
+			&:hover {
 				background: darken(#285ba7, 5);
 				border-color: darken(#285ba7, 5);
 			}
 		}
-		&_remove{
+		&_remove {
 			color: #fff;
 			background-color: #dc3545;
 			border-color: #dc3545;
-			&:hover{
+			&:hover {
 				background-color: #c82333;
 				border-color: #bd2130;
 			}
 		}
-		&_save{
+		&_save {
 			color: #fff;
 			background: #28a745;
 			border-color: #28a745;
-			&:hover{
+			&:hover {
 				background-color: darken(#28a745, 5);
 				border-color: darken(#28a745, 5);
 			}
 		}
-		&_active{
+		&_active {
 			background: #bbd6ff;
 			color: #007bff;
 		}
