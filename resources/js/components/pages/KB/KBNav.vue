@@ -1,41 +1,37 @@
 <template>
 	<aside class="KBNav">
-		<div
-			class="KBNav-search"
-		>
-			<i class="fa fa-search" />
+		<div class="KBNav-search">
+			<SearchIcon class="fa fa-search" />
 			<input
 				v-model="search.input"
 				type="text"
-				placeholder="Искать в базе..."
-				class="form-control"
-				@input="searchInput"
-				@blur="searchCheck"
+				placeholder="Быстрый поиск"
+				class="form-input"
 			>
-			<i
+			<!-- <i
 				v-if="search.input.length"
 				class="search-clear"
 				@click="clearSearch"
-			>x</i>
+			>x</i> -->
 		</div>
 		<div
 			v-if="!currentBook"
 			class="KBNav-glossary"
 		>
-			<div
-				class="btn btn-grey btn-block mb-3"
+			<button
+				class="KBNav-button"
 				@click="$emit('glossary-open')"
 			>
-				<span>Глоссарий</span>
-			</div>
+				Глоссарий
+			</button>
 
-			<div
+			<button
 				v-if="isOwner && mode === 'edit'"
-				class="btn btn-grey mb-3 px-3"
+				class="KBNav__button-settings"
 				@click="$emit('glossary-settings')"
 			>
-				<i class="fa fa-cog" />
-			</div>
+				<SettingsIcon />
+			</button>
 		</div>
 
 		<!-- Back buttons -->
@@ -147,10 +143,10 @@
 					v-if="mode == 'edit' && currentBook.canEdit"
 					class="KBNav-itemActions"
 				>
-					<i
+					<!-- <i
 						class="KBNav-itemAction fa fa-plus mr-1"
 						@click="$emit('add-page', currentBook)"
-					/>
+					/> -->
 				</div>
 			</div>
 			<template v-else-if="favorites.length">
@@ -170,6 +166,7 @@
 			<KBNavItems
 				v-if="currentBook"
 				:key="'p' + listsKey"
+				class="KBNav-items"
 				:items="books"
 				:opened="true"
 				:mode="mode"
@@ -185,6 +182,7 @@
 			<KBNavItems
 				v-else-if="books.length"
 				:key="'b' + listsKey"
+				class="KBNav-items"
 				:items="books"
 				:opened="true"
 				:mode="mode"
@@ -202,22 +200,22 @@
 		<div v-if="mode === 'edit' && !currentBook">
 			<div
 				v-if="!archived.show"
-				class="d-flex jscb mt-3"
+				class="KBNav__footer"
 			>
-				<div
-					class="btn btn-grey w-full mr-1"
+				<button
+					class="KBNav__footer-button"
 					@click="$emit('create')"
 				>
-					<i class="fa fa-plus" />
-					<span>Добавить</span>
-				</div>
-				<div
-					class="btn btn-grey"
+					<AddIcon />
+					Добавить
+				</button>
+				<button
 					title="Архив"
+					class="KBNav__footer-archive"
 					@click="getArchivedBooks"
 				>
-					<i class="fa fa-box" />
-				</div>
+					<ArchiveIcon />
+				</button>
 			</div>
 		</div>
 		<div v-if="mode === 'edit' && currentBook">
@@ -240,7 +238,9 @@
 					<i class="fa fa-plus" />
 					<span>База</span>
 					<img
-						v-b-popover.hover.right="'Вы можете создать дополнительную базу знаний с отдельными доступами'"
+						v-b-popover.hover.right="
+							'Вы можете создать дополнительную базу знаний с отдельными доступами'
+						"
 						src="/images/dist/profit-info.svg"
 						class="img-info ml-3"
 						alt="info icon"
@@ -253,26 +253,32 @@
 </template>
 
 <script>
-import {
-	fetchSettings,
-	updateSettings,
-} from '@/stores/api.js'
-import * as KBAPI from '@/stores/api/kb.js'
-import { mapState } from 'pinia'
-import { usePortalStore } from '@/stores/Portal'
+import { fetchSettings, updateSettings } from '@/stores/api.js';
+import * as KBAPI from '@/stores/api/kb.js';
+import { mapState } from 'pinia';
+import { usePortalStore } from '@/stores/Portal';
 
-import KBNavItems from './KBNavItems.vue'
+import SearchIcon from '../../../../assets/icons/SearchIcon.vue';
+import SettingsIcon from '../../../../assets/icons/SettingsIcon.vue';
+import AddIcon from '../../../../assets/icons/AddIcon.vue';
+import ArchiveIcon from '../../../../assets/icons/ArchiveIcon.vue';
+
+import KBNavItems from './KBNavItems.vue';
 
 const API = {
 	fetchSettings,
 	updateSettings,
-	...KBAPI
-}
+	...KBAPI,
+};
 
 export default {
 	name: 'KBNav',
 	components: {
+		SearchIcon,
+		SettingsIcon,
 		KBNavItems,
+		AddIcon,
+		ArchiveIcon,
 	},
 	props: {
 		mode: {
@@ -281,22 +287,22 @@ export default {
 		},
 		activeBook: {
 			type: Object,
-			default: null
+			default: null,
 		},
 		books: {
 			type: Array,
-			default: () => []
+			default: () => [],
 		},
 		favorites: {
 			type: Array,
-			default: () => []
+			default: () => [],
 		},
 		currentBook: {
 			type: Object,
-			default: null
+			default: null,
 		},
 	},
-	data(){
+	data() {
 		return {
 			search: {
 				input: '',
@@ -309,150 +315,151 @@ export default {
 				items: [],
 			},
 			listsKey: 1,
-		}
+		};
 	},
 	computed: {
 		...mapState(usePortalStore, ['isOwner', 'isAdmin']),
-		pagesMap(){
-			const map = {}
-			this.getPages(map, this.pages)
-			return map
+		pagesMap() {
+			const map = {};
+			this.getPages(map, this.pages);
+			return map;
 		},
 	},
 	watch: {
-		pages(){
-			this.updateKeys()
+		pages() {
+			this.updateKeys();
 		},
-		books(){
-			this.updateKeys()
+		books() {
+			this.updateKeys();
 		},
 	},
-	mounted(){},
+	mounted() {},
 	methods: {
-		updateKeys(){
-			++this.listsKey
+		updateKeys() {
+			++this.listsKey;
 		},
-		onBack(){
-			this.$emit('back')
-			this.clearSearch()
+		onBack() {
+			this.$emit('back');
+			this.clearSearch();
 		},
-		getPages(map, pages){
-			pages.map(page => {
-				map[page.id] = page
-				if(page.children && page.children.length) this.getPages(map, page.children)
-			})
+		getPages(map, pages) {
+			pages.map((page) => {
+				map[page.id] = page;
+				if (page.children && page.children.length)
+					this.getPages(map, page.children);
+			});
 		},
 
 		// === SEARCH ===
 		searchInput() {
-			clearTimeout(this.search.timeout)
-			this.search.timeout = setTimeout(this.runSearch, 500)
+			clearTimeout(this.search.timeout);
+			this.search.timeout = setTimeout(this.runSearch, 500);
 		},
 		searchCheck() {
-			if (this.search.input.length === 0) this.clearSearch()
+			if (this.search.input.length === 0) this.clearSearch();
 		},
 		clearSearch() {
-			clearTimeout(this.search.timeout)
+			clearTimeout(this.search.timeout);
 			this.search = {
 				input: '',
 				items: [],
 				timeout: null,
 				loading: false,
-			}
+			};
 		},
-		async runSearch(){
-			if(this.search.input.length <= 2) return null
+		async runSearch() {
+			if (this.search.input.length <= 2) return null;
 			try {
 				const data = await API.searchKBBook({
 					text: this.search.input,
-					id: this.currentBook?.id || null
-				})
-				this.search.items = data.items.map(item => {
-					const regExp = new RegExp(this.search.input,'gi')
-					item.text = item.text.replace(regExp, '<span class="KBNav-searchTerm">' + this.search.input +  '</span>')
-					return item
-				})
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Поиск не удался')
-				window.onerror && window.onerror(error)
+					id: this.currentBook?.id || null,
+				});
+				this.search.items = data.items.map((item) => {
+					const regExp = new RegExp(this.search.input, 'gi');
+					item.text = item.text.replace(
+						regExp,
+						'<span class="KBNav-searchTerm">' + this.search.input + '</span>'
+					);
+					return item;
+				});
+			} catch (error) {
+				console.error(error);
+				this.$toast.error('Поиск не удался');
+				window.onerror && window.onerror(error);
 			}
 		},
 		// === SEARCH ===
 
 		// === ARCHIVE ===
-		async archiveRestore(book){
-			if (!confirm('Вы уверены что хотите восстановить раздел?')) return
+		async archiveRestore(book) {
+			if (!confirm('Вы уверены что хотите восстановить раздел?')) return;
 			try {
-				await API.restoreKBBook(book.id)
-				const index = this.archived.items.findIndex(archived => archived.id === book.id)
-				this.archived.items.splice(index, 1)
-				this.$emit('unarchive', book)
-				this.$toast.success('Раздел восстановлен')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось восстановить раздел')
-				window.onerror && window.onerror(error)
+				await API.restoreKBBook(book.id);
+				const index = this.archived.items.findIndex(
+					(archived) => archived.id === book.id
+				);
+				this.archived.items.splice(index, 1);
+				this.$emit('unarchive', book);
+				this.$toast.success('Раздел восстановлен');
+			} catch (error) {
+				console.error(error);
+				this.$toast.error('Не удалось восстановить раздел');
+				window.onerror && window.onerror(error);
 			}
 		},
-		async archiveBook(book){
-			if (!confirm('Вы уверены что хотите архивировать раздел?')) return
+		async archiveBook(book) {
+			if (!confirm('Вы уверены что хотите архивировать раздел?')) return;
 			try {
-				await API.deleteKBBook(book.id)
-				this.$emit('archive', book)
-				this.$toast.success('Раздел удален')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось удалить раздел')
-				window.onerror && window.onerror(error)
+				await API.deleteKBBook(book.id);
+				this.$emit('archive', book);
+				this.$toast.success('Раздел удален');
+			} catch (error) {
+				console.error(error);
+				this.$toast.error('Не удалось удалить раздел');
+				window.onerror && window.onerror(error);
 			}
 		},
-		async getArchivedBooks(){
-			const loader = this.$loading.show()
+		async getArchivedBooks() {
+			const loader = this.$loading.show();
 
 			try {
-				const books = await API.fetchKBArchived()
-				this.archived.items = books
-				this.archived.show = true
+				const books = await API.fetchKBArchived();
+				this.archived.items = books;
+				this.archived.show = true;
+			} catch (error) {
+				console.error(error);
+				this.$toast.error('Не удалось получить архивные разделы');
+				window.onerror && window.onerror(error);
 			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось получить архивные разделы')
-				window.onerror && window.onerror(error)
-			}
-			loader.hide()
+			loader.hide();
 		},
 		// === ARCHIVE ===
 
 		// === ORDER ===
-		async saveBookOrder(event){
+		async saveBookOrder(event) {
 			/* eslint-disable camelcase */
 			try {
 				await API.updateKBOrder({
 					id: event.item.getAttribute('data-id'),
 					order: event.newIndex,
-					parent_id: null
-				})
-				this.$toast.success('Очередь сохранена')
-			}
-			catch (error) {
-				console.error(error)
-				this.$toast.error('Не удалось сохранить очередь')
-				window.onerror && window.onerror(error)
+					parent_id: null,
+				});
+				this.$toast.success('Очередь сохранена');
+			} catch (error) {
+				console.error(error);
+				this.$toast.error('Не удалось сохранить очередь');
+				window.onerror && window.onerror(error);
 			}
 			/* eslint-enable camelcase */
 		},
 		// === ORDER ===
 	},
-}
+};
 </script>
 
 <style lang="scss">
 $KBNav-padding: 15px;
-.KBNav{
+.KBNav {
 	display: flex;
 	flex-flow: column nowrap;
 	gap: 10px;
@@ -461,19 +468,29 @@ $KBNav-padding: 15px;
 	padding: $KBNav-padding;
 	border-right: 1px solid #dfdfdf;
 
-	background-color: #f8f8f8;
-	&-search{
+	background-color: #ffffff;
+
+	&-items {
+		margin-top: 10px;
+	}
+	&-search {
+		background-color: #f7fafc;
+		padding: 5%;
+		border-radius: 8px;
+		width: 102%;
 		position: relative;
-		.fa-search{
+		.fa-search {
 			position: absolute;
-			top: 10px;
-			left: 10px;
+			top: 12px;
+			left: 18px;
 			color: #bdcadf;
 		}
-		.form-control{
-			padding-left: 35px !important;
+		.form-input {
+			font-size: 14px;
+			padding: 0px 35px;
+			background-color: #f7fafc;
 		}
-		.search-clear{
+		.search-clear {
 			position: absolute;
 			top: 8px;
 			right: 12px;
@@ -485,57 +502,76 @@ $KBNav-padding: 15px;
 			cursor: pointer;
 		}
 	}
-	&-glossary{
+	&-glossary {
+		margin-top: 16px;
 		display: flex;
 		align-items: center;
-		gap: .25rem;
-		.fa-cog{
+		justify-content: space-between;
+		font-size: 11.88px;
+		gap: 4px;
+		.fa-cog {
 			color: #333;
 		}
 	}
 
+	&-button {
+		width: 100%;
+		height: 34px;
+		padding: 8.5px 73px;
+		color: #8da0c1;
+		font-size: 14px;
+		border: 1px solid #8da0c1;
+		border-radius: 8px;
+		background-color: #ffffff;
+	}
+
+	&__button-settings {
+		padding: 4px;
+		border-radius: 6.79px;
+		border: 1px solid #8da0c1;
+		background-color: #ffffff;
+	}
+
 	&-searchResults,
 	&-archive,
-	&-items{
+	&-items {
 		flex: 1;
-		padding: 0 $KBNav-padding;
-		margin: 0 -$KBNav-padding;
 		overflow-y: auto;
 	}
 
-	&-searchItems{
+	&-searchItems {
 		display: flex;
 		flex-flow: column nowrap;
 		gap: 10px;
 	}
-	&-searchItem{
+	&-searchItem {
 		padding: 3px 5px 10px;
 		border-bottom: 1px solid #ddd;
 		font-size: 14px;
 		cursor: pointer;
-		&:hover{
+		&:hover {
 			background-color: #f2f2f2;
 		}
 	}
-	&-searchBook{
+	&-searchBook {
 		color: #1272aa;
 	}
-	&-searchTitle{
+	&-searchTitle {
 		font-size: 16px;
 		font-weight: 700;
 		color: #666;
 	}
-	&-searchText{
+	&-searchText {
 		margin-top: 5px;
 		font-size: 12px;
 		color: #999;
 	}
-	&-searchTerm{
+	&-searchTerm {
 		background-color: #ff0;
 		color: #333;
 	}
 
-	&-currentTitle{
+	&-currentTitle {
 		display: block;
 		margin: 5px 0 10px;
 
@@ -543,9 +579,10 @@ $KBNav-padding: 15px;
 
 		font-size: 16px;
 		font-weight: 700;
-		&:hover{
-			.KBNav{
-				&-itemActions{
+		&:hover {
+			background-color: blue;
+			.KBNav {
+				&-itemActions {
 					font-size: 13px;
 					display: flex;
 				}
@@ -553,7 +590,32 @@ $KBNav-padding: 15px;
 		}
 	}
 
-	&-item{
+	&__footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 9px;
+		.KBNav__footer-button {
+			width: 100%;
+			background-color: #ebf3fb;
+			color: #156ae8;
+			padding: 10px 12px 10px 12px;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			font-weight: 500;
+			justify-content: center;
+			gap: 4px;
+		}
+		.KBNav__footer-archive {
+			border: 1px solid #8da0c1;
+			padding: 7px;
+			background-color: #ffffff;
+			border-radius: 8px;
+		}
+	}
+
+	&-item {
 		padding: 8px 0;
 
 		position: relative;
@@ -565,24 +627,24 @@ $KBNav-padding: 15px;
 
 		overflow: hidden;
 		cursor: pointer;
-		&:hover{
+		&:hover {
 			background-color: #f1f1f1;
-			.KBNav{
-				&-itemActions{
+			.KBNav {
+				&-itemActions {
 					display: flex;
 				}
 			}
 		}
 	}
-	&-mover{
+	&-mover {
 		color: #1db332 !important;
 		cursor: move;
 	}
-	&-itemText{
+	&-itemText {
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	&-itemActions{
+	&-itemActions {
 		display: none;
 
 		position: absolute;
@@ -592,7 +654,7 @@ $KBNav-padding: 15px;
 		text-align: center;
 		transform: translateY(-50%);
 	}
-	&-itemAction{
+	&-itemAction {
 		width: 27px;
 		padding: 5px;
 		margin-left: 5px;
@@ -602,12 +664,12 @@ $KBNav-padding: 15px;
 		border-radius: 4px;
 		cursor: pointer;
 
-		&:hover{
+		&:hover {
 			color: #007bff;
 		}
 	}
 	// &-favorites{}
-	&-favorite{
+	&-favorite {
 		padding: 8px 0;
 
 		position: relative;
@@ -619,12 +681,12 @@ $KBNav-padding: 15px;
 		overflow: hidden;
 
 		cursor: pointer;
-		&:hover{
+		&:hover {
 			background-color: #f1f1f1;
 		}
 	}
-	.chapter{
-		.mb-0{
+	.chapter {
+		.mb-0 {
 			width: auto;
 			overflow: hidden;
 			text-overflow: ellipsis;
