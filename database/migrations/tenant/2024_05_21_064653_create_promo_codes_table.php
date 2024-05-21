@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('promo_codes', function (Blueprint $table) {
+        Schema::connection('mysql')->create('promo_codes', function (Blueprint $table) {
             $table->string('code')->primary();
             $table->string('name');
             $table->string('rate')->default(20);
@@ -28,6 +28,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('promo_codes');
+        Schema::connection('mysql')->dropIfExists('promo_codes');
     }
 };
