@@ -111,8 +111,8 @@ export default {
 			promoData: {},
 			isPromoLoading: false,
 			isBP: ['bp', 'test'].includes(location.hostname.split('.')[0]),
-			freePeriod: false,
-			trialPeriod: false
+			freePeriod: true,
+			trialPeriod: true
 		};
 	},
 
