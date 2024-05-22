@@ -227,6 +227,20 @@ export default {
   .pricing-buy-added-title {
 	font-size: 16px !important;
   }
+  .pricing-buy-added-clue {
+	font-size: 14px !important;
+  }
+  .pricing-buy-total-count-price-people {
+	font-size: 16px !important;
+  }
+  .pricing-buy-total-count-price {
+	font-size: 16px !important;
+  }
+  .pricing-buy-description-total {
+
+	font-size: 14px !important;
+  }
+
   .pricing-buy-modal {
 	max-width: 564px !important;
 
@@ -332,19 +346,19 @@ export default {
 .pricing-buy-description-total {
 	max-width: 484px;
 	color: #737b8a;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .pricing-buy-title {
 	font-weight: 600;
-	font-size: 22px;
+	font-size: 20px;
 	margin-bottom: 12px;
   color: #333333;
 
 }
 
 .pricing-buy-description {
-	font-size: 14px;
+	font-size: 13px;
   color: #333333;
 	margin-bottom: 32px;
 }
@@ -367,7 +381,7 @@ export default {
 
 .pricing-buy-added-title {
 	color: #737b8a;
-	font-size: 14px;
+	font-size: 13px;
 }
 
 .pricing-buy-added-button-content {
@@ -396,7 +410,7 @@ export default {
 
 .pricing-buy-added-clue {
 	color: #737b8a;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .pricing-buy-added-clue_top {
@@ -406,7 +420,7 @@ export default {
 .pricing-buy-added-price {
 	font-weight: 600;
 	line-height: 24px;
-	font-size: 14px;
+	font-size: 13px;
   width: 100%;
   margin-bottom: 12px;
 }
@@ -454,7 +468,7 @@ export default {
 }
 
 .pricing-buy-total-count-price {
-
+	font-size: 13px;
 }
 
 .pricing-buy-total {
@@ -505,6 +519,6 @@ export default {
 }
 
 .pricing-buy-total-count-price-people {
-
+font-size: 13px;
 }
 </style>

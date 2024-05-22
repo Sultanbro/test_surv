@@ -18,7 +18,9 @@
 					class="PricingRates-options-button"
 					@click="$emit('updateOption', 1)"
 				>
-					<p>1 месяц</p>
+					<p class="pricing-options-price">
+						1 месяц
+					</p>
 					<p class="pricing-options-price">
 						{{ $separateThousands(Math.round(priceStore.monthly.multiCurrencyPrice[currencyCode])) || 0 }} {{ currency }}
 					</p>
@@ -28,7 +30,9 @@
 					class="PricingRates-options-button"
 					@click="$emit('updateOption', 3)"
 				>
-					<p>3 месяца</p>
+					<p class="pricing-options-price">
+						3 месяца
+					</p>
 					<p class="pricing-options-price">
 						{{ $separateThousands(Math.round(priceStore.threeMonthly.multiCurrencyPrice[currencyCode])) || 0 }} {{ currency }}
 					</p>
@@ -39,7 +43,9 @@
 					@click="$emit('updateOption', 12)"
 				>
 					<div class="pricing-option-discount">
-						<p>Год</p>
+						<p class="pricing-options-price">
+							Год
+						</p>
 						<div class="pricing-discount">
 							-20%
 						</div>
@@ -256,7 +262,7 @@
 				class="pricing-button-connect"
 				@click="submitPayment"
 			>
-				Перейти к оплате
+				Перейти к оплате <CustomPriceSpinner v-if="isLoading" />
 			</button>
 		</div>
 	</div>
@@ -269,10 +275,12 @@ import {useModalStore} from '../../../../stores/Modal';
 import {usePricingPeriodStore} from '../../../../stores/PricingPeriod';
 import {usePricingStore} from '../../../../stores/Pricing';
 import {useValidityStore} from '../../../../stores/api/pricing/validity';
+import {useCurrentFetchStore} from '../../../../stores/currentFetch';
+import CustomPriceSpinner from '../../../ui/Spinners/CustomSpinner.vue';
 
 export default  {
 	name: 'PricingModalToBuy',
-	components: {DropdownPrice},
+	components: {CustomPriceSpinner, DropdownPrice},
 	props: {
 		currency: {
 			type: String,
@@ -299,7 +307,7 @@ export default  {
 			promoFetch: [],
 			promoRate: '',
 			promoDiscount: 0,
-
+			isLoading: false,
 		}
 	},
 
@@ -309,6 +317,7 @@ export default  {
 		...mapState(usePricingPeriodStore, ['priceStore', 'tariffStore', 'tariffId']),
 		...mapState(usePricingStore, ['priceForOnePerson']),
 		...mapState(useValidityStore, ['validity', 'date']),
+		...mapState(useCurrentFetchStore, ['current']),
 
 		additionalPrice(){
 			if(!this.priceForUser) return 0
@@ -338,7 +347,8 @@ export default  {
 	},
 	created(){
 		this.fetchDateCorses()
-
+		this.currentFetch()
+		this.selectedOption = this.current
 	},
 	mounted() {
 		this.getPriceData()
@@ -349,6 +359,11 @@ export default  {
 		...mapActions(useValidityStore, ['fetchDateCorses']),
 		updateSelected(option) {
 			this.selectedOption = option;
+		},
+		currentFetch(){
+			this.axios.get('/portal/current').then(res => {
+				this.selectedOption = res.data.data.tenant_id
+			})
 		},
 		async getPriceData() {
 			try {
@@ -370,12 +385,13 @@ export default  {
 			if (this.sumPeople >0) this.sumPeople-=1
 		},
 		async submitPayment(){
+			this.isLoading = true
 			if(!this.priceStore) return
 			if(this.currency !== '₽') return this.submitWalletOne()
 
 			try{
 				/* eslint-disable camelcase */
-				if (this.tariffStore === this.price){
+				if (this.tariffStore === this.price && this.tariffId.payment_id !=='trial'){
 					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
 						currency: this.currencyCode,
 						// eslint-disable-next-line camelcase
@@ -388,6 +404,8 @@ export default  {
 
 						if (res && res.data.data.url) {
 							window.location.assign(res.data.data.url);
+							this.isLoading = false
+
 						} else {
 							console.error('URL not found in response', res);
 						}
@@ -406,6 +424,9 @@ export default  {
 					})
 					/* eslint-enable camelcase */
 					window.location.assign(url)
+					this.isLoading = false
+
+
 				}
 
 			}
@@ -417,7 +438,7 @@ export default  {
 		async submitWalletOne(){
 			try{
 				/* eslint-disable camelcase */
-				if (this.tariffStore !== 'free'){
+				if (this.tariffStore === this.price){
 					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
 						currency: this.currencyCode,
 						// eslint-disable-next-line camelcase
@@ -429,6 +450,8 @@ export default  {
 					}).then(res => {
 						if (res && res.data.data) {
 							window.location.assign(res.data.data.url);
+							this.isLoading = false
+
 						} else {
 							console.error('URL not found in response', res);
 						}
@@ -447,6 +470,8 @@ export default  {
 					})
 					/* eslint-enable camelcase */
 					window.location.assign(url)
+					this.isLoading = false
+
 				}
 
 			}
@@ -549,6 +574,9 @@ export default  {
 		color: #737b8a !important;
 		font-size: 16px !important;
 		}
+	.PricingRates-options-title{
+		font-size: 14px !important;
+	}
 		.pricing-button-group {
 		margin-top: auto !important;
 		padding: 0 0 0 0 !important;
@@ -647,6 +675,7 @@ export default  {
 		}
 
 		.pricing-buy-added-price {
+			font-size: 16px !important;
 		font-weight: 600 !important;
 		line-height: 24px !important;
 		}
@@ -656,6 +685,7 @@ export default  {
 		color: #0c50ff !important;
 		font-weight: 500 !important;
 		margin-bottom: 24px !important;
+			font-size: 16px !important;
 		}
 
 		.pricing-buy-promo-content {
@@ -668,6 +698,7 @@ export default  {
 		border-radius: 8px !important;
 		border: 1px solid #afb5c0 !important;
 		padding: 14px 16px !important;
+			font-size: 16px !important;
 		}
 
 		.pricing-buy-promo-button {
@@ -675,6 +706,7 @@ export default  {
 		border-radius: 8px !important;
 		padding: 13px 24px !important;
 		color: #0c50ff !important;
+			font-size: 16px !important;
 		}
 
 		.pricing-buy-total-content {
@@ -690,9 +722,13 @@ export default  {
 
 		}
 
-		.pricing-buy-total-count-title {}
+		.pricing-buy-total-count-title {
+			font-size: 16px !important;
+		}
 
-		.pricing-buy-total-count-price {}
+		.pricing-buy-total-count-price {
+			font-size: 16px !important;
+		}
 
 		.pricing-buy-total {
 		display: flex !important;
@@ -717,7 +753,7 @@ export default  {
 		}
 
 		.pricing-options-price {
-		font-size: 12px !important;
+		font-size: 13px !important;
 		}
 
 		.pricing-modal-promo-button {
@@ -728,7 +764,12 @@ export default  {
 		outline: none !important;
 		background-color: #f2f2f2 !important;
 		}
-
+			.pricing-promo-title{
+				font-size: 16px !important;
+			}
+		.pricing-promo-text{
+			font-size: 16px !important;
+		}
 		.inpput-promo-active {
 		background-color: #f2f2f2 !important;
 		outline: none !important;
@@ -742,6 +783,7 @@ export default  {
 		}
 
 		.pricing-buy-total-count-price-people {
+			font-size: 16px !important;
 		}
 	}
 
@@ -791,7 +833,7 @@ export default  {
 
 	.pricing-tariff-title{
 		color: #737B8A;
-		font-size: 14px;
+		font-size: 13px;
 	}
 	.pricing-button-group{
 		margin-top: auto;
@@ -803,12 +845,16 @@ export default  {
 		gap: 12px;
 	}
 	.pricing-button-connect{
-		width: 100%;
-		padding: 13px 0;
-		text-align: center;
-		border-radius: 8px;
-		background-color: #0C50FF;
-		color: white;
+	width: 100%;
+	padding: 13px 0;
+	text-align: center;
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	align-items: center;
+	background-color: #0C50FF;
+	color: white;
 	}
 	.pricing-button-connect:hover{
 		background-color: #0d3bb2;
@@ -848,11 +894,11 @@ export default  {
 		margin-bottom: 12px;
 		color: #333333;
 
-		margin-top: 24px;
+		margin-top: 12px;
 	}
 
 	.pricing-buy-description{
-	font-size: 14px;
+	font-size: 12px;
 		color: #333333;
 		margin-bottom: 16px;
 	}
@@ -871,7 +917,7 @@ export default  {
 
 	.pricing-buy-added-title{
 		color: #737B8A;
-		font-size: 16px;
+		font-size: 13px;
 	}
 
 	.pricing-buy-added-button-content{
@@ -899,11 +945,12 @@ export default  {
 
 	.pricing-buy-added-clue{
 	color: #737B8A;
-		font-size: 14px;
+		font-size: 12px;
 	}
 
 	.pricing-buy-added-price{
 	font-weight: 600;
+		font-size: 13px;
 		line-height: 24px;
 	}
 
@@ -912,6 +959,7 @@ export default  {
 	color: #0C50FF;
 		font-weight: 500;
 		margin-bottom: 12px;
+		font-size: 13px;
 	}
 
 	.pricing-buy-promo-content{
@@ -924,12 +972,14 @@ export default  {
 	border-radius: 8px;
 		border: 1px solid #AFB5C0;
 		padding: 7px 8px;
+		font-size: 13px;
 	}
 
 	.pricing-buy-promo-button{
 	background-color: #DBEAFE;
 		border-radius: 8px;
 		padding: 6px 12px;
+		font-size: 13px;
 		color: #0C50FF;
 	}
 
@@ -956,10 +1006,11 @@ export default  {
 	}
 
 	.pricing-buy-total-count-title{
-
+		font-size: 13px;
 	}
 
 	.pricing-buy-total-count-price{
+		font-size: 13px;
 	}
 
 	.pricing-buy-total{
@@ -968,13 +1019,13 @@ export default  {
 	}
 
 	.pricing-buy-total-title{
-	font-size: 24px;
+	font-size: 20px;
 		font-weight: 600;
 		line-height: 32px;
 	}
 
 	.pricing-buy-total-price{
-		font-size: 24px;
+		font-size: 20px;
 		font-weight: 600;
 		line-height: 32px;
 	}
@@ -1007,12 +1058,17 @@ export default  {
 	}
 	.pricing-buy-total-count-price-description{
 		color: #737B8A;
-		font-size: 14px;
+		font-size: 12px;
 		padding-top: 6px;
 		margin-bottom: 12px;
 	}
+	.PricingRates-options-title{
+		font-size: 12px;
+		color: #737B8A;
+	}
 
 	.pricing-buy-total-count-price-people{
+		font-size: 13px;
 	}
 	.pricing-promo{
 		display: flex;
@@ -1020,9 +1076,10 @@ export default  {
 		margin-bottom: 10px;
 	}
 	.pricing-promo-title{
-
+		font-size: 13px;
 	}
 	.pricing-promo-text{
+		font-size: 13px;
 		color:#FF5E5C;
 	}
 	</style>

@@ -47,9 +47,10 @@
 
 <script>
 import DropdownPrice from '../DropDown.vue';
-import {mapActions} from 'pinia';
+import {mapActions, mapState} from 'pinia';
 import {useModalStore} from '../../../../stores/Modal';
 import {usePricingPeriodStore} from '../../../../stores/PricingPeriod';
+import {useCurrentFetchStore} from '../../../../stores/currentFetch';
 
 export default {
 	name: 'PricingModalDefault',
@@ -60,16 +61,26 @@ export default {
 			selectedOption: null
 		}
 	},
+
 	computed:{
-		...mapActions(usePricingPeriodStore, ['tariffStore'])
+		...mapState(usePricingPeriodStore, ['tariffStore']),
+		...mapState(useCurrentFetchStore, ['current']),
+
+
+	},
+	created(){
+		this.selectedOption = this.current
+
 	},
 	mounted() {
 		this.getPriceData()
 
 	},
+
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive',  'setPrice']),
 		...mapActions(usePricingPeriodStore, ['connectedTariff']),
+
 		updateSelected(option) {
 			this.selectedOption = option;
 		},
@@ -86,7 +97,7 @@ export default {
 			try {
 				await this.axios.post('/tariff/trial', {
 					// eslint-disable-next-line camelcase
-					tenant_id: this.selectedOption.id
+					selectedOption: this.selectedOption.id
 				})
 			} catch (error) {
 				console.error('Failed to fetch price data:', error);
@@ -100,7 +111,8 @@ export default {
 			this.removeModalActive()
 			window.location.reload();
 
-		}
+		},
+
 	}
 }
 </script>
@@ -114,7 +126,7 @@ export default {
 	}
 	.pricing-img-block{
 		position: relative;
-		bottom: 5%;
+		bottom: 6%;
 		height: 326px !important;
 		background-color: #1A1A1A;
 		border-radius: 40px;
@@ -229,7 +241,7 @@ export default {
 
 .pricing-img-block{
 	position: relative;
-	bottom: 5%;
+	bottom: 6%;
 	height: 206px;
 	background-color: #1A1A1A;
 	border-radius: 40px;
@@ -284,7 +296,7 @@ export default {
 	padding: 0 16px 0 16px;
 	margin: 0 0 12px 0;
 	font-weight: 600;
-	font-size: 24px;
+	font-size: 20px;
 	line-height: 24px	;
 	width: 404px;
 	color: #333333;
@@ -295,7 +307,7 @@ export default {
 .pricing-description{
 	padding: 0 16px 0 16px;
 	width: 404px;
-	font-size: 16px;
+	font-size: 14px;
 	margin-bottom: 24px;
 	font-family: Inter,serif;
 }
@@ -310,7 +322,7 @@ export default {
 .pricing-tariff-title{
 	color: #737B8A;
 	font-family: Inter,serif;
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .pricing-button-group{
