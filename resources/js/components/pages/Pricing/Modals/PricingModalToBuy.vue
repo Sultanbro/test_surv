@@ -418,7 +418,7 @@ export default  {
 			try{
 				/* eslint-disable camelcase */
 				if (this.tariffStore !== 'free'){
-					this.axios.post(`/tariff/subscriptions/${this.info.tariff.tariff_id}/extend`, {
+					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
 						currency: this.currencyCode,
 						// eslint-disable-next-line camelcase
 						extra_users_limit: this.count > 0 ? this.count : 0,

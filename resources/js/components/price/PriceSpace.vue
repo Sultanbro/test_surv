@@ -45,9 +45,10 @@
 						<b-skeleton v-else />
 					</div>
 					<div
-						v-if="info.tariff"
+						v-if="info.tariff && info.tariff.payment_id !=='trial'"
 						class="price-space-buttons"
 					>
+						{{ info.tariff }}
 						<button>Продлить</button>
 						<p
 
