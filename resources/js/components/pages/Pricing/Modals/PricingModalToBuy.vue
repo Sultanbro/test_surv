@@ -383,7 +383,7 @@ export default  {
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
 							this.activeOption === 12 ? this.priceStore.yearly.id :
 								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
-						promo_code: this.promoRate[0].code || null,
+						promo_code: this.promoRate[0]?.code || null,
 					}).then(res => {
 
 						if (res && res.data.data.url) {
@@ -402,7 +402,7 @@ export default  {
 						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 						auto_payment: this.autoPayment,
 						tenant_id: this.selectedOption.id,
-						promo_code: this.promoRate[0].code || null,
+						promo_code: this.promoRate[0]?.code || null,
 					})
 					/* eslint-enable camelcase */
 					window.location.assign(url)
@@ -425,7 +425,7 @@ export default  {
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
 							this.activeOption === 12 ? this.priceStore.yearly.id :
 								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
-						promo_code: this.promoRate[0].code || null,
+						promo_code: this.promoRate[0]?.code || null,
 					}).then(res => {
 						if (res && res.data.data) {
 							window.location.assign(res.data.data.url);
@@ -443,7 +443,7 @@ export default  {
 						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 						auto_payment: this.autoPayment,
 						tenant_id: this.selectedOption.id,
-						promo_code: this.promoRate[0].code || null,
+						promo_code: this.promoRate[0]?.code || null,
 					})
 					/* eslint-enable camelcase */
 					window.location.assign(url)
