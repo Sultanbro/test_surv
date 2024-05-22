@@ -14,7 +14,7 @@ class WalletOneConnector implements PaymentConnector
     use HasIdempotenceKey;
 
     const CURRENCIES = [
-        'kzt' => 398
+        'kzt' => "398"
     ];
 
     public function __construct(
@@ -30,13 +30,35 @@ class WalletOneConnector implements PaymentConnector
     public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
     {
         $idempotenceKey = $this->generateIdempotenceKey();
+//        $body = [
+//            "WMI_MERCHANT_ID" => $this->merchantId,
+//            "WMI_CUSTOMER_PHONE" => Phone::normalize($customer->phone),
+//            "WMI_PAYMENT_NO" => $idempotenceKey,
+//            "WMI_CURRENCY_ID" => self::CURRENCIES[$customer->currency],
+//            "WMI_PAYMENT_AMOUNT" => (string)$invoice->price,
+//            "WMI_DESCRIPTION" => "BASE64:" . base64_encode($invoice->description . ' ' . time()),
+//            "WMI_SUCCESS_URL" => $this->successUrl,
+//            "WMI_FAIL_URL" => $this->failUrl
+//        ];
+
         $body = [
             "WMI_MERCHANT_ID" => $this->merchantId,
+//            "WMI_PTENABLED" => 'W1KZT',
+//            "WMI_PTDISABLED" => 'W1RUB',
             "WMI_CUSTOMER_PHONE" => Phone::normalize($customer->phone),
             "WMI_PAYMENT_NO" => $idempotenceKey,
             "WMI_CURRENCY_ID" => "398",
-            "WMI_PAYMENT_AMOUNT" => (string)$invoice->price,
-            "WMI_DESCRIPTION" => "BASE64:" . base64_encode($invoice->description . ' ' . time()),
+            "WMI_PAYMENT_AMOUNT" => "500.00",
+            "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
+            "WMI_CUSTOMER_EMAIL" => "vahagn99ghukasan@gmail.com",
+            "WMI_ORDER_ITEMS" => json_encode([[
+                "Title" => urlencode("Покупка тарифа"),
+                "Quantity" => 1,
+                "UnitPrice" => 150.00,
+                "SubTotal" => 450.00,
+                "TaxType" => "tax_ru_1",
+                "Tax" => 0.00
+            ]]),
             "WMI_SUCCESS_URL" => $this->successUrl,
             "WMI_FAIL_URL" => $this->failUrl,
         ];
