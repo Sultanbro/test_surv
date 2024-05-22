@@ -4,88 +4,99 @@
 			<router-link
 				to="/kb"
 				class="KBToolbar-breadcrumb"
+				:class="{ 'purple-color': breadcrumbs.length }"
 			>
 				База знаний
 			</router-link>
 			<template v-for="(breadcrumb, index) in breadcrumbs">
-				<i
-					:key="index"
-					class="fa fa-chevron-right"
-				/>
+				<ArrowIcon :key="index" />
 				<router-link
 					:key="'l' + index"
 					:to="breadcrumb.link"
-					class="KBToolbar-breadcrumb"
+					:class="{
+						'KBToolbar-breadcrumb': true,
+						'purple-color': index !== lastIndex,
+					}"
 				>
 					{{ breadcrumb.title }}
 				</router-link>
 			</template>
 		</div>
 		<div class="KBToolbar-actions">
-			<button
-				v-if="canEdit"
-				v-b-popover.hover.top="'Включить редактирование Базы знаний'"
-				class="KBToolbar-action"
-				:class="{ 'KBToolbar-action_active': isEdit }"
-				@click="$emit('mode', isEdit ? 'read' : 'edit')"
-			>
-				<SettingsToolbarIcon />
-			</button>
 			<template v-if="activeBook">
 				<template v-if="editBook">
-					<button
-						class="KBToolbar-action KBToolbar-action_info"
-						@click="$emit('upload-image')"
+					<div
+						v-if="isShowDropdown"
+						class="KBToolbar-dropdown"
+						@mouseenter="showDropdown"
+						@mouseleave="unShowDropdown"
 					>
-						<i class="far fa-image" />
-					</button>
-
+						<ul>
+							<li @click="$emit('upload-image')">
+								<DownloadImageIcon />Загрузить картинку
+							</li>
+							<li @click="$emit('upload-audio')">
+								<DownloadAudioIcon />Загрузить аудио
+							</li>
+							<li><DownloadFileIcon />Загрузить файл</li>
+						</ul>
+					</div>
 					<button
-						class="KBToolbar-action KBToolbar-action_info"
-						@click="$emit('upload-audio')"
+						class="KBToolbar-action KBToolbar-button-dropdown"
+						@mouseenter="showDropdown"
+						@mouseleave="unShowDropdown"
 					>
-						<i class="fas fa-volume-up" />
+						<BurgerMenuIcon />
 					</button>
-
-					<button
-						v-if="!isActiveCategory"
-						class="KBToolbar-action KBToolbar-action_remove"
-						@click="$emit('delete-page', activeBook)"
-					>
-						Удалить
-					</button>
-
-					<button
-						class="KBToolbar-action KBToolbar-action_save"
-						@click="$emit('save-page')"
-					>
-						Сохранить
-					</button>
-				</template>
-				<template v-else>
 					<button
 						v-if="!isActiveCategory"
 						class="KBToolbar-action KBToolbar-action_info"
 						title="Поделиться ссылкой"
 						@click="copyLink()"
 					>
-						<i class="fa fa-clone" />
+						<ShareLinkIcon />
 					</button>
 
 					<button
-						v-if="isEdit && !isActiveCategory"
-						class="KBToolbar-action KBToolbar-action_remove"
+						v-if="!isActiveCategory"
+						class="KBToolbar-action KBToolbar-action_info"
+						title="Удалить"
 						@click="$emit('delete-page', activeBook)"
 					>
-						<i class="fa fa-trash" />
+						<DeleteIcon />
 					</button>
 
+					<button
+						v-if="!isActiveCategory"
+						class="KBToolbar-action KBToolbar-action_info"
+						title="Сохранить изменения"
+						@click="$emit('save-page')"
+					>
+						<SaveIcon />
+					</button>
+				</template>
+				<template v-else>
 					<button
 						v-if="isEdit && !isActiveCategory"
 						class="KBToolbar-action KBToolbar-action_save"
 						@click="$emit('edit-page')"
 					>
-						Редактировать
+						<EditIcon />
+					</button>
+					<button
+						v-if="!isActiveCategory"
+						class="KBToolbar-action KBToolbar-action_info"
+						title="Поделиться ссылкой"
+						@click="copyLink()"
+					>
+						<ShareLinkIcon />
+					</button>
+					<button
+						v-if="isEdit && !isActiveCategory"
+						class="KBToolbar-action KBToolbar-action_remove"
+						@click="$emit('delete-page', activeBook)"
+					>
+						<RemoveIcon />
 					</button>
 				</template>
 			</template>
@@ -95,9 +106,21 @@
 					class="KBToolbar-action"
 					@click="$emit('settings')"
 				>
-					<EditToolbarIcon />
+					<SettingsToolbarIcon />
 				</button>
 			</template>
+			<button
+				v-if="canEdit"
+				v-b-popover.hover.top="'Включить редактирование Базы знаний'"
+				class="KBToolbar-checkbox-action"
+			>
+				<input
+					id="switch"
+					type="checkbox"
+					@click="$emit('mode', isEdit ? 'read' : 'edit')"
+				>
+				<label for="switch">Toggle</label>
+			</button>
 		</div>
 	</nav>
 </template>
@@ -108,13 +131,32 @@ import { usePortalStore } from '@/stores/Portal';
 import { copy2clipboard } from '@/composables/copy2clipboard.js';
 
 import SettingsToolbarIcon from '../../../../assets/icons/SettingsToolbarIcon.vue';
-import EditToolbarIcon from '../../../../assets/icons/EditToolbarIcon.vue';
+import ArrowIcon from '../../../../assets/icons/ArrowIcon.vue';
+import ShareLinkIcon from '../../../../assets/icons/ShareLinkIcon.vue';
+import RemoveIcon from '../../../../assets/icons/RemoveIcon.vue';
+import EditIcon from '../../../../assets/icons/EditIcon.vue';
+import BurgerMenuIcon from '../../../../assets/icons/BurgerMenuIcon.vue';
+import DeleteIcon from '../../../../assets/icons/DeleteIcon.vue';
+import SaveIcon from '../../../../assets/icons/SaveIcon.vue';
+
+import DownloadFileIcon from '../../../../assets/icons/DownloadFileIcon.vue';
+import DownloadAudioIcon from '../../../../assets/icons/DownloadAudioIcon.vue';
+import DownloadImageIcon from '../../../../assets/icons/DownloadImageIcon.vue';
 
 export default {
 	name: 'KBToolbar',
 	components: {
 		SettingsToolbarIcon,
-		EditToolbarIcon,
+		ArrowIcon,
+		ShareLinkIcon,
+		RemoveIcon,
+		EditIcon,
+		BurgerMenuIcon,
+		DeleteIcon,
+		SaveIcon,
+		DownloadFileIcon,
+		DownloadAudioIcon,
+		DownloadImageIcon,
 	},
 	props: {
 		mode: {
@@ -137,7 +179,9 @@ export default {
 		},
 	},
 	data() {
-		return {};
+		return {
+			isShowDropdown: false,
+		};
 	},
 	computed: {
 		...mapState(usePortalStore, ['isOwner', 'isAdmin']),
@@ -148,11 +192,20 @@ export default {
 			if (!this.activeBook) return false;
 			return !this.activeBook.parent_id || this.activeBook.is_category;
 		},
+		lastIndex() {
+			return this.breadcrumbs.length - 1;
+		},
 	},
 	watch: {},
 	created() {},
 	mounted() {},
 	methods: {
+		showDropdown() {
+			this.isShowDropdown = true;
+		},
+		unShowDropdown() {
+			this.isShowDropdown = false;
+		},
 		copyLink() {
 			try {
 				copy2clipboard(
@@ -167,7 +220,52 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+$iconColor: #8da0c1;
+
+input[type="checkbox"] {
+	height: 0;
+	width: 0;
+	visibility: hidden;
+}
+
+label {
+	cursor: pointer;
+	text-indent: -9999px;
+	width: 44px;
+	height: 25px;
+	background: $iconColor;
+	display: block;
+	border-radius: 100px;
+	position: relative;
+	padding: 1%;
+}
+
+label:after {
+	content: "";
+	position: absolute;
+	top: 5px;
+	left: 6px;
+	width: 15px;
+	height: 15px;
+	background: #fff;
+	border-radius: 90px;
+	transition: 0.3s;
+}
+
+input:checked + label {
+	background: #156ae8;
+}
+
+input:checked + label:after {
+	left: calc(100% - 5px);
+	transform: translateX(-100%);
+}
+
+label:active:after {
+	width: 12px;
+}
+
 .KBToolbar {
 	display: flex;
 	flex-flow: row nowrap;
@@ -184,9 +282,18 @@ export default {
 			color: #ccc;
 		}
 	}
+
+	.purple-color {
+		color: $iconColor;
+	}
+
+	.button-dropdown {
+		position: relative;
+	}
+
 	&-breadcrumb {
 		display: block;
-		font-size: 20px;
+		font-size: 14px;
 		font-weight: 500;
 		color: #0b172d;
 		&:last-child {
@@ -200,46 +307,53 @@ export default {
 		gap: 10px;
 
 		margin-left: auto;
+
+		.KBToolbar-dropdown {
+			z-index: 5;
+			position: absolute;
+			top: 50px;
+			right: 220px;
+			padding: 1%;
+			border-radius: 12px;
+			background-color: white;
+			box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+			ul {
+				li {
+					cursor: pointer;
+				}
+				li:not(:first-child) {
+					margin-top: 20px;
+				}
+			}
+		}
+	}
+	&-checkbox-action {
+		display: flex;
+		outline: none;
+		background: #f7f7f7;
+		margin-top: 3%;
 	}
 	&-action {
-		display: flex;
 		padding: 6px;
+		height: 35px;
+		width: 35px;
+		display: flex;
+		justify-content: center;
+		outline: none;
+		align-items: center;
 		border: 1px solid #8da0c1;
-
 		font-size: 14px;
-
 		background: #f7f7f7;
 		border-radius: 5px;
 		cursor: pointer;
 		&_info {
-			color: #fff;
-			background: #285ba7;
-			border-color: #285ba7;
-			.fa-cog {
-				color: #fff;
-			}
-			&:hover {
-				background: darken(#285ba7, 5);
-				border-color: darken(#285ba7, 5);
-			}
+			border-color: $iconColor;
 		}
 		&_remove {
-			color: #fff;
-			background-color: #dc3545;
-			border-color: #dc3545;
-			&:hover {
-				background-color: #c82333;
-				border-color: #bd2130;
-			}
+			border-color: $iconColor;
 		}
 		&_save {
-			color: #fff;
-			background: #28a745;
-			border-color: #28a745;
-			&:hover {
-				background-color: darken(#28a745, 5);
-				border-color: darken(#28a745, 5);
-			}
+			border-color: $iconColor;
 		}
 		&_active {
 			background: #bbd6ff;
