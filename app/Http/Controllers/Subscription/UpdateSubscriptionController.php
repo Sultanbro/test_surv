@@ -38,6 +38,9 @@ class UpdateSubscriptionController extends Controller
         );
 
         $invoice = $gateway->invoice($dto, $customer);
+        $subscription->update([
+            'extra_users_limit' => $data->extraUsersLimit + $subscription->extra_user_limit
+        ]);
 
         return $this->response(
             message: 'success',
