@@ -9,7 +9,7 @@
 					Оплатить картой
 				</h2>
 				<div style="display: flex; flex-direction: column">
-					<button>
+					<button @click.stop.prevent="redirect">
 						<a
 							href="https://wl.walletone.com/checkout/refill/CreditCard/347770942/NewCard"
 						>
@@ -22,7 +22,10 @@
 							Картой банка не из Росиии
 						</a>
 					</button>
-					<button style="margin-top: 2%">
+					<button
+						style="margin-top: 2%"
+						@click.stop.prevent="redirect"
+					>
 						<a href="https://proeducation.kz/e44NQ/">
 							<img
 								width="40"
@@ -35,7 +38,10 @@
 					</button>
 				</div>
 			</div>
-			<button style="margin-top: 2%">
+			<button
+				style="margin-top: 2%"
+				@click.stop.prevent="redirect"
+			>
 				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
 					<img
 						width="40"
@@ -46,7 +52,10 @@
 					Оплата Каспи Рассрочка
 				</a>
 			</button>
-			<button style="margin-top: 2%">
+			<button
+				style="margin-top: 2%"
+				@click.stop.prevent="redirect"
+			>
 				<a
 					href="https://wl.walletone.com/checkout/refill/CreditCard/347773203/NewCard"
 				>
@@ -59,7 +68,7 @@
 					Тест
 				</a>
 			</button>
-			<button @click="getAmount">
+			<button @click.stop.prevent="getAmount">
 				click
 			</button>
 		</div>
@@ -87,6 +96,7 @@ export default {
 		},
 		createForm(res) {
 			const form = document.createElement('form');
+			form.style.display = 'none';
 			form.method = 'post';
 			form.action = res.url;
 			Object.keys(res.params).forEach((key) => {
@@ -104,10 +114,12 @@ export default {
 					amount: 100,
 				})
 				.then((res) => {
-          
-					this.createForm(res.data)
+					this.createForm(res.data);
 				});
 		},
+		redirect() {
+			return this.$router.push('/payworkshopknowledgebaseform')
+		}
 	},
 };
 </script>

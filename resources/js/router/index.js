@@ -25,6 +25,7 @@ import MapView from '@/views/MapView';
 import PromotionalMaterialView from '@/views/PromotionalMaterialView';
 import ReferralPrsentationView from '@/views/ReferralPrsentationView';
 import WorkshopPage from '../pages/workshop/WorkshopPage.vue';
+import WorkshopForm from '../pages/workshop/WorkShopForm.vue';
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView';
@@ -334,6 +335,14 @@ const router = new VueRouter({
 			component: WorkshopPage,
 			meta: {
 				title: 'Страница оплаты',
+			},
+		},
+		{
+			path: '/payworkshopknowledgebaseform',
+			name: 'WorkshopForm',
+			component: WorkshopForm,
+			meta: {
+				title: 'Форма перед оплатой',
 			},
 		},
 	],
