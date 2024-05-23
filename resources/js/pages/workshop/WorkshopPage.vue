@@ -1,10 +1,16 @@
 <template>
 	<div class="workshop">
+		<h1 class="workshop__title">
+			Оплата заказа
+		</h1>
 		<div
 			v-for="button in buttons"
 			:key="button.id"
 		>
-			<button @click="openPayForm(button.link)">
+			<button
+				class="workshop__button"
+				@click="openPayForm(button.link)"
+			>
 				{{ button.title }}
 				<img
 					class="icon"
@@ -13,20 +19,7 @@
 					:src="button.img"
 					alt=""
 				>
-				<img
-					v-if="button.dopImg"
-					width="100"
-					height="100"
-					:src="button.dopImg"
-					alt=""
-				>
 			</button>
-			<p
-				v-if="button.desc"
-				style="font-size: 12px"
-			>
-				{{ button.desc }}
-			</p>
 		</div>
 	</div>
 </template>
@@ -56,6 +49,12 @@ export default {
 					id: 3,
 					title: 'Оплата Каспи Рассрочка',
 					link: 'https://pay.kaspi.kz/pay/jjtpkyxq',
+					img: 'https://cdn-icons-png.flaticon.com/512/262/262042.png',
+				},
+				{
+					id: 3,
+					title: 'Тест',
+					link: 'https://wl.walletone.com/checkout/refill/CreditCard/347773203/NewCard',
 					img: 'https://cdn-icons-png.flaticon.com/512/262/262042.png',
 				},
 			],

@@ -1,20 +1,22 @@
 .workshop {
-	font-size: 25px;
-	min-height: 100vh;
-	display: flex;
-  flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	flex-wrap: wrap;
-	gap: 1%;
-	button {
-    margin-top: 2%;
+  .wrapper {
+    font-size: 30px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1%;
+  }
+  button {
     padding: 1%;
-		width: 450px;
-		background-color: #fcff33;
-		color: rgb(0, 0, 0);
-		border-radius: 10px;
-		transition: all ease 100ms;
+    margin-top: 2%;
+    width: 450px;
+    background-color: #fcff33;
+    color: rgb(0, 0, 0);
+    border-radius: 10px;
+    transition: all ease 100ms;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,14 +24,14 @@
     img {
       border-radius: 50%;
     }
-		&:hover {
-			background-color: #d0d304;
-		}
-		&:focus {
-			outline: none;
-		}
-		a {
-			color: white;
-		}
-	}
+    &:hover {
+      background-color: #d0d304;
+    }
+    &:focus {
+      outline: none;
+    }
+    a {
+      color: white;
+    }
+  }
 }
