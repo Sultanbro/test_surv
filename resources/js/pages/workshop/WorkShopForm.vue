@@ -41,14 +41,16 @@ export default {
 
 <style scoped lang="scss">
 .workshopform {
-	padding: 2%;
+  width: 340px;
+	margin: 2%;
 	display: flex;
-	align-items: center;
+  flex-direction: column;
 	gap: 4px;
 	input[type="text"], input[type="number"] {
 		border-radius: 10px;
 		font-size: 15px;
 		padding: 1%;
+    padding: 2%;
 		border: 1px solid #646464;
 	}
 	button {
@@ -56,7 +58,7 @@ export default {
 		color: white;
 		border-radius: 15px;
 		font-size: 15px;
-		padding: 2%;
+		padding: 4%;
 	}
 }
 </style>
