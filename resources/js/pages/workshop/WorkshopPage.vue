@@ -68,14 +68,14 @@
 					Тест
 				</a>
 			</button>
-			<button @click.stop.prevent="getAmount">
-				click
-			</button>
 		</div>
 	</div>
 </template>
 
 <script>
+import { useAmountStore } from '../../stores/amount';
+import { mapActions } from 'pinia'
+
 export default {
 	name: 'WorkshopPage',
 	data() {
@@ -91,6 +91,7 @@ export default {
 		this.openPayForm();
 	},
 	methods: {
+		...mapActions(useAmountStore, ['getUsername']),
 		openPayForm(link) {
 			window.open(link, '_blank');
 		},
@@ -112,6 +113,8 @@ export default {
 			return this.axios
 				.post(this.amountApi, {
 					amount: 100,
+					phone: sessionStorage.getItem('phoneForm'),
+					sum: sessionStorage.getItem('sumForm'),
 				})
 				.then((res) => {
 					this.createForm(res.data);
