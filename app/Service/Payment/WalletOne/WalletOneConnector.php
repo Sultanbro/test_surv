@@ -4,8 +4,8 @@ namespace App\Service\Payment\WalletOne;
 
 use App\Classes\Helpers\Phone;
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\Service\Payment\Core\Callback\Invoice;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice;
 use App\Service\Payment\Core\HasIdempotenceKey;
 use App\Service\Payment\Core\PaymentConnector;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Payment\Core;
+namespace App\Service\Payment\Core\Callback;
 
 abstract class WebhookCallback
 {

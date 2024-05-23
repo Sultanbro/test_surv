@@ -28,7 +28,7 @@ class Invoice extends Model
         'amount'
     ];
 
-    public static function createFromPaymentInvoice(\App\Service\Payment\Core\Invoice $invoice): Invoice
+    public static function createFromPaymentInvoice(\App\Service\Payment\Core\Callback\Invoice $invoice): Invoice
     {
         /** @var Invoice */
         return static::query()->create([

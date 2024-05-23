@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Payment\Core;
+namespace App\Service\Payment\Core\Callback;
 
 use App\Models\Tariff\PaymentToken;
 use JsonSerializable;
