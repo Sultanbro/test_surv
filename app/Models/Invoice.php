@@ -32,7 +32,7 @@ class Invoice extends Model
     {
         /** @var Invoice */
         return static::query()->create([
-            'invoice_id' => $invoice->getPaymentToken(),
+            'invoice_id' => $invoice->getPaymentToken()->token,
             'actor_phone' => $invoice->getParams()['WMI_CUSTOMER_PHONE'],
             'actor_email' => $invoice->getParams()['WMI_CUSTOMER_EMAIL'],
             'currency' => $invoice->getParams()['WMI_CUSTOMER_EMAIL'],
