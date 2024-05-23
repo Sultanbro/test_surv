@@ -101,9 +101,8 @@ export default {
 		getAmount() {
 			return this.axios
 				.post(this.amountApi, {
-					amount: 100,
+					amount:  sessionStorage.getItem('sumForm'),
 					phone: sessionStorage.getItem('phoneForm'),
-					sum: sessionStorage.getItem('sumForm'),
 				})
 				.then((res) => {
 					this.createForm(res.data);
