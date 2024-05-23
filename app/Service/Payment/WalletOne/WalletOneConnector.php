@@ -59,6 +59,7 @@ class WalletOneConnector implements PaymentConnector
         return new Invoice(
             $this->paymentUrl,
             $idempotenceKey,
+            'rub',
             $body
         );
     }

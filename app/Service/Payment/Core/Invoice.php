@@ -10,6 +10,7 @@ class Invoice implements JsonSerializable
     public function __construct(
         private readonly string $url,
         private readonly string $paymentId,
+        private readonly string $currency,
         private readonly array  $params = [],
         private readonly bool   $success = true,
     )
@@ -31,6 +32,10 @@ class Invoice implements JsonSerializable
         return $this->success;
     }
 
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
     public function jsonSerialize(): array
     {
         return [
