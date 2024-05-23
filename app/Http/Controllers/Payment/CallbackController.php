@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Subscription;
+namespace App\Http\Controllers\Payment;
 
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
@@ -22,6 +22,10 @@ class CallbackController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
+        slack(json_encode([
+            'params' => $request->all(),
+            'currency' => $currency
+        ]));
         $response = Gateway::provider($currency)
             ->webhook([
                 'headers' => $request->header(),

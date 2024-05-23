@@ -138,3 +138,13 @@ if (!function_exists('subtractPercent')) {
         return $amount - $percentage_value;
     }
 }
+
+if (!function_exists('slack')) {
+    function slack(string $message = null): LoggerInterface
+    {
+        $logger = Log::channel('slackNotification');
+        if ($message) $logger->info($message);
+
+        return Log::channel('slackNotification');
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Invoice;
+namespace App\Http\Controllers\Payment;
 
 use App\DTO\Payment\CreateInvoiceDTO;
 use App\Facade\Payment\Gateway;

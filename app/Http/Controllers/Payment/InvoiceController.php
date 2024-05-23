@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Invoice;
+namespace App\Http\Controllers\Payment;
 
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
