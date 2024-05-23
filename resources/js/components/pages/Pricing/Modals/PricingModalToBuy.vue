@@ -448,7 +448,8 @@ export default  {
 								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 						auto_payment: this.autoPayment,
-						tenant_id: this.selectedOption.id
+						tenant_id: this.selectedOption.id,
+						promo_code: this.promoRate[0]?.code || null,
 					})
 					const form = document.createElement('form')
 					form.method = 'post'
@@ -470,7 +471,8 @@ export default  {
 								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
 						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
 						auto_payment: this.autoPayment,
-						tenant_id: this.selectedOption.id
+						tenant_id: this.selectedOption.id,
+						promo_code: this.promoRate[0]?.code || null,
 					})
 					const form = document.createElement('form')
 					form.method = 'post'
@@ -480,9 +482,9 @@ export default  {
 						inp.name = key
 						inp.value = params[key]
 						form.appendChild(inp)
-						form.submit()
 					})
 					document.body.appendChild(form)
+					form.submit()
 
 					/* eslint-enable camelcase */
 					this.isLoading = false
