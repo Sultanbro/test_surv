@@ -9,8 +9,8 @@ class CustomerDto
         public int     $id,
         public string  $currency,
         public string  $name,
+        public ?string $email = null,
         public ?string $phone = null,
-        public ?string $email = null
     )
     {
     }

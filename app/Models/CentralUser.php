@@ -156,8 +156,8 @@ class CentralUser extends Model implements ICustomer
             $this->id,
             $this->currency,
             $this->name . ' ' . $this->last_name,
+            $this->email,
             $this->phone,
-            $this->email
         );
     }
 }
