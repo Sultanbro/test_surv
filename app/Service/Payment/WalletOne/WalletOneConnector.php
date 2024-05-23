@@ -39,6 +39,7 @@ class WalletOneConnector implements PaymentConnector
             "WMI_CURRENCY_ID" => self::CURRENCIES[$invoice->currency],
             "WMI_PAYMENT_AMOUNT" => $invoice->price,
             "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
+            "WMI_CUSTOMER_EMAIL" => $customer->email,
             "WMI_ORDER_ITEMS" => json_encode([[
                 "Title" => urlencode($invoice->description),
                 "Quantity" => $invoice->quantity,
