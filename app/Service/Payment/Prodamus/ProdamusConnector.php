@@ -69,6 +69,7 @@ class ProdamusConnector implements PaymentConnector
         return new Invoice(
             url: $resp['payment_link'],
             paymentId: $paymentId,
+            currency: 'rub',
             success: $response->successful()
         );
     }

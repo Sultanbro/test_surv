@@ -37,7 +37,7 @@ class ExtendSubscriptionController extends Controller
             'Продление тарифа'
         );
 
-        $invoice = $gateway->invoice($dto, $customer);
+        $invoice = $gateway->createInvoice($dto, $customer);
         $subscription->update([
             'expired_at' => $data->extraUsersLimit + $subscription->extra_user_limit
         ]);

@@ -30,7 +30,7 @@ abstract class BasePaymentGateway
      * @param CustomerDto $customer
      * @return Invoice
      */
-    public function invoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
+    public function createInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
     {
         return $this->connector()->createNewInvoice($data, $customer);
     }

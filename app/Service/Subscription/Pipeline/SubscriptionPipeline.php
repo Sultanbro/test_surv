@@ -58,7 +58,7 @@ class SubscriptionPipeline
             $this->getPrice($this->data)
         );
 
-        $this->invoice = Gateway::provider($this->data->provider)->invoice($invoice, $this->customer);
+        $this->invoice = Gateway::provider($this->data->provider)->createInvoice($invoice, $this->customer);
     }
 
     /**

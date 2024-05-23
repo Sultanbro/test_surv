@@ -32,7 +32,7 @@ class Gateway extends Facade
     public static function fake(): BasePaymentGateway
     {
         $mock = Mockery::mock(BasePaymentGateway::class);
-        $mock->shouldReceive("invoice")
+        $mock->shouldReceive("createInvoice")
             ->with([
                 new NewSubscriptionDTO(
                     'test',

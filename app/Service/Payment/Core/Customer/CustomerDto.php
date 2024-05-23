@@ -6,11 +6,11 @@ class CustomerDto
 {
 
     public function __construct(
-        public int    $id,
-        public string $name,
-        public string $phone,
-        public string $email,
-        public string $currency
+        public int     $id,
+        public string  $currency,
+        public string  $name,
+        public ?string $email = null,
+        public ?string $phone = null,
     )
     {
     }

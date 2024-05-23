@@ -37,7 +37,7 @@ class UpdateSubscriptionController extends Controller
             'Рашерение тарифа'
         );
 
-        $invoice = $gateway->invoice($dto, $customer);
+        $invoice = $gateway->createInvoice($dto, $customer);
         $subscription->update([
             'extra_users_limit' => $data->extraUsersLimit + $subscription->extra_user_limit
         ]);

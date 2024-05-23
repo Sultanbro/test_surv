@@ -154,10 +154,10 @@ class CentralUser extends Model implements ICustomer
     {
         return new CustomerDto(
             $this->id,
-            $this->name . ' ' . $this->last_name,
-            $this->phone,
-            $this->email,
             $this->currency,
+            $this->name . ' ' . $this->last_name,
+            $this->email,
+            $this->phone,
         );
     }
 }

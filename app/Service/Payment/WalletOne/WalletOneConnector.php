@@ -30,7 +30,7 @@ class WalletOneConnector implements PaymentConnector
     public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
     {
         $idempotenceKey = $this->generateIdempotenceKey();
-        $body = [
+        $body = array_filter([
             "WMI_MERCHANT_ID" => $this->merchantId,
 //            "WMI_PTENABLED" => 'W1KZT',
 //            "WMI_PTDISABLED" => 'W1RUB',
@@ -48,17 +48,17 @@ class WalletOneConnector implements PaymentConnector
                 "TaxType" => "tax_ru_1",
                 "Tax" => 0.00
             ]]),
-            "WMI_SUCCESS_URL" => $this->successUrl,
-            "WMI_FAIL_URL" => $this->failUrl,
-        ];
+//            "WMI_SUCCESS_URL" => $this->successUrl,
+//            "WMI_FAIL_URL" => $this->failUrl,
+        ]);
 
         $signature = new Signature($this->shopKey);
         //Добавление параметра WMI_SIGNATURE в словарь параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
-
         return new Invoice(
             $this->paymentUrl,
             $idempotenceKey,
+            'rub',
             $body
         );
     }
