@@ -9,7 +9,7 @@
 					Оплатить картой
 				</h2>
 				<div style="display: flex; flex-direction: column">
-					<button @click.stop.prevent="redirect">
+					<button>
 						<a
 							href="https://wl.walletone.com/checkout/refill/CreditCard/347770942/NewCard"
 						>
@@ -22,10 +22,7 @@
 							Картой банка не из Росиии
 						</a>
 					</button>
-					<button
-						style="margin-top: 2%"
-						@click.stop.prevent="redirect"
-					>
+					<button style="margin-top: 2%">
 						<a href="https://proeducation.kz/e44NQ/">
 							<img
 								width="40"
@@ -38,10 +35,7 @@
 					</button>
 				</div>
 			</div>
-			<button
-				style="margin-top: 2%"
-				@click.stop.prevent="redirect"
-			>
+			<button style="margin-top: 2%">
 				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
 					<img
 						width="40"
@@ -52,10 +46,7 @@
 					Оплата Каспи Рассрочка
 				</a>
 			</button>
-			<button
-				style="margin-top: 2%"
-				@click.stop.prevent="redirect"
-			>
+			<button style="margin-top: 2%">
 				<a
 					href="https://wl.walletone.com/checkout/refill/CreditCard/347773203/NewCard"
 				>
@@ -74,7 +65,7 @@
 
 <script>
 import { useAmountStore } from '../../stores/amount';
-import { mapActions } from 'pinia'
+import { mapActions } from 'pinia';
 
 export default {
 	name: 'WorkshopPage',
@@ -120,9 +111,6 @@ export default {
 					this.createForm(res.data);
 				});
 		},
-		redirect() {
-			return this.$router.push('/payworkshopknowledgebaseform')
-		}
 	},
 };
 </script>
