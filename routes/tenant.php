@@ -14,6 +14,7 @@ use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Deal as Deal;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Learning as Learning;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
@@ -21,7 +22,6 @@ use App\Http\Controllers\TaxGroupController;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
-use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Features\UserImpersonation;
 
@@ -36,7 +36,24 @@ Route::middleware(['web', 'tenant'])->group(function () {
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
-    Route::get('/tariffs/get', [Root\Payment\TariffController::class, 'get']);
+    Route::prefix('tariff')->group(function () {
+        Route::get('/get', [Root\Tariff\TariffController::class, 'get']);
+        Route::get('/validity', [Root\Tariff\TariffValidityController::class, 'validity']);
+        Route::post('/trial', [Root\Subscription\TrialSubscriptionController::class, 'enable']);
+        Route::get('/trial', [Root\Subscription\TrialSubscriptionController::class, 'exists']);
+        Route::prefix('subscriptions')->group(function () {
+            Route::get('/', Root\Subscription\GetSubscriptionController::class);
+            Route::post('/', Root\Subscription\NewSubscriptionController::class);
+            Route::post('/{subscription}', Root\Subscription\UpdateSubscriptionController::class);
+            Route::post('/{subscription}/extend', Root\Subscription\ExtendSubscriptionController::class);
+        });
+    });
+
+    Route::prefix('promo-codes')->group(function () {
+        Route::get('/', [Root\PromoCode\PromoCodeController::class, 'get']);
+        Route::post('/', [Root\PromoCode\PromoCodeController::class, 'save']);
+        Route::delete('/', [Root\PromoCode\PromoCodeController::class, 'destroy']);
+    });
 });
 
 // Portal Api
@@ -167,9 +184,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('search', [Root\FaqController::class, 'search']);
     });
 
-	Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
-	Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/assigned', [User\ProfileController::class, 'newprofile']);
+    Route::get('/courses2/catalog', [User\ProfileController::class, 'newprofile']);
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
     Route::post('/courses/save-order', [Course\CourseController::class, 'saveOrder']);
@@ -733,11 +750,9 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'payment.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/', [Root\Payment\PaymentController::class, 'payment']);
-        Route::post('/status', [Root\Payment\PaymentController::class, 'updateToTariffPayments']);
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Payment\PaymentController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Subscription\CallbackController::class, 'callback']);
     });
 
     Route::group([
@@ -786,6 +801,8 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
             Route::put('/set-off-limit', [Kpi\KpiController::class, 'setOffLimit'])->name('set-off-limit');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
         });
+
+        Route::get('/tenants', [Company\CompanyController::class, 'tenants'])->name('get-tenants');
 
         Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function () {
             Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');

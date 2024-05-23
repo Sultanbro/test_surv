@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Payments\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Core\PaymentGatewayRegistry;
 use App\Service\Referral\Core\GeneratorInterface;
 use App\Service\Referral\UrlGeneratorService;
 use Illuminate\Support\ServiceProvider;

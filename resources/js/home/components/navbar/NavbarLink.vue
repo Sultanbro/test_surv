@@ -1,5 +1,6 @@
 <template>
 	<a
+		:to="href"
 		class="jNav-menu-link"
 		@click="scrollToElement"
 	>

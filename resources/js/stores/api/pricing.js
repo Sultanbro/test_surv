@@ -1,44 +1,49 @@
 /** @module stores/api/pricing */
-import axios from 'axios'
+import axios from 'axios';
 
 /**
  * Получене менеджера по текущему кабинету
  * @return {PricingManager}
  */
-export async function fetchPricingManager(){
-	const { data } = await axios.get('/owner/manager')
-	return data
+export async function fetchPricingManager() {
+	const { data } = await axios.get('/owner/manager');
+	return data;
 }
 
 /**
  * Получене текущего тарифа
  * @return {ApiResponse.OwnerInfoResponse}
  */
-export async function fetchOwnerInfo(){
-	const { data } = await axios.get('/owner/info')
-	return data
+export async function fetchOwnerInfo() {
+	const { data } = await axios.get('/owner/info');
+	return data;
+}
+
+export async function fetchValidity() {
+	const { data } = await axios.get('/tariff/validity');
+	return data;
 }
 
 /**
  * Получене возможных тарифов
  * @return {ApiResponse.PricingResponse}
  */
-export async function fetchPricing(){
-	const { data } = await axios.get('/tariffs/get')
-	return data
+export async function fetchPricing() {
+	const { data } = await axios.get('/tariff/get');
+	return data;
 }
 
 /**
  * Активация промокода
  * @return {PricingPromo}
  */
-export async function fetchPricingPromo(code){
+export async function fetchPricingPromo(code) {
 	// const { data } = await axios.get('/pricing/promo', {params: {code}})
 	const data = {
 		code: 'secret' + code,
 		value: 0,
-	}
-	return data
+	};
+	return data;
 }
 
 /**
@@ -46,19 +51,19 @@ export async function fetchPricingPromo(code){
  * @param {ApiRequest.PricingPaymentRequest} params
  * @return {string} - ссылка на оплату
  */
-export async function postPaymentData(params){
-	const { data } = await axios.post('/payment', params)
-	return data
+export async function postPaymentData(params) {
+	const { data } = await axios.post('/tariff/subscriptions', params);
+	return data;
 }
 
 /**
  * Получение статуса оплаты
  * @return {ApiResponse.PaymentStatusResponse} - ссылка на оплату
  */
-export async function fetchPaymentStatus(){
+export async function fetchPaymentStatus() {
 	// опять пост там где гет должен быть, АААААААА
-	const { data } = await axios.post('/payment/status')
-	return data
+	const { data } = await axios.post('/payment/status');
+	return data;
 }
 
 /**
@@ -130,7 +135,7 @@ export async function fetchPaymentStatus(){
  * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
  * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
  * @property {PricingItem} tariff - объект тарифа
-*/
+ */
 
 /**
  * @typedef PricingItem
@@ -143,7 +148,7 @@ export async function fetchPaymentStatus(){
  * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
  * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
  * @property {PricingItemMultiCurrency?} multiCurrencyPrice
-*/
+ */
 
 /**
  * @typedef PricingItemMultiCurrency

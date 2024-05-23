@@ -15,7 +15,7 @@ export default {
 	props: {
 		z: {
 			type: Number,
-			default: 10
+			default: 1000000
 		}
 	},
 	computed: {
@@ -34,7 +34,8 @@ export default {
 	position: fixed;
 	top: 0;
 	right: 0;
-
-	background-color: rgba(#000, 0.25);
+	overflow: hidden;
+	background-color: rgba(#000000, 0.25);
+	backdrop-filter: blur(10px);
 }
 </style>

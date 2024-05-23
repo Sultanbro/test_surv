@@ -94,6 +94,7 @@ export default {
 			return this.manager.text || 'Обратитесь ко мне за консультацией по оплате сервиса и по выбору тарифа. Спасибо.'
 		},
 	},
+
 	created(){
 		this.fetchManager()
 	},

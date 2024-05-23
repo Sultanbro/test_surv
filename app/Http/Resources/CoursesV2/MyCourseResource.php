@@ -22,6 +22,12 @@ class MyCourseResource extends JsonResource
          * @var $this CourseV2
          */
 
+        $this->load('itemsPivot.model');
+
+        foreach ($this->itemsPivot as $item) {
+            $this->itemsPivot->all_stages = $item->model->countAllStages();
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,

@@ -7,6 +7,7 @@ enum TariffValidityEnum: string
     use BaseEnum;
 
     case Monthly = 'monthly';
-//    case Yearly = 'yearly';
+    case Monthly_3 = '3_monthly';
+    case Yearly = 'yearly';
     case Annual = 'annual';
 }

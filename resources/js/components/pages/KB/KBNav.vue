@@ -47,14 +47,16 @@
 				<i class="fa fa-arrow-left" />
 				<span>Выйти из архива</span>
 			</div>
-			<div
+			<button
 				v-if="currentBook"
-				class="btn btn-grey btn-block mb-3"
+				class="KBNav-button"
 				@click="onBack"
 			>
-				<i class="fa fa-arrow-left" />
-				<span>Вернуться к разделам</span>
-			</div>
+				<div class="KBNav-button-content">
+					<BackChapterIcon />
+					Вернуться к разделам
+				</div>
+			</button>
 		</div>
 
 		<!-- Search -->
@@ -157,7 +159,7 @@
 						class="KBNav-favorite"
 						@click="$emit('search', item, '')"
 					>
-						<i class="fas fa-heart" />
+						<FavoriteIcon />
 						{{ item.title }}
 					</div>
 					<hr>
@@ -221,23 +223,28 @@
 		<div v-if="mode === 'edit' && currentBook">
 			<div
 				v-if="!archived.show"
-				class="d-flex jscb mt-3 gap-1"
+				class="KBNav-footer-buttons"
 			>
-				<div
-					class="btn btn-grey w-full mr-1"
+				<button
+					class="KBNav-button"
 					@click="$emit('add-page', currentBook)"
 				>
-					<i class="fa fa-plus" />
-					<span>Страница</span>
-				</div>
-				<div
+					<div class="KBNav-footer-button">
+						<AddIconSilver />
+						Страница
+					</div>
+				</button>
+				<button
 					v-if="$laravel.is_admin"
-					class="btn btn-grey w-full mr-1"
+					class="KBNav-button"
 					@click="$emit('create', currentBook)"
 				>
-					<i class="fa fa-plus" />
-					<span>База</span>
-					<img
+					<div class="KBNav-footer-button">
+						<AddIconSilver />
+						База
+						<InfoIcon />
+					</div>
+					<!-- <img
 						v-b-popover.hover.right="
 							'Вы можете создать дополнительную базу знаний с отдельными доступами'
 						"
@@ -245,8 +252,8 @@
 						class="img-info ml-3"
 						alt="info icon"
 						width="18"
-					>
-				</div>
+					/> -->
+				</button>
 			</div>
 		</div>
 	</aside>
@@ -262,6 +269,10 @@ import SearchIcon from '../../../../assets/icons/SearchIcon.vue';
 import SettingsIcon from '../../../../assets/icons/SettingsIcon.vue';
 import AddIcon from '../../../../assets/icons/AddIcon.vue';
 import ArchiveIcon from '../../../../assets/icons/ArchiveIcon.vue';
+import BackChapterIcon from '../../../../assets/icons/BackChapterIcon.vue';
+import AddIconSilver from '../../../../assets/icons/AddIconSilver.vue';
+import InfoIcon from '../../../../assets/icons/InfoIcon.vue';
+import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
 
 import KBNavItems from './KBNavItems.vue';
 
@@ -279,6 +290,10 @@ export default {
 		KBNavItems,
 		AddIcon,
 		ArchiveIcon,
+		BackChapterIcon,
+		AddIconSilver,
+		InfoIcon,
+		FavoriteIcon,
 	},
 	props: {
 		mode: {
@@ -458,6 +473,12 @@ export default {
 </script>
 
 <style lang="scss">
+%button-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 $KBNav-padding: 15px;
 .KBNav {
 	display: flex;
@@ -506,8 +527,6 @@ $KBNav-padding: 15px;
 		margin-top: 16px;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		font-size: 11.88px;
 		gap: 4px;
 		.fa-cog {
 			color: #333;
@@ -515,18 +534,28 @@ $KBNav-padding: 15px;
 	}
 
 	&-button {
+		margin-top: 7px;
 		width: 100%;
-		height: 34px;
-		padding: 8.5px 73px;
+		height: 45px;
+		// padding: 8.5px 45px;
 		color: #8da0c1;
 		font-size: 14px;
 		border: 1px solid #8da0c1;
 		border-radius: 8px;
 		background-color: #ffffff;
+		.KBNav-button-content {
+			@extend %button-content;
+			gap: 13px;
+		}
+		.KBNav-footer-button {
+			@extend %button-content;
+			gap: 3px;
+		}
 	}
 
 	&__button-settings {
-		padding: 4px;
+		margin-top: 3%;
+		padding: 8px;
 		border-radius: 6.79px;
 		border: 1px solid #8da0c1;
 		background-color: #ffffff;
@@ -615,6 +644,11 @@ $KBNav-padding: 15px;
 		}
 	}
 
+	&-footer-buttons {
+		display: flex;
+		gap: 8px;
+	}
+
 	&-item {
 		padding: 8px 0;
 
@@ -679,7 +713,9 @@ $KBNav-padding: 15px;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		overflow: hidden;
-
+		display: flex;
+		align-items: center;
+		gap: 5px;
 		cursor: pointer;
 		&:hover {
 			background-color: #f1f1f1;

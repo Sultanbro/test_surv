@@ -124,12 +124,17 @@ if (!function_exists('phone_or_email')) {
 }
 
 
-if (!function_exists('slack')) {
-    function slack(string $message = null): LoggerInterface
+if (!function_exists('subtractPercent')) {
+    function subtractPercent(string|float|int $amount, string|float|int $percent): float
     {
-        $logger = Log::channel('slackNotification');
-        if ($message) $logger->info($message);
+        // Convert inputs to floats for calculation
+        $amount = (float)$amount;
+        $percent = (float)$percent;
 
-        return Log::channel('slackNotification');
+        // Calculate the percentage value
+        $percentage_value = ($amount * $percent) / 100;
+
+        // Subtract the percentage value from the amount
+        return $amount - $percentage_value;
     }
 }

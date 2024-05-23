@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\Tariff\TariffKindEnum;
 use App\Enums\Tariff\TariffValidityEnum;
+use App\Models\Tariff\Tariff;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -16,29 +17,38 @@ class TariffSeeder extends Seeder
      */
     public function run(): void
     {
-        $tariffKinds = TariffKindEnum::getAllValues();
-        $validates = TariffValidityEnum::getAllValues();
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::connection('mysql')->table('tariff_prices')->truncate();
+        DB::connection('mysql')->table('tariff_subscriptions')->truncate();
+        DB::connection('mysql')->table('tariff')->truncate();
+        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1;');
+        $tariffs = config('tariffs');
+        $validates = [
+            'monthly' => 1,
+            'threeMonthly' => 3,
+            'yearly' => 12,
+        ];
 
-        $data = array();
-        $usersLimit = [5, 20, 50, 100];
-        $price = [0, 0, 7158, 92460, 22966, 220711, 85004, 817227];
+        foreach ($tariffs as $name => $tariff) {
+            foreach ($validates as $validity => $monthsCount) {
+                $tariffModel = new Tariff();
+                $tariffModel->kind = $name;
+                $tariffModel->validity = $validity;
+                $tariffModel->users_limit = $tariff['users_limit'];
+                $tariffModel->save();
+                $salePrice = 0;
+                foreach ($tariff['prices'] as $currency => $price) {
 
-        $counter = 0;
-        foreach ($tariffKinds as $kindKey => $tariffKind){
-            foreach ($validates as $validity){
-                $data[] = [
-                    'id' => $counter+1,
-                    'validity' => $validity,
-                    'kind' => $tariffKind,
-                    'users_limit' => $usersLimit[$kindKey],
-                    'price' => $price[$counter]
-                ];
-                $counter++;
+                    if ($monthsCount > 1) {
+                        $salePrice = ($price * $monthsCount) * $tariff['sale_percent'] / 100;
+                    }
+
+                    $tariffModel->prices()->create([
+                        'currency' => $currency,
+                        'value' => ($price * $monthsCount) - $salePrice,
+                    ]);
+                }
             }
         }
-
-        DB::connection('mysql')->table('tariff_payment')->delete();
-        DB::connection('mysql')->table('tariff')->delete();
-        DB::connection('mysql')->table('tariff')->insert($data);
     }
 }

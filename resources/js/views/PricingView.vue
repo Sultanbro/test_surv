@@ -8,6 +8,7 @@ export default {
 		DefaultLayout,
 		PricingPage,
 	},
+
 }
 </script>
 

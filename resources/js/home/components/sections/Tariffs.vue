@@ -162,7 +162,7 @@ export default {
 		},
 		async fetchTariffs(){
 			try {
-				var {data} = await axios.get('/api/tariffs/get')
+				var {data} = await axios.get('/api/tariff/get')
 				this.tariffs = data.data?.tariffs || []
 			}
 			catch (error) {
