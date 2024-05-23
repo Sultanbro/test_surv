@@ -9,10 +9,8 @@
 					Оплатить картой
 				</h2>
 				<div style="display: flex; flex-direction: column">
-					<button @click.stop.prevent="redirect">
-						<a
-							href="https://wl.walletone.com/checkout/refill/CreditCard/347770942/NewCard"
-						>
+					<button @click="getAmount">
+						<a>
 							<img
 								width="40"
 								height="40"
@@ -22,10 +20,7 @@
 							Картой банка не из Росиии
 						</a>
 					</button>
-					<button
-						style="margin-top: 2%"
-						@click.stop.prevent="redirect"
-					>
+					<button style="margin-top: 2%">
 						<a href="https://proeducation.kz/e44NQ/">
 							<img
 								width="40"
@@ -38,10 +33,7 @@
 					</button>
 				</div>
 			</div>
-			<button
-				style="margin-top: 2%"
-				@click.stop.prevent="redirect"
-			>
+			<button style="margin-top: 2%">
 				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
 					<img
 						width="40"
@@ -52,10 +44,7 @@
 					Оплата Каспи Рассрочка
 				</a>
 			</button>
-			<button
-				style="margin-top: 2%"
-				@click.stop.prevent="redirect"
-			>
+			<button style="margin-top: 2%">
 				<a
 					href="https://wl.walletone.com/checkout/refill/CreditCard/347773203/NewCard"
 				>
@@ -68,14 +57,14 @@
 					Тест
 				</a>
 			</button>
-			<button @click.stop.prevent="getAmount">
-				click
-			</button>
 		</div>
 	</div>
 </template>
 
 <script>
+import { useAmountStore } from '../../stores/amount';
+import { mapActions } from 'pinia';
+
 export default {
 	name: 'WorkshopPage',
 	data() {
@@ -91,6 +80,7 @@ export default {
 		this.openPayForm();
 	},
 	methods: {
+		...mapActions(useAmountStore, ['getUsername']),
 		openPayForm(link) {
 			window.open(link, '_blank');
 		},
@@ -111,15 +101,13 @@ export default {
 		getAmount() {
 			return this.axios
 				.post(this.amountApi, {
-					amount: 100,
+					amount:  sessionStorage.getItem('sumForm'),
+					phone: sessionStorage.getItem('phoneForm'),
 				})
 				.then((res) => {
 					this.createForm(res.data);
 				});
 		},
-		redirect() {
-			return this.$router.push('/payworkshopknowledgebaseform')
-		}
 	},
 };
 </script>
