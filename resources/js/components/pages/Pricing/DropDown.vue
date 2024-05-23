@@ -11,7 +11,7 @@
 					:src="selectedOption.logo || '/images/price/DefaultAvatar.png'"
 				>
 				<p class="price-dropdown-title">
-					{{ selectedOption && selectedOption.id ? selectedOption.id : placeholder }}
+					{{ selectedOption && selectedOption ? selectedOption.id || selectedOption : placeholder }}
 				</p>
 			</div>
 			<DropDownIcon />
@@ -78,6 +78,7 @@ export default {
 			isOpen: false,
 		};
 	},
+
 	methods: {
 		toggleDropdown() {
 			this.isOpen = !this.isOpen;
@@ -99,6 +100,10 @@ export default {
 		padding: 8px !important;
 
 	}
+
+		.price-dropdown-title{
+				font-size: 16px !important;
+		}
 }
 .price-dropdown {
 	position: relative;
@@ -138,6 +143,8 @@ export default {
 	width: 100%;
 	height: 200px;
 	overflow-y: auto;
+	scrollbar-width: none; /* Firefox */
+	-ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
 .price-dropdown-menu li {
@@ -156,7 +163,7 @@ export default {
 
 .price-dropdown-title{
 font-weight: 600;
-		font-size: 16px;
+		font-size: 13px;
 }
 
 .price-dropdown-option{

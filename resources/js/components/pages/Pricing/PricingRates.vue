@@ -120,14 +120,17 @@
 								class="PricingRates-header-item"
 								:class="{
 									'connectionBtn': info.tariff === null && item.name==='Бесплатный',
-									'selectedBtn': info.tariff && item.name !== names[info.tariff.kind]
+									'selectedBtn': info.tariff && item.name !== names[info.tariff.kind],
+									'disabledBtn': info.tariff && info.tariff.payment_id !=='trial' &&countRate[info.tariff.kind] > countRate[item.connectionPack]
 								}"
+								:disabled="info.tariff && info.tariff.payment_id !=='trial' && countRate[info.tariff.kind] > countRate[item.connectionPack]"
 								@click="pricingModal(item)"
 							>
 								{{ info.tariff ? (names[info.tariff.kind] === item.name ? 'Продлить' : 'Перейти'): '' }}
 								{{ info.tariff === null ?(item.name === 'Бесплатный' ? 'Подключен' : 'Подключить'): '' }}
 							</button>
 							<button
+								v-if="info.tariff && info.tariff.payment_id !=='trial'"
 								class="activePro"
 								@click="editRate"
 							>
@@ -336,6 +339,12 @@ export default {
 				base:'В месяц',
 				standard:'В месяц',
 				pro:'В месяц'
+			},
+			countRate:{
+				free: 1,
+				base: 2,
+				standard: 3,
+				pro: 4
 			},
 			connectionPack: {
 				free:'free',
@@ -1031,6 +1040,7 @@ export default {
 	}
 
 	.activePro {
+		background-color: white;
 		font-size: 12px;
 		position: absolute;
 		top: 99%;
@@ -1062,4 +1072,15 @@ export default {
 	display: flex;
 		gap: 6px;
 	}
+
+	.disabledBtn{
+		background-color: #EDEDED;
+		cursor: not-allowed;
+	}
+
+	.disabledBtn:hover{
+	background-color: #EDEDED !important;
+	color: #1e40af !important;
+
+  }
 	</style>

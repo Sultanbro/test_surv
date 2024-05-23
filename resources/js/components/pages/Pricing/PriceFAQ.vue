@@ -1,9 +1,15 @@
 <template>
 	<div>
-		<h1 class="faq-item-price pb-4">
+		<button
+			class="faq-item-price pb-4"
+			@click="question = !question"
+		>
 			Вопросы по тарифам
-		</h1>
-		<div class="referral-link-faq-content">
+		</button>
+		<div
+			v-if="question"
+			class="referral-link-faq-content"
+		>
 			<div class="referral-faq-question">
 				<div
 					v-for="(item, index) in faqItems"
@@ -45,13 +51,13 @@
 </template>
 
 <script>
-export default  {
+export default {
 	name: 'PriceFAQ',
 	data() {
 		return {
 			showMore: 10,
+			question: false,
 			faqItems: [
-
 				{
 					question: 'Есть ли автопродление тарифов, чтобы не оплачивать вручную?',
 					answer: 'Что бы не оплачивать ежемесячно. Вы можете оплатить за 3 месяца или за год',
@@ -97,7 +103,6 @@ export default  {
 			} else {
 				this.openedIndex = index;
 			}
-
 		},
 	},
 };
@@ -166,18 +171,19 @@ export default  {
 	font-size: 30px;
 	line-height: 44px;
 	color: #333333;
-
+	background-color: white;
+	cursor: pointer;
 }
 
 .referral-link-faq-content {
 	font-size: 14px;
 	overflow-y: auto;
+	animation: fadeInUp 0.3s ease;
 }
 
 .referral-faq-question {
 	display: flex;
 	flex-direction: column;
-
 	padding: 20px 0 20px 0;
 }
 
@@ -190,16 +196,10 @@ export default  {
 	border-bottom: 1px solid #CCCCCC;
 }
 
-.faq-item:hover{
-		background-color: #e0dede;
-		border-radius: 12px;
-}
-
 
 .faq-item-content {
 	transition: max-height 0.3s ease-out;
 }
-
 
 .answer {
 	margin-top: 10px;
@@ -209,19 +209,14 @@ export default  {
 	overflow: hidden;
 }
 
-
 @keyframes fadeInUp {
 	0% {
-
 		transform: translateY(-40px);
 	}
 	100% {
-
 		transform: translateY(0);
 	}
 }
-
-
 
 .faq-item-question {
 	display: flex;
@@ -236,13 +231,9 @@ export default  {
 .faq-item-image {
 	transition: transform 0.3s ease;
 	background-color: #F2F2F2;
-
-
 }
 
 .faq-item-image.active {
 	transform: rotate(45deg);
 }
-
-
 </style>

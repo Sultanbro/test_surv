@@ -45,10 +45,18 @@
 						<b-skeleton v-else />
 					</div>
 					<div
+						v-if="info.tariff "
+						class="price-space-date"
+					>
+						<p class="price-space-text-name">
+							Оплачен до:
+						</p>
+						<p>{{ info.tariff.expire_date }}</p>
+					</div>
+					<div
 						v-if="info.tariff && info.tariff.payment_id !=='trial'"
 						class="price-space-buttons"
 					>
-						{{ info.tariff }}
 						<button>Продлить</button>
 						<p
 
@@ -420,6 +428,12 @@ export default {
 	color: white;
 	background-color: #0839b6;
 
+}
+
+.price-space-date{
+		margin-top: 10px;
+	display: flex;
+		gap: 5px;
 }
 
 .price-space-buttons p {

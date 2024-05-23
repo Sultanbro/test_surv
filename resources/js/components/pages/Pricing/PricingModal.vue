@@ -90,11 +90,11 @@ export default {
 
 .pricing-buttonClose{
   position: relative;
-  right: 14%;
-  width: 40px;
-  height: 40px;
-  padding: 8px;
-  border-radius: 8px;
+  right: 12%;
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  border-radius: 6px;
 }
 .pricing-modal-content{
   position: absolute;

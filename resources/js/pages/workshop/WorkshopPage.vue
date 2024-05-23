@@ -6,7 +6,7 @@
 		>
 			<button @click="openPayForm(button.link)">
 				{{ button.title }} <img
-					width="50"
+					width="90"
 					height="50"
 					:src="button.img"
 					alt=""
@@ -26,19 +26,19 @@ export default {
 					id: 1,
 					title: 'Оплата картой Казахстана',
 					link: 'https://wl.walletone.com/checkout/refill/CreditCard/347428001/NewCard',
-					img: 'https://cdn6.aptoide.com/imgs/8/4/3/843528874033d56b6d8087f45cc8c87d_icon.png',
+					img: 'https://upload.wikimedia.org/wikipedia/commons/b/b6/Flag_of_Kazakhstan_%28The_World_Factbook%29.png',
 				},
 				{
 					id: 2,
 					title: 'Оплата картой РФ',
 					link: 'https://proeducation.kz/e44NQ/',
-					img: 'https://yt3.googleusercontent.com/7k5TkI9uN3-tDCs1hyUk2fatuNX1q_GNd9HuyinVHL_cA0OncgZDrwJcAWUUKFk2UnHRMpF5=s900-c-k-c0x00ffffff-no-rj'
+					img: 'https://gallery.yopriceville.com/downloadfullsize/send/10186'
 				},
 				{
 					id: 3,
 					title: 'Оплата Каспи Рассрочка',
 					link: '',
-					img: 'https://elkom.kz/upload/iblock/141/Logo_Kaspi_Red.png'
+					img: 'https://play-lh.googleusercontent.com/w2UcnrRAfBTW-HbV4NGk2Tte1jR5TTXVH81oUUxxZHNTnk_fp3AZIuMKo5XSsvR5b5c'
 				},
 			],
 		};

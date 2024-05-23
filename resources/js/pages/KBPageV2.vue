@@ -66,7 +66,7 @@
 		<!-- Новый раздел -->
 		<b-modal
 			v-model="showCreate"
-			title="Новый раздел"
+			title="Новая база"
 			size="md"
 			class="modalle"
 			hide-footer
@@ -1461,15 +1461,9 @@ export default {
 		position: relative;
 	}
 	&-toolbar{
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-
-		min-height: 35px;
-		padding: 5px 15px;
-
-		background-color: #F7F7F7;
-    padding: 19px 21px 12px 38px;
+    background-color: #F7F7F7;
+    height: 65px;
+    padding: 0px 29px;
 	}
 	&-body{
 		flex: 1;

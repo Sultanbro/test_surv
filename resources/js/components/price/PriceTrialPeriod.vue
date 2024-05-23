@@ -98,7 +98,7 @@ export default {
 		width: 143px !important;
 		height: 143px !important;
 		top: 33% !important;
-		left: 71%;
+		left: 68% !important;
 	}
 	.price-trial-icon-box{
 		position: absolute;

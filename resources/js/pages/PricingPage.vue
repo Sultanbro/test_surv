@@ -77,6 +77,7 @@ import PricingModalFreeLayout from '../components/pages/Pricing/Modals/PricingMo
 import PricingToFree from '../components/pages/Pricing/Modals/PricingToFree.vue';
 import {useValidityStore} from '../stores/api/pricing/validity';
 import PriceTimeLimit from '../components/pages/Pricing/PriceTimeLimit.vue';
+import {useCurrentFetchStore} from '../stores/currentFetch';
 
 export default {
 	name: 'PricingPage',
@@ -121,6 +122,7 @@ export default {
 		...mapState(useModalStore, ['currentModalId']),
 		...mapState(usePricingPeriodStore, ['tariffStore', 'priceStore']),
 		...mapState(useValidityStore, ['validity', 'date']),
+		...mapState(useCurrentFetchStore, ['current']),
 
 		additionalPrice() {
 			if (!this.priceForUser) return 0;
@@ -144,8 +146,10 @@ export default {
 			return this.currencyTranslate[this.currency];
 		},
 	},
+
 	created() {
 		this.fetchValidityCorses()
+		this.currentFetch()
 		this.fetchCurrent(Laravel.userId);
 		if (this.$route.query.status) {
 			this.fetchStatus().then((status) => {
@@ -159,6 +163,7 @@ export default {
 	methods: {
 		...mapActions(useModalStore, ['setCurrentModal', 'removeModalActive']),
 		...mapActions(useValidityStore, ['fetchValidityCorses']),
+		...mapActions(useCurrentFetchStore, ['currentFetch']),
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',

@@ -6,7 +6,7 @@
 		:data-id="item.id"
 	>
 		<div class="KBNavItem-button">
-			<div class="d-flex aic gap-2">
+			<div class="d-flex aic gap-2 mt-3">
 				<template v-if="type === 'book'">
 					<CategoryIcon
 						v-if="isEditMode && (parent ? parent.canEdit : true)"
@@ -19,7 +19,7 @@
 							v-if="isEditMode && (parent ? parent.canEdit : true)"
 							class="KBNavItem-handlerIcon KBNavItem-mover"
 						>
-							<i class="fa fa-bars" />
+							<!-- <i class="fa fa-bars" /> -->
 						</div>
 						<div
 							class="KBNavItem-handlerIcon KBNavItem-shower"
@@ -50,14 +50,14 @@
 				/> -->
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
-					title="Добавить раздел"
+					title="Добавить базу знаний"
 					@click.stop="$emit('add-book', item)"
 				>
 					<AddСhapterIcon />
 				</div>
 				<div
 					v-if="type === 'book' && (parent ? parent.canEdit : true)"
-					title="Удалить раздел"
+					title="Удалить базу знаний"
 					@click.stop="$emit('remove-book', item)"
 				>
 					<DeleteChapterIcon />
@@ -69,9 +69,6 @@
 				>
 					<SettingsChapterIcon />
 				</div>
-				<!-- <button class="KBNavItem-actions-button">
-          123
-        </button> -->
 			</div>
 		</div>
 		<slot name="nested" />
@@ -205,9 +202,8 @@ export default {
 	}
 	// &-shower{}
 	&-name {
-		margin-top: 1%;
 		flex: 1;
-		font-size: 16px;
+		font-size: 12px;
 		padding: 8px 0;
 		overflow: hidden;
 		text-overflow: ellipsis;

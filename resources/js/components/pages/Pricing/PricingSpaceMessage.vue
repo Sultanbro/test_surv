@@ -23,7 +23,6 @@ export default {
 					} else {
 						window.jChatWidget.open();
 					}
-					window.jChatWidgetBtn.classList.toggle('hidden');
 				} else {
 					console.error('Chat widget methods open or close are not available');
 				}
