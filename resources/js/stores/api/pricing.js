@@ -55,6 +55,10 @@ export async function postPaymentData(params) {
 	const { data } = await axios.post('/tariff/subscriptions', params);
 	return data;
 }
+export async function postPaymentExtendData(params) {
+	const { data } = await axios.post('/tariff/subscriptions', params);
+	return data;
+}
 
 /**
  * Получение статуса оплаты
