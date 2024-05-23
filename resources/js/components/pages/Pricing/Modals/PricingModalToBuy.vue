@@ -440,7 +440,7 @@ export default  {
 		async submitWalletOne(){
 			try{
 				/* eslint-disable camelcase */
-				if (this.tariffStore === this.price && this.tariffId.payment_id !=='trial'){
+				if (this.tariffStore === this.price  && this.tariffId.payment_id !=='trial'){
 					const { url, params } = await this.postPaymentExtendData({
 						currency: this.currencyCode,
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
@@ -450,7 +450,7 @@ export default  {
 						auto_payment: this.autoPayment,
 						tenant_id: this.selectedOption.id,
 						promo_code: this.promoRate[0]?.code || null,
-					})
+					}, this.tariffId.id);
 					const form = document.createElement('form')
 					form.method = 'post'
 					form.action = url
@@ -464,7 +464,7 @@ export default  {
 					form.submit()
 				}
 				else{
-					const { url, params } = await this.postPaymentExtendData({
+					const { url, params } = await this.postPaymentData({
 						currency: this.currencyCode,
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
 							this.activeOption === 12 ? this.priceStore.yearly.id :

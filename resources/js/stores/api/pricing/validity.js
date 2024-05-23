@@ -20,7 +20,7 @@ export const useValidityStore = defineStore('useValidityStore', {
 		},
 		async fetchDateCorses() {
 			const data = await fetchValidity();
-			this.date = data.data.validity.expired_at;
+			this.date = data.data.validity.expired_at || '';
 		},
 	},
 });
