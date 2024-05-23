@@ -12,6 +12,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        dd(Schema::connection('mysql')->hasTable('subscriptions'));
         if (Schema::connection('mysql')->hasTable('subscriptions')) return;
         Schema::connection('mysql')->create('tariff_subscriptions', function (Blueprint $table) {
             $table->id();
