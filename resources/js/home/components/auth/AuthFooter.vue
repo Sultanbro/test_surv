@@ -45,7 +45,7 @@ $md4: 479.98px;
 	// 	text-align: center;
 	// }
 	&-text {
-		font-size: 14px;
+		font-size: 12px;
 		color: #737b8a;
 		// @media (max-width: $md2) {
 		// 	margin-bottom: 10px;

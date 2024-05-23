@@ -116,7 +116,8 @@ export default {
 	}
 	.input-tel__input {
 		height: 48px;
-		font-size: 16px;
+		font-size: 13px;
+    width: 90%;
 		// color: #333;
 		line-height: 1.25;
 		padding-top: 0 !important;
@@ -124,6 +125,7 @@ export default {
 	}
 
 	&-wrapper {
+    width: 90%;
 		border-radius: 8px;
 		border: 1px solid #afb5c0;
 		background-color: #fff;

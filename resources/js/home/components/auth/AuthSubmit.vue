@@ -13,26 +13,26 @@ export default {
 	name: 'AuthSubmit',
 	components: {},
 	props: {},
-	data(){
-		return {}
+	data() {
+		return {};
 	},
 	computed: {},
 	watch: {},
-	created(){},
-	mounted(){},
-	beforeDestroy(){},
+	created() {},
+	mounted() {},
+	beforeDestroy() {},
 	methods: {},
-}
+};
 </script>
 
 <style lang="scss">
-.AuthSubmit{
+.AuthSubmit {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
 
-	width: 100%;
+	width: 90%;
 	height: 48px;
 	padding: 16px;
 	border: none;
@@ -40,20 +40,20 @@ export default {
 	color: #fff;
 
 	border-radius: 8px;
-	background-color: #0C50FF;
-	&:hover{
-		background-color: #4A7CFD;
+	background-color: #0c50ff;
+	&:hover {
+		background-color: #4a7cfd;
 	}
-	&:focus{
+	&:focus {
 		outline: none;
-		background-color: #4A7CFD;
+		background-color: #4a7cfd;
 	}
-	&_disabled{
+	&_disabled {
 		background-color: #777;
-		&:hover{
+		&:hover {
 			background-color: #777;
 		}
-		button{
+		button {
 			cursor: wait;
 		}
 	}

@@ -111,7 +111,6 @@ export default {
 	position: relative;
 
 	&-selected{
-		padding: 4px 0;
 		position: relative;
 		z-index: 2;
 

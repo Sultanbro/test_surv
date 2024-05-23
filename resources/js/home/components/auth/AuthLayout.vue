@@ -91,9 +91,11 @@ export default {
 
 	&-form {
 		container: auth-info / inline-size;
-		width: 522px;
+		width: 483px;
 		max-width: 100%;
-		padding: 72px;
+		// padding: 72px;
+    padding-top: 4%;
+    padding-left: 2%;
 
 		position: relative;
 		z-index: 1;

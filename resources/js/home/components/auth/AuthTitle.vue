@@ -17,7 +17,7 @@ export default {
 <style lang="scss">
 .AuthTitle {
 	margin: 0 0 8px;
-	font-size: 26px;
+	font-size: 22px;
 	font-weight: 600;
 	line-height: 36px;
 }
@@ -25,7 +25,7 @@ export default {
 @media (max-width: 1200px) {
 	.AuthTitle {
 		font-weight: 600;
-		font-size: 20px;
+		font-size: 18px;
 		line-height: 26px;
 	}
 }

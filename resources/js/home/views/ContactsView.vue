@@ -177,7 +177,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import '../assets/scss/app.variables.scss';
 .ContactsView{
 	&-dt{
@@ -191,13 +191,13 @@ export default {
 	&-content{
 		padding-bottom: 2rem;
 	}
+  &-col {
+    line-height: 12px;
+  }
 }
 .contact-block{
 	margin-bottom: 1rem;
 	display: flex;
-}
-h3{
-	margin-bottom: 10px;
 }
 .table{
 	caption-side: bottom;
