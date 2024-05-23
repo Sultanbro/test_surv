@@ -14,7 +14,14 @@ class WalletOneInvoiceController
     public function __invoke(Request $request): JsonResponse
     {
         //, 'customer@jobtron.com'
-        $customer = new CustomerDto(0, 'kzt', 'unknown customer', 'customer@jobtron.com');
+        $customer = new CustomerDto(
+            0,
+            'kzt',
+            'unknown customer',
+            'example@mail.com',
+            $request->get('phone')
+        );
+
         $data = new CreateInvoiceDTO('kzt', $request->get('amount'));
         $invoice = Gateway::provider('kzt')->createInvoice($data, $customer);
 //        Invoice::createFromPaymentInvoice($invoice);
