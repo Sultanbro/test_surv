@@ -1,37 +1,29 @@
 .workshop {
-  .wrapper {
+  .workshop__title {
     font-size: 30px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1%;
   }
   button {
+    font-size: 20px;
     padding: 1%;
-    margin-top: 2%;
     width: 450px;
-    background-color: #fcff33;
+    background-color: #e6d700;
     color: rgb(0, 0, 0);
     border-radius: 10px;
     transition: all ease 100ms;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    justify-content: space-between;
     img {
       border-radius: 50%;
     }
     &:hover {
-      background-color: #d0d304;
+      background-color: #c0b300;
     }
     &:focus {
       outline: none;
     }
     a {
-      color: white;
+      color: black;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
   }
 }
