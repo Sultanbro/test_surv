@@ -9,10 +9,8 @@
 					Оплатить картой
 				</h2>
 				<div style="display: flex; flex-direction: column">
-					<button>
-						<a
-							href="https://wl.walletone.com/checkout/refill/CreditCard/347781874/NewCard"
-						>
+					<button @click="getAmount">
+						<a>
 							<img
 								width="40"
 								height="40"
