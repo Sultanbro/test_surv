@@ -4,12 +4,13 @@
 			class="KBArticle-favorite"
 			@click="$emit('favorite', activeBook)"
 		>
-			<i
+			<!-- <i
 				class="fa-heart"
 				:class="[
 					activeBook.isFavorite ? 'fas' : 'far',
 				]"
-			/>
+			/> -->
+			<FavoriteIcon />
 		</div>
 		<div class="KBArticle-title">
 			{{ activeBook.title }}
@@ -70,6 +71,8 @@ import Mark from 'mark.js/dist/mark.es6.js'
 import Questions from '@/pages/Questions'
 import JobtronAvatar from '@ui/Avatar.vue'
 
+import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue'
+
 // const quotes = ['«»', '“”', '""', '()']
 // const enders = '.,!?:;'.split('')
 const markOptions = {
@@ -108,6 +111,7 @@ export default {
 	components: {
 		Questions,
 		JobtronAvatar,
+		FavoriteIcon
 	},
 	props: {
 		mode: {
@@ -216,7 +220,6 @@ export default {
 	position: relative;
 
 	&-favorite{
-		width: 27px;
 		padding: 5px;
 
 		position: absolute;
