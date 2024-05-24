@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_id')->nullable();
+            $table->string('gateway');
             $table->string('amount');
             $table->string('currency');
             $table->string('status')->default('pending');
