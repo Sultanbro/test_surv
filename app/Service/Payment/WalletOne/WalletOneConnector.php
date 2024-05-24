@@ -48,8 +48,8 @@ class WalletOneConnector implements PaymentConnector
                 "TaxType" => "tax_ru_1",
                 "Tax" => 0.00
             ]]),
-//            "WMI_SUCCESS_URL" => $this->successUrl,
-//            "WMI_FAIL_URL" => $this->failUrl,
+            "WMI_SUCCESS_URL" => $this->successUrl,
+            "WMI_FAIL_URL" => $this->failUrl,
         ]);
 
         $signature = new Signature($this->shopKey);
