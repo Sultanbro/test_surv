@@ -68,7 +68,7 @@ export default {
 		border-radius: 10px;
 		font-size: 15px;
 		padding: 3%;
-		width: 100%;
+		width: 90%;
 		border: 1px solid #646464;
 	}
 	button {
@@ -76,8 +76,12 @@ export default {
 		color: white;
 		border-radius: 15px;
 		padding: 3%;
-		width: 100%;
+		width: 90%;
 		font-size: 15px;
+    transition: all ease-in 100ms;
+    &:hover {
+      background-color: rgb(0, 122, 215);
+    }
 	}
 }
 

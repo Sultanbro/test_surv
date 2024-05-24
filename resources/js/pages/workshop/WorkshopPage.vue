@@ -8,6 +8,7 @@
 			<button @click="getAmount">
 				<a>
 					<img
+						class="workshopform__img"
 						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"
 						alt=""
 					>
@@ -18,6 +19,7 @@
 			<button>
 				<a href="https://proeducation.kz/e44NQ/">
 					<img
+						class="workshopform__img"
 						src="https://gallery.yopriceville.com/downloadfullsize/send/10186"
 						alt=""
 					>
@@ -28,12 +30,14 @@
 			<button>
 				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
 					<img
-						src="https://cdn-icons-png.flaticon.com/512/262/262042.png"
+						class="workshopform__img"
+						src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png"
 						alt=""
 					>
-					Оплата Каспи Рассрочка
+					Оплата Каспи
 				</a>
 			</button>
+			<p>Обязательно указывайте в примечании свой <strong>номер телефона</strong></p>
 		</div>
 	</div>
 </template>
@@ -122,14 +126,14 @@ export default {
 			margin-top: 1%;
 			width: 100%;
 			font-weight: bold;
-			padding: 0.5%;
+			padding: 1%;
 			background-color: #fabf0f;
 			border-radius: 10px;
 			transition: all ease 100ms;
 			display: flex;
 			flex-wrap: wrap;
-      z-index: 1;
-			img {
+			z-index: 1;
+			.workshopform__img {
 				width: 50px;
 				height: 50px;
 				border-radius: 50%;
@@ -176,12 +180,7 @@ export default {
 				margin-top: 4%;
 				width: 100%;
 				font-weight: bold;
-				padding: 1.5%;
-				img {
-					width: 50px;
-					height: 50px;
-					border-radius: 50%;
-				}
+				padding: 2%;
 				&:hover {
 					background-color: #e8ae02;
 				}
@@ -196,9 +195,9 @@ export default {
 				}
 			}
 		}
-    p {
-      margin-top: -2%;
-    }
+		p {
+			margin-top: -2%;
+		}
 	}
 }
 </style>
