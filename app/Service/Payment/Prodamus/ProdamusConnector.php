@@ -53,8 +53,8 @@ class ProdamusConnector implements PaymentConnector
             ]
         ];
 
-        $signature = new ProdamusSignature($params, $this->shopKey);
-        $params['signature'] = $signature->make();
+        $signature = new ProdamusSignature($this->shopKey);
+        $params['signature'] = $signature->make($params);
 
         $response = $this->submit($params);
 
