@@ -73,7 +73,6 @@ export default {
 		},
 		createForm(res) {
 			const form = document.createElement('form');
-			form.style.display = 'none';
 			form.method = 'post';
 			form.action = res.url;
 			Object.keys(res.params).forEach((key) => {

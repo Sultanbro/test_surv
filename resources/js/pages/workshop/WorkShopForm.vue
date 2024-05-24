@@ -21,12 +21,14 @@
 </template>
 
 <script>
-import { useAmountStore } from '../../stores/amount';
-import { mapActions, mapState } from 'pinia';
-
 export default {
+	data() {
+		return {
+			phone: '',
+			sum: '',
+		}
+	},
 	computed: {
-		...mapState(useAmountStore, ['phone', 'sum']),
 	},
 	mounted() {
 		this.$nextTick(() => {
@@ -37,7 +39,6 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
-		...mapActions(useAmountStore, ['setUsername']),
 		redirect() {
 			sessionStorage.setItem('phoneForm', this.phone);
 			sessionStorage.setItem('sumForm', this.sum);
