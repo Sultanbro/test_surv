@@ -8,6 +8,12 @@
 			type="text"
 			placeholder="Телефон"
 		>
+		<div
+			v-if="error"
+			class="workshopform__error"
+		>
+			Введите корректный номер телефона
+		</div>
 		<input
 			v-model="sum"
 			type="number"
@@ -26,9 +32,9 @@ export default {
 		return {
 			phone: '',
 			sum: '',
-		}
-	},
-	computed: {
+			phoneNumberRegex: /^\+?[1-9]\d{1,14}$/,
+			error: false
+		};
 	},
 	mounted() {
 		this.$nextTick(() => {
@@ -40,9 +46,13 @@ export default {
 	},
 	methods: {
 		redirect() {
-			sessionStorage.setItem('phoneForm', this.phone);
-			sessionStorage.setItem('sumForm', this.sum);
-			window.location.href = '/payworkshopknowledgebase';
+			if (this.validatePhone()) {
+				sessionStorage.setItem('phoneForm', this.phone.trim());
+				sessionStorage.setItem('sumForm', this.sum);
+				window.location.href = '/payworkshopknowledgebase';
+			} else {
+				this.error = true
+			}
 		},
 		setMetaViewport() {
 			const meta = document.createElement('meta');
@@ -50,20 +60,25 @@ export default {
 			meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
 			document.head.appendChild(meta);
 		},
+		validatePhone() {
+			return this.phoneNumberRegex.test(this.phone)
+		},
 	},
 };
 </script>
 
 <style scoped lang="scss">
 .workshopform {
-  max-width: 500px;
-  margin: 0 auto;
+	max-width: 500px;
+	margin: 0 auto;
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-  justify-content: center;
-	align-items: center;
+	justify-content: center;
 	gap: 20px;
+	&__error {
+		color: red;
+	}
 	input[type="text"],
 	input[type="number"] {
 		border-radius: 10px;
@@ -79,23 +94,23 @@ export default {
 		padding: 3%;
 		width: 90%;
 		font-size: 15px;
-    transition: all ease-in 100ms;
-    &:hover {
-      background-color: rgb(0, 122, 215);
-    }
+		transition: all ease-in 100ms;
+		&:hover {
+			background-color: rgb(0, 122, 215);
+		}
 	}
 }
 
 @media (max-width: 430px) {
 	.workshopform {
-    margin: 1%;
+		margin: 1%;
 		min-height: 100vh;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		input[type="text"],
 		input[type="number"] {
-			padding: 4% !important;
+			padding: 2% !important;
 			font-size: 28px !important;
 		}
 		button {
