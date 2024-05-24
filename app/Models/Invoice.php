@@ -31,7 +31,7 @@ class Invoice extends Model
         'gateway'
     ];
 
-    public static function save(\App\Service\Payment\Core\Webhook\Invoice $invoice, string $gateway): Invoice
+    public static function new(\App\Service\Payment\Core\Webhook\Invoice $invoice, string $gateway): Invoice
     {
         /** @var Invoice */
         return static::query()->create([
