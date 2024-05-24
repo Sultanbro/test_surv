@@ -8,9 +8,9 @@ use App\Facade\Payment\Gateway;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payment\Core\Customer\CustomerDto;
+use App\Service\Payment\Core\Callback\Invoice;
 use App\Service\Payment\Core\CanCalculateTariffPrice;
-use App\Service\Payment\Core\Invoice;
+use App\Service\Payment\Core\Customer\CustomerDto;
 use App\Service\Subscription\SubscribeService;
 use Exception;
 
@@ -58,7 +58,7 @@ class SubscriptionPipeline
             $this->getPrice($this->data)
         );
 
-        $this->invoice = Gateway::provider($this->data->provider)->invoice($invoice, $this->customer);
+        $this->invoice = Gateway::provider($this->data->provider)->createInvoice($invoice, $this->customer);
     }
 
     /**

@@ -9,6 +9,7 @@ import {
 	postPaymentData,
 	fetchPaymentStatus,
 } from '@/stores/api';
+import { postPaymentExtendData } from './api/pricing';
 
 function renameProps(obj, renames) {
 	if (!obj) return null;
@@ -112,6 +113,10 @@ export const usePricingStore = defineStore('pricing', {
 		},
 		async postPaymentData(params) {
 			const { data } = await postPaymentData(params);
+			return data;
+		},
+		async postPaymentExtendData(params, id) {
+			const { data } = await postPaymentExtendData(params, id);
 			return data;
 		},
 	},

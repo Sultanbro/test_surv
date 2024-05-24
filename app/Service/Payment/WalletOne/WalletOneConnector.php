@@ -4,8 +4,8 @@ namespace App\Service\Payment\WalletOne;
 
 use App\Classes\Helpers\Phone;
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\Service\Payment\Core\Callback\Invoice;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice;
 use App\Service\Payment\Core\HasIdempotenceKey;
 use App\Service\Payment\Core\PaymentConnector;
 
@@ -30,7 +30,7 @@ class WalletOneConnector implements PaymentConnector
     public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
     {
         $idempotenceKey = $this->generateIdempotenceKey();
-        $body = [
+        $body = array_filter([
             "WMI_MERCHANT_ID" => $this->merchantId,
 //            "WMI_PTENABLED" => 'W1KZT',
 //            "WMI_PTDISABLED" => 'W1RUB',
@@ -39,6 +39,7 @@ class WalletOneConnector implements PaymentConnector
             "WMI_CURRENCY_ID" => self::CURRENCIES[$invoice->currency],
             "WMI_PAYMENT_AMOUNT" => $invoice->price,
             "WMI_DESCRIPTION" => "BASE64:" . base64_encode('Заказ №' . time()),
+            "WMI_CUSTOMER_EMAIL" => $customer->email,
             "WMI_ORDER_ITEMS" => json_encode([[
                 "Title" => urlencode($invoice->description),
                 "Quantity" => $invoice->quantity,
@@ -47,17 +48,17 @@ class WalletOneConnector implements PaymentConnector
                 "TaxType" => "tax_ru_1",
                 "Tax" => 0.00
             ]]),
-            "WMI_SUCCESS_URL" => $this->successUrl,
-            "WMI_FAIL_URL" => $this->failUrl,
-        ];
+//            "WMI_SUCCESS_URL" => $this->successUrl,
+//            "WMI_FAIL_URL" => $this->failUrl,
+        ]);
 
         $signature = new Signature($this->shopKey);
         //Добавление параметра WMI_SIGNATURE в словарь параметров формы
         $body["WMI_SIGNATURE"] = $signature->make($body);
-
         return new Invoice(
             $this->paymentUrl,
             $idempotenceKey,
+            'rub',
             $body
         );
     }

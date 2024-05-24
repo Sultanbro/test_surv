@@ -3,7 +3,7 @@
 namespace App\Service\Payment\WalletOne;
 
 use App\Service\Payment\Core\BasePaymentGateway;
-use App\Service\Payment\Core\WebhookCallback;
+use App\Service\Payment\Core\Callback\WebhookCallback;
 use App\Service\Payment\Core\PaymentStatus;
 
 class WalletOneGateway extends BasePaymentGateway

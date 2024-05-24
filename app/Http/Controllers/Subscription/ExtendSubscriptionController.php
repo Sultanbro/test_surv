@@ -2,27 +2,49 @@
 
 namespace App\Http\Controllers\Subscription;
 
+use App\DTO\Payment\CreateInvoiceDTO;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Subscription\CreateSubscriptionRequest;
+use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
+use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payment\Core\PaymentUpdateStatusService;
-use App\Service\Subscription\Pipeline\SubscriptionPipeline;
-use Exception;
+use App\Service\Payment\Core\CanCalculateTariffPrice;
+use App\Service\Payment\Core\TariffListService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ExtendSubscriptionController extends Controller
 {
+    use CanCalculateTariffPrice;
 
-    public function __invoke(CreateSubscriptionRequest $request, TariffSubscription $subscription): JsonResponse
+    /**
+     * @param TariffListService $tariffGetAllService
+     */
+    public function __construct(
+        public TariffListService $tariffGetAllService
+    )
     {
-        $pipeline = new SubscriptionPipeline($request->toDto());
-        $pipeline->apply();
+    }
+
+    public function __invoke(UpdateSubscriptionRequest $request, TariffSubscription $subscription): JsonResponse
+    {
+        $data = $request->toDto();
+        $customer = CentralUser::fromAuthUser()->customer();
+        $gateway = Gateway::provider($data->provider);
+
+        $dto = new CreateInvoiceDTO(
+            $data->currency,
+            $this->getPrice($data),
+            'Продление тарифа'
+        );
+
+        $invoice = $gateway->createInvoice($dto, $customer);
+        $subscription->update([
+            'expired_at' => $data->extraUsersLimit + $subscription->extra_user_limit
+        ]);
 
         return $this->response(
-            message: 'Success',
-            data: $pipeline->invoice()
+            message: 'success',
+            data: $invoice
         );
     }
 }

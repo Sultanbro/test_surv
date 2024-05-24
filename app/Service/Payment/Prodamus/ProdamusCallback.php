@@ -3,9 +3,9 @@
 namespace App\Service\Payment\Prodamus;
 
 use App\Models\Tariff\TariffSubscription;
+use App\Service\Payment\Core\Callback\WebhookCallback;
+use App\Service\Payment\Core\Callback\WebhookCallbackResponse;
 use App\Service\Payment\Core\Hmac;
-use App\Service\Payment\Core\WebhookCallbackResponse;
-use App\Service\Payment\Core\WebhookCallback;
 
 class ProdamusCallback extends WebhookCallback
 {

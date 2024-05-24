@@ -7,6 +7,8 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\TariffSubscription;
+use App\Service\Payment\Core\Callback\Invoice;
+use App\Service\Payment\Core\Callback\WebhookCallback;
 use App\Service\Payment\Core\Customer\CustomerDto;
 use App\Support\Core\CustomException;
 use Exception;
@@ -30,7 +32,7 @@ abstract class BasePaymentGateway
      * @param CustomerDto $customer
      * @return Invoice
      */
-    public function invoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
+    public function createInvoice(CreateInvoiceDTO $data, CustomerDto $customer): Invoice
     {
         return $this->connector()->createNewInvoice($data, $customer);
     }

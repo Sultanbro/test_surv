@@ -5,6 +5,7 @@
 		>
 			Оплата тарифа {{ priceStore.name }}
 		</h1>
+		<input :value="word">
 		<div class="pricing-buy-description">
 			Выберите необходимые параметры
 		</div>
@@ -294,6 +295,7 @@ export default  {
 	},
 	data(){
 		return{
+			word:'asdasdasd',
 			options: [],
 			sumPeople: 0,
 			promo: '',
@@ -355,7 +357,7 @@ export default  {
 	},
 	methods:{
 		...mapActions(useModalStore, ['removeModalActive']),
-		...mapActions(usePricingStore, ['fetchPromo', 'postPaymentData']),
+		...mapActions(usePricingStore, ['fetchPromo', 'postPaymentData', 'postPaymentExtendData']),
 		...mapActions(useValidityStore, ['fetchDateCorses']),
 		updateSelected(option) {
 			this.selectedOption = option;
@@ -438,27 +440,31 @@ export default  {
 		async submitWalletOne(){
 			try{
 				/* eslint-disable camelcase */
-				if (this.tariffStore === this.price){
-					this.axios.post(`/tariff/subscriptions/${this.tariffId.id}/extend`, {
+				if (this.tariffStore === this.price  && this.tariffId.payment_id !=='trial'){
+					const { url, params } = await this.postPaymentExtendData({
 						currency: this.currencyCode,
-						// eslint-disable-next-line camelcase
-						extra_users_limit: this.count > 0 ? this.count : 0,
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
 							this.activeOption === 12 ? this.priceStore.yearly.id :
 								this.activeOption === 3 ? this.priceStore.threeMonthly.id : null,
+						extra_users_limit: this.sumPeople > 0 ? this.sumPeople : 0,
+						auto_payment: this.autoPayment,
+						tenant_id: this.selectedOption.id,
 						promo_code: this.promoRate[0]?.code || null,
-					}).then(res => {
-						if (res && res.data.data) {
-							window.location.assign(res.data.data.url);
-							this.isLoading = false
-
-						} else {
-							console.error('URL not found in response', res);
-						}
+					}, this.tariffId.id);
+					const form = document.createElement('form')
+					form.method = 'post'
+					form.action = url
+					Object.keys(params).forEach(key => {
+						const inp = document.createElement('input')
+						inp.name = key
+						inp.value = params[key]
+						form.appendChild(inp)
 					})
+					document.body.appendChild(form)
+					form.submit()
 				}
 				else{
-					const { url } = await this.postPaymentData({
+					const { url, params } = await this.postPaymentData({
 						currency: this.currencyCode,
 						tariff_id: this.activeOption === 1 ? this.priceStore.monthly.id :
 							this.activeOption === 12 ? this.priceStore.yearly.id :
@@ -468,8 +474,19 @@ export default  {
 						tenant_id: this.selectedOption.id,
 						promo_code: this.promoRate[0]?.code || null,
 					})
+					const form = document.createElement('form')
+					form.method = 'post'
+					form.action = url
+					Object.keys(params).forEach(key => {
+						const inp = document.createElement('input')
+						inp.name = key
+						inp.value = params[key]
+						form.appendChild(inp)
+					})
+					document.body.appendChild(form)
+					form.submit()
+
 					/* eslint-enable camelcase */
-					window.location.assign(url)
 					this.isLoading = false
 
 				}

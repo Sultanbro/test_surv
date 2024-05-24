@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Subscription;
+namespace App\Http\Controllers\Payment;
 
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
+use App\Service\Payment\Core\Callback\WebhookCallbackResponse;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,13 +23,22 @@ class CallbackController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
-        $response = Gateway::provider($currency)
-            ->webhook([
-                'headers' => $request->header(),
-                'fields' => $request->all()
-            ])
-            ->handle();
+        slack(json_encode([
+            'params' => $request->all(),
+            'currency' => $currency
+        ]));
 
-        return response()->json($response);
+        $gateway = Gateway::provider($currency);
+
+        if ($gateway->currency() == 'kzt') {
+            return response()->json(new WebhookCallbackResponse(['WMI_RESULT' => 'RETRY']));
+        }
+
+        $resp = $gateway->webhook([
+            'headers' => $request->header(),
+            'fields' => $request->all()
+        ])
+            ->handle();
+        return response()->json($resp);
     }
 }
