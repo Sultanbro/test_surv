@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Payment\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Core\Register;
 use App\Service\Payment\Prodamus\ProdamusGateway;
 use App\Service\Payment\Prodamus\ProdamusConnector;
 use App\Service\Payment\WalletOne\WalletOneGateway;
@@ -14,7 +14,7 @@ class PaymentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(PaymentGatewayRegistry::class);
+        $this->app->singleton(Register::class);
     }
 
     /**
@@ -22,8 +22,8 @@ class PaymentServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        /** @var PaymentGatewayRegistry $registry */
-        $registry = $this->app->make(PaymentGatewayRegistry::class);
+        /** @var Register $registry */
+        $registry = $this->app->make(Register::class);
 
         $registry->register(["wallet1", "kzt"], function () {
             $connector = new WalletOneConnector(

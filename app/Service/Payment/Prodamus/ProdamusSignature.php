@@ -1,26 +1,30 @@
 <?php
 
-namespace App\Service\Payment\Core;
+namespace App\Service\Payment\Prodamus;
 
-class Hmac
+use App\Service\Payment\Core\Signature\SignatureInterface;
+
+class ProdamusSignature implements SignatureInterface
 {
+    const SHA_256 = 'sha256';
+
     public function __construct(
-        private readonly array $data,
-        private readonly string $key,
-        private readonly string $algo = 'sha256'
+        private readonly string $key
     )
     {
     }
 
-    public function create(): bool|string
+    public function make(array $data): string
     {
-        if (!in_array($this->algo, hash_algos()))
+        if (!in_array(self::SHA_256, hash_algos()))
             return false;
-        $data = $this->data;
+
         array_walk_recursive($data, function (&$v) {
             $v = strval($v);
         });
+
         self::_sort($data);
+
         if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             $data = preg_replace_callback('/((\\\u[01-9a-fA-F]{4})+)/', function ($matches) {
                 return json_decode('"' . $matches[1] . '"');
@@ -28,13 +32,14 @@ class Hmac
         } else {
             $data = json_encode($data, JSON_UNESCAPED_UNICODE);
         }
-        return hash_hmac($this->algo, $data, $this->key);
+
+        return hash_hmac(self::SHA_256, $data, $this->key);
     }
 
-    public function verify($sign): bool
+    public function verify(string $signature, array $data): bool
     {
-        $_sign = $this::create();
-        return ($_sign && (strtolower($_sign) == strtolower($sign)));
+        $_sign = $this::make($data);
+        return ($_sign && (strtolower($_sign) == strtolower($signature)));
     }
 
     static private function _sort(&$data): void

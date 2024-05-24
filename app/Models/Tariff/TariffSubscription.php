@@ -208,7 +208,7 @@ class TariffSubscription extends Model
     /**
      * @throws Exception
      */
-    public static function subscribe(NewSubscriptionDTO $dto, PaymentToken $token): static
+    public static function subscribe(NewSubscriptionDTO $dto, Transaction $token): static
     {
         $tariff = Tariff::find($dto->tariffId);
 
@@ -217,7 +217,7 @@ class TariffSubscription extends Model
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),
-            $token->token,
+            $token->id,
             $dto->provider
         );
     }

@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payment\Core\CanCalculateTariffPrice;
-use App\Service\Payment\Core\TariffListService;
+use App\Service\Subscription\CanCalculateTariffPrice;
+use App\Service\Tariff\TariffListService;
 use Illuminate\Http\JsonResponse;
 
 class ExtendSubscriptionController extends Controller
@@ -37,7 +37,7 @@ class ExtendSubscriptionController extends Controller
             'Продление тарифа'
         );
 
-        $invoice = $gateway->createInvoice($dto, $customer);
+        $invoice = $gateway->createNewInvoice($dto, $customer);
         $subscription->update([
             'expired_at' => $data->extraUsersLimit + $subscription->extra_user_limit
         ]);

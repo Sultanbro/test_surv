@@ -3,19 +3,19 @@
 namespace App\Facade\Payment;
 
 use App\DTO\Payment\NewSubscriptionDTO;
-use App\Service\Payment\Core\BasePaymentGateway;
-use App\Service\Payment\Core\Callback\Invoice;
-use App\Service\Payment\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Core\Base\BasePaymentGateway;
+use App\Service\Payment\Core\Webhook\Invoice;
+use App\Service\Payment\Core\Register;
 use Closure;
 use Illuminate\Support\Facades\Facade;
 use Mockery;
 
 /**
- * @method static PaymentGatewayRegistry register(string|array $aliases, BasePaymentGateway|Closure $gateway)
+ * @method static Register register(string|array $aliases, BasePaymentGateway|Closure $gateway)
  * @method static BasePaymentGateway provider(string $name)
  * @method static array list()
  * @method static bool exists(string $name)
- * @mixin PaymentGatewayRegistry
+ * @mixin Register
  */
 class Gateway extends Facade
 {
@@ -32,7 +32,7 @@ class Gateway extends Facade
     public static function fake(): BasePaymentGateway
     {
         $mock = Mockery::mock(BasePaymentGateway::class);
-        $mock->shouldReceive("createInvoice")
+        $mock->shouldReceive("createNewInvoice")
             ->with([
                 new NewSubscriptionDTO(
                     'test',
@@ -45,6 +45,7 @@ class Gateway extends Facade
             ->once()
             ->andReturn(new Invoice(
                 'some url',
+                'test_id',
                 'some payment token'
             ));
 

@@ -8,10 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payment\Core\CanCalculateTariffPrice;
-use App\Service\Payment\Core\TariffListService;
+use App\Service\Subscription\CanCalculateTariffPrice;
+use App\Service\Tariff\TariffListService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 
 class UpdateSubscriptionController extends Controller
 {
@@ -37,7 +36,7 @@ class UpdateSubscriptionController extends Controller
             'Рашерение тарифа'
         );
 
-        $invoice = $gateway->createInvoice($dto, $customer);
+        $invoice = $gateway->createNewInvoice($dto, $customer);
         $subscription->update([
             'extra_users_limit' => $data->extraUsersLimit + $subscription->extra_user_limit
         ]);

@@ -756,7 +756,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     ], function () {
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Payment\CallbackController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Payment\WebhookController::class, 'callback']);
     });
 
     Route::group([

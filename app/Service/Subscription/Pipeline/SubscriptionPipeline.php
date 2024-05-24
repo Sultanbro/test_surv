@@ -8,9 +8,9 @@ use App\Facade\Payment\Gateway;
 use App\Jobs\ProcessCreatePaymentInvoiceLead;
 use App\Models\CentralUser;
 use App\Models\Tariff\TariffSubscription;
-use App\Service\Payment\Core\Callback\Invoice;
-use App\Service\Payment\Core\CanCalculateTariffPrice;
+use App\Service\Payment\Core\Webhook\Invoice;
 use App\Service\Payment\Core\Customer\CustomerDto;
+use App\Service\Subscription\CanCalculateTariffPrice;
 use App\Service\Subscription\SubscribeService;
 use Exception;
 
@@ -58,7 +58,7 @@ class SubscriptionPipeline
             $this->getPrice($this->data)
         );
 
-        $this->invoice = Gateway::provider($this->data->provider)->createInvoice($invoice, $this->customer);
+        $this->invoice = Gateway::provider($this->data->provider)->createNewInvoice($invoice, $this->customer);
     }
 
     /**
@@ -66,7 +66,7 @@ class SubscriptionPipeline
      */
     private function subscribeToTariff(): void
     {
-        $service = new SubscribeService($this->data, $this->invoice->getPaymentToken());
+        $service = new SubscribeService($this->data, $this->invoice->getTransaction());
         $this->subscription = $service->subscribe();
     }
 

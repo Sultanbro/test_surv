@@ -7,7 +7,7 @@ use App\Enums\Payments\PaymentStatusEnum;
 use App\Enums\Tariff\TariffKindEnum;
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
-use App\Models\Tariff\PaymentToken;
+use App\Models\Tariff\Transaction;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffSubscription;
 use App\Service\Subscription\SubscribeService;
@@ -37,7 +37,7 @@ class TrialSubscriptionController extends Controller
             expiate_at: now()->addMonth()->toDateTimeString()
         );
 
-        $service = new SubscribeService($invoice, new PaymentToken("trial"));
+        $service = new SubscribeService($invoice, new Transaction("trial"));
 
         $subscription = $service->subscribe();
         $subscription->status = PaymentStatusEnum::STATUS_SUCCESS;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Payment\Core;
+namespace App\Service\Tariff;
 
 use App\Models\Tariff\Tariff;
 use Exception;
