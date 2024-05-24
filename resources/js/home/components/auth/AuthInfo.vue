@@ -75,9 +75,10 @@ $md4: 479.98px;
 	}
 	&__item {
 		background: #ffffff66;
-		padding: 10px;
-		border-radius: 24px;
+		padding: 11px 10px;
+		border-radius: 15px;
 		display: flex;
+    max-width: 630px;
 		&__icon {
 			margin-right: 20px;
 		}
@@ -166,7 +167,7 @@ $md4: 479.98px;
 @media (max-height: 700px) {
 	.auth__info {
 		&__title {
-			font-size: 25px;
+			font-size: 33px;
 		}
 		&__subtitle {
 			font-size: 16px;

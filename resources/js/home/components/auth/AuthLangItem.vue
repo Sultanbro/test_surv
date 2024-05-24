@@ -46,7 +46,7 @@ export default {
 		border-radius: 2px;
 	}
 	&-label{
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 400;
 		line-height: 24px;
 		text-align: left;

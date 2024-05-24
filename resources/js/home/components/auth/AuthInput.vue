@@ -98,7 +98,7 @@ export default {
 		flex-flow: row nowrap;
 		align-items: center;
 
-		width: 100%;
+		width: 90%;
 		height: 48px;
 		padding: 10px 16px 10px 16px;
 		gap: 10px;
@@ -117,7 +117,7 @@ export default {
 		margin: 0;
 		border: none;
 
-		font-size: 16px;
+		font-size: 13px;
 		font-weight: 400;
 		line-height: 20px;
 		text-align: left;

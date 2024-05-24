@@ -81,12 +81,11 @@ button {
 
 .AuthHeader {
 	display: flex;
-	justify-content: space-between;
+	justify-content: end;
 	gap: 10px;
 
 	margin-bottom: 32px;
 	container: auth-header / inline-size;
-
 	&-left,
 	&-right {
 		display: flex;
@@ -104,9 +103,9 @@ button {
 		&-left,
 		&-right {
 			.main__link {
-        font-size: 12px;
-        padding: 0px 5px;
-      }
+				font-size: 12px;
+				padding: 0px 5px;
+			}
 		}
 	}
 }
@@ -137,8 +136,8 @@ button {
 	text-decoration: none;
 	padding: 0px 10px;
 	border-radius: 10px;
-	height: 40px;
-	font-size: 16px;
+	height: 34px;
+	font-size: 14px;
 	line-height: 20px;
 
 	&:hover {

@@ -16,8 +16,9 @@ export default {
 
 <style lang="scss">
 .AuthSubTitle {
-	margin: 0 0 12px;
-	font-size: 16px;
+	// margin: 0 0 12px;
+  margin-right: 35px;
+	font-size: 14px;
 	font-weight: 400;
 	line-height: 24px;
 

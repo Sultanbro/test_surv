@@ -25,15 +25,29 @@ import { useAmountStore } from '../../stores/amount';
 import { mapActions, mapState } from 'pinia';
 
 export default {
-	components: {
+	computed: {
 		...mapState(useAmountStore, ['phone', 'sum']),
+	},
+	mounted() {
+		this.$nextTick(() => {
+			this.setMetaViewport();
+		});
+	},
+	updated() {
+		this.setMetaViewport();
 	},
 	methods: {
 		...mapActions(useAmountStore, ['setUsername']),
 		redirect() {
 			sessionStorage.setItem('phoneForm', this.phone);
 			sessionStorage.setItem('sumForm', this.sum);
-			window.location.href = '/payworkshopknowledgebase'
+			window.location.href = '/payworkshopknowledgebase';
+		},
+		setMetaViewport() {
+			const meta = document.createElement('meta');
+			meta.setAttribute('name', 'viewport');
+			meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+			document.head.appendChild(meta);
 		},
 	},
 };
@@ -41,24 +55,52 @@ export default {
 
 <style scoped lang="scss">
 .workshopform {
-  width: 340px;
-	margin: 2%;
+  max-width: 500px;
+  margin: 0 auto;
+	min-height: 100vh;
 	display: flex;
-  flex-direction: column;
-	gap: 4px;
-	input[type="text"], input[type="number"] {
+	flex-direction: column;
+  justify-content: center;
+	align-items: center;
+	gap: 20px;
+	input[type="text"],
+	input[type="number"] {
 		border-radius: 10px;
 		font-size: 15px;
-		padding: 1%;
-    padding: 2%;
+		padding: 3%;
+		width: 90%;
 		border: 1px solid #646464;
 	}
 	button {
 		background-color: rgb(0, 145, 255);
 		color: white;
 		border-radius: 15px;
+		padding: 3%;
+		width: 90%;
 		font-size: 15px;
-		padding: 4%;
+    transition: all ease-in 100ms;
+    &:hover {
+      background-color: rgb(0, 122, 215);
+    }
+	}
+}
+
+@media (max-width: 430px) {
+	.workshopform {
+    margin: 1%;
+		min-height: 100vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		input[type="text"],
+		input[type="number"] {
+			padding: 4% !important;
+			font-size: 28px !important;
+		}
+		button {
+			padding: 5% !important;
+			font-size: 28px !important;
+		}
 	}
 }
 </style>

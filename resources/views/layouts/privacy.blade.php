@@ -50,7 +50,7 @@
         </div>
 
         <footer>
-            <p class="text-center">© 2022-2023 «Jobtron», Все права защищены</p>
+            <p class="text-center">© 2022-2024 «Jobtron», Все права защищены</p>
         </footer>
     </div>
   
