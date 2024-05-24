@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Service\Payment\Prodamus;
 
 use App\Service\Payment\Core\BasePaymentGateway;
-use App\Service\Payment\Core\WebhookCallback;
-use App\Service\Payment\Core\PaymentStatus;
+use App\Service\Payment\Core\Callback\WebhookCallback;
 use App\Service\Payment\Core\PaymentConnector;
+use App\Service\Payment\Core\PaymentStatus;
 
 class ProdamusGateway extends BasePaymentGateway
 {

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Invoice\WalletOneInvoiceController;
+use App\Http\Controllers\Payment\WalletOneInvoiceController;
 use App\Http\Controllers\Tariff\TariffController;
 use Illuminate\Support\Facades\Route;
 

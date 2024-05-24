@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Service\Payment\Prodamus;
 
 use App\DTO\Payment\CreateInvoiceDTO;
+use App\Service\Payment\Core\Callback\Invoice;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Invoice;
 use App\Service\Payment\Core\HasIdempotenceKey;
 use App\Service\Payment\Core\Hmac;
 use App\Service\Payment\Core\PaymentConnector;

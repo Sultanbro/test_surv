@@ -56,7 +56,7 @@ Route::middleware(['web', 'tenant'])->group(function () {
     });
 
     Route::prefix('invoices')->group(function () {
-        Route::get('/', Root\Invoice\InvoiceController::class);
+        Route::get('/', Root\Payment\InvoiceController::class);
     });
 });
 
@@ -756,7 +756,7 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
     ], function () {
         Route::withoutMiddleware(['auth', 'tenant'])
             ->name('callback')
-            ->post('/callback/{currency}', [Root\Subscription\CallbackController::class, 'callback']);
+            ->post('/callback/{currency}', [Root\Payment\CallbackController::class, 'callback']);
     });
 
     Route::group([

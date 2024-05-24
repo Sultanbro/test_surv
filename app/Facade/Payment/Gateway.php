@@ -4,7 +4,7 @@ namespace App\Facade\Payment;
 
 use App\DTO\Payment\NewSubscriptionDTO;
 use App\Service\Payment\Core\BasePaymentGateway;
-use App\Service\Payment\Core\Invoice;
+use App\Service\Payment\Core\Callback\Invoice;
 use App\Service\Payment\Core\PaymentGatewayRegistry;
 use Closure;
 use Illuminate\Support\Facades\Facade;
