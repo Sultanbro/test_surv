@@ -22,9 +22,9 @@ class WalletOneInvoiceController
             $request->get('phone')
         );
 
-        $data = new CreateInvoiceDTO('kzt', $request->get('amount','5'));
+        $data = new CreateInvoiceDTO('kzt', $request->get('amount'));
         $invoice = Gateway::provider('kzt')->createNewInvoice($data, $customer);
-        Invoice::new($invoice, 'wallet1');
+//        Invoice::new($invoice, 'wallet1');
         return response()->json($invoice);
     }
 }
