@@ -2,20 +2,20 @@
 
 namespace App\Service\Payment\Core;
 
+use App\Service\Payment\Core\Base\BasePaymentGateway;
 use Closure;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Mockery\ExpectationInterface;
 
-class PaymentGatewayRegistry
+class Register
 {
     private array $gateways = [];
 
     public function register(
         array|string               $aliases,
-        BasePaymentGateway|Closure $instance): PaymentGatewayRegistry
+        BasePaymentGateway|Closure $instance): Register
     {
         if ($instance instanceof Closure) {
             $instance = $this->resolve($instance);

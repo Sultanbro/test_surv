@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Payment\Core\PaymentGatewayRegistry;
+use App\Service\Payment\Core\Register;
 use App\Service\Referral\Core\GeneratorInterface;
 use App\Service\Referral\UrlGeneratorService;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +22,6 @@ class FacadeServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('payment_gateway', PaymentGatewayRegistry::class);
+        $this->app->singleton('payment_gateway', Register::class);
     }
 }

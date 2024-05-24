@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property string $invoice_id
+ * @property int $id
+ * @property string $transaction_id
  * @property string $actor_name
  * @property string $actor_phone
  * @property string $actor_email
@@ -20,23 +21,42 @@ class Invoice extends Model
     protected $connection = 'mysql';
     protected $table = 'invoices';
     protected $fillable = [
-        'invoice_id',
+        'transaction_id',
         'actor_name',
         'actor_phone',
         'actor_email',
         'currency',
-        'amount'
+        'amount',
+        'status',
+        'gateway'
     ];
 
-    public static function createFromPaymentInvoice(\App\Service\Payment\Core\Callback\Invoice $invoice): Invoice
+    public static function new(\App\Service\Payment\Core\Webhook\Invoice $invoice, string $gateway): Invoice
     {
         /** @var Invoice */
         return static::query()->create([
-            'invoice_id' => $invoice->getPaymentToken()->token,
+            'transaction_id' => $invoice->getTransaction()->id,
             'actor_phone' => $invoice->getParams()['WMI_CUSTOMER_PHONE'],
             'actor_email' => $invoice->getParams()['WMI_CUSTOMER_EMAIL'],
             'currency' => $invoice->getParams()['WMI_CUSTOMER_EMAIL'],
-            'amount' => $invoice->getParams()['WMI_PAYMENT_AMOUNT']
+            'amount' => $invoice->getParams()['WMI_PAYMENT_AMOUNT'],
+            'gateway' => $gateway,
+        ]);
+    }
+
+    public function setStatusSuccess(): Invoice
+    {
+        /** @var Invoice */
+        return static::query()->update([
+            'status' => 'success'
+        ]);
+    }
+
+    public function setStatusFailed(): Invoice
+    {
+        /** @var Invoice */
+        return static::query()->update([
+            'status' => 'failed'
         ]);
     }
 }

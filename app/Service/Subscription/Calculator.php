@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Payment\Core;
+namespace App\Service\Subscription;
 
 use App\DTO\Payment\NewSubscriptionDTO;
 use App\Models\PromoCode;

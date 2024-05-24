@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Subscription;
 
 use App\Http\Controllers\Controller;
 use App\Service\Admin\Owners\OwnerInfoService;
-use App\Service\Payment\Core\CanCalculateTariffPrice;
-use App\Service\Payment\Core\TariffListService;
+use App\Service\Subscription\CanCalculateTariffPrice;
+use App\Service\Tariff\TariffListService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 

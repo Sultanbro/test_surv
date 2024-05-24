@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Payment;
 
 use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
-use App\Service\Payment\Core\Callback\WebhookCallbackResponse;
+use App\Service\Payment\Core\Webhook\WebhookResponse;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CallbackController extends Controller
+class WebhookController extends Controller
 {
     /**
      * Вебхук: коротый отправляется от сервиса опалты.
@@ -31,14 +31,15 @@ class CallbackController extends Controller
         $gateway = Gateway::provider($currency);
 
         if ($gateway->currency() == 'kzt') {
-            return response()->json(new WebhookCallbackResponse(['WMI_RESULT' => 'RETRY']));
+            return response()->json(new WebhookResponse(['WMI_RESULT' => 'RETRY']));
         }
 
-        $resp = $gateway->webhook([
-            'headers' => $request->header(),
-            'fields' => $request->all()
-        ])
-            ->handle();
+        $resp = $gateway->webhook()
+            ->handle([
+                'headers' => $request->header(),
+                'fields' => $request->all()
+            ]);
+
         return response()->json($resp);
     }
 }

@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace App\Service\Payment\Prodamus;
 
 use App\DTO\Payment\CreateInvoiceDTO;
-use App\Service\Payment\Core\Callback\Invoice;
+use App\Service\Payment\Core\Base\HasIdempotenceKey;
+use App\Service\Payment\Core\Base\PaymentConnector;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\HasIdempotenceKey;
-use App\Service\Payment\Core\Hmac;
-use App\Service\Payment\Core\PaymentConnector;
+use App\Service\Payment\Core\Webhook\Invoice;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
@@ -32,7 +31,7 @@ class ProdamusConnector implements PaymentConnector
      *
      * @throws Exception
      */
-    public function createNewInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
+    public function newInvoice(CreateInvoiceDTO $invoice, CustomerDto $customer): Invoice
     {
         $paymentId = $this->generateIdempotenceKey();
         $params = [
@@ -54,8 +53,8 @@ class ProdamusConnector implements PaymentConnector
             ]
         ];
 
-        $signature = new Hmac($params, $this->shopKey);
-        $params['signature'] = $signature->create();
+        $signature = new ProdamusSignature($this->shopKey);
+        $params['signature'] = $signature->make($params);
 
         $response = $this->submit($params);
 
@@ -68,9 +67,8 @@ class ProdamusConnector implements PaymentConnector
 
         return new Invoice(
             url: $resp['payment_link'],
-            paymentId: $paymentId,
-            currency: 'rub',
-            success: $response->successful()
+            transaction_id: $paymentId,
+            currency: 'rub'
         );
     }
 

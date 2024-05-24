@@ -18,13 +18,13 @@ class WalletOneInvoiceController
             0,
             'kzt',
             'unknown customer',
-            'example@mail.com',
+            'customer@jobtron.com',
             $request->get('phone')
         );
 
-        $data = new CreateInvoiceDTO('kzt', $request->get('amount'));
-        $invoice = Gateway::provider('kzt')->createInvoice($data, $customer);
-        Invoice::createFromPaymentInvoice($invoice);
+        $data = new CreateInvoiceDTO('kzt', $request->get('amount','5'));
+        $invoice = Gateway::provider('kzt')->createNewInvoice($data, $customer);
+        Invoice::new($invoice, 'wallet1');
         return response()->json($invoice);
     }
 }

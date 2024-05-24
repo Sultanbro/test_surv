@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Service\Payment\Core\Callback;
+namespace App\Service\Payment\Core\Webhook;
 
-use App\Models\Tariff\PaymentToken;
+use App\Models\Tariff\Transaction;
 use JsonSerializable;
 
 class Invoice implements JsonSerializable
 {
     public function __construct(
         private readonly string $url,
-        private readonly string $paymentId,
+        private readonly string $transaction_id,
         private readonly string $currency,
-        private readonly array  $params = [],
-        private readonly bool   $success = true,
+        private readonly array  $params = []
     )
     {
     }
@@ -22,26 +21,21 @@ class Invoice implements JsonSerializable
         return $this->url;
     }
 
-    public function getPaymentToken(): PaymentToken
+    public function getTransaction(): Transaction
     {
-        return new PaymentToken($this->paymentId);
-    }
-
-    public function getIsSuccess(): string
-    {
-        return $this->success;
+        return new Transaction($this->transaction_id);
     }
 
     public function getCurrency(): string
     {
         return $this->currency;
     }
+
     public function jsonSerialize(): array
     {
         return [
-            'payment_id' => $this->getPaymentToken()->token,
+            'payment_id' => $this->getTransaction()->id,
             'url' => $this->getUrl(),
-            'is_success' => $this->getIsSuccess(),
             'params' => $this->getParams()
         ];
     }

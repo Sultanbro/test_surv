@@ -14,13 +14,18 @@ return new class extends Migration {
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_id');
+            $table->string('transaction_id')->nullable();
+            $table->string('gateway');
             $table->string('amount');
             $table->string('currency');
+            $table->string('status')->default('pending');
             $table->string('actor_email')->nullable();
             $table->string('actor_name')->nullable();
             $table->string('actor_phone')->nullable();
             $table->timestamps();
+
+            $table->unique(['transaction_id', 'gateway']);
+
         });
     }
 

@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace App\Service\Payment\Prodamus;
 
-use App\Service\Payment\Core\BasePaymentGateway;
-use App\Service\Payment\Core\Callback\WebhookCallback;
-use App\Service\Payment\Core\PaymentConnector;
-use App\Service\Payment\Core\PaymentStatus;
+use App\Service\Payment\Core\Base\BasePaymentGateway;
+use App\Service\Payment\Core\Base\PaymentConnector;
+use App\Service\Payment\Core\Webhook\BaseWebhook;
 
 class ProdamusGateway extends BasePaymentGateway
 {
@@ -24,18 +23,9 @@ class ProdamusGateway extends BasePaymentGateway
         return $this->connector;
     }
 
-    /**
-     * @param string $paymentId
-     * @return PaymentStatus
-     */
-    public function info(string $paymentId): PaymentStatus
+    public function webhook(): BaseWebhook
     {
-        return new ProdamusPaymentStatus($paymentId);
-    }
-
-    public function webhook(array $data): WebhookCallback
-    {
-        return new ProdamusCallback($this->connector->getShopKey(), $data);
+        return new ProdamusWebhook();
     }
 
     public function name(): string
