@@ -10,6 +10,9 @@ class ProdamusWebhookMapper implements BaseWebhookMapper
 {
     use HasState;
 
+    private string|int $transactionId;
+    private bool $success;
+
     public function map(array $data): void
     {
         $this->transactionId = $data['fields']['order_id'];

@@ -4,6 +4,7 @@ namespace App\Service\Payment\WalletOne;
 
 use App\Service\Payment\Core\Base\BasePaymentGateway;
 use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
+use App\Service\Payment\Core\Webhook\WebhookResponse;
 
 class WalletOneGateway extends BasePaymentGateway
 {
@@ -33,5 +34,10 @@ class WalletOneGateway extends BasePaymentGateway
     public function webhookHandler(): BaseWebhookMapper
     {
         return new WalletOneWebhookMapper();
+    }
+
+    public function staticWebhookResponse(): WebhookResponse
+    {
+        return new WebhookResponse(['WMI_RESULT' => 'OK']);
     }
 }

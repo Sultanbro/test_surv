@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Events\Payment\PaymentWebhookTriggeredEvent;
+use App\Facade\Payment\Gateway;
 use App\Http\Controllers\Controller;
 use App\Service\Payment\Core\Webhook\WebhookDto;
 use Exception;
@@ -23,8 +24,12 @@ class WebhookController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
-        PaymentWebhookTriggeredEvent::dispatch(new WebhookDto($currency, $request->all(), $request->header()));
+        PaymentWebhookTriggeredEvent::dispatch(new WebhookDto(
+                $currency,
+                $request->all(),
+                $request->header())
+        );
 
-        return response()->json();
+        return response()->json(Gateway::provider($currency)->staticWebhookResponse());
     }
 }

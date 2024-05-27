@@ -7,12 +7,13 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Customer\CustomerDto;
 use App\Service\Payment\Core\Invoice\Invoice;
 use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
+use App\Service\Payment\Core\Webhook\WebhookResponse;
 
 abstract class BasePaymentGateway
 {
-    abstract public function name():string;
+    abstract public function name(): string;
 
-    abstract public function currency():string;
+    abstract public function currency(): string;
 
     abstract public function connector(): PaymentConnector;
 
@@ -27,4 +28,6 @@ abstract class BasePaymentGateway
     {
         return $this->connector()->newInvoice($data, $customer);
     }
+
+    abstract public function staticWebhookResponse(): WebhookResponse;
 }
