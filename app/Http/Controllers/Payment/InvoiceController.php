@@ -20,7 +20,7 @@ class InvoiceController
         Invoice::query()->create([
             'payer_name' => $data['payer_name'],
             'payer_phone' => $data['payer_phone'],
-            'amount' => $data['amount']
+            'amount' => 0
         ]);
 
         return response()->json([], 201);
@@ -28,7 +28,7 @@ class InvoiceController
 
     public function setStatusSuccess(Invoice $invoice): JsonResponse
     {
-        $invoice->setStatusSuccess();
+        $invoice->updateStatusToSuccess();
         return response()->json([], 201);
     }
 }

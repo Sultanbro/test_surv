@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Service\Payment\Core\Base;
 
 use App\DTO\Payment\CreateInvoiceDTO;
-use App\Service\Payment\Core\Webhook\BaseWebhook;
-use App\Service\Payment\Core\Webhook\Invoice;
 use App\Service\Payment\Core\Customer\CustomerDto;
+use App\Service\Payment\Core\Invoice\Invoice;
+use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
 
 abstract class BasePaymentGateway
 {
@@ -16,7 +16,7 @@ abstract class BasePaymentGateway
 
     abstract public function connector(): PaymentConnector;
 
-    abstract public function webhook(): BaseWebhook;
+    abstract public function webhookHandler(): BaseWebhookMapper;
 
     /**
      * @param CreateInvoiceDTO $data

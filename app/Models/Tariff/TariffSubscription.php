@@ -66,6 +66,14 @@ class TariffSubscription extends Model
             ->exists();
     }
 
+    public static function getByTransactionId(int|string $getTransactionId): ?TariffSubscription
+    {
+        /** @var TariffSubscription */
+        return self::query()
+            ->where('payment_id', $getTransactionId)
+            ->first();
+    }
+
     /**
      * @return BelongsTo
      */

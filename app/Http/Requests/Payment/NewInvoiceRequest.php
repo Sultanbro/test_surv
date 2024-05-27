@@ -10,8 +10,7 @@ class NewInvoiceRequest extends FormRequest
     {
         return [
             'payer_name' => ['required', 'string'],
-            'payer_phone' => ['required', 'string'],
-            'amount' => ['required', 'string']
+            'payer_phone' => ['required', 'string']
         ];
     }
 }

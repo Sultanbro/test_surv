@@ -4,45 +4,47 @@ namespace App\Providers;
 
 use App\Events\{ActivityUpdated,
     BonusUpdated,
+    EmailNotificationEvent,
+    ExtrenalPaymentWebhookTriggeredListener,
     KpiChangedEvent,
+    Payment\PaymentWebhookTriggeredEvent,
+    TimeTrack\CreateTimeTrackHistoryEvent,
+    TrackCourseItemFinishedEvent,
+    TrackGroupChangingEvent,
     TrackKpiItemEvent,
     TrackKpiUpdatesEvent,
     TrackQuartalPremiumEvent,
     TrackTaxGroupItemEvent,
-    UserStatUpdatedEvent,
-    EmailNotificationEvent,
     TrackUserFiredEvent,
-    TimeTrack\CreateTimeTrackHistoryEvent,
-    TrackCourseItemFinishedEvent,
-    TrackGroupChangingEvent,
     TransferUserInGroupEvent,
+    UserStatUpdatedEvent,
     UserUpdatedEvent,
     WorkdayEvent};
 use App\Listeners\{ActivityUpdatedListener,
     BonusUpdatedListener,
+    EmailNotificationListener,
     EventListener,
     KpiChangedListener,
+    Payment\ExternalPaymentWebhookListener,
+    Payment\TariffPaymentWebhookListener,
+    TimeTrack\CreateTimeTrackHistoryListener,
+    TrackCourseItemFinishedListener,
+    TrackGroupChangingListener,
     TrackKpiItemListener,
     TrackKpiUpdatesListener,
     TrackQuartalPremiumListener,
     TrackTaxGroupItemListener,
-    UserStatUpdatedListener,
-    EmailNotificationListener,
-    TimeTrack\CreateTimeTrackHistoryListener,
-    TrackCourseItemFinishedListener,
-    TrackGroupChangingListener,
     TrackUserFiredListener,
     TransferUserInGroupListener,
+    UserStatUpdatedListener,
     UserUpdatedListener,
     WorkdayListener};
-
 use App\Models\WorkChart\WorkChartModel;
 use App\Observers\Timetracking\TimetrackingObserver;
 use App\Observers\UserObserver;
 use App\Observers\WorkChart\WorkChartObserver;
 use App\Timetracking;
 use App\User;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -104,6 +106,10 @@ class EventServiceProvider extends ServiceProvider
 
         UserUpdatedEvent::class => [
             UserUpdatedListener::class
+        ],
+        PaymentWebhookTriggeredEvent::class => [
+            TariffPaymentWebhookListener::class,
+            ExternalPaymentWebhookListener::class
         ]
     ];
 

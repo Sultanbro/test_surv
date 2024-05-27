@@ -5,7 +5,7 @@ namespace App\Service\Payment\Prodamus;
 
 use App\Service\Payment\Core\Base\BasePaymentGateway;
 use App\Service\Payment\Core\Base\PaymentConnector;
-use App\Service\Payment\Core\Webhook\BaseWebhook;
+use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
 
 class ProdamusGateway extends BasePaymentGateway
 {
@@ -23,9 +23,9 @@ class ProdamusGateway extends BasePaymentGateway
         return $this->connector;
     }
 
-    public function webhook(): BaseWebhook
+    public function webhookHandler(): BaseWebhookMapper
     {
-        return new ProdamusWebhook();
+        return new ProdamusWebhookMapper();
     }
 
     public function name(): string
