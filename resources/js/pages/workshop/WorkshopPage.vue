@@ -1,12 +1,12 @@
 <template>
 	<div class="workshop">
 		<h1 class="workshop__title">
-			Оплата заказа: Практикум по созданию Базы Знаний
+			Оплата: Практикума по созданию Базы Знаний
 		</h1>
 		<div class="workshop__wrapper">
 			<h2>Оплатить картой</h2>
-			<button @click="getAmount">
-				<a>
+			<button>
+				<a href="https://wl.walletone.com/checkout/refill/CreditCard/347915694/NewCard">
 					<img
 						class="workshopform__img"
 						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"
@@ -15,7 +15,6 @@
 					Картой банка не из Росиии
 				</a>
 			</button>
-			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
 			<button>
 				<a href="https://proeducation.kz/e44NQ/">
 					<img
@@ -26,26 +25,37 @@
 					Картой Российского банка
 				</a>
 			</button>
+			<p>Оплачивая картой вы соглашаетесь с условями <strong>оферты</strong></p>
+
 			<h2>Купить в рассрочку или в кредит</h2>
 			<button>
 				<a href="https://pay.kaspi.kz/pay/jjtpkyxq">
+					Оплата Каспи
 					<img
-						class="workshopform__img"
-						src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png"
+						class="workshopform__kaspi-img"
+						src="https://static.cdn-kaspi.kz/kkz/mainmvc/reswp/img/start/myBank/Red.png"
 						alt=""
 					>
-					Оплата Каспи
+					<img
+						class="workshopform__kaspi-img"
+						src="https://static.cdn-kaspi.kz/kkz/mainmvc/reswp/img/start/myBank/Kredit.png"
+						alt=""
+					>
+					<img
+						class="workshopform__kaspi-img"
+						src="https://papik.pro/grafic/uploads/posts/2023-04/thumbs/1681564231_papik-pro-p-kaspi-logotip-vektor-30.png"
+						alt=""
+					>
 				</a>
 			</button>
-			<p>Обязательно указывайте в примечании свой <strong>номер телефона</strong></p>
+			<p>
+				Обязательно указывайте в примечании свой <strong>номер телефона</strong>
+			</p>
 		</div>
 	</div>
 </template>
 
 <script>
-import { useAmountStore } from '../../stores/amount';
-import { mapActions } from 'pinia';
-
 export default {
 	name: 'WorkshopPage',
 	data() {
@@ -54,11 +64,8 @@ export default {
 			data: [],
 		};
 	},
-	created() {
-		this.openPayForm();
-	},
+	created() {},
 	mounted() {
-		this.openPayForm();
 		this.$nextTick(() => {
 			this.setMetaViewport();
 		});
@@ -67,12 +74,9 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
-		...mapActions(useAmountStore, ['getUsername']),
-		openPayForm(link) {
-			window.open(link, '_blank');
-		},
 		createForm(res) {
 			const form = document.createElement('form');
+			form.style.display = 'none';
 			form.method = 'post';
 			form.action = res.url;
 			Object.keys(res.params).forEach((key) => {
@@ -87,8 +91,8 @@ export default {
 		getAmount() {
 			return this.axios
 				.post(this.amountApi, {
-					amount: sessionStorage.getItem('sumForm'),
-					phone: sessionStorage.getItem('phoneForm'),
+					phone: sessionStorage.getItem('phoneWorkShopForm'),
+					name: sessionStorage.getItem('phoneForm'),
 				})
 				.then((res) => {
 					this.createForm(res.data);
@@ -110,32 +114,38 @@ export default {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	align-items: center;
 	font-size: 20px;
 	.workshop__title {
 		font-weight: bold;
 		font-size: 35px;
 	}
 	&__wrapper {
+		margin-top: 3%;
 		h2 {
-			margin-top: 1%;
+			margin-top: 3%;
 			font-size: 20px;
 			font-weight: bold;
 		}
+		h2:nth-of-type(2) {
+			margin-top: 10%;
+		}
 		button {
-			margin-top: 1%;
+			margin-top: 4%;
 			width: 100%;
 			font-weight: bold;
-			padding: 1%;
+			padding: 2%;
 			background-color: #fabf0f;
 			border-radius: 10px;
 			transition: all ease 100ms;
-			display: flex;
-			flex-wrap: wrap;
-			z-index: 1;
 			.workshopform__img {
 				width: 50px;
 				height: 50px;
 				border-radius: 50%;
+			}
+			.workshopform__kaspi-img {
+				width: 56px;
+				height: 42px;
 			}
 			&:hover {
 				background-color: #e8ae02;
@@ -152,13 +162,7 @@ export default {
 		}
 		p {
 			font-size: 12px;
-			background-color: #f1d070f9;
-			padding: 0% 1%;
-			z-index: 0;
-			border-radius: 0px 0px 9px 8px;
-			-webkit-border-radius: 0px 0px 9px 8px;
-			-moz-border-radius: 0px 0px 9px 8px;
-			margin-top: -0.5%;
+			margin-top: 1%;
 		}
 	}
 }
@@ -193,9 +197,6 @@ export default {
 					gap: 5px;
 				}
 			}
-		}
-		p {
-			margin-top: -2%;
 		}
 	}
 }
