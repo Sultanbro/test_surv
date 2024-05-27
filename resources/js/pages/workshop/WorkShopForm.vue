@@ -50,9 +50,10 @@ export default {
 				const userSaveApi = 'https://jobtron.org/api/v1/invoices';
 
 				this.axios.post(userSaveApi, {
+					/* eslint-disable camelcase */
 					amount: '1',
-					name: this.name,
-					phone: this.phone,
+					payer_name: this.name,
+					payer_phone: this.phone,
 				});
 				
 			} else {
