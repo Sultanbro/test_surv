@@ -1,12 +1,17 @@
 <template>
 	<form
 		class="workshopform"
-		@submit.prevent="redirect"
+		@submit.prevent.stop="saveUserData"
 	>
+		<input
+			v-model="name"
+			type="text"
+			placeholder="Ваше имя"
+		>
 		<input
 			v-model="phone"
 			type="text"
-			placeholder="Телефон"
+			placeholder="Укажите номер телефона"
 		>
 		<div
 			v-if="error"
@@ -14,12 +19,6 @@
 		>
 			Введите корректный номер телефона
 		</div>
-		<input
-			v-model="sum"
-			type="number"
-			min="0"
-			placeholder="Сумма выполнения"
-		>
 		<button type="submit">
 			Оплатить
 		</button>
@@ -28,12 +27,13 @@
 
 <script>
 export default {
+	name: 'WorkShopForm',
 	data() {
 		return {
+			name: '',
 			phone: '',
-			sum: '',
 			phoneNumberRegex: /^\+?[1-9]\d{1,14}$/,
-			error: false
+			error: false,
 		};
 	},
 	mounted() {
@@ -45,13 +45,18 @@ export default {
 		this.setMetaViewport();
 	},
 	methods: {
-		redirect() {
+		saveUserData() {
 			if (this.validatePhone()) {
-				sessionStorage.setItem('phoneForm', this.phone.trim());
-				sessionStorage.setItem('sumForm', this.sum);
-				window.location.href = '/payworkshopknowledgebase';
+				const userSaveApi = 'https://jobtron.org/api/v1/invoices';
+
+				this.axios.post(userSaveApi, {
+					amount: '1',
+					name: this.name,
+					phone: this.phone,
+				});
+				
 			} else {
-				this.error = true
+				this.error = true;
 			}
 		},
 		setMetaViewport() {
@@ -61,7 +66,10 @@ export default {
 			document.head.appendChild(meta);
 		},
 		validatePhone() {
-			return this.phoneNumberRegex.test(this.phone)
+			if (this.phoneNumberRegex.test(this.phone) && this.phone.length >= 11) {
+				return true;
+			}
+			return false;
 		},
 	},
 };
@@ -77,6 +85,7 @@ export default {
 	justify-content: center;
 	gap: 20px;
 	&__error {
+		font-size: 15px;
 		color: red;
 	}
 	input[type="text"],
@@ -111,11 +120,11 @@ export default {
 		input[type="text"],
 		input[type="number"] {
 			padding: 2% !important;
-			font-size: 28px !important;
+			font-size: 23px !important;
 		}
 		button {
 			padding: 5% !important;
-			font-size: 28px !important;
+			font-size: 23px !important;
 		}
 	}
 }
