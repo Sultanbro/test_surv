@@ -27,10 +27,9 @@ class Invoice extends Model
         'status'
     ];
 
-    public function setStatusSuccess(): Invoice
+    public function setStatusSuccess(): void
     {
-        /** @var Invoice */
-        return static::query()->update([
+         static::query()->update([
             'status' => 'success'
         ]);
     }
