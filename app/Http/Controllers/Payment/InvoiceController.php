@@ -13,23 +13,22 @@ class InvoiceController
         return response()->json(Invoice::query()->get());
     }
 
-
     public function store(NewInvoiceRequest $request): JsonResponse
     {
         $data = $request->validated();
 
         Invoice::query()->create([
-            'actor_name' => $data['name'],
-            'actor_phone' => $data['phone'],
+            'payer_name' => $data['payer_name'],
+            'payer_phone' => $data['payer_phone'],
             'amount' => $data['amount']
         ]);
 
         return response()->json([], 201);
     }
 
-
-    public function update(): JsonResponse
+    public function setStatusSuccess(Invoice $invoice): JsonResponse
     {
-        return response()->json(Invoice::query()->get());
+        $invoice->setStatusSuccess();
+        return response()->json([], 201);
     }
 }
