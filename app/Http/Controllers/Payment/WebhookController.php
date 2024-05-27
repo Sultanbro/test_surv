@@ -24,11 +24,17 @@ class WebhookController extends Controller
      */
     public function callback(Request $request, string $currency): JsonResponse
     {
-        PaymentWebhookTriggeredEvent::dispatch(new WebhookDto(
-                $currency,
-                $request->all(),
-                $request->header())
-        );
+        $dto = new WebhookDto(
+            $currency,
+            $request->all(),
+            $request->header());
+
+        PaymentWebhookTriggeredEvent::dispatch($dto);
+
+        slack(json_encode([
+            'provider' => Gateway::provider($currency)->name(),
+            'payload' => $dto->payload,
+        ]));
 
         return response()->json(Gateway::provider($currency)->staticWebhookResponse());
     }
