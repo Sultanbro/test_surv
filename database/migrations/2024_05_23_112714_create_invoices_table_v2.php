@@ -27,5 +27,6 @@ return new class extends Migration {
     {
         Schema::connection('mysql')
             ->dropIfExists('invoices');
+        Schema::dropIfExists('invoices');
     }
 };
