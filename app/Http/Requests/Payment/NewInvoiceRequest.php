@@ -9,8 +9,8 @@ class NewInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
-            'phone' => ['required', 'string'],
+            'payer_name' => ['required', 'string'],
+            'payer_phone' => ['required', 'string'],
             'amount' => ['required', 'string']
         ];
     }
