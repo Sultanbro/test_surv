@@ -84,6 +84,15 @@ const isAdmin = userInfo.is_admin
         icon: { icon: 'fa-edit' },
       }"
     />
+    <VerticalNavLink
+      v-if="isAdmin"
+      key="payers=users"
+      :item="{
+        title: 'payers-users',
+        to: 'admino-payers-users',
+        icon: { icon: 'fa-users' },
+      }"
+    />
     <!-- 👉 Pages -->
     <!--
       <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />
