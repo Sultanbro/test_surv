@@ -27,7 +27,6 @@
 
 <script>
 /* eslint-disable camelcase */
-
 export default {
 	name: 'WorkShopForm',
 	data() {
@@ -52,11 +51,10 @@ export default {
 				const userSaveApi = 'https://jobtron.org/api/v1/invoices';
 
 				this.axios.post(userSaveApi, {
-					amount: '1',
 					payer_name: this.name,
 					payer_phone: this.phone,
 				});
-				
+
 			} else {
 				this.error = true;
 			}
@@ -73,6 +71,7 @@ export default {
 			}
 			return false;
 		},
+
 	},
 };
 </script>

@@ -60,7 +60,6 @@ export default {
 	name: 'WorkshopPage',
 	data() {
 		return {
-			amountApi: 'https://jobtron.org/api/payments/invoices/wallet-one',
 			data: [],
 		};
 	},
@@ -88,16 +87,16 @@ export default {
 			document.body.appendChild(form);
 			form.submit();
 		},
-		getAmount() {
-			return this.axios
-				.post(this.amountApi, {
-					phone: sessionStorage.getItem('phoneWorkShopForm'),
-					name: sessionStorage.getItem('phoneForm'),
-				})
-				.then((res) => {
-					this.createForm(res.data);
-				});
-		},
+		// getAmount() {
+		// 	return this.axios
+		// 		.post(this.amountApi, {
+		// 			phone: sessionStorage.getItem('phoneWorkShopForm'),
+		// 			name: sessionStorage.getItem('phoneForm'),
+		// 		})
+		// 		.then((res) => {
+		// 			this.createForm(res.data);
+		// 		});
+		// },
 		setMetaViewport() {
 			const meta = document.createElement('meta');
 			meta.setAttribute('name', 'viewport');
