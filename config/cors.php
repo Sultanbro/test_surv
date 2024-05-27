@@ -32,6 +32,7 @@ return [
      * Matches the request origin. `['*']` allows all origins. Wildcards can be used, eg `*.mydomain.com`
      */
     'allowed_origins' => [
+        '*',
         '*.jobtron.org',
         'job.bpartners.kz',
     ],
