@@ -367,8 +367,8 @@ export default {
 			},
 			domain: {
 				free:'-',
-				base:'+',
-				standard:'+',
+				base:'-',
+				standard:'-',
 				pro:'+'
 			},
 
