@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Payment\Core\Webhook;
+namespace App\Service\Payment\Core\Invoice;
 
 use App\Models\Tariff\Transaction;
 use JsonSerializable;

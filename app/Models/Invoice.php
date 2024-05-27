@@ -27,9 +27,17 @@ class Invoice extends Model
         'status'
     ];
 
-    public function setStatusSuccess(): void
+    public static function getByTransactionId(int|string $getTransactionId): ?Invoice
     {
-         static::query()->update([
+        /** @var Invoice */
+        return self::query()
+            ->where('transaction_id', $getTransactionId)
+            ->first();
+    }
+
+    public function updateStatusToSuccess(): void
+    {
+        static::query()->update([
             'status' => 'success'
         ]);
     }

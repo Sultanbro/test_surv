@@ -7,7 +7,7 @@ use App\DTO\Payment\CreateInvoiceDTO;
 use App\Service\Payment\Core\Base\HasIdempotenceKey;
 use App\Service\Payment\Core\Base\PaymentConnector;
 use App\Service\Payment\Core\Customer\CustomerDto;
-use App\Service\Payment\Core\Webhook\Invoice;
+use App\Service\Payment\Core\Invoice\Invoice;
 use Exception;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;

@@ -5,7 +5,8 @@ namespace App\Service\Payment\Prodamus;
 
 use App\Service\Payment\Core\Base\BasePaymentGateway;
 use App\Service\Payment\Core\Base\PaymentConnector;
-use App\Service\Payment\Core\Webhook\BaseWebhook;
+use App\Service\Payment\Core\Webhook\BaseWebhookMapper;
+use App\Service\Payment\Core\Webhook\WebhookResponse;
 
 class ProdamusGateway extends BasePaymentGateway
 {
@@ -23,9 +24,9 @@ class ProdamusGateway extends BasePaymentGateway
         return $this->connector;
     }
 
-    public function webhook(): BaseWebhook
+    public function webhookHandler(): BaseWebhookMapper
     {
-        return new ProdamusWebhook();
+        return new ProdamusWebhookMapper();
     }
 
     public function name(): string
@@ -36,5 +37,10 @@ class ProdamusGateway extends BasePaymentGateway
     public function currency(): string
     {
         return 'rub';
+    }
+
+    public function staticWebhookResponse(): WebhookResponse
+    {
+        return new WebhookResponse(['success']);
     }
 }
