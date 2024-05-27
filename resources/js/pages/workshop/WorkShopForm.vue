@@ -50,11 +50,14 @@ export default {
 			if (this.validatePhone()) {
 				const userSaveApi = 'https://jobtron.org/api/v1/invoices';
 
-				this.axios.post(userSaveApi, {
+				const isSaveUser = this.axios.post(userSaveApi, {
 					payer_name: this.name,
 					payer_phone: this.phone,
 				});
 
+				if (isSaveUser) {
+					window.location.href = '/payworkshopknowledgebase';
+				}
 			} else {
 				this.error = true;
 			}
@@ -71,7 +74,6 @@ export default {
 			}
 			return false;
 		},
-
 	},
 };
 </script>
