@@ -26,6 +26,8 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
+
 export default {
 	name: 'WorkShopForm',
 	data() {
@@ -51,8 +53,8 @@ export default {
 
 				this.axios.post(userSaveApi, {
 					amount: '1',
-					name: this.name,
-					phone: this.phone,
+					payer_name: this.name,
+					payer_phone: this.phone,
 				});
 				
 			} else {
