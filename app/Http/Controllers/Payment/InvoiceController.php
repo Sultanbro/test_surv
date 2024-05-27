@@ -26,10 +26,8 @@ class InvoiceController
         return response()->json([], 201);
     }
 
-    public function update(int $id): JsonResponse
+    public function setStatusSuccess(Invoice $invoice): JsonResponse
     {
-        dd($id);
-        $invoice = Invoice::query()->findOrFail($id);
         $invoice->setStatusSuccess();
         return response()->json([], 201);
     }
