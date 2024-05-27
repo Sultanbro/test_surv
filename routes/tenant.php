@@ -54,10 +54,6 @@ Route::middleware(['web', 'tenant'])->group(function () {
         Route::post('/', [Root\PromoCode\PromoCodeController::class, 'save']);
         Route::delete('/', [Root\PromoCode\PromoCodeController::class, 'destroy']);
     });
-
-    Route::prefix('invoices')->group(function () {
-        Route::get('/', Root\Payment\InvoiceController::class);
-    });
 });
 
 // Portal Api
