@@ -12,6 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
+        if (Schema::connection('mysql')->hasTable('profile_groups')) return;
         Schema::connection('mysql')->create('profile_groups', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255)->nullable();

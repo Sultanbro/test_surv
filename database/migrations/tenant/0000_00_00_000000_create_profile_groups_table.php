@@ -13,6 +13,7 @@ class CreateProfileGroupsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('profile_groups')) return;
         Schema::create('profile_groups', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
