@@ -13,12 +13,6 @@
 			type="text"
 			placeholder="Укажите номер телефона"
 		>
-		<div
-			v-if="error"
-			class="workshopform__error"
-		>
-			Введите корректный номер телефона
-		</div>
 		<button type="submit">
 			Оплатить
 		</button>
@@ -47,19 +41,15 @@ export default {
 	},
 	methods: {
 		saveUserData() {
-			if (this.validatePhone()) {
-				const userSaveApi = 'https://jobtron.org/api/v1/invoices';
+			const userSaveApi = 'https://jobtron.org/api/v1/invoices';
 
-				const isSaveUser = this.axios.post(userSaveApi, {
-					payer_name: this.name,
-					payer_phone: this.phone,
-				});
+			const isSaveUser = this.axios.post(userSaveApi, {
+				payer_name: this.name,
+				payer_phone: this.phone,
+			});
 
-				if (isSaveUser) {
-					window.location.href = '/payworkshopknowledgebase';
-				}
-			} else {
-				this.error = true;
+			if (isSaveUser) {
+				window.location.href = '/payworkshopknowledgebase';
 			}
 		},
 		setMetaViewport() {
