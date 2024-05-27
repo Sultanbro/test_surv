@@ -12,6 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
+        if (Schema::connection('mysql')->hasTable('users')) return;
         Schema::connection('mysql')->create('users', function (Blueprint $table) {
             $table->id();
             $table->string('email', 50)->nullable();
