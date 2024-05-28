@@ -10,7 +10,12 @@
 					activeBook.isFavorite ? 'fas' : 'far',
 				]"
 			/> -->
-			<FavoriteIcon />
+			<div v-if="activeBook.isFavorite">
+				<FavoriteIcon />
+			</div>
+			<div v-else>
+				<HeartOutlineIcon />
+			</div>
 		</div>
 		<div class="KBArticle-title">
 			{{ activeBook.title }}
@@ -43,10 +48,7 @@
 			</div>
 		</div>
 		<!-- eslint-disable -->
-		<div
-			class="KBArticle-body"
-			v-html="markedText"
-		/>
+		<div class="KBArticle-body" v-html="markedText" />
 		<!-- eslint-enable -->
 
 		<Questions
@@ -66,12 +68,14 @@
 </template>
 
 <script>
-import Mark from 'mark.js/dist/mark.es6.js'
+import Mark from 'mark.js/dist/mark.es6.js';
 
-import Questions from '@/pages/Questions'
-import JobtronAvatar from '@ui/Avatar.vue'
+import Questions from '@/pages/Questions';
+import JobtronAvatar from '@ui/Avatar.vue';
 
-import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue'
+import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
+
+import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue';
 
 // const quotes = ['«»', '“”', '""', '()']
 // const enders = '.,!?:;'.split('')
@@ -81,12 +85,12 @@ const markOptions = {
 	exclude: ['.KBArticle-definition'],
 	accuracy: 'exactly',
 	separateWordSearch: false,
-}
-function createDefinition(text){
-	const span = document.createElement('span')
-	span.innerText = text
-	span.classList.add('KBArticle-definition')
-	return span
+};
+function createDefinition(text) {
+	const span = document.createElement('span');
+	span.innerText = text;
+	span.classList.add('KBArticle-definition');
+	return span;
 }
 // function getSynonims(term){
 // 	const result = []
@@ -111,7 +115,8 @@ export default {
 	components: {
 		Questions,
 		JobtronAvatar,
-		FavoriteIcon
+		FavoriteIcon,
+		HeartOutlineIcon,
 	},
 	props: {
 		mode: {
@@ -120,31 +125,31 @@ export default {
 		},
 		activeBook: {
 			type: Object,
-			default: null
+			default: null,
 		},
 		glossary: {
 			type: Array,
-			default: () => []
-		}
+			default: () => [],
+		},
 	},
-	data(){
-		return {}
+	data() {
+		return {};
 	},
 	computed: {
-		markedText(){
-			if(!this.activeBook) return ''
-			const div = document.createElement('div')
-			const hl = this.$route.query.hl
-			div.innerHTML = this.activeBook.text
-			const instance = new Mark(div)
+		markedText() {
+			if (!this.activeBook) return '';
+			const div = document.createElement('div');
+			const hl = this.$route.query.hl;
+			div.innerHTML = this.activeBook.text;
+			const instance = new Mark(div);
 
-			this.fixedGlossary.forEach(term => {
+			this.fixedGlossary.forEach((term) => {
 				instance.mark(term.word, {
 					...markOptions,
-					each: el => {
-						el.appendChild(createDefinition(term.definition))
-					}
-				})
+					each: (el) => {
+						el.appendChild(createDefinition(term.definition));
+					},
+				});
 				// getSynonims(term.word).forEach(word => {
 				// 	instance.mark(word, {
 				// 		...markOptions,
@@ -153,73 +158,76 @@ export default {
 				// 		}
 				// 	})
 				// })
-			})
+			});
 
-			if(hl){
+			if (hl) {
 				instance.mark(hl, {
 					...markOptions,
 					accuracy: 'partially',
-					each: el => {
-						el.classList.add('KBArticle-mark_justmark')
+					each: (el) => {
+						el.classList.add('KBArticle-mark_justmark');
 						// this.$nextTick(() => el.classList.add('KBArticle-mark_justmark'))
-					}
-				})
+					},
+				});
 			}
-			return div.innerHTML
+			return div.innerHTML;
 		},
-		fixedGlossary(){
-			const fixedMap = {}
-			const fixed = []
-			const glossary = JSON.parse(JSON.stringify(this.glossary || []))
-			glossary.forEach(term => {
-				const word = term.word.trim().toLowerCase()
-				if(~fixedMap[word] && fixedMap[word] !== undefined){
-					fixed[fixedMap[word]].definition += '\n' + term.definition
-					return
+		fixedGlossary() {
+			const fixedMap = {};
+			const fixed = [];
+			const glossary = JSON.parse(JSON.stringify(this.glossary || []));
+			glossary.forEach((term) => {
+				const word = term.word.trim().toLowerCase();
+				if (~fixedMap[word] && fixedMap[word] !== undefined) {
+					fixed[fixedMap[word]].definition += '\n' + term.definition;
+					return;
 				}
-				fixedMap[word] = fixed.length
-				fixed.push(term)
-			})
-			return fixed
+				fixedMap[word] = fixed.length;
+				fixed.push(term);
+			});
+			return fixed;
 		},
 	},
 	watch: {},
 	methods: {
 		passed() {
 			// pass if its not course.  cos there not nextElement button
-			if(!this.activeBook.item_model) {
-				this.setSegmentPassed()
+			if (!this.activeBook.item_model) {
+				this.setSegmentPassed();
 			}
 		},
-		nextElement(){},
+		nextElement() {},
 		setSegmentPassed() {
 			/* eslint-disable camelcase */
-			this.axios.post('/my-courses/pass', {
-				id: this.activeBook.id,
-				type: 3,
-				course_item_id: 0,
-				questions: this.activeBook.questions,
-				all_stages: 0,
-				completed_stages: 1,
-			}).then(() => {}).catch((error) => {
-				alert(error)
-			})
+			this.axios
+				.post('/my-courses/pass', {
+					id: this.activeBook.id,
+					type: 3,
+					course_item_id: 0,
+					questions: this.activeBook.questions,
+					all_stages: 0,
+					completed_stages: 1,
+				})
+				.then(() => {})
+				.catch((error) => {
+					alert(error);
+				});
 			/* eslint-enable camelcase */
 		},
-		onChangePassGrade(){},
+		onChangePassGrade() {},
 	},
-}
+};
 </script>
 
 <style lang="scss">
-.KBArticle{
+.KBArticle {
 	max-width: 1000px;
 	padding: 20px;
 	margin: 0 auto;
 
 	position: relative;
 
-	&-favorite{
+	&-favorite {
 		padding: 5px;
 
 		position: absolute;
@@ -228,22 +236,20 @@ export default {
 		left: 10px;
 
 		color: #333;
-		background: #ddd;
-		border-radius: 4px;
 		cursor: pointer;
 
 		&.fas,
-		&:hover{
+		&:hover {
 			color: #007bff;
 		}
 	}
-	&-title{
+	&-title {
 		padding: 15px 0;
 		text-align: center;
 		font-size: 20px;
 		font-weight: 600;
 	}
-	&-meta{
+	&-meta {
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
@@ -251,7 +257,7 @@ export default {
 		margin-bottom: 30px;
 	}
 	// &-authors{}
-	&-author{
+	&-author {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -260,19 +266,19 @@ export default {
 		margin-bottom: 5px;
 
 		font-size: 12px;
-		.fa-chevron-right{
+		.fa-chevron-right {
 			color: #e4ecf7;
 		}
 	}
-	&-authorTime{
+	&-authorTime {
 		color: #a0aec0;
 	}
-	&-authorName{
+	&-authorName {
 		color: #156ae8;
 		font-weight: 500;
 	}
 
-	&-mark{
+	&-mark {
 		display: inline-flex;
 
 		position: relative;
@@ -280,29 +286,29 @@ export default {
 		font-size: inherit;
 		font-family: inherit;
 		cursor: help;
-		&:after{
-			content: '*';
-			color: #00F;
+		&:after {
+			content: "*";
+			color: #00f;
 		}
-		&:hover{
-			.KBArticle{
-				&-definition{
+		&:hover {
+			.KBArticle {
+				&-definition {
 					transform: translate(-50%, 0);
 					visibility: visible;
 					opacity: 1;
 				}
 			}
 		}
-		&_justmark{
+		&_justmark {
 			background-color: #fcf8e3;
 			padding: 0 0.2em;
 			color: default;
-			&:after{
+			&:after {
 				content: none;
 			}
 		}
 	}
-	&-definition{
+	&-definition {
 		flex: 0 1 content;
 		width: max-content;
 		max-width: 200px;

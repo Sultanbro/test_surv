@@ -6,7 +6,7 @@
 		<div class="workshop__wrapper">
 			<h2>Оплатить картой</h2>
 			<button>
-				<a href="https://wl.walletone.com/checkout/refill/CreditCard/347924425/NewCard">
+				<a href="https://wl.walletone.com/checkout/refill/CreditCard/347953359/NewCard">
 					<img
 						class="workshopform__img"
 						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"

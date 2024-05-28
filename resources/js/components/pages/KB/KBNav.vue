@@ -8,11 +8,6 @@
 				placeholder="Быстрый поиск"
 				class="form-input"
 			>
-			<!-- <i
-				v-if="search.input.length"
-				class="search-clear"
-				@click="clearSearch"
-			>x</i> -->
 		</div>
 		<div
 			v-if="!currentBook"
@@ -50,6 +45,7 @@
 			<button
 				v-if="currentBook"
 				class="KBNav-button"
+				style="margin-top: 5%"
 				@click="onBack"
 			>
 				<div class="KBNav-button-content">
@@ -59,56 +55,68 @@
 			</button>
 		</div>
 
-		<!-- Search -->
+		<!-- Nav items -->
 		<div
-			v-if="search.input.length"
-			class="KBNav-searchResults"
+			v-else
+			class="KBNav-items"
 		>
 			<div
-				v-if="search.input.length < 3"
-				class="text-muted"
+				v-if="currentBook"
+				class="KBNav-currentTitle"
 			>
-				Введите минимум 3 символа
-			</div>
-			<div
-				v-else-if="search.loading"
-				class="text-muted"
-			>
-				Загрузка...
-			</div>
-			<div
-				v-else-if="!search.items.length"
-				class="text-muted"
-			>
-				Ничего не найдено
-			</div>
-			<div class="KBNav-searchItems">
+				{{ currentBook.title }}
 				<div
-					v-for="item in search.items"
-					:key="item.id"
-					class="KBNav-searchItem"
-					@click="$emit('search', item, search.input)"
-				>
-					<p
-						v-if="item.book"
-						class="KBNav-searchBook"
-					>
-						{{ item.book.title }}
-					</p>
-					<p class="KBNav-searchTitle">
-						{{ item.title }}
-					</p>
-					<!-- eslint-disable vue/no-v-html -->
-					<div
-						class="KBNav-searchText"
-						v-html="item.text"
-					/>
-					<!-- eslint-enable vue/no-v-html -->
-				</div>
+					v-if="mode == 'edit' && currentBook.canEdit"
+					class="KBNav-itemActions"
+				/>
 			</div>
+			<template v-else-if="favorites.length">
+				<div class="KBNav-favorites">
+					<div
+						v-for="favorite in favorites"
+						:key="favorite.id"
+						class="KBNav-favorite"
+						@click="$emit('search', favorite, '')"
+					>
+						<FavoriteIcon />
+						{{ favorite.title }}
+					</div>
+					<hr>
+				</div>
+			</template>
 		</div>
-
-		<!-- Archive -->
+		<KBNavItems
+			v-if="currentBook"
+			:key="'p' + listsKey"
+			class="KBNav-items"
+			:items="searchItems()"
+			:opened="true"
+			:mode="mode"
+			:parent="currentBook"
+			:active="activeBook ? activeBook.id : null"
+			@show-page="$emit('page', $event)"
+			@add-page="$emit('add-page', $event)"
+			@page-order="$emit('page-order', $event)"
+			@add-book="$emit('create', $event)"
+			@remove-book="archiveBook($event)"
+			@settings="$emit('settings', $event)"
+		/>
+		<KBNavItems
+			v-else-if="books.length"
+			:key="'b' + listsKey"
+			class="KBNav-items"
+			:items="searchItems()"
+			:opened="true"
+			:mode="mode"
+			:parent="null"
+			:active="null"
+			:sections-mode="true"
+			@show-page="$emit('book', $event)"
+			@page-order="$emit('page-order', $event)"
+			@add-book="$emit('create', $event)"
+			@remove-book="archiveBook($event)"
+			@settings="$emit('settings', $event)"
+		/>
 		<div
 			v-else-if="archived.show"
 			class="KBNav-archive"
@@ -131,73 +139,38 @@
 			</div>
 		</div>
 
-		<!-- Nav items -->
-		<div
-			v-else
-			class="KBNav-items"
+		<!-- Search -->
+		<!-- <div
+			v-if="search.input.length"
+			style="margin-top: 2%"
+			ss="KBNav-searchResults"
 		>
-			<div
-				v-if="currentBook"
-				class="KBNav-currentTitle"
-			>
-				{{ currentBook.title }}
+			<div v-if="search.input.length < 3" class="text-muted">
+				Введите минимум 3 символа
+			</div>
+			<div v-else-if="search.loading" class="text-muted">Загрузка...</div>
+			<div v-else-if="!search.items.length" class="text-muted">
+				Ничего не найдено
+			</div>
+			<div class="KBNav-searchItems">
 				<div
-					v-if="mode == 'edit' && currentBook.canEdit"
-					class="KBNav-itemActions"
+					v-for="item in search.items"
+					:key="item.id"
+					class="KBNav-searchItem"
+					@click="$emit('search', item, search.input)"
 				>
-					<!-- <i
-						class="KBNav-itemAction fa fa-plus mr-1"
-						@click="$emit('add-page', currentBook)"
-					/> -->
+					<p v-if="item.book" class="KBNav-searchBook">
+						{{ item.book.title }}
+					</p>
+					<p class="KBNav-searchTitle">
+						{{ item.title }}
+					</p>
+					<div class="KBNav-searchText" v-html="item.text" />
 				</div>
 			</div>
-			<template v-else-if="favorites.length">
-				<div class="KBNav-favorites">
-					<div
-						v-for="item in favorites"
-						:key="item.id"
-						class="KBNav-favorite"
-						@click="$emit('search', item, '')"
-					>
-						<FavoriteIcon />
-						{{ item.title }}
-					</div>
-					<hr>
-				</div>
-			</template>
-			<KBNavItems
-				v-if="currentBook"
-				:key="'p' + listsKey"
-				class="KBNav-items"
-				:items="books"
-				:opened="true"
-				:mode="mode"
-				:parent="currentBook"
-				:active="activeBook ? activeBook.id : null"
-				@show-page="$emit('page', $event)"
-				@add-page="$emit('add-page', $event)"
-				@page-order="$emit('page-order', $event)"
-				@add-book="$emit('create', $event)"
-				@remove-book="archiveBook($event)"
-				@settings="$emit('settings', $event)"
-			/>
-			<KBNavItems
-				v-else-if="books.length"
-				:key="'b' + listsKey"
-				class="KBNav-items"
-				:items="books"
-				:opened="true"
-				:mode="mode"
-				:parent="null"
-				:active="null"
-				:sections-mode="true"
-				@show-page="$emit('book', $event)"
-				@page-order="$emit('page-order', $event)"
-				@add-book="$emit('create', $event)"
-				@remove-book="archiveBook($event)"
-				@settings="$emit('settings', $event)"
-			/>
-		</div>
+		</div> -->
+
+		<!-- Archive -->
 
 		<div v-if="mode === 'edit' && !currentBook">
 			<div
@@ -206,6 +179,7 @@
 			>
 				<button
 					class="KBNav__footer-button"
+					title="Добавить базу знаний"
 					@click="$emit('create')"
 				>
 					<AddIcon />
@@ -403,6 +377,14 @@ export default {
 				window.onerror && window.onerror(error);
 			}
 		},
+
+		searchItems() {
+			return this.books.filter((book) => {
+				return book.title
+					.toLowerCase()
+					.includes(this.search.input.toLowerCase());
+			});
+		},
 		// === SEARCH ===
 
 		// === ARCHIVE ===
@@ -483,7 +465,6 @@ $KBNav-padding: 15px;
 .KBNav {
 	display: flex;
 	flex-flow: column nowrap;
-	gap: 10px;
 
 	height: 100vh;
 	padding: $KBNav-padding;
@@ -534,9 +515,8 @@ $KBNav-padding: 15px;
 	}
 
 	&-button {
-		margin-top: 7px;
 		width: 100%;
-		height: 45px;
+		height: 35px;
 		// padding: 8.5px 45px;
 		color: #8da0c1;
 		font-size: 14px;
@@ -554,8 +534,7 @@ $KBNav-padding: 15px;
 	}
 
 	&__button-settings {
-		margin-top: 3%;
-		padding: 8px;
+		padding: 4px;
 		border-radius: 6.79px;
 		border: 1px solid #8da0c1;
 		background-color: #ffffff;
@@ -609,7 +588,6 @@ $KBNav-padding: 15px;
 		font-size: 16px;
 		font-weight: 700;
 		&:hover {
-			background-color: blue;
 			.KBNav {
 				&-itemActions {
 					font-size: 13px;
@@ -628,7 +606,7 @@ $KBNav-padding: 15px;
 			width: 100%;
 			background-color: #ebf3fb;
 			color: #156ae8;
-			padding: 10px 12px 10px 12px;
+			padding: 2%;
 			border-radius: 8px;
 			display: flex;
 			align-items: center;
@@ -704,7 +682,7 @@ $KBNav-padding: 15px;
 	}
 	// &-favorites{}
 	&-favorite {
-		padding: 8px 0;
+		padding: 4px 0;
 
 		position: relative;
 

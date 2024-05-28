@@ -181,27 +181,27 @@
 			@close="showBookSettings = false"
 		>
 			<template #body>
-				<label class="d-flex mb-2">
+				<label class="d-flex mb-2 gap-3">
 					<input
 						v-model="send_notification_after_edit"
 						type="checkbox"
-						class="form- mb-2 mr-2"
+						class="custom-checkbox"
 					>
 					<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
 				</label>
-				<label class="d-flex mb-2">
+				<label class="d-flex mb-2 gap-3">
 					<input
 						v-model="show_page_from_kb_everyday"
 						type="checkbox"
-						class="form- mb-2 mr-2"
+						class="custom-checkbox"
 					>
 					<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
 				</label>
-				<label class="d-flex mb-2">
+				<label class="d-flex mb-2 gap-3">
 					<input
 						v-model="allow_save_kb_without_test"
 						type="checkbox"
-						class="form- mb-2 mr-2"
+						class="custom-checkbox"
 					>
 					<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
 				</label>
@@ -1462,13 +1462,14 @@ export default {
 	}
 	&-toolbar{
     background-color: #F7F7F7;
-    height: 65px;
+    height: 46px;
     padding: 0px 29px;
 	}
 	&-body{
 		flex: 1;
 		overflow-x: hidden;
 		overflow-y: auto;
+    scrollbar-width: none;
 	}
 }
 </style>

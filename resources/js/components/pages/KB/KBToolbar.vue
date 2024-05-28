@@ -32,13 +32,15 @@
 						@mouseleave="unShowDropdown"
 					>
 						<ul>
-							<li @click="$emit('upload-image')">
+							<label @click="triggerFileInput">
 								<DownloadImageIcon />Загрузить картинку
-							</li>
-							<li @click="$emit('upload-audio')">
+							</label>
+							<label @click="triggerAudioInput">
 								<DownloadAudioIcon />Загрузить аудио
-							</li>
-							<li><DownloadFileIcon />Загрузить файл</li>
+							</label>
+							<label @click="triggerFileInput">
+								<DownloadFileIcon />Загрузить файл
+							</label>
 						</ul>
 					</div>
 					<button
@@ -119,9 +121,60 @@
 					type="checkbox"
 					@click="$emit('mode', isEdit ? 'read' : 'edit')"
 				>
-				<label for="switch">Toggle</label>
+				<label
+					class="switch"
+					for="switch"
+				>Toggle</label>
 			</button>
 		</div>
+		<form
+			ref="uploadForm"
+			action="/upload/images/"
+			enctype="multipart/form-data"
+			method="post"
+			style="display: none"
+		>
+			<div class="form-group">
+				<div class="custom-file">
+					<input
+						ref="fileInput"
+						type="file"
+						class="custom-file-input"
+						accept="image/*"
+						@change="onAttachmentChange"
+					>
+					<label
+						class="custom-file-label"
+						for="customFile"
+					>Выберите файл</label>
+				</div>
+			</div>
+		</form>
+
+
+		<form
+			ref="audioUploadForm"
+			action="/upload/audio/"
+			enctype="multipart/form-data"
+			method="post"
+			style="display: none;"
+		>
+			<div class="form-group">
+				<div class="custom-file">
+					<input
+						ref="audioFileInput"
+						type="file"
+						class="custom-file-input"
+						accept="audio/mp3"
+						@change="onAttachmentChangeAudio"
+					>
+					<label
+						class="custom-file-label"
+						for="customFile"
+					>Выберите файл</label>
+				</div>
+			</div>
+		</form>
 	</nav>
 </template>
 
@@ -181,6 +234,8 @@ export default {
 	data() {
 		return {
 			isShowDropdown: false,
+			attachment: null,
+			imageAttachProgress: 0,
 		};
 	},
 	computed: {
@@ -216,6 +271,69 @@ export default {
 				this.$toast.error('Не удалось скопировать ссылку');
 			}
 		},
+		triggerFileInput() {
+			this.$refs.fileInput.click();
+		},
+		triggerAudioInput() {
+			this.$refs.audioFileInput.click();
+		},
+		async onAttachmentChange(event) {
+			this.attachment = event.target.files[0];
+			const loader = this.$loading.show();
+
+			const config = {
+				onUploadProgress: (progressEvent) => {
+					const progress = (progressEvent.loaded / progressEvent.total) * 100;
+					this.imageAttachProgress = progress;
+				},
+			};
+
+			const formData = new FormData();
+			formData.append('attachment', this.attachment);
+			formData.append('id', this.activeBook.id);
+
+			try {
+				const { data } = await this.axios.post(
+					'/upload/images/',
+					formData,
+					config
+				);
+				/* eslint-disable */
+				tinymce.activeEditor.insertContent(
+					`<img alt="картинка" src="${data.location}"/>`
+				);
+				this.imageAttachProgress = 0;
+				this.isUploadImage = false;
+			} catch (error) {
+				console.error(error);
+				this.$toast.error("Не удалось загрузить изображение");
+				window.onerror && window.onerror(error);
+			}
+
+			loader.hide();
+		},
+
+    async onAttachmentChangeAudio(event) {
+      this.attachment = event.target.files[0];
+      const loader = this.$loading.show();
+
+      const formData = new FormData();
+      formData.append('attachment', this.attachment);
+      formData.append('id', this.activeBook.id);
+
+      try {
+        const { data } = await this.axios.post('/upload/audio/', formData);
+        /* eslint-disable */
+        tinymce.activeEditor.insertContent(`<audio controls src="${data.location}"></audio>`);
+        this.isUploadAudio = false;
+      } catch (error) {
+        console.error(error);
+        this.$toast.error('Не удалось загрузить аудио');
+        window.onerror && window.onerror(error);
+      }
+
+      loader.hide();
+    }
 	},
 };
 </script>
@@ -229,7 +347,7 @@ input[type="checkbox"] {
 	visibility: hidden;
 }
 
-label {
+.switch {
 	cursor: pointer;
 	text-indent: -9999px;
 	width: 44px;
@@ -241,7 +359,7 @@ label {
 	padding: 1%;
 }
 
-label:after {
+.switch:after {
 	content: "";
 	position: absolute;
 	top: 5px;
@@ -253,16 +371,16 @@ label:after {
 	transition: 0.3s;
 }
 
-input:checked + label {
+input:checked + .switch {
 	background: #156ae8;
 }
 
-input:checked + label:after {
+input:checked + .switch:after {
 	left: calc(100% - 5px);
 	transform: translateX(-100%);
 }
 
-label:active:after {
+.switch:active:after {
 	width: 12px;
 }
 
@@ -311,7 +429,7 @@ label:active:after {
 		.KBToolbar-dropdown {
 			z-index: 5;
 			position: absolute;
-			top: 50px;
+			top: 41px;
 			right: 220px;
 			padding: 1%;
 			border-radius: 12px;

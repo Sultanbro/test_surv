@@ -6,7 +6,7 @@
 		:data-id="item.id"
 	>
 		<div class="KBNavItem-button">
-			<div class="d-flex aic gap-2 mt-3">
+			<div class="d-flex aic gap-2">
 				<template v-if="type === 'book'">
 					<CategoryIcon
 						v-if="isEditMode && (parent ? parent.canEdit : true)"
@@ -42,12 +42,12 @@
 				v-if="isEditMode && item.canEdit"
 				class="KBNavItem-actions"
 			>
-				<!-- <i
+				<i
 					v-if="!sectionsMode"
 					class="KBNavItem-action fa fa-plus"
 					title="Добавить страницу"
 					@click.stop="$emit('add-page', item)"
-				/> -->
+				/>
 				<div
 					v-if="type === 'book' && $laravel.is_admin"
 					title="Добавить базу знаний"
@@ -149,9 +149,9 @@ export default {
 .KBNavItem {
 	color: #212529;
 
-  &-actions-button {
-    background-color: transparent
-  }
+	&-actions-button {
+		background-color: transparent;
+	}
 
 	margin-top: 2px;
 	&-button {
@@ -167,6 +167,7 @@ export default {
 		&:hover {
 			.KBNavItem {
 				&-actions {
+					margin-top: 2%;
 					display: flex;
 				}
 			}
@@ -215,13 +216,14 @@ export default {
 			display: flex;
 			align-items: center;
 			gap: 4px;
+			font-size: 13px;
 		}
 	}
 	&-actions {
 		display: none;
 
 		position: absolute;
-		top: 50%;
+		top: 37%;
 		right: 0;
 
 		text-align: center;

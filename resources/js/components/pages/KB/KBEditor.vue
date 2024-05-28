@@ -35,7 +35,7 @@
 				action="/upload/images/"
 				enctype="multipart/form-data"
 				method="post"
-				style=" max-width: 300px; margin: 0 auto;"
+				style="display: none;"
 			>
 				<div class="form-group">
 					<div class="custom-file">
