@@ -322,7 +322,7 @@
 									<!--										@change="change_stat(i_index, field.key)"-->
 									<!--									>-->
 									<input
-										v-if="focused_item === i_index && focused_field === f_index && item[field.key].type === 'formula'"
+										v-if="(focused_item === i_index && focused_field === f_index && item[field.key].type === 'formula') || item[field.key].type === 'initial'"
 										v-model="item[field.key].value"
 										type="text"
 										class="in-cell"
