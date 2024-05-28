@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "watch": "npm run build:icons && vite --host",
-    "dev": "npm run build:icons && vite build --mode development --emptyOutDir",
+    "dev": "npm run build:icons && vite build --mode development",
     "build": "npm run build:icons && vite build",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
@@ -55,7 +55,6 @@
     "@iconify/vue": "^3.2.1",
     "@intlify/vite-plugin-vue-i18n": "^5.0.1",
     "@types/node": "^18.7.18",
-    "@types/vue-cropperjs": "^4.1.6",
     "@types/webfontloader": "^1.6.34",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
