@@ -1,146 +1,148 @@
 <template>
 	<aside class="KBNav">
-		<div class="KBNav-search">
-			<SearchIcon class="fa fa-search" />
-			<input
-				v-model="search.input"
-				type="text"
-				placeholder="Быстрый поиск"
-				class="form-input"
-			>
-		</div>
-		<div
-			v-if="!currentBook"
-			class="KBNav-glossary"
-		>
-			<button
-				class="KBNav-button"
-				@click="$emit('glossary-open')"
-			>
-				Глоссарий
-			</button>
-
-			<button
-				v-if="isOwner && mode === 'edit'"
-				class="KBNav__button-settings"
-				@click="$emit('glossary-settings')"
-			>
-				<SettingsIcon />
-			</button>
-		</div>
-
-		<!-- Back buttons -->
-		<div
-			v-if="archived.show || currentBook"
-			class="KBNav-back"
-		>
-			<div
-				v-if="archived.show"
-				class="btn btn-grey btn-block mb-3"
-				@click="archived.show = false"
-			>
-				<i class="fa fa-arrow-left" />
-				<span>Выйти из архива</span>
+		<div class="KBNav-wrapper">
+			<div class="KBNav-search">
+				<SearchIcon class="fa fa-search" />
+				<input
+					v-model="search.input"
+					type="text"
+					placeholder="Быстрый поиск"
+					class="form-input"
+				>
 			</div>
-			<button
-				v-if="currentBook"
-				class="KBNav-button"
-				style="margin-top: 5%"
-				@click="onBack"
-			>
-				<div class="KBNav-button-content">
-					<BackChapterIcon />
-					Вернуться к разделам
-				</div>
-			</button>
-		</div>
 
-		<!-- Nav items -->
-		<div
-			v-else
-			class="KBNav-items"
-		>
 			<div
-				v-if="currentBook"
-				class="KBNav-currentTitle"
+				v-if="!currentBook"
+				class="KBNav-glossary"
 			>
-				{{ currentBook.title }}
+				<button
+					class="KBNav-button"
+					@click="$emit('glossary-open')"
+				>
+					Глоссарий
+				</button>
+
+				<button
+					v-if="isOwner && mode === 'edit'"
+					class="KBNav__button-settings"
+					@click="$emit('glossary-settings')"
+				>
+					<SettingsIcon />
+				</button>
+			</div>
+
+			<!-- Back buttons -->
+			<div
+				v-if="archived.show || currentBook"
+				class="KBNav-back"
+			>
 				<div
-					v-if="mode == 'edit' && currentBook.canEdit"
-					class="KBNav-itemActions"
-				/>
-			</div>
-			<template v-else-if="favorites.length">
-				<div class="KBNav-favorites">
-					<div
-						v-for="favorite in favorites"
-						:key="favorite.id"
-						class="KBNav-favorite"
-						@click="$emit('search', favorite, '')"
-					>
-						<FavoriteIcon />
-						{{ favorite.title }}
-					</div>
-					<hr>
+					v-if="archived.show"
+					class="btn btn-grey btn-block mb-3"
+					@click="archived.show = false"
+				>
+					<i class="fa fa-arrow-left" />
+					<span>Выйти из архива</span>
 				</div>
-			</template>
-		</div>
-		<KBNavItems
-			v-if="currentBook"
-			:key="'p' + listsKey"
-			class="KBNav-items"
-			:items="searchItems()"
-			:opened="true"
-			:mode="mode"
-			:parent="currentBook"
-			:active="activeBook ? activeBook.id : null"
-			@show-page="$emit('page', $event)"
-			@add-page="$emit('add-page', $event)"
-			@page-order="$emit('page-order', $event)"
-			@add-book="$emit('create', $event)"
-			@remove-book="archiveBook($event)"
-			@settings="$emit('settings', $event)"
-		/>
-		<KBNavItems
-			v-else-if="books.length"
-			:key="'b' + listsKey"
-			class="KBNav-items"
-			:items="searchItems()"
-			:opened="true"
-			:mode="mode"
-			:parent="null"
-			:active="null"
-			:sections-mode="true"
-			@show-page="$emit('book', $event)"
-			@page-order="$emit('page-order', $event)"
-			@add-book="$emit('create', $event)"
-			@remove-book="archiveBook($event)"
-			@settings="$emit('settings', $event)"
-		/>
-		<div
-			v-else-if="archived.show"
-			class="KBNav-archive"
-		>
+				<button
+					v-if="currentBook"
+					class="KBNav-button"
+					style="margin-top: 5%"
+					@click="onBack"
+				>
+					<div class="KBNav-button-content">
+						<BackChapterIcon />
+						Вернуться к разделам
+					</div>
+				</button>
+			</div>
+
+			<!-- Nav items -->
 			<div
-				v-for="(book, bIndex) in archived.items"
-				:key="bIndex"
-				class="KBNav-item"
-				:title="book.title"
+				v-else
+				class="KBNav-items"
 			>
-				<p class="KBNav-itemText">
-					{{ book.title }}
-				</p>
-				<div class="KBNav-itemActions">
-					<i
-						class="KBNav-itemAction fa fa-trash-restore mr-1"
-						@click.stop="archiveRestore(book)"
+				<div
+					v-if="currentBook"
+					class="KBNav-currentTitle"
+				>
+					{{ currentBook.title }}
+					<div
+						v-if="mode == 'edit' && currentBook.canEdit"
+						class="KBNav-itemActions"
 					/>
 				</div>
+				<template v-else-if="favorites.length">
+					<div class="KBNav-favorites">
+						<div
+							v-for="favorite in favorites"
+							:key="favorite.id"
+							class="KBNav-favorite"
+							@click="$emit('search', favorite, '')"
+						>
+							<FavoriteIcon />
+							{{ favorite.title }}
+						</div>
+						<hr>
+					</div>
+				</template>
 			</div>
-		</div>
+			<KBNavItems
+				v-if="currentBook"
+				:key="'p' + listsKey"
+				class="KBNav-items"
+				:items="searchItems()"
+				:opened="true"
+				:mode="mode"
+				:parent="currentBook"
+				:active="activeBook ? activeBook.id : null"
+				@show-page="$emit('page', $event)"
+				@add-page="$emit('add-page', $event)"
+				@page-order="$emit('page-order', $event)"
+				@add-book="$emit('create', $event)"
+				@remove-book="archiveBook($event)"
+				@settings="$emit('settings', $event)"
+			/>
+			<KBNavItems
+				v-else-if="books.length"
+				:key="'b' + listsKey"
+				class="KBNav-items"
+				:items="searchItems()"
+				:opened="true"
+				:mode="mode"
+				:parent="null"
+				:active="null"
+				:sections-mode="true"
+				@show-page="$emit('book', $event)"
+				@page-order="$emit('page-order', $event)"
+				@add-book="$emit('create', $event)"
+				@remove-book="archiveBook($event)"
+				@settings="$emit('settings', $event)"
+			/>
+			<div
+				v-else-if="archived.show"
+				class="KBNav-archive"
+			>
+				<div
+					v-for="(book, bIndex) in archived.items"
+					:key="bIndex"
+					class="KBNav-item"
+					:title="book.title"
+				>
+					<p class="KBNav-itemText">
+						{{ book.title }}
+					</p>
+					<div class="KBNav-itemActions">
+						<i
+							class="KBNav-itemAction fa fa-trash-restore mr-1"
+							@click.stop="archiveRestore(book)"
+						/>
+					</div>
+				</div>
+			</div>
 
-		<!-- Search -->
-		<!-- <div
+			<!-- Search -->
+			<!-- <div
 			v-if="search.input.length"
 			style="margin-top: 2%"
 			ss="KBNav-searchResults"
@@ -169,6 +171,7 @@
 				</div>
 			</div>
 		</div> -->
+		</div>
 
 		<!-- Archive -->
 
@@ -465,6 +468,7 @@ $KBNav-padding: 15px;
 .KBNav {
 	display: flex;
 	flex-flow: column nowrap;
+	justify-content: space-between;
 
 	height: 100vh;
 	padding: $KBNav-padding;

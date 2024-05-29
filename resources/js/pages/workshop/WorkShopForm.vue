@@ -3,6 +3,7 @@
 		class="workshopform"
 		@submit.prevent.stop="saveUserData"
 	>
+		<h1>Оставить заявку на практикум</h1>
 		<input
 			v-model="name"
 			type="text"
@@ -77,6 +78,10 @@ export default {
 	flex-direction: column;
 	justify-content: center;
 	gap: 20px;
+
+	h1 {
+		font-size: 30px;
+	}
 	&__error {
 		font-size: 15px;
 		color: red;
@@ -118,6 +123,9 @@ export default {
 		button {
 			padding: 5% !important;
 			font-size: 23px !important;
+		}
+		h1 {
+      text-align: center;
 		}
 	}
 }
