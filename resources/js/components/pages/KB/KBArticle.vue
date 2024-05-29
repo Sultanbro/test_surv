@@ -10,7 +10,7 @@
 					activeBook.isFavorite ? 'fas' : 'far',
 				]"
 			/> -->
-			<div v-if="activeBook.isFavorite">
+			<div v-if="Object.keys(activeBook).length > 0">
 				<FavoriteIcon />
 			</div>
 			<div v-else>
@@ -50,7 +50,6 @@
 		<!-- eslint-disable -->
 		<div class="KBArticle-body" v-html="markedText" />
 		<!-- eslint-enable -->
-
 		<Questions
 			:id="activeBook.id"
 			:questions="activeBook.questions"
@@ -130,6 +129,10 @@ export default {
 		glossary: {
 			type: Array,
 			default: () => [],
+		},
+		isFavorite: {
+			type: Boolean,
+			default: true,
 		},
 	},
 	data() {

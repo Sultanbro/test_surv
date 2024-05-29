@@ -72,16 +72,20 @@
 						class="KBNav-itemActions"
 					/>
 				</div>
+
 				<template v-else-if="favorites.length">
 					<div class="KBNav-favorites">
 						<div
 							v-for="favorite in favorites"
 							:key="favorite.id"
 							class="KBNav-favorite"
-							@click="$emit('search', favorite, '')"
 						>
-							<FavoriteIcon />
-							{{ favorite.title }}
+							<p @click="$emit('favorite', favorite)">
+								<FavoriteIcon />
+							</p>
+							<p @click="$emit('search', favorite, '')">
+								{{ favorite.title }}
+							</p>
 						</div>
 						<hr>
 					</div>
@@ -327,6 +331,9 @@ export default {
 	},
 	mounted() {},
 	methods: {
+		unFavorite(favorite) {
+			return (favorite.isFavorite = false);
+		},
 		updateKeys() {
 			++this.listsKey;
 		},
@@ -696,7 +703,6 @@ $KBNav-padding: 15px;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		display: flex;
-		align-items: center;
 		gap: 5px;
 		cursor: pointer;
 		&:hover {
