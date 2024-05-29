@@ -13,7 +13,7 @@
     </thead>
     <tbody>
       <tr
-        v-for="payerUser in payersUsers"
+        v-for="payerUser in sortedPayersUsers"
         :key="payerUser.id"
       >
         <td>{{ payerUser.id }}</td>
@@ -28,19 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { formatDateTime } from '@/utils/formatDateTime' 
+import { formatDateTime } from '@/utils/formatDateTime'
+import { type TPayersUsers } from '@/types/payersUsers'
+import { sortedByDatePayersUsers } from '@/utils/sortedPayersUsers'
 import axios from 'axios'
-
-interface TPayersUsers {
-  amount: string
-  created_at: string
-  id: number
-  payer_name: null
-  payer_phone: null
-  status: string
-  transaction_id: null
-  updated_at: string
-}
 
 const payersUsers = ref<TPayersUsers[]>([])
 
@@ -52,4 +43,6 @@ const fetchPaersUsers = async () => {
 }
 
 fetchPaersUsers()
+
+const sortedPayersUsers = computed(() => sortedByDatePayersUsers(payersUsers.value))
 </script>
