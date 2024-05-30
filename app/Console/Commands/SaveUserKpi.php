@@ -51,7 +51,7 @@ class SaveUserKpi extends Command
         $this->truncate($startOfMonth, $this->argument('user_id'));
         $this->calc($kpis, $startOfMonth, $this->argument('user_id'));
 
-        slack('Kpi running');
+
     }
 
     private function truncate(Carbon $date, $userId = null): void
