@@ -57,7 +57,6 @@
 					:mode="mode"
 					:active-book="activeBook"
 					:glossary="glossary"
-					:is-favorite="true"
 					@favorite="unFavorite"
 				/>
 				<KBEditor
@@ -1188,12 +1187,29 @@ export default {
 			parent.children.push(book);
 		},
 		async unFavorite(page) {
-			try {
-				page.isFavorite = !page.isFavorite;
+			const favoritesBooks = await API.fetchKBFavorites();
+			const currentBook = favoritesBooks.items.find((book) => {
+				return book.id === page.id;
+			});
 
-				await API.toggleKBPageFavorite(page.id, {
-					toggle: page.isFavorite,
-				});
+			try {
+				if (page.isFavorite) {
+					page.isFavorite = !page.isFavorite;
+
+					await API.toggleKBPageFavorite(page.id, {
+						toggle: page.isFavorite,
+					});
+				} else if (page.isFavorite === undefined && currentBook) {
+					if (currentBook) {
+						await API.toggleKBPageFavorite(page.id, {
+							toggle: false,
+						});
+					}
+				} else {
+					await API.toggleKBPageFavorite(page.id, {
+						toggle: true,
+					});
+				}
 			} catch (error) {
 				console.error(error);
 				this.$toast.error('Не удалось добавить в избранное');

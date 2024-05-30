@@ -205,7 +205,7 @@ export default {
 	&-name {
 		flex: 1;
 		font-size: 12px;
-		padding: 8px 0;
+		padding: 14px 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: flex;
@@ -216,7 +216,7 @@ export default {
 			display: flex;
 			align-items: center;
 			gap: 4px;
-			font-size: 13px;
+			font-size: 14px;
 		}
 	}
 	&-actions {
