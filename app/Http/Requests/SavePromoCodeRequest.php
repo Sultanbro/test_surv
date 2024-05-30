@@ -10,7 +10,7 @@ class SavePromoCodeRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'code' => ['required', 'string', 'unique:promo_codes,code'],
+            'code' => ['required', 'string'],
             'expired_at' => ['required', 'string'],
             'rate' => ['required', 'string', 'min:1', 'max:100']
         ];
