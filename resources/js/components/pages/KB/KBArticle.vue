@@ -10,7 +10,7 @@
 					activeBook.isFavorite ? 'fas' : 'far',
 				]"
 			/> -->
-			<div v-if="Object.keys(activeBook).length > 0">
+			<div v-if="isFavorite">
 				<FavoriteIcon />
 			</div>
 			<div v-else>
@@ -76,6 +76,8 @@ import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
 
 import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue';
 
+import * as KBAPI from '@/stores/api/kb.js';
+
 // const quotes = ['«»', '“”', '""', '()']
 // const enders = '.,!?:;'.split('')
 const markOptions = {
@@ -130,13 +132,11 @@ export default {
 			type: Array,
 			default: () => [],
 		},
-		isFavorite: {
-			type: Boolean,
-			default: true,
-		},
 	},
 	data() {
-		return {};
+		return {
+			isFavorite: false,
+		};
 	},
 	computed: {
 		markedText() {
@@ -192,7 +192,18 @@ export default {
 		},
 	},
 	watch: {},
+	mounted()  {
+		this.isFavoriteBook()
+	},
 	methods: {
+		async isFavoriteBook() {
+			const favoritesBooks = await KBAPI.fetchKBFavorites();
+			const currentBook = favoritesBooks.items.find((book) => {
+				return book.id === this.activeBook.id;
+			});
+
+			return currentBook ? this.isFavorite = true : this.isFavorite = false
+		},
 		passed() {
 			// pass if its not course.  cos there not nextElement button
 			if (!this.activeBook.item_model) {

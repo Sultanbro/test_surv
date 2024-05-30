@@ -80,8 +80,17 @@
 							:key="favorite.id"
 							class="KBNav-favorite"
 						>
-							<p @click="$emit('favorite', favorite)">
+							<p
+								v-if="favorite.isFavorite"
+								@click="$emit('favorite', favorite)"
+							>
 								<FavoriteIcon />
+							</p>
+							<p
+								v-else
+								@click="$emit('favorite', favorite)"
+							>
+								<HeartOutlineIcon />
 							</p>
 							<p @click="$emit('search', favorite, '')">
 								{{ favorite.title }}
@@ -254,6 +263,7 @@ import BackChapterIcon from '../../../../assets/icons/BackChapterIcon.vue';
 import AddIconSilver from '../../../../assets/icons/AddIconSilver.vue';
 import InfoIcon from '../../../../assets/icons/InfoIcon.vue';
 import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
+import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue'
 
 import KBNavItems from './KBNavItems.vue';
 
@@ -275,6 +285,7 @@ export default {
 		AddIconSilver,
 		InfoIcon,
 		FavoriteIcon,
+		HeartOutlineIcon,
 	},
 	props: {
 		mode: {
@@ -697,7 +708,7 @@ $KBNav-padding: 15px;
 
 		position: relative;
 
-		font-size: 13px;
+		font-size: 14px;
 		font-weight: 400;
 		white-space: nowrap;
 		text-overflow: ellipsis;
