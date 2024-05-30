@@ -13,5 +13,6 @@ Route::prefix('/v1/invoices')->group(function () {
 });
 
 Route::get('/test/amocrm', function (Request $request) {
-    slack(json_encode($request->all()));
+//    slack(json_encode($request->all()));
+    slack(1);
 });
