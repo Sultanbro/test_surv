@@ -12,7 +12,7 @@ Route::prefix('/v1/invoices')->group(function () {
     Route::post('/{invoice}/status', [InvoiceController::class, 'setStatusSuccess']);
 });
 
-Route::get('/test/amocrm', function (Request $request) {
+Route::post('/test/amocrm', function (Request $request) {
 //    slack(json_encode($request->all()));
     slack(1);
 });
