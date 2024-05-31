@@ -238,7 +238,6 @@ class KpiService
                 'colors' => json_encode($request->input('colors')),
                 'created_by' => auth()->id()
             ]);
-            dd($kpi);
             foreach ($request->get('kpiables') as $kpiable) {
                 $kpi->saveTarget($kpiable);
             }
