@@ -9,7 +9,7 @@
 			class="KBPageV2-nav"
 			@glossary-open="showGlossary = true"
 			@glossary-settings="isGlossaryAccessDialog = true"
-			@favorite="unFavorite"
+			@favorite="removeFavorite"
 			@back="back"
 			@book="onBook"
 			@search="onSearch"
@@ -499,7 +499,6 @@
 				single
 			/>
 		</JobtronOverlay>
-
 		<JobtronOverlay
 			v-if="isGlossaryAccess"
 			:z="99999"
@@ -1186,6 +1185,15 @@ export default {
 			if (!parent) return;
 			parent.children.push(book);
 		},
+		async removeFavorite(page, index) {
+			this.favorites.splice(index, 1);
+
+			page.isFavorite = !page.isFavorite;
+
+			await API.toggleKBPageFavorite(page.id, {
+				toggle: page.isFavorite,
+			});
+		},
 		async unFavorite(page) {
 			const favoritesBooks = await API.fetchKBFavorites();
 			const currentBook = favoritesBooks.items.find((book) => {
@@ -1200,15 +1208,25 @@ export default {
 						toggle: page.isFavorite,
 					});
 				} else if (page.isFavorite === undefined && currentBook) {
-					if (currentBook) {
-						await API.toggleKBPageFavorite(page.id, {
-							toggle: false,
-						});
-					}
+					this.favorites = this.favorites.filter((book) => {
+						return book.id !== currentBook.id;
+					});
+
+					await API.toggleKBPageFavorite(page.id, {
+						toggle: false,
+					});
 				} else {
 					await API.toggleKBPageFavorite(page.id, {
 						toggle: true,
 					});
+
+					const favoritesBooks = await API.fetchKBFavorites();
+
+					const addedBook = favoritesBooks.items.find((book) => {
+						return book.id === page.id;
+					});
+
+					this.favorites.push(addedBook);
 				}
 			} catch (error) {
 				console.error(error);

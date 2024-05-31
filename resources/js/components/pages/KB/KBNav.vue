@@ -76,21 +76,15 @@
 				<template v-else-if="favorites.length">
 					<div class="KBNav-favorites">
 						<div
-							v-for="favorite in favorites"
+							v-for="(favorite, index) in favorites"
 							:key="favorite.id"
 							class="KBNav-favorite"
 						>
 							<p
 								v-if="favorite.isFavorite"
-								@click="$emit('favorite', favorite)"
+								@click="$emit('favorite', favorite, index)"
 							>
 								<FavoriteIcon />
-							</p>
-							<p
-								v-else
-								@click="$emit('favorite', favorite)"
-							>
-								<HeartOutlineIcon />
 							</p>
 							<p @click="$emit('search', favorite, '')">
 								{{ favorite.title }}
@@ -263,7 +257,6 @@ import BackChapterIcon from '../../../../assets/icons/BackChapterIcon.vue';
 import AddIconSilver from '../../../../assets/icons/AddIconSilver.vue';
 import InfoIcon from '../../../../assets/icons/InfoIcon.vue';
 import FavoriteIcon from '../../../../assets/icons/FavoriteIcon.vue';
-import HeartOutlineIcon from '../../../../assets/icons/HeartOutlineIcon.vue'
 
 import KBNavItems from './KBNavItems.vue';
 
@@ -285,7 +278,6 @@ export default {
 		AddIconSilver,
 		InfoIcon,
 		FavoriteIcon,
-		HeartOutlineIcon,
 	},
 	props: {
 		mode: {
