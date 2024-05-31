@@ -189,8 +189,7 @@ class KpiService
             if ($item['id'] == 0) {
                 // Создаем новый kpi item, потому что id == 0
                 $item_ids[] = KpiItem::query()->create($item)->getKey();
-            }
-            else {
+            } else {
                 $item_ids[] = $item['id'];
 
                 if (isset($item['deleted'])) {
@@ -228,44 +227,38 @@ class KpiService
      */
     public function save(KpiSaveRequest $request): array
     {
-//        if ($this->hasDuplicate($request)) {
-//            throw new TargetDuplicateException();
-//        }
-
-        $kpi_id = 0;
-        $kpi_item_ids = [];
         try {
-            DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id) {
-                /** @var Kpi $kpi */
-                $kpi = Kpi::query()->create([
-                    'completed_80' => $request->input('completed_80'),
-                    'completed_100' => $request->input('completed_100'),
-                    'lower_limit' => $request->input('lower_limit'),
-                    'upper_limit' => $request->input('upper_limit'),
-                    'colors' => json_encode($request->input('colors')),
-                    'created_by' => auth()->id()
-                ]);
-                foreach ($request->get('kpiables') as $kpiable) {
-                    $kpi->saveTarget($kpiable);
-                }
+            DB::beginTransaction();
+            /** @var Kpi $kpi */
+            $kpi = Kpi::query()->create([
+                'completed_80' => $request->input('completed_80'),
+                'completed_100' => $request->input('completed_100'),
+                'lower_limit' => $request->input('lower_limit'),
+                'upper_limit' => $request->input('upper_limit'),
+                'colors' => json_encode($request->input('colors')),
+                'created_by' => auth()->id()
+            ]);
+            foreach ($request->get('kpiables') as $kpiable) {
+                $kpi->saveTarget($kpiable);
+            }
 
-                $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
+            $kpi_item_ids = $this->saveItems($request->get('items'), $kpi->id);
 
-                $kpi->children = $kpi_item_ids;
-                $kpi->updated_at = now();
-                $kpi->save();
+            $kpi->children = $kpi_item_ids;
+            $kpi->updated_at = now();
+            $kpi->save();
 
-                $kpi_id = $kpi->id;
-            });
+            $kpi_id = $kpi->id;
 
             event(new TrackKpiUpdatesEvent($kpi_id));
             event(new KpiChangedEvent(Carbon::now()));
-
+            DB::commit();
             return [
                 'id' => $kpi_id,
                 'items' => $kpi_item_ids
             ];
         } catch (Exception $exception) {
+            DB::rollBack();
             throw new Exception($exception);
         }
     }
