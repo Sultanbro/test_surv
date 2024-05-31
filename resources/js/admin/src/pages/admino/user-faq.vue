@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import FaqList from '@/views/pages/faq/faq-list.vue';
-import FaqContent from '@/views/pages/faq/faq-content.vue';
-import axios from 'axios';
+import FaqList from '@/views/pages/faq/faq-list.vue'
+import FaqContent from '@/views/pages/faq/faq-content.vue'
+import axios from 'axios'
 
 type MoveEvent = {
-  item: HTMLElement,
-  to: HTMLElement,
+  item: HTMLElement
+  to: HTMLElement
 }
 
 type Question = {
@@ -31,81 +31,77 @@ onMounted(() => {
   fetchFAQ()
 })
 
-function treeToMap(items: Array<Question>, result: {[key: string]: Question} = {}){
+function treeToMap(items: Array<Question>, result: { [key: string]: Question } = {}) {
   return items.reduce((result, item) => {
     result[`${item.id}`] = item
-    if(item.children?.length) treeToMap(item.children, result)
+    if (item.children?.length) treeToMap(item.children, result)
     return result
   }, result)
 }
 
-async function fetchFAQ(){
+async function fetchFAQ() {
   try {
-    const {data} = await axios.get<{data: Array<Question>}>('/faq')
-    questions.value = data.data.map(item => ({...item, isCollapsed: false}))
-  }
-  catch (error) {
+    const { data } = await axios.get<{ data: Array<Question> }>('/faq')
+    questions.value = data.data.map(item => ({ ...item, isCollapsed: false }))
+  } catch (error) {
     console.error(error)
   }
 }
-async function createFAQ(item: Question){
+async function createFAQ(item: Question) {
   try {
-    const {data} = await axios.post('/faq', item)
+    const { data } = await axios.post('/faq', item)
     questions.value.push({
       ...data.data,
       children: [],
       isCollapsed: false,
     })
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
   }
 }
-async function updateFAQ(){
-  if(!active.value) return
+async function updateFAQ() {
+  if (!active.value) return
 
   try {
-      await axios.put(`/faq/update/${active.value.id}`, active.value)
-  }
-  catch (error) {
+    await axios.put(`/faq/update/${active.value.id}`, active.value)
+    console.log(active.value)
+  } catch (error) {
     console.error(error)
   }
 }
-async function saveFAQ(){
-  if(!active.value) return
+async function saveFAQ() {
+  if (!active.value) return
   return updateFAQ()
 }
-async function deleteFAQ(item: Question){
+async function deleteFAQ(item: Question) {
   try {
     await axios.delete(`/faq/delete/${item.id}`)
     const list = item.parent_id ? questionsMap.value[item.parent_id].children : questions.value
-    if(!list) return
+    if (!list) return
     const index = list.findIndex(i => i.id === item.id)
-    if(!~index) return
+    if (!~index) return
     list.splice(index, 1)
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
   }
 }
 async function onSelect(item: Question) {
   try {
-    const {data} = await axios.get(`/faq/get/${item.id}`)
+    const { data } = await axios.get(`/faq/get/${item.id}`)
     active.value = {
       ...data.data,
       isCollapsed: true,
     }
-  }
-  catch (error) {
+    console.log(active.value)
+  } catch (error) {
     console.error(error)
   }
 }
 
 async function addElement(parent_id: number, order: number) {
-
   await createFAQ({
     id: 0,
-    parent_id : parent_id || null,
+    parent_id: parent_id || null,
     order,
     title: 'Новый вопрос',
     isCollapsed: false,
@@ -113,36 +109,57 @@ async function addElement(parent_id: number, order: number) {
     body: '<h1>Заполните содержимое вопроса</h1>',
     children: [],
   })
-
 }
 
-async function saveOrder(parentId: number){
+async function saveOrder(parentId: number, currentId: number) {
+  console.log(parentId, currentId)
   const items = parentId ? questionsMap.value[parentId]?.children : questions.value
-  if(!items) return
+
+  const quetion = questionsMap.value[currentId]
+
+  console.log(quetion)
+
+  if (!items) return
   const request = {
-    items: items.map(({id, parent_id}, index) => ({
+    items: items.map(({ id, parent_id }, index) => ({
       id,
       parent_id,
       order: index,
-    }))
+    })),
   }
   try {
     await axios.post('/faq/set-order', request)
-  }
-  catch (error) {
+
+    // if (parentId === 0) {
+    //   await axios.put(`/faq/update/${currentId}`, {
+    //     ...quetion,
+    //     parent_id: null,
+    //     body: '______',
+    //   })
+    // } else {
+    //   await axios.put(`/faq/update/${currentId}`, {
+    //     ...quetion,
+    //     parent_id: parentId,
+    //     body: '______',
+    //   })
+    // }
+  } catch (error) {
     console.error(error)
   }
 }
-function onOrder({item, to}: MoveEvent){
+function onOrder({ item, to }: MoveEvent) {
   const itemId = item.getAttribute('data-id') || ''
   const toId = to.getAttribute('data-id') || ''
-  const $item = questionsMap.value[itemId]
+  const currentQuetion = questionsMap.value[itemId]
+
   // const $to = questionsMap.value[toId]
-  if(!$item) return
-  const prevParent = $item.parent_id
-  $item.parent_id = +toId || null
-  if(+toId !== prevParent) saveOrder(prevParent || 0)
-  saveOrder(+toId)
+  if (!currentQuetion) return
+
+  const parentId = currentQuetion.parent_id
+  const currentQuetionId = currentQuetion.id
+  currentQuetion.parent_id = +toId || null
+
+  if (+toId !== parentId) saveOrder(+toId, currentQuetionId)
 }
 </script>
 
@@ -173,7 +190,10 @@ function onOrder({item, to}: MoveEvent){
     <VDivider />
     <VContainer class="faq-card-body">
       <VRow>
-        <VCol cols="3" class="faq-card-list ">
+        <VCol
+          cols="3"
+          class="faq-card-list"
+        >
           <div class="scrollable flex-grow-1">
             <FaqList
               v-if="questions.length"
@@ -198,10 +218,14 @@ function onOrder({item, to}: MoveEvent){
               v-if="faqEdit"
               block
               @click="addElement(0, questions.length)"
-            >Добавить</VBtn>
+              >Добавить</VBtn
+            >
           </div>
         </VCol>
-        <VCol cols="9" clasa="faq-card-content">
+        <VCol
+          cols="9"
+          clasa="faq-card-content"
+        >
           <FaqContent
             :active="active"
             :faq-edit="faqEdit"
@@ -211,7 +235,6 @@ function onOrder({item, to}: MoveEvent){
     </VContainer>
   </VCard>
 </template>
-
 
 <style lang="scss">
 .faq-card {
@@ -224,41 +247,41 @@ function onOrder({item, to}: MoveEvent){
   }
 }
 
-.faq-card-header{
+.faq-card-header {
   display: flex;
   align-items: center;
 }
 
-.faq-card-body{
+.faq-card-body {
   flex: 1;
   display: flex;
   flex-flow: column;
   max-height: calc(100% - 59px);
   padding: 12px;
-  > .v-row{
+  > .v-row {
     flex: 1;
     max-height: calc(100% + 24px);
   }
 }
 
-.faq-card-list{
+.faq-card-list {
   display: flex;
   flex-flow: column;
   max-height: 100%;
-  outline: 1px solid rgba(var(--v-border-color),var(--v-border-opacity));
+  outline: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .faq-list-add {
   padding: 0 15px;
 }
 
-.no-questions{
+.no-questions {
   opacity: 0.7;
   padding: 0 15px;
   margin-bottom: 20px;
 }
 
-.faq-card-content{
+.faq-card-content {
   display: flex;
   flex-flow: column;
   height: 100%;
