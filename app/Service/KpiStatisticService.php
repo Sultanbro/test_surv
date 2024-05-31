@@ -1872,7 +1872,6 @@ class KpiStatisticService
             ->get();
 
         $last_date = $date->endOfMonth()->format("Y-m-d");
-        dd($last_date);
         $query ?: Kpi::withTrashed();
         return $query
             ->when($groupId, function (Builder $subQuery) use ($groupId) {
@@ -1921,12 +1920,12 @@ class KpiStatisticService
             })
             ->with([
                 'users' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'positions' => fn($q) => $q->whereNull('deleted_at')
-                    ->orWhereDate('deleted_at', '<=', $last_date),
+                    ->orWhereDate('deleted_at', '>=', $last_date),
                 'groups' => fn($q) => $q->where('active', 1),
             ])
-            ->where('kpis.created_at', '<=', $last_date)
+//            ->where('kpis.created_at', '<=', $last_date)
             ->distinct();
     }
 
