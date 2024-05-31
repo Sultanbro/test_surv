@@ -104,7 +104,7 @@ class TariffSubscription extends Model
         return self::query()
             ->when($tenant, fn($query) => $query->where('tenant_id', $tenant))
             ->select(
-                'tariff_subscriptions.id',
+                'tariff_subscriptions.id as subscription_id',
                 'tariff_subscriptions.tenant_id',
                 'tariff_subscriptions.tariff_id',
                 'tariff_subscriptions.extra_user_limit',
@@ -123,6 +123,33 @@ class TariffSubscription extends Model
             ->orderBy('tariff_subscriptions.expire_date', 'desc')
             ->groupBy('tariff_subscriptions.id')
             ->first();
+    }
+    public static function hasValidTariffPayment(string $tenant = null): bool
+    {
+        $today = Carbon::today();
+
+        return self::query()
+            ->when($tenant, fn($query) => $query->where('tenant_id', $tenant))
+            ->select(
+                'tariff_subscriptions.id',
+                'tariff_subscriptions.tenant_id',
+                'tariff_subscriptions.tariff_id',
+                'tariff_subscriptions.extra_user_limit',
+                'tariff_subscriptions.expire_date',
+                'tariff_subscriptions.created_at',
+                'tariff_subscriptions.payment_id',
+                'tariff_subscriptions.payment_provider',
+                'tariff.kind',
+                'tariff.validity',
+                'tariff.users_limit',
+                DB::raw('(`tariff`.`users_limit` + `tariff_subscriptions`.`extra_user_limit`) as total_user_limit')
+            )
+            ->leftJoin('tariff', 'tariff.id', 'tariff_subscriptions.tariff_id')
+            ->where('tariff_subscriptions.expire_date', '>', $today->format('Y-m-d'))
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
+            ->orderBy('tariff_subscriptions.expire_date', 'desc')
+            ->groupBy('tariff_subscriptions.id')
+            ->exists();
     }
 
 

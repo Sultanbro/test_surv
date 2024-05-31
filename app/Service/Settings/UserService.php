@@ -113,7 +113,7 @@ class UserService
         $usersCount = User::query()->count();
 
         if ($usersCount >= $userLimit && tenant('id') !== 'bp') {
-            new CustomException('users limited by tariff', 401, [
+            new CustomException('Максималное кол-во ползвотелей '.$userLimit.' обратитесь к руководилелю', 401, [
                 'usersLimited' => true,
             ]);
         }

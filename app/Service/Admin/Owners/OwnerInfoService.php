@@ -41,7 +41,7 @@ class OwnerInfoService
         return [
             'owner' => $owner,
             'tariff' => TariffSubscription::getValidTariffPayment(),
-            'users_count' => User::query()->count() - 1
+            'users_count' => User::query()->count()
         ];
     }
 
