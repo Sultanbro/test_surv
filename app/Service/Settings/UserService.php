@@ -269,7 +269,6 @@ class UserService
     /**
      * @param $users
      * @param $groups
-     * @return BinaryFileResponsed
      */
     private function export($users, $groups): BinaryFileResponse
     {

@@ -23,7 +23,7 @@ class CreateAnalyticsService
      */
     public function handle(CreateAnalyticDto $dto): bool
     {
-//        try {
+        try {
             DB::beginTransaction();
 
             $date = Carbon::createFromDate($dto->year, $dto->month, 1)->format('Y-m-d');
@@ -40,9 +40,9 @@ class CreateAnalyticsService
             DB::commit();
 
             return true;
-//        } catch (Throwable $exception) {
+        } catch (Throwable $exception) {
             DB::rollBack();
-//            throw new Exception($exception->getMessage());
-//        }
+            throw new Exception($exception->getMessage());
+        }
     }
 }
