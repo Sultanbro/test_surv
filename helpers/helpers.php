@@ -66,6 +66,7 @@ if (!function_exists('dd_if')) {
         exit(1);
     }
 }
+
 if (!function_exists('dump_if')) {
     function dump_if(bool $condition, mixed ...$vars): void
     {

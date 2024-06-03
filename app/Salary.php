@@ -677,11 +677,10 @@ class Salary extends Model
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                     $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
+                    dd_if($user->id === 32278, $workdays);
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
-
-                dd_if(/*tenant('id') == 'bsk33ej1vm',*/ !$workdays || !$working_hours, "$zarplata / $workdays / $working_hours", $schedule);
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
