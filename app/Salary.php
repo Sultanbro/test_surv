@@ -685,7 +685,7 @@ class Salary extends Model
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
-//                dd_if(auth()->id() == 18 && $user->id == 31533, "$hourly_pay = $zarplata / $workdays / $working_hours;");
+                dd_if(auth()->id() == 18 && $user->id == 32278, "$hourly_pay = $zarplata / $workdays / $working_hours;");
                 // add to array
 
                 $x = $tts->where('day', $i);
@@ -732,7 +732,8 @@ class Salary extends Model
 
                         $hours[$i] = round($working_hours / 2, 1);
                     }
-                } else {
+                }
+                else {
                     if ($a) {
                         $earnings[$i] = 0;
                         $hours[$i] = 0;
