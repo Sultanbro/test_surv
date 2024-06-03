@@ -116,7 +116,7 @@ class LoginController extends Controller
             /** @var CentralUser $centralUser */
             $centralUser = CentralUser::query()->where([$field => $credentials[$field]])->firstOrFail();
 
-            $tenants = $centralUser->cabinets()->first();
+            $tenants = $centralUser->tenants()->first();
 
             tenancy()->initialize($tenants);
         }

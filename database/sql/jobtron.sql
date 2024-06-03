@@ -119,7 +119,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '2022_05_19_164107_create_check_lists_table', 1),
 (2, '2022_05_24_031026_create_check_users_table', 1),
 (3, '2022_05_25_064934_create_check_reports_table', 1),
-(4, '2022_05_29_121046_create_tenant_user_table', 2),
+(4, '2022_05_29_121046_create_tenant_pivot_table', 2),
 (5, '2022_05_29_123629_add_global_id_to_tenants', 2),
 (6, '2022_11_30_071802_alter_users.php', 3),
 (7, '2022_12_29_190613_create_tenant_pivot_table', 4);
@@ -293,20 +293,20 @@ INSERT INTO `tenant_pivot` (`id`, `tenant_id`, `user_id`, `owner`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tenant_user`
+-- Table structure for table `tenant_pivot`
 --
 
-CREATE TABLE `tenant_user` (
+CREATE TABLE `tenant_pivot` (
   `id` int(10) UNSIGNED NOT NULL,
   `tenant_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `tenant_user`
+-- Dumping data for table `tenant_pivot`
 --
 
-INSERT INTO `tenant_user` (`id`, `tenant_id`, `user_id`) VALUES
+INSERT INTO `tenant_pivot` (`id`, `tenant_id`, `user_id`) VALUES
 (3, 'bp', 1),
 (14, '62mbs8', 29),
 (15, 'arq5xa', 30),
@@ -322,10 +322,10 @@ INSERT INTO `tenant_user` (`id`, `tenant_id`, `user_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tenant_user_impersonation_tokens`
+-- Table structure for table `tenant_pivot_impersonation_tokens`
 --
 
-CREATE TABLE `tenant_user_impersonation_tokens` (
+CREATE TABLE `tenant_pivot_impersonation_tokens` (
   `token` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tenant_id` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_id` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -335,10 +335,10 @@ CREATE TABLE `tenant_user_impersonation_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `tenant_user_impersonation_tokens`
+-- Dumping data for table `tenant_pivot_impersonation_tokens`
 --
 
-INSERT INTO `tenant_user_impersonation_tokens` (`token`, `tenant_id`, `user_id`, `auth_guard`, `redirect_url`, `created_at`) VALUES
+INSERT INTO `tenant_pivot_impersonation_tokens` (`token`, `tenant_id`, `user_id`, `auth_guard`, `redirect_url`, `created_at`) VALUES
 ('08OnPy3iFa6ro1F4vUongkhdZsaqI2YFkS0GqeN1Tag4dtzMlhYSeU0n7qwqNjze52xNdgh6CZA8zAUXNQSJqnFkXY3nXGq14mOGa17vZg55IBEniiklzmSoGmdv46ku', 'uozkch', '1', 'web', '/profile', '2022-12-01 13:53:40'),
 ('18jh0oe5LsTVzx5ZJALxwwPGCxnSLi3VDJns0UePQAchIUau6HDxF4J6XtXiQt6qArLZA3EUJ1k1HMP4ySjEbAf26lVAbI0NQWWJSH31E0DU0VNuZ7YB2n4LTr58Q2Ey', '4uyld3', '1', 'web', '/profile', '2022-12-08 10:17:49'),
 ('5nW5o5WNBb7CFm6O2jOIe7KL7PJJviJ0bitH6cquGTLllYrssSVHYFDZ24ObLZAx3fm4TqUP0VCxpHAVC7NxzH6PXBsVnmTgtgaTU0eRQgSecm16ONDKEoDySqY5AB8C', 'p9bthm', '1', 'web', '/profile', '2022-12-01 13:20:28'),
@@ -483,15 +483,15 @@ ALTER TABLE `tenant_pivot`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tenant_user`
+-- Indexes for table `tenant_pivot`
 --
-ALTER TABLE `tenant_user`
+ALTER TABLE `tenant_pivot`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tenant_user_impersonation_tokens`
+-- Indexes for table `tenant_pivot_impersonation_tokens`
 --
-ALTER TABLE `tenant_user_impersonation_tokens`
+ALTER TABLE `tenant_pivot_impersonation_tokens`
   ADD PRIMARY KEY (`token`);
 
 --
@@ -559,9 +559,9 @@ ALTER TABLE `tenant_pivot`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `tenant_user`
+-- AUTO_INCREMENT for table `tenant_pivot`
 --
-ALTER TABLE `tenant_user`
+ALTER TABLE `tenant_pivot`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --

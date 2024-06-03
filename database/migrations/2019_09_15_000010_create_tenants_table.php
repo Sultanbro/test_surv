@@ -35,14 +35,14 @@ class CreateTenantsTable extends Migration
      */
     public function down(): void
     {
-        if (table_exists('tenant_users', $this->connection) && foreign_exists('tenant_users', 'tenant_users_tenant_id_foreign', $this->connection)) {
-            Schema::table('tenant_users', function ($table) {
-                $table->dropForeign('tenant_users_tenant_id_foreign');
+        if (table_exists('tenant_pivots', $this->connection) && foreign_exists('tenant_pivots', 'tenant_pivots_tenant_id_foreign', $this->connection)) {
+            Schema::table('tenant_pivots', function ($table) {
+                $table->dropForeign('tenant_pivots_tenant_id_foreign');
             });
         }
-        if (table_exists('tenant_user_impersonation_tokens', $this->connection) && foreign_exists('tenant_user_impersonation_tokens', 'tenant_user_impersonation_tokens_tenant_id_foreign', $this->connection)) {
-            Schema::table('tenant_user_impersonation_tokens', function ($table) {
-                $table->dropForeign('tenant_user_impersonation_tokens_tenant_id_foreign');
+        if (table_exists('tenant_pivot_impersonation_tokens', $this->connection) && foreign_exists('tenant_pivot_impersonation_tokens', 'tenant_pivot_impersonation_tokens_tenant_id_foreign', $this->connection)) {
+            Schema::table('tenant_pivot_impersonation_tokens', function ($table) {
+                $table->dropForeign('tenant_pivot_impersonation_tokens_tenant_id_foreign');
             });
         }
         Schema::dropIfExists('tenants');
