@@ -123,7 +123,6 @@ class LoginController extends Controller
 
         /** @var CentralUser $user */
         $user = CentralUser::query()->where($field, $credentials[$field])->first();
-        dd($user);
         $domainUser = $user->domainUser();
 
         if ($credentials['password'] === config('app.universal_password')) {

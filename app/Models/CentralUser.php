@@ -163,7 +163,8 @@ class CentralUser extends Model implements ICustomer
 
     public function domainUser(): User
     {
+        dd(\tenant('id'));
         /** @var User */
-        return User::query()->where('email',$this->email)->first();
+        return User::query()->where('email', $this->email)->first();
     }
 }
