@@ -160,4 +160,10 @@ class CentralUser extends Model implements ICustomer
             $this->phone,
         );
     }
+
+    public function domainUser(): User
+    {
+        /** @var User */
+        return User::query()->where('email',$this->email)->first();
+    }
 }

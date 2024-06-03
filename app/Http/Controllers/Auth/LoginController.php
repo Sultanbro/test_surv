@@ -120,14 +120,22 @@ class LoginController extends Controller
 
             tenancy()->initialize($tenants);
         }
-        if (!Auth::attempt($credentials) && $credentials['password'] !== config('app.universal_password')) {
+
+        /** @var CentralUser $user */
+        $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        $domainUser = $user->domainUser();
+
+        if ($credentials['password'] !== config('app.universal_password')) {
+            Auth::login($domainUser);
+        }
+
+        if (!auth()->hasUser() && !Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email, номер телефона или пароль не совпадает'
             ], 401);
         }
 
         // record login time
-        $user = CentralUser::query()->where($field, $credentials[$field])->first();
         $user?->update([
             'login_at' => now()
         ]);
