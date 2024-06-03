@@ -12,6 +12,8 @@ final class CabinetService
     {
         $centralUser = $this->getCentralUser($user);
 
+        tenant()->users()->syncWithoutDetaching($centralUser->id);
+
         $data = [
             'user_id' => $centralUser->id,
             'tenant_id' => $tenantId,
