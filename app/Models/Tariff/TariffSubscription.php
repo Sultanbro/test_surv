@@ -102,7 +102,7 @@ class TariffSubscription extends Model
         $tenant = $tenant ?? tenant('id');
         /** @var TariffSubscription */
         return self::query()
-            ->when($tenant, fn($query) => $query->where('tenant_id', $tenant))
+            ->where('tenant_id', $tenant)
             ->select(
                 'tariff_subscriptions.id as subscription_id',
                 'tariff_subscriptions.tenant_id',
