@@ -13,7 +13,6 @@
           type="text"
           class="cell-type"
       >
-      {{cell_type_name}}
       <input
           v-model="cell_show_value"
           type="text"
@@ -696,7 +695,6 @@ export default {
       dependencies: [],
       cell_value: null,
       cell_type: null,
-      cell_type_name: null,
       cell_show_value: null,
       cell_comment: null,
       showFormula1_31: false,
@@ -987,9 +985,8 @@ export default {
             expression += !isNaN(item.value) ? item.value : 0;
           }
         });
-      }
-
-      if (type == 'db') { // для хранения формулы в базе
+      } else {
+        // для хранения формулы в базе
         combinations.forEach(item => {
           if (item.type == 'value') expression += item.value
           if (item.type == 'cell') expression += item.code
@@ -1111,7 +1108,7 @@ export default {
       this.cell_comment = this.items[i][field].comment
 
       this.cell_type = this.cell_types[this.items[i][field].type]
-      this.cell_type_name = this.cell_types[this.items[i][field].name]
+
       this.coords = this.items[i][field].cell
     },
 
