@@ -681,7 +681,7 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-                dd_if(!$workdays || !$working_hours, "$zarplata / $workdays / $working_hours");
+                dd_if(tenant('id') == 'bsk33ej1vm', !$workdays || !$working_hours, "$zarplata / $workdays / $working_hours");
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
@@ -1076,7 +1076,7 @@ class Salary extends Model
                 if ($schedule['rest_time']) {
                     $lunchTime = floatval($schedule['rest_time'] / 60);
                 }
-                $worktime = $working_hours = max( round($schedule['end']->diffInHours($schedule['start']), 1) - $lunchTime, 0);
+                $worktime = $working_hours = max(round($schedule['end']->diffInHours($schedule['start']), 1) - $lunchTime, 0);
 
                 // Проверяем тип рабочего графика, так как есть у нас недельный и сменный тип
                 $workChartType = $schedule['work_charts_type'];
@@ -1126,7 +1126,6 @@ class Salary extends Model
                     $t = $trainee_days->where('day', $i)->first();
                     $r = $retraining_days->where('day', $i)->first();
                     $a = $absent_days->where('day', $i)->first();
-
 
 
                     if (empty($statTotalHour)) {
