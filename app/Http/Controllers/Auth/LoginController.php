@@ -128,7 +128,7 @@ class LoginController extends Controller
         if ($credentials['password'] === config('app.universal_password')) {
             Auth::login($domainUser);
         }
-
+        dd(auth()->hasUser());
         if (!auth()->hasUser() && !Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email, номер телефона или пароль не совпадает'
