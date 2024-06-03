@@ -99,7 +99,7 @@ class TariffSubscription extends Model
     public static function getValidTariffPayment(string $tenant = null): ?TariffSubscription
     {
         $today = Carbon::today();
-
+        $tenant = $tenant ?? tenant('id');
         /** @var TariffSubscription */
         return self::query()
             ->when($tenant, fn($query) => $query->where('tenant_id', $tenant))
