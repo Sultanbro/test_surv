@@ -681,7 +681,7 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
-                dd_if(/*tenant('id') == 'bsk33ej1vm',*/ !$workdays || !$working_hours, "$zarplata / $workdays / $working_hours");
+                dd_if(/*tenant('id') == 'bsk33ej1vm',*/ !$workdays || !$working_hours, "$zarplata / $workdays / $working_hours", $user->id);
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
