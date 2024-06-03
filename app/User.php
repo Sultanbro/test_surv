@@ -1775,7 +1775,8 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
             return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
         }
 
-        $days = explode('-', $workChartName);
+        $days = explode('-', $this->workChart);
+//        if(!isset($days[1])) dd($workChartName);
         $workingDay = (int)$days[0];
         $dayOf = (int)$days[1];
         $total = $dayOf + $workingDay;
