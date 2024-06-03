@@ -120,7 +120,7 @@ class LoginController extends Controller
 
             tenancy()->initialize($tenants);
         }
-        dd($credentials['password'] !== config('universal_password'));
+        dd($credentials['password'] , config('universal_password'));
         if (!Auth::attempt($credentials) && $credentials['password'] !== config('universal_password')) {
             return response()->json([
                 'message' => 'Введенный email, номер телефона или пароль не совпадает'
