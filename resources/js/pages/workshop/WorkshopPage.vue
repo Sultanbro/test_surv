@@ -6,7 +6,9 @@
 		<div class="workshop__wrapper">
 			<h2>Оплатить картой</h2>
 			<button>
-				<a href="https://wl.walletone.com/checkout/refill/CreditCard/347953359/NewCard">
+				<a
+					href="https://wl.walletone.com/checkout/refill/CreditCard/347953359/NewCard"
+				>
 					<img
 						class="workshopform__img"
 						src="https://cdn-icons-png.flaticon.com/512/5352/5352016.png"
@@ -130,7 +132,7 @@ export default {
 			margin-top: 10%;
 		}
 		button {
-			margin-top: 4%;
+			margin-top: 2%;
 			width: 100%;
 			font-weight: bold;
 			padding: 2%;
@@ -143,8 +145,8 @@ export default {
 				border-radius: 50%;
 			}
 			.workshopform__kaspi-img {
-				width: 56px;
-				height: 42px;
+				width: 50px;
+				height: 34px;
 			}
 			&:hover {
 				background-color: #e8ae02;

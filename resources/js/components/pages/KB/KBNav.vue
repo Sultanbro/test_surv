@@ -38,7 +38,7 @@
 			>
 				<div
 					v-if="archived.show"
-					class="btn btn-grey btn-block mb-3"
+					class="btn btn-grey btn-block mb-3 mt-4"
 					@click="archived.show = false"
 				>
 					<i class="fa fa-arrow-left" />
@@ -97,12 +97,14 @@
 			<KBNavItems
 				v-if="currentBook"
 				:key="'p' + listsKey"
+				:input="search.input"
 				class="KBNav-items"
 				:items="searchItems()"
 				:opened="true"
 				:mode="mode"
 				:parent="currentBook"
 				:active="activeBook ? activeBook.id : null"
+				@update-input="updateInput"
 				@show-page="$emit('page', $event)"
 				@add-page="$emit('add-page', $event)"
 				@page-order="$emit('page-order', $event)"
@@ -113,6 +115,7 @@
 			<KBNavItems
 				v-else-if="books.length"
 				:key="'b' + listsKey"
+				:input="search.input"
 				class="KBNav-items"
 				:items="searchItems()"
 				:opened="true"
@@ -120,6 +123,7 @@
 				:parent="null"
 				:active="null"
 				:sections-mode="true"
+				@update-input="updateInput"
 				@show-page="$emit('book', $event)"
 				@page-order="$emit('page-order', $event)"
 				@add-book="$emit('create', $event)"
@@ -336,6 +340,9 @@ export default {
 	methods: {
 		unFavorite(favorite) {
 			return (favorite.isFavorite = false);
+		},
+		updateInput() {
+			this.search.input = ''
 		},
 		updateKeys() {
 			++this.listsKey;

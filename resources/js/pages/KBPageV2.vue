@@ -26,12 +26,7 @@
 				:mode="mode"
 				:active-book="activeBook"
 				:breadcrumbs="breadcrumbs"
-				:can-edit="
-					!!(!activeBook && currentBook && currentBook.canEdit) ||
-						!!(parentBook && parentBook.canEdit) ||
-						!!(activeBook && activeBook.canEdit) ||
-						isAdmin
-				"
+				:can-edit="canEdit"
 				:edit-book="editBook"
 				class="KBPageV2-toolbar"
 				@mode="mode = $event"
@@ -752,6 +747,12 @@ export default {
 	},
 
 	methods: {
+		canEdit() {
+			return !!(!this.activeBook && this.currentBook && this.currentBook.canEdit) ||
+        !!(this.parentBook && this.parentBook.canEdit) ||
+        !!(this.activeBook && this.activeBook.canEdit) ||
+        this.isAdmin;
+		},
 		...mapActions(['loadCompany']),
 		routerPush,
 
@@ -1119,19 +1120,21 @@ export default {
 
 			const loader = this.$loading.show();
 			try {
-				this.axios.post('/kb/page/update', {
+				await this.axios.post('/kb/page/update', {
 					id: this.bookForm.id,
 					title: this.bookForm.title,
 					text: this.bookForm.text,
 					pass_grade: this.bookForm.pass_grade,
 				});
 				this.editBook = false;
-				this.booksMap[this.bookForm.id].title = this.bookForm.title;
-				this.activeBook = this.bookForm;
-				this.activeBook.editor_id = this.user.id;
-				this.activeBook.editor = `${this.user.last_name} ${this.user.name}`;
-				this.activeBook.editor_avatar = `users_img/${this.user.img_url}`;
-				this.activeBook.edited_at = this.$moment().format('DD.MM.YYYY HH:mm');
+				this.$set(this.booksMap[this.bookForm.id], 'title', this.bookForm.title);
+				this.activeBook = {
+					...this.bookForm,
+					editor_id: this.user.id,
+					editor: `${this.user.last_name} ${this.user.name}`,
+					editor_avatar: `users_img/${this.user.img_url}`,
+					edited_at: this.$moment().format('DD.MM.YYYY HH:mm'),
+				};
 				this.$toast.info('Сохранено');
 			} catch (error) {
 				console.error(error);

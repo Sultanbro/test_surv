@@ -3,7 +3,9 @@
 		class="workshopform"
 		@submit.prevent.stop="saveUserData"
 	>
-		<h1>Оставить заявку на практикум</h1>
+		<h1 class="workshopform__title">
+			Оставить заявку на практикум
+		</h1>
 		<input
 			v-model="name"
 			type="text"
@@ -28,8 +30,6 @@ export default {
 		return {
 			name: '',
 			phone: '',
-			phoneNumberRegex: /^\+?[1-9]\d{1,14}$/,
-			error: false,
 		};
 	},
 	mounted() {
@@ -47,6 +47,8 @@ export default {
 			const isSaveUser = this.axios.post(userSaveApi, {
 				payer_name: this.name,
 				payer_phone: this.phone,
+				formLink: window.location.href,
+				formTitle: 'База знаний',
 			});
 
 			if (isSaveUser) {
@@ -58,12 +60,6 @@ export default {
 			meta.setAttribute('name', 'viewport');
 			meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
 			document.head.appendChild(meta);
-		},
-		validatePhone() {
-			if (this.phoneNumberRegex.test(this.phone) && this.phone.length >= 11) {
-				return true;
-			}
-			return false;
 		},
 	},
 };
@@ -80,18 +76,15 @@ export default {
 	gap: 20px;
 
 	h1 {
+		text-align: center;
 		font-size: 30px;
-	}
-	&__error {
-		font-size: 15px;
-		color: red;
+		font-weight: bold;
 	}
 	input[type="text"],
 	input[type="number"] {
 		border-radius: 10px;
 		font-size: 15px;
 		padding: 3%;
-		width: 90%;
 		border: 1px solid #646464;
 	}
 	button {
@@ -99,7 +92,6 @@ export default {
 		color: white;
 		border-radius: 15px;
 		padding: 3%;
-		width: 90%;
 		font-size: 15px;
 		transition: all ease-in 100ms;
 		&:hover {
@@ -114,7 +106,6 @@ export default {
 		min-height: 100vh;
 		display: flex;
 		justify-content: center;
-		align-items: center;
 		input[type="text"],
 		input[type="number"] {
 			padding: 2% !important;
@@ -125,7 +116,7 @@ export default {
 			font-size: 23px !important;
 		}
 		h1 {
-      text-align: center;
+			text-align: center;
 		}
 	}
 }

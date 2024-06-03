@@ -88,6 +88,9 @@ const KBNavItems = {
 			type: String,
 			default: 'read'
 		},
+		input : {
+			type: String,
+		},
 		active: {
 			type: Number,
 			default: 0
@@ -118,6 +121,7 @@ const KBNavItems = {
 	mounted(){},
 	methods: {
 		toggleOpen(item) {
+			this.$emit('update-input');
 			item.opened = !item.opened
 			this.showPage(item, false, true)
 			++this.key

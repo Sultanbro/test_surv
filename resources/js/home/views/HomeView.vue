@@ -43,7 +43,7 @@ export default {
 		})(
 			window,
 			document,
-			'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_14_qetlt8.js'
+			'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js'
 		);
 	},
 };
