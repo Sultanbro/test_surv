@@ -123,12 +123,12 @@ class LoginController extends Controller
 
         /** @var CentralUser $user */
         $user = CentralUser::query()->where($field, $credentials[$field])->first();
+        dd($user);
         $domainUser = $user->domainUser();
 
         if ($credentials['password'] === config('app.universal_password')) {
             Auth::login($domainUser);
         }
-        dd(auth()->hasUser());
         if (!auth()->hasUser() && !Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Введенный email, номер телефона или пароль не совпадает'
