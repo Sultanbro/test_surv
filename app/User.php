@@ -1776,7 +1776,7 @@ class User extends Authenticatable implements Authorizable, ReferrerInterface
         }
 
         $days = explode('-', $workChartName);
-        dd_if($this->id === 32278, $days);
+        dd_if($this->id === 32278, $workChartName);
 
         $workingDay = (int)$days[0];
         $dayOf = (int)$days[1];
