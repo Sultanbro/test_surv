@@ -119,7 +119,9 @@
 				<input
 					id="switch"
 					type="checkbox"
-					@click="$emit('mode', isEdit ? 'read' : 'edit')"
+					:checked="isEdit"
+					:disabled="!canEdit"
+					@click="toggleMode"
 				>
 				<label
 					class="switch"
@@ -151,13 +153,12 @@
 			</div>
 		</form>
 
-
 		<form
 			ref="audioUploadForm"
 			action="/upload/audio/"
 			enctype="multipart/form-data"
 			method="post"
-			style="display: none;"
+			style="display: none"
 		>
 			<div class="form-group">
 				<div class="custom-file">
@@ -255,6 +256,10 @@ export default {
 	created() {},
 	mounted() {},
 	methods: {
+		toggleMode() {
+			// this.mode = this.isEdit ? 'read' : 'edit';
+			this.$emit('mode', this.isEdit ? 'read' : 'edit');
+		},
 		showDropdown() {
 			this.isShowDropdown = true;
 		},
@@ -313,27 +318,29 @@ export default {
 			loader.hide();
 		},
 
-    async onAttachmentChangeAudio(event) {
-      this.attachment = event.target.files[0];
-      const loader = this.$loading.show();
+		async onAttachmentChangeAudio(event) {
+			this.attachment = event.target.files[0];
+			const loader = this.$loading.show();
 
-      const formData = new FormData();
-      formData.append('attachment', this.attachment);
-      formData.append('id', this.activeBook.id);
+			const formData = new FormData();
+			formData.append("attachment", this.attachment);
+			formData.append("id", this.activeBook.id);
 
-      try {
-        const { data } = await this.axios.post('/upload/audio/', formData);
-        /* eslint-disable */
-        tinymce.activeEditor.insertContent(`<audio controls src="${data.location}"></audio>`);
-        this.isUploadAudio = false;
-      } catch (error) {
-        console.error(error);
-        this.$toast.error('Не удалось загрузить аудио');
-        window.onerror && window.onerror(error);
-      }
+			try {
+				const { data } = await this.axios.post("/upload/audio/", formData);
+				/* eslint-disable */
+				tinymce.activeEditor.insertContent(
+					`<audio controls src="${data.location}"></audio>`
+				);
+				this.isUploadAudio = false;
+			} catch (error) {
+				console.error(error);
+				this.$toast.error("Не удалось загрузить аудио");
+				window.onerror && window.onerror(error);
+			}
 
-      loader.hide();
-    }
+			loader.hide();
+		},
 	},
 };
 </script>
