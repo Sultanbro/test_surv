@@ -42,6 +42,7 @@ function treeToMap(items: Array<Question>, result: { [key: string]: Question } =
 async function fetchFAQ() {
   try {
     const { data } = await axios.get<{ data: Array<Question> }>('/faq')
+    console.log(data)
     questions.value = data.data.map(item => ({ ...item, isCollapsed: false }))
   } catch (error) {
     console.error(error)
@@ -112,7 +113,7 @@ async function addElement(parent_id: number, order: number) {
 }
 
 async function saveOrder(parentId: number, currentId: number) {
-  console.log(parentId, currentId)
+  console.log(`Родитель: ${parentId}`, `Дочерний ${currentId}`)
   const items = parentId ? questionsMap.value[parentId]?.children : questions.value
 
   const quetion = questionsMap.value[currentId]
@@ -130,40 +131,44 @@ async function saveOrder(parentId: number, currentId: number) {
   try {
     await axios.post('/faq/set-order', request)
 
-    // if (parentId === 0) {
-    //   await axios.put(`/faq/update/${currentId}`, {
-    //     ...quetion,
-    //     parent_id: null,
-    //     body: '______',
-    //   })
-    // } else {
-    //   await axios.put(`/faq/update/${currentId}`, {
-    //     ...quetion,
-    //     parent_id: parentId,
-    //     body: '______',
-    //   })
-    // }
+    if (parentId === 0) {
+      await axios.put(`/faq/update/${currentId}`, {
+        ...quetion,
+        parent_id: null,
+      })
+    } else {
+      await axios.put(`/faq/update/${currentId}`, {
+        ...quetion,
+        parent_id: parentId,
+      })
+    }
   } catch (error) {
     console.error(error)
   }
 }
-function onOrder({ item, to }: MoveEvent) {
-  const itemId = item.getAttribute('data-id') || ''
-  const toId = to.getAttribute('data-id') || ''
-  const currentQuetion = questionsMap.value[itemId]
 
-  // const $to = questionsMap.value[toId]
-  if (!currentQuetion) return
+type TItem = {
+  itemId: string,
+  toId: string
+}
 
-  const parentId = currentQuetion.parent_id
-  const currentQuetionId = currentQuetion.id
-  currentQuetion.parent_id = +toId || null
+function onOrder(item: TItem) {
+  const currentQuestion = questionsMap.value[item.itemId]
 
-  if (+toId !== parentId) saveOrder(+toId, currentQuetionId)
+  console.log(`Текущий вопрос ${item.itemId}`)
+
+  if (!currentQuestion) return
+
+  const parentId = currentQuestion.parent_id
+  const currentQuestionId = currentQuestion.id
+  currentQuestion.parent_id = +item.toId || null
+
+  if (+item.toId !== parentId) saveOrder(+item.toId, currentQuestionId)
 }
 </script>
 
 <template>
+  {{ questions }}
   <VCard class="faq-card">
     <VCardTitle class="faq-card-header">
       <div>Вопросы и ответы</div>

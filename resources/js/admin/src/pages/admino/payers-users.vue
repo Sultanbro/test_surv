@@ -37,12 +37,11 @@ const payersUsers = ref<TPayersUsers[]>([])
 
 const PAERS_USERS = 'https://jobtron.org/api/v1/invoices'
 
-const fetchPaersUsers = async () => {
+const fetchPayersUsers = async () => {
   payersUsers.value = (await axios.get(PAERS_USERS)).data
-  console.log(payersUsers.value)
 }
 
-fetchPaersUsers()
+fetchPayersUsers()
 
 const sortedPayersUsers = computed(() => sortedByDatePayersUsers(payersUsers.value))
 </script>
