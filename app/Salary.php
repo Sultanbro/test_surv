@@ -677,7 +677,6 @@ class Salary extends Model
 
                 } elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                     $workdays = $user->getCountWorkDaysMonth($date->year, $date->month);
-                    dd_if($user->id === 32278, $workdays);
                 } else {
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
