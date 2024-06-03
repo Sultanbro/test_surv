@@ -10,7 +10,6 @@ final class CabinetService
     public function add(string $tenantId, User $user, bool $is_owner): void
     {
         $centralUser = $this->getCentralUser($user);
-        dd($centralUser);
         $centralUser->tenants()->syncWithoutDetaching([
             $tenantId => [
                 'owner' => $is_owner
