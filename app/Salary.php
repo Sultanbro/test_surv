@@ -681,6 +681,8 @@ class Salary extends Model
                     throw new Exception(message: 'Проверьте график работы', code: 400);
                 }
 
+                dd_if(!$workdays || !$working_hours, "$zarplata / $workdays / $working_hours");
+
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
