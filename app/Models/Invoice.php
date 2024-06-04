@@ -39,6 +39,7 @@ class Invoice extends Model
     {
         /** @var Invoice */
         return self::query()
+            ->whereNot('status', 'success')
             ->where('transaction_id', $getTransactionId)
             ->first();
     }
@@ -48,6 +49,7 @@ class Invoice extends Model
 
         /** @var Invoice */
         return self::query()
+            ->whereNot('status', 'success')
             ->where('payer_phone', Phone::normalize($phone))
             ->first();
     }
