@@ -95,6 +95,62 @@
 					</div>
 				</template>
 			</div>
+			<KBNavItems
+				v-if="currentBook"
+				:key="'p' + listsKey"
+				:input="search.input"
+				class="KBNav-items"
+				:items="searchItems()"
+				:opened="true"
+				:mode="mode"
+				:parent="currentBook"
+				:active="activeBook ? activeBook.id : null"
+				@update-input="updateInput"
+				@show-page="$emit('page', $event)"
+				@add-page="$emit('add-page', $event)"
+				@page-order="$emit('page-order', $event)"
+				@add-book="$emit('create', $event)"
+				@remove-book="archiveBook($event)"
+				@settings="$emit('settings', $event)"
+			/>
+			<KBNavItems
+				v-else-if="books.length"
+				:key="'b' + listsKey"
+				class="KBNav-items"
+				:items="searchItems()"
+				:opened="true"
+				:mode="mode"
+				:parent="null"
+				:active="null"
+				:sections-mode="true"
+				@update-input="updateInput"
+				@show-page="$emit('book', $event)"
+				@page-order="$emit('page-order', $event)"
+				@add-book="$emit('create', $event)"
+				@remove-book="archiveBook($event)"
+				@settings="$emit('settings', $event)"
+			/>
+			<div
+				v-else-if="archived.show"
+				class="KBNav-archive"
+			>
+				<div
+					v-for="(book, bIndex) in archived.items"
+					:key="bIndex"
+					class="KBNav-item"
+					:title="book.title"
+				>
+					<p class="KBNav-itemText">
+						{{ book.title }}
+					</p>
+					<div class="KBNav-itemActions">
+						<i
+							class="KBNav-itemAction fa fa-trash-restore mr-1"
+							@click.stop="archiveRestore(book)"
+						/>
+					</div>
+				</div>
+			</div>
 
 			<!-- Search -->
 			<!-- <div
@@ -126,63 +182,6 @@
 				</div>
 			</div>
 		</div> -->
-		</div>
-
-		<KBNavItems
-			v-if="currentBook"
-			:key="'p' + listsKey"
-			:input="search.input"
-			class="KBNav-items"
-			:items="filteredItems"
-			:opened="true"
-			:mode="mode"
-			:parent="currentBook"
-			:active="activeBook ? activeBook.id : null"
-			@update-input="updateInput"
-			@show-page="$emit('page', $event)"
-			@add-page="$emit('add-page', $event)"
-			@page-order="$emit('page-order', $event)"
-			@add-book="$emit('create', $event)"
-			@remove-book="archiveBook($event)"
-			@settings="$emit('settings', $event)"
-		/>
-		<KBNavItems
-			v-else-if="books.length"
-			:key="'b' + listsKey"
-			class="KBNav-items"
-			:items="filteredItems"
-			:opened="true"
-			:mode="mode"
-			:parent="null"
-			:active="null"
-			:sections-mode="true"
-			@update-input="updateInput"
-			@show-page="$emit('book', $event)"
-			@page-order="$emit('page-order', $event)"
-			@add-book="$emit('create', $event)"
-			@remove-book="archiveBook($event)"
-			@settings="$emit('settings', $event)"
-		/>
-		<div
-			v-else-if="archived.show"
-			class="KBNav-archive"
-		>
-			<div
-				v-for="(book, bIndex) in archived.items"
-				:key="bIndex"
-				class="KBNav-item"
-				:title="book.title"
-			>
-				<p class="KBNav-itemText">
-					{{ book.title }}
-				</p>
-				<div class="KBNav-itemActions">
-					<i
-						class="KBNav-itemAction fa fa-trash-restore mr-1"
-						@click.stop="archiveRestore(book)"
-					/>
-				</div>
-			</div>
 		</div>
 
 		<!-- Archive -->
@@ -384,8 +383,8 @@ export default {
 				});
 			}, 500);
 		},
-		updateInput(input) {
-			this.search.input = input;
+		updateInput() {
+			this.search.input = ''
 		},
 		searchCheck() {
 			if (this.search.input.length === 0) this.clearSearch();

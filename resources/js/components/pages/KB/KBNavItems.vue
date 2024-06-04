@@ -83,7 +83,6 @@ export default {
 		items: {
 			type: Array,
 			required: true,
-			default: () => [],
 		},
 		parent: {
 			validator(value) {
@@ -95,7 +94,6 @@ export default {
 		},
 		opened: {
 			type: Boolean,
-			default: true,
 		},
 		mode: {
 			type: String,
@@ -125,18 +123,16 @@ export default {
 		},
 	},
 	watch: {
-		items(newVal, oldVal) {
-			if (newVal !== oldVal) {
-				this.key++;
-			}
+		items(){
+			++this.key
 		},
 	},
 	methods: {
 		toggleOpen(item) {
 			this.$emit('update-input');
-			item.opened = !item.opened;
-			this.showPage(item, false, true);
-			this.key++;
+			item.opened = !item.opened
+			this.showPage(item, false, true)
+			++this.key
 		},
 		showPage(page) {
 			this.$emit('show-page', page);
