@@ -78,10 +78,14 @@ class Register
         return $instance(app());
     }
 
-    public function config(array $config): array
+    public function config(array $config): static
     {
         if ($config['gateway'] === 'prodamus') {
-            $this->register($config['gateway']);
+            $this->register($config['provider'], function () use ($config) {
+
+            });
         }
+
+        return $this;
     }
 }
